@@ -1,0 +1,72 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8a01923f5234b8eb4cd32c14da70d3c, type: 3}
+  m_Name: "\u7B2C\u4E00\u7AE0\u6CE2\u6B21"
+  m_EditorClassIdentifier: 
+  ganadoTarget: 15
+  sawmanTarget: 2
+  survivalDuration: 360
+  bellKillTarget: 15
+  bellSurvivalDuration: 600
+  reinforcementSize: 4
+  villagePatrolPositions:
+  - {x: -22.32, y: 0.08, z: -11.08}
+  - {x: -17.29, y: -0.04, z: -4.37}
+  - {x: -10, y: 0.03, z: -6.35}
+  - {x: -3.9, y: 0.04, z: -3.3}
+  - {x: 3.55, y: 0.03, z: -1.5}
+  - {x: 12, y: 0.2, z: -6}
+  - {x: 19.32, y: 0.27, z: -1.6}
+  - {x: 12.95, y: 0.23, z: 7.95}
+  villageReinforcementSites:
+  - position: {x: 20.4, y: 0.08, z: -9.98}
+    excludedPlayerArea:
+      m_Center: {x: 20.2, y: 1.5, z: -10.6}
+      m_Extent: {x: 5, y: 4, z: 4.5}
+  - position: {x: 7.01, y: 0.07, z: -9}
+    excludedPlayerArea:
+      m_Center: {x: 7.6, y: 1.5, z: -9.5}
+      m_Extent: {x: 4.5, y: 4, z: 5.5}
+  - position: {x: 18.2, y: 0.08, z: -11.25}
+    excludedPlayerArea:
+      m_Center: {x: 20.2, y: 1.5, z: -10.6}
+      m_Extent: {x: 5, y: 4, z: 4.5}
+  - position: {x: 6, y: 0.12, z: -11.7}
+    excludedPlayerArea:
+      m_Center: {x: 7.6, y: 1.5, z: -9.5}
+      m_Extent: {x: 4.5, y: 4, z: 5.5}
+  - position: {x: -22.32, y: 0.08, z: -11.08}
+    excludedPlayerArea:
+      m_Center: {x: -22.5, y: 1.5, z: -11}
+      m_Extent: {x: 6, y: 4, z: 4.5}
+  - position: {x: 12, y: 0.2, z: -6}
+    excludedPlayerArea:
+      m_Center: {x: 7.6, y: 1.5, z: -9.5}
+      m_Extent: {x: 4.5, y: 4, z: 5.5}
+  - position: {x: -17.29, y: -0.04, z: -4.37}
+    excludedPlayerArea:
+      m_Center: {x: -22.5, y: 1.5, z: -11}
+      m_Extent: {x: 6, y: 4, z: 4.5}
+  - position: {x: 12.95, y: 0.23, z: 7.95}
+    excludedPlayerArea:
+      m_Center: {x: 13, y: 1.5, z: 8}
+      m_Extent: {x: 5, y: 4, z: 4}
+  firstWaveGanado: 7
+  firstWaveSawman: 0
+  secondWaveGanado: 5
+  secondWaveSawman: 1
+  thirdWaveGanado: 5
+  thirdWaveSawman: 1
+  nextWaveRemainingRatio: 0.3
+  secondWaveDelay: 2
+  waveSpawnInterval: 0.12
+  spawnRetryDelay: 1

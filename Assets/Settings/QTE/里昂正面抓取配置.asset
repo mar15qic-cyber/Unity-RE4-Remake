@@ -1,0 +1,176 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5438f1d4ed224f57a90ac5d9bb4f027a, type: 3}
+  m_Name: "\u91CC\u6602\u6B63\u9762\u6293\u53D6\u914D\u7F6E"
+  m_EditorClassIdentifier: 
+  nativeCameras: {fileID: 0}
+  useNativeFrontGrab: 0
+  useNativeRearGrab: 0
+  useNativeAssassination: 0
+  useNativeGroundFinisher: 0
+  groundFinisherDistance: 1.65
+  requiredPresses: 8
+  inputDuration: 3
+  biteDamage: 20
+  maximumStartDistance: 2.1
+  maximumEnemyFacingAngle: 55
+  maximumPlayerFacingAngle: 80
+  maximumHeightDifference: 0.35
+  assassinationStartDistance: 2.1
+  assassinationRearAngle: 45
+  assassinationPlayerFacingAngle: 100
+  ganadoAssassinationDamage: 9999
+  sawmanAssassinationDamage: 85
+  assassinationPlayerReleaseNormalizedTime: 0.98
+  pairingDistance: 0.68
+  alignmentDuration: 0.12
+  clearanceRadius: 0.3
+  clearanceMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  playerSeparationDistance: 0.55
+  enemySeparationDistance: 0.45
+  separationDuration: 0.18
+  successPlayerMotionDistance: 0.18
+  successEnemyMotionDistance: 0.65
+  failurePairMotionDistance: 0.45
+  resultMotionCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  successPlayerRecoveryNormalizedTime: 0.55
+  playerExitSafetyTimeout: 0.35
+  assassinationSuccessForceExitDelay: 0.35
+  enemyExitSafetyTimeout: 0.5
+  minimumSuccessFinalDistance: 1.2
+  animationSafetyTimeout: 12
+  variants:
+  - kind: 0
+    playerEnter: {fileID: 0}
+    playerHold: {fileID: 0}
+    playerSuccess: {fileID: 0}
+    playerFailure: {fileID: 0}
+    enemyEnter: {fileID: 0}
+    enemyHold: {fileID: 0}
+    enemySuccess: {fileID: 0}
+    enemyFailure: {fileID: 0}
+    startAudioEvent: {fileID: 11400000, guid: 5d5c6e486478406e834dd7384be733d2, type: 2}
+    struggleAudioEvent: {fileID: 11400000, guid: 9e373c0344b84bbf93fe84742f21f14c, type: 2}
+    failureAudioEvent: {fileID: 11400000, guid: e2995e3fdd184f7fb2095602ec2617b1, type: 2}
+    pairingDistance: 0.68
+    failureDamage: 20
+    playerIsAttacker: 0
+    automaticSuccess: 0
+    automaticFailure: 0
+    singleShot: 0
+    requiresCrawlingEnemy: 0
+    requiresRearApproach: 0
+  - kind: 1
+    playerEnter: {fileID: 7400000, guid: 71c9dd1a8f98d88408d2d0c64f45b567, type: 2}
+    playerHold: {fileID: 7400000, guid: 2c39bd0ffef1ecd40867eb8e609b22b1, type: 2}
+    playerSuccess: {fileID: 7400000, guid: 53b000dd7705aa9439977b834b34c0c8, type: 2}
+    playerFailure: {fileID: 7400000, guid: 1db0fbaee07313e49b92668f0fb404bd, type: 2}
+    enemyEnter: {fileID: 7400000, guid: 36c0cc014c264a5459b8fe1e4c865c1c, type: 2}
+    enemyHold: {fileID: 7400000, guid: d3171ab02faaf644190141ae80bb26b1, type: 2}
+    enemySuccess: {fileID: 7400000, guid: 6997d22449ff4f147ba1c0c7adb86f95, type: 2}
+    enemyFailure: {fileID: 7400000, guid: 275eee89987387646946236035aaab91, type: 2}
+    startAudioEvent: {fileID: 11400000, guid: 688e923c099f49b89abaa1699805836d, type: 2}
+    struggleAudioEvent: {fileID: 11400000, guid: 64bc5351b57d486c94d3f172429a412f, type: 2}
+    failureAudioEvent: {fileID: 11400000, guid: 4b9710ac213542dabb6b54f1ecd344f3, type: 2}
+    pairingDistance: 0.68
+    failureDamage: 20
+    playerIsAttacker: 0
+    automaticSuccess: 0
+    automaticFailure: 0
+    singleShot: 0
+    requiresCrawlingEnemy: 0
+    requiresRearApproach: 1
+  - kind: 2
+    playerEnter: {fileID: 7400000, guid: 5881f6380e1353a4486f8b099cb62e4a, type: 2}
+    playerHold: {fileID: 7400000, guid: 61afc5403dae3ae429ff2001f2aa69ec, type: 2}
+    playerSuccess: {fileID: 7400000, guid: bf602d60412aa6f4b9113ad1fa0621b3, type: 2}
+    playerFailure: {fileID: 7400000, guid: f76259a61c64e704c9e447777f140745, type: 2}
+    enemyEnter: {fileID: 7400000, guid: a17f0d1fb966ecd408923fbaefbaf544, type: 2}
+    enemyHold: {fileID: 7400000, guid: 75a8550eba3ed2046815f7893bf3843d, type: 2}
+    enemySuccess: {fileID: 7400000, guid: 75bbf980a52aa314686ed50e783d5188, type: 2}
+    enemyFailure: {fileID: 7400000, guid: 97747af79cccaf749825883703a68d0d, type: 2}
+    startAudioEvent: {fileID: 11400000, guid: 431f329a44b646aca40ea06003bbfc1c, type: 2}
+    struggleAudioEvent: {fileID: 11400000, guid: cda4c8c995484c4692b5bf6bd05969d1, type: 2}
+    failureAudioEvent: {fileID: 11400000, guid: 43809af0daf04589bd0e07e8a0490608, type: 2}
+    pairingDistance: 0.62
+    failureDamage: 20
+    playerIsAttacker: 0
+    automaticSuccess: 0
+    automaticFailure: 0
+    singleShot: 0
+    requiresCrawlingEnemy: 1
+    requiresRearApproach: 0
+  - kind: 3
+    playerEnter: {fileID: 7400000, guid: 50f6c00797729194bb60a258cee2c6b9, type: 2}
+    playerHold: {fileID: 7400000, guid: 50f6c00797729194bb60a258cee2c6b9, type: 2}
+    playerSuccess: {fileID: 7400000, guid: 50f6c00797729194bb60a258cee2c6b9, type: 2}
+    playerFailure: {fileID: 7400000, guid: 50f6c00797729194bb60a258cee2c6b9, type: 2}
+    enemyEnter: {fileID: 7400000, guid: 25c0de70d5a5a5f4aaf1a40213078813, type: 2}
+    enemyHold: {fileID: 7400000, guid: 25c0de70d5a5a5f4aaf1a40213078813, type: 2}
+    enemySuccess: {fileID: 7400000, guid: 25c0de70d5a5a5f4aaf1a40213078813, type: 2}
+    enemyFailure: {fileID: 7400000, guid: 25c0de70d5a5a5f4aaf1a40213078813, type: 2}
+    startAudioEvent: {fileID: 0}
+    struggleAudioEvent: {fileID: 0}
+    failureAudioEvent: {fileID: 0}
+    pairingDistance: 0.72
+    failureDamage: 0
+    playerIsAttacker: 1
+    automaticSuccess: 1
+    automaticFailure: 0
+    singleShot: 1
+    requiresCrawlingEnemy: 0
+    requiresRearApproach: 1
+  - kind: 4
+    playerEnter: {fileID: 7400000, guid: 95ac4d47580f38940942a65e7acbb0f7, type: 2}
+    playerHold: {fileID: 7400000, guid: 682470ff3ced2004081e49037f121f01, type: 2}
+    playerSuccess: {fileID: 7400000, guid: 0e2624b9289bf794092faa7bb16dff00, type: 2}
+    playerFailure: {fileID: 7400000, guid: b27d3289d0abfe84e979ae4ee7bae679, type: 2}
+    enemyEnter: {fileID: 7400000, guid: 9f8c4cddd5aff9d43a3b641817571b21, type: 2}
+    enemyHold: {fileID: 7400000, guid: d5f1ee81f0fbd974da5034dfc8322074, type: 2}
+    enemySuccess: {fileID: 7400000, guid: 33842b76f3ecf7c498613bfef987caa9, type: 2}
+    enemyFailure: {fileID: 7400000, guid: 3d314c4767b0245469a1120036b1c910, type: 2}
+    startAudioEvent: {fileID: 0}
+    struggleAudioEvent: {fileID: 0}
+    failureAudioEvent: {fileID: 0}
+    pairingDistance: 0.82
+    failureDamage: 999
+    playerIsAttacker: 0
+    automaticSuccess: 0
+    automaticFailure: 0
+    singleShot: 0
+    requiresCrawlingEnemy: 0
+    requiresRearApproach: 0

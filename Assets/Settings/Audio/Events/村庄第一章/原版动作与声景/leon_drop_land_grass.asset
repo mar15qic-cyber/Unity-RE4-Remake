@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e226853efb80a034c8e5e9bf222a1774, type: 3}
+  m_Name: leon_drop_land_grass
+  m_EditorClassIdentifier: 
+  clips:
+  - clip: {fileID: 8300000, guid: ad2809d6b91328b4393db573b6fd378c, type: 3}
+    enabled: 1
+    weight: 1
+  - clip: {fileID: 8300000, guid: 0e7de092482dfd34f817ac0f9d71803a, type: 3}
+    enabled: 1
+    weight: 1
+  - clip: {fileID: 8300000, guid: 9dc705366f2cc22448d2eb770992d34e, type: 3}
+    enabled: 1
+    weight: 1
+  selectionMode: 0
+  baseVolume: 0.93
+  volumeRange: {x: 0.96, y: 1}
+  basePitch: 1
+  pitchRange: {x: 0.98, y: 1.02}
+  spatialMode: 1
+  minDistance: 3
+  maxDistance: 20
+  rolloffMode: 0
+  priority: 60
+  cooldown: 0
+  maxConcurrent: 3
+  loop: 0
+  category: 5
+  mixerGroupPath: 
+  voicePriority: 1
+  warnIfMissing: 1

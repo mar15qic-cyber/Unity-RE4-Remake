@@ -1,0 +1,47 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc755eac24397ee408b9e718d186bc88, type: 3}
+  m_Name: FirstAidSpray
+  m_EditorClassIdentifier: 
+  itemId: first_aid_spray
+  displayName: "\u6025\u6551\u55B7\u96FE"
+  icon: {fileID: -105090039, guid: 0c8e69aa4d809904a8253611974cfe28, type: 3}
+  itemType: 0
+  gridWidth: 1
+  gridHeight: 2
+  maxStack: 1
+  healAmount: 100
+  maxHealthBonus: 0
+  ammoWeapon: 0
+  ammoAmount: 0
+  weaponType: 0
+  usesDurability: 0
+  maxDurability: 100
+  brokenReplacementItemId: 
+  worldModelPrefab: {fileID: 389067604513344136, guid: 8e165d3ed1685664fafff848f9d2555d, type: 3}
+  modelScale: {x: 1, y: 1, z: 1}
+  modelOffset: {x: -0.0000000037252903, y: 0.000000022351742, z: 0.000000007450581}
+  modelRotation: {x: 0, y: 0, z: 0}
+  inspectionModelPrefab: {fileID: 389067604513344136, guid: 8e165d3ed1685664fafff848f9d2555d, type: 3}
+  inspectionModelRotation: {x: 90, y: -12, z: 0}
+  inspectionModelOffset: {x: 0, y: 0, z: 0}
+  inspectionViewScale: 1
+  iconRotation: 45
+  iconScale: 1.6
+  iconOffset: {x: 0, y: 0}
+  iconPadding: 1
+  craftingIngredients: []
+  craftingResultCount: 1
+  showInCraftingMenu: 1
+  craftIngredientA: 
+  craftIngredientB: 
+  description: "\u519B\u7528\u6025\u6551\u55B7\u96FE\uFF0C\u53EF\u5B8C\u5168\u6062\u590D\u751F\u547D\u503C\u3002"

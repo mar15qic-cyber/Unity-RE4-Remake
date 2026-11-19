@@ -1,0 +1,47 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc755eac24397ee408b9e718d186bc88, type: 3}
+  m_Name: YellowHerb
+  m_EditorClassIdentifier: 
+  itemId: yellow_herb
+  displayName: "\u9EC4\u8272\u8349\u836F"
+  icon: {fileID: 354776445, guid: 0c8e69aa4d809904a8253611974cfe28, type: 3}
+  itemType: 5
+  gridWidth: 1
+  gridHeight: 2
+  maxStack: 1
+  healAmount: 0
+  maxHealthBonus: 0
+  ammoWeapon: 0
+  ammoAmount: 0
+  weaponType: 0
+  usesDurability: 0
+  maxDurability: 100
+  brokenReplacementItemId: 
+  worldModelPrefab: {fileID: 1525976501729835377, guid: acb4a3a440f2b7b4aa050351bfb6de4b, type: 3}
+  modelScale: {x: 0.5836573, y: 0.5836573, z: 0.5836573}
+  modelOffset: {x: 0.018840631, y: 0.00009780839, z: -0.0075687487}
+  modelRotation: {x: 0, y: 0, z: 0}
+  inspectionModelPrefab: {fileID: 4968728480627868291, guid: faab4dbed27e6c044b2787049baeced0, type: 3}
+  inspectionModelRotation: {x: 0, y: -12, z: 0}
+  inspectionModelOffset: {x: 0, y: 0, z: 0}
+  inspectionViewScale: 1
+  iconRotation: 0
+  iconScale: 1.22
+  iconOffset: {x: 0, y: 0}
+  iconPadding: 1
+  craftingIngredients: []
+  craftingResultCount: 1
+  showInCraftingMenu: 1
+  craftIngredientA: 
+  craftIngredientB: 
+  description: "\u65E0\u6CD5\u5355\u72EC\u4F7F\u7528\uFF0C\u4E0E\u7EFF\u8272\u8349\u836F\u5408\u6210\u540E\u53EF\u6C38\u4E45\u63D0\u9AD8\u751F\u547D\u4E0A\u9650\u3002"

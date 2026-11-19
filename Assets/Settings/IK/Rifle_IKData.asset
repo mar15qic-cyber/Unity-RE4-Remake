@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1185d37013b660d4dbc50ac4ab9e64a0, type: 3}
+  m_Name: Rifle_IKData
+  m_EditorClassIdentifier: 
+  weaponType: 0
+  poses:
+  - poseName: Idle
+    rightHandLocalPos: {x: 0, y: 0, z: 0}
+    rightHandLocalRot: {x: 0, y: 0, z: 0}
+    leftHandLocalPos: {x: 0, y: 0, z: 0}
+    leftHandLocalRot: {x: 0, y: 0, z: 0}
+  - poseName: Aim
+    rightHandLocalPos: {x: 0, y: 0, z: 0}
+    rightHandLocalRot: {x: 0, y: 0, z: 0}
+    leftHandLocalPos: {x: 0, y: 0, z: 0}
+    leftHandLocalRot: {x: 0, y: 0, z: 0}
+  - poseName: Reload
+    rightHandLocalPos: {x: 0, y: 0, z: 0}
+    rightHandLocalRot: {x: 0, y: 0, z: 0}
+    leftHandLocalPos: {x: 0, y: 0, z: 0}
+    leftHandLocalRot: {x: 0, y: 0, z: 0}
+  modeWeights:
+  - mode: 0
+    armWeight: 0
+    spineWeight: 0
+    headWeight: 0
+  - mode: 1
+    armWeight: 1
+    spineWeight: 0.5
+    headWeight: 0.6
+  - mode: 2
+    armWeight: 0.4
+    spineWeight: 0.5
+    headWeight: 0.6
+  - mode: 3
+    armWeight: 0
+    spineWeight: 0
+    headWeight: 0
+  - mode: 4
+    armWeight: 0
+    spineWeight: 0
+    headWeight: 0
+  armTransitionSpeed: 12
+  spineTransitionSpeed: 6
+  headTransitionSpeed: 10

@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d4e8a881973863f4788183dc0be02ceb, type: 3}
+  m_Name: SawFootsteps
+  m_EditorClassIdentifier: 
+  surfaces:
+  - surfaceType: 1
+    walkEvent: {fileID: 11400000, guid: 72d0e4ba8765a194894da68f52f98979, type: 2}
+    runEvent: {fileID: 11400000, guid: d2f7edda9240e0f49a88300f8435f4fc, type: 2}
+    crouchEvent: {fileID: 0}
+  - surfaceType: 4
+    walkEvent: {fileID: 11400000, guid: cfcb92f411f61b647bce53a930817ccc, type: 2}
+    runEvent: {fileID: 11400000, guid: fd5fe1602974db04bb4e2c6334cbac69, type: 2}
+    crouchEvent: {fileID: 0}
+  - surfaceType: 6
+    walkEvent: {fileID: 11400000, guid: 11df1bb62c3bbe64f92241275f3f85ee, type: 2}
+    runEvent: {fileID: 11400000, guid: 1f1ef8add0330764cb0a31e8339c66b4, type: 2}
+    crouchEvent: {fileID: 0}
+  - surfaceType: 0
+    walkEvent: {fileID: 11400000, guid: 171af1250665e8e41888a5e2ef46e655, type: 2}
+    runEvent: {fileID: 11400000, guid: 540e8ca759e9d3240ba3f9fdd4015b85, type: 2}
+    crouchEvent: {fileID: 0}
+  defaultWalkEvent: {fileID: 11400000, guid: 11df1bb62c3bbe64f92241275f3f85ee, type: 2}
+  defaultRunEvent: {fileID: 11400000, guid: 1f1ef8add0330764cb0a31e8339c66b4, type: 2}

@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 86d16cbe17d26c144956336586c09d43, type: 3}
+  m_Name: Weapon
+  m_EditorClassIdentifier: 
+  weaponType: 0
+  weaponName: 
+  baseDamage: 15
+  headshotMultiplier: 1.5
+  bodyMultiplier: 1
+  limbMultiplier: 0.7
+  fireRate: 0.4
+  magazineSize: 12
+  reloadTime: 2.17
+  fireMode: 0
+  range: 100
+  baseSpread: 0.02
+  maxSpread: 0.08
+  spreadRecovery: 2
+  recoilAmount: 2
+  recoilRecovery: 5
+  cameraProfile: {fileID: 11400000, guid: 1935d53ac05138b439e280b5ce00e980, type: 2}
+  reserveAmmo: 0
+  pelletCount: 6
+  pelletSpreadAngle: 5
+  gunshotHearingRadius: 18
+  fireSound: {fileID: 0}
+  reloadSound: {fileID: 0}
+  muzzleFlash: {fileID: 0}
+  impactEffect: {fileID: 0}
+  crosshairConfig: {fileID: 11400000, guid: 6d8083b608cfac241bf70fd24d74bb75, type: 2}
+  hudIcon: {fileID: 0}

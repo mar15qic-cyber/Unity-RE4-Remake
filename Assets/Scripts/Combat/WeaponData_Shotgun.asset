@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 86d16cbe17d26c144956336586c09d43, type: 3}
+  m_Name: WeaponData_Shotgun
+  m_EditorClassIdentifier: 
+  weaponType: 3
+  weaponName: W-870
+  baseDamage: 50
+  headshotMultiplier: 1.5
+  bodyMultiplier: 1
+  limbMultiplier: 0.7
+  fireRate: 1.18
+  magazineSize: 6
+  reloadTime: 3
+  fireMode: 3
+  range: 80
+  baseSpread: 0.03
+  maxSpread: 0.1
+  spreadRecovery: 1.5
+  recoilAmount: 4.25
+  recoilRecovery: 5
+  cameraProfile: {fileID: 11400000, guid: 5a62b62579edba14dbec70a7d5e6bc09, type: 2}
+  reserveAmmo: 6
+  pelletCount: 6
+  pelletSpreadAngle: 6.5
+  gunshotHearingRadius: 26
+  fireSound: {fileID: 0}
+  reloadSound: {fileID: 0}
+  muzzleFlash: {fileID: 0}
+  impactEffect: {fileID: 0}
+  crosshairConfig: {fileID: 11400000, guid: 53dd450a4a6c4c01ae3fe0f1c03ebdc8, type: 2}
+  hudIcon: {fileID: -96089057, guid: 0c8e69aa4d809904a8253611974cfe28, type: 3}

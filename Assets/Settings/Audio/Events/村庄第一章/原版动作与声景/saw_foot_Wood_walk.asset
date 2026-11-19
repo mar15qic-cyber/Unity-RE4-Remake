@@ -1,0 +1,56 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e226853efb80a034c8e5e9bf222a1774, type: 3}
+  m_Name: saw_foot_Wood_walk
+  m_EditorClassIdentifier: 
+  clips:
+  - clip: {fileID: 8300000, guid: e6919a8cff32de34081ecce1c18acce3, type: 3}
+    enabled: 1
+    weight: 1
+  - clip: {fileID: 8300000, guid: eaea17b0ec2ecab4e8faa48f4e85d3a9, type: 3}
+    enabled: 1
+    weight: 1
+  - clip: {fileID: 8300000, guid: 2860df2277a713a42a9110f960dd7b8b, type: 3}
+    enabled: 1
+    weight: 1
+  - clip: {fileID: 8300000, guid: 676751eb5dbf3304cb142f2adf56a60e, type: 3}
+    enabled: 1
+    weight: 1
+  - clip: {fileID: 8300000, guid: 48442084365515b44a6e08dff6c3d765, type: 3}
+    enabled: 1
+    weight: 1
+  - clip: {fileID: 8300000, guid: d4f6f8f411df0fa46a23f6eae694e727, type: 3}
+    enabled: 1
+    weight: 1
+  - clip: {fileID: 8300000, guid: 553d98da0ee87ef4c9032e8f9747a529, type: 3}
+    enabled: 1
+    weight: 1
+  - clip: {fileID: 8300000, guid: 9f3b3a2d70964de40be76f0b981811fd, type: 3}
+    enabled: 1
+    weight: 1
+  selectionMode: 0
+  baseVolume: 0.75
+  volumeRange: {x: 1, y: 1}
+  basePitch: 1
+  pitchRange: {x: 1, y: 1}
+  spatialMode: 1
+  minDistance: 1
+  maxDistance: 24
+  rolloffMode: 0
+  priority: 128
+  cooldown: 0
+  maxConcurrent: 20
+  loop: 0
+  category: 7
+  mixerGroupPath: 
+  voicePriority: 1
+  warnIfMissing: 1

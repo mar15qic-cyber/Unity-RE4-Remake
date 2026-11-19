@@ -1,0 +1,56 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e226853efb80a034c8e5e9bf222a1774, type: 3}
+  m_Name: saw_foot_Mud_walk
+  m_EditorClassIdentifier: 
+  clips:
+  - clip: {fileID: 8300000, guid: ddd2943f074e9b349af0645b92a59ced, type: 3}
+    enabled: 1
+    weight: 1
+  - clip: {fileID: 8300000, guid: 19906ce2773fef74b8460142109883d8, type: 3}
+    enabled: 1
+    weight: 1
+  - clip: {fileID: 8300000, guid: 2425af10127d0bc42985d3ec16081e7d, type: 3}
+    enabled: 1
+    weight: 1
+  - clip: {fileID: 8300000, guid: 9aa022c3e85e0724dbf6b6eed689dc9f, type: 3}
+    enabled: 1
+    weight: 1
+  - clip: {fileID: 8300000, guid: 50bcf186b426fc84e9d34d43bdf1d3b6, type: 3}
+    enabled: 1
+    weight: 1
+  - clip: {fileID: 8300000, guid: d56014e41e640c74ca0066f36909579d, type: 3}
+    enabled: 1
+    weight: 1
+  - clip: {fileID: 8300000, guid: 9dc3c1b38da62a446a8b846569ccef63, type: 3}
+    enabled: 1
+    weight: 1
+  - clip: {fileID: 8300000, guid: 2cf31b4fd49931344be6263f85ab305b, type: 3}
+    enabled: 1
+    weight: 1
+  selectionMode: 0
+  baseVolume: 0.75
+  volumeRange: {x: 1, y: 1}
+  basePitch: 1
+  pitchRange: {x: 1, y: 1}
+  spatialMode: 1
+  minDistance: 1
+  maxDistance: 24
+  rolloffMode: 0
+  priority: 128
+  cooldown: 0
+  maxConcurrent: 20
+  loop: 0
+  category: 7
+  mixerGroupPath: 
+  voicePriority: 1
+  warnIfMissing: 1

@@ -1,0 +1,345 @@
+{
+  "groups": [
+    {
+      "cue": 0,
+      "cooldown": 10,
+      "delay": 0,
+      "priority": 95,
+      "once": false,
+      "wait": false,
+      "silentSlots": 0,
+      "lines": [
+        {
+          "subtitle": "糟了，空膛！",
+          "clip": "DryFire_1",
+          "spoken": "糟了，空膛！",
+          "rate": 2
+        },
+        {
+          "subtitle": "偏偏这时候！",
+          "clip": "DryFire_2",
+          "spoken": "偏偏这时候！",
+          "rate": 2
+        },
+        {
+          "subtitle": "（懊恼地叹气）",
+          "clip": "DryFire_3",
+          "spoken": "唉。",
+          "rate": 3
+        }
+      ]
+    },
+    {
+      "cue": 1,
+      "cooldown": 0,
+      "delay": 0,
+      "priority": 82,
+      "once": false,
+      "wait": true,
+      "silentSlots": 0,
+      "lines": [
+        {
+          "subtitle": "麻烦了，刀断了。",
+          "clip": "KnifeBroken_1",
+          "spoken": "麻烦了，刀断了。",
+          "rate": 1
+        },
+        {
+          "subtitle": "刀也撑不住了。",
+          "clip": "KnifeBroken_2",
+          "spoken": "刀也撑不住了。",
+          "rate": 1
+        },
+        {
+          "subtitle": "这下连刀都没了。",
+          "clip": "KnifeBroken_3",
+          "spoken": "这下连刀都没了。",
+          "rate": 1
+        }
+      ]
+    },
+    {
+      "cue": 2,
+      "cooldown": 10,
+      "delay": 0,
+      "priority": 24,
+      "once": false,
+      "wait": false,
+      "silentSlots": 1,
+      "lines": [
+        {
+          "subtitle": "先解决一个。",
+          "clip": "GunKill_1",
+          "spoken": "先解决一个。",
+          "rate": 1
+        },
+        {
+          "subtitle": "下一个在哪？",
+          "clip": "GunKill_2",
+          "spoken": "下一个在哪？",
+          "rate": 1
+        },
+        {
+          "subtitle": "能消停会儿吗？",
+          "clip": "GunKill_3",
+          "spoken": "能消停会儿吗？",
+          "rate": 0
+        },
+        {
+          "subtitle": "后面还有人。",
+          "clip": "GunKill_4",
+          "spoken": "后面还有人。",
+          "rate": 1
+        }
+      ]
+    },
+    {
+      "cue": 3,
+      "cooldown": 10,
+      "delay": 0,
+      "priority": 30,
+      "once": false,
+      "wait": false,
+      "silentSlots": 0,
+      "lines": [
+        {
+          "subtitle": "给我让开！",
+          "clip": "Kick_1",
+          "spoken": "给我让开！",
+          "rate": 3
+        },
+        {
+          "subtitle": "这下站不稳了吧。",
+          "clip": "Kick_2",
+          "spoken": "这下站不稳了吧。",
+          "rate": 2
+        },
+        {
+          "subtitle": "那边比较宽敞。",
+          "clip": "Kick_3",
+          "spoken": "那边比较宽敞。",
+          "rate": 2
+        },
+        {
+          "subtitle": "（发力声）",
+          "clip": "Kick_4",
+          "spoken": "嘿！",
+          "rate": 4
+        }
+      ]
+    },
+    {
+      "cue": 4,
+      "cooldown": 0,
+      "delay": 0,
+      "priority": 35,
+      "once": false,
+      "wait": false,
+      "silentSlots": 0,
+      "lines": [
+        {
+          "subtitle": "这条路封了。",
+          "clip": "LadderDown_1",
+          "spoken": "这条路封了。",
+          "rate": 1
+        },
+        {
+          "subtitle": "你们换条路吧。",
+          "clip": "LadderDown_2",
+          "spoken": "你们换条路吧。",
+          "rate": 1
+        },
+        {
+          "subtitle": "梯子，借我用一下。",
+          "clip": "LadderDown_3",
+          "spoken": "梯子，借我用一下。",
+          "rate": 1
+        }
+      ]
+    },
+    {
+      "cue": 5,
+      "cooldown": 0,
+      "delay": 0,
+      "priority": 86,
+      "once": true,
+      "wait": true,
+      "silentSlots": 0,
+      "lines": [
+        {
+          "subtitle": "真会挑时候，还带了电锯。",
+          "clip": "SawSeen_1",
+          "spoken": "真会挑时候，还带了电锯。",
+          "rate": 0
+        }
+      ]
+    },
+    {
+      "cue": 6,
+      "cooldown": 0,
+      "delay": 0,
+      "priority": 79,
+      "once": false,
+      "wait": true,
+      "silentSlots": 1,
+      "lines": [
+        {
+          "subtitle": "还真挡住了！",
+          "clip": "SawParry_1",
+          "spoken": "还真挡住了！",
+          "rate": 2,
+          "once": true,
+          "firstOnly": true
+        },
+        {
+          "subtitle": "差一点就糟了。",
+          "clip": "SawParry_2",
+          "spoken": "差一点就糟了。",
+          "rate": 2,
+          "once": true
+        }
+      ]
+    },
+    {
+      "cue": 7,
+      "cooldown": 0,
+      "delay": 0,
+      "priority": 52,
+      "once": true,
+      "wait": false,
+      "silentSlots": 0,
+      "lines": [
+        {
+          "subtitle": "这家伙居然还能打。",
+          "clip": "SawHalfHealth_1",
+          "spoken": "这家伙居然还能打。",
+          "rate": 1
+        }
+      ]
+    },
+    {
+      "cue": 8,
+      "cooldown": 0,
+      "delay": 0,
+      "priority": 63,
+      "once": false,
+      "wait": true,
+      "silentSlots": 0,
+      "lines": [
+        {
+          "subtitle": "这下能喘口气了。",
+          "clip": "SawKilled_1",
+          "spoken": "这下能喘口气了。",
+          "rate": 0,
+          "once": true
+        },
+        {
+          "subtitle": "总该安静了吧。",
+          "clip": "SawKilled_2",
+          "spoken": "总该安静了吧。",
+          "rate": 1,
+          "once": true
+        },
+        {
+          "subtitle": "躺着吧，别折腾了。",
+          "clip": "SawKilled_3",
+          "spoken": "躺着吧，别折腾了。",
+          "rate": 1,
+          "once": true
+        }
+      ]
+    },
+    {
+      "cue": 9,
+      "cooldown": 0,
+      "delay": 0,
+      "priority": 65,
+      "once": false,
+      "wait": true,
+      "silentSlots": 0,
+      "lines": [
+        {
+          "subtitle": "药已经用完了。",
+          "clip": "LastHealCombat_1",
+          "spoken": "药已经用完了。",
+          "rate": 2
+        },
+        {
+          "subtitle": "接下来得省着点。",
+          "clip": "LastHealCombat_2",
+          "spoken": "接下来得省着点。",
+          "rate": 1
+        }
+      ]
+    },
+    {
+      "cue": 10,
+      "cooldown": 0,
+      "delay": 0,
+      "priority": 65,
+      "once": false,
+      "wait": true,
+      "silentSlots": 0,
+      "lines": [
+        {
+          "subtitle": "这下得找点药了。",
+          "clip": "LastHealQuiet_1",
+          "spoken": "这下得找点药了。",
+          "rate": 0
+        },
+        {
+          "subtitle": "包里已经没有药了。",
+          "clip": "LastHealQuiet_2",
+          "spoken": "包里已经没有药了。",
+          "rate": 0
+        }
+      ]
+    },
+    {
+      "cue": 11,
+      "cooldown": 0,
+      "delay": 0,
+      "priority": 67,
+      "once": true,
+      "wait": true,
+      "silentSlots": 0,
+      "lines": [
+        {
+          "subtitle": "这把枪来得正好。",
+          "clip": "ShotgunPickup_1",
+          "spoken": "这把枪来得正好。",
+          "rate": 1
+        }
+      ]
+    },
+    {
+      "cue": 12,
+      "cooldown": 0,
+      "delay": 1.8,
+      "priority": 59,
+      "once": true,
+      "wait": true,
+      "silentSlots": 0,
+      "lines": [
+        {
+          "subtitle": "好吧，来一个试试。",
+          "clip": "CombatStart_1",
+          "spoken": "好吧，来一个试试。",
+          "rate": 1
+        }
+      ]
+    }
+  ],
+  "bell": [
+    {
+      "start": 69.62,
+      "end": 70.95,
+      "subtitle": "人都上哪儿去了？"
+    },
+    {
+      "start": 71.14,
+      "end": 72.38,
+      "subtitle": "去玩宾果了？"
+    }
+  ]
+}

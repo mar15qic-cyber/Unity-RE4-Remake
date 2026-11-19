@@ -1,0 +1,47 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc755eac24397ee408b9e718d186bc88, type: 3}
+  m_Name: old_compass
+  m_EditorClassIdentifier: 
+  itemId: old_compass
+  displayName: "\u53E4\u8001\u7684\u7F57\u76D8"
+  icon: {fileID: 0}
+  itemType: 3
+  gridWidth: 1
+  gridHeight: 1
+  maxStack: 1
+  healAmount: 0
+  maxHealthBonus: 0
+  ammoWeapon: 0
+  ammoAmount: 0
+  weaponType: 0
+  usesDurability: 0
+  maxDurability: 100
+  brokenReplacementItemId: 
+  worldModelPrefab: {fileID: 7766830288349509359, guid: c68f39c5fb7b29e4a9d52df1191d1179, type: 3}
+  modelScale: {x: 1, y: 1, z: 1}
+  modelOffset: {x: 0, y: 0, z: 0}
+  modelRotation: {x: 0, y: 0, z: 0}
+  inspectionModelPrefab: {fileID: 7766830288349509359, guid: c68f39c5fb7b29e4a9d52df1191d1179, type: 3}
+  inspectionModelRotation: {x: 0, y: 0, z: 0}
+  inspectionModelOffset: {x: 0, y: 0, z: 0}
+  inspectionViewScale: 1
+  iconRotation: 0
+  iconScale: 1
+  iconOffset: {x: 0, y: 0}
+  iconPadding: 0
+  craftingIngredients: []
+  craftingResultCount: 1
+  showInCraftingMenu: 1
+  craftIngredientA: 
+  craftIngredientB: 
+  description: 

@@ -1,0 +1,48 @@
+# ==============================================
+# 必忽略：Unity 自动生成的缓存（绝对不能传）
+# ==============================================
+Library/
+Temp/
+Obj/
+Logs/
+UserSettings/
+Build/
+Builds/
+
+# ==============================================
+# 超大资源文件（暂时不上传，只传代码）
+# ==============================================
+Assets/Models/
+Assets/Prefabs/
+Assets/Materials/
+Assets/Textures/
+Assets/Animations/
+Assets/Audio/
+Assets/Art/
+Assets/Resource/
+Assets/Resources/
+Assets/Scenes/
+
+# ==============================================
+# Codely CLI / 工具产物
+# ==============================================
+.codely-cli/auto-saves/
+.codely-cli/tool-outputs/
+.codely/clipboard/
+screenshots/
+mem-log/
+
+# ==============================================
+# 工具/IDE 垃圾
+# ==============================================
+.vs/
+.vscode/
+.opencode/
+.trae/
+*.csproj
+*.sln
+*.suo
+*.user
+*.userprefs
+.DS_Store
+Thumbs.db

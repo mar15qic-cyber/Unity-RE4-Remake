@@ -1,0 +1,11 @@
+{
+    "name": "Game.InventoryRules",
+    "references": [
+        "Game.Contracts"
+    ],
+    "includePlatforms": [],
+    "autoReferenced": true,
+    "overrideReferences": true,
+    "precompiledReferences": [],
+    "noEngineReferences": false
+}

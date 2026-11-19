@@ -1,0 +1,87 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 96065f2a3d2ed1843b27c6016ce89c57, type: 3}
+  m_Name: NativeShoulder_SG09R
+  m_EditorClassIdentifier: 
+  poses:
+  - anchor: 0
+    offset: {x: 0.35, y: 1.5, z: 0}
+    distance: 1.6
+    sourceFov: 63
+    measuredHorizontalFov: 65.52
+    inputRate: 0.8
+    inputDamping: 1
+    outputRate: 0.9
+    outputDamping: 0.4
+    useOutput: 0
+    followDamping: 0.03
+    verified: 0
+  - anchor: 2
+    offset: {x: 0.42, y: 0.495, z: 0}
+    distance: 0.9
+    sourceFov: 44
+    measuredHorizontalFov: 45.76
+    inputRate: 0.5
+    inputDamping: 0.08
+    outputRate: 0.7
+    outputDamping: 0.18
+    useOutput: 1
+    followDamping: 0.02
+    verified: 0
+  - anchor: 0
+    offset: {x: 0.35, y: 1.3, z: 0}
+    distance: 1.6
+    sourceFov: 70
+    measuredHorizontalFov: 0
+    inputRate: 0.75
+    inputDamping: 0.3
+    outputRate: 0.25
+    outputDamping: 0.3
+    useOutput: 0
+    followDamping: 0.03
+    verified: 0
+  - anchor: 1
+    offset: {x: 0.4, y: 0.45, z: 0}
+    distance: 1.4
+    sourceFov: 60
+    measuredHorizontalFov: 0
+    inputRate: 0.9
+    inputDamping: 0.15
+    outputRate: 0.5
+    outputDamping: 0.15
+    useOutput: 0
+    followDamping: 0.2
+    verified: 0
+  - anchor: 0
+    offset: {x: 0.2, y: 1.4, z: 0}
+    distance: 1.8
+    sourceFov: 70
+    measuredHorizontalFov: 0
+    inputRate: 0.9
+    inputDamping: 3
+    outputRate: 0.25
+    outputDamping: 0.3
+    useOutput: 0
+    followDamping: 0.02
+    verified: 0
+  - anchor: 0
+    offset: {x: 0.35, y: 1.5, z: 0}
+    distance: 1.6
+    sourceFov: 64
+    measuredHorizontalFov: 0
+    inputRate: 0.8
+    inputDamping: 1
+    outputRate: 0.9
+    outputDamping: 0.4
+    useOutput: 0
+    followDamping: 0.03
+    verified: 0

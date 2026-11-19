@@ -1,0 +1,11 @@
+{
+    "name": "Game.CombatRules",
+    "references": [
+        "Game.Contracts"
+    ],
+    "includePlatforms": [],
+    "autoReferenced": true,
+    "overrideReferences": true,
+    "precompiledReferences": [],
+    "noEngineReferences": true
+}

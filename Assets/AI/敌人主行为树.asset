@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b23f08d2ae4cba14087c1ed36193d82b, type: 3}
+  m_Name: "\u654C\u4EBA\u4E3B\u884C\u4E3A\u6811"
+  m_EditorClassIdentifier: 
+  mBehaviorSource:
+    behaviorName: "\u654C\u4EBA\u4E3B\u884C\u4E3A\u6811"
+    behaviorDescription: "\u6B7B\u4EA1\u3001\u53D7\u51FB\u548C\u7279\u6B8A\u52A8\u4F5C\u4F18\u5148\uFF1B\u6218\u6597\u4E3B\u7EBF\u663E\u5F0F\u533A\u5206\u6B63\u5E38\u8FFD\u51FB\u4E0E\u8DEF\u5F84\u5931\u8D25\u6062\u590D\u3002"
+    mTaskData:
+      types: []
+      parentIndex: 
+      startIndex: 
+      variableStartIndex: 
+      JSONSerialization: "{\"EntryTask\":{\"Type\":\"BehaviorDesigner.Runtime.Tasks.EntryTask\",\"NodeData\":{\"Offset\":\"(0,-180)\"},\"ID\":0,\"Name\":\"\u5165\u53E3\",\"Instant\":true},\"RootTask\":{\"Type\":\"BehaviorDesigner.Runtime.Tasks.Repeater\",\"NodeData\":{\"Offset\":\"(0,-30)\"},\"ID\":1,\"Name\":\"\u6301\u7EED\u51B3\u7B56\",\"Instant\":true,\"SharedIntcount\":{\"Type\":\"BehaviorDesigner.Runtime.SharedInt\",\"Name\":null,\"Int32mValue\":1},\"SharedBoolrepeatForever\":{\"Type\":\"BehaviorDesigner.Runtime.SharedBool\",\"Name\":null,\"BooleanmValue\":true},\"SharedBoolendOnFailure\":{\"Type\":\"BehaviorDesigner.Runtime.SharedBool\",\"Name\":null,\"BooleanmValue\":false},\"Children\":[{\"Type\":\"BehaviorDesigner.Runtime.Tasks.PrioritySelector\",\"NodeData\":{\"Offset\":\"(0,120)\"},\"ID\":2,\"Name\":\"\u4F18\u5148\u7EA7\u9009\u62E9\",\"Instant\":true,\"AbortTypeabortType\":\"None\",\"Children\":[{\"Type\":\"BehaviorDesigner.Runtime.Tasks.Sequence\",\"NodeData\":{\"Offset\":\"(-1050,290)\"},\"ID\":3,\"Name\":\"\u6B7B\u4EA1\",\"Instant\":true,\"AbortTypeabortType\":\"LowerPriority\",\"Children\":[{\"Type\":\"EnemyBehaviorTasks.IsEnemyDead\",\"NodeData\":{\"Offset\":\"(-1100,470)\"},\"ID\":4,\"Name\":\"\u5DF2\u7ECF\u6B7B\u4EA1\",\"Instant\":true},{\"Type\":\"EnemyBehaviorTasks.ExecuteDeath\",\"NodeData\":{\"Offset\":\"(-1000,470)\"},\"ID\":5,\"Name\":\"\u6267\u884C\u6B7B\u4EA1\",\"Instant\":true}]},{\"Type\":\"BehaviorDesigner.Runtime.Tasks.Sequence\",\"NodeData\":{\"Offset\":\"(-750,290)\"},\"ID\":6,\"Name\":\"\u53D7\u51FB\",\"Instant\":true,\"AbortTypeabortType\":\"LowerPriority\",\"Children\":[{\"Type\":\"EnemyBehaviorTasks.HasPendingHit\",\"NodeData\":{\"Offset\":\"(-800,470)\"},\"ID\":7,\"Name\":\"\u5B58\u5728\u53D7\u51FB\u8BF7\u6C42\",\"Instant\":true},{\"Type\":\"EnemyBehaviorTasks.ExecuteHit\",\"NodeData\":{\"Offset\":\"(-700,470)\"},\"ID\":8,\"Name\":\"\u6267\u884C\u53D7\u51FB\",\"Instant\":true}]},{\"Type\":\"BehaviorDesigner.Runtime.Tasks.Sequence\",\"NodeData\":{\"Offset\":\"(150,290)\"},\"ID\":19,\"Name\":\"\u6B63\u9762\u6293\u53D6\",\"Instant\":true,\"AbortTypeabortType\":\"LowerPriority\",\"Children\":[{\"Type\":\"EnemyBehaviorTasks.CanAttemptFrontGrabQTE\",\"NodeData\":{\"Offset\":\"(40,470)\"},\"ID\":20,\"Name\":\"\u53EF\u4EE5\u5C1D\u8BD5\u6B63\u9762\u6293\u53D6\",\"Instant\":true},{\"Type\":\"EnemyBehaviorTasks.TryStartFrontGrabQTE\",\"NodeData\":{\"Offset\":\"(200,470)\"},\"ID\":21,\"Name\":\"\u63D0\u4EA4\u6B63\u9762\u6293\u53D6\u8BF7\u6C42\",\"Instant\":true}]},{\"Type\":\"BehaviorDesigner.Runtime.Tasks.Sequence\",\"NodeData\":{\"Offset\":\"(750,290)\"},\"ID\":25,\"Name\":\"\u6218\u6597\u4E3B\u7EBF\",\"Instant\":true,\"AbortTypeabortType\":\"LowerPriority\",\"Children\":[{\"Type\":\"EnemyBehaviorTasks.IsCombatEngaged\",\"NodeData\":{\"Offset\":\"(610,470)\"},\"ID\":42,\"Name\":\"\u5DF2\u7ECF\u8FDB\u5165\u6218\u6597\",\"Instant\":true},{\"Type\":\"BehaviorDesigner.Runtime.Tasks.PrioritySelector\",\"NodeData\":{\"Offset\":\"(820,470)\"},\"ID\":43,\"Name\":\"\u6218\u6597\u72B6\u6001\u9009\u62E9\",\"Instant\":true,\"AbortTypeabortType\":\"None\",\"Children\":[{\"Type\":\"BehaviorDesigner.Runtime.Tasks.Sequence\",\"NodeData\":{\"Offset\":\"(-310,155)\"},\"ID\":100,\"Name\":\"\u6728\u68AF\u8FFD\u51FB\",\"Instant\":true,\"AbortTypeabortType\":\"LowerPriority\",\"Children\":[{\"Type\":\"EnemyBehaviorTasks.HasLadderPursuit\",\"NodeData\":{\"Offset\":\"(-72,150)\"},\"ID\":101,\"Name\":\"\u5B58\u5728\u6728\u68AF\u5206\u914D\u6216\u52A8\u4F5C\",\"Instant\":true},{\"Type\":\"EnemyBehaviorTasks.ExecuteLadderPursuit\",\"NodeData\":{\"Offset\":\"(72,150)\"},\"ID\":102,\"Name\":\"\u63A5\u8FD1\u5E76\u6267\u884C\u6728\u68AF\u52A8\u4F5C\",\"Instant\":true}]},{\"Type\":\"BehaviorDesigner.Runtime.Tasks.Sequence\",\"NodeData\":{\"Offset\":\"(700,650)\"},\"ID\":44,\"Name\":\"\u8DEF\u5F84\u5931\u8D25\u6062\u590D\",\"Instant\":true,\"AbortTypeabortType\":\"LowerPriority\",\"Children\":[{\"Type\":\"EnemyBehaviorTasks.HasChasePathFailure\",\"NodeData\":{\"Offset\":\"(640,830)\"},\"ID\":45,\"Name\":\"\u8FFD\u51FB\u8DEF\u5F84\u5DF2\u7ECF\u5931\u8D25\",\"Instant\":true},{\"Type\":\"EnemyBehaviorTasks.ExecuteChaseRecovery\",\"NodeData\":{\"Offset\":\"(780,830)\"},\"ID\":46,\"Name\":\"\u6062\u590D\u53EF\u8FBE\u8FFD\u51FB\u70B9\",\"Instant\":true}]},{\"Type\":\"EnemyBehaviorTasks.ExecuteCombat\",\"NodeData\":{\"Offset\":\"(940,650)\"},\"ID\":47,\"Name\":\"\u6267\u884C\u653B\u51FB\u4E0E\u6B63\u5E38\u8FFD\u51FB\",\"Instant\":true}]}]},{\"Type\":\"BehaviorDesigner.Runtime.Tasks.Sequence\",\"NodeData\":{\"Offset\":\"(1200,290)\"},\"ID\":103,\"Name\":\"\u5F00\u573A\u5DE1\u903B\",\"Instant\":true,\"AbortTypeabortType\":\"None\",\"Children\":[{\"Type\":\"EnemyBehaviorTasks.SelectPatrolPoint\",\"NodeData\":{\"Offset\":\"(-130,90)\"},\"ID\":104,\"Name\":\"\u9009\u62E9\u5F00\u573A\u5DE1\u903B\u70B9\",\"Instant\":true,\"BooleanvillageOpeningOnly\":true},{\"Type\":\"EnemyBehaviorTasks.MoveToPatrolPoint\",\"NodeData\":{\"Offset\":\"(0,90)\"},\"ID\":105,\"Name\":\"\u8D70\u5411\u5DE1\u903B\u70B9\",\"Instant\":true,\"BooleanvillageOpeningOnly\":true},{\"Type\":\"EnemyBehaviorTasks.IdleWait\",\"NodeData\":{\"Offset\":\"(130,90)\"},\"ID\":106,\"Name\":\"\u77ED\u6682\u505C\u7559\",\"Instant\":true}]},{\"Type\":\"EnemyBehaviorTasks.IdleWait\",\"NodeData\":{\"Offset\":\"(1530,290)\"},\"ID\":41,\"Name\":\"\u7A7A\u95F2\u7B49\u5F85\",\"Instant\":true}]}]}}"
+      fieldSerializationData:
+        typeName: []
+        fieldNameHash: 
+        startIndex: 
+        dataPosition: 
+        unityObjects: []
+        byteData: 
+        byteDataArray: 
+      Version: 1.7.13

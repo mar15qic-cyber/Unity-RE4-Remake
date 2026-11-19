@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e226853efb80a034c8e5e9bf222a1774, type: 3}
+  m_Name: knife_whoosh
+  m_EditorClassIdentifier: 
+  clips:
+  - clip: {fileID: 8300000, guid: 16cf6c5a64af06c439a7bbe65d52cb44, type: 3}
+    enabled: 1
+    weight: 1
+  - clip: {fileID: 8300000, guid: 56690c21f06390f4e8352ef0678f2a15, type: 3}
+    enabled: 1
+    weight: 1
+  - clip: {fileID: 8300000, guid: 4527f6324937b654780dc7ca0d87b201, type: 3}
+    enabled: 1
+    weight: 1
+  selectionMode: 0
+  baseVolume: 0.71
+  volumeRange: {x: 1, y: 1}
+  basePitch: 1
+  pitchRange: {x: 1, y: 1}
+  spatialMode: 1
+  minDistance: 1
+  maxDistance: 24
+  rolloffMode: 0
+  priority: 128
+  cooldown: 0
+  maxConcurrent: 20
+  loop: 0
+  category: 4
+  mixerGroupPath: 
+  voicePriority: 1
+  warnIfMissing: 1

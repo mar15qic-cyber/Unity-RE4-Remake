@@ -1,0 +1,44 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e226853efb80a034c8e5e9bf222a1774, type: 3}
+  m_Name: saw_foley_walk
+  m_EditorClassIdentifier: 
+  clips:
+  - clip: {fileID: 8300000, guid: a6efe41d74092744c8687abe3f93a26f, type: 3}
+    enabled: 1
+    weight: 1
+  - clip: {fileID: 8300000, guid: 00555ab1193df9f4db873749c9675e1a, type: 3}
+    enabled: 1
+    weight: 1
+  - clip: {fileID: 8300000, guid: 945979dbffc93124ab6aefc53399de45, type: 3}
+    enabled: 1
+    weight: 1
+  - clip: {fileID: 8300000, guid: b0640de9969bd2447b911fd833a070c0, type: 3}
+    enabled: 1
+    weight: 1
+  selectionMode: 0
+  baseVolume: 0.54
+  volumeRange: {x: 1, y: 1}
+  basePitch: 1
+  pitchRange: {x: 1, y: 1}
+  spatialMode: 1
+  minDistance: 1
+  maxDistance: 24
+  rolloffMode: 0
+  priority: 128
+  cooldown: 0
+  maxConcurrent: 20
+  loop: 0
+  category: 6
+  mixerGroupPath: 
+  voicePriority: 1
+  warnIfMissing: 1

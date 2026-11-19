@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e226853efb80a034c8e5e9bf222a1774, type: 3}
+  m_Name: "\u7535\u952F\u505C\u6B62"
+  m_EditorClassIdentifier: 
+  clips:
+  - clip: {fileID: 8300000, guid: 8da9fd30ca2d8a04e81bd20a35897c8a, type: 3}
+    enabled: 1
+    weight: 1
+  selectionMode: 0
+  baseVolume: 0.8
+  volumeRange: {x: 0.96, y: 1.04}
+  basePitch: 1
+  pitchRange: {x: 0.98, y: 1.02}
+  spatialMode: 1
+  minDistance: 1.2
+  maxDistance: 45
+  rolloffMode: 0
+  priority: 80
+  cooldown: 0.1
+  maxConcurrent: 4
+  loop: 0
+  category: 6
+  mixerGroupPath: "\u654C\u4EBA\u58F0\u97F3"
+  voicePriority: 2
+  warnIfMissing: 1

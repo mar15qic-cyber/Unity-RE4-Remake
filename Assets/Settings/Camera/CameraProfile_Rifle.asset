@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 16f497b2a2e14e7190c2441ef116e6cf, type: 3}
+  m_Name: CameraProfile_Rifle
+  m_EditorClassIdentifier: 
+  weaponType: 1
+  allowAim: 1
+  nativeShoulder: {fileID: 0}
+  explorePose:
+    offset: {x: 0.5, y: 1.6, z: -1.8}
+    fieldOfView: 48
+    damping: {x: 0.1, y: 0.1, z: 0.1}
+  aimPose:
+    offset: {x: 0.64, y: 1.58, z: -0.94}
+    fieldOfView: 38
+    damping: {x: 0.08, y: 0.08, z: 0.08}
+  sprintPose:
+    offset: {x: 0.5, y: 1.65, z: -2}
+    fieldOfView: 55
+    damping: {x: 0.1, y: 0.1, z: 0.1}
+  blendSpeed: 8
+  recoilScale: 0.32
+  fireShakeMultiplier: 0.2
+  maximumAccumulatedRaiseGunAngle: 1.8
+  recoilRecenteringTime: 0.12

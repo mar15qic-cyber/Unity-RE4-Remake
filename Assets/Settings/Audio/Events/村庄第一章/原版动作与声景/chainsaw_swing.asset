@@ -1,0 +1,50 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e226853efb80a034c8e5e9bf222a1774, type: 3}
+  m_Name: chainsaw_swing
+  m_EditorClassIdentifier: 
+  clips:
+  - clip: {fileID: 8300000, guid: 6bddd0c28911eab4e8259751f240c67d, type: 3}
+    enabled: 1
+    weight: 1
+  - clip: {fileID: 8300000, guid: 59fcb2f76ae30994aab8f4b5a68bd37f, type: 3}
+    enabled: 1
+    weight: 1
+  - clip: {fileID: 8300000, guid: 48c4338dcb315434a9bea6e38815cebb, type: 3}
+    enabled: 1
+    weight: 1
+  - clip: {fileID: 8300000, guid: 7134a0a1607235e42976becc27756adb, type: 3}
+    enabled: 1
+    weight: 1
+  - clip: {fileID: 8300000, guid: 3a5748d8a92913142ad3ba319f080909, type: 3}
+    enabled: 1
+    weight: 1
+  - clip: {fileID: 8300000, guid: 1d26583b6acb4da49b46c85ea2fcdc1f, type: 3}
+    enabled: 1
+    weight: 1
+  selectionMode: 0
+  baseVolume: 0.72
+  volumeRange: {x: 1, y: 1}
+  basePitch: 1
+  pitchRange: {x: 1, y: 1}
+  spatialMode: 1
+  minDistance: 1
+  maxDistance: 34
+  rolloffMode: 0
+  priority: 128
+  cooldown: 0
+  maxConcurrent: 20
+  loop: 0
+  category: 6
+  mixerGroupPath: 
+  voicePriority: 1
+  warnIfMissing: 1

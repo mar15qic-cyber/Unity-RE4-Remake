@@ -1,0 +1,9 @@
+{
+    "name": "Game.Contracts",
+    "references": [],
+    "includePlatforms": [],
+    "autoReferenced": true,
+    "overrideReferences": true,
+    "precompiledReferences": [],
+    "noEngineReferences": false
+}

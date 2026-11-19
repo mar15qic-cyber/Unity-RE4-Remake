@@ -1,0 +1,61 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 43b8f8cc0968e9c4bb157e53d137962e, type: 3}
+  m_Name: CrosshairConfig_Shotgun
+  m_EditorClassIdentifier: 
+  crosshairType: 2
+  minSize: 136
+  maxSize: 158
+  thickness: 1.4
+  lineLength: 12
+  spreadCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0.8
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 1.2
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  baseColor: {r: 0.92, g: 0.92, b: 0.92, a: 0.72}
+  hitColor: {r: 1, g: 0.4, b: 0.1, a: 0.9}
+  headshotColor: {r: 1, g: 0.9, b: 0.2, a: 1}
+  weakspotColor: {r: 0.9, g: 0.1, b: 0.5, a: 1}
+  killColor: {r: 1, g: 1, b: 1, a: 1}
+  hitFeedbackDuration: 0.15
+  hitFeedbackScale: 1.35
+  hitFeedbackFadeSpeed: 6
+  showInAim: 1
+  showInHipFire: 0
+  showInReload: 0
+  aimFadeInSpeed: 9
+  aimFadeOutSpeed: 7
+  weaponSwitchFadeSpeed: 7
+  dynamicSpread: 1
+  dynamicSpreadSpeed: 14
+  fireBloomAmount: 0.82
+  fireBloomRecoverySpeed: 1.8

@@ -1,0 +1,19 @@
+{
+    "name": "Game.RuleTests",
+    "references": [
+        "Game.Contracts",
+        "Game.CombatRules",
+        "Game.InventoryRules",
+        "Game.MissionRules"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "autoReferenced": false,
+    "overrideReferences": true,
+    "precompiledReferences": [],
+    "noEngineReferences": false,
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ]
+}

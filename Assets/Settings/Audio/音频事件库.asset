@@ -1,0 +1,205 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a331171b5d53dc541ac5a1708a81d043, type: 3}
+  m_Name: "\u97F3\u9891\u4E8B\u4EF6\u5E93"
+  m_EditorClassIdentifier: 
+  entries:
+  - name: pistol_fire
+    eventData: {fileID: 11400000, guid: 4f5889fac88ea8a4a8374654e166d7b8, type: 2}
+  - name: pistol_dry_fire
+    eventData: {fileID: 11400000, guid: 80aa944edb7df164e86dbaa62c7cebd8, type: 2}
+  - name: pistol_reload
+    eventData: {fileID: 11400000, guid: d7f8867f7b3bea74fa7a94af98ca589a, type: 2}
+  - name: rifle_fire
+    eventData: {fileID: 11400000, guid: d1c0bcfc268acc04e827eecc0520dab1, type: 2}
+  - name: rifle_dry_fire
+    eventData: {fileID: 11400000, guid: d6c909c298b058f41be55b4496af6f8b, type: 2}
+  - name: rifle_reload
+    eventData: {fileID: 11400000, guid: 51f744f0cd259d64382b857a3db5dea2, type: 2}
+  - name: village_door_open
+    eventData: {fileID: 11400000, guid: 5be079cd41b6485290f039e9fcdbf2e4, type: 2}
+  - name: chainsaw_start
+    eventData: {fileID: 11400000, guid: 44e9f3c2b56c44b4a5844bc330a8b708, type: 2}
+  - name: chainsaw_idle_loop
+    eventData: {fileID: 11400000, guid: 8d43da857e574f2bbb30bf03d2cb0fef, type: 2}
+  - name: chainsaw_rev
+    eventData: {fileID: 11400000, guid: 3dc8f5b2e8e84b398b5273e8ef78f92f, type: 2}
+  - name: chainsaw_attack
+    eventData: {fileID: 11400000, guid: 2c379065353848e69541d1bb98c773cb, type: 2}
+  - name: chainsaw_hit
+    eventData: {fileID: 11400000, guid: 3f3df31543d042b29a26bddd72cc2cf8, type: 2}
+  - name: chainsaw_stop
+    eventData: {fileID: 11400000, guid: ff7bbe71932646cb9600b97e9e40403c, type: 2}
+  - name: qte_front_grapple_start
+    eventData: {fileID: 11400000, guid: 5d5c6e486478406e834dd7384be733d2, type: 2}
+  - name: qte_front_grapple_struggle
+    eventData: {fileID: 11400000, guid: 9e373c0344b84bbf93fe84742f21f14c, type: 2}
+  - name: qte_front_grapple_fail
+    eventData: {fileID: 11400000, guid: e2995e3fdd184f7fb2095602ec2617b1, type: 2}
+  - name: qte_back_grapple_start
+    eventData: {fileID: 11400000, guid: 688e923c099f49b89abaa1699805836d, type: 2}
+  - name: qte_back_grapple_struggle
+    eventData: {fileID: 11400000, guid: 64bc5351b57d486c94d3f172429a412f, type: 2}
+  - name: qte_back_grapple_fail
+    eventData: {fileID: 11400000, guid: 4b9710ac213542dabb6b54f1ecd344f3, type: 2}
+  - name: qte_crawl_leg_start
+    eventData: {fileID: 11400000, guid: 431f329a44b646aca40ea06003bbfc1c, type: 2}
+  - name: qte_crawl_leg_struggle
+    eventData: {fileID: 11400000, guid: cda4c8c995484c4692b5bf6bd05969d1, type: 2}
+  - name: qte_crawl_leg_fail
+    eventData: {fileID: 11400000, guid: 43809af0daf04589bd0e07e8a0490608, type: 2}
+  - name: footstep_walk
+    eventData: {fileID: 11400000, guid: 003351e7466140a4d9a876fd1f7fe80e, type: 2}
+  - name: footstep_run
+    eventData: {fileID: 11400000, guid: 0d71edaae68615e4595a1dfe81366082, type: 2}
+  - name: zombie_attack
+    eventData: {fileID: 11400000, guid: 89c29b15374b07e4cb4e763a8b51a225, type: 2}
+  - name: zombie_hurt
+    eventData: {fileID: 11400000, guid: 4dc5f550261e4f949b42fc00390a81b5, type: 2}
+  - name: zombie_headshot
+    eventData: {fileID: 11400000, guid: fc997937b4b4cfb4db26987fdeda59de, type: 2}
+  - name: zombie_limb_hit
+    eventData: {fileID: 11400000, guid: 1e54c43716f634a41885d4af01392d60, type: 2}
+  - name: zombie_death
+    eventData: {fileID: 11400000, guid: b7c77cd1a3fd3f54eb77e55d6596ac2f, type: 2}
+  - name: zombie_detection
+    eventData: {fileID: 11400000, guid: d021ee26d91883d49ba7e1c2221b4b6e, type: 2}
+  - name: zombie_idle
+    eventData: {fileID: 11400000, guid: bebcbee655880d1488eec2639fdb6c92, type: 2}
+  - name: zombie_breathing
+    eventData: {fileID: 11400000, guid: 173cc72776c47254085808dec6d59928, type: 2}
+  - name: zombie_bite
+    eventData: {fileID: 11400000, guid: 2b88d11d75443c14fb21bae6908b4aa7, type: 2}
+  - name: zombie_choke
+    eventData: {fileID: 11400000, guid: 43ef1b2bd5fec3d4eadf65eb04cdf3c0, type: 2}
+  - name: zombie_gory
+    eventData: {fileID: 11400000, guid: 6c9710d9d3d092741b9c19b6cc9da7ca, type: 2}
+  - name: zombie_grunt
+    eventData: {fileID: 11400000, guid: 19d9ab23c50ec9b4a95187de090a16ff, type: 2}
+  - name: zombie_pain
+    eventData: {fileID: 11400000, guid: fc74213fee43dcf4d81aa3a42e9c7cac, type: 2}
+  - name: zombie_scream
+    eventData: {fileID: 11400000, guid: d200712935002e345b2bd86013c5bfc9, type: 2}
+  - name: hit_body
+    eventData: {fileID: 11400000, guid: 28e94804d6d09d44c9aa12f03babd015, type: 2}
+  - name: hit_head
+    eventData: {fileID: 11400000, guid: 9c657ac562fb2464396dfcd74706e242, type: 2}
+  - name: hit_limb
+    eventData: {fileID: 11400000, guid: ab785ae0971e1b34093af93a55d69335, type: 2}
+  - name: player_hit
+    eventData: {fileID: 11400000, guid: 74b71d2cc80af544196c3e0a5070f26f, type: 2}
+  - name: player_death
+    eventData: {fileID: 11400000, guid: 5628be5d1ef5ab9478039ab0f94f5a31, type: 2}
+  - name: player_breathing
+    eventData: {fileID: 11400000, guid: 669800717a2c6b14c8582be8ec4ae757, type: 2}
+  - name: player_run_breathing
+    eventData: {fileID: 11400000, guid: c12b9a9489215d749b45bbf50ab1043c, type: 2}
+  - name: player_weapon_switch
+    eventData: {fileID: 11400000, guid: bfff409084c9460485f2144eaa01668e, type: 2}
+  - name: ui_hover
+    eventData: {fileID: 11400000, guid: 1b6626a8efc2c604cadefd841d0b8b7c, type: 2}
+  - name: ui_confirm
+    eventData: {fileID: 11400000, guid: 06f45e6dffe55ee48bc643cf23c022d8, type: 2}
+  - name: ui_cancel
+    eventData: {fileID: 11400000, guid: c3844741b49a6b440b8dfc8cf79bc782, type: 2}
+  - name: item_pickup
+    eventData: {fileID: 11400000, guid: 8e39225f7cf8b694aaf75cec59e784a9, type: 2}
+  - name: item_use
+    eventData: {fileID: 11400000, guid: a47502129c160ba4bbced19731e87766, type: 2}
+  - name: box_open
+    eventData: {fileID: 11400000, guid: 169d4a6ea55eaaa4ba7e08aaf27acdb5, type: 2}
+  - name: box_close
+    eventData: {fileID: 11400000, guid: ccc57c0dae4f5f6468d4fd837b128a96, type: 2}
+  - name: melee_hit
+    eventData: {fileID: 11400000, guid: 73bfbf60e96a8b44d82517aa26d9e1db, type: 2}
+  - name: player_hit_light
+    eventData: {fileID: 11400000, guid: ad045c4f435e0374398d95a44b4ec49e, type: 2}
+  - name: player_hit_heavy
+    eventData: {fileID: 11400000, guid: 35f9d8372c464114187f20b0100b3a1e, type: 2}
+  - name: item_pickup_ammo
+    eventData: {fileID: 11400000, guid: b286fe2dc2070054da058e2ed95fc065, type: 2}
+  - name: item_pickup_healing
+    eventData: {fileID: 11400000, guid: 3d5226df21f803d408d196d4a08ddb65, type: 2}
+  - name: item_pickup_material
+    eventData: {fileID: 11400000, guid: 17b137e03a2197744837041925af3d8c, type: 2}
+  - name: item_heal
+    eventData: {fileID: 11400000, guid: 3da2a52b830334a40903cd4aa90f9cc9, type: 2}
+  - name: shotgun_fire
+    eventData: {fileID: 11400000, guid: 19d3e36c6c52bf24d83c42c8f25e3d30, type: 2}
+  - name: shotgun_dry_fire
+    eventData: {fileID: 11400000, guid: 9ac30498addc82341ae0469c0fbac00a, type: 2}
+  - name: shotgun_reload
+    eventData: {fileID: 11400000, guid: c288838a4e7b0384bbc4b15907faa81e, type: 2}
+  - name: ui_open
+    eventData: {fileID: 11400000, guid: f8605515e298e9e408e5f8a0dcf4f5a2, type: 2}
+  - name: ui_close
+    eventData: {fileID: 11400000, guid: 185440395a75a3c49a6aed4a970aad03, type: 2}
+  - name: ui_page
+    eventData: {fileID: 11400000, guid: cb7321a7809a41e44ad6f099643ad68a, type: 2}
+  - name: ui_error
+    eventData: {fileID: 11400000, guid: 784fcb325b0cdf941b92233a33b67302, type: 2}
+  - name: ui_title_start
+    eventData: {fileID: 11400000, guid: 73b7e4ee5a238c646a6bf552f81b3ecc, type: 2}
+  - name: ui_title_hover
+    eventData: {fileID: 11400000, guid: bd4d1ce920bf49941bd72787dccedc31, type: 2}
+  - name: ui_title_confirm
+    eventData: {fileID: 11400000, guid: 2962e0854f89dd24eb33c5079a3f531e, type: 2}
+  - name: ui_settings_open
+    eventData: {fileID: 11400000, guid: f1c3232acb05cb94d9c6297a92a1b78b, type: 2}
+  - name: ui_settings_hover
+    eventData: {fileID: 11400000, guid: 7ddfe22396693d04fa868373418ff431, type: 2}
+  - name: ui_settings_adjust
+    eventData: {fileID: 11400000, guid: 227fc20d1ff7a404882f53f0d3cba4f0, type: 2}
+  - name: ui_settings_confirm
+    eventData: {fileID: 11400000, guid: bfd45577c5d07314ba0801aac6548dea, type: 2}
+  - name: ui_settings_cancel
+    eventData: {fileID: 11400000, guid: 937851d07ce2d1d408b2bf5a776ff438, type: 2}
+  - name: ui_settings_error
+    eventData: {fileID: 11400000, guid: 0c711f27254313047a89d5467f662154, type: 2}
+  - name: ui_settings_tab
+    eventData: {fileID: 11400000, guid: cfc2240b3658ac14297273d2afb01ba4, type: 2}
+  - name: ui_case_open
+    eventData: {fileID: 11400000, guid: 0d9b1afb14196ac4cb6e58d2fa2457cf, type: 2}
+  - name: ui_case_close
+    eventData: {fileID: 11400000, guid: 4e2a12298172c39488ee17861d36068d, type: 2}
+  - name: ui_case_hover
+    eventData: {fileID: 11400000, guid: 7746ff7e1230c4340ab5bfdd101009b1, type: 2}
+  - name: ui_case_confirm
+    eventData: {fileID: 11400000, guid: a47502129c160ba4bbced19731e87766, type: 2}
+  - name: ui_case_cancel
+    eventData: {fileID: 11400000, guid: 847695e0a9d77274fbf8ec8d19abb222, type: 2}
+  - name: ui_case_error
+    eventData: {fileID: 11400000, guid: 3faf9ef1b64c5114cbc4dccc5e9a0ebb, type: 2}
+  - name: ui_case_manipulate
+    eventData: {fileID: 11400000, guid: f1ed21a04de298c4e9f58f173b137113, type: 2}
+  - name: ui_case_craft
+    eventData: {fileID: 11400000, guid: 583b307d38eeb994eb1c853b6d7436ec, type: 2}
+  - name: player_breathing_idle
+    eventData: {fileID: 11400000, guid: 4e717ce87192aa045b31828c3f6127c3, type: 2}
+  - name: player_breathing_combat
+    eventData: {fileID: 11400000, guid: 87040fc7c34ddf542899683a1e0644b3, type: 2}
+  - name: player_breathing_injured
+    eventData: {fileID: 11400000, guid: 17266234cefd9ab4c97f537f67b58bf4, type: 2}
+  - name: melee_hit_normal
+    eventData: {fileID: 11400000, guid: 90546a5c8bb20624291e4eccc41ac11e, type: 2}
+  - name: item_pickup_key
+    eventData: {fileID: 11400000, guid: 7c6c5986f1539cc4885857b3e0154cf5, type: 2}
+  - name: item_pickup_w870
+    eventData: {fileID: 11400000, guid: 7df02802fc4c3124289e31489a645e03, type: 2}
+  - name: ui_quit_confirm
+    eventData: {fileID: 11400000, guid: e7d55ea0068df204990dd85795000716, type: 2}
+  - name: melee_hit_critical
+    eventData: {fileID: 11400000, guid: 6b649e7a9b3b6634bbe5921c33ea73db, type: 2}
+  - name: melee_hit_critical_crack
+    eventData: {fileID: 11400000, guid: e67e798f73b5882439fae06c2ba51547, type: 2}
+  - name: melee_hit_critical_tail
+    eventData: {fileID: 11400000, guid: df377f0cf1b8b7d4191b8e3d22c10089, type: 2}

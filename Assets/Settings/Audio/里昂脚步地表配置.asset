@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d4e8a881973863f4788183dc0be02ceb, type: 3}
+  m_Name: "\u91CC\u6602\u811A\u6B65\u5730\u8868\u914D\u7F6E"
+  m_EditorClassIdentifier: 
+  surfaces:
+  - surfaceType: 0
+    walkEvent: {fileID: 11400000, guid: a08440814bbc57c49a01826b2e7a442d, type: 2}
+    runEvent: {fileID: 11400000, guid: 2a9dd7b132c32364a9aa5edc9e5cadf0, type: 2}
+    crouchEvent: {fileID: 11400000, guid: 31c106e321d3e0b4598fcf15300aa730, type: 2}
+  - surfaceType: 4
+    walkEvent: {fileID: 11400000, guid: df36986173fad0a4cba4cfcf133d3c9a, type: 2}
+    runEvent: {fileID: 11400000, guid: 5b30e7311ffd78d4d9060150283654d0, type: 2}
+    crouchEvent: {fileID: 11400000, guid: 6ad4844a4a220fb43863e0d592a6df64, type: 2}
+  - surfaceType: 6
+    walkEvent: {fileID: 11400000, guid: f1cd461c957e99a4ca9d5b3b07724e43, type: 2}
+    runEvent: {fileID: 11400000, guid: cba64815891821e4cad08765d1d4ccc2, type: 2}
+    crouchEvent: {fileID: 11400000, guid: 072d12a3f492f5c42b3fd408114601dc, type: 2}
+  - surfaceType: 1
+    walkEvent: {fileID: 11400000, guid: f34b15cca796a0a4983332d60e2bd8f0, type: 2}
+    runEvent: {fileID: 11400000, guid: 4c3af802dde47ce4f863c867fa9754ca, type: 2}
+    crouchEvent: {fileID: 11400000, guid: 3d6d57e70d126c94c906ae247f0e0194, type: 2}
+  defaultWalkEvent: {fileID: 11400000, guid: f1cd461c957e99a4ca9d5b3b07724e43, type: 2}
+  defaultRunEvent: {fileID: 11400000, guid: cba64815891821e4cad08765d1d4ccc2, type: 2}

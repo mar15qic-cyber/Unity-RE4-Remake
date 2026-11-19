@@ -1,0 +1,145 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d3f4f2ef718e424cb6ccca9aebbd2e63, type: 3}
+  m_Name: LegBiteQTECameraProfile
+  m_EditorClassIdentifier: 
+  entryDuration: 0.38
+  entryCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  entrySplinePosition: 0.72
+  entryKnotIndex: 2
+  holdingDriftDuration: 1.8
+  holdingFieldOfView: 46
+  focusMode: 1
+  playerNeckBlend: 0.65
+  enemyHeadBlend: 0.75
+  enemyFocusWeight: 0.46
+  focusOffset: {x: 0, y: 0.02, z: 0.04}
+  focusSmoothTime: 0.055
+  legBiteEnemyHeadWeight: 0.58
+  lowerLegFallbackHeight: 0.55
+  preferClosestLowerLeg: 1
+  highAngleThighBlend: 0.54
+  highAngleEnemyUpperBodyWeight: 0.5
+  highAngleBiteLegSideOffset: 0.18
+  highAngleSuccessPlayerWeight: 0.72
+  rearBiteEnemyHeadWeight: 0.56
+  rearBiteFailureFocusOffset: {x: 0, y: -0.08, z: -0.04}
+  failureAnticipationDuration: 0.35
+  failureOrbitDuration: 0.7
+  failureOrbitCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  failureAnticipationTravel: 0.08
+  successSideOffset: 0.12
+  dynamicEntryTangentScale: 0.32
+  sidePreferenceScoreTolerance: 2
+  blockedPathScore: 12
+  frontGrabEnemyFaceWeight: 0.56
+  frontGrabFailureEnemyWeight: 0.72
+  frontGrabFailureFocusOffset: {x: 0, y: -0.07, z: 0.04}
+  frontGrabFailureKnotIndex: 3
+  frontGrabFailurePressureDuration: 0.28
+  frontGrabFailurePressureTravel: 0.24
+  frontGrabFailureOrbitDuration: 0.52
+  frontGrabFailurePreContactTravel: 0.84
+  frontGrabFailureContactDuration: 0.14
+  frontGrabFailureFieldOfView: 40
+  assassinationEnemyNeckWeight: 0.64
+  assassinationAfterContactPlayerWeight: 0.28
+  assassinationMinimumFocusHeight: 0.92
+  assassinationAfterContactFocusOffset: {x: 0, y: -0.08, z: 0.04}
+  assassinationContactKnotIndex: 3
+  assassinationAftermathKnotIndex: 4
+  assassinationContactDuration: 0.18
+  assassinationAftermathDuration: 0.72
+  assassinationContactFieldOfView: 40
+  assassinationAftermathFieldOfView: 46
+  environmentMask:
+    serializedVersion: 2
+    m_Bits: 1
+  pathProbeRadius: 0.16
+  pathProbeSamples: 16
+  successDuration: 0.62
+  successPullBackDistance: 0.36
+  successVerticalOffset: 0.08
+  successFieldOfView: 50
+  failureDuration: 0.25
+  failurePushInDistance: 0.08
+  failureVerticalOffset: 0
+  failureFieldOfView: 44
+  enableCameraFeedback: 1
+  grabImpactDelay: 0.12
+  grabImpactSideOffset: 0.018
+  grabImpactVerticalOffset: 0.008
+  grabImpactDutch: 0.55
+  grabImpactDuration: 0.15
+  biteImpactSideOffset: 0.032
+  biteImpactVerticalOffset: 0.018
+  biteImpactDutch: 0.85
+  biteImpactDuration: 0.14
+  biteContactSettleDuration: 0.08
+  assassinationImpactSideOffset: 0.055
+  assassinationImpactVerticalOffset: 0.028
+  assassinationImpactDutch: 1.8
+  assassinationImpactDuration: 0.16
+  holdNoisePosition: 0.003
+  holdNoiseDutch: 0.1
+  holdNoiseFrequency: 1.1
+  kickImpactSideOffset: 0.045
+  kickImpactDutch: 1.35
+  kickImpactDelay: 0.1
+  kickImpactDuration: 0.12
+  feedbackRecoveryDuration: 0.32

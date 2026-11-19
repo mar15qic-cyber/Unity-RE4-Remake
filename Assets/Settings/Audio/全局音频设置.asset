@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7e7052d6dc85a3849b28b3bdfb813515, type: 3}
+  m_Name: "\u5168\u5C40\u97F3\u9891\u8BBE\u7F6E"
+  m_EditorClassIdentifier: 
+  poolInitialSize: 16
+  poolMaxSize: 64
+  masterMixer: {fileID: 24100000, guid: 14976309ed46134478f6aef6e19a87c4, type: 2}
+  masterGroupPath: Master
+  bgmGroupPath: "Master/\u80CC\u666F\u97F3\u4E50"
+  ambientGroupPath: "Master/\u73AF\u5883\u58F0\u97F3"
+  weaponGroupPath: "Master/\u6B66\u5668\u58F0\u97F3"
+  playerGroupPath: "Master/\u73A9\u5BB6\u58F0\u97F3"
+  enemyGroupPath: "Master/\u654C\u4EBA\u58F0\u97F3"
+  footstepGroupPath: "Master/\u811A\u6B65\u58F0\u97F3"
+  uiGroupPath: "Master/\u754C\u9762\u58F0\u97F3"
+  masterVolumeParam: MasterVolume
+  bgmVolumeParam: BGMVolume
+  ambientVolumeParam: AmbientVolume
+  sfxVolumeParam: SFXVolume
+  weaponVolumeParam: WeaponVolume
+  playerVolumeParam: PlayerVolume
+  enemyVolumeParam: EnemyVolume
+  footstepVolumeParam: FootstepVolume
+  uiVolumeParam: UIVolume
+  autoPlayBGM: 0
+  bgmEvent: {fileID: 0}
+  bgmFadeInDuration: 1
+  bgmFadeOutDuration: 1

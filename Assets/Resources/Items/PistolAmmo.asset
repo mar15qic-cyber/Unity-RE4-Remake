@@ -1,0 +1,51 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc755eac24397ee408b9e718d186bc88, type: 3}
+  m_Name: PistolAmmo
+  m_EditorClassIdentifier: 
+  itemId: pistol_ammo
+  displayName: "\u624B\u67AA\u5B50\u5F39"
+  icon: {fileID: -570321912, guid: b299fd5861985164fbd05274f15bb8fd, type: 3}
+  itemType: 1
+  gridWidth: 2
+  gridHeight: 1
+  maxStack: 50
+  healAmount: 0
+  maxHealthBonus: 0
+  ammoWeapon: 0
+  ammoAmount: 1
+  weaponType: 0
+  usesDurability: 0
+  maxDurability: 100
+  brokenReplacementItemId: 
+  worldModelPrefab: {fileID: 3990338514396137008, guid: da4886c8cceb2244c9c1c402831fe338, type: 3}
+  modelScale: {x: 1, y: 1, z: 1}
+  modelOffset: {x: 0.00006200001, y: -0.0012765247, z: 0.0000098001865}
+  modelRotation: {x: 0, y: 0, z: 0}
+  inspectionModelPrefab: {fileID: 3990338514396137008, guid: da4886c8cceb2244c9c1c402831fe338, type: 3}
+  inspectionModelRotation: {x: 0, y: 78, z: 90}
+  inspectionModelOffset: {x: 0, y: 0, z: 0}
+  inspectionViewScale: 1
+  iconRotation: 0
+  iconScale: 1.35
+  iconOffset: {x: 0, y: 0}
+  iconPadding: 1
+  craftingIngredients:
+  - itemId: gunpowder
+    count: 5
+  - itemId: resources_small
+    count: 1
+  craftingResultCount: 10
+  showInCraftingMenu: 1
+  craftIngredientA: 
+  craftIngredientB: 
+  description: "\u624B\u67AA\u5F39\u836F\u3002\u6BCF\u6B21\u5408\u6210\u53EF\u83B7\u5F9710\u53D1\u3002"

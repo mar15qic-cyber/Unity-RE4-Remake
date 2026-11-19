@@ -1,0 +1,127 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 357053691a85ba74fa7526e4cb13dc84, type: 3}
+  m_Name: ChapterOneEffects
+  m_EditorClassIdentifier: 
+  effects:
+  - kind: 1
+    prefab: {fileID: 986014845902716592, guid: 33c1d357bbd426e43b57d9a16f3b56f9, type: 3}
+    lifetime: 0.63
+    prewarm: 6
+  - kind: 2
+    prefab: {fileID: 944069266391260482, guid: fa217ac6341690d4886fe97d1d784f74, type: 3}
+    lifetime: 0.63
+    prewarm: 6
+  - kind: 3
+    prefab: {fileID: 6991489242474207416, guid: 16b30d4868a13f14abd483dc14250dc2, type: 3}
+    lifetime: 0.63
+    prewarm: 12
+  - kind: 4
+    prefab: {fileID: 6423924843967057570, guid: b7a0ecb31c0125f4ba4919f263626652, type: 3}
+    lifetime: 2
+    prewarm: 15
+  - kind: 5
+    prefab: {fileID: 5226427259633702063, guid: 41ae8276ba474b34e875cfd1e88d84b2, type: 3}
+    lifetime: 2
+    prewarm: 10
+  - kind: 6
+    prefab: {fileID: 6492599424260779382, guid: 0527e8bdc8712d7468a0af23f6433d8d, type: 3}
+    lifetime: 2
+    prewarm: 20
+  - kind: 7
+    prefab: {fileID: 2523470706804288016, guid: 244858517101b774093de522001a82d6, type: 3}
+    lifetime: 3.4
+    prewarm: 22
+  - kind: 8
+    prefab: {fileID: 8894866187762432170, guid: 0879d8af58d21b44cb9170a23edda2f8, type: 3}
+    lifetime: 3.4
+    prewarm: 20
+  - kind: 9
+    prefab: {fileID: 457589793821345403, guid: e10134c97951bfb45a22163eff6b8b8e, type: 3}
+    lifetime: 3.4
+    prewarm: 12
+  - kind: 10
+    prefab: {fileID: 1533303584023332943, guid: e69fbd6ee1192284281cf6af94e08c4c, type: 3}
+    lifetime: 3.4
+    prewarm: 14
+  - kind: 11
+    prefab: {fileID: 787703568981418583, guid: 6682cc80e1bf059499c24645c1535453, type: 3}
+    lifetime: 3.4
+    prewarm: 6
+  - kind: 13
+    prefab: {fileID: 1462487540768981313, guid: 734d9882836e7aa498558213f171f350, type: 3}
+    lifetime: 0.43
+    prewarm: 10
+  - kind: 14
+    prefab: {fileID: 793250496198253289, guid: bdb5209a73d50f54489adca5b781bdf9, type: 3}
+    lifetime: 0.43
+    prewarm: 10
+  - kind: 15
+    prefab: {fileID: 5068732079897386053, guid: f439930ea3cece743bfce51b88eed19c, type: 3}
+    lifetime: 0.43
+    prewarm: 12
+  - kind: 16
+    prefab: {fileID: 6053255683775055160, guid: e0b554c753b280147bdf12d90cd667e0, type: 3}
+    lifetime: 0.43
+    prewarm: 8
+  - kind: 17
+    prefab: {fileID: 9206511484502235272, guid: ee58d9c9d1d063f4b84d9c8453512dfa, type: 3}
+    lifetime: 0.43
+    prewarm: 8
+  - kind: 18
+    prefab: {fileID: 7521123957586761646, guid: fa30743e75755554389606a573016c3f, type: 3}
+    lifetime: 0.43
+    prewarm: 4
+  - kind: 22
+    prefab: {fileID: 6715135176661183231, guid: 2359121424e9fd24c8bc42d215ad121c, type: 3}
+    lifetime: 0.42
+    prewarm: 4
+  - kind: 19
+    prefab: {fileID: 2537143128326494729, guid: 3617196f56710ad45826e65e1d208a06, type: 3}
+    lifetime: 0.23
+    prewarm: 6
+  - kind: 20
+    prefab: {fileID: 5368589481794317021, guid: 90b557f2a44c7bc4fb04fb91ba0b06fd, type: 3}
+    lifetime: 0.23
+    prewarm: 6
+  - kind: 21
+    prefab: {fileID: 2094967847095659236, guid: 734aa532e6ed4e44c8d6baf747c5becf, type: 3}
+    lifetime: 0.83
+    prewarm: 6
+  - kind: 25
+    prefab: {fileID: 2093161254605351772, guid: ad804f0f5319c694ba6156e612e30eec, type: 3}
+    lifetime: 3.4
+    prewarm: 10
+  - kind: 23
+    prefab: {fileID: 4280165415477475802, guid: f6b5802592e33e84aa57d702fa11b27b, type: 3}
+    lifetime: 0.38
+    prewarm: 18
+  - kind: 24
+    prefab: {fileID: 3497769035533974727, guid: 590e43eff146c1946bb4a599589b8b4f, type: 3}
+    lifetime: 0.38
+    prewarm: 16
+  - kind: 26
+    prefab: {fileID: 5902321649393434833, guid: bc048121619a6664e84ca76fa99abd2c, type: 3}
+    lifetime: 0.43
+    prewarm: 6
+  - kind: 27
+    prefab: {fileID: 3551193028246219375, guid: 55cafa6be7de91f49a2ec3388e4d3a99, type: 3}
+    lifetime: 0.48
+    prewarm: 4
+  - kind: 29
+    prefab: {fileID: 3079865825809146142, guid: d6efebfaaa1a7624d9c2bba8b51e2ff0, type: 3}
+    lifetime: 0.34
+    prewarm: 6
+  - kind: 28
+    prefab: {fileID: 4361184306159213681, guid: 1ac75bb38f76e494bacdf47bad39a42d, type: 3}
+    lifetime: 0.43
+    prewarm: 6

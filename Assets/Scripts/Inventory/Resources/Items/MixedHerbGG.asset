@@ -1,0 +1,47 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc755eac24397ee408b9e718d186bc88, type: 3}
+  m_Name: MixedHerbGG
+  m_EditorClassIdentifier: 
+  itemId: mixed_herb_gg
+  displayName: "\u6DF7\u5408\u8349\u836F\uFF08\u7EFF+\u7EFF\uFF09"
+  icon: {fileID: -1725677898, guid: 0c8e69aa4d809904a8253611974cfe28, type: 3}
+  itemType: 0
+  gridWidth: 1
+  gridHeight: 1
+  maxStack: 1
+  healAmount: 60
+  maxHealthBonus: 0
+  ammoWeapon: 0
+  ammoAmount: 0
+  weaponType: 0
+  usesDurability: 0
+  maxDurability: 100
+  brokenReplacementItemId: 
+  worldModelPrefab: {fileID: 4128364196825141963, guid: 167f1855c48f5b4489aec4ab24179a17, type: 3}
+  modelScale: {x: 1, y: 1, z: 1}
+  modelOffset: {x: -0.0000000018626451, y: 0.04207103, z: -0}
+  modelRotation: {x: 0, y: 0, z: 0}
+  inspectionModelPrefab: {fileID: 4128364196825141963, guid: 167f1855c48f5b4489aec4ab24179a17, type: 3}
+  inspectionModelRotation: {x: 0, y: -12, z: 0}
+  inspectionModelOffset: {x: 0, y: 0, z: 0}
+  inspectionViewScale: 1
+  iconRotation: 0
+  iconScale: 1.22
+  iconOffset: {x: 0, y: 0}
+  iconPadding: 1
+  craftingIngredients: []
+  craftingResultCount: 1
+  showInCraftingMenu: 1
+  craftIngredientA: green_herb
+  craftIngredientB: green_herb
+  description: "\u6062\u590D60\u70B9\u751F\u547D\u503C\uFF0C\u8FD8\u53EF\u7EE7\u7EED\u4E0E\u7EFF\u8272\u8349\u836F\u5408\u6210\u3002"

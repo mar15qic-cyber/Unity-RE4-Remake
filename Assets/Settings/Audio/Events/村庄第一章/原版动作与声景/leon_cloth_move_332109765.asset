@@ -1,0 +1,47 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e226853efb80a034c8e5e9bf222a1774, type: 3}
+  m_Name: leon_cloth_move_332109765
+  m_EditorClassIdentifier: 
+  clips:
+  - clip: {fileID: 8300000, guid: b02c0912ed5ee1e44bfc8cc893f5526a, type: 3}
+    enabled: 1
+    weight: 1
+  - clip: {fileID: 8300000, guid: b573fd5a2bbe4074881d7ef497d6e054, type: 3}
+    enabled: 1
+    weight: 1
+  - clip: {fileID: 8300000, guid: 4c2af1f78f82d744bb92478132258759, type: 3}
+    enabled: 1
+    weight: 1
+  - clip: {fileID: 8300000, guid: 8882e0aea137e7448895ec35dee6ad1f, type: 3}
+    enabled: 1
+    weight: 1
+  - clip: {fileID: 8300000, guid: 6266ecc5b8b1f67408f2ea25dc88eb51, type: 3}
+    enabled: 1
+    weight: 1
+  selectionMode: 0
+  baseVolume: 0.16
+  volumeRange: {x: 1, y: 1}
+  basePitch: 1
+  pitchRange: {x: 1, y: 1}
+  spatialMode: 1
+  minDistance: 1
+  maxDistance: 24
+  rolloffMode: 0
+  priority: 128
+  cooldown: 0
+  maxConcurrent: 20
+  loop: 0
+  category: 5
+  mixerGroupPath: 
+  voicePriority: 1
+  warnIfMissing: 1

@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec770a482c0d5d34c911b0bdb51a2dab, type: 3}
+  m_Name: "\u624B\u67AA\u97F3\u9891\u914D\u7F6E"
+  m_EditorClassIdentifier: 
+  weaponId: pistol
+  fireEvent: {fileID: 11400000, guid: 4f5889fac88ea8a4a8374654e166d7b8, type: 2}
+  dryFireEvent: {fileID: 11400000, guid: 80aa944edb7df164e86dbaa62c7cebd8, type: 2}
+  reloadEvent: {fileID: 11400000, guid: d7f8867f7b3bea74fa7a94af98ca589a, type: 2}
+  meleeEvent: {fileID: 0}
+  stagedReload: 1
+  magazineOutEvent: {fileID: 11400000, guid: 08d60140beb157d4092496b1f749ae90, type: 2}
+  mechanismEvent: {fileID: 11400000, guid: 1441ee0dd7695b7409692542894e208a, type: 2}
+  holsterEvent: {fileID: 11400000, guid: 7de5947c9cf07fa42b0edd67c7695e13, type: 2}
+  equipEvent: {fileID: 11400000, guid: 2b7f0ee9b59e19148b29ba81d9d60775, type: 2}
+  equipSettledEvent: {fileID: 11400000, guid: ba2baf7a384a58846bc43c32aeaa6521, type: 2}
+  bodyImpactEvent: {fileID: 11400000, guid: 0525a4e325bb7044cacc68ac6a1ebcd8, type: 2}
+  headImpactEvent: {fileID: 11400000, guid: 421c6045fb38cb34abbf02caae4d7f3e, type: 2}

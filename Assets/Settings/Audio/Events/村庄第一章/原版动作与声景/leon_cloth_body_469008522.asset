@@ -1,0 +1,56 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e226853efb80a034c8e5e9bf222a1774, type: 3}
+  m_Name: leon_cloth_body_469008522
+  m_EditorClassIdentifier: 
+  clips:
+  - clip: {fileID: 8300000, guid: c639236e2a63133499e64dfab35af19e, type: 3}
+    enabled: 1
+    weight: 1
+  - clip: {fileID: 8300000, guid: d9c4d6e3cfd62644cba241f7666c7955, type: 3}
+    enabled: 1
+    weight: 1
+  - clip: {fileID: 8300000, guid: 4ca5208ef16a999479484c9e54589aa5, type: 3}
+    enabled: 1
+    weight: 1
+  - clip: {fileID: 8300000, guid: 9403b53d82b6eee439210b529693ab89, type: 3}
+    enabled: 1
+    weight: 1
+  - clip: {fileID: 8300000, guid: 3e069ddaf5fa2814190e8af1d9276f63, type: 3}
+    enabled: 1
+    weight: 1
+  - clip: {fileID: 8300000, guid: 26037555e9a73d64a8002f9986fcc327, type: 3}
+    enabled: 1
+    weight: 1
+  - clip: {fileID: 8300000, guid: 80686bf820949f94587961c7e5d6a973, type: 3}
+    enabled: 1
+    weight: 1
+  - clip: {fileID: 8300000, guid: 23daf7fb2beff2c44ad5788153c3fcb0, type: 3}
+    enabled: 1
+    weight: 1
+  selectionMode: 0
+  baseVolume: 0.13
+  volumeRange: {x: 1, y: 1}
+  basePitch: 1
+  pitchRange: {x: 1, y: 1}
+  spatialMode: 1
+  minDistance: 1
+  maxDistance: 24
+  rolloffMode: 0
+  priority: 128
+  cooldown: 0
+  maxConcurrent: 20
+  loop: 0
+  category: 5
+  mixerGroupPath: 
+  voicePriority: 1
+  warnIfMissing: 1

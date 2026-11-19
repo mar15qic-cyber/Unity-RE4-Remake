@@ -1,0 +1,47 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc755eac24397ee408b9e718d186bc88, type: 3}
+  m_Name: BootKnife
+  m_EditorClassIdentifier: 
+  itemId: boot_knife
+  displayName: "\u9774\u5200"
+  icon: {fileID: 21300000, guid: f1243c2182bc80b4c9a3d29032cf814e, type: 3}
+  itemType: 4
+  gridWidth: 1
+  gridHeight: 2
+  maxStack: 1
+  healAmount: 0
+  maxHealthBonus: 0
+  ammoWeapon: 0
+  ammoAmount: 0
+  weaponType: 2
+  usesDurability: 1
+  maxDurability: 45
+  brokenReplacementItemId: 
+  worldModelPrefab: {fileID: 2589522448483393140, guid: 079efd837dacb4340bdfd633ea44b004, type: 3}
+  modelScale: {x: 1, y: 1, z: 1}
+  modelOffset: {x: 0, y: 0, z: 0}
+  modelRotation: {x: 0, y: 0, z: 0}
+  inspectionModelPrefab: {fileID: 2589522448483393140, guid: 079efd837dacb4340bdfd633ea44b004, type: 3}
+  inspectionModelRotation: {x: 8, y: 64, z: 0}
+  inspectionModelOffset: {x: 0, y: 0, z: 0}
+  inspectionViewScale: 1
+  iconRotation: 90
+  iconScale: 1.3
+  iconOffset: {x: 0, y: 0}
+  iconPadding: 0
+  craftingIngredients: []
+  craftingResultCount: 1
+  showInCraftingMenu: 0
+  craftIngredientA: 
+  craftIngredientB: 
+  description: "\u6D88\u8017\u54C1\u3002\u4F18\u5148\u7528\u4E8E\u5C0F\u5200\u52A8\u4F5C\uFF0C\u8010\u4E45\u8017\u5C3D\u540E\u635F\u574F\u3002"
