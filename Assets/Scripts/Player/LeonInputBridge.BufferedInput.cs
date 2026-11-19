@@ -2,7 +2,7 @@ using UnityEngine;
 
 public partial class LeonInputBridge
 {
-    private enum GameplayIntentKind { Shoot, Reload, Melee, Interact, QuickSlot, Count }
+    private enum GameplayIntentKind { Shoot, Reload, Interact, QuickSlot, Count }
     private const double GameplayInputLifetime = .22;
     private const double ConfirmedBodyReactionLifetime = 1.6;
 
@@ -74,10 +74,10 @@ public partial class LeonInputBridge
             {
                 intent.target = qteCoordinator.ReadFinisherInput(recovering);
             }
-            else if (kind is GameplayIntentKind.Interact or GameplayIntentKind.Melee)
+            else if (kind == GameplayIntentKind.Interact)
             {
-                intent.target = qteCoordinator.ReadInteractionInput(kind == GameplayIntentKind.Melee);
-                if (!intent.target.IsValid && kind == GameplayIntentKind.Interact)
+                intent.target = qteCoordinator.ReadInteractionInput();
+                if (!intent.target.IsValid)
                 {
                     intent.target = qteCoordinator.ReadFinisherInput(recovering);
                 }
@@ -212,12 +212,6 @@ public partial class LeonInputBridge
                 if (!replay || controller.currentWeapon == intent.weapon)
                 {
                     combat.HandleReload();
-                }
-                break;
-            case GameplayIntentKind.Melee:
-                if (!controller.IsCrouching || controller.TrySetCrouching(false))
-                {
-                    combat.HandleMelee();
                 }
                 break;
             case GameplayIntentKind.QuickSlot:

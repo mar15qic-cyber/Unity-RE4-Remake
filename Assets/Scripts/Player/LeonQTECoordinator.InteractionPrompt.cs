@@ -243,16 +243,15 @@ public partial class LeonQTECoordinator
         return component.transform.position + Vector3.up * .35f;
     }
 
-    internal InteractionPromptSnapshot ReadInteractionInput(bool forMelee)
+    internal InteractionPromptSnapshot ReadInteractionInput()
     {
         promptSnapshotFrame = -1;
         RefreshInteractionSnapshots();
-        if (interactSnapshot.IsValid && (!forMelee
-            || interactSnapshot.Kind != InteractionPromptKind.Interact && interactSnapshot.Kind != InteractionPromptKind.WindowLadderPush))
+        if (interactSnapshot.IsValid)
         {
             return interactSnapshot;
         }
-        if (!forMelee && !pendingBodySnapshot.IsValid && !PromptInputBlocked()
+        if (!pendingBodySnapshot.IsValid && !PromptInputBlocked()
             && combat != null && combat.knifeModule != null
             && KnifeCombatRules.IsThrust(combat.knifeModule.CurrentAction))
         {
@@ -307,7 +306,7 @@ public partial class LeonQTECoordinator
 
     internal bool TryExecuteSnapshotInteraction()
     {
-        return TryExecuteInputInteraction(ReadInteractionInput(false));
+        return TryExecuteInputInteraction(ReadInteractionInput());
     }
 
     internal bool TryExecuteInputInteraction(InteractionPromptSnapshot request)

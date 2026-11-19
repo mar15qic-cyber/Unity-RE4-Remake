@@ -36,8 +36,6 @@ public class LeonCombat : MonoBehaviour, ICrosshairStateProvider
     private LeonAnimatorDriver driver;
     /// <summary>中文含义：当前玩家动画动作协调器。使用位置：作为 Debug.LogError(object) 的参数、作为 LeonAnimationActionCoordinator.RequestWeaponAction(ActionRequest, WeaponType, WeaponType) 的参数、LeonCombat.BindCoordinatorEvents() 等共 14 处。</summary>
     private LeonAnimationActionCoordinator coordinator;
-    /// <summary>中文含义：当前里昂配对动作协调器。使用位置：LeonCombat.HandleMelee()、LeonCombat.Start()。</summary>
-    private LeonQTECoordinator qteCoordinator;
     /// <summary>中文含义：当前里昂动画绑定组件。使用位置：LeonCombat.ApplyGuardPose()、LeonCombat.EndTemporaryKnife(bool)、LeonCombat.ForceAimOff() 等共 7 处。</summary>
     private LeonAnimRig animRig;
     /// <summary>中文含义：武器视觉表现控制器。使用位置：LeonCombat.ApplyGuardPose()、LeonCombat.ClearParryState(bool)、LeonCombat.HandleParry() 等共 6 处。</summary>
@@ -126,8 +124,6 @@ public class LeonCombat : MonoBehaviour, ICrosshairStateProvider
     private bool reloadFireHeld;
     private bool w870TriggerQueued;
     private bool w870ReloadQueued;
-    /// <summary>中文含义：是否已经发出动作管线未就绪的警告。使用位置：LeonCombat.HandleMelee()。</summary>
-    private bool newPipelineWarned;
     /// <summary>中文含义：是否已绑定事件。使用位置：LeonCombat.BindCoordinatorEvents()、LeonCombat.UnbindCoordinatorEvents()。</summary>
     private bool eventsBound;
     /// <summary>中文含义：当前近战动作的事务编号。记录协调器批准的当前近战事务，用于拒绝其他事务的完成、命中和退出回调；没有有效事务时保留既有负值哨兵。使用位置：LeonCombat.OnMeleeActionCompleted(AnimationActionTransaction)、LeonCombat.OnMeleeActionExited(AnimationActionTransaction)、LeonCombat.OnMeleeActionInterrupted(AnimationActionTransaction) 等共 5 处。</summary>
@@ -335,7 +331,6 @@ public class LeonCombat : MonoBehaviour, ICrosshairStateProvider
         weaponHandler = GetComponent<LeonWeaponHandler>();
         driver = GetComponent<LeonAnimatorDriver>();
         coordinator = GetComponent<LeonAnimationActionCoordinator>();
-        qteCoordinator = GetComponent<LeonQTECoordinator>();
         animRig = GetComponent<LeonAnimRig>();
         weaponVisualController = GetComponent<LeonWeaponVisualController>();
         aimLayerWeight = 0f;
@@ -1531,47 +1526,7 @@ global::LeonWeaponHandler receiverValue35 = weaponHandler;
     }
 
     // ==================== 近战 ====================
-    /// <summary>HandleMelee 的业务处理入口；本方法直接依赖 Debug.LogWarning(object)、LeonCombat.TryBreakNearbyWoodenBox()、LeonQTECoordinator.TryStartNearestBodyTechnique(out int)、LeonQTECoordinator.TryStartNearestPrompt(out int)，调用方通过参数与返回结果交接本次处理。</summary>
-    /// <remarks>静态调用链：上游 LeonInputBridge.OnMelee(InputAction.CallbackContext)；下游（含内部回调体） Debug.LogWarning(object)、LeonCombat.TryBreakNearbyWoodenBox()、LeonQTECoordinator.TryStartNearestBodyTechnique(out int)、LeonQTECoordinator.TryStartNearestPrompt(out int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    public void HandleMelee()
-    {
-        if (qteCoordinator != null && qteCoordinator.TryStartNearestPrompt(out _))
-        {
-            return;
-        }
-
-        if (qteCoordinator != null && qteCoordinator.TryStartNearestBodyTechnique(out _))
-        {
-            return;
-        }
-
-        if (TryBreakNearbyWoodenBox())
-        {
-            return;
-        }
-
-        if (!newPipelineWarned)
-        {
-            Debug.LogWarning("[LeonCombat] 体术只能由硬直快速反应事件授权，普通近战输入不会直接触发");
-            newPipelineWarned = true;
-        }
-    }
-
-    /// <summary>TryBreakNearbyWoodenBox 的业务处理入口；本方法直接依赖 DestructibleWoodenBox.TryFindNearestByMelee(Transform, out DestructibleWoodenBox)、LeonCombat.TryStartWoodenBoxMelee(DestructibleWoodenBox)，调用方通过参数与返回结果交接本次处理。</summary>
-    /// <remarks>静态调用链：上游 LeonCombat.HandleMelee()；下游（含内部回调体） DestructibleWoodenBox.TryFindNearestByMelee(Transform, out DestructibleWoodenBox)、LeonCombat.TryStartWoodenBoxMelee(DestructibleWoodenBox)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    private bool TryBreakNearbyWoodenBox()
-    {
-        if (!DestructibleWoodenBox.TryFindNearestByMelee(transform, out DestructibleWoodenBox /* 中文含义：目标可破坏木制箱体。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ target))
-        {
-            return false;
-        }
-
-        return TryStartWoodenBoxMelee(target);
-    }
-
-    /// <summary>TryStartWoodenBoxMelee 的业务处理入口；本方法直接依赖 DestructibleWoodenBox.CanInteract(Transform)、LeonCombat.CanAct()、LeonCombat.ForceAimOff()、LeonCombat.ForceStopShoot()、LeonCombat.StartMeleeAction(FullBodyActionType, int)，调用方通过参数与返回结果交接本次处理。</summary>
-    /// <remarks>静态调用链：上游 DestructibleWoodenBox.Interact()、LeonCombat.TryBreakNearbyWoodenBox()；下游（含内部回调体） DestructibleWoodenBox.CanInteract(Transform)、LeonCombat.CanAct()、LeonCombat.ForceAimOff()、LeonCombat.ForceStopShoot()、LeonCombat.StartMeleeAction(FullBodyActionType, int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="target">中文含义：目标可破坏木制箱体。使用位置：LeonCombat.TryStartWoodenBoxMelee(DestructibleWoodenBox)。</param>
+    /// <summary>校验木箱交互并启动对应的近战动画，在接触帧执行破坏。</summary>
     public bool TryStartWoodenBoxMelee(DestructibleWoodenBox target)
     {
         if (target == null || !CanAct() || controller.currentState == LeonState.Reloading || controller.currentState == LeonState.Shooting || !target.CanInteract(transform))

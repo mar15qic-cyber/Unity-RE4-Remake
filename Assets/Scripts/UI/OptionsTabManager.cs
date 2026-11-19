@@ -425,7 +425,7 @@ global::IAudioVolumeService receiverValue4 = volumeService;
 #endif
         }
 
-        // 如果检视面板未配置绑定列表，自动填入默认 18 项
+        // 如果检视面板未配置绑定列表，使用默认列表。
         if (bindingConfigs == null || bindingConfigs.Count == 0)
         {
             bindingConfigs = new List<BindingConfig>
@@ -468,11 +468,6 @@ global::IAudioVolumeService receiverValue4 = volumeService;
                 {
                     displayName = "装填",
                     actionName = "Reload"
-                },
-                new BindingConfig
-                {
-                    displayName = "近战",
-                    actionName = "Melee"
                 },
                 new BindingConfig
                 {
@@ -965,6 +960,12 @@ InputActionMap playerMap;
         // config（当前绑定配置）：每轮从绑定配置集合取得一个元素，仅代表当前这一项。使用位置：作为 Debug.LogWarning(object) 的参数、作为 InputActionMap.FindAction(string, bool) 的参数、作为 OptionsTabManager.AddHoverDescription(GameObject, string, string) 的参数 等共 8 处。
 foreach (BindingConfig config in bindingConfigs)
         {
+            // 兼容仍序列化旧近战配置的场景。
+            if (config.actionName == "Melee")
+            {
+                continue;
+            }
+
             if (string.IsNullOrEmpty(config.actionName))
             {
                 Debug.LogWarning("[选项] 绑定配置缺少 actionName: " + config.displayName);

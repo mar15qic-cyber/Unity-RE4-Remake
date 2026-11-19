@@ -60,8 +60,6 @@ public partial class LeonInputBridge : MonoBehaviour
     private InputAction shootAction;
     /// <summary>中文含义：换弹动作。使用位置：LeonInputBridge.EnableAndBindActions()、LeonInputBridge.OnDisable()、LeonInputBridge.Start()。</summary>
     private InputAction reloadAction;
-    /// <summary>中文含义：近战动作。使用位置：LeonInputBridge.EnableAndBindActions()、LeonInputBridge.OnDisable()、LeonInputBridge.SetGameplayInputEnabled(bool) 等共 4 处。</summary>
-    private InputAction meleeAction;
     /// <summary>中文含义：招架动作。使用位置：LeonInputBridge.EnableAndBindActions()、LeonInputBridge.OnDisable()、LeonInputBridge.SetGameplayInputEnabled(bool) 等共 4 处。</summary>
     private InputAction parryAction;
     private readonly InputAction[] quickSlotActions = new InputAction[WeaponWheelUI.SlotCount];
@@ -259,7 +257,6 @@ var uiMap = inputAsset.FindActionMap("UI");
         aimAction = playerMap.FindAction("Aim");
         shootAction = playerMap.FindAction("Shoot");
         reloadAction = playerMap.FindAction("Reload");
-        meleeAction = playerMap.FindAction("Melee");
         parryAction = playerMap.FindAction("Parry");
         for (int index = 0; index < quickSlotActions.Length; index++)
         {
@@ -390,13 +387,6 @@ global::UnityEngine.InputSystem.InputAction receiverValue6 = shootAction;
                 receiverValue6.Disable();
             }
 
-            // receiverValue7（判空前缓存的近战动作）：从近战动作读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonInputBridge.SetGameplayInputEnabled(bool)。
-global::UnityEngine.InputSystem.InputAction receiverValue7 = meleeAction;
-            if (!global::System.Object.ReferenceEquals(receiverValue7, null))
-            {
-                receiverValue7.Disable();
-            }
-
             // receiverValue8（判空前缓存的招架动作）：从招架动作读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonInputBridge.SetGameplayInputEnabled(bool)。
 global::UnityEngine.InputSystem.InputAction receiverValue8 = parryAction;
             if (!global::System.Object.ReferenceEquals(receiverValue8, null))
@@ -512,11 +502,6 @@ global::UnityEngine.InputSystem.InputActionMap receiverValue16 = itemInspectionM
         if (reloadAction != null)
         {
             reloadAction.performed += OnReload;
-        }
-
-        if (meleeAction != null)
-        {
-            meleeAction.performed += OnMelee;
         }
 
         if (parryAction != null)
@@ -635,11 +620,6 @@ global::UnityEngine.InputSystem.InputActionMap receiverValue19 = itemInspectionM
         if (reloadAction != null)
         {
             reloadAction.performed -= OnReload;
-        }
-
-        if (meleeAction != null)
-        {
-            meleeAction.performed -= OnMelee;
         }
 
         if (parryAction != null)
@@ -1536,17 +1516,6 @@ global::InventoryUI receiverValue59 = InventoryUI.Instance;
         if (CanUsePickupInput())
         {
             DispatchGameplayIntent(GameplayIntentKind.Reload, ConvertInputTime(ctx.time));
-        }
-    }
-
-    /// <summary>OnMelee 的业务处理入口；本方法直接依赖 LeonCombat.HandleMelee()、LeonController.TrySetCrouching(bool)、object.ReferenceEquals(object, object)，调用方通过参数与返回结果交接本次处理。</summary>
-    /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） LeonCombat.HandleMelee()、LeonController.TrySetCrouching(bool)、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="ctx">中文含义：当前回调上下文。</param>
-    void OnMelee(InputAction.CallbackContext ctx)
-    {
-        if (CanUsePickupInput())
-        {
-            DispatchGameplayIntent(GameplayIntentKind.Melee, ConvertInputTime(ctx.time));
         }
     }
 

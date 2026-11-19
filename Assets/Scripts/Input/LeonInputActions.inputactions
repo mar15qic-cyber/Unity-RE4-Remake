@@ -51,15 +51,6 @@
           "initialStateCheck": false
         },
         {
-          "name": "Melee",
-          "type": 1,
-          "id": "22222222-2222-2222-2222-222222222206",
-          "expectedControlType": "Button",
-          "processors": "",
-          "interactions": "",
-          "initialStateCheck": false
-        },
-        {
           "name": "Parry",
           "type": 1,
           "id": "22222222-2222-2222-2222-222222222207",
@@ -306,17 +297,6 @@
         },
         {
           "name": "",
-          "id": "33333333-3333-3333-3333-333333333310",
-          "path": "<Keyboard>/e",
-          "interactions": "",
-          "processors": "",
-          "groups": "",
-          "action": "Melee",
-          "isComposite": false,
-          "isPartOfComposite": false
-        },
-        {
-          "name": "",
           "id": "33333333-3333-3333-3333-333333333311",
           "path": "<Keyboard>/space",
           "interactions": "",
@@ -439,7 +419,7 @@
         {
           "name": "",
           "id": "33333333-3333-3333-3333-333333333315",
-          "path": "<Keyboard>/c",
+          "path": "<Keyboard>/e",
           "interactions": "",
           "processors": "",
           "groups": "",
