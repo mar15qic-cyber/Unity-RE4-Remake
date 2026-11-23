@@ -18,6 +18,10 @@ MonoBehaviour:
   headshotMultiplier: 1.5
   bodyMultiplier: 1
   limbMultiplier: 0.7
+  headCriticalChance: 0.08
+  headCriticalDamageMultiplier: 2
+  armCriticalChance: 0.08
+  armCriticalDamageMultiplier: 2
   fireRate: 0.4
   magazineSize: 12
   reloadTime: 2.17
@@ -39,3 +43,6 @@ MonoBehaviour:
   impactEffect: {fileID: 0}
   crosshairConfig: {fileID: 11400000, guid: 6d8083b608cfac241bf70fd24d74bb75, type: 2}
   hudIcon: {fileID: 0}
+  stowedRootInSpine:
+    position: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 0, w: 0}

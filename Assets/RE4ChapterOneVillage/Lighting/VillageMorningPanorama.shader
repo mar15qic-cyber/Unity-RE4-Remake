@@ -4,6 +4,7 @@ Shader "RE4/Village Morning Panorama"
     {
         _Tint ("天空色调", Color) = (0.5, 0.5, 0.5, 0.5)
         _Exposure ("线性曝光", Range(0, 16)) = 1
+        _CloudContrast ("云层明暗层次", Range(0, 1)) = 0
         _Rotation ("朝向", Range(0, 360)) = 0
         [NoScaleOffset] _MainTex ("全天球 HDR 天空", 2D) = "grey" {}
     }
@@ -23,6 +24,7 @@ Shader "RE4/Village Morning Panorama"
             half4 _MainTex_HDR;
             half4 _Tint;
             half _Exposure;
+            half _CloudContrast;
             float _Rotation;
 
             struct Interpolator
@@ -57,7 +59,12 @@ Shader "RE4/Village Morning Panorama"
                 vertical.x -= floor(vertical.x + 0.5);
                 half4 encodedSky = tex2Dgrad(_MainTex, uv, horizontal, vertical);
                 half3 sky = DecodeHDR(encodedSky, _MainTex_HDR);
-                return half4(sky * _Tint.rgb * unity_ColorSpaceDouble.rgb * _Exposure, 1.0);
+                half3 radiance = sky * _Tint.rgb * unity_ColorSpaceDouble.rgb * _Exposure;
+                // 按线性亮度压低云底，保留透光处的晨光和原全景纹理。
+                half luminance = dot(radiance, half3(0.2126h, 0.7152h, 0.0722h));
+                half cloudLight = smoothstep(0.055h, 0.48h, luminance);
+                half gain = 1.0h + _CloudContrast * lerp(-0.54h, 0.12h, cloudLight);
+                return half4(radiance * gain, 1.0h);
             }
             ENDCG
         }

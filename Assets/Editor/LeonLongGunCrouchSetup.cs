@@ -9,11 +9,15 @@ public static class LeonLongGunCrouchSetup
     [MenuItem("工具/玩家/更新长枪蹲姿")]
     public static void Refresh()
     {
+        Refresh(new[] { "NativeCqbr", "NativeW870" });
+    }
+
+    public static void Refresh(string[] prefixes)
+    {
         const string generated = "Assets/RE4ChapterOneAnimationLoop/Generated/";
         var graph = AssetDatabase.LoadAssetAtPath<UnityEditor.Animations.AnimatorController>(generated + "MainLeon.controller");
         var machine = graph.layers[0].stateMachine;
         var states = machine.states.ToDictionary(child => child.state.name, child => child.state);
-        var prefixes = new [] { "NativeCqbr", "NativeW870" };
         var suffixes = new [] { "CrouchIdle", "CrouchStart", "CrouchLoop", "CrouchStop", "CrouchDown", "CrouchUp", "CrouchMovingDown", "CrouchMovingUpLeft", "CrouchMovingUpRight" };
         int count = 0;
         foreach (string prefix in prefixes)

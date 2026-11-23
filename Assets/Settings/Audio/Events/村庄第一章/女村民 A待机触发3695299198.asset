@@ -1,0 +1,50 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e226853efb80a034c8e5e9bf222a1774, type: 3}
+  m_Name: "\u5973\u6751\u6C11 A\u5F85\u673A\u89E6\u53D13695299198"
+  m_EditorClassIdentifier: 
+  clips:
+  - clip: {fileID: 8300000, guid: 448fd29f5139c634591e4023c0d9daa9, type: 3}
+    enabled: 1
+    weight: 1
+  - clip: {fileID: 8300000, guid: d8805f19c6324c5428d09c4fc3122771, type: 3}
+    enabled: 1
+    weight: 1
+  - clip: {fileID: 8300000, guid: 72755914b714eb94b82121283aae2967, type: 3}
+    enabled: 1
+    weight: 1
+  - clip: {fileID: 8300000, guid: 290c1916a04c3f14b83ea10a8867e730, type: 3}
+    enabled: 1
+    weight: 1
+  - clip: {fileID: 8300000, guid: 14a28975d6f3a5047a889ba4dd22577a, type: 3}
+    enabled: 1
+    weight: 1
+  - clip: {fileID: 8300000, guid: 12fe51e01a7ee3443981f61671d0f8f3, type: 3}
+    enabled: 1
+    weight: 1
+  selectionMode: 0
+  baseVolume: 0.85
+  volumeRange: {x: 1, y: 1}
+  basePitch: 1
+  pitchRange: {x: 1, y: 1}
+  spatialMode: 1
+  minDistance: 3
+  maxDistance: 50
+  rolloffMode: 0
+  priority: 90
+  cooldown: 0
+  maxConcurrent: 6
+  loop: 0
+  category: 6
+  mixerGroupPath: "\u654C\u4EBA\u58F0\u97F3"
+  voicePriority: 1
+  warnIfMissing: 1

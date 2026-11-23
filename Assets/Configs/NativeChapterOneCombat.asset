@@ -17,5 +17,11 @@ MonoBehaviour:
   revivalWaitRandom: 2
   revivalContinuationHealth: 40
   enableRevival: 1
+  mutationPulse: {fileID: 11400000, guid: 1f4f84d9f708e124e90e04d17df67356, type: 2}
+  riseShort: {fileID: 11400000, guid: 042c4dd1b66ec8d4ba98b025253beb8a, type: 2}
+  riseLong: {fileID: 11400000, guid: 7f66fe47e99448f42bee2176bd1a5a52, type: 2}
+  riseMiddle: {fileID: 11400000, guid: 02d22559136762442aaf3ccd527a2122, type: 2}
+  pistolHeadStaggerMultiplier: 0.5
+  pistolLadderHeadHitsToFall: 3
   shotgunKnockdownDamage: 28
   shotgunKnockdownPellets: 3

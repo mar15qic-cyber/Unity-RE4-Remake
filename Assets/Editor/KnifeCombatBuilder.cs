@@ -63,9 +63,14 @@ public static class KnifeCombatBuilder
             configuration.combinedGripCenter = configuration.originalGripCenter;
             configuration.combinedRotation = Quaternion.identity;
 
-            Set(KnifeAction.EnterGuard, "Knife_0140");
-            Set(KnifeAction.HoldGuard, "Knife_0160", loop: true);
-            Set(KnifeAction.LowerGuard, "Knife_0158");
+            Set(KnifeAction.EnterGuard, "Knife_0140", guardPlaybackSpeed: 1.67f);
+            // 0160 提供握刀基姿，0163 保留原版十秒上身呼吸。防守时钟按完整片段循环。
+            clips["Knife_0163"] = AssetDatabase.LoadAssetAtPath<AnimationClip>(
+                "Assets/RE4ChapterOneAnimationLoop/Generated/MainLeonKnifeGuardBreath.anim");
+            if (clips["Knife_0163"] == null)
+                throw new InvalidOperationException("缺少里昂小刀格挡呼吸片段 Knife_0163。");
+            Set(KnifeAction.HoldGuard, "Knife_0163", loop: true);
+            Set(KnifeAction.LowerGuard, "Knife_0158", guardPlaybackSpeed: 2.2f);
             Set(KnifeAction.PrimarySlash, "Knife_0630", end: 46, firstHit: 13, lastHit: 23);
             Set(KnifeAction.PrimarySlashRecovery, "Knife_0630", start: 46);
             Set(KnifeAction.Backslash, "Knife_0640", end: 46, firstHit: 15, lastHit: 26);
@@ -86,9 +91,10 @@ public static class KnifeCombatBuilder
             BakeTrajectory(player, configuration);
             var knifeMachine = graph.layers[AnimatorLayerID.WeaponAction].stateMachine.stateMachines
                 .Select(child => child.stateMachine).Single(machine => machine.name == "小刀重构");
-            BindThirdSlashState(KnifeAction.ThrustTwo);
-            BindThirdSlashState(KnifeAction.ThirdSlash);
-            BindThirdSlashState(KnifeAction.ThirdSlashRecovery);
+            BindKnifeState(KnifeAction.HoldGuard);
+            BindKnifeState(KnifeAction.ThrustTwo);
+            BindKnifeState(KnifeAction.ThirdSlash);
+            BindKnifeState(KnifeAction.ThirdSlashRecovery);
             EditorUtility.SetDirty(knifeMachine);
             EditorUtility.SetDirty(graph);
             AssetDatabase.SaveAssetIfDirty(graph);
@@ -98,7 +104,7 @@ public static class KnifeCombatBuilder
             AssetDatabase.SaveAssetIfDirty(destination);
             return $"已接入 {configuration.actionClip.Length} 个正式小刀槽，含 {configuration.actionClip.Count(item => item.timing.HasHit)} 条刀刃轨迹。";
 
-            void BindThirdSlashState(KnifeAction action)
+            void BindKnifeState(KnifeAction action)
             {
                 var item = configuration.Find(action);
                 var state = knifeMachine.states.Select(child => child.state).SingleOrDefault(candidate => candidate.name == item.StateName);
@@ -113,7 +119,7 @@ public static class KnifeCombatBuilder
             }
 
             void Set(KnifeAction action, string id, int start = 0, int end = -1,
-                int firstHit = -1, int lastHit = -1, bool loop = false, bool reaction = false)
+                int firstHit = -1, int lastHit = -1, bool loop = false, bool reaction = false, float guardPlaybackSpeed = 1f)
             {
                 var item = configuration.Find(action);
                 if (item == null)
@@ -146,6 +152,7 @@ public static class KnifeCombatBuilder
                 item.clip = source;
                 item.sourceClip = source;
                 item.sourceStart = begin;
+                item.guardPlaybackSpeed = guardPlaybackSpeed;
                 item.timing = timing;
                 item.planarRootTrajectory = null;
                 if (action is KnifeAction.PrimarySlash or KnifeAction.Backslash or KnifeAction.ThirdSlash

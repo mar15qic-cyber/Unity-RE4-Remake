@@ -157,6 +157,45 @@ public sealed class KnifeCombatRulesTests
         Assert.AreEqual(KnifeParryOutcome.Perfect, rules.ResolutionParry(.18, true, true));
     }
 
+    [TestCase(false, KnifeParryOutcome.Failure)]
+    [TestCase(true, KnifeParryOutcome.Perfect)]
+    public void WhiffLeavesOnlyTheOriginalWindowAndSecondContactCanUseFreshPress(bool repress, KnifeParryOutcome expected)
+    {
+        var rules = new KnifeCombatRules { TapWindow = .34 };
+        rules.GuardInput(true, 0, 1);
+        rules.Advance(.08, .08);
+        // 第一名敌人挥空，没有接触需要提交。
+        Assert.IsTrue(rules.HasGuardEligibility(.08));
+        Assert.IsFalse(rules.HasGuardEligibility(.46));
+
+        if (repress)
+        {
+            rules.Advance(.275, .355);
+            rules.GuardInput(false, .355);
+            rules.Advance(.005, .36);
+            rules.GuardInput(true, .36, 2);
+            rules.Advance(.10, .46);
+        }
+        else
+        {
+            rules.Advance(.38, .46);
+        }
+
+        Assert.AreEqual(expected, rules.ResolutionParry(.46, true, true));
+        if (repress)
+        {
+            Assert.AreEqual(2, rules.LastResolvedAttempt.sequence);
+            Assert.IsTrue(rules.LastResolvedAttempt.consumed);
+            Assert.AreEqual(KnifeParryOutcome.Failure, rules.ResolutionParry(.46, true, true));
+            Assert.AreEqual(KnifeParryFailure.Consumed, rules.LastParryFailure);
+        }
+        else
+        {
+            Assert.AreEqual(1, rules.LastResolvedAttempt.sequence);
+            Assert.AreEqual(KnifeParryFailure.Expired, rules.LastParryFailure);
+        }
+    }
+
     [Test]
     public void LaterInputCannotSavePastContactOrOverwriteEarlierValidAttempt()
     {

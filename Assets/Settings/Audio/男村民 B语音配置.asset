@@ -25,3 +25,5 @@ MonoBehaviour:
     eventData: {fileID: 11400000, guid: 9dac44c6a53fdc8428e28b8cf0f4ee28, type: 2}
   - voiceType: 7
     eventData: {fileID: 11400000, guid: 0212a18327c0a874f8f21cc46d03e53e, type: 2}
+  - voiceType: 14
+    eventData: {fileID: 11400000, guid: 461569303eafe8b48b86b1e2ee6d72a0, type: 2}
