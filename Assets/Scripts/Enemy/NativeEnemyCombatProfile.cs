@@ -15,6 +15,12 @@ public sealed class NativeEnemyCombatProfile : ScriptableObject
     [FormerlySerializedAs("revivalDataVerified")]
     public bool enableRevival;
 
+    [Header("歪脖复起原版声音")]
+    public AudioEventData mutationPulse;
+    public AudioEventData riseShort;
+    public AudioEventData riseLong;
+    public AudioEventData riseMiddle;
+
     [Header("项目命中尺度")]
     [Tooltip("手枪命中头部时用于累积体术失衡的倍率。")]
     [Range(0f, 1f)] public float pistolHeadStaggerMultiplier = .5f;

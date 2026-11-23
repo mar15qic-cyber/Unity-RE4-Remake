@@ -13,6 +13,7 @@ public sealed partial class EnemyCombatModule
         Landing,
         Down,
         Rising,
+        LegTrap,
         DyingEntry,
         DyingLoop,
         Reviving
@@ -43,6 +44,45 @@ public sealed partial class EnemyCombatModule
     private bool nativeKickKnockdown;
     private Vector3 nativeKickTravelDirection;
 
+    private VillageLegTrap enemyTrap;
+
+    internal bool TryCatchLegTrap(VillageLegTrap trap)
+    {
+        if (!host.IsRuntimeInitialized || missionEnemyType != MissionEnemyType.Ganado || IsDead || IsQTEControlled
+            || NativeCombatActive || permanentCrawl || host.IsNavigationTraversalProtected
+            || !TryReadNativeCombatTrack("Trap2000", out var track))
+        {
+            return false;
+        }
+        var handle = ActionCoordinator.BeginNativeCombat(false);
+        if (!handle.Valid)
+        {
+            return false;
+        }
+        enemyTrap = trap;
+        nativeCombatAction = handle;
+        nativeCombatOrientation = transform.rotation * Quaternion.Inverse(track.Sample(0f).rotation);
+        SetNativeCombatTrack(track, NativeCombatPhase.LegTrap);
+        return true;
+    }
+
+    internal bool TryReadTrappedOpportunity(out ActionHandle handle)
+    {
+        handle = nativeCombatAction;
+        float frame = nativeCombatTime * 60f;
+        return nativeCombatPhase == NativeCombatPhase.LegTrap && enemyTrap != null
+            && handle.Valid && handle == ActionCoordinator.CurrentHandle && frame >= 64f && frame < 419f;
+    }
+
+    internal void ReleaseEnemyTrap()
+    {
+        if (enemyTrap != null)
+        {
+            enemyTrap.ReleaseEnemy(this);
+            enemyTrap = null;
+        }
+    }
+
     private void Start()
     {
         if (anim != null)
@@ -63,10 +103,17 @@ public sealed partial class EnemyCombatModule
         }
     }
 
+    // 补刀会话拥有受击表现。照常扣血和进入终局死亡，但不再由这次刺击排队一次正面重硬直。
+    internal void CommitPairedKnifeDamage(float damage, Vector3 point)
+    {
+        ApplyIncomingDamage(damage, point, HitboxType.Chest, Vector3.zero, true, out _);
+    }
+
     internal bool NativeCombatActive => nativeCombatPhase != NativeCombatPhase.None;
     internal bool HasGrabWindup => nativeCombatPhase == NativeCombatPhase.Grab && nativeCombatAction == ActionCoordinator.CurrentHandle;
     internal bool HasGroundFinisherPose => HealthModule != null &&
-        (nativeCombatPhase == NativeCombatPhase.Down && HealthModule.LifePhase == EnemyLifePhase.Revived
+        // 仅在落地完成至起身前开放普通击倒；濒死与变异沿用各自窗口。
+        (nativeCombatPhase == NativeCombatPhase.Down && (HealthModule.LifePhase is EnemyLifePhase.Alive or EnemyLifePhase.Revived)
         || nativeCombatPhase == NativeCombatPhase.DyingEntry || nativeCombatPhase == NativeCombatPhase.DyingLoop
         || nativeCombatPhase == NativeCombatPhase.Reviving && IsRevivalPoseNearGround());
 
@@ -173,6 +220,10 @@ public sealed partial class EnemyCombatModule
             return NativeDeathActive || BeginTerminalDirectionalKnockdown(source, travelScale, true);
         }
 
+        if (nativeCombatPhase == NativeCombatPhase.LegTrap)
+        {
+            CancelNativeCombat(true);
+        }
         if (NativeCombatActive && nativeCombatPhase != NativeCombatPhase.Grab
             && nativeCombatPhase != NativeCombatPhase.GrabRecovery && nativeCombatPhase != NativeCombatPhase.Rising)
         {
@@ -258,6 +309,10 @@ public sealed partial class EnemyCombatModule
 
     private void SetNativeCombatTrack(ChapterOnePairMotion.Track track, NativeCombatPhase phase)
     {
+        if (phase == NativeCombatPhase.GrabRecovery && nativeCombatPhase == NativeCombatPhase.Grab)
+        {
+            AnimationPresenter.BlendMissedGrab(track.clip);
+        }
         nativeCombatPhase = phase;
         nativeCombatTrack = track;
         nativeCombatTime = 0f;
@@ -347,7 +402,12 @@ public sealed partial class EnemyCombatModule
         {
             speed = 1.42f;
         }
+        float previousTime = nativeCombatTime;
         nativeCombatTime = Mathf.Min(nativeCombatTime + Time.deltaTime * speed, nativeCombatTrack.clip.length);
+        if (nativeCombatPhase == NativeCombatPhase.DyingEntry || nativeCombatPhase == NativeCombatPhase.DyingLoop || nativeCombatPhase == NativeCombatPhase.Reviving)
+        {
+            PlayRevivalMarkers(previousTime, nativeCombatTime);
+        }
         Pose sample = nativeCombatTrack.Sample(nativeCombatTime);
         Vector3 displacement = nativeCombatOrientation * (sample.position - nativeCombatPreviousSample.position);
         Vector3 planar = Vector3.ProjectOnPlane(displacement, Vector3.up);
@@ -379,7 +439,13 @@ public sealed partial class EnemyCombatModule
         {
             poseTime = Mathf.Min(poseTime, Mathf.Max(0f, nativeFallLandingTime - 1f / nativeCombatTrack.clip.frameRate));
         }
-        AnimationPresenter.PresentNativeCombat(nativeCombatTrack.clip, poseTime);
+        AnimationPresenter.PresentNativeCombat(nativeCombatTrack.clip, poseTime, nativeCombatPhase == NativeCombatPhase.GrabRecovery);
+        if (nativeCombatPhase == NativeCombatPhase.LegTrap && enemyTrap != null)
+            enemyTrap.SampleEnemy(poseTime);
+        if (nativeCombatPhase == NativeCombatPhase.LegTrap && nativeCombatTime >= 419f / 60f)
+        {
+            ReleaseEnemyTrap();
+        }
         if (nativeCombatPhase == NativeCombatPhase.Falling)
         {
             if (onSupport && nativeCombatTime >= nativeFallLandingTime)
@@ -578,6 +644,7 @@ public sealed partial class EnemyCombatModule
         }
         ActionHandle old = nativeCombatAction;
         bool grab = nativeCombatPhase == NativeCombatPhase.Grab || nativeCombatPhase == NativeCombatPhase.GrabRecovery;
+        ReleaseEnemyTrap();
         nativeCombatPhase = NativeCombatPhase.None;
         nativeCombatAction = default;
         nativeCombatTrack = null;

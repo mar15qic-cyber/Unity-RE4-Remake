@@ -53,7 +53,9 @@ internal sealed class RegionWindowRouting
     {
         character = enemy;
         bool refreshDistances = Time.time >= nextRefresh && pendingPathCount == 0;
-        if (version == 0 || outside != lastOutside || targetOutside != lastTargetOutside || refreshDistances || (lastTarget - target).sqrMagnitude > 1f || (lastPosition - enemy.transform.position).sqrMagnitude > 4f || best.route && !best.route.isActiveAndEnabled)
+        bool staleRoute = best.route && (!best.route.isActiveAndEnabled || best.route.windowPoint == null ||
+            best.route.windowPoint.IsBarricaded);
+        if (version == 0 || outside != lastOutside || targetOutside != lastTargetOutside || refreshDistances || (lastTarget - target).sqrMagnitude > 1f || (lastPosition - enemy.transform.position).sqrMagnitude > 4f || staleRoute)
         {
             // switchSide（是否切换侧边）：使用位置：RegionWindowRouting.Select(VillagerController, Vector3, bool, bool, out EnemyWindowTraversalPlan)。
 bool switchSide = outside != lastOutside || targetOutside != lastTargetOutside;
@@ -238,10 +240,17 @@ foreach (var exitPoint in EnemyWindowTraversalRoute.ActiveRoutes)
         var origin = GeneralProjection(lastPosition);
         var destination = GeneralProjection(lastTarget);
         float direct = WalkLength(origin, destination);
+        HouseThreeTraversalGeometry geometry = enemy.door03TraversalRoute;
+        if (geometry != null && geometry.entranceDoor != null &&
+            geometry.entranceDoor.IsSiegeDoorBetween(enemy.transform.position, target))
+        {
+            direct = float.PositiveInfinity;
+        }
         float bestCost = direct - .75f;
         foreach (var plan in generalPlans)
         {
-            if (plan.route == null || !plan.route.isActiveAndEnabled
+            if (plan.route == null || !plan.route.isActiveAndEnabled || plan.route.windowPoint == null ||
+                plan.route.windowPoint.IsBarricaded
                 || blockedRoutes.TryGetValue(plan.route, out float until) && Time.time < until)
             {
                 continue;
@@ -256,7 +265,8 @@ foreach (var exitPoint in EnemyWindowTraversalRoute.ActiveRoutes)
                 bestCost = cost;
             }
         }
-        if (float.IsNaN(direct) && best.route != null && best.route.isActiveAndEnabled
+        if (float.IsNaN(direct) && best.route != null && best.route.isActiveAndEnabled &&
+            best.route.windowPoint != null && !best.route.windowPoint.IsBarricaded
             && (!blockedRoutes.TryGetValue(best.route, out float expiry) || Time.time >= expiry))
         {
             result = best;

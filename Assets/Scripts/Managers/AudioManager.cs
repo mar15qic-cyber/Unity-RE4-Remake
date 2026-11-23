@@ -1413,6 +1413,57 @@ float fadeOut;
         }
     }
 
+    internal bool TryPlayBGMTail(AudioEventData loop, AudioEventData tail)
+    {
+        if (loop == null || tail == null || currentBgmEvent != loop || bgmSource == null || !bgmSource.isPlaying)
+        {
+            return false;
+        }
+
+        AudioClip clip = tail.SelectClip();
+        if (clip == null)
+        {
+            WarnMissing("BGM", tail);
+            return false;
+        }
+
+        StopBGMImmediately(loop);
+        currentBgmEvent = tail;
+        currentBgmTargetVolume = tail.baseVolume;
+        bgmSource.outputAudioMixerGroup = GetMixerGroup(tail);
+        bgmSource.volume = GetSourceVolume(AudioCategory.BGM, tail.baseVolume);
+        bgmSource.clip = clip;
+        bgmSource.pitch = tail.basePitch;
+        bgmSource.loop = false;
+        bgmSource.Play();
+        return true;
+    }
+
+    internal bool IsBGMPlaying(AudioEventData owner)
+    {
+        return owner != null && currentBgmEvent == owner && bgmSource != null && bgmSource.isPlaying;
+    }
+
+    internal void StopBGMImmediately(AudioEventData owner)
+    {
+        if (owner == null || currentBgmEvent != owner || bgmSource == null)
+        {
+            return;
+        }
+
+        if (bgmFadeCoroutine != null)
+        {
+            StopCoroutine(bgmFadeCoroutine);
+            bgmFadeCoroutine = null;
+        }
+
+        bgmSource.Stop();
+        bgmSource.clip = null;
+        currentBgmEvent = null;
+        bgmFadingOut = false;
+        bgmWasPlayingBeforePause = false;
+    }
+
     /// <summary>PauseBGM 的业务处理入口；本方法直接依赖 AudioSource.Pause()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） AudioSource.Pause()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     public void PauseBGM()

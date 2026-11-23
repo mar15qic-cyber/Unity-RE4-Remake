@@ -296,7 +296,7 @@ bool? optionalValue2;
             return false;
         }
 
-        if (!TryGetGroundDistance(out float /* 中文含义：距离。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ distance) || distance < minimumDropHeight)
+        if (!TryGetGroundDistance(out float /* 中文含义：距离。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ distance) || (airborneElapsed <= 0f && distance < minimumDropHeight))
         {
             airborneElapsed = 0f;
             return false;

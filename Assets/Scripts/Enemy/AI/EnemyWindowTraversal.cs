@@ -727,6 +727,11 @@ Vector3 movementDirection;
     /// <param name="destination">中文含义：目的地。输出参数，由本入口写入并交给调用方。使用位置：作为 EnemyWindowTraversal.TryResolveDropPursuitDestination(Vector3, out Vector3) 的参数、作为 EnemyWindowTraversal.TryResolvePursuitDestination(Vector3, out Vector3) 的参数。</param>
     public bool TryResolveSpecialPursuitDestination(Vector3 targetPosition, out Vector3 destination)
     {
+        if (controller != null && controller.HasSiegeBreachOrder)
+        {
+            destination = default;
+            return false;
+        }
         if (TryReadLadderApproach(out destination))
         {
             return true;
@@ -766,6 +771,14 @@ Vector3 movementDirection;
     {
         regionSelectWindow.ClearValue();
         generalSelectWindow.ClearValue();
+    }
+
+    internal void CancelPendingSiegeDetour()
+    {
+        ClearPendingRoute();
+        ClearPendingDropPlan();
+        ClearRegionWindowRoute();
+        windowRetreatUntil = 0f;
     }
     /// <summary>TryResolvePursuitDestination 的业务处理入口；本方法直接依赖 EnemyWindowTraversal.CacheComponents()、EnemyWindowTraversal.ClearPendingRoute()、EnemyWindowTraversal.IsCurrentActorOnPlatform()、EnemyWindowTraversal.RegisterWindowEntryPoint(EnemyWindowTraversalPlan, out Vector3)、EnemyWindowTraversal.ResolveTargetPlatformState(string, Vector3)、HouseThreeRegionNavigation.ReadChaseApproachPoint(Vector3, bool)、RegionWindowRouting.Select(VillagerController, Vector3, bool, bool, out EnemyWindowTraversalPlan)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyWindowTraversal.TryResolveSpecialPursuitDestination(Vector3, out Vector3)；下游（含内部回调体） EnemyWindowTraversal.CacheComponents()、EnemyWindowTraversal.ClearPendingRoute()、EnemyWindowTraversal.IsCurrentActorOnPlatform()、EnemyWindowTraversal.RegisterWindowEntryPoint(EnemyWindowTraversalPlan, out Vector3)、EnemyWindowTraversal.ResolveTargetPlatformState(string, Vector3)、HouseThreeRegionNavigation.ReadChaseApproachPoint(Vector3, bool)、RegionWindowRouting.Select(VillagerController, Vector3, bool, bool, out EnemyWindowTraversalPlan)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
@@ -1560,7 +1573,7 @@ global::UnityEngine.AnimationClip selectedValue17;
 
     /// <summary>BeginTraversalState 的业务处理入口；本方法直接依赖 EnemyAIManager.ReleaseCombatReservation(VillagerController)、EnemyWindowTraversal.CacheComponents()、object.ReferenceEquals(object, object)、VillagerController.PrepareForSpecialTraversal()、VillagerController.SetMovementMode(EnemyMovementMode, string, int)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyWindowTraversal.BeginWindowTraversal(EnemyWindowTraversalPlan)、EnemyWindowTraversal.TryBeginDrop(Vector3, Vector3)；下游（含内部回调体） EnemyAIManager.ReleaseCombatReservation(VillagerController)、EnemyWindowTraversal.CacheComponents()、object.ReferenceEquals(object, object)、VillagerController.PrepareForSpecialTraversal()、VillagerController.SetMovementMode(EnemyMovementMode, string, int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    private void BeginTraversalState()
+    private void BeginTraversalState(bool keepMovementCollider = false)
     {
         CacheComponents();
         controller.PrepareForSpecialTraversal();
@@ -1574,7 +1587,7 @@ global::EnemyAIManager receiverValue18 = EnemyAIManager.Instance;
         controller.SetMovementMode(EnemyMovementMode.TraversalCodeDriven);
         traversalMotionToken = controller.motionExecutor.CurrentToken;
         previousMovementColliderEnabled = movementCollider != null && movementCollider.enabled;
-        if (movementCollider != null)
+        if (movementCollider != null && !keepMovementCollider)
         {
             movementCollider.enabled = false;
         }
@@ -1862,7 +1875,7 @@ for (int i = 0; i < hits.Length; i++)
         {
             // candidate（候选）：使用位置：EnemyWindowTraversal.TryFindDropLanding(Vector3, out Vector3)。
 Collider candidate = hits[i].collider;
-            if (candidate == null || candidate.transform.IsChildOf(transform) || hits[i].normal.y < 0.45f || transform.position.y - hits[i].point.y < minimumHeight || hits[i].distance >= nearestDistance)
+            if (candidate == null || candidate.transform.IsChildOf(transform) || hits[i].normal.y < 0.45f || hits[i].distance >= nearestDistance)
             {
                 continue;
             }
@@ -1878,7 +1891,8 @@ Collider candidate = hits[i].collider;
             found = true;
         }
 
-        return found;
+        // 上层有踏面时不能越过它，把楼下命中当作跳落目标。
+        return found && transform.position.y - landingPosition.y >= minimumHeight;
     }
 
     /// <summary>PlayTraversalClip 的业务处理入口；本方法直接依赖 AnimationClipPlayable.Create(PlayableGraph, AnimationClip)、AnimationClipPlayable.SetApplyFootIK(bool)、AnimationClipPlayable.SetApplyPlayableIK(bool)、AnimationPlayableOutput.Create(PlayableGraph, string, Animator)、AnimationPlayableOutput.SetSourcePlayable&lt;AnimationPlayableOutput, AnimationClipPlayable&gt;(AnimationClipPlayable)、EnemyWindowTraversal.StopTraversalClip()、PlayableGraph.Create(string) 等共 9 处，调用方通过参数与返回结果交接本次处理。</summary>

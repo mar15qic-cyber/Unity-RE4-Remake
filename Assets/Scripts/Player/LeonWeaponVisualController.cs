@@ -1279,7 +1279,7 @@ foreach (var r in renderers)
         {
             visible = false;
         }
-        if (!visible)
+        else if (!visible)
         {
             UpdateSpareKnifeAppearance(null, false, Vector3.zero, Vector3.zero);
         }

@@ -7,6 +7,9 @@ public sealed partial class EnemyAnimationAdapter
     internal const string NativeGaitTag = "NativeGanadoGait";
     private const float NativeGaitBlendSeconds = 0.12f;
     private const float SourceGaitFrameRate = 60f;
+    private static readonly int HashSawWalkStart = Animator.StringToHash("Salvador_1000");
+    private static readonly int HashGanadoWalkStart = Animator.StringToHash("Base Layer.Ganado_1000");
+    private float hitWalkStartUntil = float.NegativeInfinity;
     private static readonly int HashNativeGaitPace = Animator.StringToHash(NativeGaitPaceParameter);
     private static readonly int HashNativeLocomotion = Animator.StringToHash("Base Layer.Locomotion");
 
@@ -70,6 +73,18 @@ public sealed partial class EnemyAnimationAdapter
         int requested = ResolveNativeGaitPace(remaining);
         if (gaitState)
         {
+            if (nativeSawGait && state.shortNameHash == HashSawWalkStart
+                || Time.time < hitWalkStartUntil && state.fullPathHash == HashGanadoWalkStart)
+            {
+                // Animator 在受击通知中接收过渡，下一个更新才会报告起步状态。
+                nativeGaitEdge = "Ganado_1000";
+                if (requested == 0 && Time.time < hitWalkStartUntil && CurrentState == VillagerState.Chase
+                    && host.Player != null && host.PlayerDistance > CombatModule.StandingApproachRange)
+                {
+                    // 寻路重新给出步速前，保留已进入的起步。碰撞与实际位移仍由运动执行器决定。
+                    return;
+                }
+            }
             if (nativeGaitEdge == null || !TryGetStandingGait(nativeGaitEdge, out var edge))
             {
                 ReturnToNativeCycle(0, 0);
@@ -203,7 +218,28 @@ public sealed partial class EnemyAnimationAdapter
         return ChapterOneRootActor.TryGetEnemyGait(id, out edge);
     }
 
-    private void StartNativeGaitEdge(string edge)
+    internal bool BlendSawHitIntoPursuit()
+    {
+        if (!nativeSawGait || !hasNativeGaitPace || anim == null || !host.UsesNativeStandingStride)
+        {
+            return false;
+        }
+
+        // 起步与受击末尾都是低位持锯。直接交接，避免经过高位待机。
+        var state = anim.GetCurrentAnimatorStateInfo(0);
+        float remaining = Mathf.Max(0f, (1f - state.normalizedTime) * state.length);
+        StartHitWalk(Mathf.Min(.22f, remaining), 0f);
+        return true;
+    }
+
+    private void StartHitWalk(float visualBlend, float recoverySeconds)
+    {
+        hitWalkStartUntil = Time.time + recoverySeconds + host.staggerRecoveryMovementDelay
+            + host.staggerRecoveryAccelerationDuration;
+        StartNativeGaitEdge("Ganado_1000", visualBlend);
+    }
+
+    private void StartNativeGaitEdge(string edge, float blendSeconds = NativeGaitBlendSeconds)
     {
         nativeGaitEdge = edge;
         string state = edge;
@@ -211,7 +247,7 @@ public sealed partial class EnemyAnimationAdapter
         {
             state = SawGaitStateName(edge);
         }
-        anim.CrossFadeInFixedTime(Animator.StringToHash("Base Layer." + state), NativeGaitBlendSeconds, 0);
+        anim.CrossFadeInFixedTime(Animator.StringToHash("Base Layer." + state), blendSeconds, 0);
     }
 
     private static string SawGaitStateName(string id) => "Salvador" + id.Substring("Ganado".Length);

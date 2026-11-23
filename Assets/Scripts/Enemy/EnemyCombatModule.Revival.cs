@@ -3,6 +3,40 @@ using UnityEngine;
 
 public sealed partial class EnemyCombatModule
 {
+    private void PlayRevivalMarkers(float previousTime, float time)
+    {
+        float first = previousTime * 60f;
+        float last = time * 60f;
+        void Trigger(int frame, AudioEventData sound)
+        {
+            if (first < frame && last >= frame && sound != null && AudioManager.HasInstance)
+            {
+                Vector3 position = nativeFinisherHead != null ? nativeFinisherHead.position : transform.position;
+                AudioManager.Instance.Play3D(sound, position);
+            }
+        }
+
+        if (nativeCombatPhase == NativeCombatPhase.Reviving)
+        {
+            Trigger(1, nativeCombatProfile.mutationPulse);
+            Trigger(25, nativeCombatProfile.mutationPulse);
+            int early = nativeDownFaceUp ? 6 : 5;
+            Trigger(early, nativeCombatProfile.riseShort);
+            Trigger(early, nativeCombatProfile.riseLong);
+            Trigger(nativeDownFaceUp ? 127 : 138, nativeCombatProfile.riseMiddle);
+        }
+        else if (nativeCombatPhase == NativeCombatPhase.DyingLoop)
+        {
+            Trigger(1, nativeCombatProfile.mutationPulse);
+            Trigger(nativeDownFaceUp ? 219 : 524, nativeCombatProfile.mutationPulse);
+        }
+        else
+        {
+            Trigger(nativeDownFaceUp ? 1 : 7, nativeCombatProfile.mutationPulse);
+            Trigger(nativeDownFaceUp ? 106 : 93, nativeCombatProfile.mutationPulse);
+        }
+    }
+
     private void ResumePendingRevival()
     {
         if (HealthModule == null || !HealthModule.Ready || IsDead || IsQTEControlled || nativeCombatProfile == null

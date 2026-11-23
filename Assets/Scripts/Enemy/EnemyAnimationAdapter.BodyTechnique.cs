@@ -26,9 +26,24 @@ public sealed partial class EnemyAnimationAdapter
 
     internal bool HasNativeBodyTechnique => nativeBodyTechnique;
     internal bool StandingHitBlendCompleted => anim != null && !anim.IsInTransition(0)
-        && anim.GetCurrentAnimatorStateInfo(0).fullPathHash == HashNativeLocomotion;
+        && (anim.GetCurrentAnimatorStateInfo(0).fullPathHash == HashNativeLocomotion
+            || anim.GetCurrentAnimatorStateInfo(0).fullPathHash == HashGanadoWalkStart);
 
-    internal bool TryBlendStandingHitToLocomotion(float blendSeconds)
+    private static readonly int DisarmHitState = Animator.StringToHash("Base Layer.HitReact.WP5801_Disarm");
+
+    internal static float StandingHitVisualBlend(AnimatorStateInfo state, float requested)
+    {
+        if (state.fullPathHash != DisarmHitState)
+        {
+            return requested;
+        }
+
+        // 脱手完成通知到原片尾只余十帧，按实际进入混合时的剩余时间收尾。
+        float timeLeft = (1f - state.normalizedTime) * state.length;
+        return Mathf.Clamp(timeLeft, 0f, requested);
+    }
+
+    internal bool TryBlendStandingHitToLocomotion(float blendSeconds, bool resumePursuit)
     {
         if (!nativeBodyTechnique || anim == null || !anim.HasState(0, HashNativeLocomotion)
             || anim.GetCurrentAnimatorStateInfo(0).fullPathHash == HashNativeLocomotion)
@@ -39,7 +54,17 @@ public sealed partial class EnemyAnimationAdapter
         // 从受击动作当前姿势直接混合回站立层，避免子状态机先切走再进入步态。
         nativeGaitEdge = null;
         SetNativeGaitPace(0);
-        anim.CrossFadeInFixedTime(HashNativeLocomotion, blendSeconds, 0, 0f);
+        float visualBlend = StandingHitVisualBlend(anim.GetCurrentAnimatorStateInfo(0), blendSeconds);
+        if (resumePursuit && hasNativeGaitPace && host.UsesNativeStandingStride
+            && anim.HasState(0, HashGanadoWalkStart))
+        {
+            // 追击直接接当前控制器的起步，缴械后由徒手覆盖器选片。
+            StartHitWalk(visualBlend, blendSeconds);
+        }
+        else
+        {
+            anim.CrossFadeInFixedTime(HashNativeLocomotion, visualBlend, 0, 0f);
+        }
         return true;
     }
 

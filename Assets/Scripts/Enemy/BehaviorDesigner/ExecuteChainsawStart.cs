@@ -179,7 +179,14 @@ namespace EnemyBehaviorTasks
             DiagTaskEnd();
             if (ComponentsReady && started && !completed && bridge != null)
             {
-                bridge.CancelIntroTaunt();
+                if (Controller.HasPendingHit)
+                {
+                    bridge.CompleteIntroTaunt();
+                }
+                else
+                {
+                    bridge.CancelIntroTaunt();
+                }
                 Controller.StopAndClearMovement();
             }
         }

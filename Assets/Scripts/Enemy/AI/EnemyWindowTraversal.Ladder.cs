@@ -1,10 +1,11 @@
+using System.Collections.Generic;
 using GameArchitecture;
 using UnityEngine;
 using UnityEngine.Playables;
 
 public partial class EnemyWindowTraversal
 {
-    private enum LadderPhase { None, Raise, Mount, Climb, Hold, Exit, Fall, Land }
+    private enum LadderPhase { None, Raise, Mount, Climb, Hold, Exit, Fall, Land, SiegeApproach }
 
     private VillageLadderSite ladder;
     private LadderPhase ladderPhase;
@@ -17,6 +18,8 @@ public partial class EnemyWindowTraversal
     private int ladderCycles;
     private int ladderFirstHandRung;
     private int pistolLadderImpact;
+    private IReadOnlyList<Vector3> siegeApproachRoute;
+    private int siegeWaypoint;
     private Vector3 ladderStart;
     private Vector3 ladderLastPosition;
     private Quaternion ladderStartRotation;
@@ -123,11 +126,22 @@ public partial class EnemyWindowTraversal
         ladderLastPosition = transform.position;
         ladderRung = 0;
         pistolLadderImpact = 0;
-        BeginTraversalState();
+        bool stagingApproach = site.IsSiegeActor(controller) && role == VillageLadderSite.Assignment.Raise;
+        BeginTraversalState(stagingApproach);
         CacheLadderLimbs();
         if (role == VillageLadderSite.Assignment.Raise)
         {
-            StartLadderPhase(LadderPhase.Raise, site.Clips.raise, site.Clips.raise.length);
+            if (stagingApproach)
+            {
+                siegeApproachRoute = site.ReadSiegeRoute(controller);
+                siegeWaypoint = 0;
+                var gait = ReadSiegeApproachGait();
+                StartLadderPhase(LadderPhase.SiegeApproach, gait, 1f);
+            }
+            else
+            {
+                StartLadderPhase(LadderPhase.Raise, site.Clips.raise, site.Clips.raise.length);
+            }
         }
         else
         {
@@ -191,6 +205,23 @@ public partial class EnemyWindowTraversal
             return;
         }
 
+        bool inSiege = ladder.IsSiegeActor(controller);
+        float delta = Time.deltaTime;
+        if (inSiege)
+        {
+            delta = Mathf.Min(Time.unscaledDeltaTime, .075f);
+            // 第一阶之后由正式游戏时间接续，玩家回来时仍有机会打断。
+            if (ladderPhase == LadderPhase.Climb && ladderRung > 0)
+            {
+                return;
+            }
+        }
+        if (ladderPhase == LadderPhase.SiegeApproach)
+        {
+            TickSiegeLadderApproach(delta);
+            return;
+        }
+
         if (ladderPhase == LadderPhase.Raise && (controller.IsDead || controller.HasPendingHit ||
             controller.HasPendingCrawl || controller.HasPendingStandUp))
         {
@@ -219,7 +250,11 @@ public partial class EnemyWindowTraversal
         {
             return;
         }
-        ladderElapsed += Time.deltaTime;
+        if (delta <= 0f)
+        {
+            return;
+        }
+        ladderElapsed += delta;
         float progress = Mathf.Clamp01(ladderElapsed / ladderDuration);
         switch (ladderPhase)
         {
@@ -248,6 +283,92 @@ public partial class EnemyWindowTraversal
                 }
 
                 break;
+        }
+
+        if (inSiege && animationGraph.IsValid() && clipPlayable.IsValid())
+        {
+            if (ladderPhase == LadderPhase.Mount || ladderPhase == LadderPhase.Raise)
+            {
+                double fraction = Mathf.Clamp01(ladderElapsed / ladderDuration);
+                clipPlayable.SetTime(fraction * clipPlayable.GetAnimationClip().length);
+            }
+            animationGraph.Evaluate(0f);
+        }
+    }
+
+    private void TickSiegeLadderApproach(float delta)
+    {
+        Vector3 distanceToFoot = ladder.Approach - ladderLastPosition;
+        distanceToFoot.y = 0f;
+        if (distanceToFoot.sqrMagnitude <= .16f * .16f)
+        {
+            if (!ladder.IsSiegeActor(controller) || ladder.CanPerformSiegeRaise(controller))
+            {
+                if (movementCollider != null)
+                {
+                    movementCollider.enabled = false;
+                }
+                ladder.BeginRaise();
+                StartLadderPhase(LadderPhase.Raise, ladder.Clips.raise, .75f);
+            }
+            return;
+        }
+        if (delta <= 0f)
+        {
+            return;
+        }
+
+        Vector3 toward = distanceToFoot;
+        while (siegeApproachRoute != null && siegeWaypoint < siegeApproachRoute.Count)
+        {
+            toward = siegeApproachRoute[siegeWaypoint] - ladderLastPosition;
+            toward.y = 0f;
+            if (toward.sqrMagnitude > .12f * .12f)
+            {
+                break;
+            }
+            siegeWaypoint++;
+            toward = distanceToFoot;
+        }
+        Vector3 step = ladderLastPosition + Vector3.ClampMagnitude(toward, 2.05f * delta);
+        if (!controller.TryResolveSupportedNavigationPosition(step, ladderLastPosition.y, out var support) ||
+            !controller.CanMoveDirectlyToNavigationPoint(support))
+        {
+            ladder.RejectSiegeApproach(controller);
+            FinishLadderTraversal(true, "围攻梯脚通路受阻");
+            return;
+        }
+        Quaternion facing = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(toward), 500f * delta);
+        WriteLadderPose(support, facing);
+        if (animationGraph.IsValid() && clipPlayable.IsValid())
+        {
+            var gait = clipPlayable.GetAnimationClip();
+            float cycle = Mathf.Repeat((float)clipPlayable.GetTime() + delta, gait.length);
+            clipPlayable.SetTime(cycle);
+            animationGraph.Evaluate(0f);
+        }
+    }
+
+    private AnimationClip ReadSiegeApproachGait()
+    {
+        if (animator != null && animator.runtimeAnimatorController != null)
+        {
+            foreach (var clip in animator.runtimeAnimatorController.animationClips)
+            {
+                if (clip.name == "Ganado_2001_GaitCycle" || clip.name == "GanadoArmed1st_2001_GaitCycle")
+                {
+                    return clip;
+                }
+            }
+        }
+        return null;
+    }
+
+    internal void CancelSiegeLadder(VillageLadderSite site)
+    {
+        if (ladder == site)
+        {
+            FinishLadderTraversal(true, "围攻演出结束并释放梯口");
         }
     }
 
@@ -529,6 +650,7 @@ public partial class EnemyWindowTraversal
         ladderPhase = LadderPhase.None;
         ladder = null;
         ladderAction = default;
+        siegeApproachRoute = null;
         StopTraversalClip();
         RestoreLadderWeapon();
         if (movementCollider != null && controller != null && !controller.IsDead)
@@ -752,6 +874,8 @@ public partial class EnemyWindowTraversal
                 return "失手坠落";
             case LadderPhase.Land:
                 return "坠落接地";
+            case LadderPhase.SiegeApproach:
+                return "围攻接近梯脚";
             default:
                 return "结束";
         }

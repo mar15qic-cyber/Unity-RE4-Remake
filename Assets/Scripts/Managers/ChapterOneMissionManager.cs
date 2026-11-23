@@ -8,7 +8,7 @@ using UnityEngine;
 /// 统一负责有限敌人储备、补位、计时、进度和通关判定。
 /// </summary>
 /// <remarks>章节任务宿主，持有 MissionRulesModel 并调用 MissionSpawnExecutor 执行生成；目标来自当前波次配置，终局通过 GameManager 提交唯一结果。</remarks>
-public class ChapterOneMissionManager : Singleton<ChapterOneMissionManager>, IManualSingleton
+public partial class ChapterOneMissionManager : Singleton<ChapterOneMissionManager>, IManualSingleton
 {
     /// <summary>中文含义：切换场景时是否保留此单例对象。</summary>
     protected override bool Persistent => false;
@@ -170,9 +170,9 @@ public class ChapterOneMissionManager : Singleton<ChapterOneMissionManager>, IMa
 
         if (gameObject.scene.path == VillageBellSequence.VillageScenePath)
         {
-            if (!waveConfiguration.ValidateVillage())
+            if (!waveConfiguration.ValidateVillage() || siegeSequence == null || !siegeSequence.HasSceneBindings)
             {
-                Debug.LogError("第一章波次资产的巡逻、增援或鸣钟配置无效。", waveConfiguration);
+                Debug.LogError("第一章波次资产或村庄围攻场景配置无效。", this);
                 return false;
             }
             bellSequence = VillageBellSequence.Load(transform);
@@ -185,6 +185,7 @@ public class ChapterOneMissionManager : Singleton<ChapterOneMissionManager>, IMa
         bindingMatch.OnPlayerDied += StopExecute;
         if (UsesBellEnding)
         {
+            generate.PrepareEntranceActors(sawmanTemplate);
             Rules.InitializeVillage(BellKillTarget, survivalDuration, waveConfiguration.VillagePatrolPositions.Length,
                 waveConfiguration.ReinforcementSize);
         }
@@ -258,6 +259,10 @@ public class ChapterOneMissionManager : Singleton<ChapterOneMissionManager>, IMa
     internal void StopExecute()
     {
         Rules.Stop();
+        if (siegeSequence != null)
+        {
+            siegeSequence.Cancel();
+        }
         villagePatrolReady = false;
         nextQuietPatrolTime = -1f;
         nextReinforcementTime = -1f;
@@ -285,6 +290,7 @@ public class ChapterOneMissionManager : Singleton<ChapterOneMissionManager>, IMa
             return;
         }
 #endif
+        bool enteredHouse = ObserveVillageApproach(out bool approachedFarm);
         StartVillageCombatIfReady();
         if (!IsRunning || IsCompleted)
         {
@@ -314,6 +320,13 @@ public class ChapterOneMissionManager : Singleton<ChapterOneMissionManager>, IMa
 
         if (UsesBellEnding)
         {
+            Rules.ObserveVillageEntrances(enteredHouse, approachedFarm, waveConfiguration.FarmEntranceKills,
+                waveConfiguration.FarmEntranceSeconds);
+            if (TryBeginVillageEntrance())
+            {
+                return;
+            }
+
             UpdateVillageReinforcements();
         }
     }
@@ -378,20 +391,7 @@ public class ChapterOneMissionManager : Singleton<ChapterOneMissionManager>, IMa
             return;
         }
 
-        int earnedSawmen = Mathf.Min(ConfiguredSawmanReserve, Rules.TotalKills / waveConfiguration.ReinforcementSize);
-        MissionEnemyType type = MissionEnemyType.Ganado;
-        GameObject prefab;
-        if (spawnedSawman < earnedSawmen && Rules.ChainsawAlive == 0)
-        {
-            type = MissionEnemyType.Sawman;
-            prefab = sawmanTemplate;
-        }
-        else
-        {
-            prefab = GetNextGanadoPrefab();
-        }
-
-        if (RegisterSpawn(generate.GenerateReinforcement(prefab), type, !needsMinimumCombatants))
+        if (RegisterSpawn(generate.GenerateReinforcement(GetNextGanadoPrefab()), MissionEnemyType.Ganado, !needsMinimumCombatants))
         {
             nextReinforcementTime = Time.time + waveSpawnInterval;
         }

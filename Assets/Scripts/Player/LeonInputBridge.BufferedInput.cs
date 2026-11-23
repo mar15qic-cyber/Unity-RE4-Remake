@@ -4,6 +4,7 @@ public partial class LeonInputBridge
 {
     private enum GameplayIntentKind { Shoot, Reload, Interact, QuickSlot, Count }
     private const double GameplayInputLifetime = .22;
+    private const double ThrustFollowUpInputLifetime = .9;
     private const double ConfirmedBodyReactionLifetime = 1.6;
 
     private struct GameplayIntent
@@ -14,6 +15,7 @@ public partial class LeonInputBridge
         internal WeaponType weapon;
         internal int slot;
         internal bool thrustPickup;
+        internal bool thrustQuickSlot;
     }
 
     private readonly GameplayIntent[] gameplayIntents = new GameplayIntent[(int)GameplayIntentKind.Count];
@@ -84,8 +86,12 @@ public partial class LeonInputBridge
             }
         }
 
-        intent.thrustPickup = kind == GameplayIntentKind.Interact && intent.target.Target is ItemPickup
-            && combat.knifeModule != null && GameArchitecture.KnifeCombatRules.IsThrust(combat.knifeModule.CurrentAction);
+        if (combat.knifeModule != null && combat.knifeModule.IsFinishingThrust)
+        {
+            intent.thrustPickup = kind == GameplayIntentKind.Interact
+                && (intent.target.Target is ItemPickup || intent.target.Kind == InteractionPromptKind.None);
+            intent.thrustQuickSlot = kind == GameplayIntentKind.QuickSlot;
+        }
 
         if (!TryConsumeGameplayIntent(kind, intent, false)
             && intent.target.Kind != InteractionPromptKind.WindowLadderPush)
@@ -128,6 +134,10 @@ public partial class LeonInputBridge
                 // 按下时已确定硬直归属。保留至该反应首个可接帧，敌人换动作即失效。
                 lifetime = ConfirmedBodyReactionLifetime;
             }
+            else if (intent.thrustPickup || intent.thrustQuickSlot)
+            {
+                lifetime = ThrustFollowUpInputLifetime;
+            }
             if (now - intent.pressedAt > lifetime || pendingBody && !CanKeepBodyIntent(intent.target)
                 || TryConsumeGameplayIntent((GameplayIntentKind)index, intent, true))
             {
@@ -167,6 +177,15 @@ public partial class LeonInputBridge
         {
             return true;
         }
+
+        if (controller.IsHeldByTrap)
+        {
+            if (kind == GameplayIntentKind.Interact && !replay)
+            {
+                controller.TrapAvatar.TryEscape();
+            }
+            return true;
+        }
         if (intent.thrustPickup && (actions.IsHitTransactionActive || controller.currentState == LeonState.Staggered
             || controller.currentState == LeonState.Traversing || controller.currentState == LeonState.QTE))
         {
@@ -186,7 +205,17 @@ public partial class LeonInputBridge
             }
         }
 
-        // 重放只提交按下时的目标和敌人动作编号。
+        if (intent.thrustPickup && intent.target.Kind == InteractionPromptKind.None && qteCoordinator != null)
+        {
+            // 掉落可能在按下交互键后的刀刃接触帧才生成。
+            intent.target = qteCoordinator.ReadThrustFollowUpPickup();
+            if (!intent.target.IsValid)
+            {
+                return false;
+            }
+        }
+
+        // 已有目标时，重放沿用按下时的目标和敌人动作编号。
         if (intent.target.IsValid)
         {
             if (intent.target.Kind == InteractionPromptKind.GroundFinisher)

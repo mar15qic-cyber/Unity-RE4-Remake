@@ -317,8 +317,8 @@ public partial class LeonAnimatorDriver
     internal bool IsNativeCqbrCarrying => ownsNativeGait && nativeCqbrCarry;
     internal bool IsNativeW870Carrying => ownsNativeGait && SupportsNativeW870Aim;
     internal bool IsNativePistolCarrying => ownsNativeGait && currentWeaponType == WeaponType.Pistol;
-    internal const float NativeCqbrRevealTime = 10f / 96f;
-    internal const float NativeCqbrGripTime = 66f / 96f;
+    internal const float NativeCqbrRevealTime = (float)RE4.ChapterOne.ChapterOneRootActor.RifleDrawVisibleFrame / RE4.ChapterOne.ChapterOneRootActor.RifleDrawFrames;
+    internal const float NativeCqbrGripTime = (float)RE4.ChapterOne.ChapterOneRootActor.RifleGripReadyFrame / RE4.ChapterOne.ChapterOneRootActor.RifleDrawFrames;
 
     internal bool CanUseNativeGait(bool crouching, bool injured)
     {
@@ -388,7 +388,9 @@ public partial class LeonAnimatorDriver
         }
 
         idleVariationWait += Time.fixedDeltaTime;
-        if (idleVariationWait < 6f || animator.IsInTransition(0))
+        float idleCycle = animator.GetCurrentAnimatorStateInfo(0).length;
+        // 等普通待机走完一轮，再播放环顾等变体。
+        if (idleVariationWait < Mathf.Max(6f, idleCycle) || animator.IsInTransition(0))
         {
             return;
         }

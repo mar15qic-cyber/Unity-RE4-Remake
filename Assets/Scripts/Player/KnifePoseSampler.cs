@@ -21,17 +21,20 @@ public sealed class KnifePoseSampler : IDisposable
     private readonly Transform[] upperBones;
     private readonly bool[] lowerBody;
     private readonly bool[] rightArm;
+    private readonly bool[] guardStance;
     /// <summary>中文含义：脊柱。只读字段，初始化后不由普通写入口替换。使用位置：KnifePoseSampler.KnifePoseSampler(KnifeCombatConfiguration, Animator)、KnifePoseSampler.Sample(AnimationClip, float, int, float, float, bool)。</summary>
     private readonly Transform spine;
-    private readonly Transform guardHips;
-    private readonly Transform guardLeftThigh;
-    private readonly Transform guardRightThigh;
-    private readonly Transform guardLeftKnee;
-    private readonly Transform guardRightKnee;
+    private readonly Transform motionRoot;
     private readonly Transform leftFoot;
     private readonly Transform rightFoot;
-    private float guardTurnWeight;
-    private float guardStepPhase;
+    private readonly Transform targetRoot;
+    private readonly Transform targetLeftFoot;
+    private readonly Transform targetRightFoot;
+    internal const float GuardTurnSettleDuration = .32f;
+    private Pose guardTurnLeftPose;
+    private Pose guardTurnRightPose;
+    private bool guardTurnLeftFirst;
+    private float guardTurnSettleTime = GuardTurnSettleDuration;
     /// <summary>中文含义：上部位置集合。只读字段，初始化后不由普通写入口替换。使用位置：KnifePoseSampler.KnifePoseSampler(KnifeCombatConfiguration, Animator)、KnifePoseSampler.Sample(AnimationClip, float, int, float, float, bool)。</summary>
     private readonly Vector3[] upperPositions;
     /// <summary>中文含义：上部旋转集合。只读字段，初始化后不由普通写入口替换。使用位置：KnifePoseSampler.KnifePoseSampler(KnifeCombatConfiguration, Animator)、KnifePoseSampler.Sample(AnimationClip, float, int, float, float, bool)。</summary>
@@ -141,20 +144,23 @@ string path = GetPath(bones[index], model.transform);
         }
 
         spine = RequireBone(HumanBodyBones.Spine);
-        guardHips = hips;
-        guardLeftThigh = RequireBone(HumanBodyBones.LeftUpperLeg);
-        guardRightThigh = RequireBone(HumanBodyBones.RightUpperLeg);
-        guardLeftKnee = RequireBone(HumanBodyBones.LeftLowerLeg);
-        guardRightKnee = RequireBone(HumanBodyBones.RightLowerLeg);
+        motionRoot = hips.parent;
         leftFoot = RequireBone(HumanBodyBones.LeftFoot);
         rightFoot = RequireBone(HumanBodyBones.RightFoot);
+        targetRoot = target.transform;
+        targetLeftFoot = targets[Array.IndexOf(bones, leftFoot)];
+        targetRightFoot = targets[Array.IndexOf(bones, rightFoot)];
         upperBones = spine.GetComponentsInChildren<Transform>(true);
         lowerBody = new bool[bones.Length];
         rightArm = new bool[bones.Length];
+        guardStance = new bool[bones.Length];
+        Transform leftArm = RequireBone(HumanBodyBones.LeftUpperArm);
         Transform upperArm = RequireBone(HumanBodyBones.RightUpperArm);
         for (int index = 0; index < bones.Length; index++)
         {
             lowerBody[index] = bones[index] != spine && !bones[index].IsChildOf(spine);
+            bool sharedSpine = leftArm.IsChildOf(bones[index]) && upperArm.IsChildOf(bones[index]);
+            guardStance[index] = lowerBody[index] || sharedSpine || bones[index] == leftArm.parent || bones[index] == upperArm.parent;
             rightArm[index] = bones[index] == upperArm || bones[index].IsChildOf(upperArm);
         }
         upperPositions = new Vector3[upperBones.Length];
@@ -231,11 +237,12 @@ AnimationClipPlayable playable = AnimationClipPlayable.Create(graph, clip);
     /// <param name="locomotionTime">中文含义：移动行为时间。使用位置：作为 Mathf.Repeat(float, float) 的参数。</param>
     /// <param name="movementWeight">中文含义：移动权重。使用位置：作为 Mathf.Clamp01(float) 的参数。</param>
     /// <param name="originalGrip">中文含义：是否原始握持。使用位置：KnifePoseSampler.Sample(AnimationClip, float, int, float, float, bool)。</param>
-    public void Sample(AnimationClip clip, float actionTime, int movementMode, float locomotionTime, float movementWeight = 1f, bool originalGrip = false)
+    public void Sample(AnimationClip clip, float actionTime, int movementMode, float locomotionTime,
+        float movementWeight = 1f, bool originalGrip = false, AnimationClip guardTurn = null, float guardTorsoLead = 0f)
     {
         // walk（行走）：使用位置：作为 KnifePoseSampler.CreateClip(AnimationClip) 的参数、作为 Mathf.Repeat(float, float) 的参数、KnifePoseSampler.Sample(AnimationClip, float, int, float, float, bool)。
-AnimationClip walk = null;
-        if (movementMode > 0 && movementMode <= configuration.previewLocomotion.Length)
+ AnimationClip walk = guardTurn;
+        if (walk == null && movementMode > 0 && movementMode <= configuration.previewLocomotion.Length)
         {
             walk = configuration.previewLocomotion[movementMode - 1];
         }
@@ -305,6 +312,9 @@ float phase = Mathf.Repeat(locomotionTime, 3f);
             // 保留完整源动作的上身朝向，步态只决定骨盆和下身。
             clip.SampleAnimation(model, Mathf.Clamp(actionTime, 0f, clip.length));
             model.transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
+
+            Vector3 guardRootPosition = motionRoot.localPosition;
+            Quaternion guardRootRotation = motionRoot.localRotation;
             // spineRotation（脊柱旋转）：使用位置：KnifePoseSampler.Sample(AnimationClip, float, int, float, float, bool)。
 Quaternion spineRotation = spine.rotation;
             // index（当前元素索引）：使用位置：KnifePoseSampler.Sample(AnimationClip, float, int, float, float, bool)。
@@ -317,6 +327,11 @@ for (int index = 0; index < upperBones.Length; index++)
             graph.Evaluate(0f);
             graph.Evaluate(0f);
             model.transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
+            if (guardTurn != null)
+            {
+                // 刚体已跟随镜头转向。保持采样根骨中立，避免转身片段再转一次。
+                motionRoot.SetLocalPositionAndRotation(guardRootPosition, guardRootRotation);
+            }
             // index（当前元素索引）：使用位置：KnifePoseSampler.Sample(AnimationClip, float, int, float, float, bool)。
 for (int index = 0; index < upperBones.Length; index++)
             {
@@ -324,7 +339,7 @@ for (int index = 0; index < upperBones.Length; index++)
                 upperBones[index].localRotation = upperRotations[index];
             }
 
-            spine.rotation = spineRotation;
+            spine.rotation = Quaternion.AngleAxis(guardTorsoLead, Vector3.up) * spineRotation;
             if (clip == configuration.previewIdle && clip.humanMotion)
             {
                 // leftFoot（左脚）：保存 Animator.GetBoneTransform(HumanBodyBones) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Clamp(float, float, float) 的参数。
@@ -374,31 +389,6 @@ Transform finger;
         return leftFoot.position.y - rightFoot.position.y;
     }
 
-    internal void ApplyGuardFootwork(float turnSpeed, float dt)
-    {
-        float targetWeight = Mathf.Clamp(turnSpeed / 170f, -1f, 1f);
-        guardTurnWeight = Mathf.MoveTowards(guardTurnWeight, targetWeight, dt * 7f);
-        float weight = Mathf.Abs(guardTurnWeight);
-        if (weight <= .001f)
-        {
-            guardStepPhase = 0f;
-            return;
-        }
-
-        guardStepPhase = Mathf.Repeat(guardStepPhase + dt * Mathf.Lerp(1.3f, 2.5f, weight), 1f);
-        float stride = Mathf.Sin(guardStepPhase * 2f * Mathf.PI);
-        float step = stride * weight;
-        Vector3 hipsPosition = guardHips.position;
-        hipsPosition.y -= .028f * weight * Mathf.Abs(stride);
-        guardHips.position = hipsPosition;
-        guardHips.rotation = Quaternion.Euler(0f, -11f * guardTurnWeight, -4f * step) * guardHips.rotation;
-        spine.rotation = Quaternion.AngleAxis(18f * guardTurnWeight, Vector3.up) * spine.rotation;
-        guardLeftThigh.rotation = Quaternion.Euler(15f * step, -6f * guardTurnWeight, 5f * step) * guardLeftThigh.rotation;
-        guardRightThigh.rotation = Quaternion.Euler(-15f * step, 6f * guardTurnWeight, 5f * step) * guardRightThigh.rotation;
-        guardLeftKnee.rotation = Quaternion.AngleAxis(17f * Mathf.Max(0f, step), Vector3.right) * guardLeftKnee.rotation;
-        guardRightKnee.rotation = Quaternion.AngleAxis(17f * Mathf.Max(0f, -step), Vector3.right) * guardRightKnee.rotation;
-    }
-
     public void BeginBlend(float duration, float elapsed)
     {
         // index（当前元素索引）：使用位置：KnifePoseSampler.BeginBlend(float, float)。
@@ -426,7 +416,8 @@ for (int index = 0; index < targets.Length; index++)
     /// <summary>Apply 的业务处理入口；本方法直接依赖 KnifePoseSampler.AdvanceBlend(float)、KnifePoseSampler.CapturePresentedPose()、KnifePoseSampler.CaptureUnderlyingPose()、Mathf.Clamp01(float)、Mathf.SmoothStep(float, float, float)、Quaternion.Slerp(Quaternion, Quaternion, float)、Vector3.Lerp(Vector3, Vector3, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 KnifePreviewReferenceValidator.CompareSourcePreview(bool)、LeonAnimatorDriver.LateUpdate()；下游（含内部回调体） KnifePoseSampler.AdvanceBlend(float)、KnifePoseSampler.CapturePresentedPose()、KnifePoseSampler.CaptureUnderlyingPose()、Mathf.Clamp01(float)、Mathf.SmoothStep(float, float, float)、Quaternion.Slerp(Quaternion, Quaternion, float)、Vector3.Lerp(Vector3, Vector3, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     /// <param name="deltaTime">中文含义：本帧时间间隔。使用位置：作为 KnifePoseSampler.AdvanceBlend(float) 的参数。</param>
-    public void Apply(float deltaTime, float lowerBodySettle = 0f, float poseWeight = 1f, bool rightArmOnly = false)
+    public void Apply(float deltaTime, float lowerBodySettle = 0f, float poseWeight = 1f, bool rightArmOnly = false,
+        float standingGuardRelease = -1f, bool guardTurning = false, bool guardStanding = false)
     {
         CaptureUnderlyingPose();
         // weight（权重）：使用位置：作为 Quaternion.Slerp(Quaternion, Quaternion, float) 的参数、作为 Vector3.Lerp(Vector3, Vector3, float) 的参数、KnifePoseSampler.Apply(float)。
@@ -448,6 +439,14 @@ for (int index = 0; index < targets.Length; index++)
             {
                 continue;
             }
+            if (standingGuardRelease >= 0f && guardStance[index])
+            {
+                // 原地松键时逐帧追随正在播放的待机，骨盆和双腿不会再回弹到按键前的旧姿态。
+                targets[index].SetLocalPositionAndRotation(
+                    Vector3.Lerp(blendPositions[index], underlyingPositions[index], standingGuardRelease),
+                    Quaternion.Slerp(blendRotations[index], underlyingRotations[index], standingGuardRelease));
+                continue;
+            }
             Vector3 position = bones[index].localPosition;
             Quaternion rotation = bones[index].localRotation;
             if (lowerBodySettle > 0f && lowerBody[index])
@@ -462,7 +461,63 @@ for (int index = 0; index < targets.Length; index++)
             targets[index].localRotation = Quaternion.Slerp(underlyingRotations[index], blendedRotation, poseWeight);
         }
 
+        if (guardTurning)
+        {
+            guardTurnLeftPose = new Pose(targetLeftFoot.position, targetLeftFoot.rotation);
+            guardTurnRightPose = new Pose(targetRightFoot.position, targetRightFoot.rotation);
+            guardTurnSettleTime = GuardTurnSettleDuration;
+        }
+        else if (guardStanding && guardTurnSettleTime < GuardTurnSettleDuration)
+        {
+            guardTurnSettleTime = Mathf.Min(guardTurnSettleTime + deltaTime, GuardTurnSettleDuration);
+            float phase = guardTurnSettleTime * 2f / GuardTurnSettleDuration;
+            float delay = 0f;
+            if (!guardTurnLeftFirst)
+            {
+                delay = 1f;
+            }
+            SettleGuardFoot(leftFoot, targetLeftFoot, guardTurnLeftPose, Mathf.Clamp01(phase - delay));
+            SettleGuardFoot(rightFoot, targetRightFoot, guardTurnRightPose, Mathf.Clamp01(phase - (1f - delay)));
+        }
+        else if (!guardStanding)
+        {
+            guardTurnSettleTime = GuardTurnSettleDuration;
+        }
+
         CapturePresentedPose();
+    }
+
+    internal void BeginGuardTurnSettle()
+    {
+        // 较低的脚先留在原地承重，另一脚先迈回站姿。
+        guardTurnLeftFirst = guardTurnLeftPose.position.y > guardTurnRightPose.position.y;
+        guardTurnSettleTime = 0f;
+        BeginBlend(GuardTurnSettleDuration, 0f);
+    }
+
+    private void SettleGuardFoot(Transform source, Transform foot, Pose from, float phase)
+    {
+        Vector3 end = targetRoot.TransformPoint(model.transform.InverseTransformPoint(source.position));
+        Quaternion endRotation = targetRoot.rotation * Quaternion.Inverse(model.transform.rotation) * source.rotation;
+        float travel = Mathf.SmoothStep(0f, 1f, phase);
+        Vector3 goal = Vector3.Lerp(from.position, end, travel);
+        float distance = Vector3.ProjectOnPlane(end - from.position, Vector3.up).magnitude;
+        float lift = Mathf.Min(.075f, distance * .29f);
+        goal += Vector3.up * (4f * travel * (1f - travel) * lift);
+
+        Transform knee = foot.parent;
+        Transform thigh = knee.parent;
+        Vector3 upper = knee.position - thigh.position;
+        Vector3 lower = foot.position - knee.position;
+        Vector3 bendNormal = Vector3.Cross(upper, lower);
+        if (bendNormal.sqrMagnitude < .000001f)
+        {
+            bendNormal = targetRoot.right;
+        }
+        float reach = upper.magnitude + lower.magnitude - .002f;
+        goal = thigh.position + Vector3.ClampMagnitude(goal - thigh.position, reach);
+        RootMotion.FinalIK.IKSolverTrigonometric.Solve(thigh, knee, foot, goal, bendNormal.normalized, 1f);
+        foot.rotation = Quaternion.Slerp(from.rotation, endRotation, travel);
     }
 
     /// <summary>ApplyExit 的业务处理入口；本方法直接依赖 KnifePoseSampler.AdvanceBlend(float)、KnifePoseSampler.CapturePresentedPose()、KnifePoseSampler.CaptureUnderlyingPose()、KnifePoseSampler.ReleasePresentation()、Mathf.Clamp01(float)、Mathf.SmoothStep(float, float, float)、Quaternion.Slerp(Quaternion, Quaternion, float) 等共 8 处，调用方通过参数与返回结果交接本次处理。</summary>

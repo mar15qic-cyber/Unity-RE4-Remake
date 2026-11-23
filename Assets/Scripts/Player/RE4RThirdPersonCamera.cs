@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using Unity.Cinemachine;
 
 /// <summary>
@@ -545,6 +545,13 @@ public partial class RE4RThirdPersonCamera : MonoBehaviour
     /// <summary>中文含义：武器后坐力俯仰偏移量。使用位置：作为 Mathf.Clamp(float, float, float) 的参数、作为 Mathf.SmoothDamp(float, float, ref float, float, float, float) 的参数、作为 RE4RThirdPersonCamera.IsFinite(float) 的参数 等共 7 处。</summary>
     private float weaponRecoilPitchOffset;
     private float visibleWeaponRecoilPitch;
+    private float pistolRetainedPitch;
+    private float pistolRecoilHoldUntil;
+    private bool w870RecoilActive;
+    [SerializeField, Range(0f, 1f), Tooltip("站定手枪点射时，每发上扬保留至下一发的比例。")]
+    private float pistolRecoilRetention = .55f;
+    [SerializeField, Min(0f), Tooltip("最后一发后保留上扬角的时间（秒）。")]
+    private float pistolRecoilHoldTime = .65f;
     /// <summary>中文含义：武器后坐力偏航偏移量。使用位置：作为 Mathf.Clamp(float, float, float) 的参数、作为 Mathf.SmoothDamp(float, float, ref float, float, float, float) 的参数、作为 RE4RThirdPersonCamera.IsFinite(float) 的参数 等共 8 处。</summary>
     private float weaponRecoilYawOffset;
     /// <summary>中文含义：武器后坐力视野角度偏移量。使用位置：作为 Mathf.Lerp(float, float, float) 的参数、作为 Mathf.Max(float, float) 的参数、作为 Mathf.SmoothDamp(float, float, ref float, float, float, float) 的参数 等共 8 处。</summary>
@@ -900,7 +907,20 @@ float cameraPitch = euler.x;
         }
 
         bool aiming = IsAiming;
-        if (aiming)
+        w870RecoilActive = aiming && controller != null && controller.currentWeapon == WeaponType.Shotgun
+            && controller.IsGrounded && !controller.IsCrouching && controller.MoveInput.sqrMagnitude <= .0025f
+            && controller.AnimDriver != null && controller.AnimDriver.SupportsNativeW870Aim
+            && activeProfile != null && activeProfile.nativeShoulder != null && activeProfile.nativeShoulder.HasShotPumpRise;
+        if (w870RecoilActive) return;
+        bool stationaryPistol = aiming && controller != null && controller.currentWeapon == WeaponType.Pistol
+            && controller.IsGrounded && !controller.IsCrouching && controller.MoveInput.sqrMagnitude <= .0025f;
+        if (stationaryPistol)
+        {
+            // 连点在同一个俯仰偏移上累积，射停后再回中；实际射线取渲染相机的瞄点。
+            pistolRetainedPitch = Mathf.Clamp(weaponRecoilPitchOffset - pitchKick * pistolRecoilRetention, -accumulatedLimit, 0f);
+            pistolRecoilHoldUntil = Time.time + pistolRecoilHoldTime;
+        }
+        else if (aiming)
         {
             // 移动中保留较小的抬镜幅度，枪械动作仍反馈每一发射击。
             float movement = GetMoveMagnitude();
@@ -1404,8 +1424,12 @@ global::RE4RThirdPersonCamera.StateParams createdValue25 = new StateParams();
         idleBreathVelocity = 0f;
         aimBreathPhase = 0f;
         aimBreathWeight = 0f;
+        proceduralAimBreathWeight = 0f;
+        nativeAimBreathAngles = Vector2.zero;
         weaponRecoilPitchOffset = 0f;
         visibleWeaponRecoilPitch = 0f;
+        w870RecoilActive = false;
+        pistolRecoilHoldUntil = 0f;
         weaponRecoilYawOffset = 0f;
         weaponRecoilFOVOffset = 0f;
         weaponRecoilDistanceOffset = 0f;
@@ -1418,17 +1442,7 @@ global::RE4RThirdPersonCamera.StateParams createdValue25 = new StateParams();
         weaponRecoilDistanceVelocity = 0f;
         weaponRecoilShoulderVelocity = 0f;
         currentWeaponRecoilReturnTime = weaponRecoilReturnTime;
-        followPivot.position = basePivotPos;
-        SnapShoulderPitch();
-        followPivot.position += Vector3.up * ReadPitchOrbitHeight();
-        followPivot.rotation = Quaternion.Euler(shoulderOrbitPitch, yaw, 0f);
-        ApplyCameraParams();
-        UpdatePanTilt(0f);
-        // lens（镜头）：使用位置：RE4RThirdPersonCamera.SnapToInitialCameraPose()。
-var lens = vcam.Lens;
-        lens.FieldOfView = curFOV;
-        lens.Dutch = 0f;
-        vcam.Lens = lens;
+        AlignShoulderRig(basePivotPos);
         if (cam == null)
         {
             return;
@@ -1564,6 +1578,11 @@ Vector3 extents = bounds.extents;
             return;
         }
 
+        if (states == null)
+        {
+            BuildStates();
+        }
+
         // receiverValue29（判空前缓存的里昂玩家控制器）：从控制器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、RE4RThirdPersonCamera.LateUpdate()。
 global::LeonController receiverValue29 = controller;
         if (!global::System.Object.ReferenceEquals(receiverValue29, null))
@@ -1642,11 +1661,11 @@ float dt = Time.deltaTime;
 
         UpdateIdleBreathing(dt);
         UpdateAimBreathing(dt);
-        UpdateFollowPivot(dt);
         if (controller != null && !inputSuppressed && !openingGate)
         {
-            controller.ApplyKnifeCameraHeading(yaw);
+            controller.ApplyKnifeCameraHeading(yaw, shoulderLookPitch);
         }
+        UpdateFollowPivot(dt);
         if (!ValidateFiniteCameraState("跟随点更新后"))
         {
             return;
@@ -1744,12 +1763,12 @@ Vector3 finalPos = basePivotPos;
         finalPos.y -= dropImpactCompression * dropImpactPulse * dropImpactStrength;
         finalPos.y += Mathf.Sin(breathPhase) * idleBobAmplitude * idleBreathWeight;
 
-        if (aimBreathWeight > 0f)
+        if (proceduralAimBreathWeight > 0f)
         {
             // aimBob（瞄准上下起伏）：使用位置：RE4RThirdPersonCamera.UpdateFollowPivot(float)。
-float aimBob = Mathf.Sin(aimBreathPhase) * aimBreathBobAmplitude * aimBreathWeight;
+float aimBob = Mathf.Sin(aimBreathPhase) * aimBreathBobAmplitude * proceduralAimBreathWeight;
             // aimSide（瞄准侧边）：使用位置：RE4RThirdPersonCamera.UpdateFollowPivot(float)。
-float aimSide = Mathf.Sin(aimBreathPhase + Mathf.PI * 0.4f) * aimBreathBobAmplitude * 0.45f * aimBreathWeight;
+float aimSide = Mathf.Sin(aimBreathPhase + Mathf.PI * 0.4f) * aimBreathBobAmplitude * 0.45f * proceduralAimBreathWeight;
             finalPos += Vector3.up * aimBob + followPivot.right * aimSide;
         }
 
@@ -1774,8 +1793,13 @@ float breathYaw;
             breathYaw = 0f;
         }
 
-        breathYaw += Mathf.Sin(aimBreathPhase + Mathf.PI * 0.25f) * aimBreathYawAmplitude * aimBreathWeight;
+        breathYaw += Mathf.Sin(aimBreathPhase + Mathf.PI * 0.25f) * aimBreathYawAmplitude * proceduralAimBreathWeight;
         // yawRotation（偏航旋转）：保存 Quaternion.Euler(float, float, float) 的返回结果，供当前步骤使用。使用位置：作为 Quaternion.Slerp(Quaternion, Quaternion, float) 的参数、RE4RThirdPersonCamera.UpdateFollowPivot(float)。
+        if (TracksHeldKnifeInput)
+        {
+            followPivot.rotation = Quaternion.Euler(shoulderOrbitPitch, yaw, 0f);
+            return;
+        }
         Quaternion yawRotation = Quaternion.Euler(shoulderOrbitPitch, yaw + breathYaw, 0f);
         // 回正自身已有定时平滑，避免再次阻尼使实际画面迟于移动参考交接。
         // assignmentReceiver34（赋值前保存的目标跟随轴心）：从跟随轴心读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：RE4RThirdPersonCamera.UpdateFollowPivot(float)。
@@ -1875,7 +1899,7 @@ float pitchInput;
         {
             alignWeight = 1f;
         }
-        if (autoAlignSpeed > 0f && alignWeight > .001f && GetMoveMagnitude() > 0.1f && allowAutoAlign)
+        if (!TracksHeldKnifeInput && autoAlignSpeed > 0f && alignWeight > .001f && GetMoveMagnitude() > 0.1f && allowAutoAlign)
         {
             // targetYaw（目标偏航）：保存 RE4RThirdPersonCamera.GetCharacterYaw() 的返回结果，供当前步骤使用。使用位置：作为 Mathf.DeltaAngle(float, float) 的参数、作为 Mathf.LerpAngle(float, float, float) 的参数、RE4RThirdPersonCamera.DriveInput(float)。
 float targetYaw = GetCharacterYaw();
@@ -2180,10 +2204,14 @@ float safePitch;
         meleePushRatio = 0f;
         aimBreathPhase = 0f;
         aimBreathWeight = 0f;
+        proceduralAimBreathWeight = 0f;
+        nativeAimBreathAngles = Vector2.zero;
         breathPhase = 0f;
         idleTimer = 0f;
         weaponRecoilPitchOffset = 0f;
         visibleWeaponRecoilPitch = 0f;
+        w870RecoilActive = false;
+        pistolRecoilHoldUntil = 0f;
         weaponRecoilYawOffset = 0f;
         weaponRecoilFOVOffset = 0f;
         weaponRecoilDistanceOffset = 0f;
@@ -2582,6 +2610,16 @@ float targetWeight;
 float moveFade = Mathf.Clamp01(GetMoveMagnitude());
         targetWeight *= Mathf.Lerp(1f, 0.45f, moveFade);
         aimBreathWeight = Mathf.MoveTowards(aimBreathWeight, targetWeight, dt * aimBreathBlendSpeed);
+        nativeAimBreathAngles = Vector2.zero;
+        proceduralAimBreathWeight = aimBreathWeight;
+        if (controller != null && controller.AnimDriver != null
+            && activeProfile != null && activeProfile.nativeShoulder != null
+            && controller.AnimDriver.TryReadStandingBreath(out var phase, out var weight)
+            && activeProfile.nativeShoulder.TrySampleBreath(phase, out var angles))
+        {
+            nativeAimBreathAngles = angles * weight;
+            proceduralAimBreathWeight *= 1f - weight;
+        }
         if (aimBreathWeight > 0.001f)
         {
             aimBreathPhase = Mathf.Repeat(aimBreathPhase + dt * aimBreathSpeed, 2f * Mathf.PI);
@@ -2608,8 +2646,23 @@ float selectedValue54;
 
         // returnTime（返回时间）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.SmoothDamp(float, float, ref float, float, float, float) 的参数。
 float returnTime = Mathf.Max(argumentValue55, selectedValue54);
-        weaponRecoilPitchOffset = Mathf.SmoothDamp(weaponRecoilPitchOffset, 0f, ref weaponRecoilPitchVelocity, returnTime, Mathf.Infinity, dt);
+        bool pistolAiming = IsAiming && controller != null && controller.currentWeapon == WeaponType.Pistol;
+        if (!pistolAiming) pistolRecoilHoldUntil = 0f;
+        float targetPitch = Time.time < pistolRecoilHoldUntil ? pistolRetainedPitch : 0f;
+        weaponRecoilPitchOffset = Mathf.SmoothDamp(weaponRecoilPitchOffset, targetPitch, ref weaponRecoilPitchVelocity, returnTime, Mathf.Infinity, dt);
         visibleWeaponRecoilPitch = Mathf.Lerp(visibleWeaponRecoilPitch, weaponRecoilPitchOffset, 1f - Mathf.Exp(-dt / .032f));
+        if (w870RecoilActive)
+        {
+            if (IsAiming && controller != null && controller.currentWeapon == WeaponType.Shotgun
+                && controller.AnimDriver != null && controller.AnimDriver.TryReadW870ShotPumpPhase(out float phase)
+                && activeProfile != null && activeProfile.nativeShoulder != null && cam != null)
+            {
+                visibleWeaponRecoilPitch = -activeProfile.nativeShoulder.ShotPumpPitch(phase, cam.fieldOfView);
+                weaponRecoilPitchOffset = visibleWeaponRecoilPitch;
+                weaponRecoilPitchVelocity = 0f;
+            }
+            else w870RecoilActive = false;
+        }
         weaponRecoilYawOffset = Mathf.SmoothDamp(weaponRecoilYawOffset, 0f, ref weaponRecoilYawVelocity, returnTime, Mathf.Infinity, dt);
         weaponRecoilFOVOffset = Mathf.SmoothDamp(weaponRecoilFOVOffset, 0f, ref weaponRecoilFOVVelocity, returnTime, Mathf.Infinity, dt);
         weaponRecoilDistanceOffset = Mathf.SmoothDamp(weaponRecoilDistanceOffset, 0f, ref weaponRecoilDistanceVelocity, returnTime, Mathf.Infinity, dt);
@@ -2706,16 +2759,19 @@ float targetZoom;
     // ========================== PanTilt 更新 ==========================
     /// <summary>UpdatePanTilt 的业务处理入口；本方法直接依赖 Mathf.Clamp(float, float, float)、Mathf.Sin(float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 RE4RThirdPersonCamera.LateUpdate()、RE4RThirdPersonCamera.SnapToInitialCameraPose()；下游（含内部回调体） Mathf.Clamp(float, float, float)、Mathf.Sin(float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
+    private Vector2 nativeAimBreathAngles;
+    private float proceduralAimBreathWeight;
+
     void UpdatePanTilt(float dt)
     {
         // aimBreathPitch（瞄准呼吸俯仰）：使用位置：作为 Mathf.Clamp(float, float, float) 的参数。
-float aimBreathPitch = Mathf.Sin(aimBreathPhase) * aimBreathPitchAmplitude * aimBreathWeight;
+float aimBreathPitch = Mathf.Sin(aimBreathPhase) * aimBreathPitchAmplitude * proceduralAimBreathWeight - nativeAimBreathAngles.y;
         // dropPitch（掉落俯仰）：使用位置：作为 Mathf.Clamp(float, float, float) 的参数。
 float dropPitch = dropLookDownAngle * dropCameraWeight + dropImpactPitch * dropImpactPulse * dropImpactStrength;
         // finalPitch（最终俯仰）：保存 Mathf.Clamp(float, float, float) 的返回结果，供当前步骤使用。使用位置：RE4RThirdPersonCamera.UpdatePanTilt()。
         float finalPitch = Mathf.Clamp(shoulderLookPitch + aimBreathPitch
             + dropPitch, pitchRange.x, pitchRange.y);
-        panTilt.PanAxis.Value = weaponRecoilYawOffset;
+        panTilt.PanAxis.Value = weaponRecoilYawOffset + nativeAimBreathAngles.x;
         float pivotPitch = Mathf.DeltaAngle(0f, followPivot.eulerAngles.x);
         panTilt.TiltAxis.Value = Mathf.Clamp(finalPitch - pivotPitch, pitchRange.x, pitchRange.y);
     }
@@ -3015,6 +3071,7 @@ sealed class RE4StableCameraCollision : CinemachineExtension
     private Vector3 lastSafeCameraPosition;
     private Vector3 lastSafeFocus;
     private bool hasSafeCameraPosition;
+    private bool recoveringFromBlockedPoint;
     private float nearPlaneRadius;
     /// <summary>中文含义：状态是否已初始化。使用位置：RE4StableCameraCollision.PostPipelineStageCallback(CinemachineVirtualCameraBase, CinemachineCore.Stage, ref CameraState, float)、RE4StableCameraCollision.ResetCollisionState()。</summary>
     private bool stateInitialized;
@@ -3133,6 +3190,9 @@ bool mustReset = !stateInitialized || deltaTime < 0f || !vcam.PreviousStateIsVal
         previousDesiredDistance = desiredDistance;
         if (mustReset)
         {
+            hasSafeCameraPosition = false;
+            recoveringFromBlockedPoint = false;
+            lastBlockedTime = float.NegativeInfinity;
             currentDistance = safeDistance;
             heldBlockedDistance = safeDistance;
             distanceVelocity = 0f;
@@ -3219,6 +3279,7 @@ float targetDistance = desiredDistance;
         Vector3 candidate = desired;
         if (!IsClearCameraPoint(focus, candidate))
         {
+            recoveringFromBlockedPoint = true;
             Vector3 offset = desired - focus;
             bool found = false;
             for (int height = 0; height <= 3 && !found; height++)
@@ -3264,12 +3325,25 @@ float targetDistance = desiredDistance;
         {
             // 上帧安全点随人物平移，避免避障把镜头留在旧世界位置。
             Vector3 previous = lastSafeCameraPosition + focus - lastSafeFocus;
-            if (gameplayDriver != null && gameplayDriver.PassageCameraWeight > .01f && deltaTime > 0f)
+            float passageWeight = 0f;
+            if (gameplayDriver != null)
             {
-                float speed = Mathf.Lerp(20f, 3.8f, gameplayDriver.PassageCameraWeight);
+                passageWeight = gameplayDriver.PassageCameraWeight;
+            }
+            if ((recoveringFromBlockedPoint || passageWeight > .01f) && deltaTime > 0f)
+            {
+                float speed = Mathf.Lerp(20f, 3.8f, passageWeight);
+                if (recoveringFromBlockedPoint)
+                {
+                    speed = 3.8f;
+                }
                 Vector3 blended = Vector3.MoveTowards(previous, candidate, speed * deltaTime);
                 if (IsClearCameraPoint(focus, previous) && IsClearCameraPoint(focus, blended))
                 {
+                    if (recoveringFromBlockedPoint)
+                    {
+                        recoveringFromBlockedPoint = (candidate - blended).sqrMagnitude > .0001f;
+                    }
                     candidate = blended;
                 }
             }

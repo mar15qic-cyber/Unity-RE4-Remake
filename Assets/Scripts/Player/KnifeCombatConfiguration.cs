@@ -14,6 +14,9 @@ public sealed class KnifeActionConfiguration
     public AnimationClip confirmedHitClip;
     /// <summary>中文含义：来源起始。使用位置：作为 KnifePoseSampler.Sample(AnimationClip, float, int, float, float, bool) 的参数、作为 LeonKnifeAnimationPreview.PreviewCharacter.Sample(AnimationClip, float, int, float) 的参数、KnifePreviewIntegrationBuilder.Configure(KnifeCombatConfiguration) 等共 4 处。</summary>
     public float sourceStart;
+    [Tooltip("格挡起手和收势的动画倍率。命中、弹反窗口与前刺收招沿用各自时序。")]
+    [Min(0.1f)]
+    public float guardPlaybackSpeed = 1f;
     /// <summary>中文含义：动作。使用位置：作为 InvalidOperationException.InvalidOperationException(string) 的参数、作为 KnifeCombatRules.Configuration(KnifeAction, KnifeActionTiming) 的参数、作为 KnifeCombatRules.IsReaction(KnifeAction) 的参数 等共 8 处。</summary>
     [Header("动作与片段")]
     [UnityEngine.Serialization.FormerlySerializedAs("动作")]
@@ -47,6 +50,23 @@ public sealed class KnifeActionConfiguration
     [Newtonsoft.Json.JsonProperty("采样间隔")]
     public float sampleInterval = 1f / 120f;
     public Vector3[] planarRootTrajectory;
+
+    internal float PlaybackSpeed
+    {
+        get
+        {
+            if (guardPlaybackSpeed > 0f && action is (KnifeAction.EnterGuard or KnifeAction.LowerGuard))
+            {
+                return guardPlaybackSpeed;
+            }
+            return 1f;
+        }
+    }
+
+    internal float SourceTimeAt(double elapsed)
+    {
+        return sourceStart + (float)elapsed * PlaybackSpeed;
+    }
 
     internal bool HasPlanarRoot => planarRootTrajectory != null && planarRootTrajectory.Length > 1;
 
@@ -105,6 +125,12 @@ public sealed class KnifeCombatConfiguration : ScriptableObject
     public AnimationClip previewLocomotionIdle;
     /// <summary>中文含义：预览移动行为。使用位置：KnifePoseSampler.Sample(AnimationClip, float, int, float, float, bool)、KnifePreviewIntegrationBuilder.Configure(KnifeCombatConfiguration)。</summary>
     public AnimationClip[] previewLocomotion;
+
+    [Tooltip("站定持刀格挡时的左转下半身片段。")]
+    public AnimationClip guardTurnLeft;
+
+    [Tooltip("站定持刀格挡时的右转下半身片段。")]
+    public AnimationClip guardTurnRight;
     /// <summary>中文含义：动作片段。使用位置：KnifeCombatBuilder.BakeTrajectory(LeonController, KnifeCombatConfiguration)、KnifeCombatBuilder.Build()、KnifeCombatBuilder.CreateController(Animator, KnifeCombatConfiguration) 等共 6 处。</summary>
     [Header("动作时序")]
     [UnityEngine.Serialization.FormerlySerializedAs("动作片段")]
@@ -296,7 +322,9 @@ foreach (var item in actionClip)
             {
                 if (item != null)
                 {
-                    rules.Configuration(item.action, item.timing);
+                    var timing = item.timing;
+                    timing.duration /= item.PlaybackSpeed;
+                    rules.Configuration(item.action, timing);
                 }
             }
         }

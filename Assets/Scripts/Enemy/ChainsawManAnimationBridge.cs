@@ -355,6 +355,10 @@ bool isInTaunt = stateInfo.fullPathHash == HashTauntState;
             return;
         }
 
+        if (anim != null)
+        {
+            animationPresenter.ClearTrigger(HashTauntTrigger);
+        }
         TauntActionFinished = true;
         HasResolvedIntroTaunt = true;
         ResumeIdleLoop();

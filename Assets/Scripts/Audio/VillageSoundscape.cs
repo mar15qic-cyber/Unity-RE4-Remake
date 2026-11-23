@@ -29,6 +29,41 @@ public sealed class VillageSoundscape : MonoBehaviour
     private float nextLocationTime;
     private bool combatPlaying;
 
+    internal void SustainCombatMusic()
+    {
+        var audio = AudioManager.Instance;
+        if (audio == null || audio.IsAudioPaused || combatMusic == null)
+        {
+            return;
+        }
+        lastThreat = Time.time;
+        if (!combatPlaying)
+        {
+            audio.PlayBGM(combatMusic);
+            combatPlaying = true;
+        }
+    }
+
+    internal void BeginBellMusicExit(AudioEventData tail)
+    {
+        var audio = AudioManager.Instance;
+        if (audio != null && audio.TryPlayBGMTail(combatMusic, tail))
+        {
+            combatPlaying = false;
+        }
+    }
+
+    internal void EndBellMusicExit(AudioEventData tail)
+    {
+        var audio = AudioManager.Instance;
+        if (audio != null)
+        {
+            audio.StopBGMImmediately(tail);
+            audio.StopBGMImmediately(combatMusic);
+        }
+        combatPlaying = false;
+    }
+
     private void Update()
     {
         var audio = AudioManager.Instance;
@@ -68,12 +103,7 @@ public sealed class VillageSoundscape : MonoBehaviour
         bool engaged = !ended && enemies != null && enemies.IsCombatUnlocked && enemies.HasEngagedEnemy();
         if (engaged)
         {
-            lastThreat = Time.time;
-            if (!combatPlaying && combatMusic != null)
-            {
-                audio.PlayBGM(combatMusic);
-                combatPlaying = true;
-            }
+            SustainCombatMusic();
         }
         else if (combatPlaying && (ended || Time.time - lastThreat >= 6f))
         {

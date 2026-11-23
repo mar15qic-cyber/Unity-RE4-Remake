@@ -104,6 +104,16 @@ public sealed partial class EnemyCombatModule
                 weight = Mathf.InverseLerp(nativeSawPreviousFrame, frame, sample);
             }
             var sampledBlade = ContactCapsule.Interpolate(nativeSawPreviousBlade, blade, weight);
+            if (siegeAttackDoor != null)
+            {
+                if (siegeAttackLanded || siegeAttackDoor.TrySawSiegeDoor(sampledBlade.center, sampledBlade.OuterRadius))
+                {
+                    siegeAttackLanded = true;
+                    return;
+                }
+                continue;
+            }
+
             var sampledBody = ContactCapsule.Interpolate(nativeSawPreviousBody, body, weight);
             if (!sampledBlade.Touches(sampledBody, out var point))
             {
@@ -144,6 +154,7 @@ public sealed partial class EnemyCombatModule
         public readonly Vector3 center;
         private readonly Vector3 halfAxis;
         private readonly float radius;
+        public float OuterRadius => halfAxis.magnitude + radius;
 
         public ContactCapsule(Vector3 center, Vector3 halfAxis, float radius)
         {

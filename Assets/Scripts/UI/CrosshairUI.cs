@@ -60,6 +60,9 @@ public class CrosshairUI : MonoBehaviour
     private float aimSettleTime = 1.25f;
     private float aimSettleProgress;
     private bool guardReticleActive;
+    private Image centerDotImage;
+    private Sprite originalCenterSprite;
+    private Sprite knifeDotSprite;
     private WeaponType currentWeaponType;
     /// <summary>中文含义：后备手枪配置。使用位置：CrosshairUI.GetFallbackConfig(WeaponType)。</summary>
     private CrosshairConfig fallbackPistolConfig;
@@ -85,6 +88,7 @@ public class CrosshairUI : MonoBehaviour
     private bool previousShowDot;
     /// <summary>中文含义：是否前一次显示跨越。使用位置：CrosshairUI.SetVisualState(bool, bool)。</summary>
     private bool previousShowCross;
+    private float lineUnit = 1f;
     /// <summary>中文含义：霰弹枪弹药准星。使用位置：CrosshairUI.EnsureVisuals()、CrosshairUI.HideOwnedVisuals()、CrosshairUI.SetVisualState(bool, bool) 等共 4 处。</summary>
     private ShotgunArcCrosshair shotgunAmmoCrosshair;
     /// <summary>Unity 组件初始化回调；状态处理与资源交接按函数内顺序执行，下游协作见调用链。</summary>
@@ -106,6 +110,12 @@ public class CrosshairUI : MonoBehaviour
     void Start()
     {
         EnsureVisuals();
+        centerDotImage = centerDot.GetComponent<Image>();
+        if (centerDotImage != null)
+        {
+            originalCenterSprite = centerDotImage.overrideSprite;
+            knifeDotSprite = Resources.Load<Sprite>("UI/KnifeReticle");
+        }
         ResolvePlayer();
         DisableCompetingCrosshairs();
         initialized = true;
@@ -152,7 +162,19 @@ bool isReloading = leon.currentState == LeonState.Reloading;
         // visible（是否可见）：使用位置：作为 CrosshairUI.SetVisualState(bool, bool) 的参数、CrosshairUI.Update()。
         bool poseReady = leon.AnimDriver == null || leon.AnimDriver.CanShowAimReticle;
         bool guardAiming = leon.TryGetComponent<KnifeCombatModule>(out var knife) && knife.IsGuardAiming;
-        guardReticleActive = guardAiming;
+        bool useKnifeDot = guardAiming || currentWeaponType == WeaponType.Knife;
+        if (guardReticleActive != useKnifeDot && centerDotImage != null)
+        {
+            if (useKnifeDot)
+            {
+                centerDotImage.overrideSprite = knifeDotSprite;
+            }
+            else
+            {
+                centerDotImage.overrideSprite = originalCenterSprite;
+            }
+        }
+        guardReticleActive = useKnifeDot;
         bool visible = gameplayVisible && (guardAiming || leon.IsAiming && poseReady)
             && !isReloading && currentConfig != null;
         if (visible)
@@ -286,7 +308,7 @@ CrosshairConfig inspectorConfig = GetInspectorConfig(currentWeaponType);
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） AnimationCurve.Evaluate(float)、Mathf.Clamp01(float)、Mathf.Lerp(float, float, float)、Mathf.Max(float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     void HandleWeaponFired()
     {
-        if (currentConfig == null || currentConfig.crosshairType == CrosshairType.Dot || currentConfig.crosshairType == CrosshairType.None)
+        if (currentWeaponType == WeaponType.Shotgun || currentConfig == null || currentConfig.crosshairType == CrosshairType.Dot || currentConfig.crosshairType == CrosshairType.None)
         {
             return;
         }
@@ -339,7 +361,10 @@ float shotSize = Mathf.Lerp(currentConfig.minSize, currentConfig.maxSize, curveV
             case WeaponType.Pistol:
                 if (fallbackPistolConfig == null)
                 {
-                    fallbackPistolConfig = CreateFallbackConfig("手枪后备准心", CrosshairType.Cross, 6f, 34f, 9f, true);
+                    fallbackPistolConfig = CreateFallbackConfig("手枪后备准心", CrosshairType.Cross, 2f, 15f, 12f, true);
+                    fallbackPistolConfig.thickness = 4f;
+                    fallbackPistolConfig.dynamicSpreadSpeed = 36f;
+                    fallbackPistolConfig.lineSprite = Resources.Load<Sprite>("UI/SG09RReticle");
                 }
 
                 return fallbackPistolConfig;
@@ -418,12 +443,19 @@ global::CrosshairConfig assignmentReceiver6 = config;
         {
             if (centerDot != null)
             {
-                centerDot.sizeDelta = Vector2.one * 4f;
+                centerDot.sizeDelta = Vector2.one * 9f;
             }
             return;
         }
         if (currentConfig == null || weaponHandler == null)
         {
+            return;
+        }
+
+        if (currentWeaponType == WeaponType.Shotgun)
+        {
+            if (shotgunAmmoCrosshair != null)
+                shotgunAmmoCrosshair.SetLayoutScale(ReadCanvasUnit(shotgunAmmoCrosshair.transform.parent));
             return;
         }
 
@@ -453,6 +485,13 @@ float moveSpread;
 
         // normalized（归一化）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：作为 AnimationCurve.Evaluate(float) 的参数、CrosshairUI.UpdateSpread()。
         float focusSpread = 1f - Mathf.SmoothStep(0f, 1f, aimSettleProgress);
+        if (currentConfig.lineSprite != null)
+        {
+            // 原作先缓慢收拢，最后一小段快速合到聚焦间距。
+            float finish = Mathf.InverseLerp(.88f, 1f, aimSettleProgress);
+            focusSpread = 1f - .4f * aimSettleProgress * aimSettleProgress - .6f * Mathf.SmoothStep(0f, 1f, finish);
+            if (!Mathf.Approximately(lineUnit, ReadLineUnit())) ApplyStyle();
+        }
         float normalized = Mathf.Max(Mathf.Max(weaponSpread, moveSpread), Mathf.Max(fireBloom, focusSpread));
         // curveValue（曲线值）：使用位置：作为 Mathf.Lerp(float, float, float) 的参数、CrosshairUI.UpdateSpread()。
 float curveValue;
@@ -480,18 +519,6 @@ float speed;
 
         displayedSize = Mathf.Lerp(displayedSize, targetSize, 1f - Mathf.Exp(-Time.deltaTime * speed));
         fireBloom = Mathf.MoveTowards(fireBloom, 0f, Mathf.Max(0.01f, currentConfig.fireBloomRecoverySpeed) * Time.deltaTime);
-        if (currentWeaponType == WeaponType.Shotgun)
-        {
-            // receiverValue12（判空前缓存的霰弹枪弹药准星）：从霰弹枪弹药准星读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、CrosshairUI.UpdateSpread()。
-global::ShotgunArcCrosshair receiverValue12 = shotgunAmmoCrosshair;
-            if (!global::System.Object.ReferenceEquals(receiverValue12, null))
-            {
-                receiverValue12.SetSize(displayedSize, currentConfig.thickness);
-            }
-
-            return;
-        }
-
         if (currentConfig.crosshairType == CrosshairType.Dot)
         {
             if (centerDot != null)
@@ -505,7 +532,7 @@ global::ShotgunArcCrosshair receiverValue12 = shotgunAmmoCrosshair;
         // lineLength（线长度）：使用位置：CrosshairUI.UpdateSpread()。
 float lineLength = currentConfig.lineLength;
         // gap（间隙）：使用位置：作为 CrosshairUI.SetPosition(RectTransform, float, float) 的参数。
-float gap = displayedSize + lineLength * 0.5f;
+float gap = (displayedSize + lineLength * 0.5f) * lineUnit;
         SetPosition(lineTop, 0f, gap);
         SetPosition(lineBottom, 0f, -gap);
         SetPosition(lineLeft, -gap, 0f);
@@ -535,9 +562,10 @@ float gap = displayedSize + lineLength * 0.5f;
         }
 
         // thickness（厚度）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：作为 CrosshairUI.SetSize(RectTransform, float, float) 的参数。
-float thickness = Mathf.Max(1f, currentConfig.thickness);
+        lineUnit = ReadLineUnit();
+        float thickness = Mathf.Max(1f, currentConfig.thickness) * lineUnit;
         // length（长度）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：作为 CrosshairUI.SetSize(RectTransform, float, float) 的参数。
-float length = Mathf.Max(2f, currentConfig.lineLength);
+        float length = Mathf.Max(2f, currentConfig.lineLength) * lineUnit;
         SetSize(lineTop, thickness, length);
         SetSize(lineBottom, thickness, length);
         SetSize(lineLeft, length, thickness);
@@ -743,7 +771,7 @@ GameObject node = new GameObject("霰弹枪弧线", typeof(RectTransform), typeo
 
         shotgunAmmoCrosshair = arcNode.GetComponent<ShotgunArcCrosshair>();
         shotgunAmmoCrosshair.rectTransform.anchorMin = shotgunAmmoCrosshair.rectTransform.anchorMax = new Vector2(0.5f, 0.5f);
-        shotgunAmmoCrosshair.rectTransform.sizeDelta = new Vector2(400f, 200f);
+        shotgunAmmoCrosshair.sprite = Resources.Load<Sprite>("UI/W870Reticle");
         shotgunAmmoCrosshair.raycastTarget = false;
         shotgunAmmoCrosshair.enabled = false;
         // lineSegment（线线段）：每轮从被遍历的集合取得一个元素，仅代表当前这一项。使用位置：CrosshairUI.EnsureVisuals()。
@@ -930,12 +958,33 @@ Image image = part.GetComponent<Image>();
     /// <param name="rect">中文含义：矩形。使用位置：CrosshairUI.SetSize(RectTransform, float, float)。</param>
     /// <param name="width">中文含义：宽度。使用位置：作为 Vector2.Vector2(float, float) 的参数。</param>
     /// <param name="height">中文含义：高度。使用位置：作为 Vector2.Vector2(float, float) 的参数。</param>
+    float ReadLineUnit()
+    {
+        if (currentConfig.lineSprite == null) return 1f;
+        return ReadCanvasUnit(lineTop != null ? lineTop.parent : transform);
+    }
+
+    float ReadCanvasUnit(Transform parent)
+    {
+        if (targetCanvas == null) return 1f;
+        var canvas = targetCanvas.rootCanvas;
+        float panelScale = canvas.transform.InverseTransformVector(parent.TransformVector(Vector3.up)).magnitude;
+        return canvas.pixelRect.height / (1080f * Mathf.Max(.001f, canvas.scaleFactor * panelScale));
+    }
+
     void SetSize(RectTransform rect, float width, float height)
     {
-        if (rect != null)
-        {
-            rect.sizeDelta = new Vector2(width, height);
-        }
+        if (rect == null) return;
+        rect.sizeDelta = new Vector2(width, height);
+        if (!rect.TryGetComponent<Image>(out var image)) return;
+        var sprite = currentConfig.lineSprite;
+        image.overrideSprite = sprite;
+        image.type = sprite != null ? Image.Type.Sliced : Image.Type.Simple;
+        if (rect.TryGetComponent<Shadow>(out var shadow)) shadow.enabled = sprite == null;
+        // 原图块的十个边缘纹素在 1080p 占一个像素。
+        image.pixelsPerUnitMultiplier = sprite != null && targetCanvas != null
+            ? 10f * targetCanvas.rootCanvas.referencePixelsPerUnit / (sprite.pixelsPerUnit * Mathf.Max(.001f, lineUnit))
+            : 1f;
     }
 
     /// <summary>SetGraphicEnabled 的业务处理入口；本方法直接依赖 Component.GetComponent&lt;Image&gt;()，调用方通过参数与返回结果交接本次处理。</summary>

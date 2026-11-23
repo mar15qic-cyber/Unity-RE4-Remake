@@ -229,6 +229,10 @@ public sealed class EnemyPerceptionModule : MonoBehaviour
         {
             manager.DiscoverVillageCombat(host);
             playerVisible = manager.IsCombatUnlocked;
+            if (playerVisible)
+            {
+                PlayVoice(ZombieVoiceType.Detection);
+            }
         }
     }
 
@@ -443,8 +447,7 @@ EnemyAIManager manager = EnemyAIManager.Instance;
         awareness = Mathf.MoveTowards(awareness, 0f, Time.deltaTime / awarenessDecayDuration);
     }
 
-    /// <summary>BecomeFullyAwareOfPlayer 的业务处理入口；本方法直接依赖 EnemyAIManager.NotifyCombatEngaged(VillagerController)、EnemyPerceptionModule.PlayVoice(ZombieVoiceType)、object.ReferenceEquals(object, object)，调用方通过参数与返回结果交接本次处理。</summary>
-    /// <remarks>静态调用链：上游 EnemyCombatModule.BecomeFullyAwareOfPlayer()、EnemyPerceptionModule.ReceiveGunshot(Vector3)、VillagerController.BecomeFullyAwareOfPlayer()；下游（含内部回调体） EnemyAIManager.NotifyCombatEngaged(VillagerController)、EnemyPerceptionModule.PlayVoice(ZombieVoiceType)、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
+    /// <summary>提交受击或枪声引发的接战，并更新玩家位置记忆。</summary>
     internal void BecomeFullyAwareOfPlayer(bool directDamage = false)
     {
         EnemyAIManager manager = EnemyAIManager.Instance;
@@ -474,9 +477,6 @@ LeonController player = Player;
         }
 
         awareness = 1f;
-        // 只有从未发现变为已发现时才播放发现语音
-        // wasAware（之前是否察觉）：使用位置：EnemyPerceptionModule.BecomeFullyAwareOfPlayer()。
-bool wasAware = fullyAwareOfPlayer;
         fullyAwareOfPlayer = true;
         combatEngaged = true;
         outsideDisengageSince = float.NegativeInfinity;
@@ -490,10 +490,6 @@ global::EnemyAIManager receiverValue2 = EnemyAIManager.Instance;
             receiverValue2.NotifyCombatEngaged(host);
         }
 
-        if (!wasAware)
-        {
-            PlayVoice(ZombieVoiceType.Detection);
-        }
     }
 
     /// <summary>ReceiveSharedCombatAlert 的业务处理入口；本方法直接依赖 EnemyPerceptionModule.ReceiveVillagePursuitOrder(Vector3)，调用方通过参数与返回结果交接本次处理。</summary>

@@ -182,6 +182,7 @@ public readonly struct QTESessionContext
     public readonly Transform enemyRoot;
     /// <summary>中文含义：敌人动画控制器。只读字段，初始化后不由普通写入口替换。使用位置：作为 QTECameraPresenter.GetHumanBone(Animator, HumanBodyBones) 的参数、QTESessionContext.QTESessionContext(int, QTEKind, Transform, Animator, Transform, Animator)。</summary>
     public readonly Animator enemyAnimator;
+    public readonly bool startedCrouching;
     /// <summary>构造并初始化 QTESessionContext 的声明状态；具体外部协作见静态调用链。</summary>
     /// <remarks>静态调用链：上游 LeonQTECoordinator.TryGetSessionContext(int, out QTESessionContext)；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     /// <param name="sessionId">中文含义：会话编号。使用位置：QTESessionContext.QTESessionContext(int, QTEKind, Transform, Animator, Transform, Animator)。</param>
@@ -190,7 +191,7 @@ public readonly struct QTESessionContext
     /// <param name="playerAnimator">中文含义：玩家动画控制器。使用位置：QTESessionContext.QTESessionContext(int, QTEKind, Transform, Animator, Transform, Animator)。</param>
     /// <param name="enemyRoot">中文含义：敌人根节点。使用位置：QTESessionContext.QTESessionContext(int, QTEKind, Transform, Animator, Transform, Animator)。</param>
     /// <param name="enemyAnimator">中文含义：敌人动画控制器。使用位置：QTESessionContext.QTESessionContext(int, QTEKind, Transform, Animator, Transform, Animator)。</param>
-    public QTESessionContext(int sessionId, QTEKind kind, Transform playerRoot, Animator playerAnimator, Transform enemyRoot, Animator enemyAnimator)
+    public QTESessionContext(int sessionId, QTEKind kind, Transform playerRoot, Animator playerAnimator, Transform enemyRoot, Animator enemyAnimator, bool startedCrouching = false)
     {
         this.sessionId = sessionId;
         this.kind = kind;
@@ -198,6 +199,7 @@ public readonly struct QTESessionContext
         this.playerAnimator = playerAnimator;
         this.enemyRoot = enemyRoot;
         this.enemyAnimator = enemyAnimator;
+        this.startedCrouching = startedCrouching;
     }
 
     /// <summary>中文含义：是否有效。使用位置：LeonQTECoordinator.TryGetSessionContext(int, out QTESessionContext)、QTECameraPresenter.LateUpdate()。</summary>

@@ -59,13 +59,7 @@ public sealed partial class QTECameraPresenter : MonoBehaviour
         /// <summary>中文含义：正面抓取失败接触。</summary>
         FrontGrabFailureContact,
         /// <summary>中文含义：正面抓取失败保持。</summary>
-        FrontGrabFailureHold,
-        /// <summary>中文含义：暗杀接触。</summary>
-        AssassinationContact,
-        /// <summary>中文含义：暗杀后续反馈。</summary>
-        AssassinationAftermath,
-        /// <summary>中文含义：暗杀保持。</summary>
-        AssassinationHold
+        FrontGrabFailureHold
     }
 
     /// <summary>中文含义：当前里昂配对动作协调器。使用位置：QTECameraPresenter.BindEvents()、QTECameraPresenter.HandleSessionStarted(int, QTEKind)、QTECameraPresenter.UnbindEvents()。</summary>
@@ -130,8 +124,6 @@ public sealed partial class QTECameraPresenter : MonoBehaviour
     private float grabImpactStartTime = -1f;
     /// <summary>中文含义：撕咬冲击起始时间。使用位置：作为 QTECameraPresenter.AddImpactFeedback(ref Vector3, ref float, float, float, Vector3, float, float) 的参数、QTECameraPresenter.HandleBiteContact(int)、QTECameraPresenter.HandleSessionStarted(int, QTEKind) 等共 4 处。</summary>
     private float biteImpactStartTime = -1f;
-    /// <summary>中文含义：暗杀冲击起始时间。使用位置：作为 QTECameraPresenter.AddImpactFeedback(ref Vector3, ref float, float, float, Vector3, float, float) 的参数、QTECameraPresenter.HandleAssassinationContact(int)、QTECameraPresenter.HandleSessionStarted(int, QTEKind) 等共 4 处。</summary>
-    private float assassinationImpactStartTime = -1f;
     /// <summary>中文含义：踢击冲击起始时间。使用位置：作为 QTECameraPresenter.AddImpactFeedback(ref Vector3, ref float, float, float, Vector3, float, float) 的参数、QTECameraPresenter.BeginResult(bool)、QTECameraPresenter.HandleSessionStarted(int, QTEKind) 等共 4 处。</summary>
     private float kickImpactStartTime = -1f;
     /// <summary>中文含义：反馈淡入淡出起始时间。使用位置：作为 Mathf.Clamp01(float) 的参数、QTECameraPresenter.BeginResult(bool)、QTECameraPresenter.HandleSessionStarted(int, QTEKind) 等共 5 处。</summary>
@@ -152,12 +144,6 @@ public sealed partial class QTECameraPresenter : MonoBehaviour
     private float frontGrabFailurePreContactSplinePosition;
     /// <summary>中文含义：正面抓取失败目标样条位置。使用位置：作为 Mathf.Lerp(float, float, float) 的参数、作为 QTECameraRig.SetSplinePosition(float) 的参数、QTECameraPresenter.BeginResult(bool) 等共 4 处。</summary>
     private float frontGrabFailureTargetSplinePosition;
-    /// <summary>中文含义：暗杀运动起始样条位置。使用位置：作为 Mathf.Lerp(float, float, float) 的参数、QTECameraPresenter.HandleAssassinationContact(int)、QTECameraPresenter.UpdateMotion()。</summary>
-    private float assassinationMotionStartSplinePosition;
-    /// <summary>中文含义：暗杀接触样条位置。使用位置：作为 Mathf.Lerp(float, float, float) 的参数、QTECameraPresenter.HandleAssassinationContact(int)、QTECameraPresenter.UpdateMotion()。</summary>
-    private float assassinationContactSplinePosition;
-    /// <summary>中文含义：暗杀后续反馈样条位置。使用位置：作为 Mathf.Lerp(float, float, float) 的参数、作为 QTECameraRig.SetSplinePosition(float) 的参数、QTECameraPresenter.HandleAssassinationContact(int)。</summary>
-    private float assassinationAftermathSplinePosition;
     /// <summary>中文含义：入口观察点。使用位置：作为 Vector3.Lerp(Vector3, Vector3, float) 的参数、QTECameraPresenter.BeginEntry()、QTECameraPresenter.ReleaseCamera()。</summary>
     private Vector3 entryLookPoint;
     /// <summary>中文含义：活动会话编号。使用位置：作为 Mathf.PerlinNoise(float, float) 的参数、作为 QTECameraPresenter.HandleAssassinationContact(int) 的参数、QTECameraPresenter.HandleAssassinationContact(int) 等共 9 处。</summary>
@@ -170,8 +156,6 @@ public sealed partial class QTECameraPresenter : MonoBehaviour
     private bool frontGrabPathBlocked;
     /// <summary>中文含义：是否正面抓取接触已接收。使用位置：QTECameraPresenter.HandleBiteContact(int)、QTECameraPresenter.HandleSessionStarted(int, QTEKind)、QTECameraPresenter.ReleaseCamera() 等共 4 处。</summary>
     private bool frontGrabContactReceived;
-    /// <summary>中文含义：是否暗杀接触已接收。使用位置：QTECameraPresenter.BeginResult(bool)、QTECameraPresenter.HandleAssassinationContact(int)、QTECameraPresenter.HandleSessionStarted(int, QTEKind) 等共 5 处。</summary>
-    private bool assassinationContactReceived;
     /// <summary>中文含义：是否已开始。使用位置：QTECameraPresenter.OnEnable()、QTECameraPresenter.Start()。</summary>
     private bool started;
     /// <summary>中文含义：是否已绑定事件。使用位置：QTECameraPresenter.BindEvents()、QTECameraPresenter.UnbindEvents()。</summary>
@@ -228,7 +212,14 @@ GameObject root = new GameObject("RuntimeQTECameraRoot");
     {
         if (activeSessionId != 0 && activePreset == null)
         {
-            UpdateNativeCamera();
+            if (sessionContext.kind == QTEKind.KnifeAssassination)
+            {
+                UpdateAssassinationCamera();
+            }
+            else
+            {
+                UpdateNativeCamera();
+            }
             return;
         }
         if (activePreset == null || activeSessionId == 0)
@@ -256,12 +247,25 @@ GameObject root = new GameObject("RuntimeQTECameraRoot");
     private void CreateRuntimePresets()
     {
         runtimePresets.Clear();
+        assassinationProfile = null;
         if (presets != null)
         {
             // preset（预设）：每轮从预设集合取得一个元素，仅代表当前这一项。使用位置：作为 Debug.LogWarning(object, Object) 的参数、作为 Dictionary<QTEKind, QTECameraPresenter.RuntimePreset>.Add(QTEKind, QTECameraPresenter.RuntimePreset) 的参数、作为 Dictionary<QTEKind, QTECameraPresenter.RuntimePreset>.ContainsKey(QTEKind) 的参数 等共 5 处。
 foreach (CameraPreset preset in presets)
             {
-                if (preset == null || preset.kind == QTEKind.LegBite || preset.rigPrefab == null || preset.profile == null)
+                if (preset == null || preset.kind == QTEKind.LegBite || preset.profile == null)
+                {
+                    continue;
+                }
+                if (preset.kind == QTEKind.KnifeAssassination)
+                {
+                    if (assassinationProfile == null)
+                    {
+                        assassinationProfile = preset.profile;
+                    }
+                    continue;
+                }
+                if (preset.rigPrefab == null)
                 {
                     continue;
                 }
@@ -281,7 +285,10 @@ QTECameraRig instance = Instantiate(preset.rigPrefab, runtimeRoot, false);
         }
 
         CreatePresetFromResources(QTEKind.RearGrab, "QTECamera/RearGrabQTECameraRig", "QTECamera/RearGrabQTECameraProfile", "背后环抱镜头");
-        CreatePresetFromResources(QTEKind.KnifeAssassination, "QTECamera/KnifeAssassinationQTECameraRig", "QTECamera/KnifeAssassinationQTECameraProfile", "刺杀镜头");
+        if (assassinationProfile == null)
+        {
+            assassinationProfile = Resources.Load<QTECameraProfile>("QTECamera/KnifeAssassinationQTECameraProfile");
+        }
     }
 
     /// <summary>CreatePresetFromResources 的业务处理入口；本方法直接依赖 Debug.LogError(object, Object)、Dictionary&lt;QTEKind, QTECameraPresenter.RuntimePreset&gt;.Add(QTEKind, QTECameraPresenter.RuntimePreset)、Dictionary&lt;QTEKind, QTECameraPresenter.RuntimePreset&gt;.ContainsKey(QTEKind)、GameObject.SetActive(bool)、Object.Instantiate&lt;QTECameraRig&gt;(QTECameraRig, Transform, bool)、QTECameraPresenter.RuntimePreset.RuntimePreset()、Resources.Load&lt;QTECameraProfile&gt;(string) 等共 8 处，调用方通过参数与返回结果交接本次处理。</summary>
@@ -355,6 +362,11 @@ QTECameraRig instance = Instantiate(rigPrefab, runtimeRoot, false);
     private void HandleSessionStarted(int sessionId, QTEKind kind)
     {
         ReleaseCamera();
+        if (kind == QTEKind.KnifeAssassination)
+        {
+            StartAssassinationCamera(sessionId);
+            return;
+        }
         if (TryStartNativeCameraSession(sessionId))
         {
             return;
@@ -403,7 +415,6 @@ float initialFieldOfView;
         activePreset.rig.Prepare(initialFieldOfView);
         grabImpactStartTime = -1f;
         biteImpactStartTime = -1f;
-        assassinationImpactStartTime = -1f;
         kickImpactStartTime = -1f;
         feedbackFadeStartTime = -1f;
         orbitSideSign = -1f;
@@ -411,7 +422,6 @@ float initialFieldOfView;
         failureOrbitBlocked = false;
         frontGrabPathBlocked = false;
         frontGrabContactReceived = false;
-        assassinationContactReceived = false;
         motion = CameraMotion.None;
     }
 
@@ -442,6 +452,11 @@ VillagerController villager = context.enemyRoot.GetComponentInParent<VillagerCon
         }
         if (activePreset == null)
         {
+            if (sessionContext.kind == QTEKind.KnifeAssassination && phase == QTEPhase.SuccessResult
+                && !coordinator.HasNativePairCameraClock(sessionId))
+            {
+                HandleAssassinationContact(sessionId);
+            }
             if (phase is QTEPhase.Exiting or QTEPhase.Completed or QTEPhase.Cancelled)
             {
                 ReleaseCamera();
@@ -543,32 +558,6 @@ QTECameraProfile profile = activePreset.profile;
         motionElapsed = 0f;
         motionDuration = Mathf.Max(0.01f, profile.biteContactSettleDuration);
         motion = CameraMotion.FailureContactSettle;
-    }
-
-    /// <summary>HandleAssassinationContact 的业务处理入口；本方法直接依赖 Mathf.Max(float, float)、QTECameraRig.GetNormalizedPositionAtKnot(int)，调用方通过参数与返回结果交接本次处理。</summary>
-    /// <remarks>静态调用链：上游 QTECameraPresenter.BeginResult(bool)；下游（含内部回调体） Mathf.Max(float, float)、QTECameraRig.GetNormalizedPositionAtKnot(int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="sessionId">中文含义：会话编号。使用位置：QTECameraPresenter.HandleAssassinationContact(int)。</param>
-    private void HandleAssassinationContact(int sessionId)
-    {
-        if (sessionId == 0 || sessionId != activeSessionId || activePreset == null || !cameraTaken || sessionContext.kind != QTEKind.KnifeAssassination || assassinationContactReceived)
-        {
-            return;
-        }
-
-        assassinationContactReceived = true;
-        // rig（绑定）：使用位置：QTECameraPresenter.HandleAssassinationContact(int)。
-QTECameraRig rig = activePreset.rig;
-        // profile（配置档）：使用位置：作为 Mathf.Max(float, float) 的参数、作为 QTECameraRig.GetNormalizedPositionAtKnot(int) 的参数、QTECameraPresenter.HandleAssassinationContact(int)。
-QTECameraProfile profile = activePreset.profile;
-        assassinationImpactStartTime = Time.time;
-        assassinationMotionStartSplinePosition = rig.SplinePosition;
-        assassinationContactSplinePosition = rig.GetNormalizedPositionAtKnot(profile.assassinationContactKnotIndex);
-        assassinationAftermathSplinePosition = rig.GetNormalizedPositionAtKnot(profile.assassinationAftermathKnotIndex);
-        motionStartFieldOfView = rig.qteCamera.Lens.FieldOfView;
-        motionTargetFieldOfView = profile.assassinationContactFieldOfView;
-        motionElapsed = 0f;
-        motionDuration = Mathf.Max(0.01f, profile.assassinationContactDuration);
-        motion = CameraMotion.AssassinationContact;
     }
 
     /// <summary>BeginEntry 的业务处理入口；本方法直接依赖 Debug.LogWarning(object, Object)、Mathf.Max(float, float)、Mathf.Min(int, int)、QTECameraPresenter.GetPreferredPath(QTECameraRig, QTECameraProfile)、QTECameraPresenter.ReleaseCamera()、QTECameraPresenter.ScorePath(SplineContainer, QTECameraProfile)、QTECameraPresenter.SetupPairRoot() 等共 15 处，调用方通过参数与返回结果交接本次处理。</summary>
@@ -729,16 +718,6 @@ float lookDistance = Mathf.Max(2f, Vector3.Distance(outputPosition, rig.focusTar
             return;
         }
 
-        if (sessionContext.kind == QTEKind.KnifeAssassination)
-        {
-            if (!assassinationContactReceived)
-            {
-                HandleAssassinationContact(activeSessionId);
-            }
-
-            return;
-        }
-
         // rig（绑定）：使用位置：QTECameraPresenter.BeginResult(bool)。
 QTECameraRig rig = activePreset.rig;
         // profile（配置档）：使用位置：作为 Mathf.Lerp(float, float, float) 的参数、作为 Mathf.Max(float, float) 的参数、作为 QTECameraRig.GetNormalizedPositionAtKnot(int) 的参数 等共 4 处。
@@ -868,12 +847,6 @@ float curved;
             case CameraMotion.Holding:
             {
                 if (sessionContext.kind == QTEKind.RearGrab)
-                {
-                    rig.SetSplinePosition(holdSplinePosition);
-                    break;
-                }
-
-                if (sessionContext.kind == QTEKind.KnifeAssassination)
                 {
                     rig.SetSplinePosition(holdSplinePosition);
                     break;
@@ -1051,48 +1024,6 @@ float curved = normalized * normalized * (3f - 2f * normalized);
                 }
 
                 break;
-            case CameraMotion.AssassinationContact:
-            {
-                motionElapsed += Time.deltaTime;
-                // normalized（归一化）：保存 Mathf.Clamp01(float) 的返回结果，供当前步骤使用。使用位置：QTECameraPresenter.UpdateMotion()。
-float normalized = Mathf.Clamp01(motionElapsed / motionDuration);
-                // curved（弯曲）：使用位置：作为 Mathf.Lerp(float, float, float) 的参数。
-float curved = normalized * normalized * (3f - 2f * normalized);
-                rig.SetSplinePosition(Mathf.Lerp(assassinationMotionStartSplinePosition, assassinationContactSplinePosition, curved));
-                rig.SetFieldOfView(Mathf.Lerp(motionStartFieldOfView, motionTargetFieldOfView, curved));
-                if (normalized >= 1f)
-                {
-                    assassinationMotionStartSplinePosition = assassinationContactSplinePosition;
-                    motionStartFieldOfView = rig.qteCamera.Lens.FieldOfView;
-                    motionTargetFieldOfView = profile.assassinationAftermathFieldOfView;
-                    motionElapsed = 0f;
-                    motionDuration = Mathf.Max(0.01f, profile.assassinationAftermathDuration);
-                    motion = CameraMotion.AssassinationAftermath;
-                }
-
-                break;
-            }
-
-            case CameraMotion.AssassinationAftermath:
-            {
-                motionElapsed += Time.deltaTime;
-                // normalized（归一化）：保存 Mathf.Clamp01(float) 的返回结果，供当前步骤使用。使用位置：QTECameraPresenter.UpdateMotion()。
-float normalized = Mathf.Clamp01(motionElapsed / motionDuration);
-                // curved（弯曲）：使用位置：作为 Mathf.Lerp(float, float, float) 的参数。
-float curved = normalized * normalized * (3f - 2f * normalized);
-                rig.SetSplinePosition(Mathf.Lerp(assassinationMotionStartSplinePosition, assassinationAftermathSplinePosition, curved));
-                rig.SetFieldOfView(Mathf.Lerp(motionStartFieldOfView, motionTargetFieldOfView, curved));
-                if (normalized >= 1f)
-                {
-                    motion = CameraMotion.AssassinationHold;
-                }
-
-                break;
-            }
-
-            case CameraMotion.AssassinationHold:
-                rig.SetSplinePosition(assassinationAftermathSplinePosition);
-                break;
         }
     }
 
@@ -1157,12 +1088,6 @@ QTECameraProfile profile = activePreset.profile;
         if (profile.focusMode == QTECameraFocusMode.NeckBiteInteractionCenter)
         {
             UpdateRearBiteFocusTarget(profile, immediate);
-            return;
-        }
-
-        if (profile.focusMode == QTECameraFocusMode.AssassinationInteractionCenter)
-        {
-            UpdateAssassinationFocusTarget(profile, immediate);
             return;
         }
 
@@ -1255,37 +1180,6 @@ Vector3 desired = Vector3.Lerp(playerNeckPosition, enemyUpperBody, profile.rearB
         ApplyFocusPosition(desired, profile, immediate);
     }
 
-    /// <summary>UpdateAssassinationFocusTarget 的业务处理入口；本方法直接依赖 Mathf.Max(float, float)、QTECameraPresenter.ApplyFocusPosition(Vector3, QTECameraProfile, bool)、QTECameraPresenter.GetBonePosition(Transform, Transform, Transform, float)、Transform.TransformVector(Vector3)、Vector3.Lerp(Vector3, Vector3, float)，调用方通过参数与返回结果交接本次处理。</summary>
-    /// <remarks>静态调用链：上游 QTECameraPresenter.UpdateFocusTarget(bool)；下游（含内部回调体） Mathf.Max(float, float)、QTECameraPresenter.ApplyFocusPosition(Vector3, QTECameraProfile, bool)、QTECameraPresenter.GetBonePosition(Transform, Transform, Transform, float)、Transform.TransformVector(Vector3)、Vector3.Lerp(Vector3, Vector3, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="profile">中文含义：配置档。使用位置：作为 Mathf.Max(float, float) 的参数、作为 QTECameraPresenter.ApplyFocusPosition(Vector3, QTECameraProfile, bool) 的参数、作为 Transform.TransformVector(Vector3) 的参数 等共 4 处。</param>
-    /// <param name="immediate">中文含义：是否立即。使用位置：作为 QTECameraPresenter.ApplyFocusPosition(Vector3, QTECameraProfile, bool) 的参数。</param>
-    private void UpdateAssassinationFocusTarget(QTECameraProfile profile, bool immediate)
-    {
-        // playerChestPosition（玩家胸部位置）：保存 QTECameraPresenter.GetBonePosition(Transform, Transform, Transform, float) 的返回结果，供当前步骤使用。使用位置：作为 Vector3.Lerp(Vector3, Vector3, float) 的参数。
-Vector3 playerChestPosition = GetBonePosition(playerUpperChest, playerNeck, sessionContext.playerRoot, 1.42f);
-        // playerHeadPosition（玩家头部位置）：保存 QTECameraPresenter.GetBonePosition(Transform, Transform, Transform, float) 的返回结果，供当前步骤使用。使用位置：作为 Vector3.Lerp(Vector3, Vector3, float) 的参数。
-Vector3 playerHeadPosition = GetBonePosition(playerHead, playerNeck, sessionContext.playerRoot, 1.68f);
-        // enemyChestPosition（敌人胸部位置）：保存 QTECameraPresenter.GetBonePosition(Transform, Transform, Transform, float) 的返回结果，供当前步骤使用。使用位置：作为 Vector3.Lerp(Vector3, Vector3, float) 的参数。
-Vector3 enemyChestPosition = GetBonePosition(enemyChest, enemyHead, sessionContext.enemyRoot, 1.4f);
-        // enemyHeadPosition（敌人头部位置）：保存 QTECameraPresenter.GetBonePosition(Transform, Transform, Transform, float) 的返回结果，供当前步骤使用。使用位置：作为 Vector3.Lerp(Vector3, Vector3, float) 的参数。
-Vector3 enemyHeadPosition = GetBonePosition(enemyHead, enemyChest, sessionContext.enemyRoot, 1.7f);
-        // playerShoulder（玩家肩部）：保存 Vector3.Lerp(Vector3, Vector3, float) 的返回结果，供当前步骤使用。使用位置：作为 Vector3.Lerp(Vector3, Vector3, float) 的参数。
-Vector3 playerShoulder = Vector3.Lerp(playerChestPosition, playerHeadPosition, 0.56f);
-        // enemyNeck（敌人颈部）：保存 Vector3.Lerp(Vector3, Vector3, float) 的返回结果，供当前步骤使用。使用位置：作为 Vector3.Lerp(Vector3, Vector3, float) 的参数。
-Vector3 enemyNeck = Vector3.Lerp(enemyChestPosition, enemyHeadPosition, 0.68f);
-        // desired（期望）：保存 Vector3.Lerp(Vector3, Vector3, float) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Max(float, float) 的参数、作为 QTECameraPresenter.ApplyFocusPosition(Vector3, QTECameraProfile, bool) 的参数、作为 Vector3.Lerp(Vector3, Vector3, float) 的参数 等共 4 处。
-Vector3 desired = Vector3.Lerp(playerShoulder, enemyNeck, profile.assassinationEnemyNeckWeight);
-        desired += activePreset.rig.pairRoot.TransformVector(profile.focusOffset);
-        if (assassinationContactReceived)
-        {
-            desired = Vector3.Lerp(desired, playerChestPosition, profile.assassinationAfterContactPlayerWeight);
-            desired += activePreset.rig.pairRoot.TransformVector(profile.assassinationAfterContactFocusOffset);
-            desired.y = Mathf.Max(desired.y, activePreset.rig.pairRoot.position.y + profile.assassinationMinimumFocusHeight);
-        }
-
-        ApplyFocusPosition(desired, profile, immediate);
-    }
-
     /// <summary>UpdateLegBiteFocusTarget 的业务处理入口；本方法直接依赖 QTECameraPresenter.ApplyFocusPosition(Vector3, QTECameraProfile, bool)、QTECameraPresenter.GetBonePosition(Transform, Transform, Transform, float)、QTECameraPresenter.SelectLowerLegIfNeeded(QTECameraProfile)、Transform.TransformVector(Vector3)、Vector3.Lerp(Vector3, Vector3, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 QTECameraPresenter.UpdateFocusTarget(bool)；下游（含内部回调体） QTECameraPresenter.ApplyFocusPosition(Vector3, QTECameraProfile, bool)、QTECameraPresenter.GetBonePosition(Transform, Transform, Transform, float)、QTECameraPresenter.SelectLowerLegIfNeeded(QTECameraProfile)、Transform.TransformVector(Vector3)、Vector3.Lerp(Vector3, Vector3, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     /// <param name="profile">中文含义：配置档。使用位置：作为 QTECameraPresenter.ApplyFocusPosition(Vector3, QTECameraProfile, bool) 的参数、作为 QTECameraPresenter.GetBonePosition(Transform, Transform, Transform, float) 的参数、作为 QTECameraPresenter.SelectLowerLegIfNeeded(QTECameraProfile) 的参数 等共 5 处。</param>
@@ -1352,7 +1246,7 @@ Vector3 desired = Vector3.Lerp(playerThighPosition, enemyUpperBodyPosition, prof
     /// <param name="immediate">中文含义：是否立即。使用位置：QTECameraPresenter.ApplyFocusPosition(Vector3, QTECameraProfile, bool)。</param>
     private void ApplyFocusPosition(Vector3 desired, QTECameraProfile profile, bool immediate)
     {
-        if ((sessionContext.kind == QTEKind.RearGrab || sessionContext.kind == QTEKind.FrontGrab || sessionContext.kind == QTEKind.KnifeAssassination) && motion == CameraMotion.Entering)
+        if ((sessionContext.kind == QTEKind.RearGrab || sessionContext.kind == QTEKind.FrontGrab) && motion == CameraMotion.Entering)
         {
             // normalized（归一化）：使用位置：作为 AnimationCurve.Evaluate(float) 的参数、QTECameraPresenter.ApplyFocusPosition(Vector3, QTECameraProfile, bool)。
 float normalized;
@@ -1470,7 +1364,7 @@ global::UnityEngine.Transform availableValue22 = playerLeftLowerLeg;
     /// <param name="profile">中文含义：配置档。使用位置：作为 QTECameraPresenter.SelectLowerLegIfNeeded(QTECameraProfile) 的参数、QTECameraPresenter.GetPreferredPath(QTECameraRig, QTECameraProfile)。</param>
     private SplineContainer GetPreferredPath(QTECameraRig rig, QTECameraProfile profile)
     {
-        if ((sessionContext.kind == QTEKind.RearGrab || sessionContext.kind == QTEKind.FrontGrab || sessionContext.kind == QTEKind.KnifeAssassination) && cameraController != null && cameraController.MainCamera != null)
+        if ((sessionContext.kind == QTEKind.RearGrab || sessionContext.kind == QTEKind.FrontGrab) && cameraController != null && cameraController.MainCamera != null)
         {
             // side（侧边）：保存 Vector3.Dot(Vector3, Vector3) 的返回结果，供当前步骤使用。使用位置：QTECameraPresenter.GetPreferredPath(QTECameraRig, QTECameraProfile)。
 float side = Vector3.Dot(cameraController.MainCamera.transform.position - sessionContext.playerRoot.position, rig.pairRoot.right);
@@ -1541,7 +1435,7 @@ float dutch = 0f;
 float now = Time.time;
         // feedbackSideSign（反馈侧边符号）：使用位置：作为 QTECameraPresenter.AddImpactFeedback(ref Vector3, ref float, float, float, Vector3, float, float) 的参数、作为 Vector3.Vector3(float, float, float) 的参数、QTECameraPresenter.UpdateCameraFeedback()。
 float feedbackSideSign;
-        if (sessionContext.kind == QTEKind.RearGrab || sessionContext.kind == QTEKind.FrontGrab || sessionContext.kind == QTEKind.KnifeAssassination)
+        if (sessionContext.kind == QTEKind.RearGrab || sessionContext.kind == QTEKind.FrontGrab)
         {
             feedbackSideSign = orbitSideSign;
         }
@@ -1575,7 +1469,6 @@ float vertical = Mathf.PerlinNoise(activeSessionId * 0.73f, noiseTime + 17.3f) -
 
         AddImpactFeedback(ref offset, ref dutch, grabImpactStartTime, profile.grabImpactDuration, new Vector3(feedbackSideSign * profile.grabImpactSideOffset, -profile.grabImpactVerticalOffset, 0f), feedbackSideSign * profile.grabImpactDutch, now);
         AddImpactFeedback(ref offset, ref dutch, biteImpactStartTime, profile.biteImpactDuration, new Vector3(orbitSideSign * profile.biteImpactSideOffset, -profile.biteImpactVerticalOffset, 0f), orbitSideSign * profile.biteImpactDutch, now);
-        AddImpactFeedback(ref offset, ref dutch, assassinationImpactStartTime, profile.assassinationImpactDuration, new Vector3(orbitSideSign * profile.assassinationImpactSideOffset, -profile.assassinationImpactVerticalOffset, 0.012f), orbitSideSign * profile.assassinationImpactDutch, now);
         AddImpactFeedback(ref offset, ref dutch, kickImpactStartTime, profile.kickImpactDuration, new Vector3(feedbackSideSign * profile.kickImpactSideOffset, 0.01f, 0.015f), feedbackSideSign * profile.kickImpactDutch, now);
         rig.SetCameraFeedback(offset, dutch);
     }
@@ -1699,9 +1592,11 @@ Transform candidateTransform = candidate.transform;
     private void ReleaseCamera()
     {
         ResetNativeCameraSession();
+        assassinationEntryTime = -1f;
+        assassinationContactTime = -1f;
         if (cameraTaken && cameraController != null)
         {
-            cameraController.ReleaseExternalCamera(this);
+            cameraController.ReleaseExternalCamera(this, true);
         }
 
         cameraTaken = false;
@@ -1723,7 +1618,6 @@ Transform candidateTransform = candidate.transform;
         enemyHead = null;
         grabImpactStartTime = -1f;
         biteImpactStartTime = -1f;
-        assassinationImpactStartTime = -1f;
         kickImpactStartTime = -1f;
         feedbackFadeStartTime = -1f;
         biteLegSideSign = -1f;
@@ -1738,7 +1632,6 @@ Transform candidateTransform = candidate.transform;
         failureOrbitBlocked = false;
         frontGrabPathBlocked = false;
         frontGrabContactReceived = false;
-        assassinationContactReceived = false;
         if (activePreset != null && activePreset.rig != null)
         {
             activePreset.rig.resultOffsetRoot.localPosition = Vector3.zero;

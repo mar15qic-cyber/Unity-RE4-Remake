@@ -59,9 +59,13 @@ public partial class WeaponBase : MonoBehaviour, ICrosshairDataProvider
     private long weaponLeaseVersion;
     /// <summary>中文含义：命中序号。使用位置：作为 DamageRequest.DamageRequest(RequestContext, ActionHandle, int, float, int, Vector3) 的参数、WeaponBase.FireInternal(Vector3, Vector3)。</summary>
     private int hitSequence;
+    // 暴击判定使用独立随机源，避免改变既有弹道散布和敌人复起的随机序列。
+    private static readonly System.Random pistolCriticalRandom = new System.Random();
     private readonly System.Collections.Generic.List<(VillagerController target, Vector3 position, Vector3 direction, HitboxType part, int index)> pelletBlood
         = new System.Collections.Generic.List<(VillagerController, Vector3, Vector3, HitboxType, int)>(6);
     private Vector3 pelletDirection;
+    private readonly System.Collections.Generic.Dictionary<VillagerController, ShotgunTerminalHit> terminalHits
+        = new System.Collections.Generic.Dictionary<VillagerController, ShotgunTerminalHit>();
     private readonly System.Collections.Generic.Dictionary<VillagerController, (Vector3 position, bool head)> pelletImpacts
         = new System.Collections.Generic.Dictionary<VillagerController, (Vector3 position, bool head)>();
     /// <summary>中文含义：里昂玩家控制器。使用位置：WeaponBase.FireAt(Vector3)、WeaponBase.FireInternal(Vector3, Vector3)、WeaponBase.Initialize(LeonController)。</summary>
@@ -404,6 +408,7 @@ bool hitResolved = TryResolveSphereHit(origin, 0.5f, direction, 2f, mask, out Ra
         {
             pelletImpacts.Clear();
             pelletBlood.Clear();
+            terminalHits.Clear();
             Vector3 forward = direction.normalized;
             Vector3 right = Vector3.Cross(Vector3.up, forward);
             if (right.sqrMagnitude < .0001f)
@@ -449,6 +454,11 @@ for (int i = 0; i < data.pelletCount; i++)
                 }
             }
 
+            foreach (var terminal in terminalHits)
+            {
+                VillagerDismemberment.Present(terminal.Key, terminal.Value, origin);
+            }
+            terminalHits.Clear();
             PresentPelletBlood();
             pelletImpacts.Clear();
             pelletBlood.Clear();
@@ -565,7 +575,7 @@ RaycastHit[] hits = hitQueries.SphereCast(origin, radius, direction, distance, m
 var hitbox = hit.collider.GetComponent<EnemyHitbox>();
         if (hitbox != null)
         {
-            CommitEnemyDamage(hitbox.Owner, hitbox.hitboxType, baseDamage, hit.point, hit.normal, reactionShots);
+            CommitEnemyDamage(hitbox.Owner, hitbox.hitboxType, baseDamage, hit.point, hit.normal, reactionShots, hasBodyPartHitbox: true);
             // receiverValue15（判空前缓存的命中通知回调）：从命中通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、WeaponBase.ProcessHit(RaycastHit, float)。
 global::System.Action<global::HitInfo> receiverValue15 = OnHit;
             if (!global::System.Object.ReferenceEquals(receiverValue15, null))
@@ -582,7 +592,7 @@ var villager = hit.collider.GetComponentInParent<VillagerController>();
         {
             // resolvedType（解算后的类型）：保存 VillagerController.ResolveFallbackHitboxType(Vector3) 的返回结果，供当前步骤使用。使用位置：作为 WeaponBase.CommitEnemyDamage(VillagerController, HitboxType, float, Vector3, Vector3) 的参数。
 HitboxType resolvedType = villager.ResolveFallbackHitboxType(hit.point);
-            CommitEnemyDamage(villager, resolvedType, baseDamage, hit.point, hit.normal, reactionShots);
+            CommitEnemyDamage(villager, resolvedType, baseDamage, hit.point, hit.normal, reactionShots, hasBodyPartHitbox: false);
             // receiverValue16（判空前缓存的命中通知回调）：从命中通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、WeaponBase.ProcessHit(RaycastHit, float)。
 global::System.Action<global::HitInfo> receiverValue16 = OnHit;
             if (!global::System.Object.ReferenceEquals(receiverValue16, null))
@@ -618,19 +628,25 @@ var d = hit.collider.GetComponentInParent<IDamageable>();
     /// <param name="position">中文含义：位置。使用位置：作为 DamageRequest.DamageRequest(RequestContext, ActionHandle, int, float, int, Vector3) 的参数。</param>
     /// <param name="normal">中文含义：表面法线。使用位置：作为 DamageResolutionModule.Commit(DamageRequest, VillagerController, HitboxType, Vector3) 的参数。</param>
     private void CommitEnemyDamage(VillagerController target, HitboxType bodyPart, float baseDamage, Vector3 position, Vector3 normal,
-        System.Collections.Generic.Dictionary<VillagerController, FirearmBodyTechniqueShot> reactionShots)
+        System.Collections.Generic.Dictionary<VillagerController, FirearmBodyTechniqueShot> reactionShots, bool hasBodyPartHitbox)
     {
         if (target == null || target.actionCoordinator == null)
         {
             return;
         }
 
+        float criticalMultiplier = 1f;
+        bool pistolCritical = hasBodyPartHitbox && baseDamage > 0f
+            && TryRollPistolCritical(target, bodyPart, out criticalMultiplier);
+        float requestedDamage = baseDamage * criticalMultiplier;
+
         // identity（身份标识）：使用位置：作为 ActionHandle.ActionHandle(ObjectIdentity, long) 的参数、作为 RequestContext.RequestContext(string, ObjectIdentity, ObjectIdentity, long) 的参数。
 var identity = new GameArchitecture.ObjectIdentity(GetInstanceID(), weaponLeaseVersion);
         // context（上下文）：使用位置：作为 DamageRequest.DamageRequest(RequestContext, ActionHandle, int, float, int, Vector3) 的参数。
 var context = new GameArchitecture.RequestContext("武器命中", identity, target.actionCoordinator.Identity, shootId);
         // request（请求）：使用位置：作为 DamageResolutionModule.Commit(DamageRequest, VillagerController, HitboxType, Vector3) 的参数。
-var request = new GameArchitecture.DamageRequest(context, new GameArchitecture.ActionHandle(identity, shootId), hitSequence++, baseDamage, (int)bodyPart, position);
+        var request = new GameArchitecture.DamageRequest(context, new GameArchitecture.ActionHandle(identity, shootId),
+            hitSequence++, requestedDamage, (int)bodyPart, position);
         bool hasImpactAudio = weaponAudio != null && weaponAudio.HasBulletImpact && data.weaponType != WeaponType.Knife;
         GameArchitecture.DamageResult result;
         if (data.weaponType == WeaponType.Knife)
@@ -667,6 +683,12 @@ var request = new GameArchitecture.DamageRequest(context, new GameArchitecture.A
             if (deferredBlood && result.Committed && result.ActualDeductHealth > 0f)
             {
                 RecordPelletBlood(target, position, normal, bodyPart);
+                if (data.weaponType == WeaponType.Shotgun)
+                {
+                    terminalHits.TryGetValue(target, out var terminal);
+                    terminal.Record(bodyPart, result.ActualDeductHealth, position, target.IsDead);
+                    terminalHits[target] = terminal;
+                }
             }
             if (shot.action.Valid && target != null && target.combatModule != null)
             {
@@ -680,6 +702,11 @@ var request = new GameArchitecture.DamageRequest(context, new GameArchitecture.A
                 }
             }
         }
+        if (pistolCritical && result.Committed && result.ActualDeductHealth > 0f && result.CurrentLethal && target != null && target.IsDead)
+        {
+            VillagerDismemberment.PresentPistolCritical(target, bodyPart, position, transform.position);
+        }
+
         if (!hasImpactAudio || !result.Committed)
         {
             return;
@@ -700,9 +727,41 @@ var request = new GameArchitecture.DamageRequest(context, new GameArchitecture.A
         }
     }
 
-    /// <summary>ApplySpread 的业务处理入口；本方法直接依赖 Quaternion.Euler(float, float, float)、Random.Range(float, float)，调用方通过参数与返回结果交接本次处理。</summary>
-    /// <remarks>静态调用链：上游 WeaponBase.FireInternal(Vector3, Vector3)；下游（含内部回调体） Quaternion.Euler(float, float, float)、Random.Range(float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="dir">中文含义：方向。使用位置：WeaponBase.ApplySpread(Vector3)。</param>
+    private bool TryRollPistolCritical(VillagerController target, HitboxType bodyPart, out float damageMultiplier)
+    {
+        damageMultiplier = 1f;
+        if (data.weaponType != WeaponType.Pistol || data.fireMode != FireMode.Single
+            || target.IsDead || target.missionEnemyType != MissionEnemyType.Ganado)
+        {
+            return false;
+        }
+
+        float chance;
+        float configuredMultiplier;
+        if (bodyPart == HitboxType.Head)
+        {
+            chance = data.headCriticalChance;
+            configuredMultiplier = data.headCriticalDamageMultiplier;
+        }
+        else if (bodyPart == HitboxType.LeftArm || bodyPart == HitboxType.RightArm)
+        {
+            chance = data.armCriticalChance;
+            configuredMultiplier = data.armCriticalDamageMultiplier;
+        }
+        else
+        {
+            return false;
+        }
+
+        if (chance > 0f && pistolCriticalRandom.NextDouble() < chance)
+        {
+            damageMultiplier = Mathf.Max(1f, configuredMultiplier);
+            return true;
+        }
+
+        return false;
+    }
+
     private void RecordPelletBlood(VillagerController target, Vector3 position, Vector3 normal, HitboxType part)
     {
         int index = 0;
@@ -750,6 +809,9 @@ var request = new GameArchitecture.DamageRequest(context, new GameArchitecture.A
         }
     }
 
+    /// <summary>ApplySpread 的业务处理入口；本方法直接依赖 Quaternion.Euler(float, float, float)、Random.Range(float, float)，调用方通过参数与返回结果交接本次处理。</summary>
+    /// <remarks>静态调用链：上游 WeaponBase.FireInternal(Vector3, Vector3)；下游（含内部回调体） Quaternion.Euler(float, float, float)、Random.Range(float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
+    /// <param name="dir">中文含义：方向。使用位置：WeaponBase.ApplySpread(Vector3)。</param>
     protected virtual Vector3 ApplySpread(Vector3 dir)
     {
         // angle（角度）：使用位置：作为 Random.Range(float, float) 的参数。

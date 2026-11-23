@@ -158,6 +158,13 @@ public partial class InventoryUI : MonoBehaviour
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） Component.GetComponentInChildren&lt;InventoryCraftingPanel&gt;(bool)、GameObject.SetActive(bool)、InventoryCraftingPanel.Initialize(InventoryUI)、InventoryUI.ApplyActionButtonStyle()、InventoryUI.ApplySkinTextures()、InventoryUI.ConfigureActionButtons()、InventoryUI.ConfigureCursorImage() 等共 10 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     void Start()
     {
+        // 背包的全屏底色只负责绘制，关闭背包时同画布的拾取提示仍会保留。
+        Transform backdrop = transform.Find("DarkOverlay");
+        if (backdrop != null && backdrop.TryGetComponent<Graphic>(out var backdropGraphic))
+        {
+            backdropGraphic.raycastTarget = false;
+        }
+
         if (!isVisible && inventoryPanel != null)
         {
             inventoryPanel.alpha = 0f;
@@ -173,11 +180,6 @@ public partial class InventoryUI : MonoBehaviour
         if (toastText != null)
         {
             toastText.gameObject.SetActive(false);
-        }
-
-        if (descriptionPanel != null)
-        {
-            descriptionPanel.gameObject.SetActive(true);
         }
 
         if (emptyHintText != null)
@@ -203,11 +205,6 @@ global::InventoryCraftingPanel receiverValue1 = craftingPanel;
         if (!global::System.Object.ReferenceEquals(receiverValue1, null))
         {
             receiverValue1.Initialize(this);
-        }
-
-        if (hintText != null)
-        {
-            hintText.text = "Tab 关闭  |  Alt 整理  |  R 旋转  |  左键拖拽  |  草药叠放合成  |  右键菜单";
         }
 
         if (mainCamera == null)
@@ -317,6 +314,7 @@ global::UnityEngine.UI.Image receiverValue2 = cellHighlightImage;
         }
 
         UpdateCursor();
+        UpdateItemShortcuts();
         UpdateHighlightPulse();
     }
 
@@ -436,6 +434,7 @@ global::UICursorManager receiverValue5 = UICursorManager.Instance;
         }
 
         MenuThemeApplier.Apply(transform.root, visualTheme);
+        BuildControlHints();
         // receiverValue6（判空前缓存的公文包与物品的三维展示组件）：从公文包与物品的三维展示组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、InventoryUI.OnSceneLoaded()。
 global::AttacheCasePresentationController receiverValue6 = threeDimensionalPresentation;
         if (!global::System.Object.ReferenceEquals(receiverValue6, null))
@@ -546,6 +545,7 @@ for (int i = 0; i < rects.Length; i++)
         }
 
         ClearDragState();
+        hoveredGridItem = null;
         // receiverValue7（判空前缓存的公文包与物品的三维展示组件）：从公文包与物品的三维展示组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、InventoryUI.PlayExitAnimation(Action)。
 global::AttacheCasePresentationController receiverValue7 = threeDimensionalPresentation;
         if (!global::System.Object.ReferenceEquals(receiverValue7, null))
@@ -758,6 +758,14 @@ GridItem currentItem = mgr.GetItemAt(selectedGridItem.gridX, selectedGridItem.gr
     /// <param name="screenPos">中文含义：屏幕位置。使用位置：作为 InventoryGridView.TryScreenPointToLocal(Vector2, out Vector2) 的参数。</param>
     void OnItemPointerDown(GridItem gi, Vector2 screenPos)
     {
+        if (!keyboardItemMove)
+        {
+            BeginItemMove(gi, screenPos);
+        }
+    }
+
+    void BeginItemMove(GridItem gi, Vector2 screenPos)
+    {
         if (gi == null || !Interactive)
         {
             return;
@@ -800,7 +808,15 @@ Vector2 itemPos;
     /// <param name="screenPos">中文含义：屏幕位置。使用位置：作为 AttacheCasePresentationController.PreviewLandPoint(GridItem, Vector2, Vector2) 的参数、作为 InventoryGridView.TryScreenPointToLocal(Vector2, out Vector2) 的参数。</param>
     void OnItemDrag(GridItem gi, Vector2 screenPos)
     {
-        if (draggingItem == null || dragCompleted)
+        if (!keyboardItemMove)
+        {
+            PreviewItemMove(gi, screenPos);
+        }
+    }
+
+    void PreviewItemMove(GridItem gi, Vector2 screenPos)
+    {
+        if (draggingItem != gi || dragCompleted)
         {
             return;
         }
@@ -825,7 +841,15 @@ global::AttacheCasePresentationController receiverValue14 = threeDimensionalPres
     /// <param name="screenPos">中文含义：屏幕位置。使用位置：作为 InventoryGridView.TryGetDropGrid(GridItem, Vector2, Vector2, out int, out int) 的参数。</param>
     void OnItemPointerUp(GridItem gi, Vector2 screenPos)
     {
-        if (draggingItem == null || dragCompleted)
+        if (!keyboardItemMove)
+        {
+            CommitItemMove(gi, screenPos);
+        }
+    }
+
+    void CommitItemMove(GridItem gi, Vector2 screenPos)
+    {
+        if (draggingItem != gi || dragCompleted)
         {
             return;
         }
@@ -839,6 +863,13 @@ global::AttacheCasePresentationController receiverValue15 = threeDimensionalPres
         }
 
         gridView.SetItemDragAlpha(gi, false);
+        if (!dragMoved && !keyboardItemMove)
+        {
+            draggingItem = null;
+            dragCompleted = false;
+            return;
+        }
+
         // 计算落点格子
         if (gridView.TryGetDropGrid(gi, screenPos, dragOffset, out int /* 中文含义：目标横向。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ targetX, out int /* 中文含义：目标纵向。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ targetY))
         {
@@ -897,7 +928,7 @@ GridItem targetItem = mgr.GetItemAt(targetX, targetY);
     /// <param name="screenPos">中文含义：屏幕位置。使用位置：作为 InventoryUI.ShowContextMenu(GridItem, Vector2) 的参数。</param>
     void OnItemClicked(GridItem gi, PointerEventData.InputButton button, Vector2 screenPos)
     {
-        if (!Interactive)
+        if (!Interactive || keyboardItemMove)
         {
             return;
         }
@@ -911,18 +942,18 @@ GridItem targetItem = mgr.GetItemAt(targetX, targetY);
             }
         }
 
-        if (button == PointerEventData.InputButton.Right)
+        selectedGridItem = gi;
+        ShowDescription(gi);
+        gridView.ShowSelected(gi);
+        bool hasDetailsPanel = descriptionPanel != null && descriptionPanel.gameObject.activeSelf;
+        bool openItemCommands = button == PointerEventData.InputButton.Right
+            || (button == PointerEventData.InputButton.Left && !hasDetailsPanel);
+        if (openItemCommands)
         {
-            selectedGridItem = gi;
-            ShowDescription(gi);
-            gridView.ShowSelected(gi);
             ShowContextMenu(gi, screenPos);
         }
         else
         {
-            selectedGridItem = gi;
-            ShowDescription(gi);
-            gridView.ShowSelected(gi);
             HideContextMenu();
         }
     }
@@ -933,6 +964,11 @@ GridItem targetItem = mgr.GetItemAt(targetX, targetY);
     /// <param name="y">中文含义：纵向。使用位置：作为 InventoryManager.GetItemAt(int, int) 的参数。</param>
     void OnCellClicked(int x, int y)
     {
+        if (keyboardItemMove)
+        {
+            return;
+        }
+
         // receiverValue16（判空前缓存的背包管理器的实例）：从背包管理器的实例读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、InventoryUI.OnCellClicked(int, int)。
 global::InventoryManager receiverValue16 = InventoryManager.Instance;
         // gi（背包网格物品）：使用位置：InventoryUI.OnCellClicked(int, int)。
@@ -1009,14 +1045,14 @@ global::GridItem gi;
     /// <param name="gi">中文含义：背包网格物品。使用位置：作为 InventoryManager.CanUseItem(ItemData) 的参数、作为 InventoryManager.GetCraftingHint(ItemData) 的参数、作为 InventoryUI.ResolveUseText(ItemData) 的参数 等共 4 处。</param>
     void ShowDescription(GridItem gi)
     {
+        if (descriptionPanel != null && !descriptionPanel.gameObject.activeSelf)
+        {
+            return;
+        }
+
         if (emptyHintText != null)
         {
             emptyHintText.gameObject.SetActive(false);
-        }
-
-        if (descriptionPanel != null)
-        {
-            descriptionPanel.gameObject.SetActive(true);
         }
 
         if (descIcon != null)
@@ -1084,6 +1120,11 @@ bool canUse = InventoryManager.Instance != null && InventoryManager.Instance.Can
     /// <remarks>静态调用链：上游 InventoryUI.ClearDragState()、InventoryUI.HandleContextDiscardButtonClicked()、InventoryUI.HandleContextStoreButtonClicked()、InventoryUI.OnCellClicked(int, int)、InventoryUI.RefreshGridInternal()；下游（含内部回调体） Color.Color(float, float, float, float)、GameObject.SetActive(bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     void ShowEmptyDescription()
     {
+        if (descriptionPanel != null && !descriptionPanel.gameObject.activeSelf)
+        {
+            return;
+        }
+
         if (emptyHintText != null)
         {
             emptyHintText.gameObject.SetActive(true);
@@ -1150,9 +1191,10 @@ bool canUse = InventoryManager.Instance != null && InventoryManager.Instance.Can
         {
             HideContextMenu();
         }
-        if (hintText != null)
+        craftingBackdropVisible = visible;
+        if (controlHints != null)
         {
-            hintText.enabled = !visible;
+            controlHints.gameObject.SetActive(!visible);
         }
         if (threeDimensionalPresentation != null)
         {
@@ -1566,6 +1608,7 @@ float selectedValue32;
     /// <remarks>静态调用链：上游 InventoryUI.PlayExitAnimation(Action)、InventoryUI.RefreshGridInternal()；下游（含内部回调体） InventoryGridView.HideSelected()、InventoryUI.ShowEmptyDescription()、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     void ClearDragState()
     {
+        keyboardItemMove = false;
         draggingItem = null;
         dragOffset = Vector2.zero;
         dragCompleted = false;

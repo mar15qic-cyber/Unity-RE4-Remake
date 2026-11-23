@@ -27,6 +27,7 @@ public sealed class VillageLeonDialogue : MonoBehaviour
     private sealed class DialogueData
     {
         public LineGroup[] groups = Array.Empty<LineGroup>();
+        public Caption[] house = Array.Empty<Caption>();
         public Caption[] bell = Array.Empty<Caption>();
     }
 
@@ -43,6 +44,7 @@ public sealed class VillageLeonDialogue : MonoBehaviour
         public Line[] lines = Array.Empty<Line>();
         [NonSerialized] public float nextAllowed;
         [NonSerialized] public bool played;
+        [NonSerialized] public Line lastPlayedLine;
     }
 
     [Serializable]
@@ -80,9 +82,7 @@ public sealed class VillageLeonDialogue : MonoBehaviour
     private readonly Dictionary<VillageSpeechCue, LineGroup> groups = new();
     private readonly List<PendingLine> pending = new();
     private readonly System.Random selection = new();
-    private readonly RaycastHit[] viewHits = new RaycastHit[16];
     private GameManager match;
-    private EnemyAIManager enemies;
     private AudioSource voice;
     private Canvas subtitleCanvas;
     private Text subtitle;
@@ -91,12 +91,10 @@ public sealed class VillageLeonDialogue : MonoBehaviour
     private bool voicePaused;
     private bool inCinematic;
     private bool bellStarted;
-    private float nextVisibilityCheck;
 
     internal void Initialize(GameManager game, EnemyAIManager enemyGroup, Font font)
     {
         match = game;
-        enemies = enemyGroup;
         TextAsset asset = Resources.Load<TextAsset>(ResourceFolder + "Lines");
         if (asset == null || font == null)
         {
@@ -167,20 +165,42 @@ public sealed class VillageLeonDialogue : MonoBehaviour
             return;
         }
 
-        active.inCinematic = true;
-        foreach (Caption caption in active.data.bell)
+        active.ShowCaptions(active.data.bell, timelineTime);
+    }
+
+    internal static void BeginHouseCaption(GameManager owner)
+    {
+        if (active != null && active.match == owner)
+        {
+            active.StopSpeech();
+            active.inCinematic = true;
+        }
+    }
+
+    internal static void ShowHouseCaption(GameManager owner, double timelineTime)
+    {
+        if (active != null && active.match == owner)
+        {
+            active.ShowCaptions(active.data.house, timelineTime);
+        }
+    }
+
+    private void ShowCaptions(Caption[] captions, double timelineTime)
+    {
+        inCinematic = true;
+        foreach (Caption caption in captions)
         {
             if (timelineTime >= caption.start && timelineTime < caption.end)
             {
-                active.SetSubtitle(caption.subtitle);
+                SetSubtitle(caption.subtitle);
                 return;
             }
         }
 
-        active.SetSubtitle(null);
+        SetSubtitle(null);
     }
 
-    internal static void EndBellCaption(GameManager owner)
+    internal static void EndCinematicCaption(GameManager owner)
     {
         if (active != null && active.match == owner)
         {
@@ -254,12 +274,6 @@ public sealed class VillageLeonDialogue : MonoBehaviour
         }
 
         float now = Time.time;
-        if (now >= nextVisibilityCheck)
-        {
-            nextVisibilityCheck = now + .12f;
-            CheckFirstSaw();
-        }
-
         int selected = -1;
         for (int index = 0; index < pending.Count; index++)
         {
@@ -285,82 +299,9 @@ public sealed class VillageLeonDialogue : MonoBehaviour
             && !AudioListener.pause;
     }
 
-    private void CheckFirstSaw()
-    {
-        if (!groups.TryGetValue(VillageSpeechCue.SawSeen, out LineGroup entry) || entry.played
-            || !enemies.IsCombatUnlocked || match.player == null)
-        {
-            return;
-        }
-
-        Camera camera = match.player.playerCamera;
-        if (camera == null || !camera.isActiveAndEnabled)
-        {
-            return;
-        }
-
-        foreach (VillagerController enemy in enemies.StandingContactEnemies)
-        {
-            if (enemy == null || enemy.IsDead || !enemy.isActiveAndEnabled || enemy.missionEnemyType != MissionEnemyType.Sawman)
-            {
-                continue;
-            }
-
-            Vector3 root = enemy.transform.position;
-            // 从实际游戏镜头检查头部和胸部，隔墙或背对电锯时不触发。
-            if (IsVisible(camera, root + Vector3.up * 1.6f) || IsVisible(camera, root + Vector3.up * 1.15f))
-            {
-                Request(VillageSpeechCue.SawSeen);
-                return;
-            }
-        }
-    }
-
-    private bool IsVisible(Camera camera, Vector3 point)
-    {
-        Vector3 viewport = camera.WorldToViewportPoint(point);
-        if (viewport.z <= camera.nearClipPlane || viewport.z > camera.farClipPlane
-            || viewport.x < 0f || viewport.x > 1f || viewport.y < 0f || viewport.y > 1f)
-        {
-            return false;
-        }
-
-        Vector3 origin = camera.transform.position;
-        Vector3 offset = point - origin;
-        float distance = offset.magnitude;
-        int hits = Physics.RaycastNonAlloc(origin, offset / distance, viewHits, distance - .03f,
-            1 << 0, QueryTriggerInteraction.Ignore);
-        for (int index = 0; index < hits; index++)
-        {
-            Transform obstacle = viewHits[index].transform;
-            if (obstacle != null && !obstacle.IsChildOf(match.player.transform)
-                && obstacle.GetComponentInParent<VillagerController>() == null)
-            {
-                return false;
-            }
-        }
-
-        return hits < viewHits.Length;
-    }
-
     private void Play(LineGroup group, float now)
     {
-        Line line = null;
-        int choices = group.silentSlots;
-        foreach (Line candidate in group.lines)
-        {
-            if (candidate.firstOnly && group.played || candidate.once && candidate.played)
-            {
-                continue;
-            }
-
-            choices++;
-            if (selection.Next(choices) == 0)
-            {
-                line = candidate;
-            }
-        }
-
+        Line line = SelectLine(group, selection);
         group.nextAllowed = now + group.cooldown;
         group.played = true;
         if (line == null)
@@ -380,7 +321,53 @@ public sealed class VillageLeonDialogue : MonoBehaviour
         voice.clip = clip;
         UpdateVoiceVolume();
         voice.Play();
+        group.lastPlayedLine = line;
         SetSubtitle(line.subtitle);
+    }
+
+    private static Line SelectLine(LineGroup group, System.Random random)
+    {
+        Line previousLine = group.lastPlayedLine;
+        Line repeatedLine = null;
+        Line selectedLine = null;
+        int eligibleCount = 0;
+        int alternativeCount = 0;
+        foreach (Line candidate in group.lines)
+        {
+            if ((candidate.firstOnly && group.played) || (candidate.once && candidate.played))
+            {
+                continue;
+            }
+
+            eligibleCount++;
+            bool matchesPreviousLine = previousLine != null &&
+                (candidate.clip == previousLine.clip ||
+                (!string.IsNullOrEmpty(candidate.subtitle) && candidate.subtitle == previousLine.subtitle));
+            if (matchesPreviousLine)
+            {
+                repeatedLine = candidate;
+                continue;
+            }
+
+            alternativeCount++;
+            if (random.Next(alternativeCount) == 0)
+            {
+                selectedLine = candidate;
+            }
+        }
+
+        // 用全部符合条件的台词计算原有静默概率。
+        if (group.silentSlots > 0 && random.Next(eligibleCount + group.silentSlots) < group.silentSlots)
+        {
+            return null;
+        }
+
+        if (selectedLine != null)
+        {
+            return selectedLine;
+        }
+
+        return repeatedLine;
     }
 
     private void UpdateVoiceVolume()

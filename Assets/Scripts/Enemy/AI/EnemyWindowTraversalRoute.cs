@@ -107,7 +107,7 @@ public class EnemyWindowTraversalRoute : MonoBehaviour
     {
         plan = default;
         EnsureWindowReference();
-        if (enemy == null || windowPoint == null)
+        if (enemy == null || windowPoint == null || windowPoint.IsBarricaded)
         {
             return false;
         }
@@ -139,7 +139,7 @@ EnemyWindowTraversal traversal = enemy.GetComponent<EnemyWindowTraversal>();
     {
         plan = default;
         EnsureWindowReference();
-        if (enemy == null || windowPoint == null || (planFarEnd && !windowPoint.isActiveAndEnabled))
+        if (enemy == null || windowPoint == null || windowPoint.IsBarricaded || (planFarEnd && !windowPoint.isActiveAndEnabled))
         {
             return false;
         }
@@ -236,7 +236,7 @@ Vector3 travelDirection = destinationGround - sourceGround;
     internal bool CanEnterWindowQueue(VillagerController enemy)
     {
         CleanupWaiters();
-        return windowPoint != null && !windowPoint.FallingBodyInOpening && (owner == null || owner == enemy)
+        return windowPoint != null && !windowPoint.IsPassageReservedByOther(this) && (owner == null || owner == enemy)
             && (waiters.Count == 0 || waiters[0] == enemy);
     }
 
@@ -447,7 +447,7 @@ var result = RequestTraversal(enemy, new GameArchitecture.RequestContext("通路
         }
 
         CleanupWaiters();
-        if (windowPoint == null || windowPoint.FallingBodyInOpening || owner != null && owner != enemy)
+        if (windowPoint == null || windowPoint.IsPassageReservedByOther(this) || owner != null && owner != enemy)
         {
             return false;
         }
@@ -475,6 +475,8 @@ var result = RequestTraversal(enemy, new GameArchitecture.RequestContext("通路
 
         waiters.Remove(enemy);
     }
+
+    internal bool HasCrossingActor => owner != null && TraversalValid(occupancyToken);
 
     /// <summary>EnsureWindowReference 的业务处理入口；本方法直接依赖 Component.GetComponent&lt;WindowTraversalPoint&gt;()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyWindowTraversalRoute.IsPointOnPlatformSide(Vector3)、EnemyWindowTraversalRoute.TryAcquireWindowSideTread(bool, out Vector3)、EnemyWindowTraversalRoute.TryBuildPlan(VillagerController, Vector3, bool, out EnemyWindowTraversalPlan)、EnemyWindowTraversalRoute.TryBuildPlanFromSide(VillagerController, bool, out EnemyWindowTraversalPlan, bool)；下游（含内部回调体） Component.GetComponent&lt;WindowTraversalPoint&gt;()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>

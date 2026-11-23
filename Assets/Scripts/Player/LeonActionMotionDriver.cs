@@ -20,8 +20,12 @@ public class LeonActionMotionDriver : MonoBehaviour
     private readonly List<Collider> ownedIgnorePairs = new List<Collider>();
     /// <summary>中文含义：命中运动是否生效。使用位置：LeonActionMotionDriver.BeginDeathMotion()、LeonActionMotionDriver.BeginHitMotion()、LeonActionMotionDriver.CancelAllMotion() 等共 8 处。</summary>
     private bool hitMotionActive;
+    private bool footHeldByTrap;
     /// <summary>中文含义：死亡运动是否生效。使用位置：LeonActionMotionDriver.AuthorizeMotion(MotionSource, int)、LeonActionMotionDriver.BeginDeathMotion()、LeonActionMotionDriver.BeginHitMotion() 等共 13 处。</summary>
     private bool deathMotionActive;
+    private readonly CorpseBodyPhysics corpsePhysics = new CorpseBodyPhysics();
+    private bool corpseBodyWasKinematic;
+    internal bool CorpseFalling => corpsePhysics.Falling;
     /// <summary>中文含义：运动租用版本。使用位置：作为 ObjectIdentity.ObjectIdentity(int, long) 的参数、LeonActionMotionDriver.AuthorizeMotion(MotionSource, int)、LeonActionMotionDriver.OnEnable()。</summary>
     private long motionLeaseVersion;
     /// <summary>中文含义：运动交接编号。使用位置：LeonActionMotionDriver.AuthorizeMotion(MotionSource, int)。</summary>
@@ -171,6 +175,11 @@ var identity = new ObjectIdentity(GetInstanceID(), motionLeaseVersion);
         }
         else
         {
+            // 渲染帧内提交的转向也写回刚体，下一物理步和松开格挡时都承接同一朝向。
+            if (body != null && Quaternion.Angle(body.rotation, orientation) > .01f)
+            {
+                body.rotation = orientation;
+            }
             transform.rotation = orientation;
         }
         return true;
@@ -209,6 +218,20 @@ var identity = new ObjectIdentity(GetInstanceID(), motionLeaseVersion);
         return true;
     }
 
+    internal void CommitCinematicExitPose(MotionControlToken token, Vector3 positionValue, Quaternion orientation)
+    {
+        if (!CommitTraversalPose(token, positionValue, orientation) || body == null)
+        {
+            return;
+        }
+        // 在首个恢复物理的帧之前就更新摄像机锚点，并清除传送前的刚体插值。
+        RigidbodyInterpolation interpolation = body.interpolation;
+        body.interpolation = RigidbodyInterpolation.None;
+        transform.SetPositionAndRotation(positionValue, orientation);
+        Physics.SyncTransforms();
+        body.interpolation = interpolation;
+    }
+
     /// <summary>ReleaseMotion 的业务处理入口；本方法直接依赖 LeonActionMotionDriver.TokenValid(MotionControlToken)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonHighDropLanding.FinishDrop()、LeonWindowTraversal.ClearActiveTraversal()；下游（含内部回调体） LeonActionMotionDriver.TokenValid(MotionControlToken)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     /// <param name="token">中文含义：凭证。使用位置：作为 LeonActionMotionDriver.TokenValid(MotionControlToken) 的参数。</param>
@@ -225,7 +248,7 @@ var identity = new ObjectIdentity(GetInstanceID(), motionLeaseVersion);
     /// <param name="state">中文含义：当前里昂状态。使用位置：LeonActionMotionDriver.SynchronizeNormalMotionPermission(LeonState)。</param>
     public void SynchronizeNormalMotionPermission(LeonState state)
     {
-        if (pairedActionSession != 0 || hitMotionActive || deathMotionActive || state == LeonState.Traversing || state == LeonState.Staggered || state == LeonState.QTE || state == LeonState.Dead)
+        if (footHeldByTrap || pairedActionSession != 0 || hitMotionActive || deathMotionActive || state == LeonState.Traversing || state == LeonState.Staggered || state == LeonState.QTE || state == LeonState.Dead)
         {
             return;
         }
@@ -437,6 +460,15 @@ Vector3 velocity = body.linearVelocity;
     /// <remarks>静态调用链：上游 LeonAnimationActionCoordinator.HandleFullBodyCompleted(Animator, FullBodyActionType, int)；下游（含内部回调体） LeonActionMotionDriver.ClearHorizontalVelocity()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     public void EndDeathMotion()
     {
+        if (deathMotionActive && TokenValid(currentMotion))
+        {
+            TryStartCorpseFall();
+        }
+        if (corpsePhysics.Active)
+        {
+            SetRootSampling(false);
+            return;
+        }
         deathMotionActive = false;
         if (currentMotion.Source == MotionSource.Death)
         {
@@ -454,6 +486,14 @@ Vector3 velocity = body.linearVelocity;
     /// <remarks>静态调用链：上游 LeonActionMotionDriver.OnDisable()、LeonAnimationActionCoordinator.OnDisable()；下游（含内部回调体） LeonActionMotionDriver.ClearHorizontalVelocity()、LeonActionMotionDriver.ReleasePairedActionMotion(int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     public void CancelAllMotion()
     {
+        if (corpsePhysics.Active)
+        {
+            corpsePhysics.Release();
+            if (body != null)
+            {
+                body.isKinematic = corpseBodyWasKinematic;
+            }
+        }
         ReleasePairedActionMotion(pairedActionSession);
         currentMotion = default;
         hitMotionActive = false;
@@ -466,17 +506,54 @@ Vector3 velocity = body.linearVelocity;
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） LeonActionMotionDriver.ClearHorizontalVelocity()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     void FixedUpdate()
     {
-        if (deathMotionActive)
+        if ((deathMotionActive || footHeldByTrap) && !corpsePhysics.Active)
         {
             ClearHorizontalVelocity();
         }
+    }
+
+    private void LateUpdate()
+    {
+        if (!deathMotionActive || !TokenValid(currentMotion) || Time.deltaTime <= 0f)
+        {
+            return;
+        }
+        TryStartCorpseFall();
+        if (corpsePhysics.Active)
+        {
+            Pose pose = corpsePhysics.ReadPose();
+            CommitPosition(currentMotion, pose.position);
+            if (body != null)
+            {
+                body.rotation = pose.rotation;
+            }
+            else
+            {
+                transform.rotation = pose.rotation;
+            }
+        }
+    }
+
+    private void TryStartCorpseFall()
+    {
+        if (!corpsePhysics.Active && corpsePhysics.TryBegin(animator, transform, true) && body != null)
+        {
+            corpseBodyWasKinematic = body.isKinematic;
+            body.isKinematic = true;
+        }
+    }
+
+    internal void SetTrapFootLock(bool locked)
+    {
+        footHeldByTrap = locked;
+        ClearHorizontalVelocity();
     }
 
     /// <summary>ClearHorizontalVelocity 的业务处理入口；本方法直接依赖 Vector3.Vector3(float, float, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonActionMotionDriver.BeginDeathMotion()、LeonActionMotionDriver.CancelAllMotion()、LeonActionMotionDriver.EndDeathMotion()、LeonActionMotionDriver.FixedUpdate()、LeonActionMotionDriver.RequestPairedActionMotion(int) 等共 6 处；下游（含内部回调体） Vector3.Vector3(float, float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     private void ClearHorizontalVelocity()
     {
-        if (body == null)
+        if (body == null || body.isKinematic)
         {
             return;
         }
@@ -510,11 +587,30 @@ Vector3 velocity = body.linearVelocity;
         }
         foreach (Collider detail in walkThroughDetails)
         {
-            if (detail != null && walkDetailSet.Add(detail) && !Physics.GetIgnoreCollision(nativeGaitCapsule, detail))
+            if (detail != null)
             {
-                Physics.IgnoreCollision(nativeGaitCapsule, detail, true);
-                ownedIgnorePairs.Add(detail);
+                RegisterWalkThroughDetail(detail);
             }
+        }
+    }
+
+    private void RegisterWalkThroughDetail(Collider detail)
+    {
+        if (walkDetailSet.Add(detail) && !Physics.GetIgnoreCollision(nativeGaitCapsule, detail))
+        {
+            Physics.IgnoreCollision(nativeGaitCapsule, detail);
+            ownedIgnorePairs.Add(detail);
+        }
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        // 原版摆放表中的枯藤沿村路重复使用；只放行这一件装饰网格与里昂胶囊的碰撞。
+        if (nativeGaitCapsule != null && collision.collider is MeshCollider obstacle &&
+            obstacle.name == "sm13_521_01" && obstacle.sharedMesh != null &&
+            obstacle.sharedMesh.name == "6defebdab5550d57f8b7")
+        {
+            RegisterWalkThroughDetail(obstacle);
         }
     }
 
@@ -527,7 +623,7 @@ Vector3 velocity = body.linearVelocity;
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） LeonActionMotionDriver.TokenValid(MotionControlToken)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     void OnAnimatorMove()
     {
-        if (pairedActionSession != 0 || animator == null || !TokenValid(currentMotion))
+        if (corpsePhysics.Active || footHeldByTrap || pairedActionSession != 0 || animator == null || !TokenValid(currentMotion))
         {
             return;
         }
@@ -702,7 +798,7 @@ Vector3 rootMotion = animator.deltaPosition;
         lastWalkHeading = heading;
         expectedWalkDistance = speed * Time.fixedDeltaTime;
         lastWalkTime = Time.fixedTime;
-        if (!TryStepOntoOuterPlatformSeam(heading) && stalled && HasNativeGaitObstacle(heading))
+        if (!TryStepOntoOuterPlatformSeam(heading) && stalled)
         {
             TryStepOntoLowTerrainEdge(heading);
         }
@@ -774,6 +870,58 @@ Vector3 rootMotion = animator.deltaPosition;
             }
         }
 
+        return TryCrossLowRidge(heading, foot, bounds, radius, maxRise);
+    }
+
+    private bool TryCrossLowRidge(Vector3 heading, Vector3 foot, Bounds bounds, float radius, float maxRise)
+    {
+        // 窄藤或碎石的顶面可能落在两个踏面采样点之间。先找挡脚的侧面，再检查另一侧的落脚地面。
+        var region = HouseThreeRegionNavigation.Current;
+        Vector3 side = Vector3.Cross(Vector3.up, heading).normalized * radius * .45f;
+        for (int lane = -1; lane <= 1; lane++)
+        {
+            Vector3 origin = foot + side * lane + Vector3.up * .055f;
+            int count = Physics.RaycastNonAlloc(origin, heading, nativeGaitHits, radius + .16f,
+                Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore);
+            float distance = float.PositiveInfinity;
+            for (int i = 0; i < count; i++)
+            {
+                RaycastHit hit = nativeGaitHits[i];
+                if (hit.rigidbody == null && hit.distance < distance && hit.normal.y < .65f &&
+                    Vector3.Dot(hit.normal, heading) < -.2f && !IsWalkThroughDetail(hit.collider) &&
+                    !Physics.GetIgnoreLayerCollision(nativeGaitCapsule.gameObject.layer, hit.collider.gameObject.layer) &&
+                    !Physics.GetIgnoreCollision(nativeGaitCapsule, hit.collider))
+                {
+                    distance = hit.distance;
+                }
+            }
+            if (float.IsInfinity(distance))
+            {
+                continue;
+            }
+
+            Vector3 high = origin + heading * (distance + .025f);
+            high.y = foot.y + maxRise + .05f;
+            if (!TryFindTerrainTread(high, maxRise + .07f, out var crest))
+            {
+                continue;
+            }
+            float rise = crest.point.y - foot.y;
+            if (rise < .025f || rise > maxRise)
+            {
+                continue;
+            }
+            Vector3 landing = foot + heading * (distance + .24f) + Vector3.up * (maxRise + .05f);
+            if (TryFindTerrainTread(landing + side, maxRise + .11f, out var left) &&
+                TryFindTerrainTread(landing - side, maxRise + .11f, out var right) &&
+                left.point.y <= crest.point.y + .035f && right.point.y <= crest.point.y + .035f &&
+                (region == null || (region.TreadRegion(left.point) == region.TreadRegion(foot) &&
+                region.TreadRegion(right.point) == region.TreadRegion(foot))) &&
+                TryCommitTerrainRise(heading, bounds, radius, rise, true))
+            {
+                return true;
+            }
+        }
         return false;
     }
 

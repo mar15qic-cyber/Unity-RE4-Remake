@@ -349,6 +349,16 @@ public partial class VillagerQTEParticipant : MonoBehaviour, IEnemyQTEParticipan
 
         controller.StopAndClearMovement();
         controller.SetMovementMode(EnemyMovementMode.FullyStopped);
+        if (activeKind == QTEKind.GroundFinisher && controller.missionEnemyType == MissionEnemyType.Sawman)
+        {
+            if (damage >= controller.currentHealth)
+            {
+                PrepareAssassinationDeathPose(session);
+            }
+            sawKnifeHitSession = session;
+            controller.combatModule.CommitPairedKnifeDamage(damage, transform.position + Vector3.up * 1.1f);
+            return true;
+        }
         DamageResolutionModule.CommitPairedActionHeavyStrike(controller, damage, transform.position + Vector3.up * 1.1f);
         if (controller.currentHealth <= 0f)
         {
@@ -1025,6 +1035,15 @@ float probability;
 
     /// <summary>UpdateBodyTechniqueAnimationWindow 的业务处理入口；本方法直接依赖 Animator.GetCurrentAnimatorStateInfo(int)、Animator.GetNextAnimatorStateInfo(int)、Animator.IsInTransition(int)、Animator.StringToHash(string)、AnimatorStateInfo.IsTag(string)、VillagerQTEParticipant.CloseBodyTechniqueOpportunity()、VillagerQTEParticipant.OpenBodyTechniqueOpportunity(int, float) 等共 8 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillagerQTEParticipant.Update()；下游（含内部回调体） Animator.GetCurrentAnimatorStateInfo(int)、Animator.GetNextAnimatorStateInfo(int)、Animator.IsInTransition(int)、Animator.StringToHash(string)、AnimatorStateInfo.IsTag(string)、VillagerQTEParticipant.CloseBodyTechniqueOpportunity()、VillagerQTEParticipant.OpenBodyTechniqueOpportunity(int, float) 等共 8 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
+    private int hitWindowState;
+    private float hitWindowTimeScale = 1f;
+
+    internal void SetHitWindowClock(int state, float scale)
+    {
+        hitWindowState = state;
+        hitWindowTimeScale = scale > 0f ? scale : 1f;
+    }
+
     private void UpdateBodyTechniqueAnimationWindow()
     {
         if (!enableBodyTechniqueOpportunity || animator == null || activeSessionId != 0 || activeBodyTechniqueSessionId != 0 || !IsAlive || controller == null || controller.CurrentState != VillagerState.Staggered)
@@ -1062,7 +1081,8 @@ bool isStandingStagger = stateInfo.IsTag(BodyTechniqueEntryTag) || stateInfo.sho
         }
 
         // normalizedTime（动画归一化播放时间）：使用位置：VillagerQTEParticipant.UpdateBodyTechniqueAnimationWindow()。
-float normalizedTime = stateInfo.normalizedTime;
+        float normalizedTime = stateInfo.normalizedTime;
+        if (hitWindowState == stateInfo.fullPathHash) normalizedTime *= hitWindowTimeScale;
         // openTime（打开时间）：使用位置：VillagerQTEParticipant.UpdateBodyTechniqueAnimationWindow()。
 float openTime;
         if (isStandingStagger)
@@ -1342,6 +1362,10 @@ global::VillagerController receiverValue18 = controller;
     private bool TryReadNativeBodyTechnique(out ActionHandle action, out int techniqueIndex)
     {
         techniqueIndex = 0;
+        if (controller.combatModule.TryReadTrappedOpportunity(out action))
+        {
+            return action != consumedNativeBodyReaction;
+        }
         if (!controller.combatModule.TryReadNativeBodyReaction(out NativeBodyReaction reaction, out action)
             || action == consumedNativeBodyReaction || !controller.animationPresenter.IsNativeBodyTechniquePoseReady(reaction))
         {
@@ -2188,6 +2212,12 @@ float cooldown;
         endRequested = false;
         if (CanRestoreIntelligence && !keepAIDisabledForIsolatedTest && !shouldRestoreCrawlPose)
         {
+            if (sawKnifeHitSession == sessionId)
+            {
+                // 这次正面重硬直已被刺击消耗，避免 AI 恢复后重新领取同一次重硬直。
+                sawKnifeHitSession = 0;
+                controller.combatModule.ConsumeHit();
+            }
             controller.ResumeAfterQTE(needsGroundRecovery);
         }
     }

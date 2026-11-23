@@ -6,9 +6,12 @@ public partial class LeonQTECoordinator
     private int promptSnapshotFrame = -1;
     private InteractionPromptSnapshot interactSnapshot;
     private InteractionPromptSnapshot finisherSnapshot;
+    private InteractionPromptSnapshot displayedFinisher;
+    private int displayedFinisherFrame = -2;
     private InteractionPromptSnapshot distantSnapshot;
     private InteractionPromptSnapshot pendingBodySnapshot;
     private InteractionPromptSnapshot pendingFinisherSnapshot;
+    private WindowBarricade heldCabinet;
     private readonly System.Collections.Generic.List<IInteractable> pickupInputCandidates = new();
 
     internal bool UsesNativeInteractionPrompts => config != null && config.useNativeGroundFinisher;
@@ -19,6 +22,8 @@ public partial class LeonQTECoordinator
         RefreshInteractionSnapshots();
         interact = interactSnapshot;
         finisher = finisherSnapshot;
+        displayedFinisher = finisher;
+        displayedFinisherFrame = Time.frameCount;
         distant = distantSnapshot;
         return interact.IsValid || finisher.IsValid || distant.IsValid;
     }
@@ -48,6 +53,16 @@ public partial class LeonQTECoordinator
         {
             return;
         }
+        if (heldCabinet != null && heldCabinet.HasActivePush)
+        {
+            if (heldCabinet.ShowsHoldPrompt)
+            {
+                interactSnapshot = new InteractionPromptSnapshot(heldCabinet, default, InteractionPromptKind.Interact,
+                    true, "Interact", heldCabinet.GetPromptText(), heldCabinet.PromptPosition);
+            }
+            return;
+        }
+        heldCabinet = null;
         Camera camera = Camera.main;
         if (camera == null)
         {
@@ -61,7 +76,7 @@ public partial class LeonQTECoordinator
         bool canBody = CanQueryBodyTechniquePrompt();
         bool canKnife = CanQueryAssassinationPrompt() && combat != null && combat.knifeModule != null && combat.knifeModule.ValidKnife;
         bool hasFinisherKnife = UsesNativeInteractionPrompts && combat != null && !combat.IsAiming
-            && combat.knifeModule != null && combat.knifeModule.ValidKnife;
+            && combat.knifeModule != null && combat.knifeModule.HasGroundFinisherKnife;
         foreach (var target in GetPromptCandidates())
         {
             if (target == null || !target.IsAlive || target.controller == null || target.controller.actionCoordinator == null)
@@ -79,21 +94,22 @@ public partial class LeonQTECoordinator
             {
                 continue;
             }
+            if (!IsPromptVisible(camera, target, position))
+            {
+                continue;
+            }
             ActionHandle action = target.controller.actionCoordinator.CurrentHandle;
             QTECancelReason finisherReason = QTECancelReason.None;
             bool canFinish = ground && canKnife && CanStart(QTEKind.GroundFinisher, target, out finisherReason);
             if (canFinish)
             {
-                if (distance < finisherDistance)
+                if (distance < finisherDistance || distance == finisherDistance
+                    && finisherSnapshot.Target != null && target.GetInstanceID() < finisherSnapshot.Target.GetInstanceID())
                 {
                     finisherDistance = distance;
                     finisherSnapshot = new InteractionPromptSnapshot(target, action, InteractionPromptKind.GroundFinisher,
                         true, "Shoot", "补刀", position);
                 }
-            }
-            if (!IsPromptVisible(camera, target, position))
-            {
-                continue;
             }
             if (ground && !canFinish)
             {
@@ -105,12 +121,6 @@ public partial class LeonQTECoordinator
                     pendingFinisherDistance = distance;
                     pendingFinisherSnapshot = new InteractionPromptSnapshot(target, action,
                         InteractionPromptKind.GroundFinisher, true, "Shoot", "补刀", position);
-                }
-                if (distance < distantDistance && !withinReach && CanApproachGroundFinisher(target))
-                {
-                    distantDistance = distance;
-                    distantSnapshot = new InteractionPromptSnapshot(target, action, InteractionPromptKind.GroundFinisher,
-                        false, "Shoot", "补刀", position);
                 }
             }
             if (distance < pendingBodyDistance && target.TryReadPendingBodyTechnique(controller, out int pendingTechnique))
@@ -224,6 +234,10 @@ public partial class LeonQTECoordinator
 
     private static Vector3 ReadWorldPromptPosition(Component component)
     {
+        if (component is WindowBarricade cabinet)
+        {
+            return cabinet.PromptPosition;
+        }
         if (component is VillageEntranceGate gate)
         {
             return gate.PromptPosition;
@@ -253,14 +267,14 @@ public partial class LeonQTECoordinator
         }
         if (!pendingBodySnapshot.IsValid && !PromptInputBlocked()
             && combat != null && combat.knifeModule != null
-            && KnifeCombatRules.IsThrust(combat.knifeModule.CurrentAction))
+            && combat.knifeModule.IsFinishingThrust)
         {
-            return ReadPickupInputDuringThrust();
+            return ReadThrustFollowUpPickup();
         }
         return pendingBodySnapshot;
     }
 
-    private InteractionPromptSnapshot ReadPickupInputDuringThrust()
+    internal InteractionPromptSnapshot ReadThrustFollowUpPickup()
     {
         Camera camera = Camera.main;
         if (camera == null || !TryGetComponent<LeonItemPickup>(out var pickupAction))
@@ -276,8 +290,12 @@ public partial class LeonQTECoordinator
             {
                 continue;
             }
-            float distance = (pickup.ContactPoint - transform.position).sqrMagnitude;
-            if (distance < closestDistance && IsPromptVisible(camera, pickup, ReadWorldPromptPosition(pickup)))
+            Vector3 offset = pickup.ContactPoint - transform.position;
+            float distance = offset.sqrMagnitude;
+            Vector3 horizontal = Vector3.ProjectOnPlane(offset, Vector3.up);
+            // 箱子的掉落可能正好落到越肩画面下沿外，伸手净空仍由拾取检查确认。
+            bool nearFront = distance <= 1.35f * 1.35f && Vector3.Dot(transform.forward, horizontal.normalized) >= .5f;
+            if (distance < closestDistance && (nearFront || IsPromptVisible(camera, pickup, ReadWorldPromptPosition(pickup))))
             {
                 closest = pickup;
                 closestDistance = distance;
@@ -295,6 +313,11 @@ public partial class LeonQTECoordinator
 
     internal InteractionPromptSnapshot ReadFinisherInput(bool includeRecovering = false)
     {
+        // 玩家按下的是上一张可见卡片；目标刚恢复或离开时，不能把这一击移给旁边的敌人。
+        if (displayedFinisherFrame >= Time.frameCount - 1 && displayedFinisher.Kind == InteractionPromptKind.GroundFinisher)
+        {
+            return displayedFinisher;
+        }
         promptSnapshotFrame = -1;
         RefreshInteractionSnapshots();
         if (includeRecovering && !finisherSnapshot.IsValid)
@@ -338,6 +361,11 @@ public partial class LeonQTECoordinator
             && interactable.CanInteract(transform))
         {
             interactable.Interact();
+            if (interactable is WindowBarricade cabinet && cabinet.HasActivePush)
+            {
+                heldCabinet = cabinet;
+                promptSnapshotFrame = -1;
+            }
             return true;
         }
         return false;

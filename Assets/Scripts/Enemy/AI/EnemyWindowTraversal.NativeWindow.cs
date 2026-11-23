@@ -17,6 +17,11 @@ public partial class EnemyWindowTraversal
     [SerializeField] private EnemyHeldWeapon nativeWindowWeapon;
     [SerializeField] private ChapterOnePairMotion.Track nativeWindowCross;
     [SerializeField] private ChapterOnePairMotion.Track nativeWindowLand;
+    [SerializeField, Tooltip("持械村民脱手后使用的同骨架原版翻窗和落地动作。")]
+    private AnimationClip unarmedWindowCross;
+    [SerializeField] private AnimationClip unarmedWindowLand;
+    private ChapterOnePairMotion.Track crossingTrack;
+    private ChapterOnePairMotion.Track landingTrack;
 
     private AnimationMixerPlayable nativeWindowMixer;
     private AnimationClipPlayable nativeLandingPlayable;
@@ -38,6 +43,11 @@ public partial class EnemyWindowTraversal
     internal void ConfigureNativeWindow(EnemyHeldWeapon weapon, ChapterOnePairMotion.Track crossing,
         ChapterOnePairMotion.Track landing)
     {
+        if (weapon != null && nativeWindowWeapon == null && nativeWindowCross != null && nativeWindowLand != null)
+        {
+            unarmedWindowCross = nativeWindowCross.clip;
+            unarmedWindowLand = nativeWindowLand.clip;
+        }
         nativeWindowWeapon = weapon;
         nativeWindowCross = crossing;
         nativeWindowLand = landing;
@@ -46,9 +56,21 @@ public partial class EnemyWindowTraversal
 
     private bool CanUseNativeWindow(EnemyWindowTraversalPlan plan)
     {
-        if ((nativeWindowWeapon != null && !nativeWindowWeapon.IsHeld) || animator == null
-            || nativeWindowCross == null || !nativeWindowCross.Matches(nativeWindowCross.clip)
-            || nativeWindowLand == null || !nativeWindowLand.Matches(nativeWindowLand.clip))
+        crossingTrack = nativeWindowCross;
+        landingTrack = nativeWindowLand;
+        if (nativeWindowWeapon != null && !nativeWindowWeapon.IsHeld && unarmedWindowCross != null && unarmedWindowLand != null)
+        {
+            var library = Resources.Load<ChapterOnePairMotion>(ChapterOnePairMotion.ResourceName);
+            if (library != null && library.TryGetTrack(unarmedWindowCross, out var crossing)
+                && library.TryGetTrack(unarmedWindowLand, out var landing))
+            {
+                crossingTrack = crossing;
+                landingTrack = landing;
+            }
+        }
+        if (animator == null || crossingTrack == null || !crossingTrack.Matches(crossingTrack.clip)
+            || crossingTrack.positions.Length <= 155 || landingTrack == null || !landingTrack.Matches(landingTrack.clip)
+            || landingTrack.positions.Length <= NativeWindowLandingEndFrame)
         {
             return false;
         }
@@ -56,9 +78,11 @@ public partial class EnemyWindowTraversal
         var window = plan.route.windowPoint;
         float sill = window.OpeningCenterWorld.y - window.openingHeight * 0.5f;
         float rise = sill - plan.sourceGround.y;
+        float drop = plan.sourceGround.y - plan.destinationGround.y;
+        float availableFall = -crossingTrack.positions[crossingTrack.positions.Length - 1].y;
         return window.openingWidth >= 1f && window.openingHeight >= 1.25f
-            && rise >= 0.75f && rise <= 1.2f
-            && Mathf.Abs(plan.destinationGround.y - plan.sourceGround.y) <= 0.30f;
+            && rise >= 0.75f && rise <= 1.2f && drop >= -.30f
+            && drop <= Mathf.Max(.30f, availableFall + .035f);
     }
 
     private readonly Collider[] nativeWindowLandingHits = new Collider[24];
@@ -132,9 +156,9 @@ public partial class EnemyWindowTraversal
         Vector3 forward = motionRotation * Vector3.forward;
         float startDepth = Vector3.Dot(plan.sourceGround - nativeWindowFloor, forward);
         float targetEntry = NativeWindowSillDepth + startDepth;
-        float fps = nativeWindowCross.clip.frameRate;
+        float fps = crossingTrack.clip.frameRate;
         int entryFrame = 0;
-        while (entryFrame < 65 && nativeWindowCross.positions[entryFrame].z < targetEntry)
+        while (entryFrame < 65 && crossingTrack.positions[entryFrame].z < targetEntry)
         {
             entryFrame++;
         }
@@ -142,31 +166,31 @@ public partial class EnemyWindowTraversal
 
         float contactHeight = motionDestination.y + 0.035f;
         int contactFrame = 155;
-        while (contactFrame < 195 && NativeWindowHeight(nativeWindowCross.positions[contactFrame].y) > contactHeight)
+        while (contactFrame < crossingTrack.positions.Length - 1 && NativeWindowHeight(crossingTrack.positions[contactFrame].y) > contactHeight)
         {
             contactFrame++;
         }
-        float before = NativeWindowHeight(nativeWindowCross.positions[contactFrame - 1].y);
-        float after = NativeWindowHeight(nativeWindowCross.positions[contactFrame].y);
+        float before = NativeWindowHeight(crossingTrack.positions[contactFrame - 1].y);
+        float after = NativeWindowHeight(crossingTrack.positions[contactFrame].y);
         nativeWindowContactTime = (contactFrame - 1 + Mathf.InverseLerp(before, after, contactHeight)) / fps;
 
-        var contactRoot = nativeWindowCross.Sample(nativeWindowContactTime).position;
+        var contactRoot = crossingTrack.Sample(nativeWindowContactTime).position;
         nativeWindowExitDepth = Mathf.Max(0.01f, contactRoot.z - NativeWindowSillDepth);
         float landingDepth = Vector3.Dot(motionDestination - nativeWindowFloor, forward);
         nativeWindowExitCorrection = Mathf.Min(0f, landingDepth - 0.32f - nativeWindowExitDepth);
         nativeWindowContact = NativeWindowCrossPosition(contactRoot);
-        nativeWindowStartBias = motionStart - NativeWindowCrossPosition(nativeWindowCross.Sample(nativeWindowEntryTime).position);
-        nativeWindowLandingDuration = NativeWindowLandingEndFrame / nativeWindowLand.clip.frameRate;
-        nativeWindowLandingDelta = nativeWindowLand.Sample(nativeWindowLandingDuration).position;
-        nativeWindowBrakeProgress = nativeWindowLand.Sample(nativeWindowLandingDuration - NativeWindowExitBlend).position.z
+        nativeWindowStartBias = motionStart - NativeWindowCrossPosition(crossingTrack.Sample(nativeWindowEntryTime).position);
+        nativeWindowLandingDuration = NativeWindowLandingEndFrame / landingTrack.clip.frameRate;
+        nativeWindowLandingDelta = landingTrack.Sample(nativeWindowLandingDuration).position;
+        nativeWindowBrakeProgress = landingTrack.Sample(nativeWindowLandingDuration - NativeWindowExitBlend).position.z
             / nativeWindowLandingDelta.z;
         nativeWindowTime = 0f;
 
         StopTraversalClip();
         animationGraph = PlayableGraph.Create("敌人原版翻窗");
         animationGraph.SetTimeUpdateMode(DirectorUpdateMode.GameTime);
-        clipPlayable = CreateNativeWindowClip(nativeWindowCross.clip, nativeWindowEntryTime);
-        nativeLandingPlayable = CreateNativeWindowClip(nativeWindowLand.clip, 0f);
+        clipPlayable = CreateNativeWindowClip(crossingTrack.clip, nativeWindowEntryTime);
+        nativeLandingPlayable = CreateNativeWindowClip(landingTrack.clip, 0f);
         nativeWindowMixer = AnimationMixerPlayable.Create(animationGraph, 2);
         animationGraph.Connect(clipPlayable, 0, nativeWindowMixer, 0);
         animationGraph.Connect(nativeLandingPlayable, 0, nativeWindowMixer, 1);
@@ -212,12 +236,12 @@ public partial class EnemyWindowTraversal
         Vector3 position;
         if (landTime <= 0f)
         {
-            var root = nativeWindowCross.Sample(sourceTime).position;
+            var root = crossingTrack.Sample(sourceTime).position;
             position = NativeWindowCrossPosition(root) + nativeWindowStartBias * (1f - entryWeight);
         }
         else
         {
-            var root = nativeWindowLand.Sample(landTime).position;
+            var root = landingTrack.Sample(landTime).position;
             float progress = Mathf.Clamp01(root.z / nativeWindowLandingDelta.z);
             if (progress > nativeWindowBrakeProgress)
             {
@@ -253,6 +277,11 @@ public partial class EnemyWindowTraversal
     {
         float depth = root.z - NativeWindowSillDepth;
         float warped = depth + nativeWindowExitCorrection * Mathf.SmoothStep(0f, 1f, depth / nativeWindowExitDepth);
+        if (depth > 0f && nativeWindowFloor.y - motionDestination.y > .30f)
+        {
+            // 保留越过窗台前的原轨迹；高窗落点较近时只压缩窗外段的水平距离。
+            warped = depth * (nativeWindowExitDepth + nativeWindowExitCorrection) / nativeWindowExitDepth;
+        }
         Vector3 position = nativeWindowFloor + motionRotation * new Vector3(root.x + NativeWindowSideOffset, 0f, warped);
         position.y = NativeWindowHeight(root.y);
         return position;

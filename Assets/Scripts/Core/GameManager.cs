@@ -185,11 +185,22 @@ System.Action<MissionResult> completionHandler = OnMissionCompleted;
         }
     }
 
-    /// <summary>Unity 销毁回调：先关闭许可并应用最终快照，再退订事件和释放单例登记。</summary>
+    /// <summary>在菜单释放暂停许可后，继续暂停本局直至场景卸载。</summary>
+    internal void HoldPauseForSceneExit()
+    {
+        Permission.Request(new GameArchitecture.ObjectIdentity(GetInstanceID(), 1), true, true, true, 0f);
+    }
+
+    /// <summary>销毁期间先退订许可变化，避免关闭许可时恢复本局音频。</summary>
     protected override void OnDestroy()
     {
-        Permission.Close();
         Permission.HasChange -= ApplyPermission;
+        Permission.Close();
+        if (HasInstance && Instance == this)
+        {
+            Time.timeScale = 1f;
+        }
+
         currentSessionAudio = null;
         base.OnDestroy();
     }

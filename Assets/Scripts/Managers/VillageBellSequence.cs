@@ -16,6 +16,8 @@ public sealed class VillageBellSequence : MonoBehaviour
     [SerializeField] private AudioSource bellSource;
     [SerializeField] private AudioClip bellStrike;
     [SerializeField] private AudioClip bellTail;
+    [Tooltip("首声钟响后接替战斗循环的原版音乐尾段。")]
+    [SerializeField] private AudioEventData combatMusicTail;
     [Tooltip("钟楼下方的场景定位点。")]
     [SerializeField] private Vector3 exitApproach;
     [Tooltip("钟楼凝视点相对定位点的高度。")]
@@ -42,6 +44,7 @@ public sealed class VillageBellSequence : MonoBehaviour
     private Camera gameplayCamera;
     private Action complete;
     private Coroutine playback;
+    private VillageCinematicPlayback cinematicPlayback;
     private bool started;
     private bool ended;
     private bool completed;
@@ -65,7 +68,14 @@ public sealed class VillageBellSequence : MonoBehaviour
         }
 
         var sequence = Instantiate(prefab, parent);
+        if (sequence.cinematicCamera.TryGetComponent<VillageBellEffects>(out var effects))
+        {
+            effects.CacheSceneDoors(sequence.transform);
+        }
         sequence.ActivateGameplayBonfire();
+        sequence.cinematicCamera.gameObject.SetActive(false);
+        sequence.cinematicPlayback = new VillageCinematicPlayback(sequence.director,
+            (UnityEngine.Timeline.TimelineAsset)sequence.director.playableAsset, sequence.stage);
         return sequence;
     }
 
@@ -173,14 +183,11 @@ public sealed class VillageBellSequence : MonoBehaviour
         if (soundscape != null)
         {
             soundscapeWasEnabled = soundscape.enabled;
+            soundscape.BeginBellMusicExit(combatMusicTail);
             soundscape.enabled = false;
         }
         Debug.Log("村庄鸣钟：首声钟响，村民停止追击并退场。", this);
         // 图表的绑定与资源初始化分散在钟声期间，摄像机和舞台仍保持关闭。
-        yield return null;
-        director.timeUpdateMode = DirectorUpdateMode.DSPClock;
-        director.extrapolationMode = DirectorWrapMode.Hold;
-        director.RebuildGraph();
         yield return null;
         if (cinematicCamera.TryGetComponent<VillageBellEffects>(out var effects))
         {
@@ -199,17 +206,21 @@ public sealed class VillageBellSequence : MonoBehaviour
             }
             bool reachedRegularCut = strikes >= 4 && elapsed >= cutTime;
             bool nearbyReaction = strikes >= 2 && enemies.HasNearbyBellReaction(match.player);
-            if ((reachedRegularCut || nearbyReaction) && CanEnterCinematic())
+            var audio = AudioManager.Instance;
+            bool playingTail = audio != null && audio.IsBGMPlaying(combatMusicTail);
+            if (!playingTail && (reachedRegularCut || nearbyReaction) && CanEnterCinematic())
             {
                 break;
             }
             yield return null;
         }
+        if (soundscape != null)
+        {
+            soundscape.EndBellMusicExit(combatMusicTail);
+        }
         // 当前钟声自然衰减，切镜不重新起音。
         EnterCinematic();
-        stage.SetActive(true);
-        director.time = 0;
-        director.Evaluate();
+        cinematicCamera.gameObject.SetActive(true);
         HideGameplayActors();
         SetCurtainOpacity(0f);
         if (gameplayCamera != null)
@@ -217,16 +228,15 @@ public sealed class VillageBellSequence : MonoBehaviour
             gameplayCamera.enabled = false;
         }
         cinematicCamera.enabled = true;
-        // 黑幕下先让过场相机出一帧，再开始计时和淡入。
-        yield return null;
+        cinematicPlayback.Begin();
         Debug.Log("村庄鸣钟：切入 Timeline。", this);
-        director.Play();
         double startClock = AudioSettings.dspTime;
         double startReal = Time.unscaledTimeAsDouble;
         double duration = director.duration;
         while (director.time < duration - 0.02 &&
             Time.unscaledTimeAsDouble - startReal < duration + 2.0)
         {
+            cinematicPlayback.Sample();
             float time = (float)director.time;
             UpdateTitle(time);
             VillageLeonDialogue.ShowBellCaption(match, director.time);
@@ -348,8 +358,8 @@ public sealed class VillageBellSequence : MonoBehaviour
 
         ended = true;
         completed = true;
-        director.Stop();
-        VillageLeonDialogue.EndBellCaption(match);
+        cinematicPlayback.Stop();
+        VillageLeonDialogue.EndCinematicCaption(match);
         UpdateTitle(88.2f);
         RestoreCanvases();
         var callback = complete;
@@ -358,7 +368,10 @@ public sealed class VillageBellSequence : MonoBehaviour
         {
             callback();
         }
-        StartCoroutine(ReleaseBlackScreen());
+        if (isActiveAndEnabled && ownsPresentation)
+        {
+            StartCoroutine(ReleaseBlackScreen());
+        }
     }
 
     private IEnumerator ReleaseBlackScreen()
@@ -402,7 +415,11 @@ public sealed class VillageBellSequence : MonoBehaviour
 
     private void RestoreGameplay()
     {
-        VillageLeonDialogue.EndBellCaption(match);
+        VillageLeonDialogue.EndCinematicCaption(match);
+        if (soundscape != null && !completed)
+        {
+            soundscape.EndBellMusicExit(combatMusicTail);
+        }
         if (ownsPresentation)
         {
             IsPresenting = false;
@@ -453,26 +470,40 @@ public sealed class VillageBellSequence : MonoBehaviour
             return;
         }
 
-        ended = true;
-        complete = null;
-        if (playback != null)
-        {
-            StopCoroutine(playback);
-            playback = null;
-        }
-        director.Stop();
-        bellSource.Stop();
-        stage.SetActive(false);
-        darkness.enabled = false;
-        if (cinematicCamera.TryGetComponent<VillageBellEffects>(out var effects))
-        {
-            effects.ReleaseReflection();
-        }
-        RestoreGameplay();
+        CancelPresentation();
     }
 
     private void OnDisable()
     {
+        if (started && (!ended || ownsPresentation))
+        {
+            CancelPresentation();
+        }
+    }
+
+    private void CancelPresentation()
+    {
+        ended = true;
+        complete = null;
+        // 组件单独停用时也要结束黑幕延迟，防止旧回调再次切换相机。
+        StopAllCoroutines();
+        playback = null;
+        if (cinematicPlayback != null)
+        {
+            cinematicPlayback.Stop();
+        }
+        if (bellSource != null)
+        {
+            bellSource.Stop();
+        }
+        if (stage != null)
+        {
+            stage.SetActive(false);
+        }
+        if (darkness != null)
+        {
+            darkness.enabled = false;
+        }
         if (cinematicCamera != null && cinematicCamera.TryGetComponent<VillageBellEffects>(out var effects))
         {
             effects.ReleaseReflection();

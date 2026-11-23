@@ -82,6 +82,7 @@ public class TitleScreenManager : MonoBehaviour
     public Texture2D chapterVillageBackdrop;
 
     private Texture2D titleBackdropShade;
+    private GameObject villageScenery;
 
     /// <summary>中文含义：选定颜色。使用位置：TitleScreenManager.RefreshMenuDisplay()、TitleScreenManager.Start()。</summary>
     [Header("颜色")]
@@ -141,6 +142,35 @@ public class TitleScreenManager : MonoBehaviour
     private bool[] menuEnabled;
     /// <summary>中文含义：是否加载。使用位置：TitleScreenManager.ExecuteMenuAction(int)、TitleScreenManager.LoadGameScene()、TitleScreenManager.OnMenuItemClicked(int)。</summary>
     private bool isLoading;
+    private void CreateVillageBackdrop()
+    {
+        if (titleVillageBackdrop != null)
+        {
+            var backdrop = ChapterLoadingView.CreateBackdrop(transform, "正式村庄主菜单背景", titleVillageBackdrop);
+            backdrop.SetAsFirstSibling();
+            var sceneryPrefab = Resources.Load<GameObject>("TitleVillage/PlazaScenery");
+            if (sceneryPrefab != null)
+            {
+                var menuCamera = Camera.main;
+                if (menuCamera != null && menuCamera.gameObject.scene == gameObject.scene)
+                {
+                    menuCamera.cullingMask = 0;
+                }
+                foreach (Light light in FindObjectsByType<Light>(FindObjectsSortMode.None))
+                {
+                    if (light.gameObject.scene == gameObject.scene && light.type == LightType.Directional)
+                    {
+                        light.enabled = false;
+                    }
+                }
+                villageScenery = Instantiate(sceneryPrefab);
+                SceneManager.MoveGameObjectToScene(villageScenery, gameObject.scene);
+                villageScenery.AddComponent<TitleVillagePan>().Begin(backdrop.GetComponentInChildren<RawImage>());
+            }
+            titleBackdropShade = ChapterLoadingView.AddBackdropShade(backdrop, .70f, .22f, .06f);
+        }
+    }
+
     /// <summary>Unity 组件初始化回调；状态处理与资源交接按函数内顺序执行，下游协作见调用链。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） GameManager.ResetScenePermission()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     void Awake()
@@ -323,12 +353,7 @@ int index = i;
             titlePanel.SetActive(true);
         }
 
-        if (titleVillageBackdrop != null)
-        {
-            var backdrop = ChapterLoadingView.CreateBackdrop(transform, "正式村庄主菜单背景", titleVillageBackdrop);
-            backdrop.SetAsFirstSibling();
-            titleBackdropShade = ChapterLoadingView.AddBackdropShade(backdrop, .70f, .22f, .06f);
-        }
+        CreateVillageBackdrop();
         Cursor.lockState = CursorLockMode.None;
         // receiverValue12（判空前缓存的界面光标管理器的实例）：从界面光标管理器的实例读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、TitleScreenManager.Start()。
 global::UICursorManager receiverValue12 = UICursorManager.Instance;
@@ -1056,6 +1081,10 @@ string selectedValue31;
 #region ===== 场景加载 =====
     private void OnDestroy()
     {
+        if (villageScenery != null)
+        {
+            Destroy(villageScenery);
+        }
         var audio = AudioManager.Instance;
         if (audio != null)
         {
@@ -1128,6 +1157,10 @@ string selectedValue31;
         }
 
         operation.allowSceneActivation = false;
+        if (villageScenery != null)
+        {
+            villageScenery.SetActive(false);
+        }
         while (operation.progress < 0.9f)
         {
             view.SetProgress(operation.progress / 0.9f);

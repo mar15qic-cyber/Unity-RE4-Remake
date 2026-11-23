@@ -193,6 +193,24 @@
           "processors": "",
           "interactions": "",
           "initialStateCheck": false
+        },
+        {
+          "name": "InventoryMove",
+          "type": "Button",
+          "id": "fb57a299-3ba7-4054-a50a-cf57ee253e09",
+          "expectedControlType": "Button",
+          "processors": "",
+          "interactions": "",
+          "initialStateCheck": false
+        },
+        {
+          "name": "InventoryConfirm",
+          "type": "Button",
+          "id": "9e21dd85-b2d4-40d4-a493-d72a95ef4b5b",
+          "expectedControlType": "Button",
+          "processors": "",
+          "interactions": "",
+          "initialStateCheck": false
         }
       ],
       "bindings": [
@@ -468,6 +486,28 @@
           "processors": "",
           "groups": "",
           "action": "Sort",
+          "isComposite": false,
+          "isPartOfComposite": false
+        },
+        {
+          "name": "",
+          "id": "4a580577-a37c-4f45-893b-95c1f663a8eb",
+          "path": "<Keyboard>/leftShift",
+          "interactions": "",
+          "processors": "",
+          "groups": "",
+          "action": "InventoryMove",
+          "isComposite": false,
+          "isPartOfComposite": false
+        },
+        {
+          "name": "",
+          "id": "55094aa7-3296-44d2-9bd4-96622b41f6fa",
+          "path": "<Keyboard>/space",
+          "interactions": "",
+          "processors": "",
+          "groups": "",
+          "action": "InventoryConfirm",
           "isComposite": false,
           "isPartOfComposite": false
         }

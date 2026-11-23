@@ -48,6 +48,10 @@ public static class InteractionSystem
     static float GetDistance(IInteractable obj, Transform interactor)
     {
         Vector3 pos = interactor.position;
+        if (obj is WindowBarricade cabinet)
+        {
+            return cabinet.InteractionDistance(pos);
+        }
         if (obj is DestructibleWoodenBox box)
         {
             return box.GetMeleeDistance(interactor);

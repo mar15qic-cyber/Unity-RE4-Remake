@@ -3,6 +3,62 @@ using UnityEngine;
 
 public partial class VillagerController
 {
+    private bool orderedToBreach;
+    internal bool HasSiegeBreachOrder => orderedToBreach && door03TraversalRoute != null
+        && door03TraversalRoute.IsReady && door03TraversalRoute.entranceDoor.IsSiegeLatched;
+
+    internal void OrderSiegeBreach(HouseThreeTraversalGeometry route)
+    {
+        if (route == null || !route.IsReady || chainsawBridge == null || IsDead)
+        {
+            return;
+        }
+        ClearPursuitIngress();
+        if (specialTraversal != null)
+        {
+            specialTraversal.CancelPendingSiegeDetour();
+        }
+        door03TraversalRoute = route;
+        orderedToBreach = true;
+    }
+
+    private bool ApproachSiegeDoor()
+    {
+        if (CurrentState == VillagerState.Attack)
+        {
+            return false;
+        }
+        // 破门演员始终从门外就位。玩家在屋内移动时，包围站位不能把他带到其他入口。
+        Vector3 gate = door03TraversalRoute.DoorGate;
+        Vector3 stance = Vector3.Lerp(gate, door03TraversalRoute.ExteriorGate, .7f);
+        if (HorizontalDistance(transform.position, stance) <= .45f && Mathf.Abs(transform.position.y - stance.y) <= .4f)
+        {
+            agent.isStopped = true;
+            FacePosition(gate, alertTurnSpeed * 1.5f);
+            if (combatModule.CanAttack())
+            {
+                actionCoordinator.RequestAction(GameArchitecture.ActionKind.Attack, "电锯破门");
+            }
+            return false;
+        }
+        agent.isStopped = false;
+        return agent.SetDestination(stance);
+    }
+
+    internal void CommitVillageEntrancePose(VillageSiegeSequence owner, Vector3 position, Quaternion rotation)
+    {
+        if (owner == null || !owner.ControlsActor(this) || IsDead || IsQTEControlled ||
+            IsNavigationTraversalProtected || motionExecutor == null)
+        {
+            return;
+        }
+        var token = motionExecutor.CurrentToken;
+        if (motionExecutor.Valid(token) && TryResolveSupportedNavigationPosition(position, position.y, out var support))
+        {
+            motionExecutor.CommitPose(token, support, rotation, true);
+        }
+    }
+
     private const float CombatSupportRise = .12f;
     private const float CombatSupportDrop = .22f;
     private const float CombatSupportGrace = .055f;
@@ -16,6 +72,22 @@ public partial class VillagerController
     internal bool IsCombatFalling => combatFallSpeed > 0f;
     internal bool OwnsImpactGroundMotion => externalKnockbackRoutine != null || combatSupportLostTime > 0f
         || (combatModule != null && (combatModule.NativeCombatActive || combatModule.NativeDeathActive));
+
+    internal bool TryAdvanceFarmEntrance(MotionControlToken token, Vector3 step, Quaternion facing)
+    {
+        if (IsDead || IsQTEControlled || IsNavigationTraversalProtected || OwnsImpactGroundMotion ||
+            Time.timeScale > 0f || motionExecutor == null || !motionExecutor.Valid(token) ||
+            !TryResolveSupportedNavigationPosition(transform.position + step, transform.position.y, out var supported) ||
+            !CanMoveDirectlyToNavigationPoint(supported))
+        {
+            return false;
+        }
+        if (Player != null && (supported - Player.transform.position).sqrMagnitude < 1.1f * 1.1f)
+        {
+            return false;
+        }
+        return motionExecutor.CommitPose(token, supported, facing, true);
+    }
 
     internal bool CommitNativeCombatMotion(ActionHandle handle, Vector3 displacement, Quaternion rotation,
         float lift, bool findLanding, out bool onSupport)
@@ -88,7 +160,7 @@ public partial class VillagerController
                 float previousSpeed = combatFallSpeed;
                 combatFallSpeed += Mathf.Abs(Physics.gravity.y) * Time.deltaTime;
                 float drop = (previousSpeed + combatFallSpeed) * .5f * Time.deltaTime;
-                if (TryReadPhysicalGround(position, position.y, .02f, drop, out float landingY))
+                if (TryReadSupportedFootprint(position, position.y, .02f, drop, out float landingY))
                 {
                     position.y = landingY;
                     combatFallSpeed = 0f;
@@ -171,7 +243,9 @@ public partial class VillagerController
 
     private bool TryReadSupportedFootprint(Vector3 point, float height, float rise, float drop, out float support)
     {
-        if (TryReadPhysicalGround(point, height, rise, drop, out support))
+        bool centerHit = TryReadPhysicalGround(point, height, rise, drop, out float centerHeight);
+        support = centerHeight;
+        if (centerHit && centerHeight >= height - .12f)
         {
             return true;
         }
@@ -180,19 +254,32 @@ public partial class VillagerController
         point.y = height;
         if (navigation == null || navigation.TreadRegion(point) != VillageTraversalRegion.SecondFloorOuterPlatform)
         {
-            return false;
+            return centerHit;
         }
 
         // 板缝宽度按两边踏面之间的实际距离计算。中心偏向一边时，两侧所需的探测距离不同。
-        return TryReadSupportedSeam(navigation, point, Vector3.right, height, out support)
-            || TryReadSupportedSeam(navigation, point, Vector3.forward, height, out support);
+        if (TryReadSupportedSeam(navigation, point, Vector3.right, height, out float seamHeight)
+            || TryReadSupportedSeam(navigation, point, Vector3.forward, height, out seamHeight))
+        {
+            if (seamHeight >= height - drop && seamHeight <= height + rise && (!centerHit || seamHeight > centerHeight))
+            {
+                support = seamHeight;
+                return true;
+            }
+        }
+        return centerHit;
     }
 
     private bool TryReadSupportedSeam(HouseThreeRegionNavigation navigation, Vector3 point, Vector3 axis,
         float height, out float support)
     {
         support = height;
-        const float span = .24f;
+        float span = .24f;
+        if (movementCollider != null)
+        {
+            float scale = Mathf.Max(Mathf.Abs(transform.lossyScale.x), Mathf.Abs(transform.lossyScale.z));
+            span = Mathf.Clamp(movementCollider.radius * scale * 2f, .24f, .55f);
+        }
         const float maximumSeamRise = .22f;
         const int sampleCount = 12;
         Vector3 step = axis * (span / sampleCount);

@@ -259,6 +259,11 @@ global::GameUIManager receiverValue5 = GameUIManager.Instance;
         }
 
         // 背包相机已激活，现在关闭游戏 HUD 和主相机
+        if (CombatHUD.HasInstance && invUi.inventoryPanel != null)
+        {
+            CombatHUD.Instance.ShowInventoryGauge((RectTransform)invUi.inventoryPanel.transform);
+        }
+
         if (gameCanvas != null)
         {
             gameCanvas.enabled = false;
@@ -359,6 +364,11 @@ Camera inventoryCamera;
         }
 
         // 立即恢复游戏画面、时间和输入。
+        if (CombatHUD.HasInstance)
+        {
+            CombatHUD.Instance.RestoreGameplayGauge();
+        }
+
         if (gameCanvas != null)
         {
             gameCanvas.enabled = true;

@@ -8,6 +8,7 @@ public sealed partial class EnemyCombatModule
     private string nativeDeathLanding;
     private float nativeDeathTime;
     private bool nativeDeathFrozen;
+    private float assassinationEndTime;
     private Pose nativeDeathPreviousSample;
     private Quaternion nativeDeathOrientation;
     private ActionHandle nativeDeathAction;
@@ -15,6 +16,30 @@ public sealed partial class EnemyCombatModule
     private bool nativeKickDeath;
     private Vector3 nativeDeathTravelDirection;
     internal bool NativeDeathActive => nativeDeathTrack != null;
+    internal bool NativeDeathPoseReady => NativeDeathActive && (nativeDeathFrozen ||
+        (string.IsNullOrEmpty(nativeDeathLanding) && nativeDeathTime >= nativeDeathTrack.clip.length));
+
+    internal void ContinueAssassinationDeath(ChapterOnePairMotion.Track track, float time, float endTime)
+    {
+        if (!host.IsDead || track == null || track.clip == null)
+        {
+            return;
+        }
+        nativeDeathTrack = track;
+        assassinationEndTime = Mathf.Min(endTime, track.clip.length);
+        nativeDeathTime = Mathf.Clamp(time, 0f, assassinationEndTime);
+        nativeDeathFrozen = nativeDeathTime >= assassinationEndTime;
+        nativeDeathLanding = null;
+        nativeKickDeath = false;
+        nativeDeathPreviousSample = track.Sample(nativeDeathTime);
+        nativeDeathOrientation = transform.rotation * Quaternion.Inverse(nativeDeathPreviousSample.rotation);
+        nativeDeathTravelScale = 1f;
+        // 配对释放后，遗体的位移和地面支撑使用死亡动作的凭证。
+        ActionCoordinator.ApproveMotionMode(EnemyMovementMode.FullRootMotion);
+        BindNativeDeathAction();
+        AnimationPresenter.SetPlaySpeed(1f);
+        AnimationPresenter.PresentNativeCombat(track.clip, nativeDeathTime);
+    }
 
     internal void PrepareNativeDeathPresentation()
     {
@@ -25,6 +50,7 @@ public sealed partial class EnemyCombatModule
         {
             return;
         }
+        assassinationEndTime = 0f;
         nativeDeathTrack = nativeCombatTrack;
         nativeDeathTime = nativeCombatTime;
         nativeDeathPreviousSample = nativeCombatPreviousSample;
@@ -122,12 +148,17 @@ public sealed partial class EnemyCombatModule
             AnimationPresenter.StopNativeCombat();
             return;
         }
-        if (nativeDeathFrozen)
+        if (NativeDeathPoseReady)
         {
             AnimationPresenter.PresentNativeCombat(nativeDeathTrack.clip, nativeDeathTime);
             return;
         }
         nativeDeathTime = Mathf.Min(nativeDeathTime + Time.deltaTime, nativeDeathTrack.clip.length);
+        if (assassinationEndTime > 0f && nativeDeathTime >= assassinationEndTime)
+        {
+            nativeDeathTime = assassinationEndTime;
+            nativeDeathFrozen = true;
+        }
         Pose sample = nativeDeathTrack.Sample(nativeDeathTime);
         Vector3 movement = Vector3.ProjectOnPlane(
             nativeDeathOrientation * (sample.position - nativeDeathPreviousSample.position), Vector3.up) * nativeDeathTravelScale;

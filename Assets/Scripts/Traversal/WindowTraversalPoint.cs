@@ -169,6 +169,8 @@ LeonWindowTraversal traversal = interactor.GetComponent<LeonWindowTraversal>();
     }
 
     private Object passageOwner;
+    private bool barricaded;
+    internal bool IsBarricaded => barricaded;
 
     private EnemyWindowTraversal fallingActor;
 
@@ -192,7 +194,7 @@ LeonWindowTraversal traversal = interactor.GetComponent<LeonWindowTraversal>();
 
     internal bool IsPassageReservedByOther(Object actor)
     {
-        return FallingBodyInOpening || passageOwner != null && passageOwner != actor;
+        return barricaded || FallingBodyInOpening || passageOwner != null && passageOwner != actor;
     }
 
     internal bool TryReservePassage(Object actor)
@@ -212,6 +214,18 @@ LeonWindowTraversal traversal = interactor.GetComponent<LeonWindowTraversal>();
         {
             passageOwner = null;
         }
+    }
+
+    internal bool CommitBarricade(Object actor)
+    {
+        if (actor == null || passageOwner != actor || FallingBodyInOpening)
+        {
+            return false;
+        }
+
+        barricaded = true;
+        NavigationCollisionCache.MarkerPoseChange();
+        return true;
     }
 
     /// <summary>Interact 的业务处理入口；本方法直接依赖 Component.GetComponent&lt;LeonWindowTraversal&gt;()、LeonWindowTraversal.TryStartTraversal(WindowTraversalPoint)、object.ReferenceEquals(object, object)，调用方通过参数与返回结果交接本次处理。</summary>

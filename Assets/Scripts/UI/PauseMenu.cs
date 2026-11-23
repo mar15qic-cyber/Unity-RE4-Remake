@@ -225,7 +225,6 @@ public class PauseMenu : MonoBehaviour
         }
 
         HandleKeyboardInput();
-        HandleMouseInput();
     }
 
     /// <summary>显示暂停菜单。</summary>
@@ -501,31 +500,6 @@ RenderTexture previous = RenderTexture.active;
         }
     }
 
-    /// <summary>HandleMouseInput 的业务处理入口；本方法直接依赖 PauseMenu.PlayHoverSound()、PauseMenu.UpdateSelection()、RectTransformUtility.RectangleContainsScreenPoint(RectTransform, Vector2)，调用方通过参数与返回结果交接本次处理。</summary>
-    /// <remarks>静态调用链：上游 PauseMenu.Update()；下游（含内部回调体） PauseMenu.PlayHoverSound()、PauseMenu.UpdateSelection()、RectTransformUtility.RectangleContainsScreenPoint(RectTransform, Vector2)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    void HandleMouseInput()
-    {
-        // mousePosition（鼠标位置）：使用位置：作为 RectTransformUtility.RectangleContainsScreenPoint(RectTransform, Vector2) 的参数。
-Vector2 mousePosition = Input.mousePosition;
-        // i（当前遍历索引）：使用位置：作为 List<RectTransform>.this[int] 的参数、PauseMenu.HandleMouseInput()。
-for (int i = 0; i < rowRects.Count; i++)
-        {
-            if (!RectTransformUtility.RectangleContainsScreenPoint(rowRects[i], mousePosition))
-            {
-                continue;
-            }
-
-            if (entries[i].enabled && selectedIndex != i)
-            {
-                selectedIndex = i;
-                PlayHoverSound();
-                UpdateSelection();
-            }
-
-            return;
-        }
-    }
-
     /// <summary>Navigate 的业务处理入口；本方法直接依赖 PauseMenu.FindEnabledIndex(int, int)、PauseMenu.PlayHoverSound()、PauseMenu.UpdateSelection()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 PauseMenu.HandleKeyboardInput()；下游（含内部回调体） PauseMenu.FindEnabledIndex(int, int)、PauseMenu.PlayHoverSound()、PauseMenu.UpdateSelection()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     /// <param name="direction">中文含义：方向。使用位置：作为 PauseMenu.FindEnabledIndex(int, int) 的参数。</param>
@@ -670,8 +644,10 @@ global::UnityEngine.UI.Text assignmentReceiver6 = item;
 
             // background（背景）：使用位置：PauseMenu.UpdateSelection()。
 Image background = rowBackgrounds[i];
-            background.enabled = selected && enabled;
-            if (background.enabled)
+            background.enabled = true;
+            background.raycastTarget = enabled;
+            background.color = Color.clear;
+            if (selected && enabled)
             {
                 background.sprite = selectedRowSprite;
                 // assignmentReceiver8（赋值前保存的目标背景）：从背景读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：PauseMenu.UpdateSelection()。
@@ -904,10 +880,18 @@ global::UnityEngine.UI.Text assignmentReceiver20 = label;
         UpdateSelection();
     }
 
-    /// <summary>QuitToTitleNow 的业务处理入口；本方法直接依赖 Application.CanStreamedLevelBeLoaded(string)、Debug.LogError(object)、GameManager.ResetScenePermission()、GameUIManager.ClearAllModals()、SceneManager.LoadScene(int, LoadSceneMode)、SceneManager.LoadScene(string, LoadSceneMode)、string.IsNullOrWhiteSpace(string)，调用方通过参数与返回结果交接本次处理。</summary>
-    /// <remarks>静态调用链：上游 PauseMenu.OnConfirmYes()；下游（含内部回调体） Application.CanStreamedLevelBeLoaded(string)、Debug.LogError(object)、GameManager.ResetScenePermission()、GameUIManager.ClearAllModals()、SceneManager.LoadScene(int, LoadSceneMode)、SceneManager.LoadScene(string, LoadSceneMode)、string.IsNullOrWhiteSpace(string)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
+    /// <summary>保持本局暂停，等待确认音播放后返回标题场景。</summary>
     IEnumerator QuitToTitle()
     {
+        int sceneBuildIndex = titleSceneBuildIndex;
+        string sceneName = titleSceneName;
+        bool loadByIndex = sceneBuildIndex >= 0 && sceneBuildIndex < SceneManager.sceneCountInBuildSettings;
+        if (!loadByIndex && (string.IsNullOrWhiteSpace(sceneName) || !Application.CanStreamedLevelBeLoaded(sceneName)))
+        {
+            Debug.LogError("[暂停菜单] 找不到标题场景，请检查构建设置中的第一个场景。");
+            yield break;
+        }
+
         isChangingScene = true;
         interactionEnabled = false;
         if (confirmYesButton != null)
@@ -920,49 +904,25 @@ global::UnityEngine.UI.Text assignmentReceiver20 = label;
             confirmNoButton.interactable = false;
         }
 
+        if (GameManager.HasInstance)
+        {
+            GameManager.Instance.HoldPauseForSceneExit();
+        }
+
         yield return AudioManager.PlayInterfaceBeforeTransition(AudioEventNames.UIQuitConfirm);
-        GameManager.ResetScenePermission();
-        // sceneBuildIndex（场景构建索引）：使用位置：作为 SceneManager.LoadScene(int, LoadSceneMode) 的参数、PauseMenu.QuitToTitleNow()。
-int sceneBuildIndex = -1;
-        if (titleSceneBuildIndex >= 0 && titleSceneBuildIndex < SceneManager.sceneCountInBuildSettings)
-        {
-            sceneBuildIndex = titleSceneBuildIndex;
-        }
-        else if (!string.IsNullOrWhiteSpace(titleSceneName) && Application.CanStreamedLevelBeLoaded(titleSceneName))
-        {
-            if (GameUIManager.HasInstance)
-            {
-                GameUIManager.Instance.ClearAllModals();
-            }
-
-            SceneManager.LoadScene(titleSceneName, LoadSceneMode.Single);
-            yield break;
-        }
-
-        if (sceneBuildIndex < 0)
-        {
-            Debug.LogError("[暂停菜单] 找不到标题场景，请检查构建设置中的第一个场景。");
-            isChangingScene = false;
-            interactionEnabled = true;
-            if (confirmYesButton != null)
-            {
-                confirmYesButton.interactable = true;
-            }
-
-            if (confirmNoButton != null)
-            {
-                confirmNoButton.interactable = true;
-            }
-
-            yield break;
-        }
-
         if (GameUIManager.HasInstance)
         {
             GameUIManager.Instance.ClearAllModals();
         }
 
-        SceneManager.LoadScene(sceneBuildIndex, LoadSceneMode.Single);
+        if (loadByIndex)
+        {
+            SceneManager.LoadScene(sceneBuildIndex, LoadSceneMode.Single);
+        }
+        else
+        {
+            SceneManager.LoadScene(sceneName, LoadSceneMode.Single);
+        }
     }
 
     /// <summary>HideNestedPanels 的业务处理入口；本方法直接依赖 GameObject.SetActive(bool)，调用方通过参数与返回结果交接本次处理。</summary>
@@ -1148,6 +1108,8 @@ GameObject menuRoot = new GameObject("菜单列表", typeof(RectTransform), type
         SetAnchors(menuRoot.GetComponent<RectTransform>(), new Vector2(0.075f, 0.25f), new Vector2(0.34f, 0.80f));
         // menuLayout（菜单布局）：保存 GameObject.GetComponent<VerticalLayoutGroup>() 的返回结果，供当前步骤使用。使用位置：PauseMenu.BuildInterface()。
 VerticalLayoutGroup menuLayout = menuRoot.GetComponent<VerticalLayoutGroup>();
+        menuLayout.childControlWidth = true;
+        menuLayout.childForceExpandWidth = true;
         menuLayout.spacing = 4f;
         menuLayout.childControlHeight = false;
         menuLayout.childForceExpandHeight = false;
@@ -1228,12 +1190,13 @@ EventTrigger.Entry enter = new EventTrigger.Entry
         };
         enter.callback.AddListener( /* 中文含义：当前流程中不使用的传入结果。 */_ =>
         {
-            if (!isVisible || !interactionEnabled || !entries[capturedIndex].enabled)
+            if (!isVisible || !interactionEnabled || isConfirming || isSubpageVisible || !entries[capturedIndex].enabled || selectedIndex == capturedIndex)
             {
                 return;
             }
 
             selectedIndex = capturedIndex;
+            PlayHoverSound();
             UpdateSelection();
         });
         trigger.triggers.Add(enter);

@@ -403,6 +403,11 @@ RE4RThirdPersonCamera driver = gameplayDriver;
     /// <param name="owner">中文含义：拥有者。要求释放的拥有者引用。</param>
     public bool ReleaseExternalCamera(Object owner)
     {
+        return ReleaseExternalCamera(owner, false);
+    }
+
+    internal bool ReleaseExternalCamera(Object owner, bool resumeShoulderFromOutput, Vector2? shoulderAngles = null)
+    {
         if (owner == null || externalOwner != owner)
         {
             return false;
@@ -414,7 +419,20 @@ RE4RThirdPersonCamera driver = gameplayDriver;
 RE4RThirdPersonCamera driver = gameplayDriver;
         if (!ReferenceEquals(driver, null))
         {
-            driver.SynchronizeFromCamera();
+            if (shoulderAngles.HasValue)
+            {
+                driver.SetInputSuppressed(false);
+                driver.ResumeShoulderAtAngles(shoulderAngles.Value);
+            }
+            else if (resumeShoulderFromOutput)
+            {
+                driver.SetInputSuppressed(false);
+                driver.ResumeShoulderFromOutput();
+            }
+            else
+            {
+                driver.SynchronizeFromCamera();
+            }
         }
 
         if (activeExternalCamera != null)

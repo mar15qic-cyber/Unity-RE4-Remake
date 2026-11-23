@@ -884,25 +884,85 @@ var countGo = new GameObject("Count", typeof(Text));
             count.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             // countRt（数量矩形变换）：保存 GameObject.GetComponent<RectTransform>() 的返回结果，供当前步骤使用。使用位置：InventoryGridView.ConfigureItemWidget(RectTransform, GridItem, float, bool)。
 var countRt = countGo.GetComponent<RectTransform>();
-            countRt.anchorMin = Vector2.one;
-            countRt.anchorMax = Vector2.one;
-            countRt.pivot = Vector2.one;
-            countRt.anchoredPosition = new Vector2(-4, -4);
+            Vector2 bottomRight = new Vector2(1f, 0f);
+            countRt.anchorMin = bottomRight;
+            countRt.anchorMax = bottomRight;
+            countRt.pivot = bottomRight;
+            countRt.anchoredPosition = new Vector2(-4f, 4f);
+            count.alignment = TextAnchor.LowerRight;
             countRt.sizeDelta = new Vector2(60, 30);
             count.fontSize = 18;
             count.color = Color.white;
             count.raycastTarget = false;
         }
 
-        // countText（数量文字）：保存 int.ToString() 的返回结果，供当前步骤使用。使用位置：InventoryGridView.ConfigureItemWidget(RectTransform, GridItem, float, bool)。
-string countText = gi.count.ToString();
-        if (count.text != countText)
+        bool showCount = TryReadItemNumber(gi, out int number, out Color numberColor) && threeDimensionalPresentation == null;
+        count.gameObject.SetActive(showCount);
+        if (showCount)
         {
-            count.text = countText;
+            UpdateItemNumber(count, number, numberColor);
+        }
+    }
+
+    internal static bool TryReadItemNumber(GridItem entry, out int number, out Color color)
+    {
+        number = entry.count;
+        color = Color.white;
+        ItemData item = entry.item;
+        if (item == null)
+        {
+            return false;
         }
 
-        count.gameObject.SetActive(gi.count > 1);
+        if (item.itemType == ItemType.Weapon && item.weaponType != WeaponType.Knife)
+        {
+            LeonController player = LeonController.Instance;
+            if (player == null || !player.TryGetComponent(out LeonWeaponHandler weapons))
+            {
+                return false;
+            }
+
+            WeaponBase weapon = weapons.GetWeapon(item.weaponType);
+            if (weapon == null || weapon.data == null)
+            {
+                return false;
+            }
+
+            number = weapon.currentAmmo;
+            if (number == 0)
+            {
+                color = new Color32(238, 94, 83, 255);
+            }
+            else if (number >= weapon.data.magazineSize && weapon.data.magazineSize > 0)
+            {
+                color = new Color32(164, 215, 113, 255);
+            }
+
+            return true;
+        }
+
+        if (item.maxStack > 1 && number >= item.maxStack)
+        {
+            color = new Color32(164, 215, 113, 255);
+        }
+
+        return item.maxStack > 1 || number > 1;
     }
+
+    internal static void UpdateItemNumber(Text label, int number, Color color)
+    {
+        string numberText = number.ToString();
+        if (label.text != numberText)
+        {
+            label.text = numberText;
+        }
+
+        if (label.color != color)
+        {
+            label.color = color;
+        }
+    }
+
 
     /// <summary>ReleaseItemWidget 的业务处理入口；本方法直接依赖 Component.GetComponent&lt;CanvasGroup&gt;()、Component.GetComponent&lt;EventTrigger&gt;()、Dictionary&lt;RectTransform, GridItem&gt;.Remove(RectTransform)、GameObject.SetActive(bool)、List&lt;EventTrigger.Entry&gt;.Clear()、List&lt;RectTransform&gt;.Add(RectTransform)、List&lt;RectTransform&gt;.Contains(RectTransform)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 InventoryGridView.RebuildInternal(int, int, IReadOnlyList&lt;GridItem&gt;)；下游（含内部回调体） Component.GetComponent&lt;CanvasGroup&gt;()、Component.GetComponent&lt;EventTrigger&gt;()、Dictionary&lt;RectTransform, GridItem&gt;.Remove(RectTransform)、GameObject.SetActive(bool)、List&lt;EventTrigger.Entry&gt;.Clear()、List&lt;RectTransform&gt;.Add(RectTransform)、List&lt;RectTransform&gt;.Contains(RectTransform)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>

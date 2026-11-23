@@ -92,7 +92,7 @@ int lowerOneElement;
     /// <summary>中文含义：是否允许地面接触。</summary>
     public bool AllowGroundContact => enableTerrainIK && isActiveAndEnabled && leon != null &&
         leon.isActiveAndEnabled && leon.NewPipelineValid && leon.IsGrounded && !waitingContact && !leon.IsJumping &&
-        action != null && !action.HasActiveFullBodyAction && !action.IsHitTransactionActive &&
+        !leon.IsHeldByTrap && action != null && !action.HasActiveFullBodyAction && !action.IsHitTransactionActive &&
         (animatorDriver == null || !animatorDriver.IsBlendingOutKnifePose) && (knife == null || !knife.Active) &&
         (elevatedLanding == null || !elevatedLanding.IsActive) && motion != null &&
         motion.CurrentMotionToken.Source == GameArchitecture.MotionSource.NormalMovement &&

@@ -73,6 +73,7 @@ public partial class LeonQTECoordinator : MonoBehaviour
     private Coroutine activeRoutine;
     /// <summary>中文含义：生效种类。使用位置：作为 QTESessionContext.QTESessionContext(int, QTEKind, Transform, Animator, Transform, Animator) 的参数、LeonQTECoordinator.AlignAndEnter(int)、LeonQTECoordinator.BeginResult(bool) 等共 16 处。</summary>
     private QTEKind activeKind;
+    private bool sessionStartedCrouching;
     /// <summary>中文含义：生效变体。使用位置：作为 LeonQTECoordinator.BeginResult(bool) 的参数、LeonQTECoordinator.AlignAndEnter(int)、LeonQTECoordinator.CommitBiteDamage(int) 等共 9 处。</summary>
     private QTEAnimationVariant activeVariant;
     /// <summary>中文含义：阶段。使用位置：作为 Debug.LogWarning(object) 的参数、LeonQTECoordinator.BeginResult(bool)、LeonQTECoordinator.Cancel(int, QTECancelReason) 等共 19 处。</summary>
@@ -86,6 +87,7 @@ public partial class LeonQTECoordinator : MonoBehaviour
     /// <summary>中文含义：按下数量。使用位置：作为 Mathf.Min(int, int) 的参数、作为 QTEProgressInfo.QTEProgressInfo(int, int, int, float, float) 的参数、LeonQTECoordinator.ChangePhase(QTEPhase) 等共 5 处。</summary>
     private int pressCount;
     private float rearHoldElapsed;
+    private int rearEscapePresses;
     private VillagerController rearHelper;
     private GameArchitecture.ObjectIdentity rearHelperIdentity;
     private bool rearHelperHit;
@@ -285,7 +287,7 @@ public partial class LeonQTECoordinator : MonoBehaviour
             return false;
         }
 
-        context = new QTESessionContext(activeSessionId, activeKind, transform, playerAnimator, participant.Root, participant.Animator);
+        context = new QTESessionContext(activeSessionId, activeKind, transform, playerAnimator, participant.Root, participant.Animator, sessionStartedCrouching);
         return context.IsValid;
     }
 
@@ -634,6 +636,7 @@ int newSessionId = ++globalSessionSequence;
         activeSessionId = newSessionId;
         DisposeNativePairFade();
         activeKind = kind;
+        sessionStartedCrouching = controller.IsCrouching;
         activeVariant = variant;
         participant = targetParticipant;
         if (UsesNativeSawPair(kind, targetParticipant) && !TryLoadNativeSawPair(out nativePair))
@@ -668,6 +671,7 @@ int newSessionId = ++globalSessionSequence;
         weaponRestoreFrames = 0;
         pressCount = 0;
         rearHoldElapsed = 0f;
+        rearEscapePresses = 0;
         rearHelper = null;
         rearHelperHit = false;
         lastInputFrame = -1;
@@ -726,7 +730,11 @@ bool variantApplied;
         }
 
         pairedKnife = null;
-        if ((kind == QTEKind.GroundFinisher || kind == QTEKind.KnifeAssassination) && InventoryManager.Instance != null)
+        if (kind == QTEKind.GroundFinisher)
+        {
+            pairedKnife = combat.knifeModule.SelectGroundFinisherKnife();
+        }
+        else if (kind == QTEKind.KnifeAssassination && InventoryManager.Instance != null)
         {
             pairedKnife = InventoryManager.Instance.GetPreferredKnife();
         }
@@ -794,10 +802,6 @@ global::System.Action<int, global::QTEKind> receiverValue4 = OnQTESessionStarted
         {
             return false;
         }
-        if (activeKind == QTEKind.RearGrab)
-        {
-            return false;
-        }
         if (phase == QTEPhase.Entering)
         {
             if (nativePair != null && (nativePair.InputFrame - nativePair.SourceFrame) / nativePair.FrameRate > EarlyEscapeWindow)
@@ -819,7 +823,15 @@ global::System.Action<int, global::QTEKind> receiverValue4 = OnQTESessionStarted
         }
 
         lastInputFrame = Time.frameCount;
-        pressCount = Mathf.Min(config.requiredPresses, pressCount + 1);
+        if (activeKind == QTEKind.RearGrab)
+        {
+            rearEscapePresses = Mathf.Min(config.requiredPresses, rearEscapePresses + 1);
+            pressCount = Mathf.Max(pressCount, rearEscapePresses);
+        }
+        else
+        {
+            pressCount = Mathf.Min(config.requiredPresses, pressCount + 1);
+        }
         PublishProgress();
         if (pressCount >= config.requiredPresses)
         {
@@ -2199,12 +2211,19 @@ float enemyBackAngle = Vector3.Angle(targetParticipant.Root.forward, -direction)
         }
         else if (kind == QTEKind.GroundFinisher)
         {
-            if (!config.useNativeGroundFinisher || combat == null || combat.knifeModule == null || !combat.knifeModule.ValidKnife)
+            if (!config.useNativeGroundFinisher || combat == null || combat.knifeModule == null || !combat.knifeModule.HasGroundFinisherKnife)
             {
                 reason = QTECancelReason.PlayerUnavailable;
                 return false;
             }
             if (playerAngle > Mathf.Max(config.maximumPlayerFacingAngle, 100f))
+            {
+                reason = QTECancelReason.FacingInvalid;
+                return false;
+            }
+            // 1020 是正面跪姿配对，从背后不能绕过电锯男进入刺击。
+            if (targetParticipant is VillagerQTEParticipant saw && saw.controller.missionEnemyType == MissionEnemyType.Sawman
+                && enemyAngle > 65f)
             {
                 reason = QTECancelReason.FacingInvalid;
                 return false;
@@ -3350,9 +3369,15 @@ int finishedSessionId = activeSessionId;
             controller.Health != null && controller.Health.IsDead;
         bool blendGrabExit = controller != null && controller.currentState != LeonState.Dead &&
             (activeKind == QTEKind.FrontGrab || activeKind == QTEKind.RearGrab);
-        StopNativePair(blendGrabExit || result == QTEResult.Cancelled &&
-            reason is QTECancelReason.SpaceBlocked or QTECancelReason.AnimationInterrupted or QTECancelReason.SafetyTimeout,
-            lethalNativeFailure);
+        NativePairPlayback assassinationPose = null;
+        if (activeKind == QTEKind.KnifeAssassination && assassinationCommitted &&
+            participant != null && !participant.IsAlive)
+        {
+            assassinationPose = nativePair;
+        }
+        bool fadeInterruptedPair = result == QTEResult.Cancelled &&
+            reason is QTECancelReason.SpaceBlocked or QTECancelReason.AnimationInterrupted or QTECancelReason.SafetyTimeout;
+        StopNativePair(assassinationPose == null && (blendGrabExit || fadeInterruptedPair), lethalNativeFailure);
         // finishedParticipant（结束参与者）：使用位置：作为 LeonQTECoordinator.UnsubscribeParticipant(IEnemyQTEParticipant) 的参数、LeonQTECoordinator.FinishCleanup(QTEResult, QTECancelReason)。
 IEnemyQTEParticipant finishedParticipant = participant;
         if (!playerReleased)
@@ -3366,6 +3391,12 @@ IEnemyQTEParticipant finishedParticipant = participant;
         {
             UnsubscribeParticipant(finishedParticipant);
             finishedParticipant.Release(finishedSessionId);
+            if (assassinationPose != null && finishedParticipant.Root != null &&
+                finishedParticipant.Root.TryGetComponent<EnemyCombatModule>(out var enemyCombat))
+            {
+                enemyCombat.ContinueAssassinationDeath(assassinationPose.EnemyTrack,
+                    assassinationPose.EnemyAudioTime, assassinationPose.EnemyFinalTime);
+            }
         }
 
         // receiverValue65（判空前缓存的动画协调器）：从动画协调器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonQTECoordinator.FinishCleanup(QTEResult, QTECancelReason)。
@@ -3794,7 +3825,8 @@ float distance = Vector3.Distance(transform.position, candidate.transform.positi
             weaponVisualController.SetKnifeAppearance(pairedKnife);
         }
 
-        if (kind == QTEKind.GroundFinisher && nativePair != null && weaponVisualController != null
+        // 原版暗杀和倒地终结的右手动画使用同一个武器挂点。
+        if (nativePair != null && weaponVisualController != null
             && weaponVisualController.BeginNativePairKnife())
         {
             assassinationKnifeVisualActive = true;

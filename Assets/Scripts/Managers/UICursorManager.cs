@@ -28,7 +28,7 @@ public class UICursorManager : Singleton<UICursorManager>
     /// <summary>中文含义：自定义光标相对于原始贴图的显示比例。使用位置：作为 Mathf.Clamp(float, float, float) 的参数。</summary>
     [Range(0.25f, 1f)]
     [Tooltip("自定义光标相对于原始贴图的显示比例")]
-    public float cursorScale = 0.5f;
+    public float cursorScale = 0.32f;
     /// <summary>中文含义：自定义光标是否生效。使用位置：UICursorManager.HideCustomCursor()、UICursorManager.ShowCustomCursor()、UICursorManager.Start() 等共 4 处。</summary>
     private bool customCursorActive;
     /// <summary>中文含义：是否上方按钮。使用位置：UICursorManager.ApplyCursor()、UICursorManager.ShowCustomCursor()、UICursorManager.UpdateHoverState()。</summary>

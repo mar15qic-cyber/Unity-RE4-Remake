@@ -7,6 +7,15 @@ using GameArchitecture;
 public partial class LeonQTECoordinator
 {
     private string groundFinisherMotion;
+
+    internal GridItem ReadGroundPromptKnife()
+    {
+        if (combat == null || combat.knifeModule == null)
+        {
+            return null;
+        }
+        return combat.knifeModule.SelectGroundFinisherKnife();
+    }
     private readonly Dictionary<VillagerQTEParticipant, GroundFinisherPlan> groundFinisherPlans = new();
 
     private sealed class GroundFinisherPlan
@@ -27,6 +36,10 @@ public partial class LeonQTECoordinator
             return false;
         }
         bool currentAction = !checkAction || target.controller.actionCoordinator.CurrentHandle == plan.action;
+        if (checkAction && (!target.TryReadGroundFinisher(out string currentMotion) || currentMotion != plan.motion))
+        {
+            return false;
+        }
         return currentAction && Time.time <= plan.expiresAt
             && (transform.position - plan.player.position).sqrMagnitude < .0025f
             && (target.Root.position - plan.enemy.position).sqrMagnitude < .0025f
@@ -109,23 +122,6 @@ public partial class LeonQTECoordinator
         return fits;
     }
 
-    private bool CanApproachGroundFinisher(VillagerQTEParticipant target)
-    {
-        if (TryReadGroundFinisherPlan(target, out _))
-        {
-            return true;
-        }
-        if (Mathf.Abs(transform.position.y - target.Root.position.y) > config.maximumHeightDifference
-            || !TryLoadGroundFinisher(target, out var pair, out _))
-        {
-            return false;
-        }
-        pair.SetStage(pair.Guard, transform, target.Root, SawPairBlend);
-        return pair.FitGroundFinisher(transform, target.Root, 9f, config.maximumHeightDifference, Vector3.zero)
-            && IsGroundFinisherMotionClear(transform.position, pair.PlayerStart.position, target)
-            && !IsPairingSpaceBlocked(pair.PlayerStart.position, target);
-    }
-
     public bool TryStartNearestGroundFinisher()
     {
         return TryStartGroundFinisherInput(ReadFinisherInput());
@@ -136,6 +132,11 @@ public partial class LeonQTECoordinator
         if (!UsesNativeInteractionPrompts || combat == null || combat.IsAiming || PromptInputBlocked()
             || !request.IsValid || request.Kind != InteractionPromptKind.GroundFinisher || !request.CanExecute
             || request.Target is not VillagerQTEParticipant selected)
+        {
+            return false;
+        }
+        Camera camera = Camera.main;
+        if (camera == null || !IsPromptVisible(camera, selected, selected.Root.position + Vector3.up * .8f))
         {
             return false;
         }
@@ -185,9 +186,17 @@ public partial class LeonQTECoordinator
         {
             role = "Ganado";
         }
-        var bank = Resources.Load<ChapterOnePairMotion>(ChapterOnePairMotion.ResourceName);
+        string resource = ChapterOnePairMotion.ResourceName;
+        string enemyPrefix = "GanadoPair_";
+        if (villager.controller.missionEnemyType == MissionEnemyType.Sawman)
+        {
+            resource = "SawKnifeFollowUp";
+            role = "Salvador";
+            enemyPrefix = "SalvadorPair_";
+        }
+        var bank = Resources.Load<ChapterOnePairMotion>(resource);
         if (bank == null || !bank.TryGetVillagerTrack("Leon", "LeonPair_" + motion, out var playerTrack)
-            || !bank.TryGetVillagerTrack(role, "GanadoPair_" + motion, out var enemyTrack))
+            || !bank.TryGetVillagerTrack(role, enemyPrefix + motion, out var enemyTrack))
         {
             return false;
         }
@@ -209,8 +218,8 @@ public partial class LeonQTECoordinator
 
     private bool TryCommitGroundFinisher(int session)
     {
-        if (session != activeSessionId || assassinationCommitted || participant == null
-            || participant.ActiveSessionId != session || !participant.IsAlive || combat == null || combat.knifeModule == null)
+        if (session != activeSessionId || assassinationCommitted || participant is not VillagerQTEParticipant victim
+            || victim.ActiveSessionId != session || !victim.IsAlive || combat == null || combat.knifeModule == null)
         {
             return false;
         }
@@ -225,15 +234,27 @@ public partial class LeonQTECoordinator
             Cancel(session, QTECancelReason.PlayerUnavailable);
             return false;
         }
+        if (session != activeSessionId || victim == null || victim.ActiveSessionId != session)
+        {
+            return false;
+        }
         assassinationCommitted = true;
         assassinationCommittedTime = Time.time;
         enemyActionCompleted = true;
-        if (participant.CommitAssassinationResult(session, float.MaxValue))
+        if (!victim.CommitAssassinationResult(session, ResolveAssassinationDamage(victim.controller)))
         {
-            Vector3 contact = Vector3.Lerp(bladeBase, bladeTip, .7f);
-            ChapterOneEffects.TryPlay(ChapterOneEffect.Assassination, contact, -transform.forward);
-            PlayKnifePairContactAudio(contact);
+            Cancel(session, QTECancelReason.EnemyUnavailable);
+            return false;
         }
+        if (victim.IsAlive && victim.controller.missionEnemyType == MissionEnemyType.Sawman && nativePair != null)
+        {
+            // 1020 的敌方释放标记在 79 帧，存活时从此处退出，致死则继续倒地。
+            nativePair.SurvivorReleaseFrame = 79;
+            nativePair.HoldEnemyResultPose = false;
+        }
+        Vector3 contact = Vector3.Lerp(bladeBase, bladeTip, .7f);
+        ChapterOneEffects.TryPlay(ChapterOneEffect.Assassination, contact, -transform.forward);
+        PlayKnifePairContactAudio(contact);
         return true;
     }
 

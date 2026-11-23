@@ -89,6 +89,11 @@ public partial class LeonAnimRig
             nativeW870Head.localRotation = nativeW870HeadBeforeAim;
         }
         nativeW870HeadAdjusted = false;
+        if (controller != null && controller.IsHeldByTrap)
+        {
+            lookPitchOffset = 0f;
+            return;
+        }
         if (nativeKnifeAim != null && nativeKnifeAim.IsGuardAiming)
         {
             return;
@@ -148,7 +153,10 @@ public partial class LeonAnimRig
             {
                 pitch = 0f;
             }
-            nativeKnifePitch = Mathf.MoveTowards(nativeKnifePitch, Mathf.Clamp(pitch, -45f, 50f), 220f * Time.deltaTime);
+            if (nativeKnifeAim.IsHoldingGuardPose && nativeKnifeAim.GuardViewFrame == Time.frameCount)
+                nativeKnifePitch = Mathf.Clamp(nativeKnifeAim.GuardViewPitch, -45f, 50f);
+            else
+                nativeKnifePitch = Mathf.MoveTowards(nativeKnifePitch, Mathf.Clamp(pitch, -45f, 50f), 220f * Time.deltaTime);
             nativeCqbrSpineBeforeAim = nativeCqbrAimSpine.localRotation;
             nativeCqbrAimSpine.rotation = Quaternion.AngleAxis(nativeKnifePitch, controller.transform.right)
                 * nativeCqbrAimSpine.rotation;
@@ -215,6 +223,18 @@ public partial class LeonAnimRig
         correction = Quaternion.RotateTowards(Quaternion.identity, correction, 80f);
         Quaternion appliedCorrection = Quaternion.Slerp(Quaternion.identity, correction, nativeCqbrAimWeight);
         bool stabilizeHead = weapon == nativeW870Weapon;
+        if (stabilizeHead && driver.NativeW870ShotActive && controller.IsGrounded && !controller.IsCrouching
+            && controller.MoveInput.sqrMagnitude <= .0025f)
+        {
+            // LeonR4R 的 0500 重绑将枪口俯仰反向。绕横轴翻回上扬，保留水平偏转、双手与护木的相对姿态。
+            Vector3 heldAxis = appliedCorrection * direction.normalized;
+            Vector3 bore = appliedCorrection * muzzle.forward;
+            Vector3 right = Vector3.Cross(Vector3.up, heldAxis).normalized;
+            float drop = Vector3.SignedAngle(Vector3.ProjectOnPlane(heldAxis, right),
+                Vector3.ProjectOnPlane(bore, right), right);
+            if (drop > 0f)
+                appliedCorrection = Quaternion.AngleAxis(-2f * drop * nativeCqbrAimWeight, right) * appliedCorrection;
+        }
         Quaternion animatedHeadRotation = Quaternion.identity;
         Quaternion animatedNeckRotation = Quaternion.identity;
         if (stabilizeHead)
@@ -363,9 +383,45 @@ public partial class LeonAnimRig
         }
     }
 
+    [Tooltip("CQBR 原版持枪时的枪体静置片段，与角色的专用持枪姿势配对。")]
+    [SerializeField] private AnimationClip nativeCqbrCarryMechanism;
+    private Transform cqbrMechanismRoot;
+    private Pose cqbrCarryRootPose;
+    private Pose cqbrAimRootPose;
+
+    private void PositionNativeCqbrOnBack()
+    {
+        if (nativeCqbrAimSpine == null || nativeCqbrWeapon == null || nativeCqbrWeapon.data == null)
+        {
+            return;
+        }
+        var mount = nativeCqbrWeapon.data.stowedRootInSpine;
+        var model = nativeCqbrAimSpine.Find("CQBR Native Back");
+        if (model == null || mount.rotation.Equals(default(Quaternion)))
+        {
+            return;
+        }
+        var gun = model.Find("wp4402_Skeleton/root/_00");
+        if (gun != null)
+        {
+            Quaternion rotation = nativeCqbrAimSpine.rotation * mount.rotation;
+            model.rotation = rotation * Quaternion.Inverse(gun.rotation) * model.rotation;
+            model.position += nativeCqbrAimSpine.TransformPoint(mount.position) - gun.position;
+        }
+    }
+
     private void SampleNativeCqbrMechanism()
     {
         var model = nativeCqbrWeapon.VisualModel;
+        if (cqbrMechanismRoot == null && nativeCqbrCarryMechanism != null && nativeCqbrBolt != null)
+        {
+            cqbrMechanismRoot = nativeCqbrBolt.parent;
+            // 原作持枪与瞄准各有一套枪体根骨位姿。读取静置帧后只混合枪体，不牵引手腕。
+            nativeCqbrCarryMechanism.SampleAnimation(model, 0f);
+            cqbrCarryRootPose = new Pose(cqbrMechanismRoot.localPosition, cqbrMechanismRoot.localRotation);
+            nativeCqbrShotMechanism.SampleAnimation(model, 0f);
+            cqbrAimRootPose = new Pose(cqbrMechanismRoot.localPosition, cqbrMechanismRoot.localRotation);
+        }
         if (nativeCqbrReloadMechanism != null && driver.NativeCqbrReloadActive
             && driver.TryReadNativeCqbrReload(out float reloadProgress))
         {
@@ -403,6 +459,7 @@ public partial class LeonAnimRig
             }
             motion.SampleAnimation(model, time);
             nativeCqbrMechanismDirty = true;
+            return;
         }
         else if (nativeCqbrWeapon.currentAmmo == 0)
         {
@@ -413,6 +470,14 @@ public partial class LeonAnimRig
         {
             nativeCqbrShotMechanism.SampleAnimation(model, 0f);
             nativeCqbrMechanismDirty = false;
+        }
+        if (cqbrMechanismRoot != null)
+        {
+            float aim = driver.NativeCqbrAimCorrectionWeight;
+            cqbrMechanismRoot.SetLocalPositionAndRotation(
+                Vector3.Lerp(cqbrCarryRootPose.position, cqbrAimRootPose.position, aim),
+                Quaternion.Slerp(cqbrCarryRootPose.rotation, cqbrAimRootPose.rotation, aim));
+
         }
     }
 

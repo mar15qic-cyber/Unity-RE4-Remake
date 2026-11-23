@@ -86,7 +86,7 @@ public sealed partial class EnemyCombatModule
     private NativeBodyReaction currentNativeBodyReaction;
     private ActionHandle nativeBodyReactionAction;
     private ActionHandle lastBodyTechniqueShot;
-    private const float StandingHitRecoveryBlend = .24f;
+    internal const float StandingHitRecoveryBlend = .24f;
     private ActionHandle standingHitRecoveryAction;
     private float standingHitRecoveryEndTime;
 
@@ -97,8 +97,14 @@ public sealed partial class EnemyCombatModule
 
     private bool TryBeginStandingHitRecovery()
     {
-        if (!HasUnfinishedStandingHit || IsQTEControlled ||
-            !AnimationPresenter.TryBlendStandingHitToLocomotion(StandingHitRecoveryBlend))
+        if (!HasUnfinishedStandingHit || IsQTEControlled)
+        {
+            return false;
+        }
+
+        bool resumePursuit = WillPursueAfterHit() && host.healthModule.LifePhase == EnemyLifePhase.Alive
+            && !host.IsNavigationTraversalProtected && host.PlayerDistance > StandingApproachRange;
+        if (!AnimationPresenter.TryBlendStandingHitToLocomotion(StandingHitRecoveryBlend, resumePursuit))
         {
             return false;
         }

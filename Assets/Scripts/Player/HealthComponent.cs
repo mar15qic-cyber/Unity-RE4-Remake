@@ -18,6 +18,7 @@ public class HealthComponent : MonoBehaviour
     public float CurrentHealth => currentHealth;
     /// <summary>中文含义：最大生命值。最大血量</summary>
     public float MaxHealth => maxHealth;
+    public float InitialMaximum { get; private set; }
 
     /// <summary>中文含义：生命比例。血量比例 (0-1)</summary>
     public float HealthRatio
@@ -47,6 +48,7 @@ public class HealthComponent : MonoBehaviour
     /// <param name="max">中文含义：最大。使用位置：HealthComponent.Initialize(float)。</param>
     public void Initialize(float max)
     {
+        InitialMaximum = max;
         maxHealth = max;
         currentHealth = maxHealth;
         // receiverValue2（判空前缓存的生命变化时的通知回调）：从生命变化时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、HealthComponent.Initialize(float)。

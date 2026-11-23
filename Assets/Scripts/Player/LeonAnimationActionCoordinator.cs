@@ -632,7 +632,7 @@ global::System.Action<global::AnimationActionTransaction, float> receiverValue11
         }
 
         // 原版事件按最近的源帧取样，避免物理步恰好落在接触帧边界时多等一拍。
-        const float cqbrFrameRounding = 0.501f / 96f;
+        const float cqbrFrameRounding = 0.501f / RE4.ChapterOne.ChapterOneRootActor.RifleDrawFrames;
         if (type == WeaponActionType.Holster && weaponTx.phase == WeaponTransactionPhase.PlayingHolster
             && weaponTx.sourceWeaponType == WeaponType.Rifle && driver != null && driver.SupportsNativeCqbr
             && normalizedTime + cqbrFrameRounding >= 1f - LeonAnimatorDriver.NativeCqbrRevealTime)
@@ -1880,6 +1880,11 @@ global::LeonAnimRig receiverValue73 = animRig;
     /// <param name="direction">中文含义：方向。使用位置：作为 LeonAnimatorDriver.BeginHit(LeonHitDirection) 的参数。</param>
     public bool RequestHit(LeonHitDirection direction)
     {
+        if (hasActiveFullBodyTx && IsEnvironmentalAction(fullBodyTx.fullBodyActionType))
+        {
+            EndLadderAction(fullBodyTx.transactionId, fullBodyTx.fullBodyActionType, true);
+        }
+
         if (hasActiveFullBodyTx && fullBodyTx.fullBodyActionType == FullBodyActionType.LadderPush)
         {
             EndLadderPush(fullBodyTx.transactionId, true);
@@ -1949,6 +1954,29 @@ global::LeonAnimRig receiverValue75 = animRig;
     internal bool RequestLadderPush()
     {
         return RequestLadderAction(FullBodyActionType.LadderPush);
+    }
+
+    internal bool RequestEnvironmentalAction(FullBodyActionType action)
+    {
+        return IsEnvironmentalAction(action) && RequestLadderAction(action);
+    }
+
+    internal bool RequestEnvironmentalFall()
+    {
+        if (!ValidateDriver() || isDead || hasActiveFullBodyTx)
+        {
+            return false;
+        }
+
+        InterruptWeaponTransactionForFullBody();
+        return RequestEnvironmentalAction(FullBodyActionType.EnvironmentalFall);
+    }
+
+    private static bool IsEnvironmentalAction(FullBodyActionType action)
+    {
+        return action == FullBodyActionType.CabinetPush || action == FullBodyActionType.TrapCatch ||
+            action == FullBodyActionType.TrapEscape || action == FullBodyActionType.EnvironmentalFall ||
+            action == FullBodyActionType.DoorBrace;
     }
 
     internal bool RequestLadderTraversal(bool interruptWeapon = false)
@@ -2049,7 +2077,6 @@ global::LeonAnimRig receiverValue75 = animRig;
         hasActiveFullBodyTx = false;
         fullBodyTx = default;
         driver.EndTraversalLanding();
-        driver.FinalizeFullBodyActionLayer();
         var pickupCompleted = OnTraversalActionCompleted;
         if (pickupCompleted != null)
         {
@@ -2088,8 +2115,12 @@ global::LeonAnimRig receiverValue75 = animRig;
     /// <remarks>静态调用链：上游 LeonHighDropLanding.BeginDrop()；下游（含内部回调体） AnimationActionTransaction.AnimationActionTransaction()、LeonAnimationActionCoordinator.CheckActionConflict(ActionKind)、LeonAnimationActionCoordinator.ValidateDriver()、LeonAnimatorDriver.BeginFullBodyAction(FullBodyActionType)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     public bool RequestAutomaticDrop()
     {
-        if (!ValidateDriver() || isDead || hasActiveFullBodyTx || !InterruptReloadForFullBodyAction() ||
-            CheckActionConflict(ActionKind.Traversal) != RejectionReason.None)
+        if (!ValidateDriver() || isDead || hasActiveFullBodyTx)
+        {
+            return false;
+        }
+        InterruptWeaponTransactionForFullBody();
+        if (CheckActionConflict(ActionKind.Traversal) != RejectionReason.None)
         {
             return false;
         }

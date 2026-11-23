@@ -962,7 +962,8 @@ float lockDuration = Mathf.Max(0f, fireInterval);
         if (weapon != null && weapon.data != null)
         {
             lockDuration = Mathf.Max(lockDuration, weapon.GetFireInterval());
-            if (weapon.data.fireMode != FireMode.Auto)
+            bool nativePistol = weapon.data.weaponType == WeaponType.Pistol && driver != null && driver.UsesNativePistolAim;
+            if (weapon.data.fireMode != FireMode.Auto && !nativePistol)
             {
                 lockDuration = Mathf.Max(lockDuration, shootAnimationLockTime);
             }
@@ -2631,7 +2632,7 @@ global::System.Action receiverValue86 = OnReloadFullyExited;
     /// <remarks>静态调用链：上游 LeonCombat.CommitGuardInput(bool, double)、LeonCombat.ExecuteFirearmAttack()、LeonCombat.HandleAim(bool)、LeonCombat.HandleReload()、LeonCombat.TryStartWoodenBoxMelee(DestructibleWoodenBox)；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     public bool CanAct()
     {
-        if (controller == null || coordinator == null || !coordinator.isActiveAndEnabled)
+        if (controller == null || coordinator == null || !coordinator.isActiveAndEnabled || controller.IsHeldByTrap)
         {
             return false;
         }
@@ -2666,7 +2667,7 @@ global::System.Action receiverValue86 = OnReloadFullyExited;
 
         if (Time.timeScale <= 0f || Time.timeAsDouble < knifeReturnAt || !CanAct()
             || knifeModule != null && knifeModule.Active
-            || coordinator.HasActiveFullBodyAction || driver != null && driver.IsBlendingOutKnifePose)
+            || coordinator.HasActiveFullBodyAction)
         {
             return;
         }
@@ -2709,14 +2710,14 @@ global::LeonAnimatorDriver receiverValue87 = driver;
     /// <summary>EndTemporaryKnife 的业务处理入口；本方法直接依赖 LeonAnimatorDriver.SetKnifeMode(bool)、LeonAnimRig.EndKnifeActionIK()、LeonAnimRig.SetWeapon(WeaponType)、LeonCombat.HandleAim(bool)、LeonController.ChangeState(LeonState)、object.ReferenceEquals(object, object)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 KnifeCombatModule.EndTransaction(bool)；下游（含内部回调体） LeonAnimatorDriver.SetKnifeMode(bool)、LeonAnimRig.EndKnifeActionIK()、LeonAnimRig.SetWeapon(WeaponType)、LeonCombat.HandleAim(bool)、LeonController.ChangeState(LeonState)、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     /// <param name="restoreAim">中文含义：是否恢复瞄准。使用位置：LeonCombat.EndTemporaryKnife(bool)。</param>
-    public void EndTemporaryKnife(bool restoreAim, bool afterThrust = false)
+    public void EndTemporaryKnife(bool restoreAim)
     {
         // receiverValue88（判空前缓存的里昂动画控制器驱动器）：从驱动组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonCombat.EndTemporaryKnife(bool)。
 global::LeonAnimatorDriver receiverValue88 = driver;
         if (temporaryKnifeEquipped && IsKnifeMode)
         {
             knifeReturnAt = Time.timeAsDouble;
-            if (!afterThrust && weaponHandler != null && weaponHandler.HasUsableKnife())
+            if (!desiredAim && weaponHandler != null && weaponHandler.HasUsableKnife())
             {
                 knifeReturnAt += TemporaryKnifeCarrySeconds;
             }

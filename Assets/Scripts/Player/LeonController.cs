@@ -217,7 +217,7 @@ public class LeonController : Singleton<LeonController>, IManualSingleton, IDama
     /// <summary>中文含义：当前平面速度。角色当前实际水平移动速度。镜头等表现层必须以此值判断是否已经进入奔跑， 不能只根据按键状态提前切换。</summary>
     public float CurrentPlanarSpeed { get => HorizontalSpeed.magnitude; }
     /// <summary>中文含义：是否实际生效的冲刺中。使用位置：作为 LeonAnimatorDriver.SetMovement(float, float, float, bool) 的参数、FootstepController.PlayFootstep()、FootstepController.Update() 等共 7 处。</summary>
-    public bool IsEffectiveSprinting => inputState.isSprinting && !inputState.isCrouching && inputState.moveInput.sqrMagnitude > 0.01f && currentState != LeonState.Aiming && currentState != LeonState.Shooting && currentState != LeonState.Reloading && currentState != LeonState.MeleeAttacking && currentState != LeonState.Parrying && currentState != LeonState.Staggered && currentState != LeonState.QTE && currentState != LeonState.Traversing && currentState != LeonState.Dead;
+    public bool IsEffectiveSprinting => inputState.isSprinting && !inputState.isCrouching && inputState.moveInput.sqrMagnitude > 0.01f && currentState != LeonState.Aiming && currentState != LeonState.Shooting && currentState != LeonState.Reloading && currentState != LeonState.MeleeAttacking && currentState != LeonState.Parrying && (currentState != LeonState.Staggered || animDriver != null && animDriver.HitMovementReleased) && currentState != LeonState.QTE && currentState != LeonState.Traversing && currentState != LeonState.Dead;
 
     /// <summary>中文含义：自由观察。只读字段，初始化后不由普通写入口替换。使用位置：LeonController.AdvanceFreeViewRecentering(float, float)、LeonController.CalculateMovementDirection(Vector3)、LeonController.CurrentFreeLookPhase.get 等共 11 处。</summary>
     private readonly FreeLookState freeObserve = new FreeLookState();
@@ -814,6 +814,11 @@ global::LeonAnimationActionCoordinator receiverValue23 = animCoordinator;
     /// <remarks>静态调用链：上游 LeonWeaponHandler.AdvanceQuickSelectSwitch()、LeonWeaponHandler.QuickSelectSwitch(WeaponType)、LeonWindowTraversal.TryBuildPlan(WindowTraversalPoint, out LeonWindowTraversal.TraversalPlan)；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     public bool CanAct()
     {
+        return !IsHeldByTrap && CanActWithoutTrap();
+    }
+
+    internal bool CanActWithoutTrap()
+    {
         if (animCoordinator == null || !animCoordinator.isActiveAndEnabled)
         {
             return false;
@@ -821,6 +826,9 @@ global::LeonAnimationActionCoordinator receiverValue23 = animCoordinator;
 
         return currentState != LeonState.Staggered && currentState != LeonState.Dead && currentState != LeonState.QTE && currentState != LeonState.MeleeAttacking && currentState != LeonState.Parrying && currentState != LeonState.Traversing;
     }
+
+    internal LeonTrapAvatar TrapAvatar { get; set; }
+    internal bool IsHeldByTrap => TrapAvatar != null && TrapAvatar.IsPinned;
 
     private LeonActionMotionDriver groundMotion;
     private readonly RaycastHit[] groundContacts = new RaycastHit[16];
@@ -1141,7 +1149,41 @@ float halfSegment = Mathf.Max(0f, localHeight * heightScale * 0.5f - radius);
     /// <param name="damage">中文含义：伤害。使用位置：作为 HealthComponent.TakeDamage(float) 的参数。</param>
     /// <param name="hitPoint">中文含义：命中点位置。使用位置：作为 LeonController.PlayDamageFeedback(Vector3) 的参数。</param>
     /// <param name="hitDirection">中文含义：命中方向。使用位置：作为 LeonCombat.HandleHit(LeonHitDirection) 的参数、作为 LeonWindowTraversal.QueueDeferredHit(LeonHitDirection) 的参数。</param>
-    private void ApplyDamage(float damage, Vector3 hitPoint, LeonHitDirection hitDirection, Vector3 hitNormal = default)
+    internal void TakeEnvironmentalImpact(float damage, Vector3 source, Vector3 contact, bool knockdown)
+    {
+        if (Health == null || Health.IsDead)
+        {
+            return;
+        }
+
+        LeonHitDirection direction = ResolveHitDirection(source);
+        if (!knockdown || !TryGetComponent(out LeonEnvironmentalFall fall) || !fall.CanStart)
+        {
+            ApplyDamage(damage, contact, direction);
+            return;
+        }
+
+        float before = Health.CurrentHealth;
+        ApplyDamage(damage, contact, direction, default, false);
+        if (Health.IsDead || Health.CurrentHealth >= before)
+        {
+            return;
+        }
+
+        if (TrapAvatar != null)
+        {
+            TrapAvatar.ReleaseTrap();
+        }
+
+        Vector3 away = transform.position - source;
+        if (!fall.TryStart(away) && combat != null)
+        {
+            combat.HandleHit(direction);
+        }
+    }
+
+    private void ApplyDamage(float damage, Vector3 hitPoint, LeonHitDirection hitDirection, Vector3 hitNormal = default,
+        bool useStandingReaction = true)
     {
         if (Health == null || Health.IsDead)
         {
@@ -1158,6 +1200,10 @@ float halfSegment = Mathf.Max(0f, localHeight * heightScale * 0.5f - radius);
         float previousHealth = Health.CurrentHealth;
         Health.TakeDamage(damage);
         damageResolutionInProgress = false;
+        if (Health.CurrentHealth < previousHealth && TrapAvatar != null)
+        {
+            TrapAvatar.ReactToDamage();
+        }
         if (combat != null)
         {
             combat.ForceStopShoot();
@@ -1176,6 +1222,10 @@ global::LeonAnimatorDriver receiverValue29 = // 死亡优先级最高：清除�
             }
 
             BeginDeathSequence();
+        }
+        else if (!useStandingReaction)
+        {
+            ForceExitCrouch();
         }
         else if (windowTraversal != null && windowTraversal.IsTraversing)
         {
@@ -1415,6 +1465,16 @@ global::LeonPlayerAudio receiverValue40 = playerAudio;
             return;
         }
 
+        var motion = GetComponent<LeonActionMotionDriver>();
+        if (motion != null && motion.CorpseFalling)
+        {
+            if (deathCompletionFallbackRoutine != null)
+            {
+                StopCoroutine(deathCompletionFallbackRoutine);
+            }
+            deathCompletionFallbackRoutine = StartCoroutine(WaitForCorpseLanding(motion));
+            return;
+        }
         if (!ReportDeathCompletion())
         {
             return;
@@ -1429,6 +1489,18 @@ global::LeonPlayerAudio receiverValue40 = playerAudio;
 
     /// <summary>WaitForDeathCompletionFallback 的业务处理入口；本方法直接依赖 LeonController.ReportDeathCompletion()、Mathf.Max(float, float)、WaitForSecondsRealtime.WaitForSecondsRealtime(float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonController.BeginDeathSequence()；下游（含内部回调体） LeonController.ReportDeathCompletion()、Mathf.Max(float, float)、WaitForSecondsRealtime.WaitForSecondsRealtime(float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
+    private IEnumerator WaitForCorpseLanding(LeonActionMotionDriver motion)
+    {
+        float elapsed = 0f;
+        while (motion != null && motion.CorpseFalling && elapsed < 1.5f)
+        {
+            yield return null;
+            elapsed += Time.unscaledDeltaTime;
+        }
+        deathCompletionFallbackRoutine = null;
+        ReportDeathCompletion();
+    }
+
     private IEnumerator WaitForDeathCompletionFallback()
     {
         yield return new WaitForSecondsRealtime(Mathf.Max(0.1f, deathResultFallbackDelay));
@@ -1752,14 +1824,15 @@ global::RE4CameraController receiverValue54 = cameraController;
     /// <summary>中文含义：摄像机控制器。使用位置：KnifeCombatModule.ResolveIncomingAttack(KnifeIncomingAttackContext)、LeonCombat.PlayParryFeedback(VillagerController, Vector3, Vector3, KnifeParryResult)、LeonWeaponHandler.Fire() 等共 4 处。</summary>
     public RE4CameraController CameraController => cameraController;
 
-    internal void ApplyKnifeCameraHeading(float heading)
+    internal void ApplyKnifeCameraHeading(float heading, float pitch)
     {
         if (combat != null && combat.knifeModule != null)
         {
-            combat.knifeModule.ApplyCameraHeading(heading);
+            combat.knifeModule.ApplyCameraHeading(heading, pitch);
         }
     }
 
+    internal bool IsHoldingKnifeGuard => combat != null && combat.knifeModule != null && combat.knifeModule.IsHoldingGuardPose;
     internal bool IsKnifeGuardAiming => combat != null && combat.knifeModule != null && combat.knifeModule.IsGuardAiming;
     // === 管线访问器 ===
     /// <summary>中文含义：动画驱动器。</summary>

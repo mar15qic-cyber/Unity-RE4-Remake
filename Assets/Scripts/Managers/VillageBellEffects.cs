@@ -6,6 +6,10 @@ using UnityEngine.Playables;
 [RequireComponent(typeof(Camera))]
 public sealed class VillageBellEffects : MonoBehaviour
 {
+    // 原始时间轴的末镜从教堂门前拉回广场。
+    private const double ChurchPullbackStart = 55d;
+    private const double ChurchOcclusionResume = 62.25d;
+
     [Header("水洼、落斧与靴子水花")]
     public PlayableDirector director;
     public Renderer puddle;
@@ -24,55 +28,53 @@ public sealed class VillageBellEffects : MonoBehaviour
     private bool rendering;
     private bool axePlayed;
     private bool stepPlayed;
-    private float previousFogDensity;
+    private bool previousPuddleEnabled;
+    private bool previousOcclusionCulling;
+    private readonly Plane[] reflectionFrustum = new Plane[6];
+    private readonly List<Renderer> sceneDoorRenderers = new List<Renderer>();
     private readonly List<Renderer> hiddenDoorRenderers = new List<Renderer>();
-    private readonly List<LODGroup> sceneryLods = new List<LODGroup>();
 
     private void OnEnable()
     {
         source = GetComponent<Camera>();
-        source.useOcclusionCulling = false;
-        source.farClipPlane = Mathf.Max(source.farClipPlane, 650f);
+        previousOcclusionCulling = source.useOcclusionCulling;
+        previousPuddleEnabled = puddle.enabled;
         axePlayed = false;
         stepPlayed = false;
         water = new MaterialPropertyBlock();
-        previousFogDensity = RenderSettings.fogDensity;
-        if (RenderSettings.fog && RenderSettings.fogMode != FogMode.Linear)
-        {
-            RenderSettings.fogDensity = Mathf.Max(previousFogDensity, 0.022f);
-        }
         var reflectionObject = new GameObject("村庄过场水面反射", typeof(Camera));
         reflectionObject.hideFlags = HideFlags.HideAndDontSave;
         mirror = reflectionObject.GetComponent<Camera>();
         mirror.enabled = false;
         PrepareReflection();
-        foreach (var root in gameObject.scene.GetRootGameObjects())
+        foreach (Renderer door in sceneDoorRenderers)
         {
-            if (transform.IsChildOf(root.transform))
+            if (door != null && !door.forceRenderingOff)
             {
-                continue;
+                hiddenDoorRenderers.Add(door);
+                door.forceRenderingOff = true;
             }
+        }
+    }
 
-            sceneryLods.AddRange(root.GetComponentsInChildren<LODGroup>(true));
-            foreach (var item in root.GetComponentsInChildren<Transform>(true))
+    // 村庄装配时登记会被演出替换的门扇，切镜时只切换这些渲染器。
+    internal void CacheSceneDoors(Transform sequenceRoot)
+    {
+        sceneDoorRenderers.Clear();
+        var transforms = new List<Transform>();
+        foreach (GameObject root in gameObject.scene.GetRootGameObjects())
+        {
+            root.GetComponentsInChildren(true, transforms);
+            foreach (Transform item in transforms)
             {
-                if (item.name != doorSourceName && item.name != interactiveDoorName)
+                if (item.name == doorSourceName || item.name == interactiveDoorName)
                 {
-                    continue;
-                }
-                foreach (var renderer in item.GetComponentsInChildren<Renderer>(true))
-                {
-                    if (!renderer.forceRenderingOff)
+                    if (!item.IsChildOf(sequenceRoot))
                     {
-                        hiddenDoorRenderers.Add(renderer);
-                        renderer.forceRenderingOff = true;
+                        sceneDoorRenderers.AddRange(item.GetComponentsInChildren<Renderer>(true));
                     }
                 }
             }
-        }
-        foreach (var lod in sceneryLods)
-        {
-            lod.ForceLOD(0);
         }
     }
 
@@ -82,7 +84,10 @@ public sealed class VillageBellEffects : MonoBehaviour
         {
             return;
         }
-        reflection = new RenderTexture(1024, 576, 24, RenderTextureFormat.DefaultHDR);
+        // 倒影主要显示近处的斧头与靴子，按输出分辨率缩放并限制开销。
+        int width = Mathf.Clamp(Screen.width / 2, 128, 768);
+        int height = Mathf.Max(1, Mathf.RoundToInt(width * (float)Screen.height / Mathf.Max(1, Screen.width)));
+        reflection = new RenderTexture(width, height, 24, RenderTextureFormat.DefaultHDR);
         reflection.name = "村庄过场水面反射";
         reflection.Create();
     }
@@ -100,7 +105,15 @@ public sealed class VillageBellEffects : MonoBehaviour
 
     private void LateUpdate()
     {
-        float time = (float)director.time;
+        // 末镜穿过门前的烘焙遮挡单元，那里会误剔除已经入画的树冠、围栏和屋顶边缘。
+        double shotTime = director.time;
+        bool crossesChurchCells = shotTime >= ChurchPullbackStart && shotTime < ChurchOcclusionResume;
+        bool useOcclusion = previousOcclusionCulling && !crossesChurchCells;
+        if (source.useOcclusionCulling != useOcclusion)
+        {
+            source.useOcclusionCulling = useOcclusion;
+        }
+        float time = (float)shotTime;
         bool waterShot = time >= 10.30f && time <= 19.45f;
         puddle.enabled = waterShot;
         water.SetFloat("_ShotTime", time);
@@ -130,6 +143,11 @@ public sealed class VillageBellEffects : MonoBehaviour
         {
             return;
         }
+        GeometryUtility.CalculateFrustumPlanes(source, reflectionFrustum);
+        if (!GeometryUtility.TestPlanesAABB(reflectionFrustum, puddle.bounds))
+        {
+            return;
+        }
         rendering = true;
         bool invert = GL.invertCulling;
         try
@@ -137,6 +155,9 @@ public sealed class VillageBellEffects : MonoBehaviour
             mirror.CopyFrom(source);
             mirror.enabled = false;
             mirror.targetTexture = reflection;
+            // 片中水面只反射近处角色、屋檐和天空，无需远景的延迟光照缓冲。
+            mirror.renderingPath = RenderingPath.Forward;
+            mirror.farClipPlane = Mathf.Min(source.farClipPlane, 64f);
             mirror.depthTextureMode = DepthTextureMode.None;
             mirror.useOcclusionCulling = false;
             float level = puddle.transform.position.y;
@@ -164,7 +185,8 @@ public sealed class VillageBellEffects : MonoBehaviour
 
     private void OnDisable()
     {
-        RenderSettings.fogDensity = previousFogDensity;
+        source.useOcclusionCulling = previousOcclusionCulling;
+        puddle.enabled = previousPuddleEnabled;
         foreach (var renderer in hiddenDoorRenderers)
         {
             if (renderer != null)
@@ -173,14 +195,6 @@ public sealed class VillageBellEffects : MonoBehaviour
             }
         }
         hiddenDoorRenderers.Clear();
-        foreach (var lod in sceneryLods)
-        {
-            if (lod != null)
-            {
-                lod.ForceLOD(-1);
-            }
-        }
-        sceneryLods.Clear();
         ReleaseReflection();
         if (mirror != null)
         {

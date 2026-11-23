@@ -89,6 +89,20 @@ public sealed class ChapterWaveConfiguration : ScriptableObject
     internal int BellKillTarget => bellKillTarget;
     internal float BellSurvivalSeconds => bellSurvivalDuration;
     internal int ReinforcementSize => reinforcementSize;
+
+    [SerializeField, Min(1f), Tooltip("农场门村庄侧的电锯人触发距离。")]
+    private float farmEntranceRadius = 6f;
+    [SerializeField, Min(1), Tooltip("普通村民击杀达到该数值时触发农场登场。")]
+    private int farmEntranceKills = 6;
+    [SerializeField, Min(1f), Tooltip("战斗计时达到该秒数时触发农场登场。")]
+    private float farmEntranceSeconds = 120f;
+    [SerializeField, Min(1f), Tooltip("本章登场的电锯人最大生命值。")]
+    private float entranceSawmanHealth = 360f;
+
+    internal float FarmEntranceRadius => farmEntranceRadius;
+    internal int FarmEntranceKills => farmEntranceKills;
+    internal float FarmEntranceSeconds => farmEntranceSeconds;
+    internal float EntranceSawmanHealth => entranceSawmanHealth;
     internal Vector3[] VillagePatrolPositions => villagePatrolPositions;
     internal ReinforcementSite[] VillageReinforcementSites => villageReinforcementSites;
 
@@ -96,7 +110,10 @@ public sealed class ChapterWaveConfiguration : ScriptableObject
     {
         return bellKillTarget >= 1 && bellSurvivalDuration >= 1f && !float.IsInfinity(bellSurvivalDuration) &&
             villagePatrolPositions != null && reinforcementSize > 0 && villagePatrolPositions.Length >= reinforcementSize &&
-            villageReinforcementSites != null && villageReinforcementSites.Length > 0;
+            villageReinforcementSites != null && villageReinforcementSites.Length > 0 &&
+            farmEntranceKills > 0 && farmEntranceRadius >= 1f && float.IsFinite(farmEntranceRadius) &&
+            farmEntranceSeconds >= 1f && float.IsFinite(farmEntranceSeconds) &&
+            entranceSawmanHealth >= 1f && float.IsFinite(entranceSawmanHealth);
     }
     /// <summary>中文含义：首个波次常规数量。使用位置：ChapterOneMissionManager.firstWaveGanado.get。</summary>
     internal int FirstWaveNormalCount => firstWaveGanado;

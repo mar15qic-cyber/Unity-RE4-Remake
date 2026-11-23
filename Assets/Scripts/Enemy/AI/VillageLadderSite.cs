@@ -23,6 +23,18 @@ public sealed partial class VillageLadderSite : MonoBehaviour, IInteractable
     private EnemyAIManager group;
     private WindowTraversalPoint window;
     private Transform ladderVisual;
+    private bool awaitingSiege;
+
+    internal void DeploySiegeLadder()
+    {
+        if (awaitingSiege)
+        {
+            SetLadderLift(1f);
+            State = LadderState.Ready;
+            awaitingSiege = false;
+            ladderVisual.gameObject.SetActive(true);
+        }
+    }
     private MeshRenderer originalRenderer;
     private MeshCollider originalCollider;
     private bool originalRendererEnabled;
@@ -213,6 +225,11 @@ public sealed partial class VillageLadderSite : MonoBehaviour, IInteractable
         }
 
         var windows = Object.FindObjectsByType<WindowTraversalPoint>(FindObjectsSortMode.None);
+        var siege = startup.GetComponentInChildren<VillageSiegeSequence>(true);
+        if (siege == null)
+        {
+            siege = Object.FindFirstObjectByType<VillageSiegeSequence>();
+        }
         foreach (var layout in config.sites)
         {
             if (layout == null)
@@ -251,6 +268,11 @@ public sealed partial class VillageLadderSite : MonoBehaviour, IInteractable
                 continue;
             }
 
+            if (siege != null && siege.OwnsWindow(window))
+            {
+                site.awaitingSiege = true;
+                site.ladderVisual.gameObject.SetActive(false);
+            }
             root.SetActive(true);
         }
 
@@ -369,6 +391,15 @@ public sealed partial class VillageLadderSite : MonoBehaviour, IInteractable
         activeAction = default;
         fixedClimbers.Clear();
         fixedExitOwner = null;
+        siegeOwner = null;
+        siegeActor = null;
+        siegePriorityUntil = 0f;
+        siegePathVersion++;
+        siegePendingPaths = 0;
+        siegeRoute = null;
+        siegeBestActor = null;
+        siegeCandidates.Clear();
+        siegeBlockedActors.Clear();
         routeVersion++;
         CancelSelection();
         if (originalRenderer != null)
@@ -450,7 +481,7 @@ public sealed partial class VillageLadderSite : MonoBehaviour, IInteractable
     private bool IsTargetAbove(VillagerController actor)
     {
         return actor.Player != null && actor.Player == group.PlayerTarget && actor.perceptionModule != null &&
-            actor.perceptionModule.ReadFullyAwareOfPlayer && CanServeTarget(ReadTargetRegion(navigation, actor.Player.transform.position));
+            actor.perceptionModule.ReadFullyAwareOfPlayer && CanServeTarget(ReadAssignmentTarget(actor.Player));
     }
 
     private static bool IsUpperFloor(VillageTraversalRegion region)
@@ -462,6 +493,10 @@ public sealed partial class VillageLadderSite : MonoBehaviour, IInteractable
 
     private bool CanServeTarget(VillageTraversalRegion targetRegion)
     {
+        if (awaitingSiege)
+        {
+            return false;
+        }
         if (IsFixed || targetRegion == VillageTraversalRegion.TowerPlatform)
         {
             return IsFixed && !tower.HasCollapsed && targetRegion == VillageTraversalRegion.TowerPlatform;
@@ -488,6 +523,10 @@ public sealed partial class VillageLadderSite : MonoBehaviour, IInteractable
 
     private void Update()
     {
+        if (awaitingSiege)
+        {
+            return;
+        }
         TickPush();
         if (State == LadderState.Falling)
         {
@@ -505,7 +544,7 @@ public sealed partial class VillageLadderSite : MonoBehaviour, IInteractable
         VillageTraversalRegion targetRegion = VillageTraversalRegion.HouseOuterGround;
         if (player != null)
         {
-            targetRegion = ReadTargetRegion(navigation, player.transform.position);
+            targetRegion = ReadAssignmentTarget(player);
         }
 
         if (!IsUpperFloor(targetRegion))
@@ -673,7 +712,7 @@ public sealed partial class VillageLadderSite : MonoBehaviour, IInteractable
         }
 
         var player = group.PlayerTarget;
-        if (player != null && CanServeTarget(ReadTargetRegion(navigation, player.transform.position)) &&
+        if (player != null && CanServeTarget(ReadAssignmentTarget(player)) &&
             ((State == LadderState.Down && role == Assignment.Raise) ||
              (State == LadderState.Ready && role == Assignment.Climb)))
         {
@@ -734,6 +773,15 @@ public sealed partial class VillageLadderSite : MonoBehaviour, IInteractable
             return false;
         }
 
+        if (IsSiegeActor(actor) && assignedRole == Assignment.Raise && State == LadderState.Down)
+        {
+            return siegeRoute != null;
+        }
+        if (IsSiegeActor(actor) && assignedRole == Assignment.Climb && !siegeMountAllowed)
+        {
+            return false;
+        }
+
         Vector3 difference = actor.transform.position - Approach;
         float height = Mathf.Abs(difference.y);
         difference.y = 0f;
@@ -776,10 +824,13 @@ public sealed partial class VillageLadderSite : MonoBehaviour, IInteractable
         version = ++routeVersion;
         role = assignedRole;
         activeRole = role;
-        if (role == Assignment.Raise)
+        if (role == Assignment.Raise && !IsSiegeActor(actor))
         {
-            State = LadderState.Raising;
-            PlaySound(configuration.gripSound, Foot);
+            BeginRaise();
+        }
+        else if (role == Assignment.Climb && siegeOwner == null)
+        {
+            siegePriorityUntil = 0f;
         }
 
         ClearAssignment("已接受" + RoleName(role));
@@ -1004,6 +1055,10 @@ public sealed partial class VillageLadderSite : MonoBehaviour, IInteractable
 
     public bool CanInteract(Transform interactor)
     {
+        if (awaitingSiege)
+        {
+            return false;
+        }
         candidate = null;
         candidateClimb = false;
         candidateDrop = false;

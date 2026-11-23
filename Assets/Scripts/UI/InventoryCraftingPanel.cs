@@ -1,6 +1,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Controls;
+using UnityEngine.InputSystem.UI;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 /// <summary>
@@ -74,6 +77,19 @@ public class InventoryCraftingPanel : MonoBehaviour
     /// <summary>中文含义：是否已初始化。使用位置：InventoryCraftingPanel.Initialize(InventoryUI)。</summary>
     private bool initialized;
     private int recipeCategory;
+    private const float CraftHoldSeconds = 0.65f;
+    private InventoryCraftHoldTarget craftButtonHoldTarget;
+    private InventoryCraftHoldTarget activeCraftTarget;
+    private ItemData heldRecipe;
+    private InputAction heldConfirmAction;
+    private ButtonControl heldPointerButton;
+    private int heldPointerId;
+    private double craftHoldStarted;
+
+    private bool CanInteractWithCrafting => craftingPageRoot != null && craftingPageRoot.activeInHierarchy
+        && inventoryUI != null && inventoryUI.Interactive
+        && (!GameUIManager.HasInstance || GameUIManager.Instance.currentState == GameUIManager.State.Inventory);
+
     /// <summary>Initialize 的业务处理入口；本方法直接依赖 InventoryCraftingPanel.ShowItemsPage()、UnityEvent.AddListener(UnityAction)、UnityEvent.RemoveListener(UnityAction)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 InventoryUI.Start()；下游（含内部回调体） InventoryCraftingPanel.ShowItemsPage()、UnityEvent.AddListener(UnityAction)、UnityEvent.RemoveListener(UnityAction)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     /// <param name="owner">中文含义：拥有者。使用位置：InventoryCraftingPanel.Initialize(InventoryUI)。</param>
@@ -124,8 +140,8 @@ public class InventoryCraftingPanel : MonoBehaviour
 
         if (craftButton != null)
         {
-            craftButton.onClick.RemoveListener(CraftSelectedRecipe);
-            craftButton.onClick.AddListener(CraftSelectedRecipe);
+            craftButtonHoldTarget = craftButton.gameObject.AddComponent<InventoryCraftHoldTarget>();
+            craftButtonHoldTarget.Bind(this, null);
         }
 
         if (recipeCategoryButtons != null)
@@ -145,27 +161,150 @@ public class InventoryCraftingPanel : MonoBehaviour
 
     private void Update()
     {
-        Keyboard keyboard = Keyboard.current;
-        if (keyboard == null || craftingPageRoot == null || !craftingPageRoot.activeInHierarchy
-            || inventoryUI == null || !inventoryUI.Interactive || recipeCategoryButtons == null || recipeCategoryButtons.Length < 2)
+        if (!CanInteractWithCrafting)
         {
+            CancelCraftHold();
             return;
         }
-        int lastCategory = recipeCategoryButtons.Length - 1;
-        if (keyboard.aKey.wasPressedThisFrame)
+
+        Keyboard keyboard = Keyboard.current;
+        if (keyboard != null && recipeCategoryButtons != null && recipeCategoryButtons.Length > 1)
         {
-            SelectCategory((recipeCategory + lastCategory) % recipeCategoryButtons.Length);
+            int lastCategory = recipeCategoryButtons.Length - 1;
+            if (keyboard.aKey.wasPressedThisFrame)
+            {
+                SelectCategory((recipeCategory + lastCategory) % recipeCategoryButtons.Length);
+            }
+            else if (keyboard.dKey.wasPressedThisFrame)
+            {
+                SelectCategory((recipeCategory + 1) % recipeCategoryButtons.Length);
+            }
         }
-        else if (keyboard.dKey.wasPressedThisFrame)
+
+        AdvanceCraftHold();
+    }
+
+    private void OnDisable()
+    {
+        CancelCraftHold();
+    }
+
+    private void OnApplicationFocus(bool hasFocus)
+    {
+        if (!hasFocus)
         {
-            SelectCategory((recipeCategory + 1) % recipeCategoryButtons.Length);
+            CancelCraftHold();
         }
     }
 
-    /// <summary>ShowItemsPage 的业务处理入口；本方法直接依赖 GameObject.SetActive(bool)、InventoryCraftingPanel.ApplyTabStyle(Button, bool)，调用方通过参数与返回结果交接本次处理。</summary>
-    /// <remarks>静态调用链：上游 InventoryCraftingPanel.Initialize(InventoryUI)、InventoryUI.OnSceneLoaded()；下游（含内部回调体） GameObject.SetActive(bool)、InventoryCraftingPanel.ApplyTabStyle(Button, bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
+    internal void BeginPointerCraftHold(InventoryCraftHoldTarget target, ItemData rowRecipe, PointerEventData eventData)
+    {
+        if (rowRecipe != null && rowRecipe != selectedRecipe)
+        {
+            return;
+        }
+
+        if (!TryBeginCraftHold(target))
+        {
+            return;
+        }
+
+        heldPointerId = eventData.pointerId;
+        Mouse mouse = Mouse.current;
+        if (eventData is ExtendedPointerEventData pointer && pointer.device is Mouse activeMouse)
+        {
+            mouse = activeMouse;
+        }
+
+        if (mouse != null)
+        {
+            heldPointerButton = mouse.leftButton;
+        }
+    }
+
+    internal void EndPointerCraftHold(InventoryCraftHoldTarget target, int pointerId)
+    {
+        if (heldConfirmAction == null && activeCraftTarget == target && heldPointerId == pointerId)
+        {
+            CancelCraftHold();
+        }
+    }
+
+    internal void CancelCraftHoldOn(InventoryCraftHoldTarget target)
+    {
+        if (activeCraftTarget == target)
+        {
+            CancelCraftHold();
+        }
+    }
+
+    private bool TryBeginCraftHold(InventoryCraftHoldTarget target)
+    {
+        if (!CanInteractWithCrafting || heldRecipe != null || target == null || selectedRecipe == null)
+        {
+            return false;
+        }
+
+        InventoryManager manager = InventoryManager.Instance;
+        if (manager == null || !manager.CanCraft(selectedRecipe))
+        {
+            return false;
+        }
+
+        activeCraftTarget = target;
+        heldRecipe = selectedRecipe;
+        craftHoldStarted = Time.unscaledTimeAsDouble;
+        activeCraftTarget.ShowProgress(0.001f);
+        return true;
+    }
+
+    private void AdvanceCraftHold()
+    {
+        if (heldRecipe == null)
+        {
+            InputAction confirm = inventoryUI.InventoryConfirmAction;
+            if (confirm != null && confirm.WasPressedThisFrame() && confirm.IsPressed() && TryBeginCraftHold(craftButtonHoldTarget))
+            {
+                heldConfirmAction = confirm;
+            }
+
+            return;
+        }
+
+        bool releasedConfirm = heldConfirmAction != null && !heldConfirmAction.IsPressed();
+        bool releasedPointer = heldPointerButton != null && !heldPointerButton.isPressed;
+        if (activeCraftTarget == null || heldRecipe != selectedRecipe || releasedConfirm || releasedPointer)
+        {
+            CancelCraftHold();
+            return;
+        }
+
+        float elapsed = (float)(Time.unscaledTimeAsDouble - craftHoldStarted);
+        activeCraftTarget.ShowProgress(elapsed / CraftHoldSeconds);
+        if (elapsed >= CraftHoldSeconds)
+        {
+            ItemData recipe = heldRecipe;
+            CancelCraftHold();
+            CraftRecipe(recipe);
+        }
+    }
+
+    private void CancelCraftHold()
+    {
+        if (activeCraftTarget != null)
+        {
+            activeCraftTarget.ShowProgress(0f);
+        }
+
+        activeCraftTarget = null;
+        heldRecipe = null;
+        heldConfirmAction = null;
+        heldPointerButton = null;
+    }
+
     public void ShowItemsPage()
     {
+        CancelCraftHold();
         if (inventoryUI != null && inventoryUI.Interactive && craftingPageRoot != null && craftingPageRoot.activeSelf)
         {
             AudioManager.PlayInterface(AudioEventNames.UIPage);
@@ -254,6 +393,7 @@ public class InventoryCraftingPanel : MonoBehaviour
     /// <remarks>静态调用链：上游 InventoryCraftingPanel.CraftSelectedRecipe()、InventoryCraftingPanel.SelectRecipe(ItemData)、InventoryCraftingPanel.ShowCraftingPage()、InventoryUI.OnSceneLoaded()、InventoryUI.RefreshGridInternal()；下游（含内部回调体） InventoryCraftingPanel.RebuildRecipeList(InventoryManager)、InventoryCraftingPanel.ShowRecipeDetails(ItemData, InventoryManager)、InventoryManager.GetCraftingRecipes()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     public void Refresh()
     {
+        CancelCraftHold();
         // manager（当前背包管理器）：使用位置：作为 InventoryCraftingPanel.RebuildRecipeList(InventoryManager) 的参数、作为 InventoryCraftingPanel.ShowRecipeDetails(ItemData, InventoryManager) 的参数、InventoryCraftingPanel.Refresh()。
 InventoryManager manager = InventoryManager.Instance;
         if (manager == null || recipeListRoot == null)
@@ -394,6 +534,8 @@ for (int i = 0; i < recipes.Count; i++)
         button.targetGraphic = background;
         button.transition = Selectable.Transition.None;
         button.onClick.AddListener(() => SelectRecipe(recipe));
+        var holdTarget = widget.AddComponent<InventoryCraftHoldTarget>();
+        holdTarget.Bind(this, recipe);
 
         var icon = CreateImage(widget.transform, "产物图标", new Vector2(12f, -4f), new Vector2(55f, 40f));
         icon.sprite = recipe.icon;
@@ -688,7 +830,16 @@ bool canCraft = hasRecipe && manager.CanCraft(recipe);
 global::UnityEngine.UI.Text assignmentReceiver22 = craftButtonText;
             if (canCraft)
             {
-                assignmentReceiver22.text = "合成";
+                assignmentReceiver22.text = "长按合成";
+                InputAction confirm = inventoryUI.InventoryConfirmAction;
+                if (confirm != null && confirm.bindings.Count > 0)
+                {
+                    string keyName = confirm.GetBindingDisplayString(0, InputBinding.DisplayStringOptions.DontIncludeInteractions);
+                    if (!string.IsNullOrEmpty(keyName))
+                    {
+                        assignmentReceiver22.text += "  [" + keyName + "]";
+                    }
+                }
             }
             else
             {
@@ -699,42 +850,27 @@ global::UnityEngine.UI.Text assignmentReceiver22 = craftButtonText;
 
     /// <summary>CraftSelectedRecipe 的业务处理入口；本方法直接依赖 InventoryCraftingPanel.Refresh()、InventoryManager.TryCraft(ItemData, out int)、InventoryUI.ShowPickupToast(string)、object.ReferenceEquals(object, object)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） InventoryCraftingPanel.Refresh()、InventoryManager.TryCraft(ItemData, out int)、InventoryUI.ShowPickupToast(string)、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    private void CraftSelectedRecipe()
+    private void CraftRecipe(ItemData recipe)
     {
-        // manager（当前背包管理器）：使用位置：InventoryCraftingPanel.CraftSelectedRecipe()。
-InventoryManager manager = InventoryManager.Instance;
-        if (manager == null || selectedRecipe == null)
+        InventoryManager manager = InventoryManager.Instance;
+        if (!CanInteractWithCrafting || manager == null || recipe != selectedRecipe)
         {
             return;
         }
 
-        if (manager.TryCraft(selectedRecipe, out int /* 中文含义：合成后的数量。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ craftedCount))
+        if (manager.TryCraft(recipe, out int craftedCount))
         {
-            // receiverValue24（判空前缓存的背包界面）：从背包界面读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、InventoryCraftingPanel.CraftSelectedRecipe()。
-global::InventoryUI receiverValue24 = inventoryUI;
-            if (!global::System.Object.ReferenceEquals(receiverValue24, null))
-            {
-                receiverValue24.ShowPickupToast("合成完成：" + selectedRecipe.displayName + " ×" + craftedCount);
-            }
+            inventoryUI.ShowPickupToast("合成完成：" + recipe.displayName + " ×" + craftedCount);
         }
         else
         {
-            // receiverValue25（判空前缓存的背包界面）：从背包界面读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、InventoryCraftingPanel.CraftSelectedRecipe()。
             AudioManager.PlayInterface(AudioEventNames.UICaseError);
-            InventoryUI receiverValue25 = inventoryUI;
-            if (!global::System.Object.ReferenceEquals(receiverValue25, null))
-            {
-                receiverValue25.ShowPickupToast("材料不足或公文包空间不足");
-            }
+            inventoryUI.ShowPickupToast("材料不足或公文包空间不足");
         }
 
         Refresh();
     }
 
-    /// <summary>ApplyTabStyle 的业务处理入口；本方法直接依赖 Color.Color(float, float, float, float)、Component.GetComponent&lt;Image&gt;()、Component.GetComponentInChildren&lt;Text&gt;(bool)，调用方通过参数与返回结果交接本次处理。</summary>
-    /// <remarks>静态调用链：上游 InventoryCraftingPanel.ShowCraftingPage()、InventoryCraftingPanel.ShowItemsPage()；下游（含内部回调体） Color.Color(float, float, float, float)、Component.GetComponent&lt;Image&gt;()、Component.GetComponentInChildren&lt;Text&gt;(bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="button">中文含义：按钮。使用位置：InventoryCraftingPanel.ApplyTabStyle(Button, bool)。</param>
-    /// <param name="selected">中文含义：是否选定。使用位置：InventoryCraftingPanel.ApplyTabStyle(Button, bool)。</param>
     private void ApplyTabStyle(Button button, bool selected)
     {
         if (button == null)

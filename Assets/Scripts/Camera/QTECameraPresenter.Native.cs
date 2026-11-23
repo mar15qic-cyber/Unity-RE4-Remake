@@ -24,6 +24,7 @@ public sealed partial class QTECameraPresenter
     private CinemachineCore.GetBlendOverrideDelegate previousNativeBlendOverride;
     private bool nativeBlendOverrideRegistered;
     private float nativeExitBlendSeconds = .18f;
+    private bool resultCameraReleased;
     private CinemachineBlendDefinition.Styles nativeExitBlendStyle = CinemachineBlendDefinition.Styles.EaseOut;
 
     private void RegisterNativeBlendOverride()
@@ -67,16 +68,26 @@ public sealed partial class QTECameraPresenter
             // 进入已按动作源帧混合，不能再叠加主相机默认的两秒过渡。
             return new CinemachineBlendDefinition(CinemachineBlendDefinition.Styles.Cut, 0f);
         }
-        if (IsContinuousQteCamera(from))
+        if (cameraController != null && to == cameraController.gameplayCamera && from is CinemachineCamera outgoing &&
+            runtimeRoot != null && outgoing.transform.IsChildOf(runtimeRoot))
         {
             float duration = nativeExitBlendSeconds;
             if (to != null)
             {
                 CameraState next = to.State;
+                CameraState last = from.State;
+                if (!IsQteCameraMovementClear(last.GetFinalPosition(), next.GetFinalPosition(), .15f))
+                {
+                    return new CinemachineBlendDefinition(CinemachineBlendDefinition.Styles.Cut, 0f);
+                }
                 // 近景转回越肩时，按实际角度和位移保证足够的回收时间。
-                float turn = Quaternion.Angle(stableQtePose.rotation, next.GetFinalOrientation());
-                float travel = Vector3.Distance(stableQtePose.position, next.GetFinalPosition());
+                float turn = Quaternion.Angle(last.GetFinalOrientation(), next.GetFinalOrientation());
+                float travel = Vector3.Distance(last.GetFinalPosition(), next.GetFinalPosition());
                 duration = Mathf.Max(duration, turn / 150f, travel / 5f);
+                if (groundReturnAngles.HasValue)
+                {
+                    duration = Mathf.Max(duration, Mathf.Abs(last.Lens.FieldOfView - next.Lens.FieldOfView) / 60f);
+                }
             }
             return new CinemachineBlendDefinition(nativeExitBlendStyle, duration);
         }
@@ -105,8 +116,22 @@ public sealed partial class QTECameraPresenter
         nativeExitBlendSeconds = .18f;
         nativeExitBlendStyle = CinemachineBlendDefinition.Styles.EaseOut;
         activeNativeTracks = tracks;
+        if (context.kind == QTEKind.GroundFinisher && context.enemyRoot.TryGetComponent<VillagerController>(out var enemy)
+            && enemy.missionEnemyType == MissionEnemyType.Sawman)
+        {
+            activeNativeTracks = Resources.Load<NativeQTECameraTracks>("SawKnifeCamera");
+            if (activeNativeTracks == null)
+            {
+                return false;
+            }
+        }
         activeSessionId = sessionId;
         sessionContext = context;
+        if (context.kind == QTEKind.FrontGrab && cameraController.MainCamera != null)
+        {
+            Vector3 focus = (context.playerRoot.position + context.enemyRoot.position) * .5f;
+            frontGrabEntryRadial = Vector3.ProjectOnPlane(cameraController.MainCamera.transform.position - focus, Vector3.up).normalized;
+        }
         BeginGroundFinisherCamera();
         CacheFocusBones();
         return true;
@@ -145,7 +170,7 @@ public sealed partial class QTECameraPresenter
         {
             hasCandidate = TryFramePlayerRecovery(out pose, out horizontalFov);
         }
-        else if (NativeGroundFinisherTiming.TryGet(playerClip, out _))
+        else if (NativeGroundFinisherTiming.TryGet(playerClip, out _) && playerClip != "LeonPair_SawKneel1020")
         {
             hasCandidate = TrySampleGroundFinisherCamera(out pose, out horizontalFov);
         }
@@ -172,6 +197,11 @@ public sealed partial class QTECameraPresenter
         }
 
         nativeCameraTaken = PresentContinuousQteCamera(GetContinuousQteCamera(), hasCandidate, pose, horizontalFov);
+        if (nativeCameraTaken && hasCandidate && sessionContext.kind == QTEKind.FrontGrab && frontGrabShotRadial.sqrMagnitude < .01f)
+        {
+            ReadGrabAnchors(out var leon, out var enemy);
+            frontGrabShotRadial = Vector3.ProjectOnPlane(pose.position - (leon + enemy) * .5f, Vector3.up).normalized;
+        }
     }
 
     private CinemachineCamera GetContinuousQteCamera()
@@ -184,19 +214,44 @@ public sealed partial class QTECameraPresenter
             nativeCamera.Priority = 0;
             nativeCamera.enabled = false;
         }
+        float nearClipPlane = LensSettings.Default.NearClipPlane;
+        if (sessionContext.kind == QTEKind.KnifeAssassination)
+        {
+            nearClipPlane = AssassinationNearClipPlane;
+        }
+        // 交接直接插值镜头朝向和镜头参数，避免 Cinemachine 另按两个注视点重算旋转和 FOV。
+        nativeCamera.BlendHint = default;
+        if (groundReturnAngles.HasValue)
+        {
+            nativeCamera.BlendHint = CinemachineCore.BlendHints.IgnoreTarget
+                | CinemachineCore.BlendHints.FreezeWhenBlendingOut;
+        }
+        var lens = nativeCamera.Lens;
+        if (lens.NearClipPlane != nearClipPlane)
+        {
+            lens.NearClipPlane = nearClipPlane;
+            nativeCamera.Lens = lens;
+        }
         return nativeCamera;
     }
 
     private bool PresentContinuousQteCamera(CinemachineCamera camera, bool hasCandidate, Pose destination, float horizontalFov)
     {
         Camera output = cameraController.MainCamera;
-        if (output == null)
+        if (output == null || resultCameraReleased)
         {
             return false;
         }
 
         float now = Time.time;
         bool active = stableExternalCamera == camera && camera.enabled;
+        if (!active && qteNeedsStableClearance && stableExternalCamera == camera &&
+            coordinator.CurrentPhase is QTEPhase.SuccessResult or QTEPhase.FailureResult)
+        {
+            // 抓取阶段已经因遮挡交回越肩时，收尾也沿用玩家当前看到的机位。
+            resultCameraReleased = true;
+            return false;
+        }
         float verticalFov = Camera.HorizontalToVerticalFieldOfView(horizontalFov, output.aspect);
         Pose previous = new Pose(output.transform.position, output.transform.rotation);
         float previousFov = output.fieldOfView;
@@ -207,6 +262,16 @@ public sealed partial class QTECameraPresenter
         }
 
         float dt = Mathf.Min(.05f, Time.deltaTime);
+        if (groundReturnAngles.HasValue)
+        {
+            // 接管首帧沿用当前画面，随后逐步跟上源镜头，避免一帧内抬头或缩放。
+            if (!active)
+            {
+                groundCameraEntryTime = now;
+            }
+            float entryWeight = Mathf.SmoothStep(0f, 1f, (now - groundCameraEntryTime) / .12f);
+            dt *= entryWeight;
+        }
         float nextFov = previousFov;
         Pose next = previous;
         if (hasCandidate)
@@ -218,7 +283,12 @@ public sealed partial class QTECameraPresenter
             nextFov = Mathf.MoveTowards(previousFov, Mathf.Lerp(previousFov, verticalFov, weight), 88f * dt);
         }
 
-        float radius = CameraRouteClearance.ReadNearPlaneRadius(output.nearClipPlane, Mathf.Max(previousFov, nextFov), output.aspect);
+        float nearClipPlane = output.nearClipPlane;
+        if (sessionContext.kind == QTEKind.KnifeAssassination)
+        {
+            nearClipPlane = camera.Lens.NearClipPlane;
+        }
+        float radius = CameraRouteClearance.ReadNearPlaneRadius(nearClipPlane, Mathf.Max(previousFov, nextFov), output.aspect);
         bool movementClear = hasCandidate && IsQteCameraMovementClear(previous.position, next.position, radius);
         if (!movementClear)
         {
@@ -235,7 +305,11 @@ public sealed partial class QTECameraPresenter
             }
             if (active)
             {
-                cameraController.ReleaseExternalCamera(this);
+                cameraController.ReleaseExternalCamera(this, true, groundReturnAngles);
+                if (coordinator.CurrentPhase is QTEPhase.SuccessResult or QTEPhase.FailureResult)
+                {
+                    resultCameraReleased = true;
+                }
             }
             qteNeedsStableClearance = true;
             return false;
@@ -400,7 +474,7 @@ public sealed partial class QTECameraPresenter
     {
         if (nativeCameraTaken && cameraController != null)
         {
-            cameraController.ReleaseExternalCamera(this);
+            cameraController.ReleaseExternalCamera(this, true, groundReturnAngles);
         }
         nativeCameraTaken = false;
     }
@@ -408,11 +482,16 @@ public sealed partial class QTECameraPresenter
     private void ResetNativeCameraSession()
     {
         ReleaseNativeCamera();
+        groundReturnAngles = null;
         activeNativeTracks = null;
         nativePlayerClip = null;
         nativeTrack = null;
         nextNativeTrackSearch = 0f;
         nativeMirrored = false;
+        frontGrabEntryRadial = Vector3.zero;
+        frontGrabShotRadial = Vector3.zero;
+        standingResultOffset = Vector3.zero;
+        resultCameraReleased = false;
         stableExternalCamera = null;
         qteObstructedSince = -1f;
         qteClearSince = -1f;

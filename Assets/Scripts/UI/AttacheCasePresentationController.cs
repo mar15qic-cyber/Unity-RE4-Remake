@@ -1032,13 +1032,15 @@ global::UnityEngine.UI.Text assignmentReceiver11 = text;
             return;
         }
 
-        text.gameObject.SetActive(!craftingBackdrop && Interactive && widget.gameObject.activeInHierarchy && item.count > 1);
+        bool showCount = InventoryGridView.TryReadItemNumber(item, out int number, out Color numberColor)
+            && !craftingBackdrop && Interactive && widget.gameObject.activeInHierarchy;
+        text.gameObject.SetActive(showCount);
         if (!text.gameObject.activeSelf)
         {
             return;
         }
 
-        text.text = item.count.ToString();
+        InventoryGridView.UpdateItemNumber(text, number, numberColor);
         // corner（角落）：使用位置：作为 Vector3.Vector3(float, float, float) 的参数。
 Vector2 corner = widget.anchoredPosition + new Vector2(widget.rect.width * .5f - 4, -widget.rect.height * .5f + 4);
         // world（世界空间）：保存 Transform.TransformPoint(Vector3) 的返回结果，供当前步骤使用。使用位置：作为 Camera.WorldToViewportPoint(Vector3) 的参数。

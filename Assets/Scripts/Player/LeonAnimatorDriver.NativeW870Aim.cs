@@ -33,7 +33,17 @@ public partial class LeonAnimatorDriver
         && activeFullBodyAction == FullBodyActionType.None;
 
     internal bool NativeW870OwnsAimArms => w870Pose != W870Pose.None;
-    internal bool NativeW870FireCycleActive => w870Pose is W870Pose.Shot or W870Pose.LastShot or W870Pose.Pump;
+    internal bool NativeW870ShotActive => w870Pose is W870Pose.Shot or W870Pose.LastShot;
+    internal bool NativeW870FireCycleActive => NativeW870ShotActive || w870Pose == W870Pose.Pump;
+    internal bool TryReadW870ShotPumpPhase(out float phase)
+    {
+        phase = 0f;
+        if (!NativeW870FireCycleActive) return false;
+        // 0500 / 0510 have 49 and 51 source frames at the same rate.
+        float progress = ReadNativeW870PoseProgress();
+        phase = w870Pose == W870Pose.Pump ? 0.49f + 0.51f * progress : 0.49f * progress;
+        return true;
+    }
     private bool IsW870AimPose => w870Pose is W870Pose.Aim or W870Pose.EmptyAim;
     internal bool NativeW870BlocksFire => NativeW870FireCycleActive
         || currentAiming && SupportsNativeW870Aim && !IsW870AimPose && !isCrouching;
@@ -75,7 +85,7 @@ public partial class LeonAnimatorDriver
         {
             pose = W870Pose.LastShot;
         }
-        PlayNativeW870Pose(pose, 1f / 49f);
+        PlayNativeW870Pose(pose);
         return true;
     }
 

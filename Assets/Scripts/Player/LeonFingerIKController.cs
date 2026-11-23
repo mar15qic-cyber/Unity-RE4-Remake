@@ -173,7 +173,7 @@ public class LeonFingerIKController : MonoBehaviour
     {
         bool ladderOwnsFingers = coordinator != null && coordinator.IsLadderActionActive;
         bool knifeOwnsFingers = combat != null && combat.knifeModule != null && combat.knifeModule.Active;
-        if (ladderOwnsFingers || knifeOwnsFingers)
+        if (ladderOwnsFingers || knifeOwnsFingers || controller != null && controller.IsHeldByTrap)
         {
             if (fingerRig != null)
             {

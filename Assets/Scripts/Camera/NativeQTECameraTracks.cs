@@ -34,19 +34,19 @@ public sealed class NativeQTECameraTracks : ScriptableObject
     [SerializeField] private Track[] tracks = Array.Empty<Track>();
 
 #if UNITY_EDITOR
-    public void ReplaceGroundFinisherTracks(Track[] replacement)
+    public void ReplaceGroundFinisherTracks(Track[] replacement, string prefix = "LeonPair_Ground")
     {
         var next = new System.Collections.Generic.List<Track>();
         foreach (Track track in tracks)
         {
-            if (track != null && !track.playerClip.StartsWith("LeonPair_Ground", StringComparison.Ordinal))
+            if (track != null && !track.playerClip.StartsWith(prefix, StringComparison.Ordinal))
             {
                 next.Add(track);
             }
         }
         foreach (Track track in replacement)
         {
-            if (track == null || !track.IsValid || !track.playerClip.StartsWith("LeonPair_Ground", StringComparison.Ordinal))
+            if (track == null || !track.IsValid || !track.playerClip.StartsWith(prefix, StringComparison.Ordinal))
             {
                 throw new ArgumentException("补刀镜头轨道不完整。");
             }

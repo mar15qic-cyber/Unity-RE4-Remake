@@ -2285,6 +2285,9 @@ global::HouseThreeRegionNavigation receiverValue76 = HouseThreeRegionNavigation.
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） CharacterMotionExecutor.Revoke()、CombatDiagnosticFields.Text(string, string)、EnemyActionCoordinator.CloseAction()、EnemyCombatTimeline.Describe&lt;VillagerState&gt;(VillagerState)、EnemyCombatTimeline.IsRecord(VillagerController)、EnemyCombatTimeline.Record(VillagerController, string, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields)、EnemyCombatTimeline.Unregister(VillagerController) 等共 12 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     void OnDisable()
     {
+        corpsePhysics.Release();
+        corpseSupportApplied = false;
+        orderedToBreach = false;
         ClearCombatGroundMotion();
         if (externalKnockbackRoutine != null)
         {
@@ -2352,7 +2355,7 @@ global::HouseThreeRegionNavigation receiverValue79 = HouseThreeRegionNavigation.
         {
             combatModule.TickNativeDeathPresentation();
         }
-        if (IsRuntimeInitialized && externalKnockbackRoutine == null && combatSupportLostTime > 0f
+        if (IsRuntimeInitialized && !corpsePhysics.Active && externalKnockbackRoutine == null && combatSupportLostTime > 0f
             && !IsNavigationTraversalProtected && !IsQTEControlled && !combatModule.NativeCombatActive && !combatModule.NativeDeathActive)
         {
             CommitCombatGroundMotion(transform.rotation, 0f, out bool landed);
@@ -2443,19 +2446,40 @@ Vector3 movementStartPosition = transform.position;
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） VillagerController.ReconcileStandingPursuitFacingAfterAnimation()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     private static readonly int CorpseDeathState = Animator.StringToHash("Death");
     private bool corpseSupportApplied;
+    private readonly CorpseBodyPhysics corpsePhysics = new CorpseBodyPhysics();
 
     void LateUpdate()
     {
         if (!IsDead)
         {
+            corpsePhysics.Release();
             corpseSupportApplied = false;
         }
-        else if (!corpseSupportApplied && combatSupportLostTime <= 0f && !IsQTEControlled && anim != null && motionExecutor != null && !anim.IsInTransition(0))
+        else if (!IsQTEControlled && !IsNavigationTraversalProtected && externalKnockbackRoutine == null &&
+            anim != null && motionExecutor != null && motionExecutor.CurrentToken.Source == GameArchitecture.MotionSource.Death)
         {
-            AnimatorStateInfo death = anim.GetCurrentAnimatorStateInfo(0);
-            if (death.shortNameHash == CorpseDeathState && death.normalizedTime >= 0.99f)
+            if (!corpseSupportApplied && !corpsePhysics.Active)
             {
-                FitCorpseToGround();
+                AnimatorStateInfo death = anim.GetCurrentAnimatorStateInfo(0);
+                bool ordinaryDeath = !anim.IsInTransition(0) && death.shortNameHash == CorpseDeathState;
+                bool ready = ordinaryDeath && death.normalizedTime >= .99f;
+                if (combatModule != null && combatModule.NativeDeathActive)
+                {
+                    ready = combatModule.NativeDeathPoseReady;
+                }
+                else if (!ready && ordinaryDeath)
+                {
+                    corpsePhysics.TryBegin(anim, transform, true);
+                }
+                if (ready && !corpsePhysics.TryBegin(anim, transform, false))
+                {
+                    FitCorpseToGround();
+                }
+            }
+            if (corpsePhysics.Active)
+            {
+                Pose pose = corpsePhysics.ReadPose();
+                corpseSupportApplied = motionExecutor.CommitPose(motionExecutor.CurrentToken, pose.position, pose.rotation, true);
             }
         }
 
@@ -2480,7 +2504,6 @@ Vector3 movementStartPosition = transform.position;
     /// <remarks>静态调用链：上游 VillagerController.LateUpdate()；下游（含内部回调体） Vector3.Dot(Vector3, Vector3)、Vector3.Normalize()、VillagerController.ResolveLocalAvoidanceMinimumForwardAlignment()、VillagerController.ResolveStandingPursuitFacingTurnRate()、VillagerController.RotateTowardsDirection(Vector3, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     private void FitCorpseToGround()
     {
-        corpseSupportApplied = true;
         Vector3 normalSum = Vector3.zero;
         int count = 0;
         float lift = 0f;
@@ -2521,7 +2544,7 @@ Vector3 movementStartPosition = transform.position;
         {
             // 斜面上的尸体跟随地表倾斜，小幅抬高已压入地面的姿势。
             Quaternion slope = Quaternion.RotateTowards(Quaternion.identity, Quaternion.FromToRotation(Vector3.up, normalSum.normalized), 18f);
-            motionExecutor.CommitActionPose(transform.position + Vector3.up * Mathf.Clamp(lift, 0f, 0.16f), slope * transform.rotation);
+            corpseSupportApplied = motionExecutor.CommitActionPose(transform.position + Vector3.up * Mathf.Clamp(lift, 0f, 0.16f), slope * transform.rotation);
         }
     }
 
@@ -2614,6 +2637,11 @@ Vector3 facingDirection = lastStableAvoidanceDirection;
             return false;
         }
 
+        if (HasSiegeBreachOrder)
+        {
+            return ApproachSiegeDoor();
+        }
+
         if (specialTraversal != null && specialTraversal.TryReadPlatformExitClearance(out Vector3 clearance))
         {
             agent.isStopped = false;
@@ -2629,6 +2657,20 @@ Vector3 facingDirection = lastStableAvoidanceDirection;
         // player（玩家）：使用位置：作为 HouseThreeRegionNavigation.CrossLayerOrIndoorsChase(Vector3, Vector3) 的参数、作为 PathAgent.SetDestination(Vector3) 的参数、VillagerController.RefreshChaseDestination()。
         LeonController player = Player;
         EnemyAIManager tacticalManager = EnemyAIManager.Instance;
+        if (chainsawBridge != null && player != null && door03TraversalRoute != null &&
+            door03TraversalRoute.entranceDoor != null &&
+            door03TraversalRoute.entranceDoor.IsSiegeDoorBetween(transform.position, player.transform.position) &&
+            TryGetSameLevelPursuitIngressDestination(player.transform.position, out Vector3 siegeApproach))
+        {
+            if (CurrentState == VillagerState.Attack)
+            {
+                return false;
+            }
+
+            agent.isStopped = false;
+            return agent.SetPursuitDestination(siegeApproach);
+        }
+
         if (specialTraversal != null && player != null)
         {
             // playerPosition（玩家位置）：使用位置：作为 EnemyWindowTraversal.TryResolveSamePlatformPursuitDestination(Vector3, out Vector3) 的参数、作为 EnemyWindowTraversal.TryResolveSpecialPursuitDestination(Vector3, out Vector3) 的参数。
@@ -3252,7 +3294,14 @@ float queueSeparation;
 
             if (isQueueHead && distanceToDoor <= crossingDistance && !pursuitIngressDoor.IsOpen)
             {
-                pursuitIngressDoor.TryOpenForAI(transform);
+                if (pursuitIngressDoor.IsSiegeLatched && chainsawBridge != null && combatModule.CanAttack())
+                {
+                    actionCoordinator.RequestAction(GameArchitecture.ActionKind.Attack, "电锯破门");
+                }
+                else
+                {
+                    pursuitIngressDoor.TryOpenForAI(transform);
+                }
             }
 
             // sourceDepth（来源深度）：使用位置：VillagerController.TryGetPursuitIngressDestination(Vector3, out Vector3)。
@@ -4176,7 +4225,7 @@ float deltaDistance = currentDistance - previousDistance;
             {
                 // displacement（位移）：使用位置：作为 VillagerController.MoveWithCollision(Vector3, bool, bool) 的参数、作为 VillagerController.TryExecuteStairActionDisplacement(Vector3) 的参数。
 Vector3 displacement = direction * deltaDistance;
-                MoveWithCollision(displacement, false, false);
+                MoveWithCollision(displacement, true, false);
             }
             CommitCombatGroundMotion(transform.rotation, 0f, out _);
 
@@ -5090,6 +5139,10 @@ global::EnemyAIManager receiverValue125 = EnemyAIManager.Instance;
     /// <remarks>静态调用链：上游 VillagerController.CurrentChaseTarget.get；下游（含内部回调体） EnemyAIManager.GetCombatDestination(VillagerController, Vector3)、VillagerController.ShouldUseCloseDirectPursuitTarget()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     private Vector3 GetCurrentCombatTarget()
     {
+        if (HasSiegeBreachOrder)
+        {
+            return door03TraversalRoute.ExteriorGate;
+        }
         // player（玩家）：使用位置：VillagerController.GetCurrentCombatTarget()。
 LeonController player = Player;
         if (player == null)
@@ -5139,7 +5192,7 @@ EnemyAIManager manager = EnemyAIManager.Instance;
     private bool TryResolveCloseDirectPursuitDirection(out Vector3 direction)
     {
         direction = Vector3.zero;
-        if (pursuitIngressDoor != null || !ShouldUseCloseDirectPursuitTarget() || RequiresNavigationTraversalToPlayer())
+        if (HasSiegeBreachOrder || pursuitIngressDoor != null || !ShouldUseCloseDirectPursuitTarget() || RequiresNavigationTraversalToPlayer())
         {
             return false;
         }
@@ -5885,7 +5938,8 @@ float sampledSpeed;
             case EnemyMovementMode.ActionRootMotion:
                 deltaPos.y = 0f;
                 // strictAttackCollision（是否严格攻击碰撞）：使用位置：作为 VillagerController.MoveWithCollision(Vector3, bool, bool) 的参数。
-bool strictAttackCollision = CurrentState == VillagerState.Attack || CurrentState == VillagerState.CrawlAttack;
+                bool strictAttackCollision = CurrentState == VillagerState.Attack || CurrentState == VillagerState.CrawlAttack
+                    || CurrentState == VillagerState.Staggered;
                 if (CurrentState == VillagerState.Attack)
                 {
                     deltaPos = combatModule.AdjustStandingKnifeRootMotion(deltaPos);
@@ -5914,12 +5968,14 @@ bool strictAttackCollision = CurrentState == VillagerState.Attack || CurrentStat
                             step = step / distance * Mathf.Clamp(hit.distance - movementCollisionSkin, 0f, distance);
                         }
                         motionExecutor.CommitNormalPosition(transform.position + step);
-                        MaintainGroundContact();
+                        CommitCombatGroundMotion(transform.rotation, 0f, out _);
                     }
                 }
                 else if (!TryExecuteStairActionDisplacement(deltaPos))
                 {
-                    motionExecutor.CommitNormalPosition(transform.position + deltaPos);
+                    // 倒地受击的根轨含俯身和后退。水平位移受墙面阻挡，脚底高度由踏面接管。
+                    MoveWithCollision(deltaPos, true, false);
+                    MaintainGroundContact();
                 }
                 break;
         }
@@ -6841,7 +6897,7 @@ Vector3 actualDirection = actualDisplacement.normalized;
         // 跨上台沿，帧尾又被中心射线拉回较低踏面。
         Vector3 position = transform.position;
         if (!allowLargeDrop && !IsNavigationTraversalProtected && !IsQTEControlled
-            && TryReadPhysicalGround(position, position.y, maximumGroundStepUp, maximumGroundDrop, out float floorY))
+            && TryReadSupportedFootprint(position, position.y, maximumGroundStepUp, maximumGroundDrop, out float floorY))
         {
             // 先采样脚下的真实踏面，避免脚边球探针先碰到较高瓦片或相邻平台。
             if (floorY <= position.y + .01f || CanRaiseRaiseMovementCapsule(floorY - position.y))
@@ -7711,7 +7767,9 @@ global::HouseThreeTraversalGeometry traversal;
         }
 
         displacement.y = 0f;
-        MoveWithCollision(displacement, CurrentState == VillagerState.Attack || CurrentState == VillagerState.CrawlAttack, false);
+        bool strictCollision = CurrentState == VillagerState.Attack || CurrentState == VillagerState.CrawlAttack
+            || CurrentState == VillagerState.Staggered;
+        MoveWithCollision(displacement, strictCollision, false);
         MaintainGroundContact();
         return true;
     }
@@ -8007,7 +8065,7 @@ Collider candidate = movementHits[i].collider;
     /// <param name="samplePosition">中文含义：采样位置。使用位置：作为 Physics.RaycastNonAlloc(Vector3, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 的参数、作为 Physics.SphereCastNonAlloc(Vector3, float, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 的参数、作为 Vector3.Vector3(float, float, float) 的参数 等共 4 处。</param>
     /// <param name="previousHeight">中文含义：前一次高度。使用位置：作为 Vector3.Vector3(float, float, float) 的参数、VillagerController.TryResolveSupportedNavigationPosition(Vector3, float, out Vector3)。</param>
     /// <param name="supportedPosition">中文含义：支持的位置。输出参数，由本入口写入并交给调用方。使用位置：VillagerController.TryResolveSupportedNavigationPosition(Vector3, float, out Vector3)。</param>
-    private bool TryResolveSupportedNavigationPosition(Vector3 samplePosition, float previousHeight, out Vector3 supportedPosition)
+    internal bool TryResolveSupportedNavigationPosition(Vector3 samplePosition, float previousHeight, out Vector3 supportedPosition)
     {
         supportedPosition = default;
         // allowedStep（允许的步进）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：作为 Physics.RaycastNonAlloc(Vector3, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 的参数、作为 Physics.SphereCastNonAlloc(Vector3, float, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 的参数、VillagerController.TryResolveSupportedNavigationPosition(Vector3, float, out Vector3)。

@@ -14,7 +14,7 @@ public sealed class LeonItemPickup : MonoBehaviour
     private ItemPickup target;
     private ItemData firstInspectionItem;
     private int transactionId;
-    private float contactProgress;
+    private float contactTime;
     private float requestedAt;
     private bool processedContact;
     private bool movingPickup;
@@ -38,6 +38,9 @@ public sealed class LeonItemPickup : MonoBehaviour
     private Vector3 reachEnd;
     private Vector3 itemContact;
     private const int WorldCollisionMask = 1 << 0;
+    private const float PickupSourceFrameRate = 60f;
+    private const float MovingRecoveryTime = 7f / PickupSourceFrameRate;
+    private const float StandingRecoveryTime = 12f / PickupSourceFrameRate;
 
     private void Start()
     {
@@ -117,18 +120,17 @@ public sealed class LeonItemPickup : MonoBehaviour
         Vector3 offset = itemContact - transform.position;
         Vector3 direction = Vector3.ProjectOnPlane(offset, Vector3.up);
         int height = 0;
-        contactProgress = 12f / 27f;
+        contactTime = 12f / PickupSourceFrameRate;
         Vector3 sourceContact = new Vector3(.0005f, .5705f, .6568f);
         if (offset.y >= 1.14f)
         {
             height = 2;
-            contactProgress = 12f / 27f;
             sourceContact = new Vector3(.3104f, 1.3924f, .6595f);
         }
         else if (offset.y >= .69f)
         {
             height = 1;
-            contactProgress = 16f / 34f;
+            contactTime = 16f / PickupSourceFrameRate;
             sourceContact = new Vector3(.1139f, .9686f, .6851f);
         }
 
@@ -143,7 +145,7 @@ public sealed class LeonItemPickup : MonoBehaviour
             }
             if (height == 0)
             {
-                contactProgress = 11f / 23f;
+                contactTime = 11f / PickupSourceFrameRate;
             }
             movingPickup = true;
             MovingEntrySpeed = velocity.magnitude;
@@ -228,18 +230,18 @@ public sealed class LeonItemPickup : MonoBehaviour
                 motion.CommitTraversalPose(motionToken, position, next, true);
             }
         }
-        if (driver.TryReadItemPickupProgress(out float progress))
+        if (driver.TryReadItemPickupTime(out float elapsed))
         {
-            if (progress >= contactProgress)
+            if (elapsed >= contactTime)
             {
                 if (!CommitContact())
                 {
                     actions.CancelTraversal();
                     return;
                 }
-                bool wantsToMove = player.MoveInput.sqrMagnitude > .01f;
-                bool hasBufferedAction = inputBridge != null && inputBridge.HasBufferedPickupInput(transactionId);
-                if (wantsToMove || hasBufferedAction || progress >= contactProgress + .10f)
+
+                // 物品在接触帧入包，动作继续收手。持续方向输入沿用原步态或在站姿恢复时接管。
+                if (elapsed >= contactTime + RecoveryTime)
                 {
                     actions.CompleteItemPickup(transactionId);
                 }
@@ -248,6 +250,18 @@ public sealed class LeonItemPickup : MonoBehaviour
         else if (Time.time - requestedAt > .8f)
         {
             actions.CancelTraversal();
+        }
+    }
+
+    private float RecoveryTime
+    {
+        get
+        {
+            if (movingPickup)
+            {
+                return MovingRecoveryTime;
+            }
+            return StandingRecoveryTime;
         }
     }
 
@@ -302,10 +316,10 @@ public sealed class LeonItemPickup : MonoBehaviour
             reachApplied = false;
         }
         float weight = 0f;
-        if (OwnsTransaction() && driver.TryReadItemPickupProgress(out float progress))
+        if (OwnsTransaction() && driver.TryReadItemPickupTime(out float elapsed))
         {
-            float rise = Mathf.InverseLerp(0.03f, contactProgress, progress);
-            float fade = 1f - Mathf.InverseLerp(contactProgress, contactProgress + 0.23f, progress);
+            float rise = Mathf.InverseLerp(1f / PickupSourceFrameRate, contactTime, elapsed);
+            float fade = 1f - Mathf.InverseLerp(contactTime, contactTime + RecoveryTime, elapsed);
             weight = Mathf.SmoothStep(0f, 1f, Mathf.Min(rise, fade));
         }
         else if (Time.time - reachReleasedAt < .12f && player != null && player.CanAct()

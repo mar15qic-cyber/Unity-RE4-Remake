@@ -26,8 +26,6 @@ public partial class RE4RThirdPersonCamera
     private float pistolFramingWeight;
     private float knifeFramingVelocity;
     private float pistolFramingVelocity;
-    private float pistolClearanceDistance;
-    private float pistolClearanceVelocity;
 
     // 按参考录像调出的项目目标角度，录像本身未提供原作的镜头参数。
     private const float PistolUpAngle = 48f;
@@ -50,6 +48,9 @@ public partial class RE4RThirdPersonCamera
         return Mathf.Lerp(1.32f, 1.02f, crouchCameraWeight);
     }
 
+    private bool TracksHeldKnifeInput => !isLocked && !inputSuppressed && controller != null
+        && controller.IsHoldingKnifeGuard && !controller.IsolateObserveCameraSteering;
+
     private void UpdateShoulderOrbit(float dt)
     {
         float targetKnifeFraming = 0f;
@@ -58,7 +59,8 @@ public partial class RE4RThirdPersonCamera
         {
             targetKnifeFraming = 1f;
         }
-        else if (UsesPistolShoulder && IsAiming && !controller.IsolateObserveCameraSteering)
+        else if (controller != null && IsAiming && !controller.IsolateObserveCameraSteering
+            && (UsesPistolShoulder || controller.currentWeapon == WeaponType.Rifle && (activeProfile == null || activeProfile.allowAim)))
         {
             targetPistolFraming = 1f;
         }
@@ -85,7 +87,10 @@ public partial class RE4RThirdPersonCamera
             }
             requestedPitch *= upperAngle / inputRange;
         }
-        shoulderLookPitch = Mathf.Lerp(shoulderLookPitch, requestedPitch, 1f - Mathf.Exp(-dt / 0.065f));
+        if (TracksHeldKnifeInput)
+            shoulderLookPitch = requestedPitch;
+        else
+            shoulderLookPitch = Mathf.Lerp(shoulderLookPitch, requestedPitch, 1f - Mathf.Exp(-dt / 0.065f));
         shoulderOrbitPitch = ResolveShoulderOrbitPitch(shoulderLookPitch);
     }
 
@@ -97,6 +102,99 @@ public partial class RE4RThirdPersonCamera
         }
 
         return 58f * (1f - Mathf.Exp(-lookPitch / 48f));
+    }
+
+    internal void SnapAfterVillageEntrance(Quaternion facing)
+    {
+        if (target == null || vcam == null)
+        {
+            return;
+        }
+        SetVillageViewAngles(facing);
+        // 将跟随点和遮挡历史一起切到里昂的新站位。
+        vcam.PreviousStateIsValid = false;
+        SnapToInitialCameraPose();
+        vcam.InternalUpdateCameraState(Vector3.up, -1f);
+        var state = vcam.State;
+        cam.transform.SetPositionAndRotation(state.GetFinalPosition(), state.GetFinalOrientation());
+        cam.fieldOfView = state.Lens.FieldOfView;
+    }
+
+    internal bool TrySampleVillageShoulder(Vector3 exitPosition, Quaternion facing, out CameraState state)
+    {
+        state = default;
+        if (vcam == null || followPivot == null || tpf == null || panTilt == null || target == null)
+        {
+            return false;
+        }
+        // 暂停期间刚体的显示位置可能仍在门口，使用源演员本帧的交还站位采样。
+        SetVillageViewAngles(facing);
+        AlignShoulderRig(exitPosition);
+        vcam.InternalUpdateCameraState(Vector3.up, -1f);
+        state = vcam.State;
+        return true;
+    }
+
+    private void SetVillageViewAngles(Quaternion facing)
+    {
+        Vector3 angles = facing.eulerAngles;
+        yaw = Mathf.DeltaAngle(0f, angles.y);
+        pitch = Mathf.Clamp(Mathf.DeltaAngle(0f, angles.x), pitchRange.x, pitchRange.y);
+    }
+
+    private void AlignShoulderRig(Vector3 pivotPosition)
+    {
+        SnapShoulderPitch();
+        followPivot.SetPositionAndRotation(pivotPosition + Vector3.up * ReadPitchOrbitHeight(),
+            Quaternion.Euler(shoulderOrbitPitch, yaw, 0f));
+        ApplyCameraParams();
+        UpdatePanTilt(0f);
+        var lens = vcam.Lens;
+        lens.FieldOfView = curFOV;
+        lens.Dutch = 0f;
+        vcam.Lens = lens;
+    }
+
+    internal Vector2 CaptureShoulderViewAngles()
+    {
+        if (cam == null)
+        {
+            return new Vector2(yaw, pitch);
+        }
+        // 输入角在相机阻尼之前，转身途中要记住玩家最后实际看到的视角。
+        Vector3 view = cam.transform.eulerAngles;
+        return new Vector2(Mathf.DeltaAngle(0f, view.y), Mathf.DeltaAngle(0f, view.x));
+    }
+
+    // 补刀退出时使用玩家进入前的观察方向，武器和站姿仍由当前越肩配置提供镜头参数。
+    internal void ResumeShoulderAtAngles(Vector2 angles)
+    {
+        yaw = angles.x;
+        pitch = Mathf.Clamp(angles.y, pitchRange.x, pitchRange.y);
+        pivotVel = Vector3.zero;
+        unlockBoost = 1f;
+        RefreshShoulderAfterExternalCamera();
+    }
+
+    internal void ResumeShoulderFromOutput()
+    {
+        SynchronizeFromCamera();
+        RefreshShoulderAfterExternalCamera();
+    }
+
+    private void RefreshShoulderAfterExternalCamera()
+    {
+        if (cam == null || target == null || followPivot == null || vcam == null || panTilt == null)
+        {
+            return;
+        }
+        // 在 Cinemachine 计算交接之前同步越肩机位，避免混合先读到接管前的朝向。
+        lastTargetYaw = GetCharacterYaw();
+        turnLagTimer = 0f;
+        SnapShoulderPitch();
+        followPivot.rotation = Quaternion.Euler(shoulderOrbitPitch, yaw, 0f);
+        UpdatePanTilt(0f);
+        vcam.InternalUpdateCameraState(Vector3.up, -1f);
     }
 
     private void SnapShoulderPitch()
@@ -112,9 +210,7 @@ public partial class RE4RThirdPersonCamera
 
     private float ReadPistolCloseWeight()
     {
-        // 大仰角交给视锥构图解算，避免近肩推进和仰视机位同时拉动镜头。
-        float raised = Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(8f, 34f, -shoulderLookPitch));
-        return pistolFramingWeight * (1f - raised);
+        return pistolFramingWeight;
     }
 
     private float ReadKnifeFramingRatio()
@@ -128,8 +224,6 @@ public partial class RE4RThirdPersonCamera
         if (modeWeight <= 0f || followPivot == null || controller == null || isLocked || inputSuppressed
             || controller.currentState == LeonState.Dead || controller.currentState == LeonState.QTE)
         {
-            pistolClearanceDistance = 0f;
-            pistolClearanceVelocity = 0f;
             return basePosition;
         }
 
@@ -161,46 +255,20 @@ public partial class RE4RThirdPersonCamera
         raisedShoulderPoints[2] = toCamera * (right - anchor);
         raisedShoulderPoints[3] = toCamera * (spine - anchor);
         Vector3 cameraPosition = basePosition;
-        if (shoulderLookPitch < 0f)
+        if (shoulderLookPitch < 0f && knifeFramingWeight > .001f)
         {
             Vector3 baseOffset = toCamera * (anchor - basePosition);
             cameraPosition = FitRaisedShoulderPosition(basePosition, baseOffset, orientation,
-                frustumScale, nearDepth, modeWeight);
+                frustumScale, nearDepth, knifeFramingWeight);
         }
 
-        float closeWeight = ReadPistolCloseWeight();
-        if (closeWeight <= 0f)
-        {
-            pistolClearanceDistance = 0f;
-            pistolClearanceVelocity = 0f;
-            return cameraPosition;
-        }
-
-        // 平移瞄准时给肩背留出步态摆动的余量，视线继续跟随准星输入。
-        Vector3 anchorOffset = toCamera * (anchor - cameraPosition);
-        float retreat = 0f;
-        foreach (Vector3 point in raisedShoulderPoints)
-        {
-            float margin = ReadShoulderFrustumMargin(point + anchorOffset, frustumScale, nearDepth);
-            retreat = Mathf.Max(retreat, (.06f - margin) / ShoulderFrustumEdge);
-        }
-
-        if (!previousStateValid || dt < 0f)
-        {
-            pistolClearanceDistance = retreat;
-            pistolClearanceVelocity = 0f;
-        }
-        else if (dt > 0f)
-        {
-            float damping = .14f;
-            if (retreat > pistolClearanceDistance)
-            {
-                damping = .055f;
-            }
-            pistolClearanceDistance = Mathf.SmoothDamp(pistolClearanceDistance, retreat,
-                ref pistolClearanceVelocity, damping, Mathf.Infinity, dt);
-        }
-        return cameraPosition - orientation * Vector3.forward * (pistolClearanceDistance * closeWeight);
+        // 枪械瞄准以同一个屏幕肩点解算机位。大俯角才稍稍拉开，让近地目标露出来。
+        float down = Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(38f, 65f, shoulderLookPitch));
+        float distance = Mathf.Abs(aimOffset.z);
+        float depth = Mathf.Max(nearDepth, distance) + .14f * down + weaponRecoilDistanceOffset;
+        Vector3 shoulderFrame = new Vector3(-.56f * tanX, Mathf.Lerp(-.38f, -.26f, down) * tanY, 1f);
+        Vector3 gunPosition = shoulders - orientation * (shoulderFrame * depth);
+        return Vector3.Lerp(cameraPosition, gunPosition, pistolFramingWeight);
     }
 
     private Vector3 FitRaisedShoulderPosition(Vector3 basePosition, Vector3 baseOffset, Quaternion orientation,

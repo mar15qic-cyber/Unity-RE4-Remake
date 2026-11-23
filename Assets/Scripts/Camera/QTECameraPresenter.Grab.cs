@@ -4,8 +4,11 @@ using UnityEngine.Splines;
 public sealed partial class QTECameraPresenter
 {
     private int grabScreenSide;
+    private Vector3 frontGrabEntryRadial;
+    private Vector3 frontGrabShotRadial;
     private int recoveryCameraSession;
     private Vector3 recoveryCameraOffset;
+    private Vector3 standingResultOffset;
 
     private bool UsesSawFailureComposition => nativePlayerClip == "LeonPair_0030_jack_pl_2nd_wp5300";
 
@@ -57,6 +60,20 @@ public sealed partial class QTECameraPresenter
                     sign = Mathf.Sign(Vector3.Dot(stableQtePose.position - focus, side));
                 }
                 horizontal += side * (sign * (.64f - Mathf.Abs(lateral)) * horizontal.magnitude);
+            }
+        }
+        if (sessionContext.kind == QTEKind.FrontGrab && frontGrabEntryRadial.sqrMagnitude > .01f)
+        {
+            // 开场从玩法镜头的近侧取景；第一次选中可用机位后，连续跟随双方而不绕到背面。
+            float distance = horizontal.magnitude;
+            if (frontGrabShotRadial.sqrMagnitude > .01f)
+            {
+                horizontal = frontGrabShotRadial * distance;
+            }
+            else
+            {
+                float angle = Vector3.SignedAngle(frontGrabEntryRadial, horizontal, Vector3.up);
+                horizontal = Quaternion.AngleAxis(Mathf.Clamp(angle, -78f, 78f), Vector3.up) * frontGrabEntryRadial * distance;
             }
         }
         float horizontalDistance = Mathf.Clamp(horizontal.magnitude, 1.4f, 3.2f);
@@ -313,6 +330,12 @@ public sealed partial class QTECameraPresenter
         }
 
         QTECameraRig rig = activePreset.rig;
+        if (coordinator.CurrentPhase is QTEPhase.SuccessResult or QTEPhase.FailureResult)
+        {
+            bool framed = TryFrameStandingResult(out Pose result, out float resultFov);
+            nativeCameraTaken = PresentContinuousQteCamera(GetContinuousQteCamera(), framed, result, resultFov);
+            return;
+        }
         float along = rig.SplinePosition;
         bool valid = TryFrameRearPath(rig.SelectedPath, along, out Pose pose, out float fov);
         bool obstructedLongEnough = qteObstructedSince >= 0f && Time.time - qteObstructedSince >= .10f;
@@ -342,5 +365,34 @@ public sealed partial class QTECameraPresenter
         }
 
         nativeCameraTaken = PresentContinuousQteCamera(GetContinuousQteCamera(), valid, pose, fov);
+    }
+
+    private bool TryFrameStandingResult(out Pose pose, out float horizontalFov)
+    {
+        // 摔脱和刺击收尾都会改变角色朝向。沿最后可见的观察方向平移，避免跟着角色绕行。
+        var output = cameraController.MainCamera;
+        pose = default;
+        horizontalFov = 72f;
+        if (output == null)
+        {
+            return false;
+        }
+        Vector3 center = Vector3.Lerp(sessionContext.playerRoot.position, sessionContext.enemyRoot.position, .3f);
+        center.y += 1.12f;
+        if (standingResultOffset.sqrMagnitude < .01f)
+        {
+            float distance = Mathf.Clamp(Vector3.Distance(center, output.transform.position), 1.8f, 3.2f);
+            standingResultOffset = -output.transform.forward * distance;
+        }
+        pose = new Pose(center + standingResultOffset, Quaternion.LookRotation(-standingResultOffset, Vector3.up));
+        for (int i = 0; i < 3; i++)
+        {
+            pose.position = center + standingResultOffset * (1f - i * .19f);
+            if (IsQteCameraMovementClear(center, pose.position, .14f) && HasGrabSight(pose.position, center))
+            {
+                return true;
+            }
+        }
+        return false;
     }
 }

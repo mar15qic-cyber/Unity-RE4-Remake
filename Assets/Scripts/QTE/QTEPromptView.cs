@@ -242,7 +242,7 @@ bool? optionalValue2;
         }
         else if (kind == QTEKind.RearGrab)
         {
-            currentActionText = "长按挣脱";
+            currentActionText = "连按或长按挣脱";
         }
         else
         {

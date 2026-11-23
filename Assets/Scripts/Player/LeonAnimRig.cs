@@ -263,6 +263,7 @@ public partial class LeonAnimRig : MonoBehaviour
     void Start()
     {
         nativeKnifeAim = GetComponent<KnifeCombatModule>();
+        PositionNativeCqbrOnBack();
         if (anim == null)
         {
             anim = GetComponent<Animator>();
@@ -940,7 +941,8 @@ bool? optionalValue7;
         }
 
         // 全身动作淡出期间保持武器约束为零，避免动作末段重新拉扯手臂。
-        if (IsFullBodyActionLayerInfluencingPose() || actionCoordinator != null && actionCoordinator.IsLadderActionActive)
+        if (IsFullBodyActionLayerInfluencingPose() || controller != null && controller.IsHeldByTrap
+            || actionCoordinator != null && actionCoordinator.IsLadderActionActive)
         {
             currentArmWeight = 0f;
             ForceAllWeaponIKOff();

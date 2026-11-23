@@ -59,7 +59,8 @@ public partial class LeonAnimatorDriver
     private bool UsesWeaponEquipLayerFade => NativePistolEquipActive || IsValid && (animator.GetInteger(HashWeaponAction) == W870EquipAction
         || animator.GetInteger(HashWeaponAction) == (int)WeaponActionType.Equip && SupportsNativeW870Switch);
     private bool UsesNativeWeaponLayerFade => UsesNativeReloadLayerFade || NativeW870SwitchActive
-        || NativePistolHolsterActive || UsesWeaponEquipLayerFade;
+        || NativePistolHolsterActive || UsesWeaponEquipLayerFade
+        || SupportsNativeCqbr && currentWeaponType == WeaponType.Rifle && animator.GetInteger(HashWeaponAction) == (int)WeaponActionType.Holster;
 
     internal bool IsNativeW870SwitchPlaying()
     {

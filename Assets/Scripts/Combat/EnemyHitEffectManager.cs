@@ -73,6 +73,7 @@ public class EnemyHitEffectManager : Singleton<EnemyHitEffectManager>
     void Start()
     {
         ChapterOneEffects.Prewarm();
+        ExecutionGeometry.Preload();
     }
 
     /// <summary>

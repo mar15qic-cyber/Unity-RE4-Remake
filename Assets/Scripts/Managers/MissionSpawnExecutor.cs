@@ -24,6 +24,7 @@ public sealed class MissionSpawnExecutor
     /// <summary>中文含义：下一次村民敌人预制件索引。使用位置：MissionSpawnExecutor.GetNextGanadoPrefab()。</summary>
     private int nextGanadoPrefabIndex;
     private int nextReinforcementSite;
+    private Transform entranceReserve;
     private readonly HitQueryBuffer visibilityQueries = new HitQueryBuffer();
     /// <summary>构造并初始化 MissionSpawnExecutor 的声明状态；具体外部协作见静态调用链。</summary>
     /// <remarks>静态调用链：上游 ChapterOneMissionManager.Prepare(GameManager, EnemyAIManager, HouseThreeTraversalGeometry)；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
@@ -409,6 +410,76 @@ float minimumCenterY = position.y + radius + skin + halfSegment;
             IsSpawnPhysicallyClear(position, rotation, prefab);
     }
 
+    internal void PrepareEntranceActors(GameObject prefab)
+    {
+        if (prefab == null || entranceReserve != null)
+        {
+            return;
+        }
+        // 同局最多有两次电锯登场。禁用父对象可在装载时复制骨架，正式登场才启动角色。
+        var holder = new GameObject("村庄登场角色预备");
+        holder.SetActive(false);
+        holder.transform.SetParent(configuration.transform, false);
+        entranceReserve = holder.transform;
+        for (int index = 0; index < 2; index++)
+        {
+            UnityEngine.Object.Instantiate(prefab, entranceReserve, false);
+        }
+    }
+
+    internal VillagerController GenerateEntrance(GameObject prefab, Transform anchor, float health)
+    {
+        if (prefab == null || anchor == null || AstarPath.active == null || player == null)
+        {
+            return null;
+        }
+
+        NNInfo village = AstarPath.active.GetNearest(configuration.waveConfiguration.VillagePatrolPositions[0],
+            NearestNodeConstraint.Walkable);
+        if (village.node == null)
+        {
+            return null;
+        }
+
+        foreach (Vector3 offset in SpawnOffsets)
+        {
+            Vector3 desired = anchor.position + anchor.rotation * offset;
+            NNInfo nearest = AstarPath.active.GetNearest(desired, NearestNodeConstraint.Walkable);
+            if (nearest.node == null || !PathUtilities.IsPathPossible(nearest.node, village.node))
+            {
+                continue;
+            }
+
+            Vector3 position = nearest.position;
+            Vector3 separation = position - player.transform.position;
+            if (Vector3.Distance(position, desired) > configuration.spawnSnapDistance ||
+                Mathf.Abs(position.y - desired.y) > configuration.spawnSnapHeight || separation.sqrMagnitude < 2.25f ||
+                IsSpawnOccupied(position) || !IsSpawnPhysicallyClear(position, anchor.rotation, prefab))
+            {
+                continue;
+            }
+
+            GameObject prepared = null;
+            if (prefab == configuration.sawmanTemplate && entranceReserve != null && entranceReserve.childCount > 0)
+            {
+                Transform actor = entranceReserve.GetChild(0);
+                actor.SetPositionAndRotation(position, anchor.rotation);
+                actor.SetParent(null, true);
+                prepared = actor.gameObject;
+            }
+            VillagerController enemy = CreateEnemy(prefab, position, anchor.rotation, prepared);
+            if (enemy != null)
+            {
+                // 生命模块在角色首次 Start 时读取此值。
+                enemy.maxHealth = health;
+            }
+
+            return enemy;
+        }
+
+        return null;
+    }
+
     private bool IsVisibleFromCamera(Camera camera, Vector3 position, GameObject prefab)
     {
         GetSpawnCapsule(position, Quaternion.identity, prefab, out Vector3 top, out Vector3 bottom, out float radius);
@@ -465,12 +536,13 @@ float minimumCenterY = position.y + radius + skin + halfSegment;
         return CreateEnemy(prefab, position, rotation);
     }
 
-    private VillagerController CreateEnemy(GameObject prefab, Vector3 position, Quaternion rotation)
+    private VillagerController CreateEnemy(GameObject prefab, Vector3 position, Quaternion rotation, GameObject instance = null)
     {
-        // instance（实例）：保存 Object.Instantiate<GameObject>(GameObject, Vector3, Quaternion) 的返回结果，供当前步骤使用。使用位置：作为 Debug.LogError(object, Object) 的参数、作为 Object.Destroy(Object) 的参数、MissionSpawnExecutor.Generate(GameObject)。
-GameObject instance = UnityEngine.Object.Instantiate(prefab, position, rotation);
-        // enemy（敌人）：保存 GameObject.GetComponent<VillagerController>() 的返回结果，供当前步骤使用。使用位置：MissionSpawnExecutor.Generate(GameObject)。
-var enemy = instance.GetComponent<VillagerController>();
+        if (instance == null)
+        {
+            instance = UnityEngine.Object.Instantiate(prefab, position, rotation);
+        }
+        var enemy = instance.GetComponent<VillagerController>();
         if (enemy == null)
         {
             Debug.LogError("[第一章任务] 敌人预制件缺少村民控制器，本次刷新不计入储备。", instance);

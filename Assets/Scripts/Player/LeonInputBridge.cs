@@ -832,6 +832,8 @@ global::System.Action receiverValue29 = itemInspectionCloseCallback;
         }
     }
 
+    internal bool IsInteractionHeld => interactAction != null && interactAction.enabled && interactAction.IsPressed();
+
     internal string ReadInteractBindingLabel()
     {
         if (interactAction == null)
@@ -1013,7 +1015,7 @@ bool? optionalValue39;
             return;
         }
 
-        if (controller == null || !controller.CanAct() || moveAction == null || !moveAction.enabled ||
+        if (controller == null || (!controller.CanAct() && !(controller.currentState == LeonState.Staggered && controller.AnimDriver != null && controller.AnimDriver.HitMovementReleased)) || moveAction == null || !moveAction.enabled ||
             sprintAction == null || !sprintAction.enabled)
         {
             return;
@@ -1561,7 +1563,8 @@ global::InventoryUI receiverValue59 = InventoryUI.Instance;
     /// <summary>OnParry 的业务处理入口；本方法直接依赖 LeonCombat.CommitGuardInput(bool, double)、LeonController.TrySetCrouching(bool)、LeonInputBridge.CloseWeaponWheel(bool)、LeonInputBridge.ConvertInputTime(double)、object.ReferenceEquals(object, object)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） LeonCombat.CommitGuardInput(bool, double)、LeonController.TrySetCrouching(bool)、LeonInputBridge.CloseWeaponWheel(bool)、LeonInputBridge.ConvertInputTime(double)、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     /// <param name="ctx">中文含义：当前回调上下文。使用位置：作为 LeonInputBridge.ConvertInputTime(double) 的参数、LeonInputBridge.OnParry(InputAction.CallbackContext)。</param>
-    internal bool CanReadParryInput => isActiveAndEnabled && parryAction != null && parryAction.enabled;
+    internal bool CanReadParryInput => isActiveAndEnabled && parryAction != null && parryAction.enabled && CanUsePickupInput();
+    internal bool IsParryInputHeld => parryAction != null && parryAction.IsPressed();
 
     internal string GetParryBindingDisplayName()
     {
@@ -1808,6 +1811,16 @@ var loader = InventorySceneLoader.Instance;
     /// <summary>OnSort 的业务处理入口；本方法直接依赖 InventoryManager.Sort()、object.ReferenceEquals(object, object)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） InventoryManager.Sort()、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     /// <param name="ctx">中文含义：当前回调上下文。</param>
+    internal InputAction FindInventoryAction(string actionName)
+    {
+        if (playerMap == null)
+        {
+            return null;
+        }
+
+        return playerMap.FindAction(actionName);
+    }
+
     void OnSort(InputAction.CallbackContext ctx)
     {
         if (InventorySceneLoader.Instance != null && InventorySceneLoader.Instance.IsVisible && InventoryUI.Instance != null && InventoryUI.Instance.Interactive)

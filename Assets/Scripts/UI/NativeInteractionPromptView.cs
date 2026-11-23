@@ -30,6 +30,8 @@ public sealed class NativeInteractionPromptView : MonoBehaviour
         public Image background;
         public Text label;
         public Text fallbackKey;
+        public RectTransform holdGroup;
+        public Image holdFill;
         public Component target;
         public bool wasNear;
         public float appearedAt;
@@ -167,6 +169,41 @@ public sealed class NativeInteractionPromptView : MonoBehaviour
         return image;
     }
 
+    private void ShowCabinetHold(PromptCard card, float progress)
+    {
+        if (card.holdGroup == null)
+        {
+            var group = new GameObject("柜体长按提示", typeof(RectTransform));
+            card.holdGroup = group.GetComponent<RectTransform>();
+            card.holdGroup.SetParent(card.root, false);
+            card.holdGroup.anchoredPosition = new Vector2(-96f, 0f);
+            // cs_ui0350 的底环和亮环共用一张原版图，十二点起顺时针揭示亮环。
+            Image flare = Image(card.holdGroup, "环形阴影", Vector2.zero, new Vector2(60f, 60f));
+            flare.sprite = Art("CabinetHoldFlare");
+            flare.color = new Color32(0, 0, 0, 204);
+            Image track = Image(card.holdGroup, "底环", Vector2.zero, new Vector2(48f, 48f));
+            track.sprite = Art("CabinetHoldGauge");
+            track.color = new Color32(75, 75, 70, 204);
+            card.holdFill = Image(card.holdGroup, "长按进度", Vector2.zero, new Vector2(48f, 48f));
+            card.holdFill.sprite = track.sprite;
+            card.holdFill.type = UnityEngine.UI.Image.Type.Filled;
+            card.holdFill.fillMethod = UnityEngine.UI.Image.FillMethod.Radial360;
+            card.holdFill.fillOrigin = (int)UnityEngine.UI.Image.Origin360.Top;
+            card.holdFill.fillClockwise = true;
+            card.holdFill.color = new Color32(250, 240, 230, 255);
+            Text hold = Label(card.holdGroup, "长按标识", new Vector2(0f, 38f), new Vector2(110f, 29f), 18);
+            hold.text = "长按";
+            hold.alignment = TextAnchor.MiddleCenter;
+            hold.color = new Color32(255, 250, 240, 255);
+            card.holdGroup.SetSiblingIndex(card.key.transform.GetSiblingIndex());
+        }
+        card.holdGroup.gameObject.SetActive(true);
+        card.holdFill.fillAmount = progress;
+        card.background.enabled = false;
+        card.label.enabled = false;
+        card.key.rectTransform.sizeDelta = new Vector2(42f, 42f);
+    }
+
     private Text Label(Transform parent, string name, Vector2 position, Vector2 size, int fontSize)
     {
         var go = new GameObject(name, typeof(RectTransform), typeof(Text));
@@ -277,11 +314,13 @@ public sealed class NativeInteractionPromptView : MonoBehaviour
     {
         Vector3 screen = camera.WorldToScreenPoint(snapshot.Position);
         bool near = snapshot.CanExecute;
+        var cabinet = snapshot.Target as WindowBarricade;
         bool groundFinisher = near && snapshot.Kind == InteractionPromptKind.GroundFinisher;
         bool blockedFinisher = snapshot.Kind == InteractionPromptKind.GroundFinisherBlocked;
         if (screen.z <= 0f || screen.x < 0f || screen.x > Screen.width || screen.y < 0f || screen.y > Screen.height)
         {
-            if (!groundFinisher && (!near || !LeonQTECoordinator.IsPassageInteraction(snapshot.Target)))
+            if (!groundFinisher && (cabinet == null || !cabinet.ShowsHoldPrompt) &&
+                (!near || !LeonQTECoordinator.IsPassageInteraction(snapshot.Target)))
             {
                 return;
             }
@@ -313,6 +352,11 @@ public sealed class NativeInteractionPromptView : MonoBehaviour
         card.icon.enabled = false;
         card.durability.enabled = false;
         card.fallbackKey.enabled = false;
+        if (card.holdGroup != null)
+        {
+            card.holdGroup.gameObject.SetActive(cabinet != null && near);
+        }
+        card.key.rectTransform.sizeDelta = new Vector2(52f, 52f);
         card.arrow.enabled = snapshot.Kind != InteractionPromptKind.EmergencyDefense && !blockedFinisher;
         card.secondArrow.enabled = !near && !blockedFinisher;
         card.key.rectTransform.anchoredPosition = new Vector2(-96f, 0f);
@@ -330,7 +374,11 @@ public sealed class NativeInteractionPromptView : MonoBehaviour
             card.fallbackKey.enabled = true;
             card.fallbackKey.text = input.ReadPromptBinding(snapshot.InputAction);
         }
-        if (blockedFinisher)
+        if (cabinet != null && near)
+        {
+            ShowCabinetHold(card, cabinet.HoldProgress);
+        }
+        else if (blockedFinisher)
         {
             card.icon.enabled = true;
             card.icon.sprite = Art("Knife");
@@ -344,19 +392,19 @@ public sealed class NativeInteractionPromptView : MonoBehaviour
             card.icon.sprite = Art("Knife");
             card.icon.rectTransform.sizeDelta = new Vector2(52f, 52f);
             card.label.enabled = false;
-            card.key.rectTransform.anchoredPosition = new Vector2(-50f, 0f);
+            card.key.rectTransform.anchoredPosition = new Vector2(-96f, 0f);
             card.fallbackKey.rectTransform.anchoredPosition = card.key.rectTransform.anchoredPosition;
-            card.icon.rectTransform.anchoredPosition = new Vector2(-96f, 0f);
+            card.icon.rectTransform.anchoredPosition = new Vector2(-50f, 0f);
             card.arrow.enabled = false;
             card.secondArrow.enabled = false;
             if (InventoryManager.HasInstance)
             {
-                var knife = InventoryManager.Instance.GetPreferredKnife();
+                var knife = coordinator.ReadGroundPromptKnife();
                 if (knife != null)
                 {
                     float fraction = knife.DurabilityNormalized;
                     card.durability.enabled = fraction > 0f;
-                    card.durability.rectTransform.anchoredPosition = new Vector2(-115f, -23f);
+                    card.durability.rectTransform.anchoredPosition = new Vector2(-69f, -23f);
                     card.durability.rectTransform.sizeDelta = new Vector2(38f * fraction, 3f);
                 }
             }

@@ -921,13 +921,13 @@ float distance = (point - origin).sqrMagnitude;
                 continue;
             }
 
-            // 碎片使用原版拆分网格，碰撞仅在碎片的存活期间启用。
+            // 碎片使用原版拆分网格和物理散落。
             GameObject part = mesh.gameObject;
-            part.layer = LayerMask.NameToLayer("Ignore Raycast");
             Bounds localBounds = mesh.sharedMesh.bounds;
             BoxCollider shape = part.AddComponent<BoxCollider>();
             shape.center = localBounds.center;
             shape.size = Vector3.Max(localBounds.size, Vector3.one * 0.012f);
+            ConfigureFragmentCollision(shape);
             Rigidbody body = part.AddComponent<Rigidbody>();
             body.mass = Mathf.Clamp(renderer.bounds.size.magnitude * 0.4f, 0.025f, 0.3f);
             Vector3 direction = Vector3.ProjectOnPlane(renderer.bounds.center - hitPoint, Vector3.up).normalized;
@@ -978,6 +978,7 @@ Vector3 spawnPosition = new Vector3(Random.Range(bounds.min.x, bounds.max.x), Ra
         // fragment（碎片）：保存 GameObject.CreatePrimitive(PrimitiveType) 的返回结果，供当前步骤使用。使用位置：作为 DestructibleWoodenBox.ShrinkAndDestroy(Transform, float, float) 的参数、DestructibleWoodenBox.CreateFragment(Bounds, Vector3, Vector3, Material, string)。
 GameObject fragment = GameObject.CreatePrimitive(PrimitiveType.Cube);
         fragment.name = objectName;
+        ConfigureFragmentCollision(fragment.GetComponent<BoxCollider>());
         fragment.transform.position = spawnPosition;
         fragment.transform.rotation = transform.rotation * Random.rotationUniform;
         fragment.transform.localScale = ClampFragmentSize(size, bounds.size);
@@ -1009,6 +1010,13 @@ Vector3 impulse = direction * Random.Range(fragmentImpulse * 0.65f, fragmentImpu
         body.AddForce(impulse, ForceMode.Impulse);
         body.AddTorque(Random.onUnitSphere * Random.Range(fragmentTorque * 0.45f, fragmentTorque * 1.2f), ForceMode.Impulse);
         StartCoroutine(ShrinkAndDestroy(fragment.transform, fragmentLifetime, fragmentShrinkDuration));
+    }
+
+    private static void ConfigureFragmentCollision(Collider fragment)
+    {
+        // 木屑可以撞地滚落，玩家连贯移动时不会被弹起的碎片卡住。
+        fragment.gameObject.layer = LayerMask.NameToLayer("Ignore Raycast");
+        fragment.excludeLayers |= LayerMask.GetMask("player");
     }
 
     /// <summary>ClampFragmentSize 的业务处理入口；本方法直接依赖 Mathf.Clamp(float, float, float)、Mathf.Max(float, float)、Vector3.Vector3(float, float, float)，调用方通过参数与返回结果交接本次处理。</summary>

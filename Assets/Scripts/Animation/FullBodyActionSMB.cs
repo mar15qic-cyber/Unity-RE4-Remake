@@ -51,7 +51,12 @@ public enum FullBodyActionType
     VillageGateOpen = 23,
     ItemPickup = 24,
     LadderPush = 25,
-    LadderTraversal = 26
+    LadderTraversal = 26,
+    CabinetPush = 27,
+    TrapCatch = 28,
+    TrapEscape = 29,
+    EnvironmentalFall = 30,
+    DoorBrace = 31
 }
 
 internal static class MeleeActionKinds
@@ -142,8 +147,28 @@ public class FullBodyActionSMB : StateMachineBehaviour
     /// <param name="animator">中文含义：动画控制器。使用位置：作为 Action&lt;Animator, FullBodyActionType, int&gt;.Invoke(Animator, FullBodyActionType, int) 的参数。</param>
     /// <param name="stateInfo">中文含义：当前动画状态信息。</param>
     /// <param name="layerIndex">中文含义：动画图层索引。</param>
+    private float nativeHitExitSeconds;
+    private readonly System.Collections.Generic.List<AnimatorClipInfo> hitClips = new();
+
     public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
+        nativeHitExitSeconds = 0f;
+        if (actionType == FullBodyActionType.Hit)
+        {
+            animator.GetCurrentAnimatorClipInfo(layerIndex, hitClips);
+            foreach (var item in hitClips)
+            {
+                if (item.weight < .5f) continue;
+                int endFrame = item.clip.name switch
+                {
+                    "LeonDamage_0100" => 68,
+                    "LeonDamage_0102" => 77,
+                    "LeonDamage_0104" => 85,
+                    _ => 0
+                };
+                nativeHitExitSeconds = endFrame * completeNormalizedTime / 60f;
+            }
+        }
         hasCompleted = false;
         entrySequence = ++globalEntrySequence;
         // receiverValue1（判空前缓存的动作进入时的通知回调）：从动作进入时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、FullBodyActionSMB.OnStateEnter(Animator, AnimatorStateInfo, int)。
@@ -167,6 +192,10 @@ global::System.Action<global::UnityEngine.Animator, global::FullBodyActionType, 
         }
 
         float completionTime = completeNormalizedTime;
+        if (actionType == FullBodyActionType.Hit && nativeHitExitSeconds > 0f && stateInfo.length > 0f)
+        {
+            completionTime = nativeHitExitSeconds / stateInfo.length;
+        }
         if (actionType == FullBodyActionType.Death)
         {
             completionTime = Mathf.Max(completionTime, 1f);

@@ -17,6 +17,7 @@ public class EnemyTimedHitStateSMB : StateMachineBehaviour
     public float completeNormalizedTime = 0.9f;
     /// <summary>中文含义：是否完成已发送。使用位置：EnemyTimedHitStateSMB.OnStateEnter(Animator, AnimatorStateInfo, int)、EnemyTimedHitStateSMB.OnStateUpdate(Animator, AnimatorStateInfo, int)。</summary>
     private bool completeSent;
+    [HideInInspector] public float opportunityTimeScale = 1f;
     /// <summary>实现基类的 OnStateEnter 重写入口；框架调用后按本方法分支执行，并通过下游成员完成协作。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） Component.GetComponent&lt;VillagerController&gt;()、GameObject.SendMessage(string, SendMessageOptions)、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     /// <param name="animator">中文含义：动画控制器。使用位置：EnemyTimedHitStateSMB.OnStateEnter(Animator, AnimatorStateInfo, int)。</param>
@@ -45,6 +46,10 @@ global::VillagerController receiverValue1 = animator.GetComponent<VillagerContro
         }
 
         completeSent = false;
+        if (animator.TryGetComponent<VillagerQTEParticipant>(out var participant))
+        {
+            participant.SetHitWindowClock(stateInfo.fullPathHash, opportunityTimeScale);
+        }
         animator.gameObject.SendMessage(EnemyAnimationMessageNames.ChainsawHitAudioEnter, SendMessageOptions.DontRequireReceiver);
     }
 

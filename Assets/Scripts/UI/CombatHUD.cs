@@ -71,6 +71,12 @@ public class CombatHUD : Singleton<CombatHUD>
     private float lastHealth;
     private float revealUntil;
     private bool wasBlocked;
+    private RectTransform inventoryGaugeParent;
+    private Transform gameplayGaugeParent;
+    private int gameplayGaugeSibling;
+    private float cachedHealthMaximum;
+    private const float BaseHealthSweep = 168f;
+    private const float MaximumHealthSweep = 270f;
     private WeaponType lastFirearm;
     private bool hasLastFirearm;
     private Image knifeTrack;
@@ -138,6 +144,8 @@ public class CombatHUD : Singleton<CombatHUD>
     public CanvasGroup parryPromptGroup;
     /// <summary>中文含义：招架提示键标签。使用位置：作为 CombatHUD.StretchToParent(RectTransform) 的参数、CombatHUD.BuildOrRepairParryPrompt()、CombatHUD.UpdateParryPrompt()。</summary>
     public Text parryPromptKeyLabel;
+    private Image parryKeyImage;
+    private KnifeParryPromptKind shownParryPrompt;
     /// <summary>中文含义：招架提示动作标签。使用位置：CombatHUD.BuildOrRepairParryPrompt()。</summary>
     public Text parryPromptActionLabel;
     /// <summary>中文含义：招架提示小刀图标。使用位置：CombatHUD.BuildOrRepairParryPrompt()。</summary>
@@ -206,6 +214,7 @@ public class CombatHUD : Singleton<CombatHUD>
         {
             leon.OnHealthChanged -= OnHealthChanged;
         }
+        RestoreGameplayGauge();
         UnbindInventory();
         revealUntil = 0f;
         if (gaugeGroup != null)
@@ -300,7 +309,7 @@ GameObject playerObject = GameObject.FindGameObjectWithTag("Player");
         displayHealth = leon.currentHealth;
         lastHealth = displayHealth;
         leon.OnHealthChanged += OnHealthChanged;
-        UpdateHealthFill(leon.currentHealth, leon.maxHealth);
+        UpdateHealthFill(leon.currentHealth, ReadHealthMaximum(), true);
         RefreshAmmoText();
         healthGaugeInitialized = true;
     }
@@ -376,16 +385,6 @@ bool legacyOffset = resolvedOffset.x > -16f || resolvedOffset.x < -240f || resol
 
         ConfigureRing(healthRingBackground, healthRingBackgroundColor, 1f);
         ConfigureRing(healthRingValue, healthNormalColor, 1f);
-        Sprite nativeRim = GetNativeHudSprite("HealthRim");
-        if (nativeRim != null)
-        {
-            Image rim = CreateImage("生命环刻度", healthGaugeRoot);
-            StretchToParent(rim.rectTransform);
-            rim.sprite = nativeRim;
-            rim.color = new Color(0.95f, 0.94f, 0.89f, 0.54f);
-            rim.preserveAspect = true;
-            rim.transform.SetAsFirstSibling();
-        }
         if (healthFill != null)
         {
             healthFill.enabled = false;
@@ -456,7 +455,7 @@ RectTransform rect = ring.rectTransform;
         ring.raycastTarget = false;
         ring.thickness = Mathf.Clamp(healthRingThickness, 6f, 8f);
         ring.startAngle = 90f;
-        ring.sweepAngle = 168f;
+        ring.sweepAngle = MaximumHealthSweep;
         ring.clockwise = true;
         ring.segmentCount = 112;
         ring.color = color;
@@ -610,86 +609,59 @@ GameObject root = new GameObject("弹反提示", typeof(RectTransform), typeof(C
             parryPromptGroup = root.GetComponent<CanvasGroup>();
         }
 
-        // rootRect（根节点矩形）：保存 Component.GetComponent<RectTransform>() 的返回结果，供当前步骤使用。使用位置：作为 CombatHUD.CreateImage(string, RectTransform) 的参数、作为 CombatHUD.CreateText(string, RectTransform, int) 的参数、作为 Transform.SetParent(Transform, bool) 的参数 等共 4 处。
-RectTransform rootRect = parryPromptGroup.GetComponent<RectTransform>();
-        // bottomRight（右下角）：使用位置：CombatHUD.BuildOrRepairParryPrompt()。
-Vector2 bottomRight = new Vector2(1f, 0f);
-        rootRect.anchorMin = bottomRight;
-        rootRect.anchorMax = bottomRight;
-        rootRect.pivot = bottomRight;
-        rootRect.anchoredPosition = parryPromptOffset;
-        rootRect.sizeDelta = new Vector2(162f, 48f);
-        rootRect.SetAsLastSibling();
-        // keyTransform（键变换）：保存 Transform.Find(string) 的返回结果，供当前步骤使用。使用位置：CombatHUD.BuildOrRepairParryPrompt()。
-Transform keyTransform = rootRect.Find("空格键");
-        // keyBackground（键背景）：使用位置：CombatHUD.BuildOrRepairParryPrompt()。
-Image keyBackground;
-        if (keyTransform == null)
+        var rootRect = parryPromptGroup.GetComponent<RectTransform>();
+        ConfigureKnifeRect(rootRect, new Vector2(KnifeIconPosition.x, 22f), new Vector2(43f, 19f));
+        rootRect.pivot = new Vector2(.5f, .5f);
+        var existingKey = rootRect.Find("空格键");
+        if (existingKey != null)
         {
-            // keyObject（键对象）：使用位置：CombatHUD.BuildOrRepairParryPrompt()。
-GameObject keyObject = new GameObject("空格键", typeof(RectTransform), typeof(Image), typeof(Outline));
-            keyObject.transform.SetParent(rootRect, false);
-            keyTransform = keyObject.transform;
+            parryKeyImage = existingKey.GetComponent<Image>();
         }
-
-        keyBackground = keyTransform.GetComponent<Image>();
-        // keyRect（键矩形）：保存 Component.GetComponent<RectTransform>() 的返回结果，供当前步骤使用。使用位置：作为 CombatHUD.CreateText(string, RectTransform, int) 的参数、CombatHUD.BuildOrRepairParryPrompt()。
-RectTransform keyRect = keyTransform.GetComponent<RectTransform>();
-        keyRect.anchorMin = keyRect.anchorMax = new Vector2(0f, 0.5f);
-        keyRect.pivot = new Vector2(0f, 0.5f);
-        keyRect.anchoredPosition = Vector2.zero;
-        keyRect.sizeDelta = new Vector2(58f, 32f);
-        keyBackground.color = new Color(0.05f, 0.05f, 0.05f, 0.82f);
-        keyBackground.raycastTarget = false;
-        // outline（轮廓）：保存 Component.GetComponent<Outline>() 的返回结果，供当前步骤使用。使用位置：CombatHUD.BuildOrRepairParryPrompt()。
-Outline outline = keyTransform.GetComponent<Outline>();
-        outline.effectColor = new Color(0.85f, 0.88f, 0.9f, 0.78f);
-        outline.effectDistance = new Vector2(1f, -1f);
+        if (parryKeyImage == null)
+        {
+            parryKeyImage = CreateImage("空格键", rootRect);
+        }
+        StretchToParent(parryKeyImage.rectTransform);
+        parryKeyImage.sprite = Resources.Load<Sprite>("NativeInteractionArt/Key_Space");
+        parryKeyImage.preserveAspect = true;
+        parryKeyImage.color = Color.white;
+        parryKeyImage.raycastTarget = false;
+        if (parryKeyImage.TryGetComponent<Outline>(out var outline))
+        {
+            outline.enabled = false;
+        }
         if (parryPromptKeyLabel == null)
         {
-            // existingLabel（已有标签）：保存 Transform.Find(string) 的返回结果，供当前步骤使用。使用位置：CombatHUD.BuildOrRepairParryPrompt()。
-Transform existingLabel = keyTransform.Find("按键文字");
-            if (existingLabel != null)
-            {
-                parryPromptKeyLabel = existingLabel.GetComponent<Text>();
-            }
-            else
-            {
-                parryPromptKeyLabel = CreateText("按键文字", keyRect, 16);
-            }
+            parryPromptKeyLabel = CreateText("按键文字", rootRect, 13);
         }
-
+        parryPromptKeyLabel.rectTransform.SetParent(rootRect, false);
         StretchToParent(parryPromptKeyLabel.rectTransform);
-        parryPromptKeyLabel.text = "空格";
-        parryPromptKeyLabel.color = parryPromptColor;
-        if (parryPromptKnifeIcon == null)
+        parryPromptKeyLabel.resizeTextForBestFit = true;
+        parryPromptKeyLabel.resizeTextMinSize = 8;
+        parryPromptKeyLabel.resizeTextMaxSize = 13;
+        parryPromptKeyLabel.alignment = TextAnchor.MiddleCenter;
+        if (parryPromptKnifeIcon != null)
         {
-            parryPromptKnifeIcon = CreateImage("弹反小刀", rootRect);
+            parryPromptKnifeIcon.enabled = false;
         }
-
-        // iconRect（图标矩形）：使用位置：CombatHUD.BuildOrRepairParryPrompt()。
-RectTransform iconRect = parryPromptKnifeIcon.rectTransform;
-        iconRect.anchorMin = iconRect.anchorMax = new Vector2(0f, 0.5f);
-        iconRect.pivot = new Vector2(0f, 0.5f);
-        iconRect.anchoredPosition = new Vector2(68f, 7f);
-        iconRect.sizeDelta = new Vector2(47f, 24f);
-        parryPromptKnifeIcon.sprite = knifeIcon;
-        parryPromptKnifeIcon.preserveAspect = true;
-        parryPromptKnifeIcon.enabled = knifeIcon != null;
         if (parryPromptActionLabel == null)
         {
-            parryPromptActionLabel = CreateText("弹反文字", rootRect, 14);
+            parryPromptActionLabel = CreateText("重按提示", rootRect, 13);
         }
 
-        // actionRect（动作矩形）：使用位置：CombatHUD.BuildOrRepairParryPrompt()。
-RectTransform actionRect = parryPromptActionLabel.rectTransform;
-        actionRect.anchorMin = actionRect.anchorMax = new Vector2(0f, 0.5f);
-        actionRect.pivot = new Vector2(0f, 0.5f);
-        actionRect.anchoredPosition = new Vector2(68f, -13f);
-        actionRect.sizeDelta = new Vector2(80f, 22f);
-        parryPromptActionLabel.alignment = TextAnchor.MiddleLeft;
-        parryPromptActionLabel.text = "弹反";
+        RectTransform actionRect = parryPromptActionLabel.rectTransform;
+        actionRect.SetParent(rootRect, false);
+        actionRect.anchorMin = new Vector2(.5f, .5f);
+        actionRect.anchorMax = actionRect.anchorMin;
+        actionRect.pivot = actionRect.anchorMin;
+        actionRect.anchoredPosition = Vector2.zero;
+        actionRect.sizeDelta = new Vector2(84f, 19f);
+        parryPromptActionLabel.alignment = TextAnchor.MiddleCenter;
+        parryPromptActionLabel.text = "松开再按";
         parryPromptActionLabel.color = parryPromptColor;
+        parryPromptActionLabel.raycastTarget = false;
+        parryPromptActionLabel.enabled = false;
+        shownParryPrompt = KnifeParryPromptKind.None;
         parryPromptGroup.alpha = 0f;
         parryPromptGroup.interactable = false;
         parryPromptGroup.blocksRaycasts = false;
@@ -754,11 +726,12 @@ Color targetColor;
             targetColor = healthNormalColor;
         }
 
-        if (healthVisualCacheInitialized && Mathf.Abs(cachedHealthRatio - ratio) < 0.001f && cachedHealthColor == targetColor && (!isFinalTarget || cachedHealthAtTarget))
+        if (healthVisualCacheInitialized && cachedHealthMaximum == max && Mathf.Abs(cachedHealthRatio - ratio) < 0.001f && cachedHealthColor == targetColor && (!isFinalTarget || cachedHealthAtTarget))
         {
             return;
         }
 
+        cachedHealthMaximum = max;
         cachedHealthRatio = ratio;
         cachedHealthColor = targetColor;
         cachedHealthAtTarget = isFinalTarget;
@@ -768,7 +741,18 @@ Color targetColor;
             return;
         }
 
-        healthRingValue.SetFillAmount(ratio);
+        float startingMaximum = max;
+        if (leon.Health != null && leon.Health.InitialMaximum > 0f)
+        {
+            startingMaximum = leon.Health.InitialMaximum;
+        }
+
+        float baseHealthMaximum = Mathf.Max(1f, startingMaximum);
+        float bonus = Mathf.Max(0f, max - baseHealthMaximum);
+        float growth = bonus / (baseHealthMaximum * 0.5f + bonus);
+        float availableArc = Mathf.Lerp(BaseHealthSweep, MaximumHealthSweep, growth) / MaximumHealthSweep;
+        healthRingBackground.SetFillAmount(availableArc);
+        healthRingValue.SetFillAmount(availableArc * ratio);
         healthRingValue.color = targetColor;
     }
 
@@ -787,7 +771,9 @@ Color targetColor;
         }
 
         BindInventory();
-        bool blocked = IsCombatVisualBlocked() || leon.currentState == LeonState.Dead;
+        bool showingInventoryGauge = inventoryGaugeParent != null && inventoryGaugeParent.gameObject.activeInHierarchy
+            && (!GameUIManager.HasInstance || GameUIManager.Instance.currentState == GameUIManager.State.Inventory);
+        bool blocked = leon.currentState == LeonState.Dead || (!showingInventoryGauge && IsCombatVisualBlocked());
         if (blocked)
         {
             gaugeGroup.alpha = 0f;
@@ -806,10 +792,64 @@ Color targetColor;
         }
 
         RefreshAmmoText();
-        UpdateBloodVignette();
         UpdateSmoothHealth();
         UpdateKnifeDurability();
-        UpdateGaugeVisibility();
+        if (showingInventoryGauge)
+        {
+            gaugeGroup.alpha = 1f;
+        }
+        else
+        {
+            UpdateBloodVignette();
+            UpdateGaugeVisibility();
+        }
+    }
+
+    internal void ShowInventoryGauge(RectTransform parent)
+    {
+        if (parent == null)
+        {
+            return;
+        }
+
+        TryInitializeHealthGauge();
+        if (!healthGaugeInitialized || inventoryGaugeParent == parent)
+        {
+            return;
+        }
+
+        RestoreGameplayGauge();
+        gameplayGaugeParent = healthGaugeRoot.parent;
+        gameplayGaugeSibling = healthGaugeRoot.GetSiblingIndex();
+        inventoryGaugeParent = parent;
+        healthGaugeRoot.SetParent(parent, false);
+        healthGaugeRoot.SetAsLastSibling();
+        gaugeGroup.alpha = 1f;
+    }
+
+    internal void RestoreGameplayGauge()
+    {
+        if (gameplayGaugeParent == null || healthGaugeRoot == null)
+        {
+            return;
+        }
+
+        healthGaugeRoot.SetParent(gameplayGaugeParent, false);
+        healthGaugeRoot.SetSiblingIndex(gameplayGaugeSibling);
+        inventoryGaugeParent = null;
+        gameplayGaugeParent = null;
+        revealUntil = 0f;
+        gaugeGroup.alpha = 0f;
+    }
+
+    private float ReadHealthMaximum()
+    {
+        if (leon.Health != null)
+        {
+            return leon.Health.MaxHealth;
+        }
+
+        return leon.maxHealth;
     }
 
     private void RevealGauge()
@@ -822,7 +862,7 @@ Color targetColor;
         bool weaponActive = weaponHandler.IsSwitching || leon.currentState == LeonState.Shooting;
         if (combat != null)
         {
-            weaponActive |= combat.IsAiming || combat.IsReloading || combat.IsKnifeAttackActive
+            weaponActive |= combat.IsParryPromptVisible || combat.IsAiming || combat.IsReloading || combat.IsKnifeAttackActive
                 || (combat.knifeModule != null && combat.knifeModule.Active);
         }
 
@@ -1025,7 +1065,7 @@ Color targetColor;
     /// <remarks>静态调用链：上游 CombatHUD.Update()；下游（含内部回调体） Component.GetComponent&lt;LeonCombat&gt;()、Mathf.Sin(float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     void UpdateParryPrompt()
     {
-        if (parryPromptGroup == null)
+        if (parryPromptGroup == null || parryKeyImage == null || parryPromptKeyLabel == null || parryPromptActionLabel == null)
         {
             return;
         }
@@ -1035,35 +1075,47 @@ Color targetColor;
             combat = leon.GetComponent<LeonCombat>();
         }
 
-        bool visible = leon != null && combat != null && !IsCombatVisualBlocked() && combat.IsParryPromptVisible;
         LeonInputBridge inputBridge = null;
-        if (visible && leon.TryGetComponent(out inputBridge))
+        bool canReadInput = leon != null && combat != null && !IsCombatVisualBlocked()
+            && leon.TryGetComponent(out inputBridge) && inputBridge.CanReadParryInput;
+        KnifeParryPromptKind prompt = KnifeParryPromptKind.None;
+        if (combat != null && combat.knifeModule != null)
         {
-            visible = inputBridge.CanReadParryInput;
+            bool held = canReadInput && inputBridge.IsParryInputHeld;
+            prompt = combat.knifeModule.ReadParryPrompt(canReadInput, held);
+        }
+        else if (canReadInput && combat.IsParryPromptVisible)
+        {
+            prompt = KnifeParryPromptKind.Perfect;
         }
 
-        if (visible)
+        if (shownParryPrompt == prompt)
         {
-            if (parryPromptGroup.alpha == 0f && parryPromptKeyLabel != null && inputBridge != null)
-            {
-                parryPromptKeyLabel.text = inputBridge.GetParryBindingDisplayName();
-            }
-
-            parryPromptGroup.alpha = 1f;
+            return;
         }
-        else
+
+        shownParryPrompt = prompt;
+        bool showKey = prompt == KnifeParryPromptKind.Perfect;
+        parryKeyImage.enabled = false;
+        parryPromptKeyLabel.enabled = false;
+        parryPromptActionLabel.enabled = prompt == KnifeParryPromptKind.PressAgain;
+        if (showKey && inputBridge != null)
+        {
+            string binding = inputBridge.GetParryBindingDisplayName();
+            bool nativeSpace = binding == "空格" && parryKeyImage.sprite != null;
+            parryKeyImage.enabled = nativeSpace;
+            parryPromptKeyLabel.enabled = !nativeSpace;
+            parryPromptKeyLabel.text = binding;
+            parryPromptKeyLabel.color = parryPromptColor;
+        }
+
+        if (prompt == KnifeParryPromptKind.None)
         {
             parryPromptGroup.alpha = 0f;
         }
-
-        if (visible && parryPromptKeyLabel != null)
+        else
         {
-            // pulse（脉冲）：使用位置：CombatHUD.UpdateParryPrompt()。
-float pulse = 0.82f + Mathf.Sin(Time.unscaledTime * 11f) * 0.18f;
-            // color（颜色）：使用位置：CombatHUD.UpdateParryPrompt()。
-Color color = parryPromptColor;
-            color.a *= pulse;
-            parryPromptKeyLabel.color = color;
+            parryPromptGroup.alpha = 1f;
         }
     }
 
@@ -1078,13 +1130,13 @@ Color color = parryPromptColor;
 
         // targetHealth（目标生命）：使用位置：作为 Mathf.Abs(float) 的参数、作为 Mathf.Lerp(float, float, float) 的参数、CombatHUD.UpdateSmoothHealth()。
 float targetHealth = leon.currentHealth;
-        displayHealth = Mathf.Lerp(displayHealth, targetHealth, healthLerpSpeed * Time.deltaTime);
+        displayHealth = Mathf.Lerp(displayHealth, targetHealth, healthLerpSpeed * Time.unscaledDeltaTime);
         if (Mathf.Abs(displayHealth - targetHealth) < 0.1f)
         {
             displayHealth = targetHealth;
         }
 
-        UpdateHealthFill(displayHealth, leon.maxHealth, Mathf.Abs(displayHealth - targetHealth) < 0.0001f);
+        UpdateHealthFill(displayHealth, ReadHealthMaximum(), Mathf.Abs(displayHealth - targetHealth) < 0.0001f);
     }
 
     /// <summary>SetLaserVisible 的业务处理入口；本方法直接依赖 Component.GetComponent&lt;Image&gt;()、object.ReferenceEquals(object, object)，调用方通过参数与返回结果交接本次处理。</summary>

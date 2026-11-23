@@ -4,6 +4,8 @@ using UnityEngine;
 public sealed partial class QTECameraPresenter
 {
     private Transform nativeGroundSpine;
+    private Vector2? groundReturnAngles;
+    private float groundCameraEntryTime;
     private Quaternion nativeGroundView;
     private Vector3 nativeGroundFocus;
     private Vector3 nativeGroundFocusVelocity;
@@ -11,6 +13,11 @@ public sealed partial class QTECameraPresenter
 
     private void BeginGroundFinisherCamera()
     {
+        groundReturnAngles = null;
+        if (sessionContext.kind == QTEKind.GroundFinisher && cameraController.gameplayDriver != null)
+        {
+            groundReturnAngles = cameraController.gameplayDriver.CaptureShoulderViewAngles();
+        }
         nativeGroundSpine = null;
         nativeGroundFacingBound = false;
         foreach (Transform bone in sessionContext.playerRoot.GetComponentsInChildren<Transform>())
@@ -23,12 +30,10 @@ public sealed partial class QTECameraPresenter
             }
         }
         nativeGroundView = sessionContext.playerRoot.rotation;
-        // via.Range(-60, 30) 表示起点与范围，即原版俯角 -60 到 -30 度。
-        // Unity 的正 X 欧拉角朝下，转换后是 30 到 60 度。
-        Vector3 viewAngles = nativeGroundView.eulerAngles;
-        float pitch = 35f;
-        nativeGroundView = Quaternion.Euler(pitch, viewAngles.y, 0f);
-        nativeGroundFocus = sessionContext.playerRoot.position + Vector3.up;
+        if (cameraController.MainCamera != null)
+        {
+            nativeGroundView = cameraController.MainCamera.transform.rotation;
+        }
         nativeGroundFocusVelocity = Vector3.zero;
     }
 
@@ -40,22 +45,38 @@ public sealed partial class QTECameraPresenter
         {
             return false;
         }
-        if (!nativeGroundFacingBound && coordinator.TryGetNativePairCameraFrame(activeSessionId,
-            out _, out _, out _, out Pose stage))
+        if (!nativeGroundFacingBound)
         {
-            nativeGroundView = Quaternion.Euler(35f, stage.rotation.eulerAngles.y, 0f);
+            // 接住玩家入镜前的观察方向。用双方真实骨点确定俯角，整次刺击固定观察轴。
+            float pitch = 35f;
+            if (enemyHead != null && cameraController.MainCamera != null)
+            {
+                Vector3 midpoint = Vector3.Lerp(nativeGroundSpine.position, enemyHead.position, .5f);
+                Vector3 sight = midpoint - cameraController.MainCamera.transform.position;
+                float planar = Vector3.ProjectOnPlane(sight, Vector3.up).magnitude;
+                pitch = Mathf.Atan2(-sight.y, planar) * Mathf.Rad2Deg;
+            }
+            nativeGroundView = Quaternion.Euler(Mathf.Clamp(pitch, 30f, 60f), nativeGroundView.eulerAngles.y, 0f);
+        }
+        // 保留 KnifeFatalCamera 的脊柱锚点和偏移，同时把受击方头颈纳入构图。
+        Vector3 anchor = nativeGroundSpine.position;
+        if (enemyHead != null)
+        {
+            anchor = Vector3.Lerp(anchor, enemyHead.position, .4f);
+        }
+        Vector3 desiredFocus = anchor + nativeGroundView * new Vector3(.25f, .2f, 0f);
+        if (!nativeGroundFacingBound)
+        {
+            nativeGroundFocus = desiredFocus;
             nativeGroundFacingBound = true;
         }
-        // KnifeKill_FaceDown 状态机引用 KnifeFatalCamera / Camera2；源 mcam 同号轨道并非该分支的实际镜头。
-        // 原版配置：Spine_1、偏移 (0.25, 0.2, 0)、跟随 0.05 秒、距离 1.6 / 1.45。
-        Vector3 desiredFocus = nativeGroundSpine.position + nativeGroundView * new Vector3(.25f, .2f, 0f);
         nativeGroundFocus = Vector3.SmoothDamp(nativeGroundFocus, desiredFocus, ref nativeGroundFocusVelocity,
             .05f, Mathf.Infinity, Time.deltaTime);
         Vector3 direction = nativeGroundView * Vector3.forward;
         Vector3 position = nativeGroundFocus - direction * 1.6f;
         if (!IsNativeCameraClear(position))
         {
-            position = nativeGroundFocus - direction * 1.45f;
+            position = nativeGroundFocus + nativeGroundView * Vector3.right * .1f - direction * 1.45f;
             if (!IsNativeCameraClear(position))
             {
                 return false;

@@ -58,6 +58,8 @@ public sealed class NativeActionAudio : MonoBehaviour
     private Cursor knifeCursor;
     private Cursor pairCursor;
     private Cursor playerPairCursor;
+    private Cursor weaponPairCursor;
+    private readonly Dictionary<string, Track> weaponPairTracks = new(StringComparer.Ordinal);
     private NativePlayerActionAudioProfile playerProfile;
     private readonly Dictionary<string, Track> playerPairTracks = new(StringComparer.Ordinal);
 
@@ -116,6 +118,16 @@ public sealed class NativeActionAudio : MonoBehaviour
         if (leon != null)
         {
             playerProfile = Resources.Load<NativePlayerActionAudioProfile>("Combat/LeonActionAudio");
+            if (playerProfile != null && playerProfile.motionTracks != null)
+            {
+                foreach (var track in playerProfile.motionTracks)
+                    if (track != null && !string.IsNullOrEmpty(track.clip)) byClip.TryAdd(track.clip, track);
+            }
+            if (playerProfile != null && playerProfile.weaponPairTracks != null)
+            {
+                foreach (var track in playerProfile.weaponPairTracks)
+                    if (track != null && !string.IsNullOrEmpty(track.clip)) weaponPairTracks.Add(track.clip, track);
+            }
             if (playerProfile != null && playerProfile.pairTracks != null)
             {
                 foreach (var track in playerProfile.pairTracks)
@@ -137,13 +149,24 @@ public sealed class NativeActionAudio : MonoBehaviour
         }
     }
 
-    internal void SamplePair(string trackName, int session, float seconds, Transform soundOrigin)
+    internal void SamplePair(string trackName, int session, float seconds, Transform soundOrigin, bool allowRewind = true)
     {
         var audio = AudioManager.Instance;
         if (isActiveAndEnabled && audio != null && !audio.IsAudioPaused && byClip.TryGetValue(trackName, out var track))
         {
+            if (!allowRewind && pairCursor.track == track && pairCursor.owner == session && seconds < pairCursor.progress)
+            {
+                return;
+            }
             Advance(audio, ref pairCursor, track, session, seconds, 0f, 0f, soundOrigin);
         }
+    }
+
+    internal void SamplePairedWeapon(string trackName, int session, float seconds, Transform weapon)
+    {
+        if (isActiveAndEnabled && weapon != null && AudioManager.HasInstance && !AudioManager.Instance.IsAudioPaused
+            && weaponPairTracks.TryGetValue(trackName, out var track))
+            Advance(AudioManager.Instance, ref weaponPairCursor, track, session, seconds, 0f, 0f, weapon);
     }
 
     internal bool HasPlayerPairTrack(string trackName)
@@ -188,6 +211,7 @@ public sealed class NativeActionAudio : MonoBehaviour
         knifeCursor = default;
         pairCursor = default;
         playerPairCursor = default;
+        weaponPairCursor = default;
         OwnsFootsteps = false;
     }
 
@@ -228,6 +252,12 @@ public sealed class NativeActionAudio : MonoBehaviour
         }
         OwnsFootsteps = false;
 
+        if (villager != null && villager.IsQTEControlled)
+        {
+            Array.Clear(layers, 0, layers.Length);
+            return;
+        }
+
         bool independentKnife = knife != null && knife.Active;
         if (independentKnife)
         {
@@ -235,7 +265,7 @@ public sealed class NativeActionAudio : MonoBehaviour
             if (action != null && action.sourceClip != null && byClip.TryGetValue(action.sourceClip.name, out var track))
             {
                 float start = action.sourceStart;
-                float time = start + (float)knife.CurrentActionTime;
+                float time = action.SourceTimeAt(knife.CurrentActionTime);
                 bool suppressGuardFootsteps = leonAnimatorDriver != null && leonAnimatorDriver.OwnsKnifeLocomotionFootsteps
                     && !knife.IsAttack && !GameArchitecture.KnifeCombatRules.IsReaction(knife.CurrentAction);
                 Advance(audio, ref knifeCursor, track, knife.CurrentInstance, time, 0f, start,

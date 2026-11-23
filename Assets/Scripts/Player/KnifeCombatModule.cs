@@ -3,6 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using GameArchitecture;
 
+internal enum KnifeParryPromptKind
+{
+    None,
+    Perfect,
+    PressAgain
+}
+
 /// <summary>玩家控制、动作与运动模块 KnifeIncomingAttackContext；通过方法参数、返回值及声明成员与调用方通信，静态调用索引记录可解析的直接依赖。</summary>
 [UnityEngine.Scripting.APIUpdating.MovedFrom(true, "", "Assembly-CSharp", "小刀来袭上下文")]
 public sealed class KnifeIncomingAttackContext
@@ -197,6 +204,7 @@ public sealed partial class KnifeCombatModule : MonoBehaviour
     private readonly List<KnifeIncomingAttackContext> incomingAttackQueue = new List<KnifeIncomingAttackContext>();
     /// <summary>中文含义：提示候选。只读字段，初始化后不由普通写入口替换。使用位置：KnifeCombatModule.CloseIncomingAttackPrompt(VillagerController)、KnifeCombatModule.CurrentPromptIncomingAttack.get、KnifeCombatModule.OnDisable() 等共 4 处。</summary>
     private readonly Dictionary<int, KnifeIncomingAttackContext> promptCandidate = new Dictionary<int, KnifeIncomingAttackContext>();
+    private (KnifeParryPromptKind kind, int enemyId, long attackId, int segment) lastParryPrompt;
     /// <summary>中文含义：命中目标列表。只读字段，初始化后不由普通写入口替换。使用位置：KnifeCombatModule.ActionSwitch(KnifeAction, long, double)、KnifeCombatModule.DetectBlade(KnifeTraversedInterval)。</summary>
     private readonly HashSet<(long, int)> hitTargets = new HashSet<(long, int)>();
     /// <summary>中文含义：解算后的传入攻击。只读字段，初始化后不由普通写入口替换。使用位置：KnifeCombatModule.OnDisable()、KnifeCombatModule.ResolveIncomingAttack(KnifeIncomingAttackContext)。</summary>
@@ -263,10 +271,18 @@ public sealed partial class KnifeCombatModule : MonoBehaviour
     public bool IsHitStop => Time.timeAsDouble < hitStopEnd;
     /// <summary>中文含义：是否防守保持。</summary>
     public bool GuardHold => Ready && rules.GuardHeld;
-    internal float GuardTurnSpeed { get; private set; }
+    internal bool IsHoldingGuardPose => IsGuardAiming && CurrentAction is (KnifeAction.EnterGuard or KnifeAction.HoldGuard);
+    internal float GuardViewPitch { get; private set; }
+    internal float GuardTurnDelta { get; private set; }
+    internal float GuardEntryHeadingError { get; private set; }
+    internal int GuardViewFrame { get; private set; } = -1;
     private float cameraHeading;
     private bool hasCameraHeading;
+    private bool guardEntryTurning;
+    private const float GuardEntryTurnSpeed = 480f;
     private bool IsReleasedThrust => lastKnifeAttackWasThrust && !GuardHold && CurrentAction == KnifeAction.LowerGuard;
+    internal bool IsFinishingThrust => Active && lastKnifeAttackWasThrust
+        && (KnifeCombatRules.IsThrust(CurrentAction) || CurrentAction == KnifeAction.ThrustRecovery || IsReleasedThrust);
     public bool IsGuardAiming => Active && GuardHold && CanExecute
         && (CurrentAction == KnifeAction.EnterGuard || CurrentAction == KnifeAction.HoldGuard
             || CurrentAction == KnifeAction.ThrustOne || CurrentAction == KnifeAction.ThrustTwo
@@ -731,10 +747,31 @@ double freeze = Math.Max(0, Math.Min(time, hitStopEnd) - Math.Max(advancedTime, 
     /// <summary>PrepareTransaction 的业务处理入口；本方法直接依赖 LeonAnimationActionCoordinator.AsKnifeInterruptReload()、LeonAnimationActionCoordinator.RequestIndependentKnifeTransaction()、LeonAnimRig.SetIKMode(IKMode)、LeonCombat.BeginTemporaryKnife()、LeonWeaponVisualController.SetKnifeModeVisible(bool)、object.ReferenceEquals(object, object)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 KnifeCombatModule.Update()；下游（含内部回调体） LeonAnimationActionCoordinator.AsKnifeInterruptReload()、LeonAnimationActionCoordinator.RequestIndependentKnifeTransaction()、LeonAnimRig.SetIKMode(IKMode)、LeonCombat.BeginTemporaryKnife()、LeonWeaponVisualController.SetKnifeModeVisible(bool)、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     /// <param name="guard">中文含义：是否防守。使用位置：KnifeCombatModule.PrepareTransaction(bool)。</param>
-    internal void ApplyCameraHeading(float heading)
+    internal void ApplyCameraHeading(float heading, float pitch)
     {
         cameraHeading = heading;
         hasCameraHeading = true;
+        if (IsHoldingGuardPose && !IsHitStop && !player.IsolateObserveCameraSteering && Time.deltaTime > 0f)
+        {
+            float previousHeading = transform.eulerAngles.y;
+            float bodyHeading = heading;
+            GuardEntryHeadingError = 0f;
+            if (CurrentAction == KnifeAction.EnterGuard || guardEntryTurning)
+            {
+                // 侧面或背面入防时，让真实转角逐帧驱动换脚，保持阶段继续跟随镜头。
+                bodyHeading = Mathf.MoveTowardsAngle(previousHeading, heading, GuardEntryTurnSpeed * Mathf.Min(Time.deltaTime, .05f));
+                GuardEntryHeadingError = Mathf.DeltaAngle(bodyHeading, heading);
+                guardEntryTurning = Mathf.Abs(GuardEntryHeadingError) > .1f;
+            }
+            bool committed = coordinator.CommitKnifeAssistOrientation(Quaternion.Euler(0f, bodyHeading, 0f));
+            GuardTurnDelta = 0f;
+            if (committed)
+            {
+                GuardTurnDelta = Mathf.DeltaAngle(previousHeading, bodyHeading);
+            }
+            GuardViewPitch = pitch;
+            GuardViewFrame = Time.frameCount;
+        }
     }
 
     private void AccumulateRootMotion(KnifeTraversedInterval interval)
@@ -842,6 +879,10 @@ global::LeonAnimRig receiverValue10 = handConstraint;
     /// <param name="offset">中文含义：偏移量。</param>
     private void ActionSwitch(KnifeAction action, long instance, double offset)
     {
+        if (action != KnifeAction.HoldGuard)
+        {
+            guardEntryTurning = false;
+        }
         Record("动作切换", action.ToString());
         pendingSwingSound = false;
         waitingCommitAnimation = action != KnifeAction.None;
@@ -982,7 +1023,7 @@ global::LeonWeaponVisualController receiverValue16 = weaponVisual;
 global::LeonCombat receiverValue17 = combat;
         if (!global::System.Object.ReferenceEquals(receiverValue17, null))
         {
-            receiverValue17.EndTemporaryKnife(restoreAim && CanExecute, lastKnifeAttackWasThrust);
+            receiverValue17.EndTemporaryKnife(restoreAim && CanExecute);
         }
     }
 
@@ -1077,7 +1118,10 @@ float angle = Vector3.Angle(transform.forward, direction);
     /// <remarks>静态调用链：上游 KnifeCombatModule.Update()；下游（含内部回调体） KnifeCombatRules.Query(KnifeAction)、LeonAnimationActionCoordinator.CommitKnifeAssistOrientation(Quaternion)、Mathf.Min(float, float)、Quaternion.Angle(Quaternion, Quaternion)、Quaternion.RotateTowards(Quaternion, Quaternion, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     private void UpdateWeakSteering()
     {
-        GuardTurnSpeed = 0f;
+        if (IsHoldingGuardPose && hasCameraHeading)
+        {
+            return;
+        }
         if ((IsGuardAiming || KnifeCombatRules.IsThrust(CurrentAction) || IsReleasedThrust)
             && !IsHitStop && !player.IsolateObserveCameraSteering && Time.deltaTime > 0f)
         {
@@ -1093,11 +1137,7 @@ float angle = Vector3.Angle(transform.forward, direction);
 
             Quaternion target = Quaternion.Euler(0f, heading, 0f);
             Quaternion facing = Quaternion.RotateTowards(transform.rotation, target, 540f * Time.deltaTime);
-            float previousYaw = transform.eulerAngles.y;
-            if (coordinator.CommitKnifeAssistOrientation(facing))
-            {
-                GuardTurnSpeed = Mathf.DeltaAngle(previousYaw, facing.eulerAngles.y) / Time.deltaTime;
-            }
+            coordinator.CommitKnifeAssistOrientation(facing);
             return;
         }
 
@@ -1152,6 +1192,48 @@ global::VillagerController optionalValue21;
     /// <summary>中文含义：是否显示招架提示。使用位置：LeonCombat.IsParryPromptVisible.get。</summary>
     public bool ShowParryPrompt { get => CurrentPromptIncomingAttack != null; }
 
+    internal KnifeParryPromptKind ReadParryPrompt(bool canReadInput, bool held)
+    {
+        KnifeIncomingAttackContext candidate = null;
+        if (canReadInput)
+        {
+            candidate = CurrentPromptIncomingAttack;
+        }
+
+        KnifeParryPromptKind kind = KnifeParryPromptKind.None;
+        if (candidate != null)
+        {
+            double contactTime = candidate.expectedContactTime;
+            if (held)
+            {
+                if (!rules.HasGuardEligibility(contactTime))
+                {
+                    kind = KnifeParryPromptKind.PressAgain;
+                }
+            }
+            else if (contactTime - Time.timeAsDouble <= rules.PerfectWindow + 1e-7)
+            {
+                kind = KnifeParryPromptKind.Perfect;
+            }
+        }
+
+        if (kind == KnifeParryPromptKind.None)
+        {
+            lastParryPrompt = default;
+            return kind;
+        }
+
+        var prompt = (kind, candidate.attacker.GetInstanceID(), candidate.attackId, candidate.attackSegment);
+        if (lastParryPrompt != prompt)
+        {
+            lastParryPrompt = prompt;
+            Record("弹反提示", kind + "；敌人=" + candidate.attacker.name + "；攻击=" + candidate.attackId
+                + "；段=" + candidate.attackSegment + "；预计接触=" + candidate.expectedContactTime.ToString("F6"));
+        }
+
+        return kind;
+    }
+
     /// <summary>中文含义：当前提示传入攻击。使用位置：KnifeCombatModule.ShowParryPrompt.get。</summary>
     public KnifeIncomingAttackContext CurrentPromptIncomingAttack
     {
@@ -1166,14 +1248,23 @@ global::VillagerController optionalValue21;
 
             double now = Time.timeAsDouble;
             KnifeIncomingAttackContext mostUrgent = null;
-            foreach (KnifeIncomingAttackContext candidate in promptCandidate.Values)
+            int mostUrgentEnemyId = 0;
+            foreach (var entry in promptCandidate)
             {
+                KnifeIncomingAttackContext candidate = entry.Value;
                 double lead = candidate.expectedContactTime - now;
-                if (lead > 0 && lead <= configuration.EffectiveTapWindow + .000001
-                    && candidate.Valid && candidate.canParry && IsFront(candidate)
-                    && (mostUrgent == null || candidate.expectedContactTime < mostUrgent.expectedContactTime))
+                bool isUpcoming = lead > 0 && lead <= rules.TapWindow + .000001;
+                if (!isUpcoming || !candidate.Valid || !candidate.canParry || !IsFront(candidate)
+                    || resolvedIncomingAttack.Contains((entry.Key, candidate.attackId, candidate.attackSegment)))
+                {
+                    continue;
+                }
+
+                if (mostUrgent == null || candidate.expectedContactTime < mostUrgent.expectedContactTime
+                    || candidate.expectedContactTime == mostUrgent.expectedContactTime && entry.Key < mostUrgentEnemyId)
                 {
                     mostUrgent = candidate;
+                    mostUrgentEnemyId = entry.Key;
                 }
             }
 
@@ -1349,6 +1440,12 @@ var key = (incomingAttack.attacker.GetInstanceID(), incomingAttack.attackId, inc
         if (!resolvedIncomingAttack.Add(key))
         {
             return;
+        }
+
+        if (promptCandidate.TryGetValue(key.Item1, out KnifeIncomingAttackContext prompt)
+            && prompt.attackId == incomingAttack.attackId && prompt.attackSegment == incomingAttack.attackSegment)
+        {
+            promptCandidate.Remove(key.Item1);
         }
 
         if (resolvedIncomingAttack.Count > 512)
@@ -1548,7 +1645,15 @@ float selectedValue28;
                     continue;
                 }
 
-                Vector3 point = collision.ClosestPoint((bladeBase + bladeTip) * 0.5f);
+                var middle = (bladeBase + bladeTip) * .5f;
+                Vector3 point;
+                if (collision is MeshCollider mesh && !mesh.convex && mesh.GetComponentInParent<VillageLegTrap>() != null)
+                {
+                    var blade = bladeTip - bladeBase;
+                    point = mesh.Raycast(new Ray(bladeBase, blade.normalized), out var bladeHit, blade.magnitude)
+                        ? bladeHit.point : mesh.bounds.ClosestPoint(middle);
+                }
+                else point = collision.ClosestPoint(middle);
                 contactList.Add(new ContactCandidate
                 {
                     collider = collision,
@@ -1559,6 +1664,22 @@ float selectedValue28;
             }
         }
 
+        // 水平挥刀的烘焙轨迹够不到地面。朝脚边夹子下刀仍须在攻击有效帧内，
+        // 准心命中夹体，且人物到接触点之间无遮挡。
+        if (player.playerCamera != null)
+        {
+            var view = player.playerCamera.transform;
+            if (view.forward.y < 0f && Physics.Raycast(view.position, view.forward, out var groundHit, 8f,
+                configuration.hitMask, QueryTriggerInteraction.Ignore)
+                && groundHit.collider.GetComponentInParent<VillageLegTrap>() != null)
+            {
+                var reach = groundHit.point - transform.position;
+                if (Mathf.Abs(reach.y) <= .6f && Vector3.ProjectOnPlane(reach, Vector3.up).sqrMagnitude <= .95f * .95f
+                    && Vector3.Dot(transform.forward, reach) >= 0f)
+                    contactList.Add(new ContactCandidate { collider = groundHit.collider, position = groundHit.point,
+                        distance = reach.magnitude, time = interval.end });
+            }
+        }
         contactList.Sort(( /* 中文含义：第一个接触候选。 */first, /* 中文含义：第二个接触候选。 */ second) =>
         {
             if (first.time != second.time)
@@ -1601,6 +1722,9 @@ global::VillagerController enemy;
 
             // caseValue（公文包值）：保存 Component.GetComponentInParent<DestructibleWoodenBox>() 的返回结果，供当前步骤使用。使用位置：KnifeCombatModule.DetectBlade(KnifeTraversedInterval)。
 var caseValue = collision.GetComponentInParent<DestructibleWoodenBox>();
+            var trap = collision.GetComponentInParent<VillageLegTrap>();
+            if (trap != null && collision.isTrigger)
+                continue;
             // target（目标变换节点）：使用位置：作为 KnifeCombatModule.NoneOcclusion(Vector3, Transform) 的参数、KnifeCombatModule.DetectBlade(KnifeTraversedInterval)。
 global::UnityEngine.Transform target;
             if (enemy != null)
@@ -1615,7 +1739,7 @@ global::UnityEngine.Transform target;
                 }
                 else
                 {
-                    target = collision.transform;
+                    target = trap != null ? trap.transform : collision.transform;
                 }
             }
 
@@ -1679,6 +1803,15 @@ global::System.Action<global::KnifeMeleeHitNotification> receiverValue37 = Commi
                     {
                         thrustDamageInstance = interval.instance;
                     }
+                    finishedThrust.Add(interval.instance);
+                    break;
+                }
+            }
+            else if (trap != null)
+            {
+                hitTargets.Add((interval.instance, targetId));
+                if (trap.TryDisarm() && KnifeCombatRules.IsThrust(interval.action))
+                {
                     finishedThrust.Add(interval.instance);
                     break;
                 }

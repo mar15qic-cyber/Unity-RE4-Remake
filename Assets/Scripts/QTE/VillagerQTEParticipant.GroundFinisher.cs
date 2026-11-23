@@ -36,14 +36,42 @@ public partial class VillagerQTEParticipant
         return true;
     }
 
+    // 电锯男只开放正面重硬直已入态的中段；轻受击和恢复混合均不提供提示。
+    private int sawKnifeHitSession;
+    private static readonly int SawHeavyFront = Animator.StringToHash("Base Layer.Stagger.Stagger_Heavy_Front");
+
     internal bool TryReadGroundFinisher(out string motion)
     {
         motion = null;
-        if (!IsAvailable || !IsAlive || controller.missionEnemyType != MissionEnemyType.Ganado
+        if (!IsAvailable || !IsAlive || controller == null
             || controller.combatModule == null || controller.animationPresenter == null
             || activeSessionId != 0 || activeBodyTechniqueSessionId != 0)
         {
             return false;
+        }
+
+        if (controller.missionEnemyType == MissionEnemyType.Sawman)
+        {
+            if (controller.CurrentState != VillagerState.Staggered || animator == null || animator.IsInTransition(0))
+            {
+                return false;
+            }
+            var state = animator.GetCurrentAnimatorStateInfo(0);
+            if (state.fullPathHash != SawHeavyFront || state.normalizedTime < .15f || state.normalizedTime >= .7f)
+            {
+                return false;
+            }
+            motion = "SawKneel1020";
+            return true;
+        }
+        if (controller.missionEnemyType != MissionEnemyType.Ganado)
+        {
+            return false;
+        }
+        if (controller.combatModule.TryReadTrappedOpportunity(out _))
+        {
+            motion = "Ground1035";
+            return true;
         }
 
         if (controller.combatModule.HasGroundFinisherPose)

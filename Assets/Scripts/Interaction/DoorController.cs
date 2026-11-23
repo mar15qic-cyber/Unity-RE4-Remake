@@ -9,7 +9,7 @@ using Pathfinding;
 /// </summary>
 [RequireComponent(typeof(Animator))]
 [RequireComponent(typeof(Collider))]
-public class DoorController : MonoBehaviour, IInteractable
+public partial class DoorController : MonoBehaviour, IInteractable
 {
     /// <summary>中文含义：场景门集合。只读字段，初始化后不由普通写入口替换。使用位置：DoorController.CopyActiveSceneDoors(List&lt;DoorController&gt;)、DoorController.IsInsideOpenPassage(Vector3, float)、DoorController.OnDisable() 等共 8 处。</summary>
     private static readonly List<DoorController> sceneDoors = new();
@@ -131,9 +131,9 @@ public class DoorController : MonoBehaviour, IInteractable
     /// <summary>中文含义：交互范围。</summary>
     public float InteractRange => interactRange;
     /// <summary>中文含义：是否打开。使用位置：VillagerController.ShouldDeferCurrentIngressDoorBlocker(Collider)、VillagerController.TryGetPursuitIngressDestination(Vector3, out Vector3)。</summary>
-    public bool IsOpen => isOpen;
+    public bool IsOpen => isOpen || siegeBroken;
     /// <summary>中文含义：是否通道就绪。使用位置：VillagerController.TryGetPursuitIngressDestination(Vector3, out Vector3)。</summary>
-    public bool IsPassageReady => isOpen && !isAnimating;
+    public bool IsPassageReady => siegeBroken || !siegeLatched && isOpen && !isAnimating;
 
     /// <summary>中文含义：通道中心。使用位置：作为 AstarPath.GetNearest(Vector3, NearestNodeConstraint) 的参数、作为 DoorwayTraversalOccupancy.HorizontalDistance(Vector3, Vector3) 的参数、作为 Mathf.Abs(float) 的参数 等共 27 处。</summary>
     public Vector3 PassageCenter
@@ -273,7 +273,7 @@ DoorController door = sceneDoors[index];
     /// <param name="interactor">中文含义：交互者。</param>
     public bool CanInteract(Transform interactor)
     {
-        if (isAnimating || (openOnPlayerContact && !isOpen))
+        if (siegeLatched || siegeBroken || isAnimating || (openOnPlayerContact && !isOpen))
         {
             return false;
         }
@@ -290,7 +290,7 @@ DoorController door = sceneDoors[index];
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） DoorController.SetOpen(bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     public void Interact()
     {
-        if (isAnimating)
+        if (siegeLatched || siegeBroken || isAnimating)
         {
             return;
         }
@@ -319,7 +319,7 @@ DoorController door = sceneDoors[index];
 
     private void FixedUpdate()
     {
-        if (!openOnPlayerContact || isOpen || isAnimating || animator == null
+        if (siegeLatched || siegeBroken || !openOnPlayerContact || isOpen || isAnimating || animator == null
             || physicalCollider == null || !physicalCollider.enabled || physicalCollider.isTrigger)
         {
             return;
@@ -346,12 +346,16 @@ DoorController door = sceneDoors[index];
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） Animator.GetCurrentAnimatorStateInfo(int)、AnimatorStateInfo.IsName(string)、DoorController.HandleAnimationEnd()、DoorController.SetPhysicalColliderBlocking()、NavigationCollisionCache.MarkerPoseChange()、Quaternion.AngleAxis(float, Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     void Update()
     {
+        if (siegeLatchPending)
+        {
+            TryLatchForSiege();
+        }
         if (isAnimating)
         {
             NavigationCollisionCache.MarkerPoseChange();
         }
 
-        if (animator == null || hingePivot == null)
+        if (siegeBroken || animator == null || hingePivot == null)
         {
             return;
         }
@@ -669,6 +673,11 @@ var animRig = player.GetComponent<LeonAnimRig>();
     /// <param name="opener">中文含义：开门者。</param>
     public bool TryOpenForAI(Transform opener)
     {
+        if (siegeLatched || siegeBroken)
+        {
+            return false;
+        }
+
         if (isOpen || isAnimating || animator == null)
         {
             return false;
@@ -1235,7 +1244,7 @@ Vector3 depthAxis;
     /// <param name="open">中文含义：是否打开。使用位置：DoorController.SetOpen(bool)。</param>
     private void SetOpen(bool open)
     {
-        if (isOpen == open)
+        if (siegeLatched || siegeBroken || isOpen == open)
         {
             return;
         }

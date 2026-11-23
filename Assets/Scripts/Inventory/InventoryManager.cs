@@ -318,6 +318,12 @@ ItemData item = Resources.Load<ItemData>(resourcesPath);
 
     public GridItem GetPreferredKnife()
     {
+        return SelectKnifeWithDurability(0);
+    }
+
+    // 补刀先筛除付不起本次消耗的刀，然后沿用菜刀、靴刀、战斗刀的现有选刀顺序。
+    internal GridItem SelectKnifeWithDurability(int minimum)
+    {
         GridItem preferred = null;
         int priority = int.MaxValue;
         int durability = int.MaxValue;
@@ -348,6 +354,10 @@ ItemData item = Resources.Load<ItemData>(resourcesPath);
             if (remaining < 0)
             {
                 remaining = item.item.maxDurability;
+            }
+            if (remaining < minimum)
+            {
+                continue;
             }
             if (rank < priority || rank == priority && remaining < durability)
             {

@@ -48,6 +48,12 @@ public partial class LeonAnimatorDriver : MonoBehaviour
     private bool knifePoseExiting;
     /// <summary>中文含义：小刀移动模式。使用位置：LeonAnimatorDriver.LateUpdate()、LeonAnimatorDriver.PlayIndependentKnifeClip(KnifeActionConfiguration, float, float)。</summary>
     private int knifeMovementMode;
+    private const int KnifeGuardTurnLeftMode = 7;
+    private const int KnifeGuardTurnRightMode = 8;
+    private const float KnifeGuardTurnCycleAngle = 180f;
+    private float knifeGuardTurnTime;
+    private float knifeGuardTurnWeight;
+    private int knifeGuardTurnMode;
     /// <summary>中文含义：小刀移动行为时间。使用位置：作为 KnifePoseSampler.Sample(AnimationClip, float, int, float, float, bool) 的参数、LeonAnimatorDriver.LateUpdate()、LeonAnimatorDriver.PlayIndependentKnifeClip(KnifeActionConfiguration, float, float)。</summary>
     private float knifeLocomotionTime;
     /// <summary>中文含义：小刀姿态进入混合时长。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
@@ -160,9 +166,9 @@ public partial class LeonAnimatorDriver : MonoBehaviour
         return true;
     }
 
-    internal bool TryReadItemPickupProgress(out float progress)
+    internal bool TryReadItemPickupTime(out float elapsed)
     {
-        progress = 0f;
+        elapsed = 0f;
         if (!IsValid || waitingForFullBodyStateEntry || activeFullBodyAction != FullBodyActionType.ItemPickup)
         {
             return false;
@@ -174,7 +180,7 @@ public partial class LeonAnimatorDriver : MonoBehaviour
             return false;
         }
 
-        progress = state.normalizedTime;
+        elapsed = state.normalizedTime * state.length;
         return true;
     }
 
@@ -525,12 +531,15 @@ public partial class LeonAnimatorDriver : MonoBehaviour
 
         UpdateWeaponActionLayerWeight();
         UpdateFullBodyLayerWeight();
+        UpdateHitRecoveryLayers();
         UpdateInjuredLayerWeight();
         UpdateInjuredLowerLayerWeight();
         UpdateKnifeModeBlend();
         UpdateLongGunCrouchLayerExit();
         UpdateLongGunCrouchLayerBlend();
         UpdateNativeGunPose();
+        UpdateStationaryGunBreath(PistolBreathLayerName, PistolBreathState, WeaponType.Pistol, pistolAimPose == PistolAimPose.Hold, NativePistolFireCycleActive, ref pistolBreath);
+        UpdateStationaryGunBreath(W870BreathLayerName, W870BreathState, WeaponType.Shotgun, IsW870AimPose, NativeW870FireCycleActive || w870Pose == W870Pose.DryFire, ref w870Breath);
     }
 
     /// <summary>UpdateKnifeModeBlend 的业务处理入口；本方法直接依赖 Animator.SetFloat(int, float)、Mathf.Approximately(float, float)、Mathf.Max(float, float)、Mathf.MoveTowards(float, float, float)、Mathf.SmoothStep(float, float, float)，调用方通过参数与返回结果交接本次处理。</summary>
@@ -1075,10 +1084,22 @@ float selectedValue8;
         if (blendingQTEFullBodyExit)
         {
             selectedValue8 = qteFullBodyLayerExitBlendDuration;
+            if (activeFullBodyAction == FullBodyActionType.Hit)
+            {
+                selectedValue8 = .28f;
+            }
+            else if (activeFullBodyAction == FullBodyActionType.ItemPickup)
+            {
+                selectedValue8 = .22f;
+            }
         }
         else if (blendingFullBodyLayerEntry && MeleeActionKinds.IsWoodenBox(activeFullBodyAction))
         {
             selectedValue8 = 0.12f;
+        }
+        else if (blendingFullBodyLayerEntry && activeFullBodyAction == FullBodyActionType.ItemPickup)
+        {
+            selectedValue8 = .14f;
         }
         else
         {
@@ -1109,13 +1130,17 @@ float duration = Mathf.Max(argumentValue9, selectedValue8);
     /// <remarks>静态调用链：上游 LeonAnimatorDriver.EndFullBodyAction()、LeonAnimatorDriver.EndTraversalLanding()、LeonAnimatorDriver.UpdateFullBodyLayerWeight()；下游（含内部回调体） Animator.GetLayerWeight(int)、Animator.SetInteger(int, int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     private void ClearFullBodyActionAfterFadeIfReady()
     {
-        if (!clearFullBodyActionAfterFade || animator.GetLayerWeight(LayerFullBodyAction) > 0.01f)
+        if (!clearFullBodyActionAfterFade || VisibleFullBodyWeight > 0.01f)
         {
             return;
         }
 
         animator.SetInteger(HashFullBodyAction, 0);
         clearFullBodyActionAfterFade = false;
+        if (activeFullBodyAction == FullBodyActionType.ItemPickup)
+        {
+            activeFullBodyAction = FullBodyActionType.None;
+        }
     }
 
     /// <summary>PrepareFullBodyLayerEntry 的业务处理入口；本方法直接依赖 Animator.Play(int, int, float)、Animator.SetLayerWeight(int, float)，调用方通过参数与返回结果交接本次处理。</summary>
@@ -1752,6 +1777,50 @@ AnimatorStateInfo state = animator.GetCurrentAnimatorStateInfo(LayerRifleCrouch)
         animator.SetInteger(HashWeaponAction, ResolveWeaponActionParameter(WeaponActionType.Equip));
     }
 
+    private int hitUpperLayer = -1;
+    private bool hitHandedOff;
+    private LeonHitDirection hitDirectionForRecovery;
+    internal bool HitMovementReleased { get; private set; }
+    // 分层回收时，全身层只保留下肢的剩余权重。动作退出按上身仍在播放的权重结算。
+    private float VisibleFullBodyWeight => hitHandedOff && activeFullBodyAction == FullBodyActionType.Hit
+        ? fullBodyLayerWeight : animator.GetLayerWeight(LayerFullBodyAction);
+
+    private void UpdateHitRecoveryLayers()
+    {
+        if (hitUpperLayer < 0) return;
+        var state = animator.GetCurrentAnimatorStateInfo(LayerFullBodyAction);
+        if (activeFullBodyAction != FullBodyActionType.Hit || state.shortNameHash != HashFullBodyHit
+            || waitingForFullBodyStateEntry || state.length < 1.9f)
+        {
+            animator.SetLayerWeight(hitUpperLayer, 0f);
+            HitMovementReleased = false;
+            hitHandedOff = false;
+            return;
+        }
+        float frame = state.normalizedTime * state.length * 60f;
+        if (frame < 42f) return;
+        if (!hitHandedOff)
+        {
+            animator.Play("HitRecovery", hitUpperLayer, state.normalizedTime);
+            hitHandedOff = true;
+        }
+        if (!HitMovementReleased && frame >= (hitDirectionForRecovery == LeonHitDirection.Center ? 42f : 46f))
+        {
+            HitMovementReleased = true;
+            var motion = GetComponent<LeonActionMotionDriver>();
+            if (motion != null && motion.HitMotionActive)
+            {
+                motion.EndHitMotion();
+                motion.SynchronizeNormalMotionPermission(LeonState.Walking);
+            }
+        }
+
+        float lower = 1f - Mathf.SmoothStep(0f, 1f, (frame - 42f) / 8f);
+        // 保持 Hit 状态的时钟运转，退出事件仍由同一个动作事务接收。
+        animator.SetLayerWeight(LayerFullBodyAction, Mathf.Max(.0001f, lower) * fullBodyLayerWeight);
+        animator.SetLayerWeight(hitUpperLayer, fullBodyLayerWeight);
+    }
+
     /// <summary>BeginHit 的业务处理入口；本方法直接依赖 Animator.SetFloat(int, float)、LeonAnimatorDriver.BeginFullBodyAction(FullBodyActionType)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonAnimationActionCoordinator.RequestHit(LeonHitDirection)；下游（含内部回调体） Animator.SetFloat(int, float)、LeonAnimatorDriver.BeginFullBodyAction(FullBodyActionType)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     /// <param name="hitDirection">中文含义：命中方向。使用位置：作为 Animator.SetFloat(int, float) 的参数。</param>
@@ -1762,6 +1831,10 @@ AnimatorStateInfo state = animator.GetCurrentAnimatorStateInfo(LayerRifleCrouch)
             return;
         }
 
+        hitUpperLayer = animator.GetLayerIndex("Native Hit Upper");
+        HitMovementReleased = false;
+        hitDirectionForRecovery = hitDirection;
+        hitHandedOff = false;
         animator.SetFloat(HashHitDir, (float)hitDirection);
         BeginFullBodyAction(FullBodyActionType.Hit);
     }
@@ -1780,7 +1853,7 @@ AnimatorStateInfo state = animator.GetCurrentAnimatorStateInfo(LayerRifleCrouch)
     private static readonly int NativeKnifeCarryState = Animator.StringToHash(NativeKnifeCarryStateName);
     private bool nativeKnifeCarryActive;
     internal bool SupportsNativeKnifeCarry => IsValid && animator.HasState(LayerRifleCrouch, NativeKnifeCarryState);
-    internal bool IsBlendingOutKnifePose => knifePoseExiting;
+    internal bool IsBlendingOutKnifePose => knifePoseExiting && !releasedThrustPose;
 
     private void UpdateNativeKnifeCarry()
     {
@@ -1886,6 +1959,9 @@ int state = Animator.StringToHash(clip.StatePath);
             {
                 knifeLocomotionTime = 0;
                 knifeMovementMode = 0;
+                knifeGuardTurnTime = 0f;
+                knifeGuardTurnWeight = 0f;
+                knifeGuardTurnMode = 0;
             }
 
             knifePoseActive = true;
@@ -2028,9 +2104,34 @@ float nominalSpeed = 1.83f;
                     }
                 }
 
+                bool guardStanding = mode == 0 && knifeModule.IsHoldingGuardPose && ownerController.IsGrounded;
+                AnimationClip guardTurn = null;
+                if (guardStanding)
+                {
+                    guardTurn = UpdateKnifeGuardTurn(delta);
+                    if (guardTurn != null)
+                    {
+                        mode = knifeGuardTurnMode;
+                    }
+                }
+                else
+                {
+                    knifeGuardTurnMode = 0;
+                    knifeGuardTurnTime = 0f;
+                    knifeGuardTurnWeight = 0f;
+                }
+
                 if (mode != knifeMovementMode)
                 {
-                    knifePoseSampler.BeginBlend(.12f, 0);
+                    if (guardStanding && mode == 0 && ownerController.MoveInput.sqrMagnitude <= .01f
+                        && (knifeMovementMode == KnifeGuardTurnLeftMode || knifeMovementMode == KnifeGuardTurnRightMode))
+                    {
+                        knifePoseSampler.BeginGuardTurnSettle();
+                    }
+                    else
+                    {
+                        knifePoseSampler.BeginBlend(.12f, 0);
+                    }
                     knifeMovementMode = mode;
                 }
 
@@ -2047,13 +2148,18 @@ bool originalGrip = action.action == GameArchitecture.KnifeAction.OutwardDeflect
                         knifePoseSampler.BeginBlend(knifeModule.configuration.contactBlend, 0f);
                     }
                 }
-                knifePoseSampler.Sample(source, action.sourceStart + (float)knifeModule.CurrentActionTime, mode, knifeLocomotionTime, 1f, originalGrip);
-                float guardTurn = 0f;
-                if (knifeModule.IsGuardAiming && !knifeModule.IsAttack && !knifeModule.IsHitStop && mode == 0)
+                // 抬刀按动作时间连续采样，弹反输入过期由 HUD 提示。
+                float sampleTime = action.SourceTimeAt(knifeModule.CurrentActionTime);
+                float lowerBodyTime = knifeLocomotionTime;
+                float movementWeight = 1f;
+                float guardTorsoLead = 0f;
+                if (guardTurn != null)
                 {
-                    guardTurn = knifeModule.GuardTurnSpeed;
+                    lowerBodyTime = knifeGuardTurnTime;
+                    movementWeight = knifeGuardTurnWeight;
+                    guardTorsoLead = Mathf.Clamp(knifeModule.GuardEntryHeadingError * .24f, -24f, 24f) * movementWeight;
                 }
-                knifePoseSampler.ApplyGuardFootwork(guardTurn, delta);
+                knifePoseSampler.Sample(source, sampleTime, mode, lowerBodyTime, movementWeight, originalGrip, guardTurn, guardTorsoLead);
                 // poseDelta（姿态增量）：使用位置：作为 KnifePoseSampler.Apply(float) 的参数、LeonAnimatorDriver.LateUpdate()。
 float poseDelta = delta;
                 if (GameArchitecture.KnifeCombatRules.IsReaction(action.action))
@@ -2063,15 +2169,26 @@ float poseDelta = delta;
                 }
 
                 float lowerBodySettle = 0f;
-                if (mode == 0 && !action.sourceClip.humanMotion
-                    && action.action is GameArchitecture.KnifeAction.LowerGuard or GameArchitecture.KnifeAction.ThrustRecovery)
+                float standingGuardRelease = -1f;
+                float poseWeight = 1f;
+                if (action.action == GameArchitecture.KnifeAction.LowerGuard && !knifeModule.IsFinishingThrust)
+                {
+                    float progress = Mathf.InverseLerp(action.sourceStart, action.sourceStart + action.timing.duration, sampleTime);
+                    poseWeight = 1f - Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(.38f, .96f, progress));
+                    if (mode == 0)
+                    {
+                        standingGuardRelease = Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(0f, .96f, progress));
+                    }
+                }
+                else if (mode == 0 && !action.sourceClip.humanMotion && action.action == GameArchitecture.KnifeAction.ThrustRecovery)
                 {
                     // 在收招尾段先把站姿交回基础层，再让接地系统恢复。
                     float progress = Mathf.InverseLerp(action.timing.duration - .26f, action.timing.duration,
                         (float)knifeModule.CurrentActionTime);
                     lowerBodySettle = Mathf.SmoothStep(0f, 1f, progress);
                 }
-                knifePoseSampler.Apply(poseDelta, lowerBodySettle);
+                knifePoseSampler.Apply(poseDelta, lowerBodySettle, poseWeight, standingGuardRelease: standingGuardRelease,
+                    guardTurning: guardTurn != null, guardStanding: guardStanding && ownerController.MoveInput.sqrMagnitude <= .01f);
                 if (knifeFootsteps == null)
                 {
                     TryGetComponent(out knifeFootsteps);
@@ -2079,7 +2196,7 @@ float poseDelta = delta;
 
                 if (knifeFootsteps != null)
                 {
-                    knifeFootsteps.SampleKnifeFootsteps(mode, knifePoseSampler.LocomotionClip, knifeLocomotionTime,
+                    knifeFootsteps.SampleKnifeFootsteps(mode, knifePoseSampler.LocomotionClip, lowerBodyTime,
                         knifePoseSampler.ReadLeftFootHeightDifference(), delta > 0f);
                 }
                 // 原版刀姿求值之后再叠加视线俯仰，使画面和实际刀刃接触使用同一姿态。
@@ -2108,12 +2225,23 @@ bool interrupted = ownerController == null || ownerController.currentState == Le
             }
             else if (releasedThrustPose)
             {
-                UpdateReleasedThrustPose(pickup);
-            }
-            else if (pickup)
-            {
-                knifePoseExiting = false;
-                knifePoseSampler.ReleasePresentation();
+                if (pickup || ownerController.AnimCoordinator.HasActiveFullBodyAction
+                    || ownerController.AnimCoordinator.HasPendingWeaponSwitch)
+                {
+                    // 拾取伸手时从当前收势连续混合，避免骨盆先弹回步态再弯身。
+                    releasedThrustPose = false;
+                    float handoffDuration = .10f;
+                    if (pickup)
+                    {
+                        handoffDuration = .18f;
+                    }
+                    knifePoseSampler.BeginBlend(handoffDuration, 0f);
+                    knifePoseExiting = knifePoseSampler.ApplyExit(Time.deltaTime);
+                }
+                else
+                {
+                    UpdateReleasedThrustPose();
+                }
             }
             else
             {
@@ -2127,14 +2255,66 @@ bool interrupted = ownerController == null || ownerController.currentState == Le
         }
     }
 
+    private AnimationClip UpdateKnifeGuardTurn(float delta)
+    {
+        var configuration = knifeModule.configuration;
+        if (configuration.guardTurnLeft == null || configuration.guardTurnRight == null)
+        {
+            return null;
+        }
+
+        float turn = 0f;
+        if (delta > 0f && knifeModule.GuardViewFrame == Time.frameCount)
+        {
+            turn = knifeModule.GuardTurnDelta;
+        }
+
+        bool turning = Mathf.Abs(turn) > Mathf.Max(.12f, 10f * delta);
+        if (!turning && delta > 0f)
+        {
+            knifeGuardTurnMode = 0;
+            knifeGuardTurnTime = 0f;
+            knifeGuardTurnWeight = 0f;
+            return null;
+        }
+        if (turning)
+        {
+            int requestedMode = KnifeGuardTurnRightMode;
+            if (turn < 0f)
+            {
+                requestedMode = KnifeGuardTurnLeftMode;
+            }
+            if (knifeGuardTurnMode != requestedMode)
+            {
+                knifeGuardTurnMode = requestedMode;
+                knifeGuardTurnTime = 0f;
+            }
+            knifeGuardTurnWeight = Mathf.MoveTowards(knifeGuardTurnWeight, 1f, delta * 8f);
+        }
+        if (knifeGuardTurnWeight <= 0f)
+        {
+            return null;
+        }
+
+        AnimationClip clip = configuration.guardTurnRight;
+        if (knifeGuardTurnMode == KnifeGuardTurnLeftMode)
+        {
+            clip = configuration.guardTurnLeft;
+        }
+        if (turning)
+        {
+            knifeGuardTurnTime += Mathf.Abs(turn) / KnifeGuardTurnCycleAngle * clip.length;
+        }
+        return clip;
+    }
+
     /// <summary>Unity 组件停用回调；状态处理与资源交接按函数内顺序执行，下游协作见调用链。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） KnifePoseSampler.Dispose()、LeonAnimatorDriver.SetKnifeLocalHitStop(bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    private void UpdateReleasedThrustPose(bool pickup)
+    private void UpdateReleasedThrustPose()
     {
         var lower = knifeModule.configuration.Find(GameArchitecture.KnifeAction.LowerGuard);
-        const float duration = .24f;
         releasedThrustElapsed += Time.deltaTime;
-        if (lower == null || lower.sourceClip == null || releasedThrustElapsed >= duration)
+        if (lower == null || lower.sourceClip == null || releasedThrustElapsed >= lower.timing.duration)
         {
             releasedThrustPose = false;
             knifePoseExiting = false;
@@ -2142,11 +2322,11 @@ bool interrupted = ownerController == null || ownerController.currentState == Le
             return;
         }
 
-        float progress = Mathf.Clamp01(releasedThrustElapsed / duration);
-        float sampleTime = lower.sourceStart + lower.timing.duration * progress;
-        float weight = 1f - Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(.6f, 1f, progress));
+        float sampleTime = lower.sourceStart + releasedThrustElapsed;
+        float weight = 1f - Mathf.SmoothStep(0f, 1f,
+            Mathf.InverseLerp(lower.timing.duration - .18f, lower.timing.duration, releasedThrustElapsed));
         knifePoseSampler.Sample(lower.sourceClip, sampleTime, 0, 0f);
-        knifePoseSampler.Apply(Time.deltaTime, 1f, weight, pickup);
+        knifePoseSampler.Apply(Time.deltaTime, 1f, weight);
     }
 
     private void OnDisable()
@@ -2367,7 +2547,7 @@ bool interrupted = ownerController == null || ownerController.currentState == Le
         // qteAction（是否配对动作动作）：保存 LeonAnimatorDriver.IsQTEAction(FullBodyActionType) 的返回结果，供当前步骤使用。使用位置：LeonAnimatorDriver.EndFullBodyAction()。
 bool qteAction = IsQTEAction(activeFullBodyAction);
         // fullBodyLayerVisible（全身图层是否可见）：使用位置：LeonAnimatorDriver.EndFullBodyAction()。
-bool fullBodyLayerVisible = animator.GetLayerWeight(LayerFullBodyAction) > 0.01f;
+bool fullBodyLayerVisible = VisibleFullBodyWeight > 0.01f;
         if (activeMeleeOnWeaponLayer != FullBodyActionType.None)
         {
             clearFullBodyActionAfterFade = false;
@@ -2376,7 +2556,9 @@ bool fullBodyLayerVisible = animator.GetLayerWeight(LayerFullBodyAction) > 0.01f
             return;
         }
 
-        if ((qteAction || MeleeActionKinds.IsWoodenBox(activeFullBodyAction) || MeleeActionKinds.IsEnemyKick(activeFullBodyAction)) && fullBodyLayerVisible)
+        bool fadeWhileStateIsPlaying = qteAction || activeFullBodyAction == FullBodyActionType.Hit
+            || MeleeActionKinds.IsWoodenBox(activeFullBodyAction) || MeleeActionKinds.IsEnemyKick(activeFullBodyAction);
+        if (fadeWhileStateIsPlaying && fullBodyLayerVisible)
         {
             // 先淡出当前姿态，再清空状态，避免同时向空状态和底层混合。
             clearFullBodyActionAfterFade = true;
@@ -2426,7 +2608,7 @@ bool fullBodyLayerVisible = animator.GetLayerWeight(LayerFullBodyAction) > 0.01f
         }
 
         // shouldSmoothQTEExit（是否应当平滑配对动作退出）：使用位置：LeonAnimatorDriver.FinalizeFullBodyActionLayer()。
-        bool shouldSmoothQTEExit = IsQTEAction(activeFullBodyAction) || activeFullBodyAction == FullBodyActionType.WindowDropLand ||
+        bool shouldSmoothQTEExit = IsQTEAction(activeFullBodyAction) || activeFullBodyAction == FullBodyActionType.Hit || activeFullBodyAction == FullBodyActionType.WindowDropLand ||
             activeFullBodyAction == FullBodyActionType.WindowClimbThrough || activeFullBodyAction == FullBodyActionType.VillageGateOpen ||
             activeFullBodyAction == FullBodyActionType.ItemPickup;
         activeFullBodyAction = FullBodyActionType.None;
@@ -2449,7 +2631,7 @@ bool fullBodyLayerVisible = animator.GetLayerWeight(LayerFullBodyAction) > 0.01f
     /// <remarks>静态调用链：上游 LeonAnimatorDriver.EndFullBodyAction()、LeonAnimatorDriver.EndTraversalLanding()、LeonAnimatorDriver.FinalizeFullBodyActionLayer()；下游（含内部回调体） Animator.GetLayerWeight(int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     private void BeginQTEFullBodyExitBlend()
     {
-        fullBodyLayerWeight = animator.GetLayerWeight(LayerFullBodyAction);
+        fullBodyLayerWeight = VisibleFullBodyWeight;
         targetFullBodyLayerWeight = 0f;
         blendFullBodyLayerWeight = fullBodyLayerWeight > 0f;
         blendingFullBodyLayerEntry = false;

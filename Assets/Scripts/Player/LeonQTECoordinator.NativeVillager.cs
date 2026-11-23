@@ -64,6 +64,7 @@ public partial class LeonQTECoordinator
             }
             playback = new NativePairPlayback(stab, default, default, 0, AssassinationContactFrame,
                 Array.Empty<int>(), true);
+            playback.HoldEnemyResultPose = true;
         }
         else if (kind == QTEKind.RearBiteNeck)
         {

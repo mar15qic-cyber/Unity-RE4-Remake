@@ -23,6 +23,8 @@ public class CrosshairConfig : ScriptableObject
     /// <summary>中文含义：线段长度 (Cross 类型)。使用位置：作为 CrossRenderer.Configure(float, float) 的参数、作为 Mathf.Max(float, float) 的参数、CrosshairUI.CreateFallbackConfig(string, CrosshairType, float, float, float, bool) 等共 4 处。</summary>
     [Tooltip("线段长度 (Cross 类型)")]
     public float lineLength = 9f;
+    [Tooltip("原版四向准星的九宫格图块。尺寸以 1080p 为参考。")]
+    public Sprite lineSprite;
     /// <summary>中文含义：散布曲线。0~1 归一化 spread → 0~1 UI 尺寸比例曲线。使用位置：CrosshairPresenter.Update()、CrosshairUI.HandleWeaponFired()、CrosshairUI.UpdateSpread()。</summary>
     [Header("Spread 映射")]
     [Tooltip("0~1 归一化 spread → 0~1 UI 尺寸比例曲线")]

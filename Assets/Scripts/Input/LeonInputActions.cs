@@ -280,6 +280,24 @@ public partial class @LeonInputActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""InventoryMove"",
+                    ""type"": ""Button"",
+                    ""id"": ""fb57a299-3ba7-4054-a50a-cf57ee253e09"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""InventoryConfirm"",
+                    ""type"": ""Button"",
+                    ""id"": ""9e21dd85-b2d4-40d4-a493-d72a95ef4b5b"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -555,6 +573,28 @@ public partial class @LeonInputActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Sort"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""4a580577-a37c-4f45-893b-95c1f663a8eb"",
+                    ""path"": ""<Keyboard>/leftShift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""InventoryMove"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""55094aa7-3296-44d2-9bd4-96622b41f6fa"",
+                    ""path"": ""<Keyboard>/space"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""InventoryConfirm"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -942,6 +982,8 @@ public partial class @LeonInputActions: IInputActionCollection2, IDisposable
         m_Player_Pause = m_Player.FindAction("Pause", throwIfNotFound: true);
         m_Player_Inventory = m_Player.FindAction("Inventory", throwIfNotFound: true);
         m_Player_Sort = m_Player.FindAction("Sort", throwIfNotFound: true);
+        m_Player_InventoryMove = m_Player.FindAction("InventoryMove", throwIfNotFound: true);
+        m_Player_InventoryConfirm = m_Player.FindAction("InventoryConfirm", throwIfNotFound: true);
         // ItemInspection
         m_ItemInspection = asset.FindActionMap("ItemInspection", throwIfNotFound: true);
         m_ItemInspection_Close = m_ItemInspection.FindAction("Close", throwIfNotFound: true);
@@ -1062,6 +1104,8 @@ public partial class @LeonInputActions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Pause;
     private readonly InputAction m_Player_Inventory;
     private readonly InputAction m_Player_Sort;
+    private readonly InputAction m_Player_InventoryMove;
+    private readonly InputAction m_Player_InventoryConfirm;
     /// <summary>
     /// Provides access to input actions defined in input action map "Player".
     /// </summary>
@@ -1158,6 +1202,14 @@ public partial class @LeonInputActions: IInputActionCollection2, IDisposable
         /// </summary>
         public InputAction @Sort => m_Wrapper.m_Player_Sort;
         /// <summary>
+        /// Provides access to the underlying input action "Player/InventoryMove".
+        /// </summary>
+        public InputAction @InventoryMove => m_Wrapper.m_Player_InventoryMove;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/InventoryConfirm".
+        /// </summary>
+        public InputAction @InventoryConfirm => m_Wrapper.m_Player_InventoryConfirm;
+        /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
         public InputActionMap Get() { return m_Wrapper.m_Player; }
@@ -1246,6 +1298,12 @@ public partial class @LeonInputActions: IInputActionCollection2, IDisposable
             @Sort.started += instance.OnSort;
             @Sort.performed += instance.OnSort;
             @Sort.canceled += instance.OnSort;
+            @InventoryMove.started += instance.OnInventoryMove;
+            @InventoryMove.performed += instance.OnInventoryMove;
+            @InventoryMove.canceled += instance.OnInventoryMove;
+            @InventoryConfirm.started += instance.OnInventoryConfirm;
+            @InventoryConfirm.performed += instance.OnInventoryConfirm;
+            @InventoryConfirm.canceled += instance.OnInventoryConfirm;
         }
 
         /// <summary>
@@ -1320,6 +1378,12 @@ public partial class @LeonInputActions: IInputActionCollection2, IDisposable
             @Sort.started -= instance.OnSort;
             @Sort.performed -= instance.OnSort;
             @Sort.canceled -= instance.OnSort;
+            @InventoryMove.started -= instance.OnInventoryMove;
+            @InventoryMove.performed -= instance.OnInventoryMove;
+            @InventoryMove.canceled -= instance.OnInventoryMove;
+            @InventoryConfirm.started -= instance.OnInventoryConfirm;
+            @InventoryConfirm.performed -= instance.OnInventoryConfirm;
+            @InventoryConfirm.canceled -= instance.OnInventoryConfirm;
         }
 
         /// <summary>
@@ -1872,6 +1936,20 @@ public partial class @LeonInputActions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnSort(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "InventoryMove" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnInventoryMove(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "InventoryConfirm" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnInventoryConfirm(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "ItemInspection" which allows adding and removing callbacks.

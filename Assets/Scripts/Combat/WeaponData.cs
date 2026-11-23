@@ -30,6 +30,19 @@ public class WeaponData : ScriptableObject
     public float bodyMultiplier = 1.0f;
     /// <summary>中文含义：肢体倍率。</summary>
     public float limbMultiplier = 0.7f;
+
+    [Range(0f, 1f)]
+    [Tooltip("单发手枪命中村民头部时的暴击概率，0 表示关闭。")]
+    public float headCriticalChance;
+    [Min(1f)]
+    [Tooltip("手枪头部暴击在原有部位倍率之外追加的伤害倍率。")]
+    public float headCriticalDamageMultiplier = 1f;
+    [Range(0f, 1f)]
+    [Tooltip("单发手枪命中村民手臂时的暴击概率，左右臂共用，0 表示关闭。")]
+    public float armCriticalChance;
+    [Min(1f)]
+    [Tooltip("手枪手臂暴击在原有部位倍率之外追加的伤害倍率。")]
+    public float armCriticalDamageMultiplier = 1f;
     /// <summary>中文含义：开火速率。使用位置：WeaponBase.GetFireInterval()。</summary>
     [Header("Fire Rate")]
     public float fireRate = 0.4f;
@@ -90,4 +103,8 @@ public class WeaponData : ScriptableObject
     [Header("界面显示")]
     [Tooltip("当前武器在战斗界面中显示的图标，可直接从图集子图片拖入。")]
     public Sprite hudIcon;
+
+    [Header("背枪挂点")]
+    [Tooltip("拔枪交接帧中枪体根骨相对于上脊柱的位姿，由配套角色与枪体动作读取。")]
+    public Pose stowedRootInSpine;
 }

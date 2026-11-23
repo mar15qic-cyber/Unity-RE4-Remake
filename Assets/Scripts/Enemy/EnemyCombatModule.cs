@@ -952,7 +952,6 @@ bool shouldReact = shouldEnterCrawl || (Time.time >= hitReactionImmuneUntil && a
             return;
         }
 
-        ClearNativeBodyReaction();
         // forcedHeavyStagger（是否强制重型硬直）：使用位置：作为 EnemyCombatModule.ResolveStaggerLevel(HitboxType, bool) 的参数、EnemyCombatModule.TakeDamage(float, Vector3, HitboxType, Vector3)。
 bool forcedHeavyStagger = forcedNextHitDirection == 5;
         // criticalStandingStagger（是否暴击站立硬直）：使用位置：EnemyCombatModule.TakeDamage(float, Vector3, HitboxType, Vector3)。
@@ -962,6 +961,17 @@ bool forcedHeavyStagger = forcedNextHitDirection == 5;
         bool criticalStandingStagger = !disarm && !forcedHeavyStagger && !pendingCrawl && !isLegHit
             && (!UsesNativeBodyTechnique || hitboxType != HitboxType.Head)
             && ShouldTriggerCriticalStagger(hitboxType, damage);
+        bool repeatChestHit = hitboxType == HitboxType.Chest && HasUnfinishedStandingHit
+            && !shouldEnterCrawl && forcedNextHitDirection < 0 && !IsQTEControlled;
+        if (repeatChestHit && (!criticalStandingStagger || pendingStandingStagger))
+        {
+            // 行为树仍在等待当前动作的结束通知。普通追击命中只结算韧性和免疫间隔。
+            accumulatedPoiseDamage = 0f;
+            hitReactionImmuneUntil = Time.time + hitReactionImmunity;
+            return;
+        }
+
+        ClearNativeBodyReaction();
         // useStandingStagger（是否使用站立硬直）：使用位置：EnemyCombatModule.TakeDamage(float, Vector3, HitboxType, Vector3)。
 bool useStandingStagger = forcedHeavyStagger || criticalStandingStagger;
         pendingStandingStagger = useStandingStagger;
@@ -1032,6 +1042,11 @@ bool useStandingStagger = forcedHeavyStagger || criticalStandingStagger;
         }
 
         MarkDamageReactionPending(shouldEnterCrawl);
+        if (repeatChestHit && criticalStandingStagger)
+        {
+            // 已在受击任务中时，行为树不会再次调用 OnStart，需要立即进入新的硬直状态。
+            ActionCoordinator.RequestAction(GameArchitecture.ActionKind.HitReaction, "躯干追击触发暴击硬直");
+        }
     }
 
     private void MarkDamageReactionPending(bool shouldEnterCrawl)
@@ -1266,9 +1281,18 @@ Vector3 localDirection = transform.InverseTransformDirection(worldDirection.norm
             return false;
         }
 
-        return host.ShouldChasePlayer && CanEvaluateStandingCombatAction && !host.IsNavigationTraversalProtected
-            && IsAttackReady && IsPlayerWithinAttackStartRange() && IsStandingAttackSurfaceStable()
-            && CanEngagePlayerAtCloseRange() && CanReachWithStandingPose();
+        if (!host.ShouldChasePlayer || !CanEvaluateStandingCombatAction || host.IsNavigationTraversalProtected ||
+            !IsAttackReady || !IsStandingAttackSurfaceStable())
+        {
+            return false;
+        }
+
+        if (host.HasSiegeBreachOrder)
+        {
+            return ResolveSiegeDoor() != null;
+        }
+        return ResolveSiegeDoor() != null || IsPlayerWithinAttackStartRange() &&
+            CanEngagePlayerAtCloseRange() && CanReachWithStandingPose();
     }
 
     internal bool CanCrawlAttack()
@@ -1437,7 +1461,7 @@ bool shouldBlendStandingStaggerRecovery = pendingStandingStagger;
             }
         }
 
-        if (!pendingCrawl && fullyAwareOfPlayer && Player != null && (!IsPlayerWithinCombatHoldRange() || !CanEngagePlayerAtCloseRange()))
+        if (WillPursueAfterHit())
         {
             if (CanLogMovementDiagnostic)
             {
@@ -1728,6 +1752,8 @@ global::EnemyColliderController receiverValue31 = colliderCtrl;
     private int rearAssistSession;
     internal bool BeginAttack()
     {
+        siegeAttackDoor = ResolveSiegeDoor();
+        siegeAttackLanded = false;
         rearAssistSession = 0;
         if (Player != null && Player.TryGetComponent<LeonQTECoordinator>(out var rearPair) && rearPair.IsRearHelper(host))
         {
@@ -1740,7 +1766,12 @@ global::EnemyColliderController receiverValue31 = colliderCtrl;
         int attackIndex;
         if (chainsawBridge != null)
         {
-            attackIndex = chainsawBridge.SelectAttackIndex(PlayerDistance, standingAttackAnimationCount);
+            float attackDistance = PlayerDistance;
+            if (siegeAttackDoor != null)
+            {
+                attackDistance = Vector3.Distance(transform.position, siegeAttackDoor.PassageCenter);
+            }
+            attackIndex = chainsawBridge.SelectAttackIndex(attackDistance, standingAttackAnimationCount);
         }
         else
         {
@@ -1762,7 +1793,14 @@ global::EnemyColliderController receiverValue31 = colliderCtrl;
         normalSwingHitHasRecoverWindow = false;
         standingParryWindowOpen = false;
         lastAttackTime = Time.time;
-        FacePlayerImmediately();
+        if (siegeAttackDoor != null)
+        {
+            host.ArchitectureInvokeFacePosition(siegeAttackDoor.PassageCenter, 50f);
+        }
+        else
+        {
+            FacePlayerImmediately();
+        }
 
         AnimationPresenter.SetIntegerValue(HashAttackIndex, attackIndex);
         currentKnifeAttackMove = attackIndex;
@@ -2418,7 +2456,7 @@ Vector3 localPoint = transform.InverseTransformPoint(hitPoint);
 
         if (!TryBeginStandingHitRecovery())
         {
-            AnimationPresenter.SetBoolean(HashHIT, false);
+            ReleaseStandingHitPose();
         }
     }
 
@@ -2437,10 +2475,31 @@ Vector3 localPoint = transform.InverseTransformPoint(hitPoint);
         }
 
         deferredStandingHitCompletion = false;
-        AnimationPresenter.SetBoolean(HashHIT, false);
-        hitFinished = true;
         currentStandingStaggerBodyTechnique = false;
         bodyTechniqueWindowEndTime = 0f;
+        if (TryBeginStandingHitRecovery()) return;
+        ReleaseStandingHitPose();
+        hitFinished = true;
+    }
+
+    private bool WillPursueAfterHit()
+    {
+        return !pendingCrawl && fullyAwareOfPlayer && Player != null
+            && (!IsPlayerWithinCombatHoldRange() || !CanEngagePlayerAtCloseRange());
+    }
+
+    private void ReleaseStandingHitPose()
+    {
+        AnimationPresenter.SetBoolean(HashHIT, false);
+        bool upperBodyHit = pendingHitDirection == 1 || pendingHitDirection == 2
+            || (pendingStandingStagger && pendingStaggerLevel == 0);
+        if (upperBodyHit && chainsawBridge != null && chainsawBridge.HasStartedChainsaw && chainsawBridge.HasResolvedIntroTaunt
+            && !host.IsNavigationTraversalProtected && WillPursueAfterHit()
+            && AnimationPresenter.BlendSawHitIntoPursuit())
+        {
+            // 直接过渡会绕过受击子状态机的 Exit 节点，沿用该节点的受击结束处理。
+            NotifyHitStateMachineExited();
+        }
     }
 
     /// <summary>NotifyHitStateMachineExited 的业务处理入口；本方法直接依赖 EnemyCombatModule.DiagLog(string, string)，调用方通过参数与返回结果交接本次处理。</summary>
@@ -2659,6 +2718,15 @@ int hitMask = 1 << safeHitIndex;
         bool nativeSawContact = UsesNativeSawContact;
         if (currentHealth <= 0 || (!nativeSawContact && (attackHitMask & hitMask) != 0))
         {
+            return;
+        }
+
+        if (siegeAttackDoor != null)
+        {
+            if (!nativeSawContact && !siegeAttackLanded)
+            {
+                siegeAttackLanded = siegeAttackDoor.TrySawSiegeDoor(chainsawBridge.GetChainsawDamageOrigin(), 0.65f);
+            }
             return;
         }
 
@@ -3328,6 +3396,7 @@ Vector3 offset = point - origin;
     {
         CancelNativeCombat(false);
         nativeDeathTrack = null;
+        assassinationEndTime = 0f;
         nativeDeathAction = default;
         ClearStandingMelee();
         ClearNativeBodyReaction();

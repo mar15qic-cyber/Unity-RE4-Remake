@@ -232,7 +232,8 @@ public partial class LeonQTECoordinator
             if (delta > 0f)
             {
                 rearHoldElapsed += delta;
-                pressCount = Mathf.FloorToInt(Mathf.Clamp01(rearHoldElapsed / target) * config.requiredPresses);
+                int heldProgress = Mathf.FloorToInt(Mathf.Clamp01(rearHoldElapsed / target) * config.requiredPresses);
+                pressCount = Mathf.Max(heldProgress, rearEscapePresses);
                 controller.ApplyRearHoldDamage(controller.maxHealth * config.rearDrainPerSecond * delta);
                 if (IsActive && rearHoldElapsed >= target - .0001f)
                 {
@@ -320,6 +321,12 @@ public partial class LeonQTECoordinator
             return;
         }
         pair.Present();
+        if (activeKind == QTEKind.FrontGrab && phase == QTEPhase.FailureResult &&
+            participant.Root.TryGetComponent<NativeActionAudio>(out var villagerAudio))
+        {
+            // 失败结果可能继续以同一段动画求值，当前事务内的发声标记只跨过一次。
+            villagerAudio.SamplePair(pair.EnemyClipName, session, pair.EnemyAudioTime, null, allowRewind: false);
+        }
         if (TryGetComponent<NativeActionAudio>(out var audio))
         {
             var source = participant.Root;
@@ -327,6 +334,7 @@ public partial class LeonQTECoordinator
             if (saw != null && saw.chainsawDamageOrigin != null)
             {
                 source = saw.chainsawDamageOrigin;
+                audio.SamplePairedWeapon(pair.EnemyClipName, session, pair.EnemyAudioTime, source);
             }
             audio.SamplePair(pair.EnemyClipName, session, pair.EnemyAudioTime, source);
             audio.SamplePlayerPair(pair.PlayerClipName, session, pair.PlayerAudioTime);
@@ -392,6 +400,7 @@ public partial class LeonQTECoordinator
         {
             return;
         }
+        UpdateSawAppearance(pair);
         PresentNativeFrontGrabLanding(pair);
         if (pair.ContactSent || pair.SourceFrame < pair.ContactFrame - 0.001f)
         {
@@ -426,7 +435,7 @@ public partial class LeonQTECoordinator
         else if (phase == QTEPhase.FailureResult)
         {
             pair.ContactSent = true;
-            if (activeKind == QTEKind.ChainsawExecution)
+            if (activeKind == QTEKind.ChainsawExecution && !pair.ContactVfxPlayed)
             {
                 Transform head = GetPlayerBone(HumanBodyBones.Head);
                 Vector3 hitPoint = ResolveNeckBiteHitPoint();
@@ -700,6 +709,10 @@ public partial class LeonQTECoordinator
                 presenter.PresentNativeCombat(pair.EnemyClip, pair.SourceFrame / pair.FrameRate);
             }
         }
+        if (!keepPlayerDeathPose)
+        {
+            ClearSawAppearance();
+        }
         nativePair = null;
         if (keepPlayerDeathPose)
         {
@@ -740,6 +753,7 @@ public partial class LeonQTECoordinator
     {
         if (terminalNativePair != null)
         {
+            ClearSawAppearance();
             terminalNativePair.Dispose();
             terminalNativePair = null;
         }
@@ -822,6 +836,8 @@ public partial class LeonQTECoordinator
                 return time;
             }
         }
+        public ChapterOnePairMotion.Track EnemyTrack => current.enemy;
+        public float EnemyFinalTime => current.finalFrame / FrameRate;
         public AnimationClip EnemyClip => current.enemy.clip;
         public string PlayerClipName => current.player.clip.name;
         public float PlayerAudioTime => ReadPlayerPoseTime(time);
@@ -835,6 +851,16 @@ public partial class LeonQTECoordinator
         public bool ContactVfxPlayed { get; set; }
         public bool ContactSent { get; set; }
         public bool HoldEnemyResultPose { get; set; }
+        public int SurvivorReleaseFrame { get; set; }
+
+        private float EnemyTrackTime(float seconds)
+        {
+            if (SurvivorReleaseFrame > 0)
+            {
+                return Mathf.Min(seconds, SurvivorReleaseFrame / FrameRate);
+            }
+            return seconds;
+        }
         public bool HasValidStages => Guard.IsValid && (SingleShot || Escape.IsValid && Failure.IsValid);
 
         private int EndFrame
@@ -1054,7 +1080,7 @@ public partial class LeonQTECoordinator
                 enemy = previousEnemy;
                 return;
             }
-            enemy = BlendRoot(EnemyStart, previousEnemy, current.enemy.Sample(seconds), weight);
+            enemy = BlendRoot(EnemyStart, previousEnemy, current.enemy.Sample(EnemyTrackTime(seconds)), weight);
         }
 
         private static Pose BlendRoot(Pose start, Pose previous, Pose sample, float weight)
@@ -1096,7 +1122,12 @@ public partial class LeonQTECoordinator
                 {
                     enemyTime += enemyReleaseStart;
                 }
-                enemyOutput.Present(enemyTime, BlendWeight, enemyWeight, isResult && !continuedGuard);
+                if (SurvivorReleaseFrame > 0 && SourceFrame >= SurvivorReleaseFrame)
+                {
+                    float elapsed = (SourceFrame - SurvivorReleaseFrame) / FrameRate;
+                    enemyWeight *= 1f - Mathf.SmoothStep(0f, 1f, elapsed / SawPairBlend);
+                }
+                enemyOutput.Present(EnemyTrackTime(enemyTime), BlendWeight, enemyWeight, isResult && !continuedGuard);
             }
         }
 

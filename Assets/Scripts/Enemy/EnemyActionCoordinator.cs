@@ -377,6 +377,11 @@ global::EnemyAIManager receiverValue3 = EnemyAIManager.Instance;
     /// <remarks>静态调用链：上游 VillagerController.UpdateCombatFacing()；下游（含内部回调体） EnemyActionCoordinator.FacePosition(Vector3, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     internal void UpdateCombatFacing()
     {
+        if (host.HasSiegeBreachOrder)
+        {
+            FacePosition(host.door03TraversalRoute.DoorGate, alertTurnSpeed * 1.5f);
+            return;
+        }
         if (Player != null)
         {
             FacePosition(Player.transform.position, alertTurnSpeed * 1.5f);

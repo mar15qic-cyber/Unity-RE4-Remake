@@ -173,6 +173,8 @@ public class LeonLocomotion : MonoBehaviour
 
         // state（当前里昂状态）：使用位置：LeonLocomotion.HandleMovement()。
 var state = controller.currentState;
+        if (state == LeonState.Staggered && driver != null && driver.HitMovementReleased)
+            state = LeonState.Walking;
         // input（输入数据）：使用位置：作为 LeonController.CalculateMovementDirection(Vector3) 的参数、作为 LeonLocomotion.HandleRotation(Vector3, Camera, bool, bool, bool, bool, bool, Vector3) 的参数、LeonLocomotion.HandleMovement()。
 var input = controller.MoveInput;
         // cam（摄像机）：使用位置：作为 LeonLocomotion.HandleRotation(Vector3, Camera, bool, bool, bool, bool, bool, Vector3) 的参数、作为 LeonLocomotion.UpdateTurnAngleFromCamera(Camera, bool, bool, bool, bool) 的参数。
@@ -247,13 +249,20 @@ bool isCrouching = controller.IsCrouching;
                 || driver.NativeW870OwnsAimArms && driver.IsNativeW870Carrying
                 || driver.NativePistolOwnsAimArms && driver.IsNativePistolCarrying);
         bool injured = controller.IsInjured;
+        // 松开格挡时先恢复持刀基础层，收势直接淡入真实待机或当前步态。
+        bool releasingGuard = state == LeonState.Parrying && combat != null && combat.knifeModule != null
+            && combat.knifeModule.CurrentAction == GameArchitecture.KnifeAction.LowerGuard
+            && !combat.knifeModule.IsFinishingThrust;
+        bool allowNativeMovement = !isMeleeing || releasingGuard;
+        bool isolateCameraSteering = controller.IsolateObserveCameraSteering;
+        // 自由环顾只锁定移动参考，进入观察和回正时都沿用当前步态。
         bool basicGait = driver != null && movementToken.Valid && driver.CanUseBasicGait
-            && !injured && !isCrouching && !isAiming && !isShooting && !isReloading && !isMeleeing
-            && IsBasicMovementState(state) && !controller.IsolateObserveCameraSteering;
+            && !injured && !isCrouching && !isAiming && !isShooting && !isReloading && allowNativeMovement
+            && (IsBasicMovementState(state) || releasingGuard);
         bool running = basicGait && controller.IsEffectiveSprinting;
         bool sprintingForward = !basicGait && controller.IsEffectiveSprinting && input.z > .1f;
         var direction = LeonAnimatorDriver.NativeDirection.Forward;
-        if (!controller.IsolateObserveCameraSteering && !running && !sprintingForward)
+        if (!isolateCameraSteering && !running && !sprintingForward)
         {
             direction = ReadDirectionalInput(input);
         }
@@ -273,7 +282,7 @@ bool isCrouching = controller.IsCrouching;
             && driver.CanUseNativeGait(isCrouching, injured)
             && (!directionalRequest || nativeDirectional)
             && (!isAiming && !isShooting || keepNativeAimIdle || nativeDirectional || finishDirectional)
-            && (!isReloading || driver.PreservesNativeReloadGait) && !isMeleeing;
+            && (!isReloading || driver.PreservesNativeReloadGait) && allowNativeMovement;
         if (isShooting || isAiming || isReloading || isMeleeing)
         {
             ResetTurnAngle();
@@ -420,7 +429,7 @@ float targetInputMag;
             if (basicGait && inputMag > 0.05f && !driver.IsBasicRunTurning)
             {
                 Vector3 desiredFacing = moveDir;
-                if (!running && cam != null)
+                if (!running && !isolateCameraSteering && cam != null)
                 {
                     desiredFacing = Quaternion.Euler(0f, cam.transform.eulerAngles.y, 0f) * Vector3.forward;
                 }
