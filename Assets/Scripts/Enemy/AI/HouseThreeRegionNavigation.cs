@@ -31,7 +31,7 @@ public enum VillageTraversalRegion
 [UnityEngine.Scripting.APIUpdating.MovedFrom(true, "", "Assembly-CSharp", "三号屋分区导航")]
 public sealed class HouseThreeRegionNavigation : MonoBehaviour
 {
-    /// <summary>中文含义：正式缓存。使用位置：HouseThreeRegionNavigation.ConfigurationError()、HouseThreeRegionNavigation.LoadProductionImage()、StrictAstarGraphBaker.PublishCandidate()。</summary>
+    /// <summary>正式缓存。</summary>
     [Header("正式分区导航数据")]
     [UnityEngine.Serialization.FormerlySerializedAs("试验缓存")]
     [UnityEngine.Serialization.FormerlySerializedAs("正式缓存")]
@@ -39,43 +39,43 @@ public sealed class HouseThreeRegionNavigation : MonoBehaviour
     public TextAsset productionCache;
     [Tooltip("布景调整后需要重建的局部导航范围。")]
     public Bounds[] refreshedSceneryBounds;
-    /// <summary>中文含义：通路。使用位置：作为 HouseThreeRegionNavigation.ApproachEndPoint(Vector3, Vector3, float) 的参数、作为 Vector3.Dot(Vector3, Vector3) 的参数、作为 Vector3.ProjectOnPlane(Vector3, Vector3) 的参数 等共 11 处。</summary>
+    /// <summary>通路。</summary>
     [UnityEngine.Serialization.FormerlySerializedAs("通路")]
     [UnityEngine.InspectorName("通路")]
     public HouseThreeTraversalGeometry traversal;
-    /// <summary>中文含义：外平台标识。使用位置：作为 EnemyNavigationElevatedWalkableVolume.ContainsBoundaryRegionPoint(string, Vector3) 的参数、作为 EnemyWindowTraversal.TryGetPlatformRegionState(string, out bool) 的参数、作为 LeonWindowTraversal.TryGetEnemyPlatformRegionState(string, out bool) 的参数 等共 8 处。</summary>
+    /// <summary>外平台标识。</summary>
     [Header("沿用窗口和外平台边界的区域标识")]
     [UnityEngine.Serialization.FormerlySerializedAs("外平台标识")]
     [UnityEngine.InspectorName("外平台标识")]
     public string outerPlatformIdentifier;
-    /// <summary>中文含义：一楼范围。使用位置：HouseThreeRegionNavigation.TreadRegion(Vector3)。</summary>
+    /// <summary>一楼范围。</summary>
     [Header("室内地板的世界边界")]
     [UnityEngine.Serialization.FormerlySerializedAs("一楼范围")]
     [UnityEngine.InspectorName("一楼范围")]
     public Bounds firstFloorRange;
-    /// <summary>中文含义：二楼范围。使用位置：HouseThreeRegionNavigation.ReadPlatformOwnership(Vector3, bool)、HouseThreeRegionNavigation.TreadRegion(Vector3)。</summary>
+    /// <summary>二楼范围。</summary>
     [UnityEngine.Serialization.FormerlySerializedAs("二楼范围")]
     [UnityEngine.InspectorName("二楼范围")]
     public Bounds secondFloorRange;
-    /// <summary>中文含义：当前。使用位置：EnemyActionCoordinator.BeginDeath()、EnemyActionCoordinator.BeginIdle()、EnemyActionCoordinator.BeginPatrol() 等共 27 处。</summary>
+    /// <summary>当前。</summary>
     public static HouseThreeRegionNavigation Current { get; private set; }
 
-    /// <summary>中文含义：楼梯上部成员。只读字段，初始化后不由普通写入口替换。使用位置：HouseThreeRegionNavigation.OnDisable()、HouseThreeRegionNavigation.ReleaseCharacter(VillagerController)、HouseThreeRegionNavigation.StairAllowFrontEnter(VillagerController, Vector3)。</summary>
+    /// <summary>楼梯上部成员。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly List<VillagerController> stairUpperMember = new List<VillagerController>();
-    /// <summary>中文含义：窗口专用连接。使用位置：HouseThreeRegionNavigation.ConfigurationError()、HouseThreeRegionNavigation.OnEnable()、StrictAstarGraphBaker.ApplyHouseThreeRegionRules(HouseThreeRegionNavigation, AstarPath) 等共 4 处。</summary>
+    /// <summary>窗口专用连接。</summary>
     [HideInInspector]
     [UnityEngine.Serialization.FormerlySerializedAs("窗口专用连接")]
     [UnityEngine.InspectorName("窗口专用连接")]
     public NodeLink2[] windowDedicatedConnect;
-    /// <summary>中文含义：脚部下部命中。只读字段，初始化后不由普通写入口替换。使用位置：作为 Physics.RaycastNonAlloc(Vector3, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 的参数、作为 Physics.SphereCastNonAlloc(Vector3, float, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 的参数、HouseThreeRegionNavigation.ReadPlatformOwnership(Vector3, bool)。</summary>
+    /// <summary>脚部下部命中。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly RaycastHit[] footLowerHit = new RaycastHit[16];
-    /// <summary>中文含义：跟随间距。使用位置：HouseThreeRegionNavigation.StairAllowFrontEnter(VillagerController, Vector3)。</summary>
+    /// <summary>跟随间距。</summary>
     [Header("楼梯入口让行与跟随")]
     [Range(.3f, 1f)]
     [UnityEngine.Serialization.FormerlySerializedAs("跟随间距")]
     [UnityEngine.InspectorName("跟随间距")]
     public float followSpacing = .62f;
-    /// <summary>中文含义：让出行帧。只读字段，初始化后不由普通写入口替换。使用位置：HouseThreeRegionNavigation.IsEntryPointYieldRow(VillagerController)、HouseThreeRegionNavigation.OnDisable()、HouseThreeRegionNavigation.ReleaseCharacter(VillagerController) 等共 4 处。</summary>
+    /// <summary>让出行帧。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly Dictionary<VillagerController, int> yieldRowFrame = new();
     /// <summary>ConfigurationError 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
     /// <remarks>静态调用链：上游 HouseThreeRegionNavigation.OnEnable()、SceneStartupEntry.ConfigurationError()；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
@@ -128,7 +128,7 @@ foreach (var connect in windowDedicatedConnect)
             return;
         }
 
-        // error（错误）：保存 HouseThreeRegionNavigation.ConfigurationError() 的返回结果，供当前步骤使用。使用位置：作为 Debug.LogError(object, Object) 的参数、HouseThreeRegionNavigation.OnEnable()。
+        // 错误。
 string error = ConfigurationError();
         if (error != null)
         {
@@ -192,7 +192,7 @@ foreach (var connect in windowDedicatedConnect)
 
     /// <summary>ReleaseCharacter 的业务处理入口；本方法直接依赖 Dictionary&lt;VillagerController, int&gt;.Remove(VillagerController)、List&lt;VillagerController&gt;.Remove(VillagerController)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyActionCoordinator.BeginDeath()、EnemyActionCoordinator.BeginIdle()、EnemyActionCoordinator.BeginPatrol()、EnemyActionCoordinator.BeginStationaryPatrol(float)、HouseThreeRegionNavigation.StairAllowFrontEnter(VillagerController, Vector3) 等共 8 处；下游（含内部回调体） Dictionary&lt;VillagerController, int&gt;.Remove(VillagerController)、List&lt;VillagerController&gt;.Remove(VillagerController)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="character">中文含义：角色。使用位置：作为 Dictionary&lt;VillagerController, int&gt;.Remove(VillagerController) 的参数、作为 List&lt;VillagerController&gt;.Remove(VillagerController) 的参数。</param>
+    /// <param name="character">角色。</param>
     public void ReleaseCharacter(VillagerController character)
     {
         stairUpperMember.Remove(character);
@@ -201,11 +201,11 @@ foreach (var connect in windowDedicatedConnect)
 
     /// <summary>IsEntryPointYieldRow 的业务处理入口；本方法直接依赖 Dictionary&lt;VillagerController, int&gt;.TryGetValue(VillagerController, out int)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） Dictionary&lt;VillagerController, int&gt;.TryGetValue(VillagerController, out int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="character">中文含义：角色。使用位置：作为 Dictionary&lt;VillagerController, int&gt;.TryGetValue(VillagerController, out int) 的参数。</param>
+    /// <param name="character">角色。</param>
     public bool IsEntryPointYieldRow(VillagerController character) => yieldRowFrame.TryGetValue(character, out int /* 中文含义：帧。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ frame) && Time.frameCount - frame <= 1;
     /// <summary>TreadRegion 的业务处理入口；本方法直接依赖 Bounds.Contains(Vector3)、EnemyNavigationElevatedWalkableVolume.ContainsBoundaryRegionPoint(string, Vector3)、HouseThreeTraversalGeometry.TryResolveStairHeight(Vector3, out float)、Mathf.Abs(float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyCombatModule.IsPlayerWithinCombatVerticalRange(LeonController)、HouseThreeRegionNavigation.CrossLayerOrIndoorsChase(Vector3, Vector3)、HouseThreeRegionNavigation.QuerySameSideSurface(Vector3, bool, float, float)、HouseThreeRegionNavigation.ReadPlatformOwnership(Vector3, bool)、PathAgent.ReadNormalNavigationPoint(Vector3, float, float) 等共 12 处；下游（含内部回调体） Bounds.Contains(Vector3)、EnemyNavigationElevatedWalkableVolume.ContainsBoundaryRegionPoint(string, Vector3)、HouseThreeTraversalGeometry.TryResolveStairHeight(Vector3, out float)、Mathf.Abs(float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="position">中文含义：位置。使用位置：作为 Bounds.Contains(Vector3) 的参数、作为 EnemyNavigationElevatedWalkableVolume.ContainsBoundaryRegionPoint(string, Vector3) 的参数、作为 HouseThreeTraversalGeometry.TryResolveStairHeight(Vector3, out float) 的参数 等共 4 处。</param>
+    /// <param name="position">位置。</param>
     internal bool TryReadOuterPlatformSeam(Vector3 foot, Vector3 direction, float radius, RaycastHit blocker, out float rise)
     {
         rise = 0f;
@@ -243,7 +243,7 @@ foreach (var connect in windowDedicatedConnect)
 
     public VillageTraversalRegion TreadRegion(Vector3 position)
     {
-        if (traversal.TryResolveStairHeight(position, out float /* 中文含义：楼梯高度。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ stairHeight) && Mathf.Abs(position.y - stairHeight) < 0.38f)
+        if (traversal != null && traversal.TryResolveStairHeight(position, out float /* 中文含义：楼梯高度。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ stairHeight) && Mathf.Abs(position.y - stairHeight) < 0.38f)
         {
             return VillageTraversalRegion.Stair;
         }
@@ -268,10 +268,15 @@ foreach (var connect in windowDedicatedConnect)
         }
     }
 
+    public bool IsOnSecondFloorOuterPlatform(Vector3 position)
+    {
+        return TreadRegion(position) == VillageTraversalRegion.SecondFloorOuterPlatform;
+    }
+
     /// <summary>ReadPlatformOwnership 的业务处理入口；本方法直接依赖 Component.GetComponentInParent&lt;LeonController&gt;()、Component.GetComponentInParent&lt;VillagerController&gt;()、float.IsInfinity(float)、HouseThreeRegionNavigation.TreadRegion(Vector3)、Mathf.Abs(float)、Physics.RaycastNonAlloc(Vector3, Vector3, RaycastHit[], float, int, QueryTriggerInteraction)、Physics.SphereCastNonAlloc(Vector3, float, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 等共 8 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyWindowTraversal.IsCurrentActorOnPlatform()、LeonWindowTraversal.TryGetEnemyPlatformRegionState(string, out bool)；下游（含内部回调体） Component.GetComponentInParent&lt;LeonController&gt;()、Component.GetComponentInParent&lt;VillagerController&gt;()、float.IsInfinity(float)、HouseThreeRegionNavigation.TreadRegion(Vector3)、Mathf.Abs(float)、Physics.RaycastNonAlloc(Vector3, Vector3, RaycastHit[], float, int, QueryTriggerInteraction)、Physics.SphereCastNonAlloc(Vector3, float, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 等共 8 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="footBottom">中文含义：脚部底部。使用位置：作为 Mathf.Abs(float) 的参数、作为 Physics.RaycastNonAlloc(Vector3, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 的参数、作为 Physics.SphereCastNonAlloc(Vector3, float, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 的参数 等共 4 处。</param>
-    /// <param name="originalOwnership">中文含义：是否原始归属。使用位置：HouseThreeRegionNavigation.ReadPlatformOwnership(Vector3, bool)。</param>
+    /// <param name="footBottom">脚部底部。</param>
+    /// <param name="originalOwnership">是否原始归属。</param>
     public bool ReadPlatformOwnership(Vector3 footBottom, bool originalOwnership)
     {
         // 只接受实体踏面，窗台交接沿用上一侧。
@@ -283,14 +288,14 @@ foreach (var connect in windowDedicatedConnect)
         // passage（通道）：每轮从敌人翻窗通行路线的生效路线集合取得一个元素，仅代表当前这一项。使用位置：HouseThreeRegionNavigation.ReadPlatformOwnership(Vector3, bool)。
 foreach (var passage in EnemyWindowTraversalRoute.ActiveRoutes)
         {
-            // window（窗口）：使用位置：作为 Vector3.Dot(Vector3, Vector3) 的参数、HouseThreeRegionNavigation.ReadPlatformOwnership(Vector3, bool)。
+            // 窗口。
 var window = passage.windowPoint;
             if (!window || passage.platformRegionId != outerPlatformIdentifier)
             {
                 continue;
             }
 
-            // offset（偏移量）：使用位置：作为 Mathf.Abs(float) 的参数、作为 Vector3.Dot(Vector3, Vector3) 的参数。
+            // 偏移量。
 var offset = footBottom - window.OpeningCenterWorld;
             if (Mathf.Abs(offset.y) <= window.openingHeight && Mathf.Abs(Vector3.Dot(offset, window.NormalWorld)) < window.wallThickness * .5f && Mathf.Abs(Vector3.Dot(offset, window.transform.right)) < window.openingWidth * .5f)
             {
@@ -298,16 +303,16 @@ var offset = footBottom - window.OpeningCenterWorld;
             }
         }
 
-        // count（数量）：保存 Physics.RaycastNonAlloc(Vector3, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 的返回结果，供当前步骤使用。使用位置：HouseThreeRegionNavigation.ReadPlatformOwnership(Vector3, bool)。
+        // 数量。
 int count = Physics.RaycastNonAlloc(footBottom + Vector3.up * .18f, Vector3.down, footLowerHit, .48f, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore);
-        // latest（最新）：使用位置：作为 float.IsInfinity(float) 的参数、HouseThreeRegionNavigation.ReadPlatformOwnership(Vector3, bool)。
+        // 最新。
 float latest = float.PositiveInfinity;
-        // tread（踏面）：使用位置：作为 HouseThreeRegionNavigation.TreadRegion(Vector3) 的参数、HouseThreeRegionNavigation.ReadPlatformOwnership(Vector3, bool)。
+        // 踏面。
 Vector3 tread = default;
-        // i（当前遍历索引）：使用位置：HouseThreeRegionNavigation.ReadPlatformOwnership(Vector3, bool)。
+        // 当前遍历索引。
 for (int i = 0; i < count; i++)
         {
-            // hit（命中）：使用位置：HouseThreeRegionNavigation.ReadPlatformOwnership(Vector3, bool)。
+            // 命中。
 var hit = footLowerHit[i];
             if (hit.normal.y < .45f || hit.distance >= latest || hit.collider.GetComponentInParent<VillagerController>() || hit.collider.GetComponentInParent<LeonController>())
             {
@@ -340,10 +345,10 @@ var hit = footLowerHit[i];
             // 木板窄缝可能漏过中心射线，但脚底周围仍有同层踏面。
             // 仅用贴近脚底的实体补采样，不能借楼下地面判断窗内外。
             count = Physics.SphereCastNonAlloc(footBottom + Vector3.up * .5f, .25f, Vector3.down, footLowerHit, .7f, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore);
-            // i（当前遍历索引）：使用位置：HouseThreeRegionNavigation.ReadPlatformOwnership(Vector3, bool)。
+            // 当前遍历索引。
 for (int i = 0; i < count; i++)
             {
-                // hit（命中）：使用位置：作为 Mathf.Abs(float) 的参数、HouseThreeRegionNavigation.ReadPlatformOwnership(Vector3, bool)。
+                // 命中。
 var hit = footLowerHit[i];
                 if (hit.normal.y < .45f || hit.distance >= latest || Mathf.Abs(hit.point.y - footBottom.y) > .3f || hit.collider.GetComponentInParent<VillagerController>() || hit.collider.GetComponentInParent<LeonController>())
                 {
@@ -360,10 +365,10 @@ var hit = footLowerHit[i];
             // 尸体会抬高脚底；补查同层原有踏面，不把临时角色碰撞当成楼层。
             // 查询深度小于上下楼层间距，翻越过程仍由调用方保留来源区域。
             count = Physics.RaycastNonAlloc(footBottom + Vector3.up * .18f, Vector3.down, footLowerHit, 1.38f, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore);
-            // i（当前遍历索引）：使用位置：HouseThreeRegionNavigation.ReadPlatformOwnership(Vector3, bool)。
+            // 当前遍历索引。
 for (int i = 0; i < count; i++)
             {
-                // hit（命中）：使用位置：HouseThreeRegionNavigation.ReadPlatformOwnership(Vector3, bool)。
+                // 命中。
 var hit = footLowerHit[i];
                 if (hit.normal.y < .45f || hit.distance >= latest || hit.collider.GetComponentInParent<VillagerController>() || hit.collider.GetComponentInParent<LeonController>())
                 {
@@ -380,7 +385,7 @@ var hit = footLowerHit[i];
             return originalOwnership;
         }
 
-        // region（区域）：保存 HouseThreeRegionNavigation.TreadRegion(Vector3) 的返回结果，供当前步骤使用。使用位置：HouseThreeRegionNavigation.ReadPlatformOwnership(Vector3, bool)。
+        // 区域。
 var region = TreadRegion(tread);
         if (originalOwnership && TreadRegion(footBottom) == VillageTraversalRegion.SecondFloorOuterPlatform
             && footBottom.y - tread.y > .3f)
@@ -399,18 +404,18 @@ var region = TreadRegion(tread);
 
     /// <summary>ReadSameSideNavigationPoint 的业务处理入口；本方法直接依赖 HouseThreeRegionNavigation.QuerySameSideSurface(Vector3, bool, float, float)、Mathf.Clamp(float, float, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 HouseThreeRegionNavigation.ReadChaseApproachPoint(Vector3, bool)、PathAgent.ReadNormalNavigationPoint(Vector3, float, float)、RegionWindowRouting.Projection(Vector3, bool)、StrictAstarGraphBaker.ValidatePlatformSeamWalk(HouseThreeRegionNavigation, AstarPath)；下游（含内部回调体） HouseThreeRegionNavigation.QuerySameSideSurface(Vector3, bool, float, float)、Mathf.Clamp(float, float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="position">中文含义：位置。使用位置：作为 HouseThreeRegionNavigation.QuerySameSideSurface(Vector3, bool, float, float) 的参数。</param>
-    /// <param name="outside">中文含义：是否外部。使用位置：作为 HouseThreeRegionNavigation.QuerySameSideSurface(Vector3, bool, float, float) 的参数。</param>
-    /// <param name="maximumDistance">中文含义：最大距离。使用位置：作为 HouseThreeRegionNavigation.QuerySameSideSurface(Vector3, bool, float, float) 的参数。</param>
-    /// <param name="maximumHeightDifference">中文含义：最大高度差值。使用位置：作为 Mathf.Clamp(float, float, float) 的参数。</param>
+    /// <param name="position">位置。</param>
+    /// <param name="outside">是否外部。</param>
+    /// <param name="maximumDistance">最大距离。</param>
+    /// <param name="maximumHeightDifference">最大高度差值。</param>
     public NNInfo ReadSameSideNavigationPoint(Vector3 position, bool outside, float maximumDistance, float maximumHeightDifference) => QuerySameSideSurface(position, outside, maximumDistance, Mathf.Clamp(maximumHeightDifference, .1f, .6f));
     /// <summary>ReadChaseApproachPoint 的业务处理入口；本方法直接依赖 HouseThreeRegionNavigation.QuerySameSideSurface(Vector3, bool, float, float)、HouseThreeRegionNavigation.ReadSameSideNavigationPoint(Vector3, bool, float, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyWindowTraversal.TryResolvePursuitDestination(Vector3, out Vector3)、EnemyWindowTraversal.TryResolveSamePlatformPursuitDestination(Vector3, out Vector3)；下游（含内部回调体） HouseThreeRegionNavigation.QuerySameSideSurface(Vector3, bool, float, float)、HouseThreeRegionNavigation.ReadSameSideNavigationPoint(Vector3, bool, float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="position">中文含义：位置。使用位置：作为 HouseThreeRegionNavigation.QuerySameSideSurface(Vector3, bool, float, float) 的参数、作为 HouseThreeRegionNavigation.ReadSameSideNavigationPoint(Vector3, bool, float, float) 的参数。</param>
-    /// <param name="outside">中文含义：是否外部。使用位置：作为 HouseThreeRegionNavigation.QuerySameSideSurface(Vector3, bool, float, float) 的参数、作为 HouseThreeRegionNavigation.ReadSameSideNavigationPoint(Vector3, bool, float, float) 的参数。</param>
+    /// <param name="position">位置。</param>
+    /// <param name="outside">是否外部。</param>
     public NNInfo ReadChaseApproachPoint(Vector3 position, bool outside)
     {
-        // strictPoint（严格点）：保存 HouseThreeRegionNavigation.ReadSameSideNavigationPoint(Vector3, bool, float, float) 的返回结果，供当前步骤使用。使用位置：HouseThreeRegionNavigation.ReadChaseApproachPoint(Vector3, bool)。
+        // 严格点。
 var strictPoint = ReadSameSideNavigationPoint(position, outside, 1.25f, .6f);
         // 高处目标可以靠近到同侧合法表面，不能扩大敌人自身接入或攻击范围。
         if (strictPoint.node != null)
@@ -425,10 +430,10 @@ var strictPoint = ReadSameSideNavigationPoint(position, outside, 1.25f, .6f);
 
     /// <summary>QuerySameSideSurface 的业务处理入口；本方法直接依赖 AstarPath.GetNearest(Vector3, NearestNodeConstraint)、GraphNode.ClosestPointOnNode(Vector3)、HouseThreeRegionNavigation.TreadRegion(Vector3)、Mathf.Abs(float)、Mathf.Max(float, float)、Mathf.Sqrt(float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 HouseThreeRegionNavigation.ReadChaseApproachPoint(Vector3, bool)、HouseThreeRegionNavigation.ReadSameSideNavigationPoint(Vector3, bool, float, float)；下游（含内部回调体） AstarPath.GetNearest(Vector3, NearestNodeConstraint)、GraphNode.ClosestPointOnNode(Vector3)、HouseThreeRegionNavigation.TreadRegion(Vector3)、Mathf.Abs(float)、Mathf.Max(float, float)、Mathf.Sqrt(float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="positionValue">中文含义：位置值。使用位置：作为 AstarPath.GetNearest(Vector3, NearestNodeConstraint) 的参数、作为 GraphNode.ClosestPointOnNode(Vector3) 的参数、HouseThreeRegionNavigation.QuerySameSideSurface(Vector3, bool, float, float)。</param>
-    /// <param name="outside">中文含义：是否外部。使用位置：HouseThreeRegionNavigation.QuerySameSideSurface(Vector3, bool, float, float)。</param>
-    /// <param name="maximumDistance">中文含义：最大距离。使用位置：作为 Mathf.Max(float, float) 的参数、作为 Mathf.Sqrt(float) 的参数、HouseThreeRegionNavigation.QuerySameSideSurface(Vector3, bool, float, float)。</param>
-    /// <param name="maximumHeightDifference">中文含义：最大高度差值。使用位置：作为 Mathf.Sqrt(float) 的参数、HouseThreeRegionNavigation.QuerySameSideSurface(Vector3, bool, float, float)。</param>
+    /// <param name="positionValue">位置值。</param>
+    /// <param name="outside">是否外部。</param>
+    /// <param name="maximumDistance">最大距离。</param>
+    /// <param name="maximumHeightDifference">最大高度差值。</param>
     private NNInfo QuerySameSideSurface(Vector3 positionValue, bool outside, float maximumDistance, float maximumHeightDifference)
     {
         if (AstarPath.active == null)
@@ -436,38 +441,110 @@ var strictPoint = ReadSameSideNavigationPoint(position, outside, 1.25f, .6f);
             return default;
         }
 
-        // constraint（约束）：使用位置：作为 AstarPath.GetNearest(Vector3, NearestNodeConstraint) 的参数、HouseThreeRegionNavigation.QuerySameSideSurface(Vector3, bool, float, float)。
+        // 约束。
 var constraint = NearestNodeConstraint.Walkable;
         maximumDistance = Mathf.Max(.1f, maximumDistance);
         constraint.maxDistance = Mathf.Sqrt(maximumDistance * maximumDistance + maximumHeightDifference * maximumHeightDifference);
         // 木板边沿的节点会内缩；可以投影到同侧踏面，不能穿过薄墙选中室内节点。
         constraint.filter = /* 中文含义：节点。 */ node =>
         {
-            // point（点）：保存 GraphNode.ClosestPointOnNode(Vector3) 的返回结果，供当前步骤使用。使用位置：HouseThreeRegionNavigation.QuerySameSideSurface(Vector3, bool, float, float)。
+            // 点。
 var point = node.ClosestPointOnNode(positionValue);
-            // difference（差值）：使用位置：作为 Mathf.Abs(float) 的参数、HouseThreeRegionNavigation.QuerySameSideSurface(Vector3, bool, float, float)。
+            // 差值。
 var difference = point - positionValue;
-            return Mathf.Abs(difference.y) <= maximumHeightDifference && difference.x * difference.x + difference.z * difference.z <= maximumDistance * maximumDistance && (TreadRegion((Vector3)node.position) == VillageTraversalRegion.SecondFloorOuterPlatform) == outside;
+            return Mathf.Abs(difference.y) <= maximumHeightDifference && difference.x * difference.x + difference.z * difference.z <= maximumDistance * maximumDistance && (TreadRegion(point) == VillageTraversalRegion.SecondFloorOuterPlatform) == outside;
         };
         return AstarPath.active.GetNearest(positionValue, constraint);
     }
 
+    /// <summary>判断指定坐标是否落在二楼外平台窗外落脚禁区内（按各窗真实外侧方向计算，避免阻挡新翻出窗口的同伴或误判屋檐投影）。</summary>
+    internal bool IsInsideOuterPlatformWindowExclusionZone(Vector3 point, float radius = 1.35f)
+    {
+        float effectiveRadius = Mathf.Max(0.25f, radius);
+        float radiusSqr = effectiveRadius * effectiveRadius;
+        IReadOnlyList<EnemyWindowTraversalRoute> routes = EnemyWindowTraversalRoute.ActiveRoutes;
+        for (int index = 0; index < routes.Count; index++)
+        {
+            EnemyWindowTraversalRoute route = routes[index];
+            if (!TryGetOuterPlatformWindowLanding(route, out Vector3 exteriorLanding))
+            {
+                continue;
+            }
+
+            if (Mathf.Abs(point.y - exteriorLanding.y) > 1.35f)
+            {
+                continue;
+            }
+
+            float dx = point.x - exteriorLanding.x;
+            float dz = point.z - exteriorLanding.z;
+            if (dx * dx + dz * dz <= radiusSqr)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /// <summary>读取二楼外平台窗口路线对应的窗外平台侧落脚采样点（严格按 platformSideSign 区分窗外与室内）。</summary>
+    internal bool TryGetOuterPlatformWindowLanding(EnemyWindowTraversalRoute route, out Vector3 exteriorLanding)
+    {
+        exteriorLanding = default;
+        if (route == null || !route.isActiveAndEnabled || route.windowPoint == null)
+        {
+            return false;
+        }
+
+        if (!string.Equals(route.platformRegionId, outerPlatformIdentifier))
+        {
+            return false;
+        }
+
+        int exteriorSign;
+        if (route.platformSideSign >= 0)
+        {
+            exteriorSign = 1;
+        }
+        else
+        {
+            exteriorSign = -1;
+        }
+
+        Vector3 probe = route.windowPoint.GetApproachProbePosition(exteriorSign);
+        NNInfo surfaceInfo = ReadSameSideNavigationPoint(probe, true, 1.4f, 2.2f);
+        if (surfaceInfo.node != null)
+        {
+            exteriorLanding = surfaceInfo.position;
+            return true;
+        }
+
+        if (Physics.Raycast(probe + Vector3.up * 0.25f, Vector3.down, out RaycastHit groundHit, 3.5f, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore))
+        {
+            exteriorLanding = groundHit.point;
+            return true;
+        }
+
+        exteriorLanding = probe;
+        return true;
+    }
+
     /// <summary>CrossLayerOrIndoorsChase 的业务处理入口；本方法直接依赖 HouseThreeRegionNavigation.TreadRegion(Vector3)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillagerController.RefreshChaseDestination()；下游（含内部回调体） HouseThreeRegionNavigation.TreadRegion(Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="enemy">中文含义：敌人。使用位置：作为 HouseThreeRegionNavigation.TreadRegion(Vector3) 的参数。</param>
-    /// <param name="player">中文含义：玩家。使用位置：作为 HouseThreeRegionNavigation.TreadRegion(Vector3) 的参数。</param>
+    /// <param name="enemy">敌人。</param>
+    /// <param name="player">玩家。</param>
     public bool CrossLayerOrIndoorsChase(Vector3 enemy, Vector3 player)
     {
-        // startPoint（起始点）：保存 HouseThreeRegionNavigation.TreadRegion(Vector3) 的返回结果，供当前步骤使用。使用位置：HouseThreeRegionNavigation.CrossLayerOrIndoorsChase(Vector3, Vector3)。
+        // 起始点。
 var startPoint = TreadRegion(enemy);
-        // endPoint（结束点）：保存 HouseThreeRegionNavigation.TreadRegion(Vector3) 的返回结果，供当前步骤使用。使用位置：HouseThreeRegionNavigation.CrossLayerOrIndoorsChase(Vector3, Vector3)。
+        // 结束点。
 var endPoint = TreadRegion(player);
         return startPoint != VillageTraversalRegion.HouseOuterGround || endPoint != VillageTraversalRegion.HouseOuterGround;
     }
 
     /// <summary>CanNormalWalk 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
     /// <remarks>静态调用链：上游 HouseThreeRegionNavigation.StairAllowFrontEnter(VillagerController, Vector3)；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="character">中文含义：角色。使用位置：HouseThreeRegionNavigation.CanNormalWalk(VillagerController)。</param>
+    /// <param name="character">角色。</param>
     private bool CanNormalWalk(VillagerController character)
     {
         return character && character.isActiveAndEnabled && character.IsRuntimeInitialized && character.IsActive && !character.IsDead && !character.IsPermanentlyCrawling && !character.HasPendingHit && !character.IsQTEControlled && character.CurrentMovementMode == EnemyMovementMode.StandingPathRootMotion && (character.CurrentState == VillagerState.Chase || character.CurrentState == VillagerState.Patrol);
@@ -475,21 +552,21 @@ var endPoint = TreadRegion(player);
 
     /// <summary>ApproachEndPoint 的业务处理入口；本方法直接依赖 Mathf.Abs(float)、Vector3.ProjectOnPlane(Vector3, Vector3)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 HouseThreeRegionNavigation.StairAllowFrontEnter(VillagerController, Vector3)；下游（含内部回调体） Mathf.Abs(float)、Vector3.ProjectOnPlane(Vector3, Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="position">中文含义：位置。使用位置：作为 Mathf.Abs(float) 的参数、作为 Vector3.ProjectOnPlane(Vector3, Vector3) 的参数。</param>
-    /// <param name="endPoint">中文含义：结束点。使用位置：作为 Mathf.Abs(float) 的参数、作为 Vector3.ProjectOnPlane(Vector3, Vector3) 的参数。</param>
-    /// <param name="radius">中文含义：半径。使用位置：HouseThreeRegionNavigation.ApproachEndPoint(Vector3, Vector3, float)。</param>
+    /// <param name="position">位置。</param>
+    /// <param name="endPoint">结束点。</param>
+    /// <param name="radius">半径。</param>
     private bool ApproachEndPoint(Vector3 position, Vector3 endPoint, float radius) => Mathf.Abs(position.y - endPoint.y) < .45f && Vector3.ProjectOnPlane(position - endPoint, Vector3.up).sqrMagnitude < radius * radius;
     /// <summary>WalkDirection 的业务处理入口；本方法直接依赖 Mathf.Abs(float)、Vector3.Dot(Vector3, Vector3)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 HouseThreeRegionNavigation.StairAllowFrontEnter(VillagerController, Vector3)；下游（含内部回调体） Mathf.Abs(float)、Vector3.Dot(Vector3, Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="character">中文含义：角色。使用位置：作为 Mathf.Abs(float) 的参数、HouseThreeRegionNavigation.WalkDirection(VillagerController, Vector3, Vector3)。</param>
-    /// <param name="direction">中文含义：方向。使用位置：作为 Vector3.Dot(Vector3, Vector3) 的参数。</param>
-    /// <param name="axis">中文含义：轴。使用位置：作为 Vector3.Dot(Vector3, Vector3) 的参数。</param>
+    /// <param name="character">角色。</param>
+    /// <param name="direction">方向。</param>
+    /// <param name="axis">轴。</param>
     private int WalkDirection(VillagerController character, Vector3 direction, Vector3 axis)
     {
         // 接缝处的路径可能横向绕柱，以当前终点楼层判断进出，目标反向时立即更新。
         if (character.Agent != null && character.Agent.HasDestination)
         {
-            // endHeight（结束高度）：使用位置：作为 Mathf.Abs(float) 的参数、HouseThreeRegionNavigation.WalkDirection(VillagerController, Vector3, Vector3)。
+            // 结束高度。
 float endHeight = character.Agent.Destination.y;
             if (endHeight >= traversal.UpperExit.y - .4f)
             {
@@ -526,18 +603,18 @@ float endHeight = character.Agent.Destination.y;
 
     /// <summary>StairAllowFrontEnter 的业务处理入口；本方法直接依赖 Dictionary&lt;VillagerController, int&gt;.Remove(VillagerController)、HouseThreeRegionNavigation.ApproachEndPoint(Vector3, Vector3, float)、HouseThreeRegionNavigation.CanNormalWalk(VillagerController)、HouseThreeRegionNavigation.ReleaseCharacter(VillagerController)、HouseThreeRegionNavigation.WalkDirection(VillagerController, Vector3, Vector3)、HouseThreeTraversalGeometry.TryResolveStairHeight(Vector3, out float)、List&lt;VillagerController&gt;.Add(VillagerController) 等共 11 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillagerController.UpdateCodeDrivenMovement()；下游（含内部回调体） Dictionary&lt;VillagerController, int&gt;.Remove(VillagerController)、HouseThreeRegionNavigation.ApproachEndPoint(Vector3, Vector3, float)、HouseThreeRegionNavigation.CanNormalWalk(VillagerController)、HouseThreeRegionNavigation.ReleaseCharacter(VillagerController)、HouseThreeRegionNavigation.WalkDirection(VillagerController, Vector3, Vector3)、HouseThreeTraversalGeometry.TryResolveStairHeight(Vector3, out float)、List&lt;VillagerController&gt;.Add(VillagerController) 等共 11 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="enemy">中文含义：敌人。使用位置：作为 Dictionary&lt;VillagerController, int&gt;.Remove(VillagerController) 的参数、作为 Dictionary&lt;VillagerController, int&gt;.this[VillagerController] 的参数、作为 HouseThreeRegionNavigation.CanNormalWalk(VillagerController) 的参数 等共 8 处。</param>
-    /// <param name="direction">中文含义：方向。使用位置：作为 HouseThreeRegionNavigation.WalkDirection(VillagerController, Vector3, Vector3) 的参数、HouseThreeRegionNavigation.StairAllowFrontEnter(VillagerController, Vector3)。</param>
+    /// <param name="enemy">敌人。</param>
+    /// <param name="direction">方向。</param>
     public bool StairAllowFrontEnter(VillagerController enemy, Vector3 direction)
     {
-        // i（当前遍历索引）：使用位置：作为 List<VillagerController>.this[int] 的参数、HouseThreeRegionNavigation.StairAllowFrontEnter(VillagerController, Vector3)。
+        // 当前遍历索引。
 for (int i = stairUpperMember.Count - 1; i >= 0; i--)
         {
-            // other（另一个村民敌人控制器）：使用位置：作为 HouseThreeRegionNavigation.ApproachEndPoint(Vector3, Vector3, float) 的参数、作为 HouseThreeRegionNavigation.CanNormalWalk(VillagerController) 的参数、作为 HouseThreeRegionNavigation.ReleaseCharacter(VillagerController) 的参数 等共 6 处。
+            // 另一个村民敌人控制器。
 var other = stairUpperMember[i];
-            // atTread（是否所在踏面）：使用位置：HouseThreeRegionNavigation.StairAllowFrontEnter(VillagerController, Vector3)。
+            // 是否所在踏面。
 bool atTread = other && traversal.TryResolveStairHeight(other.transform.position, out float /* 中文含义：高度。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ height) && Mathf.Abs(other.transform.position.y - height) <= .45f;
-            // atSeam（是否所在接缝）：使用位置：HouseThreeRegionNavigation.StairAllowFrontEnter(VillagerController, Vector3)。
+            // 是否所在接缝。
 bool atSeam = other && (ApproachEndPoint(other.transform.position, traversal.UpperExit, 1.35f) || ApproachEndPoint(other.transform.position, traversal.LowerEntry, 1.15f));
             if (!CanNormalWalk(other) || (!atTread && !atSeam))
             {
@@ -545,7 +622,7 @@ bool atSeam = other && (ApproachEndPoint(other.transform.position, traversal.Upp
             }
         }
 
-        // positionValue（位置值）：使用位置：作为 HouseThreeRegionNavigation.ApproachEndPoint(Vector3, Vector3, float) 的参数、作为 HouseThreeTraversalGeometry.TryResolveStairHeight(Vector3, out float) 的参数、作为 Mathf.Abs(float) 的参数 等共 4 处。
+        // 位置值。
 var positionValue = enemy.transform.position;
         if (!CanNormalWalk(enemy))
         {
@@ -558,23 +635,23 @@ var positionValue = enemy.transform.position;
             return true;
         }
 
-        // axis（轴）：使用位置：作为 HouseThreeRegionNavigation.WalkDirection(VillagerController, Vector3, Vector3) 的参数、作为 Vector3.Dot(Vector3, Vector3) 的参数。
+        // 轴。
 var axis = Vector3.ProjectOnPlane(traversal.UpperExit - traversal.LowerEntry, Vector3.up).normalized;
-        // progress（进度）：保存 Vector3.Dot(Vector3, Vector3) 的返回结果，供当前步骤使用。使用位置：HouseThreeRegionNavigation.StairAllowFrontEnter(VillagerController, Vector3)。
+        // 进度。
 float progress = Vector3.Dot(positionValue - traversal.LowerEntry, axis);
-        // length（长度）：保存 Vector3.Dot(Vector3, Vector3) 的返回结果，供当前步骤使用。使用位置：HouseThreeRegionNavigation.StairAllowFrontEnter(VillagerController, Vector3)。
+        // 长度。
 float length = Vector3.Dot(traversal.UpperExit - traversal.LowerEntry, axis);
-        // directionIndex（方向索引）：保存 HouseThreeRegionNavigation.WalkDirection(VillagerController, Vector3, Vector3) 的返回结果，供当前步骤使用。使用位置：HouseThreeRegionNavigation.StairAllowFrontEnter(VillagerController, Vector3)。
+        // 方向索引。
 int directionIndex = WalkDirection(enemy, direction, axis);
-        // hasEnter（是否具有进入）：保存 List<VillagerController>.Contains(VillagerController) 的返回结果，供当前步骤使用。使用位置：HouseThreeRegionNavigation.StairAllowFrontEnter(VillagerController, Vector3)。
+        // 是否具有进入。
 bool hasEnter = stairUpperMember.Contains(enemy);
-        // upperEndWaitingRange（上部结束等待中范围）：使用位置：作为 HouseThreeRegionNavigation.ApproachEndPoint(Vector3, Vector3, float) 的参数。
+        // 上部结束等待中范围。
 float upperEndWaitingRange = Vector3.ProjectOnPlane(traversal.UpperPlatformRelease - traversal.UpperExit, Vector3.up).magnitude + followSpacing;
-        // entryPoint（是否入口点）：使用位置：HouseThreeRegionNavigation.StairAllowFrontEnter(VillagerController, Vector3)。
+        // 是否入口点。
 bool entryPoint;
         if (!hasEnter)
         {
-            // selectedValue5（分支选出的分支判断）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：HouseThreeRegionNavigation.StairAllowFrontEnter(VillagerController, Vector3)。
+            // 分支选出的分支判断。
 bool selectedValue5;
             if (directionIndex > 0)
             {
@@ -592,7 +669,7 @@ bool selectedValue5;
             entryPoint = false;
         }
 
-        // treadValid（踏面是否有效）：使用位置：HouseThreeRegionNavigation.StairAllowFrontEnter(VillagerController, Vector3)。
+        // 踏面是否有效。
 bool treadValid = traversal.TryResolveStairHeight(positionValue, out float /* 中文含义：楼梯高度。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ stairHeight) && Mathf.Abs(positionValue.y - stairHeight) <= .45f;
         if (!entryPoint && !hasEnter && !treadValid)
         {
@@ -600,7 +677,7 @@ bool treadValid = traversal.TryResolveStairHeight(positionValue, out float /* �
             return true;
         }
 
-        // canWalk（是否可以行走）：使用位置：HouseThreeRegionNavigation.StairAllowFrontEnter(VillagerController, Vector3)。
+        // 是否可以行走。
 bool canWalk = true;
         // other（另一个村民敌人控制器）：每轮从楼梯上部成员取得一个元素，仅代表当前这一项。使用位置：作为 HouseThreeRegionNavigation.WalkDirection(VillagerController, Vector3, Vector3) 的参数、作为 Vector3.Dot(Vector3, Vector3) 的参数、HouseThreeRegionNavigation.StairAllowFrontEnter(VillagerController, Vector3)。
 foreach (var other in stairUpperMember)
@@ -611,7 +688,7 @@ foreach (var other in stairUpperMember)
             }
 
             // 每帧读取实际路径方向，玩家反向移动后不能遗留旧的放行方向。
-            // pairDirection（配对方向）：使用位置：作为 HouseThreeRegionNavigation.WalkDirection(VillagerController, Vector3, Vector3) 的参数、HouseThreeRegionNavigation.StairAllowFrontEnter(VillagerController, Vector3)。
+            // 配对方向。
 global::UnityEngine.Vector3 pairDirection;
             if (other.Agent != null)
             {
@@ -622,14 +699,14 @@ global::UnityEngine.Vector3 pairDirection;
                 pairDirection = Vector3.zero;
             }
 
-            // otherDirection（另一个方向）：保存 HouseThreeRegionNavigation.WalkDirection(VillagerController, Vector3, Vector3) 的返回结果，供当前步骤使用。使用位置：HouseThreeRegionNavigation.StairAllowFrontEnter(VillagerController, Vector3)。
+            // 另一个方向。
 int otherDirection = WalkDirection(other, pairDirection, axis);
             if (entryPoint && pairDirection.sqrMagnitude > .0001f && otherDirection != directionIndex)
             {
                 canWalk = false;
             }
 
-            // frontDistance（前方距离）：使用位置：HouseThreeRegionNavigation.StairAllowFrontEnter(VillagerController, Vector3)。
+            // 前方距离。
 float frontDistance = Vector3.Dot(other.transform.position - positionValue, axis) * directionIndex;
             if (otherDirection == directionIndex && frontDistance > .01f && frontDistance < followSpacing)
             {

@@ -77,17 +77,17 @@ public enum CrosshairLifecycleEvent
 /// </summary>
 public struct HitInfo
 {
-    /// <summary>中文含义：当前命中类型。使用位置：HitInfo.HitInfo(HitType, Vector3, float)。</summary>
+    /// <summary>当前命中类型。</summary>
     public HitType type;
-    /// <summary>中文含义：命中点位置。使用位置：HitInfo.HitInfo(HitType, Vector3, float)。</summary>
+    /// <summary>命中点位置。</summary>
     public Vector3 hitPoint;
-    /// <summary>中文含义：伤害。使用位置：HitInfo.HitInfo(HitType, Vector3, float)。</summary>
+    /// <summary>伤害。</summary>
     public float damage;
     /// <summary>构造并初始化 HitInfo 的声明状态；具体外部协作见静态调用链。</summary>
     /// <remarks>静态调用链：上游 WeaponBase.ProcessHit(RaycastHit, float)；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="type">中文含义：当前命中类型。使用位置：HitInfo.HitInfo(HitType, Vector3, float)。</param>
-    /// <param name="hitPoint">中文含义：命中点位置。使用位置：HitInfo.HitInfo(HitType, Vector3, float)。</param>
-    /// <param name="damage">中文含义：伤害。使用位置：HitInfo.HitInfo(HitType, Vector3, float)。</param>
+    /// <param name="type">当前命中类型。</param>
+    /// <param name="hitPoint">命中点位置。</param>
+    /// <param name="damage">伤害。</param>
     public HitInfo(HitType type, Vector3 hitPoint, float damage)
     {
         this.type = type;

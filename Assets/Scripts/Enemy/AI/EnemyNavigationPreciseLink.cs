@@ -7,7 +7,7 @@ using UnityEngine;
 [DisallowMultipleComponent]
 public class EnemyNavigationPreciseLink : MonoBehaviour
 {
-    /// <summary>中文含义：连接。使用位置：PathAgent.IsNavigationLinkEndpoint(Vector3)。</summary>
+    /// <summary>连接。</summary>
     [Header("窄通路导航连接")]
     public Pathfinding.NodeLink2 link;
 }

@@ -24,32 +24,32 @@ public enum IKMode
 /// </summary>
 public class IKModeBehaviour : StateMachineBehaviour
 {
-    /// <summary>中文含义：进入此状态时切换到哪个IK模式。使用位置：作为 LeonAnimRig.SetIKMode(IKMode) 的参数。</summary>
+    /// <summary>进入此状态时切换到哪个IK模式。</summary>
     [Header("IK模式")]
     [Tooltip("进入此状态时切换到哪个IK模式")]
     public IKMode enterMode = IKMode.None;
-    /// <summary>中文含义：是否在进入时设置Layer权重。使用位置：IKModeBehaviour.OnStateEnter(Animator, AnimatorStateInfo, int)、IKModeBehaviour.OnStateExit(Animator, AnimatorStateInfo, int)。</summary>
+    /// <summary>是否在进入时设置Layer权重。</summary>
     [Header("动画层权重")]
     [Tooltip("是否在进入时设置Layer权重")]
     public bool manageLayerWeight = true;
-    /// <summary>中文含义：目标图层。目标图层索引（Layer1=枪械, Layer2=全身动作）。使用位置：作为 Animator.SetLayerWeight(int, float) 的参数、IKModeBehaviour.OnStateExit(Animator, AnimatorStateInfo, int)。</summary>
+    /// <summary>目标图层。目标图层索引（Layer1=枪械, Layer2=全身动作）。</summary>
     [Tooltip("目标图层索引（Layer1=枪械, Layer2=全身动作）")]
     public int targetLayer = 2;
-    /// <summary>中文含义：进入状态时的图层权重。使用位置：作为 Animator.SetLayerWeight(int, float) 的参数。</summary>
+    /// <summary>进入状态时的图层权重。</summary>
     [Tooltip("进入状态时的图层权重")]
     [Range(0f, 1f)]
     public float enterWeight = 1f;
-    /// <summary>中文含义：退出状态时的图层权重。使用位置：作为 Animator.SetLayerWeight(int, float) 的参数。</summary>
+    /// <summary>退出状态时的图层权重。</summary>
     [Tooltip("退出状态时的图层权重")]
     [Range(0f, 1f)]
     public float exitWeight = 0f;
-    /// <summary>中文含义：反向动力学绑定。使用位置：IKModeBehaviour.OnStateEnter(Animator, AnimatorStateInfo, int)、IKModeBehaviour.OnStateExit(Animator, AnimatorStateInfo, int)。</summary>
+    /// <summary>反向动力学绑定。</summary>
     private LeonAnimRig ikRig;
-    /// <summary>中文含义：上一次模式反向动力学权重。使用位置：IKModeBehaviour.OnStateEnter(Animator, AnimatorStateInfo, int)。</summary>
+    /// <summary>上一次模式反向动力学权重。</summary>
     private float lastModeIKWeight;
     /// <summary>实现基类的 OnStateEnter 重写入口；框架调用后按本方法分支执行，并通过下游成员完成协作。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） Animator.SetLayerWeight(int, float)、Component.GetComponent&lt;LeonAnimRig&gt;()、LeonAnimRig.GetIKWeight()、LeonAnimRig.SetIKMode(IKMode)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="animator">中文含义：动画控制器。使用位置：IKModeBehaviour.OnStateEnter(Animator, AnimatorStateInfo, int)。</param>
+    /// <param name="animator">动画控制器。</param>
     /// <param name="stateInfo">中文含义：当前动画状态信息。</param>
     /// <param name="layerIndex">中文含义：动画图层索引。</param>
     public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
@@ -75,7 +75,7 @@ public class IKModeBehaviour : StateMachineBehaviour
 
     /// <summary>实现基类的 OnStateExit 重写入口；框架调用后按本方法分支执行，并通过下游成员完成协作。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） Animator.SetLayerWeight(int, float)、LeonAnimRig.SetIKMode(IKMode)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="animator">中文含义：动画控制器。使用位置：IKModeBehaviour.OnStateExit(Animator, AnimatorStateInfo, int)。</param>
+    /// <param name="animator">动画控制器。</param>
     /// <param name="stateInfo">中文含义：当前动画状态信息。</param>
     /// <param name="layerIndex">中文含义：动画图层索引。</param>
     public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)

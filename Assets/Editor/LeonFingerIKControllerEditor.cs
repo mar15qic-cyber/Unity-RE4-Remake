@@ -15,7 +15,7 @@ public class LeonFingerIKControllerEditor : Editor
         DrawDefaultInspector();
         EditorGUILayout.Space(8f);
         EditorGUILayout.HelpBox("先在非播放模式点击创建目标，然后在武器层级下逐个拖动手指目标。调整完成后保存当前场景或预制件，运行时会直接读取这些目标。", MessageType.Info);
-        // controller（当前里昂手指反向动力学控制器）：使用位置：作为 Debug.LogWarning(object, Object) 的参数、作为 EditorUtility.SetDirty(Object) 的参数、作为 LeonFingerIKControllerEditor.MarkFingerRigDirty(LeonFingerIKController) 的参数 等共 6 处。
+        // 当前里昂手指反向动力学控制器。
 LeonFingerIKController controller = (LeonFingerIKController)target;
         if (GUILayout.Button("创建并保存全部武器手指目标"))
         {
@@ -38,14 +38,14 @@ LeonFingerIKController controller = (LeonFingerIKController)target;
         if (GUILayout.Button("写入当前武器目标到 FingerRig"))
         {
             Undo.RecordObject(controller, "写入里昂手指目标");
-            // fingerRig（手指绑定）：保存 Component.GetComponent<FingerRig>() 的返回结果，供当前步骤使用。使用位置：作为 Undo.RecordObject(Object, string) 的参数、LeonFingerIKControllerEditor.OnInspectorGUI()。
+            // 手指绑定。
 FingerRig fingerRig = controller.GetComponent<FingerRig>();
             if (fingerRig != null)
             {
                 Undo.RecordObject(fingerRig, "写入里昂手指目标");
             }
 
-            // success（是否成功）：保存 LeonFingerIKController.WriteCurrentWeaponTargetsToFingerRig() 的返回结果，供当前步骤使用。使用位置：LeonFingerIKControllerEditor.OnInspectorGUI()。
+            // 是否成功。
 bool success = controller.WriteCurrentWeaponTargetsToFingerRig();
             if (!success)
             {
@@ -60,7 +60,7 @@ bool success = controller.WriteCurrentWeaponTargetsToFingerRig();
 
     /// <summary>MarkFingerRigDirty 的业务处理入口；本方法直接依赖 Component.GetComponent&lt;FingerRig&gt;()、EditorUtility.SetDirty(Object)、PrefabUtility.RecordPrefabInstancePropertyModifications(Object)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonFingerIKControllerEditor.OnInspectorGUI()；下游（含内部回调体） Component.GetComponent&lt;FingerRig&gt;()、EditorUtility.SetDirty(Object)、PrefabUtility.RecordPrefabInstancePropertyModifications(Object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="controller">中文含义：当前里昂手指反向动力学控制器。使用位置：LeonFingerIKControllerEditor.MarkFingerRigDirty(LeonFingerIKController)。</param>
+    /// <param name="controller">当前里昂手指反向动力学控制器。</param>
     private static void MarkFingerRigDirty(LeonFingerIKController controller)
     {
         if (controller == null)
@@ -68,7 +68,7 @@ bool success = controller.WriteCurrentWeaponTargetsToFingerRig();
             return;
         }
 
-        // fingerRig（手指绑定）：保存 Component.GetComponent<FingerRig>() 的返回结果，供当前步骤使用。使用位置：作为 EditorUtility.SetDirty(Object) 的参数、作为 PrefabUtility.RecordPrefabInstancePropertyModifications(Object) 的参数、LeonFingerIKControllerEditor.MarkFingerRigDirty(LeonFingerIKController)。
+        // 手指绑定。
 FingerRig fingerRig = controller.GetComponent<FingerRig>();
         if (fingerRig != null)
         {
@@ -79,7 +79,7 @@ FingerRig fingerRig = controller.GetComponent<FingerRig>();
 
     /// <summary>MarkOwnerDirty 的业务处理入口；本方法直接依赖 EditorSceneManager.MarkSceneDirty(Scene)、PrefabUtility.RecordPrefabInstancePropertyModifications(Object)、Scene.IsValid()、string.IsNullOrEmpty(string)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonFingerIKControllerEditor.OnInspectorGUI()；下游（含内部回调体） EditorSceneManager.MarkSceneDirty(Scene)、PrefabUtility.RecordPrefabInstancePropertyModifications(Object)、Scene.IsValid()、string.IsNullOrEmpty(string)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="controller">中文含义：当前里昂手指反向动力学控制器。使用位置：作为 EditorSceneManager.MarkSceneDirty(Scene) 的参数、作为 PrefabUtility.RecordPrefabInstancePropertyModifications(Object) 的参数、作为 string.IsNullOrEmpty(string) 的参数 等共 4 处。</param>
+    /// <param name="controller">当前里昂手指反向动力学控制器。</param>
     private static void MarkOwnerDirty(LeonFingerIKController controller)
     {
         if (controller == null)

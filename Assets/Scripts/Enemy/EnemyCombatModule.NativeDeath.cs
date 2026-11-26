@@ -91,7 +91,7 @@ public sealed partial class EnemyCombatModule
         BeginTerminalDirectionalKnockdown(shot.sourcePosition);
     }
 
-    private bool BeginTerminalDirectionalKnockdown(Vector3 source, float travelScale = 1f, bool fromKick = false)
+    private bool BeginTerminalDirectionalKnockdown(Vector3 source, float travelScale = 1f, bool fromKick = false, int kneelSide = 0)
     {
         var traversal = host.ArchitectureReadSpecialTraversal;
         if (traversal != null && traversal.DeferLadderGroundReaction)
@@ -102,7 +102,17 @@ public sealed partial class EnemyCombatModule
         Vector3 local = transform.InverseTransformDirection(source - transform.position);
         string motion = "Native_1015";
         string landing = "Native_1016";
-        if (local.z < -Mathf.Abs(local.x))
+        if (fromKick && kneelSide == 1 && TryReadNativeCombatTrack("Ganado_1100", out _))
+        {
+            motion = "Ganado_1100";
+            landing = "Ganado_1101";
+        }
+        else if (fromKick && kneelSide == 2 && TryReadNativeCombatTrack("Ganado_1105", out _))
+        {
+            motion = "Ganado_1105";
+            landing = "Ganado_1106";
+        }
+        else if (local.z < -Mathf.Abs(local.x))
         {
             motion = "Native_1030";
             landing = "Native_1031";
@@ -150,7 +160,13 @@ public sealed partial class EnemyCombatModule
         }
         if (NativeDeathPoseReady)
         {
-            AnimationPresenter.PresentNativeCombat(nativeDeathTrack.clip, nativeDeathTime);
+            float frozenBlendSeconds = 0f;
+            if (nativeDeathTrack.clip.name.StartsWith("Ganado_110", System.StringComparison.Ordinal)
+                || nativeDeathTrack.clip.name.StartsWith("Native_10", System.StringComparison.Ordinal))
+            {
+                frozenBlendSeconds = 0.08f;
+            }
+            AnimationPresenter.PresentNativeCombat(nativeDeathTrack.clip, nativeDeathTime, false, frozenBlendSeconds);
             return;
         }
         nativeDeathTime = Mathf.Min(nativeDeathTime + Time.deltaTime, nativeDeathTrack.clip.length);
@@ -184,7 +200,13 @@ public sealed partial class EnemyCombatModule
         {
             poseTime = Mathf.Min(poseTime, Mathf.Max(0f, landingTime - 1f / nativeDeathTrack.clip.frameRate));
         }
-        AnimationPresenter.PresentNativeCombat(nativeDeathTrack.clip, poseTime);
+        float activeBlendSeconds = 0f;
+        if (nativeDeathTrack.clip.name.StartsWith("Ganado_110", System.StringComparison.Ordinal)
+            || nativeDeathTrack.clip.name.StartsWith("Native_10", System.StringComparison.Ordinal))
+        {
+            activeBlendSeconds = 0.08f;
+        }
+        AnimationPresenter.PresentNativeCombat(nativeDeathTrack.clip, poseTime, false, activeBlendSeconds);
         if (findingLanding && onSupport && nativeDeathTime >= landingTime)
         {
             if (TryReadNativeCombatTrack(nativeDeathLanding, out var landing))

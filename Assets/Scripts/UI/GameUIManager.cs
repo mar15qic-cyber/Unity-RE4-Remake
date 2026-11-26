@@ -42,97 +42,97 @@ public class GameUIManager : Singleton<GameUIManager>, IManualSingleton, ICrossh
     [Serializable]
     private sealed class ModalEntry
     {
-        /// <summary>中文含义：拥有者。使用位置：GameUIManager.RegisterModal(Object, GameUIManager.State, bool, bool, bool)、GameUIManager.RemoveDestroyedOwners()、GameUIManager.UnregisterModal(Object)。</summary>
+        /// <summary>拥有者。</summary>
         public UnityEngine.Object owner;
-        /// <summary>中文含义：当前状态。使用位置：GameUIManager.ApplyModalState()、GameUIManager.RegisterModal(Object, GameUIManager.State, bool, bool, bool)。</summary>
+        /// <summary>当前状态。</summary>
         public State state;
-        /// <summary>中文含义：是否暂停项游戏。使用位置：GameUIManager.RegisterModal(Object, GameUIManager.State, bool, bool, bool)。</summary>
+        /// <summary>是否暂停项游戏。</summary>
         public bool pausesGame;
-        /// <summary>中文含义：是否显示时光标。使用位置：GameUIManager.ApplyModalState()、GameUIManager.RegisterModal(Object, GameUIManager.State, bool, bool, bool)。</summary>
+        /// <summary>是否显示时光标。</summary>
         public bool showsCursor;
-        /// <summary>中文含义：是否阻断项玩家输入。使用位置：GameUIManager.RegisterModal(Object, GameUIManager.State, bool, bool, bool)。</summary>
+        /// <summary>是否阻断项玩家输入。</summary>
         public bool blocksPlayerInput;
-        /// <summary>中文含义：许可句柄。使用位置：作为 GameplayPermissionService.Release(GameplayPermissionHandle) 的参数、GameUIManager.RegisterModal(Object, GameUIManager.State, bool, bool, bool)。</summary>
+        /// <summary>许可句柄。</summary>
         [UnityEngine.Serialization.FormerlySerializedAs("许可句柄")]
         [UnityEngine.InspectorName("许可句柄")]
         [Newtonsoft.Json.JsonProperty("许可句柄")]
         public GameArchitecture.GameplayPermissionHandle permissionHandle;
     }
 
-    /// <summary>中文含义：暂停菜单。使用位置：作为 GameUIManager.RegisterModal(Object, GameUIManager.State, bool, bool, bool) 的参数、作为 GameUIManager.UnregisterModal(Object) 的参数、GameUIManager.AutoWireMissingReferences() 等共 10 处。</summary>
+    /// <summary>暂停菜单。</summary>
     [Header("子面板引用")]
     public PauseMenu pauseMenu;
-    /// <summary>中文含义：对局结束屏幕。使用位置：作为 GameUIManager.RegisterModal(Object, GameUIManager.State, bool, bool, bool) 的参数、GameUIManager.AutoWireMissingReferences()、GameUIManager.OnPlayerDied() 等共 4 处。</summary>
+    /// <summary>对局结束屏幕。</summary>
     public GameOverScreen gameOverScreen;
-    /// <summary>中文含义：任务已清除屏幕。使用位置：作为 GameUIManager.RegisterModal(Object, GameUIManager.State, bool, bool, bool) 的参数、GameUIManager.AutoWireMissingReferences()、GameUIManager.OnMissionCompleted(MissionResult) 等共 4 处。</summary>
+    /// <summary>任务已清除屏幕。</summary>
     public MissionClearedScreen missionClearedScreen;
-    /// <summary>中文含义：任务进度战斗显示界面。使用位置：GameUIManager.AutoWireMissingReferences()、SceneStartupEntry.ConfigurationError()、SceneStartupEntry.Start()。</summary>
+    /// <summary>任务进度战斗显示界面。</summary>
     public MissionProgressHUD missionProgressHUD;
-    /// <summary>中文含义：波次已清除界面。使用位置：GameUIManager.AutoWireMissingReferences()、SceneStartupEntry.ConfigurationError()。</summary>
+    /// <summary>波次已清除界面。</summary>
     public WaveClearedUI waveClearedUI;
-    /// <summary>中文含义：选项集合菜单。使用位置：作为 GameUIManager.RegisterModal(Object, GameUIManager.State, bool, bool, bool) 的参数、作为 GameUIManager.UnregisterModal(Object) 的参数、GameUIManager.AutoWireMissingReferences() 等共 8 处。</summary>
+    /// <summary>选项集合菜单。</summary>
     public OptionsMenu optionsMenu;
     /// <summary>中文含义：波次结算显示时是否暂停游戏。</summary>
     [Header("界面策略")]
     [Tooltip("波次结算显示时是否暂停游戏")]
     public bool pauseOnWaveCleared;
-    /// <summary>中文含义：对局结束时是否暂停游戏。死亡画面显示时是否暂停游戏。使用位置：作为 GameUIManager.RegisterModal(Object, GameUIManager.State, bool, bool, bool) 的参数。</summary>
+    /// <summary>对局结束时是否暂停游戏。死亡画面显示时是否暂停游戏。</summary>
     [Tooltip("死亡画面显示时是否暂停游戏")]
     public bool pauseOnGameOver = true;
-    /// <summary>中文含义：是否状态变化时输出调试信息。状态变化时输出调试信息。使用位置：GameUIManager.ApplyModalState()。</summary>
+    /// <summary>是否状态变化时输出调试信息。状态变化时输出调试信息。</summary>
     [Tooltip("状态变化时输出调试信息")]
     public bool logStateChanges;
-    /// <summary>中文含义：绑定本局玩家的输入组件。使用位置：GameUIManager.AutoWireMissingReferences()、SceneStartupEntry.ConfigurationError()。</summary>
+    /// <summary>绑定本局玩家的输入组件。</summary>
     [Header("玩家输入")]
     [Tooltip("绑定本局玩家的输入组件")]
     public LeonInputBridge playerInputBridge;
-    /// <summary>中文含义：模态界面打开时自动隐藏。战斗信息画布；模态界面打开时自动隐藏。使用位置：GameUIManager.ApplyGameplayHudVisibility()。</summary>
+    /// <summary>模态界面打开时自动隐藏。战斗信息画布；模态界面打开时自动隐藏。</summary>
     [Header("战斗界面可见性")]
     [Tooltip("战斗信息画布；模态界面打开时自动隐藏")]
     public CanvasGroup gameplayHudRoot;
-    /// <summary>中文含义：模态界面打开时需要隐藏的额外对象，例如准心根对象。使用位置：GameUIManager.ApplyGameplayHudVisibility()。</summary>
+    /// <summary>模态界面打开时需要隐藏的额外对象，例如准心根对象。</summary>
     [Tooltip("模态界面打开时需要隐藏的额外对象，例如准心根对象")]
     public GameObject[] gameplayOnlyObjects;
-    /// <summary>中文含义：模态界面打开时是否隐藏战斗信息。使用位置：GameUIManager.ApplyGameplayHudVisibility()。</summary>
+    /// <summary>模态界面打开时是否隐藏战斗信息。</summary>
     [Tooltip("模态界面打开时是否隐藏战斗信息")]
     public bool hideGameplayHudWhenBlocked = true;
-    /// <summary>中文含义：当前状态。使用位置：作为 Action&lt;GameUIManager.State&gt;.Invoke(GameUIManager.State) 的参数、作为 Debug.Log(object) 的参数、CombatHUD.IsCombatVisualBlocked() 等共 13 处。</summary>
+    /// <summary>当前状态。</summary>
     public State currentState { get; private set; } = State.Gameplay;
-    /// <summary>中文含义：是否游戏已暂停。使用位置：GameUIManager.ApplyModalState()、GameUIManager.IsPaused.get、GameUIManager.NotifyLifecycleChanges(bool, bool, bool)。</summary>
+    /// <summary>是否游戏已暂停。</summary>
     public bool IsGamePaused => currentSessionPermission != null && currentSessionPermission.Current.PauseAudio;
-    /// <summary>中文含义：是否玩家输入阻挡。使用位置：作为 Action&lt;bool&gt;.Invoke(bool) 的参数、GameUIManager.ApplyGameplayHudVisibility()、GameUIManager.ApplyModalState() 等共 5 处。</summary>
+    /// <summary>是否玩家输入阻挡。</summary>
     public bool IsPlayerInputBlocked => currentSessionPermission != null && !currentSessionPermission.Current.AllowInput;
-    /// <summary>中文含义：是否光标请求的。使用位置：GameUIManager.ApplyModalState()、LeonInputBridge.Update()。</summary>
+    /// <summary>是否光标请求的。</summary>
     public bool IsCursorRequested { get; private set; }
 
-    /// <summary>中文含义：状态变化时的通知回调。事件通信成员 OnStateChanged，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。使用位置：GameUIManager.ApplyModalState()。</summary>
+    /// <summary>状态变化时的通知回调。事件通信成员 OnStateChanged，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。</summary>
     public event Action<State> OnStateChanged;
-    /// <summary>中文含义：玩家输入阻断变化时的通知回调。事件通信成员 OnPlayerInputBlockChanged，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。使用位置：GameUIManager.ApplyModalState()。</summary>
+    /// <summary>玩家输入阻断变化时的通知回调。事件通信成员 OnPlayerInputBlockChanged，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。</summary>
     public event Action<bool> OnPlayerInputBlockChanged;
-    /// <summary>中文含义：生命周期变化时的通知回调。事件通信成员 OnLifecycleChanged，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。使用位置：CrosshairLifecycleAdapter.OnDestroy()、CrosshairLifecycleAdapter.Start()、GameUIManager.NotifyLifecycleChanges(bool, bool, bool)。</summary>
+    /// <summary>生命周期变化时的通知回调。事件通信成员 OnLifecycleChanged，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。</summary>
     public event Action<CrosshairLifecycleEvent> OnLifecycleChanged;
-    /// <summary>中文含义：是否已暂停。使用位置：CrosshairLifecycleAdapter.IsPaused.get、PerformanceSamplingEntry.Tick()、WeaponWheelUI.CanOpen()。</summary>
+    /// <summary>是否已暂停。</summary>
     public bool IsPaused => IsGamePaused;
-    /// <summary>中文含义：是否已进入对局结束状态。使用位置：CrosshairLifecycleAdapter.IsGameOver.get、GameUIManager.ApplyModalState()、GameUIManager.NotifyLifecycleChanges(bool, bool, bool) 等共 4 处。</summary>
+    /// <summary>是否已进入对局结束状态。</summary>
     public bool IsGameOver => currentState == State.GameOver;
-    /// <summary>中文含义：是否任务已清除。使用位置：WeaponWheelUI.CanOpen()。</summary>
+    /// <summary>是否任务已清除。</summary>
     public bool IsMissionCleared => currentState == State.MissionCleared;
-    /// <summary>中文含义：背包界面是否打开。使用位置：CrosshairLifecycleAdapter.IsInventoryOpen.get、GameUIManager.ApplyModalState()、GameUIManager.NotifyLifecycleChanges(bool, bool, bool) 等共 4 处。</summary>
+    /// <summary>背包界面是否打开。</summary>
     public bool IsInventoryOpen => currentState == State.Inventory || currentState == State.Storage;
 
-    /// <summary>中文含义：模态堆叠。只读字段，初始化后不由普通写入口替换。使用位置：作为 GameplayPermissionService.Release(GameplayPermissionHandle) 的参数、作为 List&lt;GameUIManager.ModalEntry&gt;.this[int] 的参数、GameUIManager.ApplyModalState() 等共 8 处。</summary>
+    /// <summary>模态堆叠。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly List<ModalEntry> modalStack = new List<ModalEntry>();
-    /// <summary>中文含义：是否退出键防抖。使用位置：GameUIManager.ClearEscDebounce()、GameUIManager.Update()。</summary>
+    /// <summary>是否退出键防抖。</summary>
     private bool escDebounce;
-    /// <summary>中文含义：模态输入帧。使用位置：GameUIManager.TryClaimModalInput()。</summary>
+    /// <summary>模态输入帧。</summary>
     private int modalInputFrame = -1;
-    /// <summary>中文含义：当前会话许可。使用位置：GameUIManager.BindingCurrentSession(GameManager)、GameUIManager.ClearAllModals()、GameUIManager.IsGamePaused.get 等共 8 处。</summary>
+    /// <summary>当前会话许可。</summary>
     private GameplayPermissionService currentSessionPermission;
-    /// <summary>中文含义：绑定对局。使用位置：作为 GameUIManager.OnMissionCompleted(MissionResult) 的参数、GameUIManager.BindingCurrentSession(GameManager)、GameUIManager.BreakOpenPresentation() 等共 5 处。</summary>
+    /// <summary>绑定对局。</summary>
     private GameManager bindingMatch;
-    /// <summary>中文含义：是否具有连接表现。使用位置：GameUIManager.BreakOpenPresentation()、GameUIManager.ConnectPresentation()。</summary>
+    /// <summary>是否具有连接表现。</summary>
     private bool hasConnectPresentation;
-    /// <summary>中文含义：lastPausePresentation 表示“是否上一次暂停表现”；lastInputBlockPresentation 表示“是否上一次输入阻断表现”。使用位置：GameUIManager.ApplyModalState()。；使用位置：GameUIManager.ApplyModalState()。</summary>
+    /// <summary>lastPausePresentation 表示“是否上一次暂停表现”；lastInputBlockPresentation 表示“是否上一次输入阻断表现”。</summary>
     private bool lastPausePresentation, lastInputBlockPresentation;
     /// <summary>AutoWireMissingReferences 的业务处理入口；本方法直接依赖 SceneStartupEntry.QueryHasHasReference&lt;GameOverScreen&gt;(Component)、SceneStartupEntry.QueryHasHasReference&lt;LeonInputBridge&gt;(Component)、SceneStartupEntry.QueryHasHasReference&lt;MissionClearedScreen&gt;(Component)、SceneStartupEntry.QueryHasHasReference&lt;MissionProgressHUD&gt;(Component)、SceneStartupEntry.QueryHasHasReference&lt;OptionsMenu&gt;(Component)、SceneStartupEntry.QueryHasHasReference&lt;PauseMenu&gt;(Component)、SceneStartupEntry.QueryHasHasReference&lt;WaveClearedUI&gt;(Component)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） SceneStartupEntry.QueryHasHasReference&lt;GameOverScreen&gt;(Component)、SceneStartupEntry.QueryHasHasReference&lt;LeonInputBridge&gt;(Component)、SceneStartupEntry.QueryHasHasReference&lt;MissionClearedScreen&gt;(Component)、SceneStartupEntry.QueryHasHasReference&lt;MissionProgressHUD&gt;(Component)、SceneStartupEntry.QueryHasHasReference&lt;OptionsMenu&gt;(Component)、SceneStartupEntry.QueryHasHasReference&lt;PauseMenu&gt;(Component)、SceneStartupEntry.QueryHasHasReference&lt;WaveClearedUI&gt;(Component)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
@@ -177,7 +177,7 @@ public class GameUIManager : Singleton<GameUIManager>, IManualSingleton, ICrossh
 
     /// <summary>BindingCurrentSession 的业务处理入口；本方法直接依赖 GameUIManager.BreakOpenPresentation()、GameUIManager.ConnectPresentation()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 SceneStartupEntry.Start()；下游（含内部回调体） GameUIManager.BreakOpenPresentation()、GameUIManager.ConnectPresentation()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="gameManager">中文含义：游戏管理器。使用位置：GameUIManager.BindingCurrentSession(GameManager)。</param>
+    /// <param name="gameManager">游戏管理器。</param>
     internal void BindingCurrentSession(GameManager gameManager)
     {
         BreakOpenPresentation();
@@ -311,7 +311,7 @@ public class GameUIManager : Singleton<GameUIManager>, IManualSingleton, ICrossh
                 HidePause();
                 break;
             case State.Options:
-                // receiverValue2（判空前缓存的选项集合菜单）：从选项集合菜单读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、GameUIManager.HandleEscPress()。
+                // 判空前缓存的选项集合菜单。
 global::OptionsMenu receiverValue2 = optionsMenu;
                 if (!global::System.Object.ReferenceEquals(receiverValue2, null))
                 {
@@ -320,7 +320,7 @@ global::OptionsMenu receiverValue2 = optionsMenu;
 
                 break;
             case State.Inventory:
-                // receiverValue3（判空前缓存的背包场景加载器的实例）：从背包场景加载器的实例读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、GameUIManager.HandleEscPress()。
+                // 判空前缓存的背包场景加载器的实例。
 global::InventorySceneLoader receiverValue3 = InventorySceneLoader.Instance;
                 if (!global::System.Object.ReferenceEquals(receiverValue3, null))
                 {
@@ -343,11 +343,11 @@ global::InventorySceneLoader receiverValue3 = InventorySceneLoader.Instance;
     /// 新增界面可直接使用此方法接入统一暂停、光标和输入阻断。
     /// </summary>
     /// <remarks>静态调用链：上游 GameOverScreen.Show()、GameUIManager.OnMissionCompleted(MissionResult)、GameUIManager.OnPlayerDied()、GameUIManager.OpenOptionsFromPause()、GameUIManager.ShowInventory() 等共 8 处；下游（含内部回调体） Debug.LogWarning(object)、GameplayPermissionService.Request(ObjectIdentity, bool, bool, bool, float)、GameplayPermissionService.Update(GameplayPermissionHandle, bool, bool, bool, float)、GameUIManager.ApplyModalState()、GameUIManager.ModalEntry.ModalEntry()、List&lt;GameUIManager.ModalEntry&gt;.Add(GameUIManager.ModalEntry)、List&lt;GameUIManager.ModalEntry&gt;.RemoveAt(int) 等共 9 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="owner">中文含义：拥有者。使用位置：作为 ObjectIdentity.ObjectIdentity(int, long) 的参数、GameUIManager.RegisterModal(Object, GameUIManager.State, bool, bool, bool)。</param>
-    /// <param name="state">中文含义：当前状态。使用位置：GameUIManager.RegisterModal(Object, GameUIManager.State, bool, bool, bool)。</param>
-    /// <param name="pausesGame">中文含义：是否暂停项游戏。使用位置：GameUIManager.RegisterModal(Object, GameUIManager.State, bool, bool, bool)。</param>
-    /// <param name="showsCursor">中文含义：是否显示时光标。使用位置：GameUIManager.RegisterModal(Object, GameUIManager.State, bool, bool, bool)。</param>
-    /// <param name="blocksPlayerInput">中文含义：是否阻断项玩家输入。使用位置：GameUIManager.RegisterModal(Object, GameUIManager.State, bool, bool, bool)。</param>
+    /// <param name="owner">拥有者。</param>
+    /// <param name="state">当前状态。</param>
+    /// <param name="pausesGame">是否暂停项游戏。</param>
+    /// <param name="showsCursor">是否显示时光标。</param>
+    /// <param name="blocksPlayerInput">是否阻断项玩家输入。</param>
     public void RegisterModal(UnityEngine.Object owner, State state, bool pausesGame = true, bool showsCursor = true, bool blocksPlayerInput = true)
     {
         if (owner == null)
@@ -356,9 +356,9 @@ global::InventorySceneLoader receiverValue3 = InventorySceneLoader.Instance;
             return;
         }
 
-        // originalHandle（原始句柄）：使用位置：GameUIManager.RegisterModal(Object, GameUIManager.State, bool, bool, bool)。
+        // 原始句柄。
 GameArchitecture.GameplayPermissionHandle originalHandle = default;
-        // i（当前遍历索引）：使用位置：作为 List<GameUIManager.ModalEntry>.RemoveAt(int) 的参数、作为 List<GameUIManager.ModalEntry>.this[int] 的参数、GameUIManager.RegisterModal(Object, GameUIManager.State, bool, bool, bool)。
+        // 当前遍历索引。
 for (int i = modalStack.Count - 1; i >= 0; i--)
         {
             if (modalStack[i].owner != owner)
@@ -376,21 +376,21 @@ for (int i = modalStack.Count - 1; i >= 0; i--)
             return;
         }
 
-        // hasUpdate（是否具有更新）：使用位置：GameUIManager.RegisterModal(Object, GameUIManager.State, bool, bool, bool)。
+        // 是否具有更新。
 bool hasUpdate;
         if (currentSessionPermission != null)
         {
-            // callReceiver9（调用前缓存的当前会话许可）：从当前会话许可读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：GameUIManager.RegisterModal(Object, GameUIManager.State, bool, bool, bool)。
+            // 调用前缓存的当前会话许可。
 global::GameplayPermissionService callReceiver9 = currentSessionPermission;
-            // argumentValue5（按原顺序缓存的实参原始句柄）：从原始句柄读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 GameplayPermissionService.Update(GameplayPermissionHandle, bool, bool, bool, float) 的参数。
+            // 按原顺序缓存的实参原始句柄。
 global::GameArchitecture.GameplayPermissionHandle argumentValue5 = originalHandle;
-            // argumentValue6（按原顺序缓存的实参是否阻断项玩家输入）：从阻断项玩家输入读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 GameplayPermissionService.Update(GameplayPermissionHandle, bool, bool, bool, float) 的参数。
+            // 按原顺序缓存的实参是否阻断项玩家输入。
 bool argumentValue6 = blocksPlayerInput;
-            // argumentValue7（按原顺序缓存的实参分支判断）：按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 GameplayPermissionService.Update(GameplayPermissionHandle, bool, bool, bool, float) 的参数。
+            // 按原顺序缓存的实参分支判断。
 bool argumentValue7 = state != State.Gameplay;
-            // argumentValue8（按原顺序缓存的实参是否暂停项游戏）：从暂停项游戏读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 GameplayPermissionService.Update(GameplayPermissionHandle, bool, bool, bool, float) 的参数。
+            // 按原顺序缓存的实参是否暂停项游戏。
 bool argumentValue8 = pausesGame;
-            // selectedValue4（分支选出的0）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：作为 GameplayPermissionService.Update(GameplayPermissionHandle, bool, bool, bool, float) 的参数、GameUIManager.RegisterModal(Object, GameUIManager.State, bool, bool, bool)。
+            // 分支选出的0。
 int selectedValue4;
             if (pausesGame)
             {
@@ -408,9 +408,9 @@ int selectedValue4;
             hasUpdate = false;
         }
 
-        // callReceiver20（调用前缓存的模态堆叠）：从模态堆叠读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：GameUIManager.RegisterModal(Object, GameUIManager.State, bool, bool, bool)。
+        // 调用前缓存的模态堆叠。
 global::System.Collections.Generic.List<global::GameUIManager.ModalEntry> callReceiver20 = modalStack;
-        // createdValue11（本次新建的模态入口）：保存本次创建实例，按原先顺序完成逐项初始化后交给后续使用方。使用位置：作为 List<GameUIManager.ModalEntry>.Add(GameUIManager.ModalEntry) 的参数、GameUIManager.RegisterModal(Object, GameUIManager.State, bool, bool, bool)。
+        // 本次新建的模态入口。
 global::GameUIManager.ModalEntry createdValue11 = new ModalEntry();
         createdValue11.owner = owner;
         createdValue11.state = state;
@@ -425,17 +425,17 @@ global::GameUIManager.ModalEntry createdValue11 = new ModalEntry();
         {
             if (currentSessionPermission != null)
             {
-                // callReceiver17（调用前缓存的当前会话许可）：从当前会话许可读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：GameUIManager.RegisterModal(Object, GameUIManager.State, bool, bool, bool)。
+                // 调用前缓存的当前会话许可。
 global::GameplayPermissionService callReceiver17 = currentSessionPermission;
-                // argumentValue13（按原顺序缓存的实参对象身份标识的返回结果）：从对象身份标识的返回结果读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 GameplayPermissionService.Request(ObjectIdentity, bool, bool, bool, float) 的参数。
+                // 按原顺序缓存的实参对象身份标识的返回结果。
 global::GameArchitecture.ObjectIdentity argumentValue13 = new GameArchitecture.ObjectIdentity(owner.GetInstanceID(), 1);
-                // argumentValue14（按原顺序缓存的实参是否阻断项玩家输入）：从阻断项玩家输入读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 GameplayPermissionService.Request(ObjectIdentity, bool, bool, bool, float) 的参数。
+                // 按原顺序缓存的实参是否阻断项玩家输入。
 bool argumentValue14 = blocksPlayerInput;
-                // argumentValue15（按原顺序缓存的实参分支判断）：按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 GameplayPermissionService.Request(ObjectIdentity, bool, bool, bool, float) 的参数。
+                // 按原顺序缓存的实参分支判断。
 bool argumentValue15 = state != State.Gameplay;
-                // argumentValue16（按原顺序缓存的实参是否暂停项游戏）：从暂停项游戏读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 GameplayPermissionService.Request(ObjectIdentity, bool, bool, bool, float) 的参数。
+                // 按原顺序缓存的实参是否暂停项游戏。
 bool argumentValue16 = pausesGame;
-                // selectedValue12（分支选出的0）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：作为 GameplayPermissionService.Request(ObjectIdentity, bool, bool, bool, float) 的参数、GameUIManager.RegisterModal(Object, GameUIManager.State, bool, bool, bool)。
+                // 分支选出的0。
 int selectedValue12;
                 if (pausesGame)
                 {
@@ -460,7 +460,7 @@ int selectedValue12;
 
     /// <summary>注销由指定对象登记的模态界面。</summary>
     /// <remarks>静态调用链：上游 GameOverScreen.Hide()、GameUIManager.HideInventory()、GameUIManager.HidePause()、GameUIManager.OnOptionsClosed()、GameUIManager.OnPauseResume() 等共 10 处；下游（含内部回调体） GameplayPermissionService.Release(GameplayPermissionHandle)、GameUIManager.ApplyModalState()、List&lt;GameUIManager.ModalEntry&gt;.RemoveAt(int)、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="owner">中文含义：拥有者。使用位置：GameUIManager.UnregisterModal(Object)。</param>
+    /// <param name="owner">拥有者。</param>
     public void UnregisterModal(UnityEngine.Object owner)
     {
         if (owner == null)
@@ -468,9 +468,9 @@ int selectedValue12;
             return;
         }
 
-        // changed（是否发生变化）：使用位置：GameUIManager.UnregisterModal(Object)。
+        // 是否发生变化。
 bool changed = false;
-        // i（当前遍历索引）：使用位置：作为 List<GameUIManager.ModalEntry>.RemoveAt(int) 的参数、作为 List<GameUIManager.ModalEntry>.this[int] 的参数、GameUIManager.UnregisterModal(Object)。
+        // 当前遍历索引。
 for (int i = modalStack.Count - 1; i >= 0; i--)
         {
             if (modalStack[i].owner != owner)
@@ -478,9 +478,9 @@ for (int i = modalStack.Count - 1; i >= 0; i--)
                 continue;
             }
 
-            // receiverValue21（判空前缓存的当前会话许可）：从当前会话许可读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、GameUIManager.UnregisterModal(Object)。
+            // 判空前缓存的当前会话许可。
 global::GameplayPermissionService receiverValue21 = currentSessionPermission;
-            // optionalValue22（条件访问得到的释放的返回结果）：保存条件访问的结果，接收者为空时保持默认空值，非空时才执行原成员访问。使用位置：GameUIManager.UnregisterModal(Object)。
+            // 条件访问得到的释放的返回结果。
 bool? optionalValue22;
             if (!global::System.Object.ReferenceEquals(receiverValue21, null))
             {
@@ -510,9 +510,9 @@ bool? optionalValue22;
         // item（当前模态入口）：每轮从模态堆叠取得一个元素，仅代表当前这一项。使用位置：作为 GameplayPermissionService.Release(GameplayPermissionHandle) 的参数。
 foreach (var item in modalStack)
         {
-            // receiverValue23（判空前缓存的当前会话许可）：从当前会话许可读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、GameUIManager.ClearAllModals()。
+            // 判空前缓存的当前会话许可。
 global::GameplayPermissionService receiverValue23 = currentSessionPermission;
-            // optionalValue24（条件访问得到的释放的返回结果）：保存条件访问的结果，接收者为空时保持默认空值，非空时才执行原成员访问。使用位置：GameUIManager.ClearAllModals()。
+            // 条件访问得到的释放的返回结果。
 bool? optionalValue24;
             if (!global::System.Object.ReferenceEquals(receiverValue23, null))
             {
@@ -577,7 +577,7 @@ bool? optionalValue24;
 
     /// <summary>OnMissionCompleted 的业务处理入口；本方法直接依赖 GameUIManager.ClearAllModals()、GameUIManager.RegisterModal(Object, GameUIManager.State, bool, bool, bool)、MissionClearedScreen.Show(MissionResult)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 GameUIManager.ConnectPresentation()；下游（含内部回调体） GameUIManager.ClearAllModals()、GameUIManager.RegisterModal(Object, GameUIManager.State, bool, bool, bool)、MissionClearedScreen.Show(MissionResult)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="result">中文含义：当前任务结果。使用位置：作为 MissionClearedScreen.Show(MissionResult) 的参数。</param>
+    /// <param name="result">当前任务结果。</param>
     void OnMissionCompleted(MissionResult result)
     {
         if (currentState == State.GameOver || missionClearedScreen == null)
@@ -598,7 +598,7 @@ bool? optionalValue24;
         if (optionsMenu == null)
         {
             Debug.LogError("[界面中枢] 无法打开设置页：场景中没有可用的设置菜单。");
-            // receiverValue25（判空前缓存的暂停菜单）：从暂停菜单读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、GameUIManager.OpenOptionsFromPause()。
+            // 判空前缓存的暂停菜单。
 global::PauseMenu receiverValue25 = pauseMenu;
             if (!global::System.Object.ReferenceEquals(receiverValue25, null))
             {
@@ -609,7 +609,7 @@ global::PauseMenu receiverValue25 = pauseMenu;
         }
 
         optionsMenu.onClosed = OnOptionsClosed;
-        // receiverValue26（判空前缓存的暂停菜单）：从暂停菜单读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、GameUIManager.OpenOptionsFromPause()。
+        // 判空前缓存的暂停菜单。
 global::PauseMenu receiverValue26 = pauseMenu;
         if (!global::System.Object.ReferenceEquals(receiverValue26, null))
         {
@@ -624,7 +624,7 @@ global::PauseMenu receiverValue26 = pauseMenu;
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） object.ReferenceEquals(object, object)、OptionsMenu.Hide()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     public void HideOptions()
     {
-        // receiverValue27（判空前缓存的选项集合菜单）：从选项集合菜单读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、GameUIManager.HideOptions()。
+        // 判空前缓存的选项集合菜单。
 global::OptionsMenu receiverValue27 = optionsMenu;
         if (!global::System.Object.ReferenceEquals(receiverValue27, null))
         {
@@ -637,7 +637,7 @@ global::OptionsMenu receiverValue27 = optionsMenu;
     void OnOptionsClosed()
     {
         UnregisterModal(optionsMenu);
-        // receiverValue28（判空前缓存的暂停菜单）：从暂停菜单读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、GameUIManager.OnOptionsClosed()。
+        // 判空前缓存的暂停菜单。
 global::PauseMenu receiverValue28 = pauseMenu;
         if (!global::System.Object.ReferenceEquals(receiverValue28, null))
         {
@@ -665,7 +665,7 @@ global::PauseMenu receiverValue28 = pauseMenu;
     /// <remarks>静态调用链：上游 LeonInputBridge.OnInventoryToggle(InputAction.CallbackContext)、StorageBoxUI.Update()；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     public bool TryClaimModalInput()
     {
-        // frame（帧）：使用位置：GameUIManager.TryClaimModalInput()。
+        // 帧。
 int frame = Time.frameCount;
         if (modalInputFrame == frame)
         {
@@ -678,7 +678,7 @@ int frame = Time.frameCount;
 
     /// <summary>ShowConfirmDialog 的业务处理入口；本方法直接依赖 Debug.Log(object)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） Debug.Log(object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="message">中文含义：消息。使用位置：作为 Debug.Log(object) 的参数。</param>
+    /// <param name="message">消息。</param>
     /// <param name="onYes">中文含义：确认时的通知回调。</param>
     /// <param name="onNo">中文含义：无时的通知回调。</param>
     public void ShowConfirmDialog(string message, Action onYes, Action onNo)
@@ -688,6 +688,22 @@ int frame = Time.frameCount;
 
     /// <summary>CanPlayerAct 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
     /// <remarks>静态调用链：上游 DoorController.IsPlayerBlocked()、WorldInteractionPromptUI.IsUIBlocking()；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
+    // 配对动作本身会锁住普通输入。QTE 只需额外检查真正占用输入的界面。
+    internal bool HasBlockingModal
+    {
+        get
+        {
+            foreach (var entry in modalStack)
+            {
+                if (entry.owner != null && entry.blocksPlayerInput)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+
     public bool CanPlayerAct()
     {
         return !IsPlayerInputBlocked;
@@ -697,9 +713,9 @@ int frame = Time.frameCount;
     /// <remarks>静态调用链：上游 GameUIManager.Update()；下游（含内部回调体） GameplayPermissionService.Release(GameplayPermissionHandle)、GameUIManager.ApplyModalState()、List&lt;GameUIManager.ModalEntry&gt;.RemoveAt(int)、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     void RemoveDestroyedOwners()
     {
-        // changed（是否发生变化）：使用位置：GameUIManager.RemoveDestroyedOwners()。
+        // 是否发生变化。
 bool changed = false;
-        // i（当前遍历索引）：使用位置：作为 List<GameUIManager.ModalEntry>.RemoveAt(int) 的参数、作为 List<GameUIManager.ModalEntry>.this[int] 的参数、GameUIManager.RemoveDestroyedOwners()。
+        // 当前遍历索引。
 for (int i = modalStack.Count - 1; i >= 0; i--)
         {
             if (modalStack[i].owner != null)
@@ -707,9 +723,9 @@ for (int i = modalStack.Count - 1; i >= 0; i--)
                 continue;
             }
 
-            // receiverValue29（判空前缓存的当前会话许可）：从当前会话许可读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、GameUIManager.RemoveDestroyedOwners()。
+            // 判空前缓存的当前会话许可。
 global::GameplayPermissionService receiverValue29 = currentSessionPermission;
-            // optionalValue30（条件访问得到的释放的返回结果）：保存条件访问的结果，接收者为空时保持默认空值，非空时才执行原成员访问。使用位置：GameUIManager.RemoveDestroyedOwners()。
+            // 条件访问得到的释放的返回结果。
 bool? optionalValue30;
             if (!global::System.Object.ReferenceEquals(receiverValue29, null))
             {
@@ -734,15 +750,15 @@ bool? optionalValue30;
     /// <remarks>静态调用链：上游 GameUIManager.ClearAllModals()、GameUIManager.ConnectPresentation()、GameUIManager.RegisterModal(Object, GameUIManager.State, bool, bool, bool)、GameUIManager.RemoveDestroyedOwners()、GameUIManager.UnregisterModal(Object)；下游（含内部回调体） Action&lt;bool&gt;.Invoke(bool)、Action&lt;GameUIManager.State&gt;.Invoke(GameUIManager.State)、Debug.Log(object)、GameUIManager.ApplyGameplayHudVisibility()、GameUIManager.NotifyLifecycleChanges(bool, bool, bool)、object.ReferenceEquals(object, object)、UICursorManager.HideCustomCursor() 等共 8 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     void ApplyModalState()
     {
-        // previousState（前一次状态）：使用位置：GameUIManager.ApplyModalState()。
+        // 前一次状态。
 State previousState = currentState;
-        // previousInputBlocked（前一次输入是否受阻）：使用位置：GameUIManager.ApplyModalState()。
+        // 前一次输入是否受阻。
 bool previousInputBlocked = lastInputBlockPresentation;
-        // wasPaused（之前是否已暂停）：使用位置：作为 GameUIManager.NotifyLifecycleChanges(bool, bool, bool) 的参数。
+        // 之前是否已暂停。
 bool wasPaused = lastPausePresentation;
-        // wasGameOver（之前是否对局结束）：使用位置：作为 GameUIManager.NotifyLifecycleChanges(bool, bool, bool) 的参数。
+        // 之前是否对局结束。
 bool wasGameOver = IsGameOver;
-        // wasInventoryOpen（之前是否背包打开）：使用位置：作为 GameUIManager.NotifyLifecycleChanges(bool, bool, bool) 的参数。
+        // 之前是否背包打开。
 bool wasInventoryOpen = IsInventoryOpen;
         if (modalStack.Count > 0)
         {
@@ -754,7 +770,7 @@ bool wasInventoryOpen = IsInventoryOpen;
         }
 
         IsCursorRequested = false;
-        // i（当前遍历索引）：使用位置：作为 List<GameUIManager.ModalEntry>.this[int] 的参数、GameUIManager.ApplyModalState()。
+        // 当前遍历索引。
 for (int i = 0; i < modalStack.Count; i++)
         {
             IsCursorRequested |= modalStack[i].showsCursor;
@@ -762,7 +778,7 @@ for (int i = 0; i < modalStack.Count; i++)
 
         if (IsCursorRequested)
         {
-            // receiverValue32（判空前缓存的界面光标管理器的实例）：从界面光标管理器的实例读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、GameUIManager.ApplyModalState()。
+            // 判空前缓存的界面光标管理器的实例。
 global::UICursorManager receiverValue32 = UICursorManager.Instance;
             if (!global::System.Object.ReferenceEquals(receiverValue32, null))
             {
@@ -771,7 +787,7 @@ global::UICursorManager receiverValue32 = UICursorManager.Instance;
         }
         else
         {
-            // receiverValue33（判空前缓存的界面光标管理器的实例）：从界面光标管理器的实例读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、GameUIManager.ApplyModalState()。
+            // 判空前缓存的界面光标管理器的实例。
 global::UICursorManager receiverValue33 = UICursorManager.Instance;
             if (!global::System.Object.ReferenceEquals(receiverValue33, null))
             {
@@ -786,7 +802,7 @@ global::UICursorManager receiverValue33 = UICursorManager.Instance;
                 Debug.Log("[界面中枢] 当前状态：" + currentState);
             }
 
-            // receiverValue34（判空前缓存的状态变化时的通知回调）：从状态变化时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、GameUIManager.ApplyModalState()。
+            // 判空前缓存的状态变化时的通知回调。
 global::System.Action<global::GameUIManager.State> receiverValue34 = OnStateChanged;
             if (!global::System.Object.ReferenceEquals(receiverValue34, null))
             {
@@ -796,7 +812,7 @@ global::System.Action<global::GameUIManager.State> receiverValue34 = OnStateChan
 
         if (previousInputBlocked != IsPlayerInputBlocked)
         {
-            // receiverValue35（判空前缓存的玩家输入阻断变化时的通知回调）：从玩家输入阻断变化时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、GameUIManager.ApplyModalState()。
+            // 判空前缓存的玩家输入阻断变化时的通知回调。
 global::System.Action<bool> receiverValue35 = OnPlayerInputBlockChanged;
             if (!global::System.Object.ReferenceEquals(receiverValue35, null))
             {
@@ -819,11 +835,11 @@ global::System.Action<bool> receiverValue35 = OnPlayerInputBlockChanged;
             return;
         }
 
-        // visible（是否可见）：使用位置：作为 GameObject.SetActive(bool) 的参数、GameUIManager.ApplyGameplayHudVisibility()。
+        // 是否可见。
 bool visible = !IsPlayerInputBlocked;
         if (gameplayHudRoot != null)
         {
-            // assignmentReceiver36（赋值前保存的目标模态界面打开时自动隐藏）：从玩法战斗显示界面根节点读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：GameUIManager.ApplyGameplayHudVisibility()。
+            // 赋值前保存的目标模态界面打开时自动隐藏。
 global::UnityEngine.CanvasGroup assignmentReceiver36 = gameplayHudRoot;
             if (visible)
             {
@@ -843,7 +859,7 @@ global::UnityEngine.CanvasGroup assignmentReceiver36 = gameplayHudRoot;
             return;
         }
 
-        // i（当前遍历索引）：使用位置：GameUIManager.ApplyGameplayHudVisibility()。
+        // 当前遍历索引。
 for (int i = 0; i < gameplayOnlyObjects.Length; i++)
         {
             if (gameplayOnlyObjects[i] != null)
@@ -855,18 +871,18 @@ for (int i = 0; i < gameplayOnlyObjects.Length; i++)
 
     /// <summary>NotifyLifecycleChanges 的业务处理入口；本方法直接依赖 Action&lt;CrosshairLifecycleEvent&gt;.Invoke(CrosshairLifecycleEvent)、object.ReferenceEquals(object, object)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 GameUIManager.ApplyModalState()；下游（含内部回调体） Action&lt;CrosshairLifecycleEvent&gt;.Invoke(CrosshairLifecycleEvent)、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="wasPaused">中文含义：之前是否已暂停。使用位置：GameUIManager.NotifyLifecycleChanges(bool, bool, bool)。</param>
-    /// <param name="wasGameOver">中文含义：之前是否对局结束。使用位置：GameUIManager.NotifyLifecycleChanges(bool, bool, bool)。</param>
-    /// <param name="wasInventoryOpen">中文含义：之前是否背包打开。使用位置：GameUIManager.NotifyLifecycleChanges(bool, bool, bool)。</param>
+    /// <param name="wasPaused">之前是否已暂停。</param>
+    /// <param name="wasGameOver">之前是否对局结束。</param>
+    /// <param name="wasInventoryOpen">之前是否背包打开。</param>
     void NotifyLifecycleChanges(bool wasPaused, bool wasGameOver, bool wasInventoryOpen)
     {
         if (wasPaused != IsGamePaused)
         {
-            // receiverValue38（判空前缓存的生命周期变化时的通知回调）：从生命周期变化时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、GameUIManager.NotifyLifecycleChanges(bool, bool, bool)。
+            // 判空前缓存的生命周期变化时的通知回调。
 global::System.Action<global::CrosshairLifecycleEvent> receiverValue38 = OnLifecycleChanged;
             if (!global::System.Object.ReferenceEquals(receiverValue38, null))
             {
-                // selectedValue39（分支选出的准星生命周期事件的暂停已进入）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：作为 Action<CrosshairLifecycleEvent>.Invoke(CrosshairLifecycleEvent) 的参数、GameUIManager.NotifyLifecycleChanges(bool, bool, bool)。
+                // 分支选出的准星生命周期事件的暂停已进入。
 global::CrosshairLifecycleEvent selectedValue39;
                 if (IsGamePaused)
                 {
@@ -883,11 +899,11 @@ global::CrosshairLifecycleEvent selectedValue39;
 
         if (wasGameOver != IsGameOver)
         {
-            // receiverValue40（判空前缓存的生命周期变化时的通知回调）：从生命周期变化时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、GameUIManager.NotifyLifecycleChanges(bool, bool, bool)。
+            // 判空前缓存的生命周期变化时的通知回调。
 global::System.Action<global::CrosshairLifecycleEvent> receiverValue40 = OnLifecycleChanged;
             if (!global::System.Object.ReferenceEquals(receiverValue40, null))
             {
-                // selectedValue41（分支选出的准星生命周期事件的死亡）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：作为 Action<CrosshairLifecycleEvent>.Invoke(CrosshairLifecycleEvent) 的参数、GameUIManager.NotifyLifecycleChanges(bool, bool, bool)。
+                // 分支选出的准星生命周期事件的死亡。
 global::CrosshairLifecycleEvent selectedValue41;
                 if (IsGameOver)
                 {
@@ -904,11 +920,11 @@ global::CrosshairLifecycleEvent selectedValue41;
 
         if (wasInventoryOpen != IsInventoryOpen)
         {
-            // receiverValue42（判空前缓存的生命周期变化时的通知回调）：从生命周期变化时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、GameUIManager.NotifyLifecycleChanges(bool, bool, bool)。
+            // 判空前缓存的生命周期变化时的通知回调。
 global::System.Action<global::CrosshairLifecycleEvent> receiverValue42 = OnLifecycleChanged;
             if (!global::System.Object.ReferenceEquals(receiverValue42, null))
             {
-                // selectedValue43（分支选出的准星生命周期事件的背包已打开）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：作为 Action<CrosshairLifecycleEvent>.Invoke(CrosshairLifecycleEvent) 的参数、GameUIManager.NotifyLifecycleChanges(bool, bool, bool)。
+                // 分支选出的准星生命周期事件的背包已打开。
 global::CrosshairLifecycleEvent selectedValue43;
                 if (IsInventoryOpen)
                 {
@@ -931,9 +947,9 @@ global::CrosshairLifecycleEvent selectedValue43;
         // item（当前模态入口）：每轮从模态堆叠取得一个元素，仅代表当前这一项。使用位置：作为 GameplayPermissionService.Release(GameplayPermissionHandle) 的参数。
 foreach (var item in modalStack)
         {
-            // receiverValue44（判空前缓存的当前会话许可）：从当前会话许可读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、GameUIManager.RestoreGameplayState()。
+            // 判空前缓存的当前会话许可。
 global::GameplayPermissionService receiverValue44 = currentSessionPermission;
-            // optionalValue45（条件访问得到的释放的返回结果）：保存条件访问的结果，接收者为空时保持默认空值，非空时才执行原成员访问。使用位置：GameUIManager.RestoreGameplayState()。
+            // 条件访问得到的释放的返回结果。
 bool? optionalValue45;
             if (!global::System.Object.ReferenceEquals(receiverValue44, null))
             {

@@ -8,13 +8,13 @@ using UnityEngine;
 /// </summary>
 public class WeaponVisualEventRelay : MonoBehaviour
 {
-    /// <summary>中文含义：当前玩家动画动作协调器。使用位置：WeaponVisualEventRelay.OnEquipVisualReveal()、WeaponVisualEventRelay.OnHolsterVisualCommit()、WeaponVisualEventRelay.OnLongGunSupportHandGrip() 等共 5 处。</summary>
+    /// <summary>当前玩家动画动作协调器。</summary>
     [SerializeField]
     private LeonAnimationActionCoordinator coordinator;
-    /// <summary>中文含义：动画控制器。使用位置：作为 LeonAnimationActionCoordinator.NotifyVisualMarker(Animator, VisualMarker) 的参数、WeaponVisualEventRelay.OnEquipVisualReveal()、WeaponVisualEventRelay.OnHolsterVisualCommit() 等共 6 处。</summary>
+    /// <summary>动画控制器。</summary>
     [SerializeField]
     private Animator animator;
-    /// <summary>中文含义：是否错误已记录。使用位置：WeaponVisualEventRelay.OnEquipVisualReveal()、WeaponVisualEventRelay.OnHolsterVisualCommit()、WeaponVisualEventRelay.OnLongGunSupportHandGrip() 等共 4 处。</summary>
+    /// <summary>是否错误已记录。</summary>
     private bool errorLogged;
     /// <summary>Unity 首次启用后的启动回调；状态处理与资源交接按函数内顺序执行，下游协作见调用链。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） Component.GetComponent&lt;Animator&gt;()、Component.GetComponent&lt;LeonAnimationActionCoordinator&gt;()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>

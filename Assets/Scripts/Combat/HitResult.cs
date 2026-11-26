@@ -7,34 +7,33 @@ using UnityEngine;
 /// </summary>
 public struct HitResult
 {
-    /// <summary>中文含义：目标游戏对象。被命中的目标 GameObject</summary>
+    /// <summary>被命中的目标对象。</summary>
     public GameObject target;
-    /// <summary>中文含义：命中点位置。命中点世界坐标</summary>
+    /// <summary>命中点世界坐标。</summary>
     public Vector3 hitPoint;
-    /// <summary>中文含义：命中表面法线。命中面法线</summary>
+    /// <summary>命中表面法线。</summary>
     public Vector3 hitNormal;
     public Vector3 bloodDirection;
-    /// <summary>中文含义：命中盒类型。命中部位类型</summary>
+    /// <summary>命中部位类型。</summary>
     public HitboxType hitboxType;
-    /// <summary>中文含义：伤害。基础伤害乘部位倍率得到的结算值；免疫、减伤后的实际扣血见 DamageResult。</summary>
+    /// <summary>基础伤害乘部位倍率后的结算值；实际扣血见 DamageResult。</summary>
     public float damage;
-    /// <summary>中文含义：是否击杀。伤害提交后目标生命是否已归零；保留既有击杀显示标志。</summary>
+    /// <summary>伤害提交后目标生命是否已归零。</summary>
     public bool isKill;
-    /// <summary>中文含义：是否爆头。是否命中头部</summary>
+    /// <summary>是否命中头部。</summary>
     public bool isHeadshot;
     // 伤害来源已在自身表现入口负责接触声。
     public bool impactSoundHandled;
     public ChapterOneEffect bloodEffect;
     public bool deferBloodPresentation;
-    /// <summary>构造并初始化 HitResult 的声明状态；具体外部协作见静态调用链。</summary>
-    /// <remarks>静态调用链：上游 DamageResolutionModule.CommitEnemyHit(VillagerController, HitboxType, float, Vector3, Vector3)；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="target">中文含义：目标游戏对象。使用位置：HitResult.HitResult(GameObject, Vector3, Vector3, HitboxType, float, bool, bool)。</param>
-    /// <param name="hitPoint">中文含义：命中点位置。使用位置：HitResult.HitResult(GameObject, Vector3, Vector3, HitboxType, float, bool, bool)。</param>
-    /// <param name="hitNormal">中文含义：命中表面法线。使用位置：HitResult.HitResult(GameObject, Vector3, Vector3, HitboxType, float, bool, bool)。</param>
-    /// <param name="hitboxType">中文含义：命中盒类型。使用位置：HitResult.HitResult(GameObject, Vector3, Vector3, HitboxType, float, bool, bool)。</param>
-    /// <param name="damage">中文含义：伤害。使用位置：HitResult.HitResult(GameObject, Vector3, Vector3, HitboxType, float, bool, bool)。</param>
-    /// <param name="isKill">中文含义：是否击杀。使用位置：HitResult.HitResult(GameObject, Vector3, Vector3, HitboxType, float, bool, bool)。</param>
-    /// <param name="isHeadshot">中文含义：是否爆头。使用位置：HitResult.HitResult(GameObject, Vector3, Vector3, HitboxType, float, bool, bool)。</param>
+    /// <summary>由伤害结算创建命中事实，供战斗事件分发器及其表现订阅者使用。</summary>
+    /// <param name="target">目标游戏对象。</param>
+    /// <param name="hitPoint">命中点位置。</param>
+    /// <param name="hitNormal">命中表面法线。</param>
+    /// <param name="hitboxType">命中盒类型。</param>
+    /// <param name="damage">伤害。</param>
+    /// <param name="isKill">是否击杀。</param>
+    /// <param name="isHeadshot">是否爆头。</param>
     public HitResult(GameObject target, Vector3 hitPoint, Vector3 hitNormal, HitboxType hitboxType, float damage, bool isKill, bool isHeadshot, bool impactSoundHandled = false, ChapterOneEffect bloodEffect = ChapterOneEffect.None, bool deferBloodPresentation = false)
     {
         this.target = target;

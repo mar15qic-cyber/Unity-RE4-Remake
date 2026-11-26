@@ -17,11 +17,11 @@ public enum FireMode
 [CreateAssetMenu(fileName = "Weapon", menuName = "RE4/Weapon Data")]
 public class WeaponData : ScriptableObject
 {
-    /// <summary>中文含义：武器类型。使用位置：作为 WeaponRuntimeModule.CheckFire(int, bool, float, float) 的参数、作为 WeaponRuntimeModule.TryFire(int, bool, float, float) 的参数、CrosshairUI.RefreshWeaponConfig(bool) 等共 8 处。</summary>
+    /// <summary>武器类型。</summary>
     public WeaponType weaponType;
-    /// <summary>中文含义：武器名称。使用位置：作为 string.IsNullOrWhiteSpace(string) 的参数、CombatHUD.RefreshAmmoText()、WeaponWheelUI.ResolveDisplayName(WeaponWheelUI.WeaponSlot)。</summary>
+    /// <summary>武器名称。</summary>
     public string weaponName;
-    /// <summary>中文含义：基础伤害。使用位置：作为 DamageResolutionModule.CommitEnemyHit(VillagerController, HitboxType, float, Vector3, Vector3) 的参数、作为 DestructibleWoodenBox.TakeDamage(float, Vector3) 的参数、作为 WeaponBase.ProcessHit(RaycastHit, float) 的参数。</summary>
+    /// <summary>基础伤害。</summary>
     [Header("Damage")]
     public float baseDamage = 15f;
     /// <summary>中文含义：爆头倍率。</summary>
@@ -43,34 +43,34 @@ public class WeaponData : ScriptableObject
     [Min(1f)]
     [Tooltip("手枪手臂暴击在原有部位倍率之外追加的伤害倍率。")]
     public float armCriticalDamageMultiplier = 1f;
-    /// <summary>中文含义：开火速率。使用位置：WeaponBase.GetFireInterval()。</summary>
+    /// <summary>开火速率。</summary>
     [Header("Fire Rate")]
     public float fireRate = 0.4f;
-    /// <summary>中文含义：弹匣尺寸。使用位置：作为 WeaponBase.CommitReload(int, int, bool, Action&lt;int&gt;) 的参数、作为 WeaponRuntimeModule.BeginReload(int, int, int) 的参数、作为 WeaponRuntimeModule.CommitReload(int, int, int, int, bool, Action&lt;int&gt;) 的参数 等共 11 处。</summary>
+    /// <summary>弹匣尺寸。</summary>
     public int magazineSize = 12;
-    /// <summary>中文含义：换弹时间。使用位置：作为 MonoBehaviour.Invoke(string, float) 的参数。</summary>
+    /// <summary>换弹时间。</summary>
     public float reloadTime = 2.17f;
-    /// <summary>中文含义：开火模式。射击弹道模式：Single=单发精准, Pellet=散弹散射。使用位置：LeonCombat.GetShootLockDuration(WeaponBase)、LeonCombat.Update()、LeonCombat.UpdateShootStateLock() 等共 4 处。</summary>
+    /// <summary>开火模式。射击弹道模式：Single=单发精准, Pellet=散弹散射。</summary>
     [Header("Fire Mode")]
     [Tooltip("射击弹道模式：Single=单发精准, Pellet=散弹散射")]
     public FireMode fireMode = FireMode.Single;
-    /// <summary>中文含义：射线检测最大距离。使用位置：作为 WeaponBase.TryResolveRayHit(Vector3, Vector3, float, int, out RaycastHit) 的参数、LeonWeaponHandler.Fire()、RE4CameraController.GetCurrentWeaponRange()。</summary>
+    /// <summary>射线检测最大距离。</summary>
     [Header("Range")]
     [Tooltip("射线检测最大距离")]
     public float range = 100f;
-    /// <summary>中文含义：基础散布。使用位置：作为 Mathf.Min(float, float) 的参数。</summary>
+    /// <summary>基础散布。</summary>
     [Header("Spread")]
     public float baseSpread = 0.02f;
-    /// <summary>中文含义：最大散布。使用位置：作为 Mathf.Clamp01(float) 的参数、作为 Mathf.Min(float, float) 的参数、WeaponBase.GetSpreadNormalized()。</summary>
+    /// <summary>最大散布。</summary>
     public float maxSpread = 0.08f;
-    /// <summary>中文含义：散布恢复。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>散布恢复。</summary>
     public float spreadRecovery = 2f;
-    /// <summary>中文含义：后坐力大小。使用位置：作为 RE4CameraController.AddWeaponRecoil(float) 的参数。</summary>
+    /// <summary>后坐力大小。</summary>
     [Header("Recoil")]
     public float recoilAmount = 2f;
     /// <summary>中文含义：后坐力恢复。</summary>
     public float recoilRecovery = 5f;
-    /// <summary>中文含义：该武器使用的摄像机配置。使用位置：RE4CameraController.GetWeaponProfile(WeaponType)。</summary>
+    /// <summary>该武器使用的摄像机配置。</summary>
     [Header("Camera")]
     [Tooltip("该武器使用的摄像机配置")]
     public CameraProfile cameraProfile;
@@ -78,16 +78,16 @@ public class WeaponData : ScriptableObject
     [Header("Ammo Reserve")]
     [Tooltip("初始备弹数量")]
     public int reserveAmmo = 0;
-    /// <summary>中文含义：霰弹弹丸数量。使用位置：作为 WeaponBase.ProcessHit(RaycastHit, float) 的参数、WeaponBase.FireInternal(Vector3, Vector3)。</summary>
+    /// <summary>霰弹弹丸数量。</summary>
     [Header("Pellet (Pellet 模式专用)")]
     public int pelletCount = 6;
-    /// <summary>中文含义：霰弹弹丸散布角度。使用位置：WeaponBase.FireInternal(Vector3, Vector3)。</summary>
+    /// <summary>霰弹弹丸散布角度。</summary>
     public float pelletSpreadAngle = 5f;
-    /// <summary>中文含义：枪声听觉半径。使用位置：作为 CombatEventDispatcher.PublishWeaponFired(Vector3, float) 的参数。</summary>
+    /// <summary>枪声听觉半径。</summary>
     [Header("Audio & VFX (预留)")]
     [Min(0f)]
     public float gunshotHearingRadius = 18f;
-    /// <summary>中文含义：开火声音。使用位置：作为 AudioManager.PlaySFX3D(AudioClip, Vector3) 的参数、WeaponBase.FireInternal(Vector3, Vector3)。</summary>
+    /// <summary>开火声音。</summary>
     public AudioClip fireSound;
     /// <summary>中文含义：换弹声音。</summary>
     public AudioClip reloadSound;
@@ -95,11 +95,11 @@ public class WeaponData : ScriptableObject
     public GameObject muzzleFlash;
     /// <summary>中文含义：冲击效果。</summary>
     public GameObject impactEffect;
-    /// <summary>中文含义：该武器的准心配置资产。使用位置：CrosshairUI.RefreshWeaponConfig(bool)、WeaponBase.GetCrosshairConfig()。</summary>
+    /// <summary>该武器的准心配置资产。</summary>
     [Header("Crosshair")]
     [Tooltip("该武器的准心配置资产")]
     public CrosshairConfig crosshairConfig;
-    /// <summary>中文含义：当前武器在战斗界面中显示的图标，可直接从图集子图片拖入。使用位置：CombatHUD.RefreshAmmoText()、WeaponWheelUI.ResolveIcon(WeaponWheelUI.WeaponSlot, WeaponBase)。</summary>
+    /// <summary>当前武器在战斗界面中显示的图标，可直接从图集子图片拖入。</summary>
     [Header("界面显示")]
     [Tooltip("当前武器在战斗界面中显示的图标，可直接从图集子图片拖入。")]
     public Sprite hudIcon;

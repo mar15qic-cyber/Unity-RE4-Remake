@@ -255,7 +255,7 @@ namespace EnemyBehaviorTasks
     [TaskDescription("判断爬行敌人是否已经贴近玩家并可以开始爬行攻击。")]
     public class CanCrawlAttackNow : EnemyConditionalTaskBase
     {
-        /// <summary>中文含义：配对动作参与者。使用位置：CanCrawlAttackNow.OnAwake()、CanCrawlAttackNow.OnUpdate()。</summary>
+        /// <summary>配对动作参与者。</summary>
         private VillagerQTEParticipant qteParticipant;
         /// <summary>实现基类的 OnAwake 重写入口；框架调用后按本方法分支执行，并通过下游成员完成协作。</summary>
         /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） EnemyConditionalTaskBase.OnAwake()、GameObject.GetComponent&lt;VillagerQTEParticipant&gt;()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
@@ -293,9 +293,9 @@ namespace EnemyBehaviorTasks
     [TaskDescription("判断当前是否可以尝试向快速反应事件系统交接正面抓取。")]
     public abstract class CanAttemptEnemyQTEBase : EnemyConditionalTaskBase
     {
-        /// <summary>中文含义：参与者。使用位置：CanAttemptEnemyQTEBase.OnAwake()、CanAttemptEnemyQTEBase.OnUpdate()。</summary>
+        /// <summary>参与者。</summary>
         private VillagerQTEParticipant participant;
-        /// <summary>中文含义：种类。使用位置：作为 EnemyAIManager.CanAcquireQTEReservation(VillagerController, QTEKind) 的参数、CanAttemptEnemyQTEBase.OnUpdate()。</summary>
+        /// <summary>种类。</summary>
         protected abstract QTEKind Kind { get; }
 
         /// <summary>实现基类的 OnAwake 重写入口；框架调用后按本方法分支执行，并通过下游成员完成协作。</summary>
@@ -313,7 +313,7 @@ namespace EnemyBehaviorTasks
         /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） EnemyAIManager.CanAcquireQTEReservation(VillagerController, QTEKind)、VillagerQTEParticipant.CanAttemptChainsawExecution(LeonController)、VillagerQTEParticipant.CanAttemptLegBite(LeonController)、VillagerQTEParticipant.CanAttemptRearBiteNeck(LeonController)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
         public override TaskStatus OnUpdate()
         {
-            // canEvaluate（是否可以评估）：使用位置：CanAttemptEnemyQTEBase.OnUpdate()。
+            // 是否可以评估。
 bool canEvaluate;
             if (Kind == QTEKind.LegBite)
             {
@@ -329,7 +329,7 @@ bool canEvaluate;
                 return TaskStatus.Failure;
             }
 
-            // canAttempt（是否可以尝试）：使用位置：CanAttemptEnemyQTEBase.OnUpdate()。
+            // 是否可以尝试。
 bool canAttempt;
             if (Kind == QTEKind.RearBiteNeck)
             {
@@ -397,7 +397,7 @@ bool canAttempt;
     [TaskDescription("判断当前是否可以尝试向快速反应事件系统交接正面抓取。")]
     public class CanAttemptFrontGrabQTE : EnemyConditionalTaskBase
     {
-        /// <summary>中文含义：参与者。使用位置：CanAttemptFrontGrabQTE.OnAwake()、CanAttemptFrontGrabQTE.OnUpdate()。</summary>
+        /// <summary>参与者。</summary>
         private VillagerQTEParticipant participant;
         /// <summary>实现基类的 OnAwake 重写入口；框架调用后按本方法分支执行，并通过下游成员完成协作。</summary>
         /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） EnemyConditionalTaskBase.OnAwake()、GameObject.GetComponent&lt;VillagerQTEParticipant&gt;()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>

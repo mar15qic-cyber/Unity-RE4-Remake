@@ -815,6 +815,47 @@ public partial class LeonAnimatorDriver
         }
     }
 
+    internal void ResetNativeGaitToIdleImmediate()
+    {
+        ownsNativeGait = false;
+        holdsNativeInjuryDuringKnifeAction = false;
+        basicGaitActive = false;
+        basicRunRequested = false;
+        walkReverseRemaining = 0f;
+        basicRunLean = 0f;
+        previousRunForward = false;
+        idleVariationWait = 0f;
+        playingIdleVariation = 0;
+        nativePhase = NativePhase.Idle;
+        nativePace = NativePace.Walk;
+        nativeResumeLoopPhase = 0f;
+        nativeCrouching = false;
+        nativeCqbrCarry = currentWeaponType == WeaponType.Rifle;
+        nativeKnifeGait = currentWeaponType == WeaponType.Knife && SupportsNativeKnifeGait;
+        nativeGaitWeaponType = currentWeaponType;
+        nativeStanceHasInput = false;
+        NativeGaitDirection = Vector3.zero;
+        requestedNativeState = 0;
+        if (!IsValid)
+        {
+            return;
+        }
+
+        animator.SetFloat(HashHorizontal, 0f);
+        animator.SetFloat(HashVertical, 0f);
+        animator.SetFloat(BasicRunLeanHash, 0f);
+        WriteLegacyCrouchParameter();
+        if (CanUseNativeGait(false, nativeInjuryPoseActive))
+        {
+            PlayNativeGait(NativePhase.Idle, 0f, 0f);
+        }
+        else
+        {
+            animator.CrossFadeInFixedTime(HashBaseIdle, 0f, 0, 0f, 0f);
+        }
+        animator.Update(0f);
+    }
+
     internal void ReleaseNativeGait(bool moving, bool crouching = false)
     {
         holdsNativeInjuryDuringKnifeAction = false;

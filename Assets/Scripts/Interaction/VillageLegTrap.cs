@@ -87,8 +87,20 @@ public sealed class VillageLegTrap : MonoBehaviour, IInteractable, IDamageable
         var enemy = other.GetComponentInParent<VillagerController>();
         if (enemy != null)
         {
-            if ((other.ClosestPoint(Ankle) - Ankle).sqrMagnitude <= .25f * .25f
-                && enemy.combatModule != null && enemy.combatModule.TryCatchLegTrap(this))
+            bool footInRange = false;
+            if (enemy.combatModule != null)
+            {
+                if (enemy.combatModule.HasCachedTrapFeet)
+                {
+                    footInRange = enemy.combatModule.IsFootNearLegTrap(Ankle, 0.36f);
+                }
+                else
+                {
+                    footInRange = (other.ClosestPoint(Ankle) - Ankle).sqrMagnitude <= .22f * .22f;
+                }
+            }
+
+            if (footInRange && enemy.combatModule != null && enemy.combatModule.TryCatchLegTrap(this))
             {
                 enemyOccupant = enemy.combatModule;
                 SampleEnemy(0f);

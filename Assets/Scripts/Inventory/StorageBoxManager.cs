@@ -14,35 +14,35 @@ public class StorageBoxManager : Singleton<StorageBoxManager>, IManualSingleton
     /// <summary>中文含义：切换场景时是否保留此单例对象。</summary>
     protected override bool Persistent => false;
 
-    /// <summary>中文含义：本局背包。使用位置：SceneStartupEntry.ConfigurationError()、StorageBoxManager.TransferToInventory(GridItem)、StorageBoxManager.TransferToStorage(GridItem)。</summary>
+    /// <summary>本局背包。</summary>
     [Header("本局引用")]
     [UnityEngine.Serialization.FormerlySerializedAs("本局背包")]
     [UnityEngine.InspectorName("本局背包")]
     public InventoryManager currentSessionInventory;
-    /// <summary>中文含义：本局玩家。使用位置：SceneStartupEntry.ConfigurationError()、StorageBoxManager.TransferToStorage(GridItem)。</summary>
+    /// <summary>本局玩家。</summary>
     [UnityEngine.Serialization.FormerlySerializedAs("本局玩家")]
     [UnityEngine.InspectorName("本局玩家")]
     public LeonController currentSessionPlayer;
-    /// <summary>中文含义：是否关闭时保持旧版限制。启用后允许把当前手持武器存入箱子；关闭时保持旧版限制。使用位置：StorageBoxManager.TransferToStorage(GridItem)。</summary>
+    /// <summary>是否关闭时保持旧版限制。启用后允许把当前手持武器存入箱子；关闭时保持旧版限制。</summary>
     [Header("存取规则")]
     [Tooltip("启用后允许把当前手持武器存入箱子；关闭时保持旧版限制。")]
     public bool allowStoringEquippedWeapon = true;
-    /// <summary>中文含义：是否新游戏的寄存箱中预置一把满弹匣、无备用弹药的奖励步枪。新游戏的寄存箱中预置一把满弹匣、无备用弹药的奖励步枪。使用位置：StorageBoxManager.ResetForNewRun()。</summary>
+    /// <summary>是否新游戏的寄存箱中预置一把满弹匣、无备用弹药的奖励步枪。新游戏的寄存箱中预置一把满弹匣、无备用弹药的奖励步枪。</summary>
     [Header("初始奖励")]
     [Tooltip("新游戏的寄存箱中预置一把满弹匣、无备用弹药的奖励步枪。")]
     public bool includeRewardRifle = true;
-    /// <summary>中文含义：模型。使用位置：作为 ItemUseService.CompleteStored(int, bool, bool, int, StorageRulesModel) 的参数、StorageBoxManager.CommitTransferToStorage(GridItem, InventoryManager)、StorageBoxManager.GetStorageItems() 等共 9 处。</summary>
+    /// <summary>模型。</summary>
     public StorageRulesModel Model { get; } = new StorageRulesModel();
 
-    /// <summary>中文含义：使用服务。只读字段，初始化后不由普通写入口替换。使用位置：StorageBoxManager.ClearPendingTransfer()、StorageBoxManager.IsTransferPending.get、StorageBoxManager.OnStorageWeaponSwitchCompleted(bool, int) 等共 4 处。</summary>
+    /// <summary>使用服务。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly ItemUseService useService = new ItemUseService();
     public event System.Action OnStorageChanged { add => Model.OnStorageChanged += value; remove => Model.OnStorageChanged -= value; }
 
-    /// <summary>中文含义：转移已失败时的通知回调。事件通信成员 OnTransferFailed，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。使用位置：StorageBoxManager.OnStorageWeaponSwitchCompleted(bool, int)、StorageBoxUI.BindManagerEvents()、StorageBoxUI.UnbindManagerEvents()。</summary>
+    /// <summary>转移已失败时的通知回调。事件通信成员 OnTransferFailed，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。</summary>
     public event System.Action<string> OnTransferFailed;
-    /// <summary>中文含义：是否打开。使用位置：InventoryUI.ShowContextMenu(GridItem, Vector2)、StorageBoxManager.Close()、StorageBoxManager.Open() 等共 4 处。</summary>
+    /// <summary>是否打开。</summary>
     public bool IsOpen { get; private set; }
-    /// <summary>中文含义：是否转移待处理。使用位置：StorageBoxManager.TransferToStorage(GridItem)。</summary>
+    /// <summary>是否转移待处理。</summary>
     public bool IsTransferPending => useService.WaitingStored;
 
     /// <summary>GetStorageItems 的业务处理入口；本方法直接依赖 StorageRulesModel.GetStorageItems()，调用方通过参数与返回结果交接本次处理。</summary>
@@ -61,7 +61,7 @@ public class StorageBoxManager : Singleton<StorageBoxManager>, IManualSingleton
     {
         ClearPendingTransfer();
         IsOpen = false;
-        // reward（奖励）：使用位置：作为 StorageRulesModel.Initialize(ItemData) 的参数、StorageBoxManager.ResetForNewRun()。
+        // 奖励。
 ItemData reward;
         if (includeRewardRifle)
         {
@@ -82,13 +82,13 @@ ItemData reward;
 
     /// <summary>ValidateInventorySource 的业务处理入口；本方法直接依赖 StorageRulesModel.ValidateInventorySource(GridItem, InventoryRulesModel)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 StorageBoxManager.TransferToStorage(GridItem)；下游（含内部回调体） StorageRulesModel.ValidateInventorySource(GridItem, InventoryRulesModel)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="item">中文含义：当前背包网格物品。使用位置：作为 StorageRulesModel.ValidateInventorySource(GridItem, InventoryRulesModel) 的参数。</param>
-    /// <param name="invMgr">中文含义：背包管理器。使用位置：作为 StorageRulesModel.ValidateInventorySource(GridItem, InventoryRulesModel) 的参数、StorageBoxManager.ValidateInventorySource(GridItem, InventoryManager)。</param>
+    /// <param name="item">当前背包网格物品。</param>
+    /// <param name="invMgr">背包管理器。</param>
     bool ValidateInventorySource(GridItem item, InventoryManager invMgr) => invMgr != null && Model.ValidateInventorySource(item, invMgr.Model);
     /// <summary>CommitTransferToStorage 的业务处理入口；本方法直接依赖 StorageRulesModel.CommitTransferToStorage(GridItem, InventoryRulesModel)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 StorageBoxManager.TransferToStorage(GridItem)；下游（含内部回调体） StorageRulesModel.CommitTransferToStorage(GridItem, InventoryRulesModel)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="source">中文含义：来源背包网格物品。使用位置：作为 StorageRulesModel.CommitTransferToStorage(GridItem, InventoryRulesModel) 的参数。</param>
-    /// <param name="invMgr">中文含义：背包管理器。使用位置：作为 StorageRulesModel.CommitTransferToStorage(GridItem, InventoryRulesModel) 的参数、StorageBoxManager.CommitTransferToStorage(GridItem, InventoryManager)。</param>
+    /// <param name="source">来源背包网格物品。</param>
+    /// <param name="invMgr">背包管理器。</param>
     bool CommitTransferToStorage(GridItem source, InventoryManager invMgr)
     {
         if (invMgr == null || !Model.CommitTransferToStorage(source, invMgr.Model))
@@ -101,7 +101,7 @@ ItemData reward;
     }
     /// <summary>TransferToInventory 的业务处理入口；本方法直接依赖 StorageRulesModel.TransferToInventory(GridItem, InventoryRulesModel)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 PerformanceSamplingEntry.Drive(int, double)、StorageBoxUI.ConfigureStorageEntry(GameObject, GridItem, bool)；下游（含内部回调体） StorageRulesModel.TransferToInventory(GridItem, InventoryRulesModel)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="item">中文含义：当前背包网格物品。使用位置：作为 StorageRulesModel.TransferToInventory(GridItem, InventoryRulesModel) 的参数。</param>
+    /// <param name="item">当前背包网格物品。</param>
     public bool TransferToInventory(GridItem item)
     {
         if (this == null || !isActiveAndEnabled || !gameObject.scene.isLoaded)
@@ -109,7 +109,7 @@ ItemData reward;
             return false;
         }
 
-        // inventory（背包）：使用位置：作为 StorageRulesModel.TransferToInventory(GridItem, InventoryRulesModel) 的参数、StorageBoxManager.TransferToInventory(GridItem)。
+        // 背包。
 InventoryManager inventory = currentSessionInventory;
         if (inventory == null || !Model.TransferToInventory(item, inventory.Model))
         {
@@ -125,7 +125,7 @@ InventoryManager inventory = currentSessionInventory;
     /// 先验证全部条件，确认后再执行修改。
     /// </summary>
     /// <remarks>静态调用链：上游 InventoryUI.HandleContextStoreButtonClicked()、PerformanceSamplingEntry.Drive(int, double)、StorageBoxUI.OnInventoryItemClicked(GridItem, PointerEventData.InputButton, Vector2)、StorageBoxUI.OnInventoryItemPointerUp(GridItem, Vector2)；下游（含内部回调体） Component.GetComponent&lt;LeonWeaponHandler&gt;()、ItemUseService.BeginStored(InventoryRulesModel, GridItem, int)、LeonWeaponHandler.TrySwitchAwayForStorage(WeaponType, Action&lt;bool&gt;)、StorageBoxManager.ClearPendingTransfer()、StorageBoxManager.CommitTransferToStorage(GridItem, InventoryManager)、StorageBoxManager.OnStorageWeaponSwitchCompleted(bool, int)、StorageBoxManager.ValidateInventorySource(GridItem, InventoryManager)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="item">中文含义：当前背包网格物品。使用位置：作为 ItemUseService.BeginStored(InventoryRulesModel, GridItem, int) 的参数、作为 LeonWeaponHandler.TrySwitchAwayForStorage(WeaponType, Action&lt;bool&gt;) 的参数、作为 StorageBoxManager.CommitTransferToStorage(GridItem, InventoryManager) 的参数 等共 5 处。</param>
+    /// <param name="item">当前背包网格物品。</param>
     public bool TransferToStorage(GridItem item)
     {
         if (this == null || !isActiveAndEnabled || !gameObject.scene.isLoaded)
@@ -143,7 +143,7 @@ InventoryManager inventory = currentSessionInventory;
             return false;
         }
 
-        // invMgr（背包管理器）：使用位置：作为 ItemUseService.BeginStored(InventoryRulesModel, GridItem, int) 的参数、作为 StorageBoxManager.CommitTransferToStorage(GridItem, InventoryManager) 的参数、作为 StorageBoxManager.ValidateInventorySource(GridItem, InventoryManager) 的参数。
+        // 背包管理器。
 InventoryManager invMgr = currentSessionInventory;
         if (!ValidateInventorySource(item, invMgr))
         {
@@ -152,9 +152,9 @@ InventoryManager invMgr = currentSessionInventory;
 
         if (item.item.itemType == ItemType.Weapon)
         {
-            // leon（里昂）：使用位置：StorageBoxManager.TransferToStorage(GridItem)。
+            // 里昂。
 LeonController leon = currentSessionPlayer;
-            // isEquipped（是否已装备）：使用位置：StorageBoxManager.TransferToStorage(GridItem)。
+            // 是否已装备。
 bool isEquipped = leon != null && leon.currentWeapon == item.item.weaponType;
             if (isEquipped)
             {
@@ -163,14 +163,14 @@ bool isEquipped = leon != null && leon.currentWeapon == item.item.weaponType;
                     return false;
                 }
 
-                // weaponHandler（管理当前装备与武器切换的组件）：保存 Component.GetComponent<LeonWeaponHandler>() 的返回结果，供当前步骤使用。使用位置：StorageBoxManager.TransferToStorage(GridItem)。
+                // 管理当前装备与武器切换的组件。
 LeonWeaponHandler weaponHandler = leon.GetComponent<LeonWeaponHandler>();
                 if (weaponHandler == null)
                 {
                     return false;
                 }
 
-                // requestVersion（请求版本）：保存 ItemUseService.BeginStored(InventoryRulesModel, GridItem, int) 的返回结果，供当前步骤使用。使用位置：作为 StorageBoxManager.OnStorageWeaponSwitchCompleted(bool, int) 的参数、StorageBoxManager.TransferToStorage(GridItem)。
+                // 请求版本。
 int requestVersion = useService.BeginStored(invMgr.Model, item, gameObject.scene.handle);
                 if (requestVersion == 0)
                 {
@@ -196,21 +196,21 @@ int requestVersion = useService.BeginStored(invMgr.Model, item, gameObject.scene
 
     /// <summary>OnStorageWeaponSwitchCompleted 的业务处理入口；本方法直接依赖 Action&lt;string&gt;.Invoke(string)、ItemUseService.CompleteStored(int, bool, bool, int, StorageRulesModel)、object.ReferenceEquals(object, object)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 StorageBoxManager.TransferToStorage(GridItem)；下游（含内部回调体） Action&lt;string&gt;.Invoke(string)、ItemUseService.CompleteStored(int, bool, bool, int, StorageRulesModel)、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="success">中文含义：是否成功。使用位置：StorageBoxManager.OnStorageWeaponSwitchCompleted(bool, int)。</param>
-    /// <param name="requestVersion">中文含义：请求版本。使用位置：StorageBoxManager.OnStorageWeaponSwitchCompleted(bool, int)。</param>
+    /// <param name="success">是否成功。</param>
+    /// <param name="requestVersion">请求版本。</param>
     void OnStorageWeaponSwitchCompleted(bool success, int requestVersion)
     {
-        // valid（是否有效）：使用位置：StorageBoxManager.OnStorageWeaponSwitchCompleted(bool, int)。
+        // 是否有效。
 bool valid = this != null && isActiveAndEnabled && gameObject.scene.isLoaded;
-        // callReceiver6（调用前缓存的使用服务）：从使用服务读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：StorageBoxManager.OnStorageWeaponSwitchCompleted(bool, int)。
+        // 调用前缓存的使用服务。
 global::ItemUseService callReceiver6 = useService;
-        // argumentValue3（按原顺序缓存的实参请求版本）：从请求版本读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 ItemUseService.CompleteStored(int, bool, bool, int, StorageRulesModel) 的参数。
+        // 按原顺序缓存的实参请求版本。
 int argumentValue3 = requestVersion;
-        // argumentValue4（按原顺序缓存的实参是否成功）：从成功读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 ItemUseService.CompleteStored(int, bool, bool, int, StorageRulesModel) 的参数。
+        // 按原顺序缓存的实参是否成功。
 bool argumentValue4 = success;
-        // argumentValue5（按原顺序缓存的实参是否有效）：从有效读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 ItemUseService.CompleteStored(int, bool, bool, int, StorageRulesModel) 的参数。
+        // 按原顺序缓存的实参是否有效。
 bool argumentValue5 = valid;
-        // selectedValue2（分支选出的游戏对象的场景的句柄）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：作为 ItemUseService.CompleteStored(int, bool, bool, int, StorageRulesModel) 的参数、StorageBoxManager.OnStorageWeaponSwitchCompleted(bool, int)。
+        // 分支选出的游戏对象的场景的句柄。
 int selectedValue2;
         if (valid)
         {
@@ -221,7 +221,7 @@ int selectedValue2;
             selectedValue2 = -1;
         }
 
-        // result（结果）：保存 ItemUseService.CompleteStored(int, bool, bool, int, StorageRulesModel) 的返回结果，供当前步骤使用。使用位置：StorageBoxManager.OnStorageWeaponSwitchCompleted(bool, int)。
+        // 结果。
 int result = callReceiver6.CompleteStored(argumentValue3, argumentValue4, argumentValue5, selectedValue2, Model);
         if (result == 1)
         {
@@ -229,7 +229,7 @@ int result = callReceiver6.CompleteStored(argumentValue3, argumentValue4, argume
         }
         else if (result == -1)
         {
-            // receiverValue7（判空前缓存的转移已失败时的通知回调）：从转移已失败时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、StorageBoxManager.OnStorageWeaponSwitchCompleted(bool, int)。
+            // 判空前缓存的转移已失败时的通知回调。
 global::System.Action<string> receiverValue7 = OnTransferFailed;
             if (!global::System.Object.ReferenceEquals(receiverValue7, null))
             {
@@ -238,7 +238,7 @@ global::System.Action<string> receiverValue7 = OnTransferFailed;
         }
         else if (result == -2)
         {
-            // receiverValue8（判空前缓存的转移已失败时的通知回调）：从转移已失败时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、StorageBoxManager.OnStorageWeaponSwitchCompleted(bool, int)。
+            // 判空前缓存的转移已失败时的通知回调。
 global::System.Action<string> receiverValue8 = OnTransferFailed;
             if (!global::System.Object.ReferenceEquals(receiverValue8, null))
             {

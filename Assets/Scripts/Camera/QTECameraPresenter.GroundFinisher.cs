@@ -14,7 +14,8 @@ public sealed partial class QTECameraPresenter
     private void BeginGroundFinisherCamera()
     {
         groundReturnAngles = null;
-        if (sessionContext.kind == QTEKind.GroundFinisher && cameraController.gameplayDriver != null)
+        if ((sessionContext.kind == QTEKind.GroundFinisher || sessionContext.kind == QTEKind.FrontGrab)
+            && cameraController.gameplayDriver != null)
         {
             groundReturnAngles = cameraController.gameplayDriver.CaptureShoulderViewAngles();
         }

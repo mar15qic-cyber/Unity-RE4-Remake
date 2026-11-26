@@ -8,7 +8,7 @@ public static class PlayerModuleBoundaryValidator
 {
     /// <summary>Validate 的业务处理入口；本方法直接依赖 ArchitectureBoundaryValidator.Scan()、CheckReadOnly(Type, params string[])、List&lt;string&gt;.Add(string)、string.StartsWith(string, StringComparison)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyAIIntegrationContractValidator.Validate()；下游（含内部回调体） ArchitectureBoundaryValidator.Scan()、CheckReadOnly(Type, params string[])、List&lt;string&gt;.Add(string)、string.StartsWith(string, StringComparison)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="failure">中文含义：失败。使用位置：CheckReadOnly(Type, params string[])、PlayerModuleBoundaryValidator.Validate(List&lt;string&gt;)。</param>
+    /// <param name="failure">失败。</param>
     public static void Validate(List<string> failure)
     {
         CheckReadOnly(typeof(LeonController), "currentState", "currentWeapon");
@@ -35,14 +35,14 @@ foreach (var item in ArchitectureBoundaryValidator.Scan())
 
         /// <summary>CheckReadOnly 的业务处理入口；本方法直接依赖 List&lt;string&gt;.Add(string)、object.ReferenceEquals(object, object)、Type.GetField(string, BindingFlags)、Type.GetProperty(string)，调用方通过参数与返回结果交接本次处理。</summary>
         /// <remarks>静态调用链：上游 PlayerModuleBoundaryValidator.Validate(List&lt;string&gt;)；下游（含内部回调体） List&lt;string&gt;.Add(string)、object.ReferenceEquals(object, object)、Type.GetField(string, BindingFlags)、Type.GetProperty(string)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-        /// <param name="type">中文含义：反射操作使用的类型信息。使用位置：作为 List&lt;string&gt;.Add(string) 的参数、CheckReadOnly(Type, params string[])。</param>
-        /// <param name="member">中文含义：成员。使用位置：CheckReadOnly(Type, params string[])。</param>
+        /// <param name="type">反射操作使用的类型信息。</param>
+        /// <param name="member">成员。</param>
         void CheckReadOnly(Type type, params string[] member)
         {
             // name（名称）：每轮从成员取得一个元素，仅代表当前这一项。使用位置：作为 List<string>.Add(string) 的参数、作为 Type.GetField(string, BindingFlags) 的参数、作为 Type.GetProperty(string) 的参数。
 foreach (string name in member)
             {
-                // conditionResult3（短路判断得到的分支判断）：保存短路分支结果，未选中的分支不执行。使用位置：CheckReadOnly(Type, params string[])。
+                // 短路判断得到的分支判断。
 bool conditionResult3;
                 if (type.GetField(name, BindingFlags.Instance | BindingFlags.Public) != null)
                 {
@@ -50,9 +50,9 @@ bool conditionResult3;
                 }
                 else
                 {
-                    // receiverValue1（判空前缓存的取得属性的返回结果）：从取得属性的返回结果读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、CheckReadOnly(Type, params string[])。
+                    // 判空前缓存的取得属性的返回结果。
 global::System.Reflection.PropertyInfo receiverValue1 = type.GetProperty(name);
-                    // optionalValue2（条件访问得到的接收者值1的是否可以写入）：保存条件访问的结果，接收者为空时保持默认空值，非空时才执行原成员访问。使用位置：CheckReadOnly(Type, params string[])。
+                    // 条件访问得到的接收者值1的是否可以写入。
 bool? optionalValue2;
                     if (!global::System.Object.ReferenceEquals(receiverValue1, null))
                     {

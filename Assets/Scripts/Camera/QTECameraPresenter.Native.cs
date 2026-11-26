@@ -26,6 +26,10 @@ public sealed partial class QTECameraPresenter
     private float nativeExitBlendSeconds = .18f;
     private bool resultCameraReleased;
     private CinemachineBlendDefinition.Styles nativeExitBlendStyle = CinemachineBlendDefinition.Styles.EaseOut;
+    private Transform pendingBlendIgnorePlayer;
+    private Transform pendingBlendIgnoreEnemy;
+    private bool pendingBlendHasGroundReturnAngles;
+    private int pendingBlendExpireFrame = -1;
 
     private void RegisterNativeBlendOverride()
     {
@@ -76,7 +80,7 @@ public sealed partial class QTECameraPresenter
             {
                 CameraState next = to.State;
                 CameraState last = from.State;
-                if (!IsQteCameraMovementClear(last.GetFinalPosition(), next.GetFinalPosition(), .15f))
+                if (!IsQteBlendMovementClear(last.GetFinalPosition(), next.GetFinalPosition(), .15f))
                 {
                     return new CinemachineBlendDefinition(CinemachineBlendDefinition.Styles.Cut, 0f);
                 }
@@ -84,7 +88,9 @@ public sealed partial class QTECameraPresenter
                 float turn = Quaternion.Angle(last.GetFinalOrientation(), next.GetFinalOrientation());
                 float travel = Vector3.Distance(last.GetFinalPosition(), next.GetFinalPosition());
                 duration = Mathf.Max(duration, turn / 150f, travel / 5f);
-                if (groundReturnAngles.HasValue)
+                bool hasGroundReturn = groundReturnAngles.HasValue
+                    || (Time.frameCount <= pendingBlendExpireFrame && pendingBlendHasGroundReturnAngles);
+                if (hasGroundReturn)
                 {
                     duration = Mathf.Max(duration, Mathf.Abs(last.Lens.FieldOfView - next.Lens.FieldOfView) / 60f);
                 }
@@ -162,11 +168,23 @@ public sealed partial class QTECameraPresenter
             ReleaseNativeCamera();
             return;
         }
+        if (coordinator != null && coordinator.ShouldReleaseFrontGrabStabCamera() && !resultCameraReleased)
+        {
+            nativeExitBlendSeconds = 0.60f;
+            nativeExitBlendStyle = CinemachineBlendDefinition.Styles.EaseInOut;
+            resultCameraReleased = true;
+            ReleaseNativeCamera();
+            return;
+        }
 
         Pose pose = default;
         float horizontalFov = 64f;
         bool hasCandidate;
-        if (coordinator.IsNativePairPlayerRecovering)
+        if (coordinator.TryReadFrontGrabStabCamera(out float stabProgress))
+        {
+            hasCandidate = TryFrameFrontGrabStab(stabProgress, out pose, out horizontalFov);
+        }
+        else if (coordinator.IsNativePairPlayerRecovering)
         {
             hasCandidate = TryFramePlayerRecovery(out pose, out horizontalFov);
         }
@@ -191,8 +209,14 @@ public sealed partial class QTECameraPresenter
             {
                 nativeTrack = SelectNativeTrack(playerClip, frameRate, sourceFrame, stage);
                 nextNativeTrackSearch = Time.time + .16f;
-                hasCandidate = nativeTrack != null
-                    && TrySampleNativePose(nativeTrack, sourceFrame, stage, nativeMirrored, out pose, out horizontalFov);
+                if (nativeTrack != null)
+                {
+                    hasCandidate = TrySampleNativePose(nativeTrack, sourceFrame, stage, nativeMirrored, out pose, out horizontalFov);
+                }
+            }
+            if (!hasCandidate && playerClip == "LeonPair_SawKneel1020")
+            {
+                hasCandidate = TrySampleGroundFinisherCamera(out pose, out horizontalFov);
             }
         }
 
@@ -202,6 +226,34 @@ public sealed partial class QTECameraPresenter
             ReadGrabAnchors(out var leon, out var enemy);
             frontGrabShotRadial = Vector3.ProjectOnPlane(pose.position - (leon + enemy) * .5f, Vector3.up).normalized;
         }
+    }
+
+    private bool TryFrameFrontGrabStab(float progress, out Pose pose, out float horizontalFov)
+    {
+        pose = default;
+        horizontalFov = 62f;
+        var output = Camera.main;
+        if (output == null)
+        {
+            return false;
+        }
+        ReadGrabAnchors(out var leon, out var enemy);
+        Vector3 center = (leon + enemy) * .5f;
+        Vector3 radial = frontGrabShotRadial;
+        if (radial.sqrMagnitude < .01f)
+        {
+            radial = Vector3.ProjectOnPlane(output.transform.position - center, Vector3.up).normalized;
+        }
+        if (radial.sqrMagnitude < .01f)
+        {
+            return false;
+        }
+        float weight = Mathf.SmoothStep(0f, 1f, progress * 2f);
+        Vector3 focus = Vector3.Lerp(center, enemy, .22f) - Vector3.up * (.12f * weight);
+        float distance = Mathf.Clamp(Vector3.Distance(output.transform.position, center), 1.65f, 2.6f);
+        Vector3 position = center + radial * distance + Vector3.up * .12f;
+        pose = new Pose(position, Quaternion.LookRotation(focus - position, Vector3.up));
+        return true;
     }
 
     private CinemachineCamera GetContinuousQteCamera()
@@ -316,13 +368,18 @@ public sealed partial class QTECameraPresenter
         }
 
         qteObstructedSince = -1f;
+        if (!active && (resultCameraReleased || coordinator != null && (coordinator.CurrentPhase == QTEPhase.SuccessResult
+            || coordinator.CurrentPhase == QTEPhase.FailureResult || coordinator.CurrentPhase == QTEPhase.Exiting)))
+        {
+            return false;
+        }
         if (!active && qteNeedsStableClearance)
         {
             if (qteClearSince < 0f)
             {
                 qteClearSince = now;
             }
-            if (now - qteClearSince < .20f)
+            if (now - qteClearSince < .45f)
             {
                 return false;
             }
@@ -366,10 +423,11 @@ public sealed partial class QTECameraPresenter
         bool bestMirror = false;
         float bestScore = float.PositiveInfinity;
         var candidate = activeNativeTracks.Find(playerClip, frameRate);
+        bool allowMirror = UsesGrabComposition || sessionContext.kind == QTEKind.GroundFinisher;
         while (candidate != null)
         {
             int count = 1;
-            if (UsesGrabComposition)
+            if (allowMirror)
             {
                 count = 2;
             }
@@ -387,6 +445,10 @@ public sealed partial class QTECameraPresenter
                 {
                     score = ScoreGrabComposition(pose, fov, grabScreenSide);
                 }
+                else if (mirrored)
+                {
+                    score = 1f;
+                }
                 if (score < bestScore)
                 {
                     best = candidate;
@@ -395,7 +457,7 @@ public sealed partial class QTECameraPresenter
                 }
             }
 
-            if (best != null && !UsesGrabComposition)
+            if (best != null && !UsesGrabComposition && !bestMirror)
             {
                 break;
             }
@@ -459,6 +521,11 @@ public sealed partial class QTECameraPresenter
         if (sessionContext.kind == QTEKind.GroundFinisher)
         {
             height = .65f;
+            if (sessionContext.enemyRoot != null && sessionContext.enemyRoot.TryGetComponent<VillagerController>(out var enemy)
+                && enemy.missionEnemyType == MissionEnemyType.Sawman)
+            {
+                height = 1.30f;
+            }
         }
         return (sessionContext.playerRoot.position + sessionContext.enemyRoot.position) * .5f + Vector3.up * height;
     }
@@ -470,8 +537,32 @@ public sealed partial class QTECameraPresenter
             && IsQteCameraMovementClear(focus, cameraPosition, .13f);
     }
 
+    private bool IsQteBlendMovementClear(Vector3 from, Vector3 to, float radius)
+    {
+        Transform playerIgnore = sessionContext.playerRoot;
+        Transform enemyIgnore = sessionContext.enemyRoot;
+        if (playerIgnore == null && enemyIgnore == null && Time.frameCount <= pendingBlendExpireFrame)
+        {
+            playerIgnore = pendingBlendIgnorePlayer;
+            enemyIgnore = pendingBlendIgnoreEnemy;
+        }
+        return !CameraRouteClearance.HasOverlap(to, radius, Physics.DefaultRaycastLayers, nativeCameraOverlaps,
+                playerIgnore, enemyIgnore)
+            && !CameraRouteClearance.Sweep(from, to, radius, Physics.DefaultRaycastLayers, nativeSightHits,
+                playerIgnore, enemyIgnore, out _);
+    }
+
+    private void PreserveBlendContextForFrame()
+    {
+        pendingBlendIgnorePlayer = sessionContext.playerRoot;
+        pendingBlendIgnoreEnemy = sessionContext.enemyRoot;
+        pendingBlendHasGroundReturnAngles = groundReturnAngles.HasValue;
+        pendingBlendExpireFrame = Time.frameCount + 1;
+    }
+
     private void ReleaseNativeCamera()
     {
+        PreserveBlendContextForFrame();
         if (nativeCameraTaken && cameraController != null)
         {
             cameraController.ReleaseExternalCamera(this, true, groundReturnAngles);

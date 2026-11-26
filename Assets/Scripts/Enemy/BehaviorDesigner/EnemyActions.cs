@@ -40,9 +40,9 @@ namespace EnemyBehaviorTasks
     [TaskDescription("执行受击并等待动画完成。")]
     public class ExecuteHit : EnemyTaskBase
     {
-        /// <summary>中文含义：截止时间。使用位置：ExecuteHit.OnStart()、ExecuteHit.OnUpdate()。</summary>
+        /// <summary>截止时间。</summary>
         private float deadline;
-        /// <summary>中文含义：是否已完成。使用位置：ExecuteHit.OnEnd()、ExecuteHit.OnStart()、ExecuteHit.OnUpdate()。</summary>
+        /// <summary>是否已完成。</summary>
         private bool completed;
         /// <summary>实现基类的 OnStart 重写入口；框架调用后按本方法分支执行，并通过下游成员完成协作。</summary>
         /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） EnemyActionCoordinator.RequestAction(ActionKind, string, bool)、EnemyTaskBase.DiagTaskStart()、object.GetType()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
@@ -74,7 +74,7 @@ namespace EnemyBehaviorTasks
             }
 
             if (Controller.combatModule != null && (Controller.combatModule.NativeCombatActive
-                || Controller.combatModule.StandingHitRecoveryActive))
+                || Controller.combatModule.StandingHitRecoveryActive) && Time.time < deadline + 4f)
             {
                 return TaskStatus.Running;
             }
@@ -106,11 +106,11 @@ namespace EnemyBehaviorTasks
     [TaskDescription("沿寻路方向爬行，超时后请求起身。")]
     public class ExecuteCrawl : EnemyTaskBase
     {
-        /// <summary>中文含义：结束时间。使用位置：ExecuteCrawl.OnStart()、ExecuteCrawl.OnUpdate()。</summary>
+        /// <summary>结束时间。</summary>
         private float endTime;
-        /// <summary>中文含义：是否已完成。使用位置：ExecuteCrawl.OnEnd()、ExecuteCrawl.OnStart()、ExecuteCrawl.OnUpdate()。</summary>
+        /// <summary>是否已完成。</summary>
         private bool completed;
-        /// <summary>中文含义：配对动作参与者。使用位置：ExecuteCrawl.OnAwake()、ExecuteCrawl.OnUpdate()。</summary>
+        /// <summary>配对动作参与者。</summary>
         private VillagerQTEParticipant qteParticipant;
         /// <summary>实现基类的 OnAwake 重写入口；框架调用后按本方法分支执行，并通过下游成员完成协作。</summary>
         /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） EnemyTaskBase.OnAwake()、GameObject.GetComponent&lt;VillagerQTEParticipant&gt;()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
@@ -200,13 +200,13 @@ namespace EnemyBehaviorTasks
     [TaskDescription("执行起身并等待完成信号。")]
     public class ExecuteStandUp : EnemyTaskBase
     {
-        /// <summary>中文含义：截止时间。使用位置：ExecuteStandUp.OnStart()、ExecuteStandUp.OnUpdate()。</summary>
+        /// <summary>截止时间。</summary>
         private float deadline;
-        /// <summary>中文含义：缓冲区截止时间。使用位置：ExecuteStandUp.OnStart()、ExecuteStandUp.OnUpdate()。</summary>
+        /// <summary>缓冲区截止时间。</summary>
         private float bufferDeadline;
-        /// <summary>中文含义：是否已完成。使用位置：ExecuteStandUp.OnEnd()、ExecuteStandUp.OnStart()、ExecuteStandUp.OnUpdate()。</summary>
+        /// <summary>是否已完成。</summary>
         private bool completed;
-        /// <summary>中文含义：超时是否已经申请。使用位置：ExecuteStandUp.OnStart()、ExecuteStandUp.OnUpdate()。</summary>
+        /// <summary>超时是否已经申请。</summary>
         private bool timeoutRequested;
         /// <summary>实现基类的 OnStart 重写入口；框架调用后按本方法分支执行，并通过下游成员完成协作。</summary>
         /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） EnemyActionCoordinator.RequestAction(ActionKind, string, bool)、EnemyTaskBase.DiagTaskStart()、object.GetType()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
@@ -281,13 +281,13 @@ namespace EnemyBehaviorTasks
     [TaskDescription("执行攻击并等待统一结束信号。")]
     public class ExecuteAttack : EnemyTaskBase
     {
-        /// <summary>中文含义：截止时间。使用位置：ExecuteAttack.OnStart()、ExecuteAttack.OnUpdate()。</summary>
+        /// <summary>截止时间。</summary>
         private float deadline;
-        /// <summary>中文含义：缓冲区截止时间。使用位置：ExecuteAttack.OnStart()、ExecuteAttack.OnUpdate()。</summary>
+        /// <summary>缓冲区截止时间。</summary>
         private float bufferDeadline;
-        /// <summary>中文含义：是否已开始。使用位置：ExecuteAttack.OnEnd()、ExecuteAttack.OnStart()、ExecuteAttack.OnUpdate()。</summary>
+        /// <summary>是否已开始。</summary>
         private bool started;
-        /// <summary>中文含义：超时是否已经申请。使用位置：ExecuteAttack.OnStart()、ExecuteAttack.OnUpdate()。</summary>
+        /// <summary>超时是否已经申请。</summary>
         private bool timeoutRequested;
         /// <summary>实现基类的 OnStart 重写入口；框架调用后按本方法分支执行，并通过下游成员完成协作。</summary>
         /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） EnemyActionCoordinator.RequestAction(ActionKind, string, bool)、EnemyTaskBase.DiagTaskStart()、object.GetType()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
@@ -357,15 +357,15 @@ namespace EnemyBehaviorTasks
     [TaskDescription("停止爬行移动，面向玩家执行一次爬行攻击并等待动画完成。")]
     public class ExecuteCrawlAttack : EnemyTaskBase
     {
-        /// <summary>中文含义：截止时间。使用位置：ExecuteCrawlAttack.OnStart()、ExecuteCrawlAttack.OnUpdate()。</summary>
+        /// <summary>截止时间。</summary>
         private float deadline;
-        /// <summary>中文含义：缓冲区截止时间。使用位置：ExecuteCrawlAttack.OnStart()、ExecuteCrawlAttack.OnUpdate()。</summary>
+        /// <summary>缓冲区截止时间。</summary>
         private float bufferDeadline;
-        /// <summary>中文含义：是否已开始。使用位置：ExecuteCrawlAttack.OnStart()、ExecuteCrawlAttack.OnUpdate()。</summary>
+        /// <summary>是否已开始。</summary>
         private bool started;
-        /// <summary>中文含义：超时是否已经申请。使用位置：ExecuteCrawlAttack.OnStart()、ExecuteCrawlAttack.OnUpdate()。</summary>
+        /// <summary>超时是否已经申请。</summary>
         private bool timeoutRequested;
-        /// <summary>中文含义：是否已完成。使用位置：ExecuteCrawlAttack.OnEnd()、ExecuteCrawlAttack.OnStart()、ExecuteCrawlAttack.OnUpdate()。</summary>
+        /// <summary>是否已完成。</summary>
         private bool completed;
         /// <summary>实现基类的 OnStart 重写入口；框架调用后按本方法分支执行，并通过下游成员完成协作。</summary>
         /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） EnemyActionCoordinator.RequestAction(ActionKind, string, bool)、EnemyTaskBase.DiagTaskStart()、object.GetType()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
@@ -447,9 +447,9 @@ namespace EnemyBehaviorTasks
     [TaskDescription("向里昂快速反应事件协调器提交一次正面抓取请求，提交后立即结束。")]
     public class TryStartFrontGrabQTE : EnemyTaskBase
     {
-        /// <summary>中文含义：参与者。使用位置：作为 LeonQTECoordinator.TryStart(QTEKind, IEnemyQTEParticipant, out int) 的参数、TryStartFrontGrabQTE.OnAwake()、TryStartFrontGrabQTE.OnUpdate() 等共 5 处。</summary>
+        /// <summary>参与者。</summary>
         private VillagerQTEParticipant participant;
-        /// <summary>中文含义：是否已尝试。使用位置：TryStartFrontGrabQTE.OnStart()、TryStartFrontGrabQTE.OnUpdate()。</summary>
+        /// <summary>是否已尝试。</summary>
         private bool attempted;
         /// <summary>实现基类的 OnAwake 重写入口；框架调用后按本方法分支执行，并通过下游成员完成协作。</summary>
         /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） EnemyTaskBase.OnAwake()、GameObject.GetComponent&lt;VillagerQTEParticipant&gt;()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
@@ -484,8 +484,17 @@ namespace EnemyBehaviorTasks
                 return TaskStatus.Failure;
             }
 
-            // coordinator（当前里昂配对动作协调器）：保存 Component.GetComponent<LeonQTECoordinator>() 的返回结果，供当前步骤使用。使用位置：作为 TryStartFrontGrabQTE.TryStartStandingGrab(LeonQTECoordinator, QTEKind) 的参数、TryStartFrontGrabQTE.OnUpdate()。
-LeonQTECoordinator coordinator = Controller.Player.GetComponent<LeonQTECoordinator>();
+            // 当前里昂配对动作协调器。
+            LeonQTECoordinator coordinator;
+            EnemyAIManager manager = EnemyAIManager.Instance;
+            if (manager != null)
+            {
+                coordinator = manager.ReadPlayerQte(Controller.Player);
+            }
+            else
+            {
+                coordinator = Controller.Player.GetComponent<LeonQTECoordinator>();
+            }
             if (coordinator == null)
             {
                 RecordStandingGrabRejection(QTECancelReason.ResourceMissing);
@@ -513,8 +522,8 @@ LeonQTECoordinator coordinator = Controller.Player.GetComponent<LeonQTECoordinat
 
         /// <summary>TryStartStandingGrab 的业务处理入口；本方法直接依赖 EnemyAIManager.CompleteQTEAttempt(VillagerController, QTEKind, bool)、EnemyAIManager.TryAcquireQTEReservation(VillagerController, QTEKind)、LeonQTECoordinator.TryStart(QTEKind, IEnemyQTEParticipant, out int)、VillagerQTEParticipant.RecordQTERejection(QTECancelReason, QTEKind)，调用方通过参数与返回结果交接本次处理。</summary>
         /// <remarks>静态调用链：上游 TryStartFrontGrabQTE.OnUpdate()；下游（含内部回调体） EnemyAIManager.CompleteQTEAttempt(VillagerController, QTEKind, bool)、EnemyAIManager.TryAcquireQTEReservation(VillagerController, QTEKind)、LeonQTECoordinator.TryStart(QTEKind, IEnemyQTEParticipant, out int)、VillagerQTEParticipant.RecordQTERejection(QTECancelReason, QTEKind)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-        /// <param name="coordinator">中文含义：当前里昂配对动作协调器。使用位置：作为 VillagerQTEParticipant.RecordQTERejection(QTECancelReason, QTEKind) 的参数、TryStartFrontGrabQTE.TryStartStandingGrab(LeonQTECoordinator, QTEKind)。</param>
-        /// <param name="kind">中文含义：种类。使用位置：作为 EnemyAIManager.CompleteQTEAttempt(VillagerController, QTEKind, bool) 的参数、作为 EnemyAIManager.TryAcquireQTEReservation(VillagerController, QTEKind) 的参数、作为 LeonQTECoordinator.TryStart(QTEKind, IEnemyQTEParticipant, out int) 的参数 等共 4 处。</param>
+        /// <param name="coordinator">当前里昂配对动作协调器。</param>
+        /// <param name="kind">种类。</param>
         private bool TryStartStandingGrab(LeonQTECoordinator coordinator, QTEKind kind)
         {
             if (!EnemyAIManager.Instance.TryAcquireQTEReservation(Controller, kind))
@@ -545,10 +554,10 @@ LeonQTECoordinator coordinator = Controller.Player.GetComponent<LeonQTECoordinat
 
         /// <summary>RecordStandingGrabRejection 的业务处理入口；本方法直接依赖 VillagerQTEParticipant.CanAttemptRearBiteNeck(LeonController)、VillagerQTEParticipant.RecordQTERejection(QTECancelReason, QTEKind)，调用方通过参数与返回结果交接本次处理。</summary>
         /// <remarks>静态调用链：上游 TryStartFrontGrabQTE.OnUpdate()；下游（含内部回调体） VillagerQTEParticipant.CanAttemptRearBiteNeck(LeonController)、VillagerQTEParticipant.RecordQTERejection(QTECancelReason, QTEKind)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-        /// <param name="reason">中文含义：原因。使用位置：作为 VillagerQTEParticipant.RecordQTERejection(QTECancelReason, QTEKind) 的参数。</param>
+        /// <param name="reason">原因。</param>
         private void RecordStandingGrabRejection(QTECancelReason reason)
         {
-            // kind（种类）：使用位置：作为 VillagerQTEParticipant.RecordQTERejection(QTECancelReason, QTEKind) 的参数、TryStartFrontGrabQTE.RecordStandingGrabRejection(QTECancelReason)。
+            // 种类。
 QTEKind kind;
             if (participant.CanAttemptRearBiteNeck(Controller.Player))
             {
@@ -568,11 +577,11 @@ QTEKind kind;
     [TaskDescription("持续更新玩家目的地并追击。")]
     public abstract class TryStartEnemyQTEBase : EnemyTaskBase
     {
-        /// <summary>中文含义：参与者。使用位置：作为 LeonQTECoordinator.TryStart(QTEKind, IEnemyQTEParticipant, out int) 的参数、TryStartEnemyQTEBase.OnAwake()、TryStartEnemyQTEBase.OnUpdate()。</summary>
+        /// <summary>参与者。</summary>
         private VillagerQTEParticipant participant;
-        /// <summary>中文含义：是否已尝试。使用位置：TryStartEnemyQTEBase.OnStart()、TryStartEnemyQTEBase.OnUpdate()。</summary>
+        /// <summary>是否已尝试。</summary>
         private bool attempted;
-        /// <summary>中文含义：种类。使用位置：作为 EnemyAIManager.CompleteQTEAttempt(VillagerController, QTEKind, bool) 的参数、作为 EnemyAIManager.TryAcquireQTEReservation(VillagerController, QTEKind) 的参数、作为 LeonQTECoordinator.TryStart(QTEKind, IEnemyQTEParticipant, out int) 的参数 等共 5 处。</summary>
+        /// <summary>种类。</summary>
         protected abstract QTEKind Kind { get; }
 
         /// <summary>实现基类的 OnAwake 重写入口；框架调用后按本方法分支执行，并通过下游成员完成协作。</summary>
@@ -597,7 +606,7 @@ QTEKind kind;
         /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） Component.GetComponent&lt;LeonQTECoordinator&gt;()、EnemyAIManager.CompleteQTEAttempt(VillagerController, QTEKind, bool)、EnemyAIManager.TryAcquireQTEReservation(VillagerController, QTEKind)、LeonQTECoordinator.TryStart(QTEKind, IEnemyQTEParticipant, out int)、VillagerQTEParticipant.RecordQTERejection(QTECancelReason, QTEKind)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
         public override TaskStatus OnUpdate()
         {
-            // canEvaluate（是否可以评估）：使用位置：TryStartEnemyQTEBase.OnUpdate()。
+            // 是否可以评估。
 bool canEvaluate;
             if (Kind == QTEKind.LegBite)
             {
@@ -619,8 +628,17 @@ bool canEvaluate;
                 return TaskStatus.Failure;
             }
 
-            // coordinator（当前里昂配对动作协调器）：保存 Component.GetComponent<LeonQTECoordinator>() 的返回结果，供当前步骤使用。使用位置：作为 VillagerQTEParticipant.RecordQTERejection(QTECancelReason, QTEKind) 的参数、TryStartEnemyQTEBase.OnUpdate()。
-LeonQTECoordinator coordinator = Controller.Player.GetComponent<LeonQTECoordinator>();
+            // 当前里昂配对动作协调器。
+            LeonQTECoordinator coordinator;
+            EnemyAIManager manager = EnemyAIManager.Instance;
+            if (manager != null)
+            {
+                coordinator = manager.ReadPlayerQte(Controller.Player);
+            }
+            else
+            {
+                coordinator = Controller.Player.GetComponent<LeonQTECoordinator>();
+            }
             if (coordinator == null)
             {
                 participant.RecordQTERejection(QTECancelReason.ResourceMissing, Kind);
@@ -697,7 +715,7 @@ LeonQTECoordinator coordinator = Controller.Player.GetComponent<LeonQTECoordinat
     [TaskDescription("在一个持续任务内完成追击、近身转向和普通攻击。")]
     public class ExecuteCombat : EnemyTaskBase
     {
-        /// <summary>中文含义：攻击截止时间。使用位置：ExecuteCombat.OnUpdate()。</summary>
+        /// <summary>攻击截止时间。</summary>
         private float attackDeadline;
         /// <summary>实现基类的 OnStart 重写入口；框架调用后按本方法分支执行，并通过下游成员完成协作。</summary>
         /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） EnemyActionCoordinator.RequestAction(ActionKind, string, bool)、EnemyTaskBase.DiagTaskStart()、object.GetType()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
@@ -832,7 +850,7 @@ LeonQTECoordinator coordinator = Controller.Player.GetComponent<LeonQTECoordinat
             DiagTaskEnd();
             if (ComponentsReady)
             {
-                // receiverValue4（判空前缓存的敌人智能管理器的实例）：从敌人智能管理器的实例读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、ChasePlayer.OnEnd()。
+                // 判空前缓存的敌人智能管理器的实例。
 global::EnemyAIManager receiverValue4 = EnemyAIManager.Instance;
                 if (!global::System.Object.ReferenceEquals(receiverValue4, null))
                 {
@@ -895,7 +913,7 @@ global::EnemyAIManager receiverValue4 = EnemyAIManager.Instance;
             if (ComponentsReady)
             {
                 Controller.actionCoordinator.RequestStopMovement();
-                // receiverValue6（判空前缓存的敌人智能管理器的实例）：从敌人智能管理器的实例读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、InvestigatePlayer.OnEnd()。
+                // 判空前缓存的敌人智能管理器的实例。
 global::EnemyAIManager receiverValue6 = EnemyAIManager.Instance;
                 if (!global::System.Object.ReferenceEquals(receiverValue6, null))
                 {
@@ -965,7 +983,7 @@ global::EnemyAIManager receiverValue6 = EnemyAIManager.Instance;
     {
         [BehaviorDesigner.Runtime.Tasks.Tooltip("只在正式村庄的开场发现阶段选择巡逻路线。")]
         public bool villageOpeningOnly;
-        /// <summary>中文含义：最大尝试次数。编译期常量，保持既有值与消费者映射。使用位置：SelectPatrolPoint.OnUpdate()。</summary>
+        /// <summary>最大尝试次数。编译期常量，保持既有值与消费者映射。</summary>
         private const int MaxAttempts = 8;
         /// <summary>实现基类的 OnUpdate 重写入口；框架调用后按本方法分支执行，并通过下游成员完成协作。</summary>
         /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） AstarPath.GetNearest(Vector3, NearestNodeConstraint)、Vector3.Distance(Vector3, Vector3)、Vector3.Vector3(float, float, float)、VillagerController.ClearPatrolTarget()、VillagerController.SetPatrolTarget(Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
@@ -988,21 +1006,21 @@ global::EnemyAIManager receiverValue6 = EnemyAIManager.Instance;
                 patrolRadius = Mathf.Min(patrolRadius, 4.5f);
             }
 
-            // origin（原点）：保存 AstarPath.GetNearest(Vector3, NearestNodeConstraint) 的返回结果，供当前步骤使用。使用位置：SelectPatrolPoint.OnUpdate()。
+            // 原点。
 NNInfo origin = AstarPath.active.GetNearest(Controller.transform.position, NearestNodeConstraint.Walkable);
             if (origin.node == null)
             {
                 return TaskStatus.Failure;
             }
 
-            // i（当前遍历索引）：使用位置：SelectPatrolPoint.OnUpdate()。
+            // 当前遍历索引。
 for (int i = 0; i < MaxAttempts; i++)
             {
-                // offset（偏移量）：使用位置：作为 Vector3.Vector3(float, float, float) 的参数。
+                // 偏移量。
 Vector2 offset = Random.insideUnitCircle * patrolRadius;
-                // candidate（候选）：使用位置：作为 AstarPath.GetNearest(Vector3, NearestNodeConstraint) 的参数、作为 Vector3.Distance(Vector3, Vector3) 的参数。
+                // 候选。
 Vector3 candidate = Controller.PatrolCenter + new Vector3(offset.x, 0f, offset.y);
-                // nearest（最近）：保存 AstarPath.GetNearest(Vector3, NearestNodeConstraint) 的返回结果，供当前步骤使用。使用位置：作为 Vector3.Distance(Vector3, Vector3) 的参数、作为 VillagerController.SetPatrolTarget(Vector3) 的参数、SelectPatrolPoint.OnUpdate()。
+                // 最近。
 NNInfo nearest = AstarPath.active.GetNearest(candidate, NearestNodeConstraint.Walkable);
                 if (nearest.node == null || nearest.node.Area != origin.node.Area || Vector3.Distance(candidate, nearest.position) > Agent.graphSnapDistance)
                 {
@@ -1103,15 +1121,15 @@ NNInfo nearest = AstarPath.active.GetNearest(candidate, NearestNodeConstraint.Wa
     [TaskDescription("敌人停留在当前位置观察四周，并缓慢转向随机方向。")]
     public class PatrolInPlace : EnemyTaskBase
     {
-        /// <summary>中文含义：转向参数保持持续时间。编译期常量，保持既有值与消费者映射。使用位置：PatrolInPlace.OnStart()。</summary>
+        /// <summary>转向参数保持持续时间。编译期常量，保持既有值与消费者映射。</summary>
         private const float TurnParameterHoldDuration = 0.15f;
-        /// <summary>中文含义：结束时间。使用位置：PatrolInPlace.OnStart()、PatrolInPlace.OnUpdate()。</summary>
+        /// <summary>结束时间。</summary>
         private float endTime;
-        /// <summary>中文含义：释放转向时间。使用位置：PatrolInPlace.OnStart()、PatrolInPlace.OnUpdate()。</summary>
+        /// <summary>释放转向时间。</summary>
         private float releaseTurnTime;
-        /// <summary>中文含义：是否转向已释放。使用位置：PatrolInPlace.OnStart()、PatrolInPlace.OnUpdate()。</summary>
+        /// <summary>是否转向已释放。</summary>
         private bool turnReleased;
-        /// <summary>中文含义：目标旋转。使用位置：作为 VillagerController.UpdateStationaryPatrolFacing(Quaternion) 的参数、PatrolInPlace.OnStart()。</summary>
+        /// <summary>目标旋转。</summary>
         private Quaternion targetRotation;
         /// <summary>实现基类的 OnStart 重写入口；框架调用后按本方法分支执行，并通过下游成员完成协作。</summary>
         /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） EnemyTaskBase.DiagTaskStart()、Mathf.Clamp(float, float, float)、Mathf.Max(float, float)、Mathf.Min(float, float)、Quaternion.Euler(float, float, float)、Random.Range(float, float)、VillagerController.BeginStationaryPatrol(float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
@@ -1123,13 +1141,13 @@ NNInfo nearest = AstarPath.active.GetNearest(candidate, NearestNodeConstraint.Wa
                 return;
             }
 
-            // maximumTurnAngle（最大转向角度）：保存 Mathf.Clamp(float, float, float) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Max(float, float) 的参数、作为 Mathf.Min(float, float) 的参数、作为 Random.Range(float, float) 的参数。
+            // 最大转向角度。
 float maximumTurnAngle = Mathf.Clamp(Controller.stationaryPatrolMaxTurnAngle, 0f, 180f);
-            // minimumTurnAngle（最小转向角度）：保存 Mathf.Min(float, float) 的返回结果，供当前步骤使用。使用位置：作为 Random.Range(float, float) 的参数。
+            // 最小转向角度。
 float minimumTurnAngle = Mathf.Min(maximumTurnAngle, Mathf.Max(25f, maximumTurnAngle * 0.45f));
-            // turnMagnitude（转向长度）：保存 Random.Range(float, float) 的返回结果，供当前步骤使用。使用位置：PatrolInPlace.OnStart()。
+            // 转向长度。
 float turnMagnitude = Random.Range(minimumTurnAngle, maximumTurnAngle);
-            // turnAngle（转向角度）：使用位置：作为 Quaternion.Euler(float, float, float) 的参数、作为 VillagerController.BeginStationaryPatrol(float) 的参数、PatrolInPlace.OnStart()。
+            // 转向角度。
 float turnAngle;
             if (Random.value < 0.5f)
             {
@@ -1144,9 +1162,9 @@ float turnAngle;
             Controller.BeginStationaryPatrol(turnAngle);
             turnReleased = false;
             releaseTurnTime = Time.time + TurnParameterHoldDuration;
-            // minimum（最小）：保存 Mathf.Min(float, float) 的返回结果，供当前步骤使用。使用位置：作为 Random.Range(float, float) 的参数。
+            // 最小。
 float minimum = Mathf.Min(Controller.stationaryPatrolMinDuration, Controller.stationaryPatrolMaxDuration);
-            // maximum（最大）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：作为 Random.Range(float, float) 的参数。
+            // 最大。
 float maximum = Mathf.Max(Controller.stationaryPatrolMinDuration, Controller.stationaryPatrolMaxDuration);
             endTime = Time.time + Random.Range(minimum, maximum);
         }
@@ -1199,7 +1217,7 @@ float maximum = Mathf.Max(Controller.stationaryPatrolMinDuration, Controller.sta
     [TaskDescription("进入空闲并等待一段随机时间。")]
     public class IdleWait : EnemyTaskBase
     {
-        /// <summary>中文含义：结束时间。使用位置：IdleWait.OnStart()、IdleWait.OnUpdate()。</summary>
+        /// <summary>结束时间。</summary>
         private float endTime;
         /// <summary>实现基类的 OnStart 重写入口；框架调用后按本方法分支执行，并通过下游成员完成协作。</summary>
         /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） EnemyActionCoordinator.RequestAction(ActionKind, string, bool)、EnemyTaskBase.DiagTaskStart()、object.GetType()、Random.Range(float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>

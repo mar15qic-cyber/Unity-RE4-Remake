@@ -78,8 +78,11 @@ public sealed partial class VillageSiegeSequence : MonoBehaviour
     private CinemachineBrain brain;
     private CinemachineBlendDefinition previousBlend;
     private bool previousIgnoreTimeScale;
+    private CinemachineVirtualCameraBase.StandbyUpdateMode previousGameplayStandby;
+    private bool hasSavedGameplayStandby;
     private bool outsideDoor;
     private bool latchedDuringSequence;
+    private bool villageShoulderSampleInitialized;
     private Quaternion gameplayRotation;
     private LeonAnimationActionCoordinator playerActions;
     private LeonActionMotionDriver playerMotion;
@@ -160,6 +163,7 @@ public sealed partial class VillageSiegeSequence : MonoBehaviour
     {
         activeEntrance = entrance;
         latchedDuringSequence = false;
+        villageShoulderSampleInitialized = false;
         currentStage = houseStage;
         director = houseDirector;
         currentPlayback = housePlayback;
@@ -188,6 +192,17 @@ public sealed partial class VillageSiegeSequence : MonoBehaviour
         previousIgnoreTimeScale = brain.IgnoreTimeScale;
         brain.DefaultBlend = new CinemachineBlendDefinition(CinemachineBlendDefinition.Styles.Cut, 0f);
         brain.IgnoreTimeScale = true;
+        hasSavedGameplayStandby = false;
+        if (cameraController.gameplayCamera != null)
+        {
+            previousGameplayStandby = cameraController.gameplayCamera.StandbyUpdate;
+            cameraController.gameplayCamera.StandbyUpdate = CinemachineVirtualCameraBase.StandbyUpdateMode.Never;
+            hasSavedGameplayStandby = true;
+        }
+        if (cameraController.gameplayDriver != null)
+        {
+            cameraController.gameplayDriver.SetExternalVillageCameraSampling(true);
+        }
         permission = match.Permission.Request(new ObjectIdentity(GetInstanceID(), 1), true, true, false, 0f);
         currentStage.UpdateVolume();
         if (soundscape != null)
@@ -339,6 +354,11 @@ public sealed partial class VillageSiegeSequence : MonoBehaviour
         playerTransaction = playerActions.CurrentFullBodyTransactionId;
         playerToken = playerMotion.AuthorizeMotion(MotionSource.Traversal, playerTransaction);
         playerMotion.StopHorizontalSpeed(playerToken);
+        LeonLocomotion playerLocomotion = player.GetComponent<LeonLocomotion>();
+        if (playerLocomotion != null)
+        {
+            playerLocomotion.ResetLocomotionForCinematicHandoff();
+        }
     }
 
     private void HideGameplay(Transform target)
@@ -396,6 +416,19 @@ public sealed partial class VillageSiegeSequence : MonoBehaviour
             destination.y += PlayerExitHeightOffset;
             playerMotion.CommitCinematicExitPose(playerToken, destination, currentStage.playerRoot.rotation);
         }
+        villageShoulderSampleInitialized = false;
+        if (activeMatch != null && activeMatch.player != null)
+        {
+            LeonLocomotion playerLocomotion = activeMatch.player.GetComponent<LeonLocomotion>();
+            if (playerLocomotion != null)
+            {
+                playerLocomotion.ResetLocomotionForCinematicHandoff();
+            }
+            if (playerMotion != null)
+            {
+                playerMotion.StopHorizontalSpeed(playerToken);
+            }
+        }
         if (playerTransaction != 0)
         {
             if (playerMotion != null)
@@ -445,9 +478,21 @@ public sealed partial class VillageSiegeSequence : MonoBehaviour
         presentationParticles.Clear();
         if (cameraController != null && brain != null)
         {
+            if (hasSavedGameplayStandby && cameraController.gameplayCamera != null)
+            {
+                cameraController.gameplayCamera.StandbyUpdate = previousGameplayStandby;
+            }
+            hasSavedGameplayStandby = false;
+            if (cameraController.gameplayDriver != null)
+            {
+                cameraController.gameplayDriver.SetExternalVillageCameraSampling(false);
+            }
             cameraController.ReleaseExternalCamera(this);
             brain.ResetState();
-            cameraController.gameplayDriver.SnapAfterVillageEntrance(returnRotation);
+            if (cameraController.gameplayDriver != null)
+            {
+                cameraController.gameplayDriver.SnapAfterVillageEntrance(returnRotation);
+            }
             brain.DefaultBlend = previousBlend;
             brain.IgnoreTimeScale = previousIgnoreTimeScale;
         }

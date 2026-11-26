@@ -9,16 +9,16 @@ using UnityEditor;
 /// </summary>
 public class HitboxSetup : EditorWindow
 {
-    /// <summary>中文含义：半径。编译期常量，保持既有值与消费者映射。使用位置：作为 Debug.Log(object) 的参数、作为 Mathf.Max(float, float) 的参数、HitboxSetup.CreateArmHitbox(Animator, HumanBodyBones, HumanBodyBones, HitboxType, int)。</summary>
+    /// <summary>半径。编译期常量，保持既有值与消费者映射。</summary>
     const float ARM_RADIUS = 0.10f;
-    /// <summary>中文含义：半径。编译期常量，保持既有值与消费者映射。使用位置：作为 Debug.Log(object) 的参数、HitboxSetup.CreateHandHitbox(Animator, HumanBodyBones, HitboxType, int)。</summary>
+    /// <summary>半径。编译期常量，保持既有值与消费者映射。</summary>
     const float HAND_RADIUS = 0.09f;
     /// <summary>编辑器菜单调用入口 Setup；按当前参数和已绑定配置执行资源操作，下游调用见静态索引。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） AssetDatabase.LoadAssetAtPath&lt;GameObject&gt;(string)、Debug.Log(object)、Debug.LogError(object)、GameObject.GetComponent&lt;Animator&gt;()、HitboxSetup.ClearEnemyHitboxes(GameObject)、HitboxSetup.CreateArmHitbox(Animator, HumanBodyBones, HumanBodyBones, HitboxType, int)、HitboxSetup.CreateHandHitbox(Animator, HumanBodyBones, HitboxType, int) 等共 14 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     [MenuItem("Tools/Enemy/创建骨骼 Hitbox")]
     static void Setup()
     {
-        // prefab（预制件）：保存 AssetDatabase.LoadAssetAtPath<GameObject>(string) 的返回结果，供当前步骤使用。使用位置：作为 PrefabUtility.InstantiatePrefab(Object) 的参数、HitboxSetup.Setup()。
+        // 预制件。
 var prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefab/Villager.prefab");
         if (prefab == null)
         {
@@ -26,9 +26,9 @@ var prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefab/Villager.p
             return;
         }
 
-        // instance（实例）：使用位置：作为 HitboxSetup.ClearEnemyHitboxes(GameObject) 的参数、作为 Object.DestroyImmediate(Object) 的参数、作为 PrefabUtility.SaveAsPrefabAsset(GameObject, string) 的参数 等共 4 处。
+        // 实例。
 var instance = (GameObject)PrefabUtility.InstantiatePrefab(prefab);
-        // anim（动画控制器）：保存 GameObject.GetComponent<Animator>() 的返回结果，供当前步骤使用。使用位置：作为 HitboxSetup.CreateArmHitbox(Animator, HumanBodyBones, HumanBodyBones, HitboxType, int) 的参数、作为 HitboxSetup.CreateHandHitbox(Animator, HumanBodyBones, HitboxType, int) 的参数、作为 HitboxSetup.CreateHitbox(Animator, HumanBodyBones, HitboxType, int, string) 的参数 等共 4 处。
+        // 动画控制器。
 var anim = instance.GetComponent<Animator>();
         if (anim == null || !anim.isHuman)
         {
@@ -37,7 +37,7 @@ var anim = instance.GetComponent<Animator>();
             return;
         }
 
-        // hitboxLayer（命中盒图层）：保存 LayerMask.NameToLayer(string) 的返回结果，供当前步骤使用。使用位置：作为 HitboxSetup.CreateArmHitbox(Animator, HumanBodyBones, HumanBodyBones, HitboxType, int) 的参数、作为 HitboxSetup.CreateHandHitbox(Animator, HumanBodyBones, HitboxType, int) 的参数、作为 HitboxSetup.CreateHitbox(Animator, HumanBodyBones, HitboxType, int, string) 的参数 等共 5 处。
+        // 命中盒图层。
 int hitboxLayer = LayerMask.NameToLayer("EnemyHitbox");
         if (hitboxLayer < 0)
         {
@@ -83,16 +83,16 @@ foreach (var vc in Object.FindObjectsByType<VillagerController>(FindObjectsSortM
     /// 不得删除攻击范围、QTE 或其他系统的触发器。
     /// </summary>
     /// <remarks>静态调用链：上游 HitboxSetup.Setup()、HitboxSetup.SetupOnSceneObject(GameObject, int)；下游（含内部回调体） GameObject.GetComponent&lt;Collider&gt;()、GameObject.GetComponentsInChildren&lt;EnemyHitbox&gt;(bool)、Object.DestroyImmediate(Object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="root">中文含义：根游戏对象。使用位置：HitboxSetup.ClearEnemyHitboxes(GameObject)。</param>
+    /// <param name="root">根游戏对象。</param>
     static void ClearEnemyHitboxes(GameObject root)
     {
         // hitbox（命中盒）：每轮从取得组件集合内部子对象集合的返回结果取得一个元素，仅代表当前这一项。使用位置：作为 Object.DestroyImmediate(Object) 的参数、HitboxSetup.ClearEnemyHitboxes(GameObject)。
 foreach (var hitbox in root.GetComponentsInChildren<EnemyHitbox>(true))
         {
-            // go（当前游戏对象）：使用位置：HitboxSetup.ClearEnemyHitboxes(GameObject)。
+            // 当前游戏对象。
 var go = hitbox.gameObject;
             DestroyImmediate(hitbox);
-            // col（列）：保存 GameObject.GetComponent<Collider>() 的返回结果，供当前步骤使用。使用位置：作为 Object.DestroyImmediate(Object) 的参数、HitboxSetup.ClearEnemyHitboxes(GameObject)。
+            // 列。
 var col = go.GetComponent<Collider>();
             if (col != null)
             {
@@ -103,14 +103,14 @@ var col = go.GetComponent<Collider>();
 
     /// <summary>CreateHitbox 的业务处理入口；本方法直接依赖 Animator.GetBoneTransform(HumanBodyBones)、Component.GetComponent&lt;CapsuleCollider&gt;()、Component.GetComponent&lt;EnemyHitbox&gt;()、Component.GetComponent&lt;SphereCollider&gt;()、Debug.Log(object)、Debug.LogWarning(object)、GameObject.AddComponent&lt;CapsuleCollider&gt;() 等共 12 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 HitboxSetup.Setup()、HitboxSetup.SetupOnSceneObject(GameObject, int)；下游（含内部回调体） Animator.GetBoneTransform(HumanBodyBones)、Component.GetComponent&lt;CapsuleCollider&gt;()、Component.GetComponent&lt;EnemyHitbox&gt;()、Component.GetComponent&lt;SphereCollider&gt;()、Debug.Log(object)、Debug.LogWarning(object)、GameObject.AddComponent&lt;CapsuleCollider&gt;() 等共 12 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="anim">中文含义：动画控制器。使用位置：HitboxSetup.CreateHitbox(Animator, HumanBodyBones, HitboxType, int, string)。</param>
-    /// <param name="bone">中文含义：骨骼。使用位置：作为 Animator.GetBoneTransform(HumanBodyBones) 的参数、作为 Debug.Log(object) 的参数、作为 Debug.LogWarning(object) 的参数。</param>
-    /// <param name="type">中文含义：当前命中部位类别。使用位置：作为 Debug.Log(object) 的参数、作为 HitboxSetup.GetCenter(HitboxType) 的参数、作为 HitboxSetup.GetHeight(HitboxType) 的参数 等共 5 处。</param>
-    /// <param name="layer">中文含义：图层。使用位置：HitboxSetup.CreateHitbox(Animator, HumanBodyBones, HitboxType, int, string)。</param>
-    /// <param name="colliderType">中文含义：碰撞体类型。使用位置：作为 Debug.Log(object) 的参数、HitboxSetup.CreateHitbox(Animator, HumanBodyBones, HitboxType, int, string)。</param>
+    /// <param name="anim">动画控制器。</param>
+    /// <param name="bone">骨骼。</param>
+    /// <param name="type">当前命中部位类别。</param>
+    /// <param name="layer">图层。</param>
+    /// <param name="colliderType">碰撞体类型。</param>
     static void CreateHitbox(Animator anim, HumanBodyBones bone, HitboxType type, int layer, string colliderType)
     {
-        // boneTransform（骨骼变换）：保存 Animator.GetBoneTransform(HumanBodyBones) 的返回结果，供当前步骤使用。使用位置：HitboxSetup.CreateHitbox(Animator, HumanBodyBones, HitboxType, int, string)。
+        // 骨骼变换。
 var boneTransform = anim.GetBoneTransform(bone);
         if (boneTransform == null)
         {
@@ -118,11 +118,11 @@ var boneTransform = anim.GetBoneTransform(bone);
             return;
         }
 
-        // col（列）：使用位置：HitboxSetup.CreateHitbox(Animator, HumanBodyBones, HitboxType, int, string)。
+        // 列。
 Collider col;
         if (colliderType == "Sphere")
         {
-            // sc（缩放）：保存 Component.GetComponent<SphereCollider>() 的返回结果，供当前步骤使用。使用位置：HitboxSetup.CreateHitbox(Animator, HumanBodyBones, HitboxType, int, string)。
+            // 缩放。
 var sc = boneTransform.GetComponent<SphereCollider>();
             if (sc == null)
             {
@@ -136,7 +136,7 @@ var sc = boneTransform.GetComponent<SphereCollider>();
         }
         else
         {
-            // cc（角色碰撞器）：保存 Component.GetComponent<CapsuleCollider>() 的返回结果，供当前步骤使用。使用位置：HitboxSetup.CreateHitbox(Animator, HumanBodyBones, HitboxType, int, string)。
+            // 角色碰撞器。
 var cc = boneTransform.GetComponent<CapsuleCollider>();
             if (cc == null)
             {
@@ -151,7 +151,7 @@ var cc = boneTransform.GetComponent<CapsuleCollider>();
             col = cc;
         }
 
-        // hitbox（命中盒）：保存 Component.GetComponent<EnemyHitbox>() 的返回结果，供当前步骤使用。使用位置：HitboxSetup.CreateHitbox(Animator, HumanBodyBones, HitboxType, int, string)。
+        // 命中盒。
 var hitbox = boneTransform.GetComponent<EnemyHitbox>();
         if (hitbox == null)
         {
@@ -165,16 +165,16 @@ var hitbox = boneTransform.GetComponent<EnemyHitbox>();
 
     /// <summary>CreateArmHitbox 的业务处理入口；本方法直接依赖 Animator.GetBoneTransform(HumanBodyBones)、Component.GetComponent&lt;CapsuleCollider&gt;()、Component.GetComponent&lt;EnemyHitbox&gt;()、Debug.Log(object)、Debug.LogWarning(object)、GameObject.AddComponent&lt;CapsuleCollider&gt;()、GameObject.AddComponent&lt;EnemyHitbox&gt;() 等共 10 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 HitboxSetup.Setup()、HitboxSetup.SetupOnSceneObject(GameObject, int)；下游（含内部回调体） Animator.GetBoneTransform(HumanBodyBones)、Component.GetComponent&lt;CapsuleCollider&gt;()、Component.GetComponent&lt;EnemyHitbox&gt;()、Debug.Log(object)、Debug.LogWarning(object)、GameObject.AddComponent&lt;CapsuleCollider&gt;()、GameObject.AddComponent&lt;EnemyHitbox&gt;() 等共 10 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="anim">中文含义：动画控制器。使用位置：HitboxSetup.CreateArmHitbox(Animator, HumanBodyBones, HumanBodyBones, HitboxType, int)。</param>
-    /// <param name="bone">中文含义：骨骼。使用位置：作为 Animator.GetBoneTransform(HumanBodyBones) 的参数、作为 Debug.Log(object) 的参数、作为 Debug.LogWarning(object) 的参数。</param>
-    /// <param name="nextBone">中文含义：下一次骨骼。使用位置：作为 Animator.GetBoneTransform(HumanBodyBones) 的参数、作为 Debug.LogWarning(object) 的参数。</param>
-    /// <param name="type">中文含义：当前命中部位类别。使用位置：作为 Debug.Log(object) 的参数、HitboxSetup.CreateArmHitbox(Animator, HumanBodyBones, HumanBodyBones, HitboxType, int)。</param>
-    /// <param name="layer">中文含义：图层。使用位置：HitboxSetup.CreateArmHitbox(Animator, HumanBodyBones, HumanBodyBones, HitboxType, int)。</param>
+    /// <param name="anim">动画控制器。</param>
+    /// <param name="bone">骨骼。</param>
+    /// <param name="nextBone">下一次骨骼。</param>
+    /// <param name="type">当前命中部位类别。</param>
+    /// <param name="layer">图层。</param>
     static void CreateArmHitbox(Animator anim, HumanBodyBones bone, HumanBodyBones nextBone, HitboxType type, int layer)
     {
-        // current（当前变换节点）：保存 Animator.GetBoneTransform(HumanBodyBones) 的返回结果，供当前步骤使用。使用位置：HitboxSetup.CreateArmHitbox(Animator, HumanBodyBones, HumanBodyBones, HitboxType, int)。
+        // 当前变换节点。
 var current = anim.GetBoneTransform(bone);
-        // next（下一个变换节点）：保存 Animator.GetBoneTransform(HumanBodyBones) 的返回结果，供当前步骤使用。使用位置：作为 Transform.InverseTransformPoint(Vector3) 的参数、HitboxSetup.CreateArmHitbox(Animator, HumanBodyBones, HumanBodyBones, HitboxType, int)。
+        // 下一个变换节点。
 var next = anim.GetBoneTransform(nextBone);
         if (current == null || next == null)
         {
@@ -182,9 +182,9 @@ var next = anim.GetBoneTransform(nextBone);
             return;
         }
 
-        // localOffset（局部偏移量）：保存 Transform.InverseTransformPoint(Vector3) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Abs(float) 的参数、HitboxSetup.CreateArmHitbox(Animator, HumanBodyBones, HumanBodyBones, HitboxType, int)。
+        // 局部偏移量。
 Vector3 localOffset = current.InverseTransformPoint(next.position);
-        // boneLength（骨骼长度）：使用位置：HitboxSetup.CreateArmHitbox(Animator, HumanBodyBones, HumanBodyBones, HitboxType, int)。
+        // 骨骼长度。
 float boneLength = localOffset.magnitude;
         if (boneLength < 0.001f)
         {
@@ -192,15 +192,15 @@ float boneLength = localOffset.magnitude;
             return;
         }
 
-        // center（中心）：使用位置：作为 Debug.Log(object) 的参数、HitboxSetup.CreateArmHitbox(Animator, HumanBodyBones, HumanBodyBones, HitboxType, int)。
+        // 中心。
 Vector3 center = localOffset * 0.5f;
-        // absX（绝对值横向）：保存 Mathf.Abs(float) 的返回结果，供当前步骤使用。使用位置：HitboxSetup.CreateArmHitbox(Animator, HumanBodyBones, HumanBodyBones, HitboxType, int)。
+        // 绝对值横向。
 float absX = Mathf.Abs(localOffset.x);
-        // absY（绝对值纵向）：保存 Mathf.Abs(float) 的返回结果，供当前步骤使用。使用位置：HitboxSetup.CreateArmHitbox(Animator, HumanBodyBones, HumanBodyBones, HitboxType, int)。
+        // 绝对值纵向。
 float absY = Mathf.Abs(localOffset.y);
-        // absZ（绝对值深度）：保存 Mathf.Abs(float) 的返回结果，供当前步骤使用。使用位置：HitboxSetup.CreateArmHitbox(Animator, HumanBodyBones, HumanBodyBones, HitboxType, int)。
+        // 绝对值深度。
 float absZ = Mathf.Abs(localOffset.z);
-        // direction（方向）：使用位置：作为 Debug.Log(object) 的参数、HitboxSetup.CreateArmHitbox(Animator, HumanBodyBones, HumanBodyBones, HitboxType, int)。
+        // 方向。
 int direction;
         if (absX >= absY && absX >= absZ)
         {
@@ -208,7 +208,7 @@ int direction;
         }
         else
         {
-            // selectedValue1（分支选出的1）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：HitboxSetup.CreateArmHitbox(Animator, HumanBodyBones, HumanBodyBones, HitboxType, int)。
+            // 分支选出的1。
 int selectedValue1;
             if (absY >= absZ)
             {
@@ -222,9 +222,9 @@ int selectedValue1;
             direction = (selectedValue1);
         }
 
-        // height（高度）：使用位置：作为 Debug.Log(object) 的参数、作为 Mathf.Max(float, float) 的参数。
+        // 高度。
 float height = boneLength + ARM_RADIUS * 2f * 0.5f;
-        // cc（角色碰撞器）：保存 Component.GetComponent<CapsuleCollider>() 的返回结果，供当前步骤使用。使用位置：HitboxSetup.CreateArmHitbox(Animator, HumanBodyBones, HumanBodyBones, HitboxType, int)。
+        // 角色碰撞器。
 var cc = current.GetComponent<CapsuleCollider>();
         if (cc == null)
         {
@@ -236,7 +236,7 @@ var cc = current.GetComponent<CapsuleCollider>();
         cc.center = center;
         cc.direction = direction;
         cc.isTrigger = true;
-        // hitbox（命中盒）：保存 Component.GetComponent<EnemyHitbox>() 的返回结果，供当前步骤使用。使用位置：HitboxSetup.CreateArmHitbox(Animator, HumanBodyBones, HumanBodyBones, HitboxType, int)。
+        // 命中盒。
 var hitbox = current.GetComponent<EnemyHitbox>();
         if (hitbox == null)
         {
@@ -250,13 +250,13 @@ var hitbox = current.GetComponent<EnemyHitbox>();
 
     /// <summary>CreateHandHitbox 的业务处理入口；本方法直接依赖 Animator.GetBoneTransform(HumanBodyBones)、Component.GetComponent&lt;EnemyHitbox&gt;()、Component.GetComponent&lt;SphereCollider&gt;()、Debug.Log(object)、Debug.LogWarning(object)、GameObject.AddComponent&lt;EnemyHitbox&gt;()、GameObject.AddComponent&lt;SphereCollider&gt;()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 HitboxSetup.Setup()、HitboxSetup.SetupOnSceneObject(GameObject, int)；下游（含内部回调体） Animator.GetBoneTransform(HumanBodyBones)、Component.GetComponent&lt;EnemyHitbox&gt;()、Component.GetComponent&lt;SphereCollider&gt;()、Debug.Log(object)、Debug.LogWarning(object)、GameObject.AddComponent&lt;EnemyHitbox&gt;()、GameObject.AddComponent&lt;SphereCollider&gt;()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="anim">中文含义：动画控制器。使用位置：HitboxSetup.CreateHandHitbox(Animator, HumanBodyBones, HitboxType, int)。</param>
-    /// <param name="bone">中文含义：骨骼。使用位置：作为 Animator.GetBoneTransform(HumanBodyBones) 的参数、作为 Debug.Log(object) 的参数、作为 Debug.LogWarning(object) 的参数。</param>
-    /// <param name="type">中文含义：当前命中部位类别。使用位置：作为 Debug.Log(object) 的参数、HitboxSetup.CreateHandHitbox(Animator, HumanBodyBones, HitboxType, int)。</param>
-    /// <param name="layer">中文含义：图层。使用位置：HitboxSetup.CreateHandHitbox(Animator, HumanBodyBones, HitboxType, int)。</param>
+    /// <param name="anim">动画控制器。</param>
+    /// <param name="bone">骨骼。</param>
+    /// <param name="type">当前命中部位类别。</param>
+    /// <param name="layer">图层。</param>
     static void CreateHandHitbox(Animator anim, HumanBodyBones bone, HitboxType type, int layer)
     {
-        // boneTransform（骨骼变换）：保存 Animator.GetBoneTransform(HumanBodyBones) 的返回结果，供当前步骤使用。使用位置：HitboxSetup.CreateHandHitbox(Animator, HumanBodyBones, HitboxType, int)。
+        // 骨骼变换。
 var boneTransform = anim.GetBoneTransform(bone);
         if (boneTransform == null)
         {
@@ -264,7 +264,7 @@ var boneTransform = anim.GetBoneTransform(bone);
             return;
         }
 
-        // sc（缩放）：保存 Component.GetComponent<SphereCollider>() 的返回结果，供当前步骤使用。使用位置：HitboxSetup.CreateHandHitbox(Animator, HumanBodyBones, HitboxType, int)。
+        // 缩放。
 var sc = boneTransform.GetComponent<SphereCollider>();
         if (sc == null)
         {
@@ -274,7 +274,7 @@ var sc = boneTransform.GetComponent<SphereCollider>();
         sc.radius = HAND_RADIUS;
         sc.center = Vector3.zero;
         sc.isTrigger = true;
-        // hitbox（命中盒）：保存 Component.GetComponent<EnemyHitbox>() 的返回结果，供当前步骤使用。使用位置：HitboxSetup.CreateHandHitbox(Animator, HumanBodyBones, HitboxType, int)。
+        // 命中盒。
 var hitbox = boneTransform.GetComponent<EnemyHitbox>();
         if (hitbox == null)
         {
@@ -288,11 +288,11 @@ var hitbox = boneTransform.GetComponent<EnemyHitbox>();
 
     /// <summary>SetupOnSceneObject 的业务处理入口；本方法直接依赖 GameObject.GetComponent&lt;Animator&gt;()、HitboxSetup.ClearEnemyHitboxes(GameObject)、HitboxSetup.CreateArmHitbox(Animator, HumanBodyBones, HumanBodyBones, HitboxType, int)、HitboxSetup.CreateHandHitbox(Animator, HumanBodyBones, HitboxType, int)、HitboxSetup.CreateHitbox(Animator, HumanBodyBones, HitboxType, int, string)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 HitboxSetup.Setup()；下游（含内部回调体） GameObject.GetComponent&lt;Animator&gt;()、HitboxSetup.ClearEnemyHitboxes(GameObject)、HitboxSetup.CreateArmHitbox(Animator, HumanBodyBones, HumanBodyBones, HitboxType, int)、HitboxSetup.CreateHandHitbox(Animator, HumanBodyBones, HitboxType, int)、HitboxSetup.CreateHitbox(Animator, HumanBodyBones, HitboxType, int, string)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="go">中文含义：当前游戏对象。使用位置：作为 HitboxSetup.ClearEnemyHitboxes(GameObject) 的参数、HitboxSetup.SetupOnSceneObject(GameObject, int)。</param>
-    /// <param name="layer">中文含义：图层。使用位置：作为 HitboxSetup.CreateArmHitbox(Animator, HumanBodyBones, HumanBodyBones, HitboxType, int) 的参数、作为 HitboxSetup.CreateHandHitbox(Animator, HumanBodyBones, HitboxType, int) 的参数、作为 HitboxSetup.CreateHitbox(Animator, HumanBodyBones, HitboxType, int, string) 的参数。</param>
+    /// <param name="go">当前游戏对象。</param>
+    /// <param name="layer">图层。</param>
     static void SetupOnSceneObject(GameObject go, int layer)
     {
-        // anim（动画控制器）：保存 GameObject.GetComponent<Animator>() 的返回结果，供当前步骤使用。使用位置：作为 HitboxSetup.CreateArmHitbox(Animator, HumanBodyBones, HumanBodyBones, HitboxType, int) 的参数、作为 HitboxSetup.CreateHandHitbox(Animator, HumanBodyBones, HitboxType, int) 的参数、作为 HitboxSetup.CreateHitbox(Animator, HumanBodyBones, HitboxType, int, string) 的参数 等共 4 处。
+        // 动画控制器。
 var anim = go.GetComponent<Animator>();
         if (anim == null || !anim.isHuman)
         {
@@ -317,7 +317,7 @@ var anim = go.GetComponent<Animator>();
 
     /// <summary>GetRadius 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
     /// <remarks>静态调用链：上游 HitboxSetup.CreateHitbox(Animator, HumanBodyBones, HitboxType, int, string)；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="type">中文含义：当前命中部位类别。使用位置：HitboxSetup.GetRadius(HitboxType)。</param>
+    /// <param name="type">当前命中部位类别。</param>
     static float GetRadius(HitboxType type)
     {
         switch (type)
@@ -338,7 +338,7 @@ var anim = go.GetComponent<Animator>();
 
     /// <summary>GetHeight 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
     /// <remarks>静态调用链：上游 HitboxSetup.CreateHitbox(Animator, HumanBodyBones, HitboxType, int, string)；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="type">中文含义：当前命中部位类别。使用位置：HitboxSetup.GetHeight(HitboxType)。</param>
+    /// <param name="type">当前命中部位类别。</param>
     static float GetHeight(HitboxType type)
     {
         switch (type)
@@ -357,7 +357,7 @@ var anim = go.GetComponent<Animator>();
 
     /// <summary>GetCenter 的业务处理入口；本方法直接依赖 Vector3.Vector3(float, float, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 HitboxSetup.CreateHitbox(Animator, HumanBodyBones, HitboxType, int, string)；下游（含内部回调体） Vector3.Vector3(float, float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="type">中文含义：当前命中部位类别。使用位置：HitboxSetup.GetCenter(HitboxType)。</param>
+    /// <param name="type">当前命中部位类别。</param>
     static Vector3 GetCenter(HitboxType type)
     {
         switch (type)

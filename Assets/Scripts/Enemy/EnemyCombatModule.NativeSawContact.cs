@@ -125,6 +125,24 @@ public sealed partial class EnemyCombatModule
                 return;
             }
             attackHitMask |= mask;
+            if (rearAssistSession > 0 || player.currentState == LeonState.QTE)
+            {
+                if (player.TryGetComponent<LeonQTECoordinator>(out var rearPair))
+                {
+                    int assistSession = rearAssistSession;
+                    if (assistSession == 0 && rearPair.IsRearHelper(host))
+                    {
+                        assistSession = rearPair.CurrentSessionId;
+                    }
+                    Vector3 impactNormal = (point - sampledBlade.center).normalized;
+                    if (rearPair.CommitRearHelperHit(host, assistSession,
+                        chainsawBridge.ResolveAttackDamage(attackDamage), point, impactNormal))
+                    {
+                        chainsawBridge.PlayChainsawHit();
+                    }
+                }
+                return;
+            }
             if (TryCommitChainsawThreatContact(player, sampledBlade.center, point))
             {
                 return;

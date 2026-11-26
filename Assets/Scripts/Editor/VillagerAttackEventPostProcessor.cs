@@ -6,7 +6,7 @@ using UnityEditor;
 /// </summary>
 public class VillagerAttackEventPostProcessor : AssetPostprocessor
 {
-    /// <summary>中文含义：攻击动画片段路径。编译期常量，保持既有值与消费者映射。使用位置：作为 VillagerAttackEventPostProcessor.InjectAttackEvent(string) 的参数。</summary>
+    /// <summary>攻击动画片段路径。编译期常量，保持既有值与消费者映射。</summary>
     private const string AttackClipPath = "Assets/Animations/Enemy/Zombie Attack.fbx";
     /// <summary>OnPostprocessModel 的业务处理入口；本方法直接依赖 string.Contains(string)、VillagerAttackEventPostProcessor.InjectAttackEvent(string)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） string.Contains(string)、VillagerAttackEventPostProcessor.InjectAttackEvent(string)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
@@ -35,10 +35,10 @@ public class VillagerAttackEventPostProcessor : AssetPostprocessor
     /// 给攻击动画剪辑添加 OnAttackHit 事件（在动画中段触发）
     /// </summary>
     /// <remarks>静态调用链：上游 VillagerAttackEventPostProcessor.MenuItemInject()、VillagerAttackEventPostProcessor.OnPostprocessModel(GameObject)；下游（含内部回调体） AnimationEvent.AnimationEvent()、AssetImporter.GetAtPath(string)、AssetImporter.SaveAndReimport()、Debug.Log(object)、Debug.LogError(object)、EditorUtility.SetDirty(Object)、List&lt;AnimationEvent&gt;.Add(AnimationEvent) 等共 9 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="fbxPath">中文含义：模型文件路径。使用位置：作为 AssetImporter.GetAtPath(string) 的参数、作为 Debug.LogError(object) 的参数。</param>
+    /// <param name="fbxPath">模型文件路径。</param>
     static void InjectAttackEvent(string fbxPath)
     {
-        // importer（导入器）：使用位置：作为 EditorUtility.SetDirty(Object) 的参数、VillagerAttackEventPostProcessor.InjectAttackEvent(string)。
+        // 导入器。
 var importer = AssetImporter.GetAtPath(fbxPath) as ModelImporter;
         if (importer == null)
         {
@@ -46,9 +46,9 @@ var importer = AssetImporter.GetAtPath(fbxPath) as ModelImporter;
             return;
         }
 
-        // clips（动画片段集合）：使用位置：VillagerAttackEventPostProcessor.InjectAttackEvent(string)。
+        // 动画片段集合。
 var clips = importer.clipAnimations;
-        // modified（是否修改后的）：使用位置：VillagerAttackEventPostProcessor.InjectAttackEvent(string)。
+        // 是否修改后的。
 bool modified = false;
         // clip（动画片段）：每轮从动画片段集合取得一个元素，仅代表当前这一项。使用位置：作为 Debug.Log(object) 的参数、作为 List<AnimationEvent>.List(IEnumerable<AnimationEvent>) 的参数、VillagerAttackEventPostProcessor.InjectAttackEvent(string)。
 foreach (var clip in clips)
@@ -59,7 +59,7 @@ foreach (var clip in clips)
             }
 
             // 检查是否已有 OnAttackHit 事件
-            // hasHit（是否已经命中）：使用位置：VillagerAttackEventPostProcessor.InjectAttackEvent(string)。
+            // 是否已经命中。
 bool hasHit = false;
             // evt（当前动画事件）：每轮从动画片段的事件集合取得一个元素，仅代表当前这一项。使用位置：VillagerAttackEventPostProcessor.InjectAttackEvent(string)。
 foreach (var evt in clip.events)
@@ -76,12 +76,12 @@ foreach (var evt in clip.events)
                 continue;
             }
 
-            // hitEvent（命中事件）：使用位置：作为 Debug.Log(object) 的参数、作为 List<AnimationEvent>.Add(AnimationEvent) 的参数、VillagerAttackEventPostProcessor.InjectAttackEvent(string)。
+            // 命中事件。
 var hitEvent = new AnimationEvent();
             hitEvent.time = (clip.lastFrame - clip.firstFrame) / 30f * 0.5f;
             hitEvent.functionName = "OnAttackHit";
             hitEvent.messageOptions = SendMessageOptions.DontRequireReceiver;
-            // eventList（事件列表）：使用位置：VillagerAttackEventPostProcessor.InjectAttackEvent(string)。
+            // 事件列表。
 var eventList = new System.Collections.Generic.List<AnimationEvent>(clip.events);
             eventList.Add(hitEvent);
             clip.events = eventList.ToArray();

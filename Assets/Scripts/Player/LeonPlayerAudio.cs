@@ -6,34 +6,34 @@ using UnityEngine;
 [DisallowMultipleComponent]
 public class LeonPlayerAudio : MonoBehaviour
 {
-    /// <summary>中文含义：呼吸事件名称。使用位置：LeonPlayerAudio.UpdateBreathingLoop()。</summary>
+    /// <summary>呼吸事件名称。</summary>
     [Header("事件名")]
     public string breathingEventName = AudioEventNames.PlayerBreathing;
-    /// <summary>中文含义：运行呼吸事件名称。使用位置：LeonPlayerAudio.UpdateBreathingLoop()。</summary>
+    /// <summary>运行呼吸事件名称。</summary>
     public string runBreathingEventName = AudioEventNames.PlayerRunBreathing;
     [Tooltip("原地、战斗与受伤时使用的独立喘息事件")]
     public string idleBreathingEventName = "player_breathing_idle";
     public string combatBreathingEventName = "player_breathing_combat";
     public string injuredBreathingEventName = "player_breathing_injured";
-    /// <summary>中文含义：死亡事件名称。使用位置：作为 AudioManager.Play3D(string, Vector3) 的参数。</summary>
+    /// <summary>死亡事件名称。</summary>
     public string deathEventName = AudioEventNames.PlayerDeath;
-    /// <summary>中文含义：武器切换事件名称。使用位置：作为 AudioManager.Play3D(string, Vector3) 的参数。</summary>
+    /// <summary>武器切换事件名称。</summary>
     public string weaponSwitchEventName = AudioEventNames.PlayerWeaponSwitch;
-    /// <summary>中文含义：移动中阈值。使用位置：LeonPlayerAudio.UpdateBreathingLoop()。</summary>
+    /// <summary>移动中阈值。</summary>
     [Header("呼吸切换")]
     [Min(0f)]
     public float movingThreshold = 0.1f;
-    /// <summary>中文含义：里昂玩家控制器。使用位置：LeonPlayerAudio.Start()、LeonPlayerAudio.UpdateBreathingLoop()。</summary>
+    /// <summary>里昂玩家控制器。</summary>
     private LeonController controller;
-    /// <summary>中文含义：管理当前装备与武器切换的组件。使用位置：LeonPlayerAudio.BindEvents()、LeonPlayerAudio.Start()、LeonPlayerAudio.UnbindEvents()。</summary>
+    /// <summary>管理当前装备与武器切换的组件。</summary>
     private LeonWeaponHandler weaponHandler;
-    /// <summary>中文含义：呼吸句柄。使用位置：作为 AudioManager.Stop(AudioPlayHandle) 的参数、LeonPlayerAudio.StopBreathingLoop()、LeonPlayerAudio.UpdateBreathingLoop() 等共 4 处。</summary>
+    /// <summary>呼吸句柄。</summary>
     private AudioPlayHandle breathingHandle;
     private AudioPlayHandle hurtHandle;
-    /// <summary>中文含义：当前循环事件名称。使用位置：LeonPlayerAudio.StopBreathingLoop()、LeonPlayerAudio.UpdateBreathingLoop()。</summary>
+    /// <summary>当前循环事件名称。</summary>
     private string currentLoopEventName;
     private float nextBreathTime;
-    /// <summary>中文含义：是否已绑定事件。使用位置：LeonPlayerAudio.BindEvents()、LeonPlayerAudio.UnbindEvents()。</summary>
+    /// <summary>是否已绑定事件。</summary>
     private bool eventsBound;
     /// <summary>Unity 首次启用后的启动回调；状态处理与资源交接按函数内顺序执行，下游协作见调用链。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） Component.GetComponent&lt;LeonController&gt;()、Component.GetComponent&lt;LeonWeaponHandler&gt;()、LeonPlayerAudio.BindEvents()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
@@ -109,9 +109,9 @@ public class LeonPlayerAudio : MonoBehaviour
     {
         StopBreathingLoop();
         StopHurt();
-        // receiverValue1（判空前缓存的音频管理器的实例）：从音频管理器的实例读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonPlayerAudio.PlayDeath()。
+        // 判空前缓存的音频管理器的实例。
 global::AudioManager receiverValue1 = AudioManager.Instance;
-        // optionalValue2（条件访问得到的播放3距离的返回结果）：保存条件访问的结果，接收者为空时保持默认空值，非空时才执行原成员访问。使用位置：LeonPlayerAudio.PlayDeath()。
+        // 条件访问得到的播放3距离的返回结果。
 global::AudioPlayHandle? optionalValue2;
         if (!global::System.Object.ReferenceEquals(receiverValue1, null))
         {
@@ -180,9 +180,9 @@ global::AudioPlayHandle? optionalValue2;
             return;
         }
 
-        // receiverValue3（判空前缓存的音频管理器的实例）：从音频管理器的实例读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonPlayerAudio.HandleWeaponSwitched(WeaponType)。
+        // 判空前缓存的音频管理器的实例。
 global::AudioManager receiverValue3 = AudioManager.Instance;
-        // optionalValue4（条件访问得到的播放3距离的返回结果）：保存条件访问的结果，接收者为空时保持默认空值，非空时才执行原成员访问。使用位置：LeonPlayerAudio.HandleWeaponSwitched(WeaponType)。
+        // 条件访问得到的播放3距离的返回结果。
 global::AudioPlayHandle? optionalValue4;
         if (!global::System.Object.ReferenceEquals(receiverValue3, null))
         {
@@ -209,9 +209,9 @@ global::AudioPlayHandle? optionalValue4;
             return;
         }
 
-        // isRunning（是否运行中）：使用位置：LeonPlayerAudio.UpdateBreathingLoop()。
+        // 是否运行中。
 bool isRunning = controller.IsEffectiveSprinting;
-        // isMoving（是否移动中）：使用位置：LeonPlayerAudio.UpdateBreathingLoop()。
+        // 是否移动中。
 bool isMoving = controller.MoveInput.magnitude > movingThreshold;
         var audio = AudioManager.Instance;
         if (audio == null || audio.IsAudioPaused || hurtHandle.IsValid)
@@ -220,7 +220,7 @@ bool isMoving = controller.MoveInput.magnitude > movingThreshold;
             return;
         }
 
-        // targetEventName（目标事件名称）：使用位置：作为 AudioManager.Play3D(string, Vector3) 的参数、LeonPlayerAudio.UpdateBreathingLoop()。
+        // 目标事件名称。
 string targetEventName;
         if (controller.IsInjured)
         {

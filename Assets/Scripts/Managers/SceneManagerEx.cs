@@ -64,12 +64,12 @@ public class SceneManagerEx : Singleton<SceneManagerEx>
     /// 异步加载场景的协程实现
     /// </summary>
     /// <remarks>静态调用链：上游 SceneManagerEx.LoadSceneAsync(string)；下游（含内部回调体） Mathf.Clamp01(float)、SceneManager.LoadSceneAsync(string)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="sceneName">中文含义：场景名称。使用位置：作为 SceneManager.LoadSceneAsync(string) 的参数。</param>
+    /// <param name="sceneName">场景名称。</param>
     private IEnumerator LoadSceneCoroutine(string sceneName)
     {
         IsLoading = true;
         LoadingProgress = 0f;
-        // asyncOp（异步操作）：保存 SceneManager.LoadSceneAsync(string) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Clamp01(float) 的参数、SceneManagerEx.LoadSceneCoroutine(string)。
+        // 异步操作。
 AsyncOperation asyncOp = SceneManager.LoadSceneAsync(sceneName);
         if (asyncOp != null)
         {

@@ -8,16 +8,16 @@ using UnityEngine;
 [Serializable]
 public class IKHandPose
 {
-    /// <summary>中文含义：姿态名称（Idle / Aim / Reload 等）。使用位置：作为 List&lt;IKHandPose&gt;.Add(IKHandPose) 的参数、作为 List&lt;IKHandPose&gt;.Find(Predicate&lt;IKHandPose&gt;) 的参数、WeaponIKData.SavePose(string, Vector3, Vector3, Vector3, Vector3)。</summary>
+    /// <summary>姿态名称（Idle / Aim / Reload 等）。</summary>
     [Tooltip("姿态名称（Idle / Aim / Reload 等）")]
     public string poseName = "Idle";
-    /// <summary>中文含义：右手局部位置。使用位置：WeaponIKData.SavePose(string, Vector3, Vector3, Vector3, Vector3)。</summary>
+    /// <summary>右手局部位置。</summary>
     public Vector3 rightHandLocalPos;
-    /// <summary>中文含义：右手局部旋转。使用位置：WeaponIKData.SavePose(string, Vector3, Vector3, Vector3, Vector3)。</summary>
+    /// <summary>右手局部旋转。</summary>
     public Vector3 rightHandLocalRot;
-    /// <summary>中文含义：左手局部位置。使用位置：WeaponIKData.SavePose(string, Vector3, Vector3, Vector3, Vector3)。</summary>
+    /// <summary>左手局部位置。</summary>
     public Vector3 leftHandLocalPos;
-    /// <summary>中文含义：左手局部旋转。使用位置：WeaponIKData.SavePose(string, Vector3, Vector3, Vector3, Vector3)。</summary>
+    /// <summary>左手局部旋转。</summary>
     public Vector3 leftHandLocalRot;
 }
 
@@ -27,16 +27,16 @@ public class IKHandPose
 [Serializable]
 public class IKModeWeights
 {
-    /// <summary>中文含义：IK 模式。使用位置：作为 List&lt;IKModeWeights&gt;.Add(IKModeWeights) 的参数、作为 List&lt;IKModeWeights&gt;.Find(Predicate&lt;IKModeWeights&gt;) 的参数。</summary>
+    /// <summary>IK 模式。</summary>
     [Tooltip("IK 模式")]
     public IKMode mode;
-    /// <summary>中文含义：手臂权重。使用位置：作为 List&lt;IKModeWeights&gt;.Add(IKModeWeights) 的参数。</summary>
+    /// <summary>手臂权重。</summary>
     [Range(0f, 1f)]
     public float armWeight = 0f;
-    /// <summary>中文含义：脊柱权重。使用位置：作为 List&lt;IKModeWeights&gt;.Add(IKModeWeights) 的参数。</summary>
+    /// <summary>脊柱权重。</summary>
     [Range(0f, 1f)]
     public float spineWeight = 0f;
-    /// <summary>中文含义：头部权重。使用位置：作为 List&lt;IKModeWeights&gt;.Add(IKModeWeights) 的参数。</summary>
+    /// <summary>头部权重。</summary>
     [Range(0f, 1f)]
     public float headWeight = 0f;
 }
@@ -52,11 +52,11 @@ public class WeaponIKData : ScriptableObject
     [Header("武器信息")]
     [Tooltip("武器类型标识")]
     public WeaponType weaponType;
-    /// <summary>中文含义：该武器的所有 IK 姿态。使用位置：WeaponIKData.GetPose(string)、WeaponIKData.OnValidate()、WeaponIKData.SavePose(string, Vector3, Vector3, Vector3, Vector3)。</summary>
+    /// <summary>该武器的所有 IK 姿态。</summary>
     [Header("手部姿态")]
     [Tooltip("该武器的所有 IK 姿态")]
     public List<IKHandPose> poses = new List<IKHandPose>();
-    /// <summary>中文含义：每个 IK 模式对应的手臂/脊椎/头部目标权重。使用位置：WeaponIKData.GetWeights(IKMode)、WeaponIKData.OnValidate()。</summary>
+    /// <summary>每个 IK 模式对应的手臂/脊椎/头部目标权重。</summary>
     [Header("IK 模式权重表")]
     [Tooltip("每个 IK 模式对应的手臂/脊椎/头部目标权重")]
     public List<IKModeWeights> modeWeights = new List<IKModeWeights>();
@@ -93,7 +93,7 @@ public class WeaponIKData : ScriptableObject
 
     /// <summary>GetPose 的业务处理入口；本方法直接依赖 List&lt;IKHandPose&gt;.Find(Predicate&lt;IKHandPose&gt;)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 WeaponIKData.SavePose(string, Vector3, Vector3, Vector3, Vector3)；下游（含内部回调体） List&lt;IKHandPose&gt;.Find(Predicate&lt;IKHandPose&gt;)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="poseName">中文含义：姿态名称。使用位置：作为 List&lt;IKHandPose&gt;.Find(Predicate&lt;IKHandPose&gt;) 的参数。</param>
+    /// <param name="poseName">姿态名称。</param>
     public IKHandPose GetPose(string poseName)
     {
         return poses.Find( /* 中文含义：当前反向动力学手部姿态。 */p => p.poseName == poseName);
@@ -101,7 +101,7 @@ public class WeaponIKData : ScriptableObject
 
     /// <summary>GetWeights 的业务处理入口；本方法直接依赖 List&lt;IKModeWeights&gt;.Find(Predicate&lt;IKModeWeights&gt;)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） List&lt;IKModeWeights&gt;.Find(Predicate&lt;IKModeWeights&gt;)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="mode">中文含义：当前反向动力学模式。使用位置：作为 List&lt;IKModeWeights&gt;.Find(Predicate&lt;IKModeWeights&gt;) 的参数。</param>
+    /// <param name="mode">当前反向动力学模式。</param>
     public IKModeWeights GetWeights(IKMode mode)
     {
         return modeWeights.Find( /* 中文含义：当前反向动力学模式权重集合。 */w => w.mode == mode);
@@ -109,14 +109,14 @@ public class WeaponIKData : ScriptableObject
 
     /// <summary>SavePose 的业务处理入口；本方法直接依赖 EditorUtility.SetDirty(Object)、IKHandPose.IKHandPose()、List&lt;IKHandPose&gt;.Add(IKHandPose)、WeaponIKData.GetPose(string)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） EditorUtility.SetDirty(Object)、IKHandPose.IKHandPose()、List&lt;IKHandPose&gt;.Add(IKHandPose)、WeaponIKData.GetPose(string)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="poseName">中文含义：姿态名称。使用位置：作为 WeaponIKData.GetPose(string) 的参数、WeaponIKData.SavePose(string, Vector3, Vector3, Vector3, Vector3)。</param>
-    /// <param name="rPos">中文含义：右侧位置。使用位置：WeaponIKData.SavePose(string, Vector3, Vector3, Vector3, Vector3)。</param>
-    /// <param name="rRot">中文含义：右侧旋转。使用位置：WeaponIKData.SavePose(string, Vector3, Vector3, Vector3, Vector3)。</param>
-    /// <param name="lPos">中文含义：左侧位置。使用位置：WeaponIKData.SavePose(string, Vector3, Vector3, Vector3, Vector3)。</param>
-    /// <param name="lRot">中文含义：左侧旋转。使用位置：WeaponIKData.SavePose(string, Vector3, Vector3, Vector3, Vector3)。</param>
+    /// <param name="poseName">姿态名称。</param>
+    /// <param name="rPos">右侧位置。</param>
+    /// <param name="rRot">右侧旋转。</param>
+    /// <param name="lPos">左侧位置。</param>
+    /// <param name="lRot">左侧旋转。</param>
     public void SavePose(string poseName, Vector3 rPos, Vector3 rRot, Vector3 lPos, Vector3 lRot)
     {
-        // pose（姿态）：保存 WeaponIKData.GetPose(string) 的返回结果，供当前步骤使用。使用位置：作为 List<IKHandPose>.Add(IKHandPose) 的参数、WeaponIKData.SavePose(string, Vector3, Vector3, Vector3, Vector3)。
+        // 姿态。
 var pose = GetPose(poseName);
         if (pose == null)
         {

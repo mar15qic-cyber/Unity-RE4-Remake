@@ -53,14 +53,14 @@ public class LeonController : Singleton<LeonController>, IManualSingleton, IDama
     /// <summary>中文含义：切换场景时是否保留此单例对象。</summary>
     protected override bool Persistent => false;
 
-    /// <summary>中文含义：初始状态。使用位置：作为 LeonAnimationActionCoordinator.InitializePlayerState(LeonLocomotion, LeonState) 的参数、LeonController.currentState.get。</summary>
+    /// <summary>初始状态。</summary>
     [Header("当前状态")]
     [UnityEngine.Serialization.FormerlySerializedAs("currentState")]
     [SerializeField]
     [UnityEngine.Serialization.FormerlySerializedAs("初始状态")]
     [UnityEngine.InspectorName("初始状态")]
     private LeonState initialState = LeonState.Idle;
-    /// <summary>中文含义：当前状态。使用位置：CrosshairUI.Update()、DropManager.CanRollDrop()、EnemyCombatModule.ApplyDeadChainsawPulse() 等共 63 处。</summary>
+    /// <summary>当前状态。</summary>
     public LeonState currentState
     {
         get
@@ -76,13 +76,13 @@ public class LeonController : Singleton<LeonController>, IManualSingleton, IDama
         }
     }
 
-    /// <summary>中文含义：初始武器。使用位置：LeonController.InitialEquipment.get。</summary>
+    /// <summary>初始武器。</summary>
     [UnityEngine.Serialization.FormerlySerializedAs("currentWeapon")]
     [SerializeField]
     [UnityEngine.Serialization.FormerlySerializedAs("初始武器")]
     [UnityEngine.InspectorName("初始武器")]
     private WeaponType initialWeaponValue = WeaponType.Pistol;
-    /// <summary>中文含义：初始装备。使用位置：作为 LeonWeaponHandler.InitializeRuntimeModule(WeaponType) 的参数、LeonController.currentWeapon.get、LeonWeaponHandler.Start()。</summary>
+    /// <summary>初始装备。</summary>
     public WeaponType InitialEquipment
     {
         get
@@ -98,7 +98,7 @@ public class LeonController : Singleton<LeonController>, IManualSingleton, IDama
         }
     }
 
-    /// <summary>中文含义：当前武器。使用位置：作为 Action&lt;WeaponType&gt;.Invoke(WeaponType) 的参数、作为 Debug.LogWarning(object) 的参数、作为 LeonAnimationActionCoordinator.RequestWeaponAction(ActionRequest, WeaponType, WeaponType) 的参数 等共 35 处。</summary>
+    /// <summary>当前武器。</summary>
     public WeaponType currentWeapon
     {
         get
@@ -114,14 +114,14 @@ public class LeonController : Singleton<LeonController>, IManualSingleton, IDama
         }
     }
 
-    /// <summary>中文含义：玩家摄像机。使用位置：作为 Transform.InverseTransformDirection(Vector3) 的参数、LeonAnimRig.LateUpdate()、LeonController.CalculateMovementDirection(Vector3) 等共 12 处。</summary>
+    /// <summary>玩家摄像机。</summary>
     [Header("引用")]
     public Camera playerCamera;
-    /// <summary>中文含义：瞄准目标。使用位置：LeonController.RegisterCameraController(RE4CameraController, Camera, Transform)、LeonQTESetupUtility.BuildTestScene(LeonQTEConfig, GameObject)。</summary>
+    /// <summary>瞄准目标。</summary>
     public Transform aimTarget;
     /// <summary>中文含义：武器挂点。</summary>
     public Transform weaponSocket;
-    /// <summary>中文含义：最大生命值。使用位置：作为 CombatHUD.UpdateHealthFill(float, float, bool) 的参数、作为 HealthComponent.Initialize(float) 的参数、作为 Mathf.Max(float, float) 的参数 等共 7 处。</summary>
+    /// <summary>最大生命值。</summary>
     [Header("数值")]
     public float maxHealth = 100f;
     /// <summary>中文含义：生命。血量组件</summary>
@@ -148,97 +148,118 @@ public class LeonController : Singleton<LeonController>, IManualSingleton, IDama
     /// <summary>中文含义：行走速度。</summary>
     [Header("移动")]
     public float walkSpeed = 1.83f;
-    /// <summary>中文含义：运行速度。使用位置：作为 Mathf.Clamp(float, float, float) 的参数、LeonLocomotion.HandleMovement()。</summary>
+    /// <summary>运行速度。</summary>
     public float runSpeed = 3.90f;
-    /// <summary>中文含义：旋转速度。使用位置：作为 Quaternion.Lerp(Quaternion, Quaternion, float) 的参数。</summary>
+    /// <summary>旋转速度。</summary>
     public float rotationSpeed = 10f;
     /// <summary>中文含义：射击移动速度。</summary>
     public float shootMoveSpeed = 1.83f;
-    /// <summary>中文含义：蹲伏时的胶囊体高度，不能小于直径。使用位置：作为 LeonController.GetWorldCapsule(Vector3, float, float, out Vector3, out Vector3, out float) 的参数、作为 Mathf.Clamp(float, float, float) 的参数、LeonController.ApplyCrouchState(bool) 等共 4 处。</summary>
+    /// <summary>蹲伏时的胶囊体高度，不能小于直径。</summary>
     [Header("蹲伏碰撞")]
     [Tooltip("蹲伏时的胶囊体高度，不能小于直径")]
     public float crouchColliderHeight = 1.2f;
-    /// <summary>中文含义：起身空间检测额外增加的半径余量。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>起身空间检测额外增加的半径余量。</summary>
     [Tooltip("起身空间检测额外增加的半径余量")]
     public float crouchClearancePadding = 0.02f;
-    /// <summary>中文含义：参与起身空间检测的碰撞层。使用位置：作为 Physics.OverlapCapsuleNonAlloc(Vector3, Vector3, float, Collider[], int, QueryTriggerInteraction) 的参数。</summary>
+    /// <summary>参与起身空间检测的碰撞层。</summary>
     [Tooltip("参与起身空间检测的碰撞层")]
     public LayerMask crouchObstructionMask = ~0;
-    /// <summary>中文含义：攻击来源横向分量超过此值时，播放对应的左侧或右侧受击动画。使用位置：LeonController.ResolveHitDirection(Vector3)。</summary>
+    /// <summary>攻击来源横向分量超过此值时，播放对应的左侧或右侧受击动画。</summary>
     [Header("受击方向")]
     [Tooltip("攻击来源横向分量超过此值时，播放对应的左侧或右侧受击动画")]
     [Range(0f, 1f)]
     public float hitSideThreshold = 0.35f;
-    /// <summary>中文含义：生命比例小于等于该值时进入受伤状态。使用位置：LeonController.HandleHealthChanged(float, float)。</summary>
+    /// <summary>生命比例小于等于该值时进入受伤状态。</summary>
     [Header("低血量受伤状态")]
     [Tooltip("生命比例小于等于该值时进入受伤状态")]
     [Range(0.05f, 0.9f)]
     public float injuredEnterRatio = 0.35f;
-    /// <summary>中文含义：生命比例恢复至该值以上才退出受伤状态（迟滞区间防止抖动）。使用位置：LeonController.HandleHealthChanged(float, float)。</summary>
+    /// <summary>生命比例恢复至该值以上才退出受伤状态（迟滞区间防止抖动）。</summary>
     [Tooltip("生命比例恢复至该值以上才退出受伤状态（迟滞区间防止抖动）")]
     [Range(0.05f, 1f)]
     public float injuredExitRatio = 0.40f;
     /// <summary>中文含义：是否受伤。逻辑受伤状态：进入阈值立即生效，退出需达到恢复阈值</summary>
     public bool IsInjured { get; private set; }
 
-    /// <summary>中文含义：死亡动画完成通知丢失时，等待多久后强制进入死亡结算界面。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>背后环抱等 QTE 释放后的短暂无敌截止时间。</summary>
+    private float qteReleaseInvulnerableUntil;
+
+    /// <summary>当前是否处于 QTE 释放后的短暂无敌窗口内。</summary>
+    internal bool IsQTEReleaseInvulnerable
+    {
+        get
+        {
+            return Time.time < qteReleaseInvulnerableUntil;
+        }
+    }
+
+    /// <summary>授予玩家一段短暂的 QTE 释放后普通伤害无敌窗口。</summary>
+    internal void GrantQTEReleaseInvulnerability(float duration)
+    {
+        if (duration > 0f)
+        {
+            qteReleaseInvulnerableUntil = Mathf.Max(qteReleaseInvulnerableUntil, Time.time + duration);
+        }
+    }
+
+    /// <summary>死亡动画完成通知丢失时，等待多久后强制进入死亡结算界面。</summary>
     [Header("死亡流程")]
     [Tooltip("死亡动画完成通知丢失时，等待多久后强制进入死亡结算界面")]
     [Min(0.1f)]
     public float deathResultFallbackDelay = 2.5f;
-    /// <summary>中文含义：横向瞄准平滑。使用位置：作为 Mathf.Lerp(float, float, float) 的参数。</summary>
+    /// <summary>横向瞄准平滑。</summary>
     [Header("Aim Offset 平滑")]
     public float horAimSmooth = 0.75f;
-    /// <summary>中文含义：纵向瞄准平滑。使用位置：作为 Mathf.Lerp(float, float, float) 的参数。</summary>
+    /// <summary>纵向瞄准平滑。</summary>
     public float verAimSmooth = 8f;
-    /// <summary>中文含义：纵向瞄准增益。抬头/低头动画触发增益，&gt;1 放大 verAim 让 BlendTree 更容易进入上下方向。使用位置：作为 Mathf.Clamp(float, float, float) 的参数、LeonController.UpdateAnimatorParameters()。</summary>
+    /// <summary>纵向瞄准增益。抬头/低头动画触发增益，&gt;1 放大 verAim 让 BlendTree 更容易进入上下方向。</summary>
     [Tooltip("抬头/低头动画触发增益，>1 放大 verAim 让 BlendTree 更容易进入上下方向")]
     public float verAimGain = 1.5f;
-    /// <summary>中文含义：低头角度下限。使用位置：作为 Mathf.Clamp(float, float, float) 的参数。</summary>
+    /// <summary>低头角度下限。</summary>
     [Tooltip("低头角度下限")]
     public float verAimMin = -45f;
-    /// <summary>中文含义：平滑横向瞄准。使用位置：作为 LeonAnimatorDriver.SetAimAngles(float, float) 的参数、作为 Mathf.Lerp(float, float, float) 的参数、LeonController.SynchronizeEnterAimAngle() 等共 4 处。</summary>
+    /// <summary>平滑横向瞄准。</summary>
     private float smoothHorAim;
-    /// <summary>中文含义：平滑纵向瞄准。使用位置：作为 LeonAnimatorDriver.SetAimAngles(float, float) 的参数、作为 Mathf.Lerp(float, float, float) 的参数、LeonController.SynchronizeEnterAimAngle() 等共 4 处。</summary>
+    /// <summary>平滑纵向瞄准。</summary>
     private float smoothVerAim;
     // === 运行时输入状态 ===
-    /// <summary>中文含义：输入状态。使用位置：作为 LeonAnimatorDriver.SetCrouching(bool) 的参数、作为 LeonController.TrySetCrouching(bool) 的参数、LeonController.ApplyCrouchState(bool) 等共 23 处。</summary>
+    /// <summary>输入状态。</summary>
     [SerializeField]
     private InputState inputState;
     /// <summary>中文含义：输入数据。输入状态（只读访问）</summary>
     public ref readonly InputState Input => ref inputState;
     // === 向后兼容属性 ===
-    /// <summary>中文含义：移动输入。使用位置：作为 FreeLookState.UpdateMovementInput(Vector3) 的参数、作为 Mathf.Clamp01(float) 的参数、FootstepController.Update() 等共 18 处。</summary>
+    /// <summary>移动输入。</summary>
     public Vector3 MoveInput => inputState.moveInput;
-    /// <summary>中文含义：观察输入。使用位置：RE4RThirdPersonCamera.GetLookInput()。</summary>
+    /// <summary>观察输入。</summary>
     public Vector2 LookInput => inputState.lookInput;
-    /// <summary>中文含义：是否正在冲刺。使用位置：LeonLocomotion.UpdateTurnAngleFromCamera(Camera, bool, bool, bool, bool)。</summary>
+    /// <summary>是否正在冲刺。</summary>
     public bool IsSprinting => inputState.isSprinting;
     /// <summary>中文含义：当前平面速度。角色当前实际水平移动速度。镜头等表现层必须以此值判断是否已经进入奔跑， 不能只根据按键状态提前切换。</summary>
     public float CurrentPlanarSpeed { get => HorizontalSpeed.magnitude; }
-    /// <summary>中文含义：是否实际生效的冲刺中。使用位置：作为 LeonAnimatorDriver.SetMovement(float, float, float, bool) 的参数、FootstepController.PlayFootstep()、FootstepController.Update() 等共 7 处。</summary>
+    /// <summary>是否实际生效的冲刺中。</summary>
     public bool IsEffectiveSprinting => inputState.isSprinting && !inputState.isCrouching && inputState.moveInput.sqrMagnitude > 0.01f && currentState != LeonState.Aiming && currentState != LeonState.Shooting && currentState != LeonState.Reloading && currentState != LeonState.MeleeAttacking && currentState != LeonState.Parrying && (currentState != LeonState.Staggered || animDriver != null && animDriver.HitMovementReleased) && currentState != LeonState.QTE && currentState != LeonState.Traversing && currentState != LeonState.Dead;
 
-    /// <summary>中文含义：自由观察。只读字段，初始化后不由普通写入口替换。使用位置：LeonController.AdvanceFreeViewRecentering(float, float)、LeonController.CalculateMovementDirection(Vector3)、LeonController.CurrentFreeLookPhase.get 等共 11 处。</summary>
+    /// <summary>自由观察。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly FreeLookState freeObserve = new FreeLookState();
-    /// <summary>中文含义：是否自由观察中。使用位置：LeonAnimRig.Update()。</summary>
+    /// <summary>是否自由观察中。</summary>
     public bool IsFreeLooking => freeObserve.Phase == FreeLookPhase.Observe;
-    /// <summary>中文含义：当前自由环顾阶段。使用位置：RE4RThirdPersonCamera.DriveInput(float)。</summary>
+    /// <summary>当前自由环顾阶段。</summary>
     public FreeLookPhase CurrentFreeLookPhase => freeObserve.Phase;
-    /// <summary>中文含义：是否隔离观察摄像机转向。使用位置：LeonLocomotion.HandleRotation(Vector3, Camera, bool, bool, bool, bool, bool, Vector3)、LeonLocomotion.UpdateTurnAngleFromCamera(Camera, bool, bool, bool, bool)、RE4RThirdPersonCamera.DriveInput(float)。</summary>
+    /// <summary>是否隔离观察摄像机转向。</summary>
     public bool IsolateObserveCameraSteering => freeObserve.IsolateCameraSteering;
-    /// <summary>中文含义：是否跳跃中。使用位置：LeonFootAction.AllowGroundContact.get、LeonFootAction.FixedUpdate()。</summary>
+    /// <summary>是否跳跃中。</summary>
     public bool IsJumping => inputState.isJumping;
-    /// <summary>中文含义：是否正在蹲伏。使用位置：LeonAnimRig.InjuredSingleHandPoseSuppressionActive()、LeonAnimRig.Update()、LeonInputBridge.EnterQTEInput(int) 等共 11 处。</summary>
+    /// <summary>是否正在蹲伏。</summary>
     public bool IsCrouching => inputState.isCrouching;
     internal bool IsFirearmStanceBlocked => IsCrouching || animDriver != null && animDriver.IsRisingForFirearm;
-    /// <summary>中文含义：是否着地。使用位置：FootstepController.Update()、LeonFootAction.AllowGroundContact.get、LeonFootAction.FixedUpdate() 等共 4 处。</summary>
+    /// <summary>是否着地。</summary>
     public bool IsGrounded => inputState.isGrounded;
 
     // === 输入写入方法（由 LeonInputBridge 调用）===
     /// <summary>SetMoveInput 的业务处理入口；本方法直接依赖 FreeLookState.UpdateMovementInput(Vector3)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 KnifePreviewReferenceValidator.CaptureRuntime(KnifeCombatModule)、LeonInputBridge.EnterQTEInput(int)、LeonInputBridge.ExitQTEInput(int)、LeonInputBridge.LockForDeath()、LeonInputBridge.OnMove(InputAction.CallbackContext) 等共 7 处；下游（含内部回调体） FreeLookState.UpdateMovementInput(Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="value">中文含义：值。使用位置：作为 FreeLookState.UpdateMovementInput(Vector3) 的参数、LeonController.SetMoveInput(Vector3)。</param>
+    /// <param name="value">值。</param>
     public void SetMoveInput(Vector3 value)
     {
         inputState.moveInput = value;
@@ -258,28 +279,28 @@ public class LeonController : Singleton<LeonController>, IManualSingleton, IDama
 
     /// <summary>SetLookInput 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
     /// <remarks>静态调用链：上游 LeonInputBridge.EnterQTEInput(int)、LeonInputBridge.LockForDeath()、LeonInputBridge.OnLook(InputAction.CallbackContext)、LeonWindowTraversal.TryStartTraversal(WindowTraversalPoint)、PerformanceSamplingEntry.Drive(int, double)；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="value">中文含义：值。使用位置：LeonController.SetLookInput(Vector2)。</param>
+    /// <param name="value">值。</param>
     public void SetLookInput(Vector2 value) => inputState.lookInput = value;
     /// <summary>SetSprinting 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
     /// <remarks>静态调用链：上游 LeonHighDropLanding.BeginDrop()、LeonInputBridge.EnterQTEInput(int)、LeonInputBridge.ExitQTEInput(int)、LeonInputBridge.LockForDeath()、LeonInputBridge.OnSprintEnd(InputAction.CallbackContext) 等共 7 处；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="value">中文含义：是否值。使用位置：LeonController.SetSprinting(bool)。</param>
+    /// <param name="value">是否值。</param>
     public void SetSprinting(bool value) => inputState.isSprinting = value && !inputState.isCrouching;
     /// <summary>SetFreeLooking 的业务处理入口；本方法直接依赖 FreeLookState.SetKeyBinding(bool, bool, float)、object.ReferenceEquals(object, object)、RE4RThirdPersonCamera.SynchronizeObserveDirection(bool)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonInputBridge.EnterQTEInput(int)、LeonInputBridge.LockForDeath()、LeonInputBridge.OnFreeLookEnd(InputAction.CallbackContext)、LeonInputBridge.OnFreeLookStart(InputAction.CallbackContext)、LeonInputBridge.Update() 等共 6 处；下游（含内部回调体） FreeLookState.SetKeyBinding(bool, bool, float)、object.ReferenceEquals(object, object)、RE4RThirdPersonCamera.SynchronizeObserveDirection(bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="value">中文含义：是否值。使用位置：作为 FreeLookState.SetKeyBinding(bool, bool, float) 的参数、LeonController.SetFreeLooking(bool)。</param>
+    /// <param name="value">是否值。</param>
     public void SetFreeLooking(bool value)
     {
         inputState.isFreeLooking = value;
-        // originalPhase（原始阶段）：使用位置：LeonController.SetFreeLooking(bool)。
+        // 原始阶段。
 var originalPhase = freeObserve.Phase;
         freeObserve.SetKeyBinding(value, AllowFreeObserve && !IsAiming, ViewHorizontalAngle);
         if (originalPhase != freeObserve.Phase)
         {
-            // receiverValue5（判空前缓存的摄像机控制器）：从摄像机控制器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonController.SetFreeLooking(bool)。
+            // 判空前缓存的摄像机控制器。
 global::RE4CameraController receiverValue5 = cameraController;
             if (!global::System.Object.ReferenceEquals(receiverValue5, null))
             {
-                // receiverValue6（判空前缓存的接收者值5的玩法驱动器）：从接收者值5的玩法驱动器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonController.SetFreeLooking(bool)。
+                // 判空前缓存的接收者值5的玩法驱动器。
 global::RE4RThirdPersonCamera receiverValue6 = receiverValue5.gameplayDriver;
                 if (!global::System.Object.ReferenceEquals(receiverValue6, null))
                 {
@@ -289,7 +310,7 @@ global::RE4RThirdPersonCamera receiverValue6 = receiverValue5.gameplayDriver;
         }
     }
 
-    /// <summary>中文含义：视图水平角度。使用位置：作为 FreeLookState.SetKeyBinding(bool, bool, float) 的参数。</summary>
+    /// <summary>视图水平角度。</summary>
     private float ViewHorizontalAngle
     {
         get
@@ -305,10 +326,10 @@ global::RE4RThirdPersonCamera receiverValue6 = receiverValue5.gameplayDriver;
         }
     }
 
-    /// <summary>中文含义：是否允许自由观察。使用位置：作为 FreeLookState.SetKeyBinding(bool, bool, float) 的参数、LeonController.UpdateFreeLookState()。</summary>
+    /// <summary>是否允许自由观察。</summary>
     private bool AllowFreeObserve => isActiveAndEnabled && applyHasFocus && (inputBridge == null || inputBridge.AllowFreeViewInput) && (!GameManager.HasInstance || GameManager.Instance.Permission.Current.AllowInput) && (!GameUIManager.HasInstance || !GameUIManager.Instance.IsPlayerInputBlocked) && (cameraController == null || !cameraController.HasExternalCamera) && currentState != LeonState.Staggered && currentState != LeonState.Dead && currentState != LeonState.QTE && currentState != LeonState.Traversing && currentState != LeonState.MeleeAttacking && currentState != LeonState.Parrying;
 
-    /// <summary>中文含义：应用是否具有焦点。使用位置：LeonController.AllowFreeObserve.get、LeonController.OnApplicationFocus(bool)。</summary>
+    /// <summary>应用是否具有焦点。</summary>
     private bool applyHasFocus = true;
     /// <summary>UpdateFreeLookState 的业务处理入口；本方法直接依赖 FreeLookState.UpdateMovementInput(Vector3)、LeonController.ResetFreeView()、LeonController.TakeOverFreeViewAim()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonController.FixedUpdate()、LeonController.Update()、RE4RThirdPersonCamera.LateUpdate()；下游（含内部回调体） FreeLookState.UpdateMovementInput(Vector3)、LeonController.ResetFreeView()、LeonController.TakeOverFreeViewAim()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
@@ -331,10 +352,10 @@ global::RE4RThirdPersonCamera receiverValue6 = receiverValue5.gameplayDriver;
 
     /// <summary>CalculateMovementDirection 的业务处理入口；本方法直接依赖 FreeLookState.CalculateMovementDirection(Vector3, Vector3, Vector3)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonLocomotion.HandleMovement()；下游（含内部回调体） FreeLookState.CalculateMovementDirection(Vector3, Vector3, Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="input">中文含义：输入数据。使用位置：作为 FreeLookState.CalculateMovementDirection(Vector3, Vector3, Vector3) 的参数。</param>
+    /// <param name="input">输入数据。</param>
     public Vector3 CalculateMovementDirection(Vector3 input)
     {
-        // reference（引用）：使用位置：作为 FreeLookState.CalculateMovementDirection(Vector3, Vector3, Vector3) 的参数、LeonController.CalculateMovementDirection(Vector3)。
+        // 引用。
 global::UnityEngine.Transform reference;
         if (playerCamera != null)
         {
@@ -350,19 +371,19 @@ global::UnityEngine.Transform reference;
 
     /// <summary>AdvanceFreeViewRecentering 的业务处理入口；本方法直接依赖 FreeLookState.AdvanceRecentering(float, float, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 RE4RThirdPersonCamera.DriveInput(float)；下游（含内部回调体） FreeLookState.AdvanceRecentering(float, float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="timeStepSize">中文含义：时间步进尺寸。使用位置：作为 FreeLookState.AdvanceRecentering(float, float, float) 的参数。</param>
-    /// <param name="duration">中文含义：持续时间。使用位置：作为 FreeLookState.AdvanceRecentering(float, float, float) 的参数。</param>
+    /// <param name="timeStepSize">时间步进尺寸。</param>
+    /// <param name="duration">持续时间。</param>
     public float AdvanceFreeViewRecentering(float timeStepSize, float duration) => freeObserve.AdvanceRecentering(timeStepSize, duration, transform.eulerAngles.y);
     /// <summary>InterruptFreeViewRecentering 的业务处理入口；本方法直接依赖 FreeLookState.InterruptRecentering()、object.ReferenceEquals(object, object)、RE4RThirdPersonCamera.SynchronizeObserveDirection(bool)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 RE4RThirdPersonCamera.DriveInput(float)；下游（含内部回调体） FreeLookState.InterruptRecentering()、object.ReferenceEquals(object, object)、RE4RThirdPersonCamera.SynchronizeObserveDirection(bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     public void InterruptFreeViewRecentering()
     {
         freeObserve.InterruptRecentering();
-        // receiverValue9（判空前缓存的摄像机控制器）：从摄像机控制器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonController.InterruptFreeViewRecentering()。
+        // 判空前缓存的摄像机控制器。
 global::RE4CameraController receiverValue9 = cameraController;
         if (!global::System.Object.ReferenceEquals(receiverValue9, null))
         {
-            // receiverValue10（判空前缓存的接收者值9的玩法驱动器）：从接收者值9的玩法驱动器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonController.InterruptFreeViewRecentering()。
+            // 判空前缓存的接收者值9的玩法驱动器。
 global::RE4RThirdPersonCamera receiverValue10 = receiverValue9.gameplayDriver;
             if (!global::System.Object.ReferenceEquals(receiverValue10, null))
             {
@@ -377,11 +398,11 @@ global::RE4RThirdPersonCamera receiverValue10 = receiverValue9.gameplayDriver;
     {
         if (freeObserve.IsolateCameraSteering)
         {
-            // receiverValue11（判空前缓存的摄像机控制器）：从摄像机控制器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonController.TakeOverFreeViewAim()。
+            // 判空前缓存的摄像机控制器。
 global::RE4CameraController receiverValue11 = cameraController;
             if (!global::System.Object.ReferenceEquals(receiverValue11, null))
             {
-                // receiverValue12（判空前缓存的接收者值11的玩法驱动器）：从接收者值11的玩法驱动器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonController.TakeOverFreeViewAim()。
+                // 判空前缓存的接收者值11的玩法驱动器。
 global::RE4RThirdPersonCamera receiverValue12 = receiverValue11.gameplayDriver;
                 if (!global::System.Object.ReferenceEquals(receiverValue12, null))
                 {
@@ -402,7 +423,7 @@ global::RE4RThirdPersonCamera receiverValue12 = receiverValue11.gameplayDriver;
 
     /// <summary>OnApplicationFocus 的业务处理入口；本方法直接依赖 LeonController.ResetFreeView()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） LeonController.ResetFreeView()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="hasFocus">中文含义：是否具有焦点。使用位置：LeonController.OnApplicationFocus(bool)。</param>
+    /// <param name="hasFocus">是否具有焦点。</param>
     void OnApplicationFocus(bool hasFocus)
     {
         applyHasFocus = hasFocus;
@@ -415,7 +436,7 @@ global::RE4RThirdPersonCamera receiverValue12 = receiverValue11.gameplayDriver;
     /// <summary>Unity 组件停用回调；状态处理与资源交接按函数内顺序执行，下游协作见调用链。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） LeonController.ResetFreeView()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     void OnDisable() => ResetFreeView();
-    /// <summary>中文含义：水平速度。使用位置：作为 Transform.InverseTransformDirection(Vector3) 的参数、作为 Vector3.Dot(Vector3, Vector3) 的参数、LeonController.CurrentPlanarSpeed.get。</summary>
+    /// <summary>水平速度。</summary>
     internal Vector3 HorizontalSpeed
     {
         get
@@ -431,54 +452,54 @@ global::RE4RThirdPersonCamera receiverValue12 = receiverValue11.gameplayDriver;
         }
     }
 
-    /// <summary>中文含义：运动刚体。使用位置：作为 Vector3.ProjectOnPlane(Vector3, Vector3) 的参数、LeonController.CanStandUp()、LeonController.HorizontalSpeed.get 等共 4 处。</summary>
+    /// <summary>运动刚体。</summary>
     private Rigidbody rb;
-    /// <summary>中文含义：移动行为。使用位置：作为 LeonAnimationActionCoordinator.InitializePlayerState(LeonLocomotion, LeonState) 的参数、LeonController.FinishQTEState(bool)、LeonController.FixedUpdate() 等共 4 处。</summary>
+    /// <summary>移动行为。</summary>
     private LeonLocomotion locomotion;
-    /// <summary>中文含义：战斗。使用位置：LeonController.ApplyDamage(float, Vector3, LeonHitDirection)、LeonController.BeginDeathSequence()、LeonController.HandleDeferredTraversalHit(LeonHitDirection) 等共 9 处。</summary>
+    /// <summary>战斗。</summary>
     private LeonCombat combat;
-    /// <summary>中文含义：管理当前装备与武器切换的组件。使用位置：LeonController.CanReload()、LeonController.CompleteReload()、LeonController.currentWeapon.get 等共 12 处。</summary>
+    /// <summary>管理当前装备与武器切换的组件。</summary>
     private LeonWeaponHandler weaponHandler;
-    /// <summary>中文含义：摄像机控制器。使用位置：LeonController.AllowFreeObserve.get、LeonController.CameraController.get、LeonController.InterruptFreeViewRecentering() 等共 9 处。</summary>
+    /// <summary>摄像机控制器。</summary>
     private RE4CameraController cameraController;
     // === 管线组件缓存 ===
-    /// <summary>中文含义：动画驱动器。使用位置：LeonController.AnimDriver.get、LeonController.ApplyCrouchState(bool)、LeonController.ApplyDamage(float, Vector3, LeonHitDirection) 等共 8 处。</summary>
+    /// <summary>动画驱动器。</summary>
     private LeonAnimatorDriver animDriver;
-    /// <summary>中文含义：动画协调器。使用位置：LeonController.AnimCoordinator.get、LeonController.BeginDeathSequence()、LeonController.CanAct() 等共 9 处。</summary>
+    /// <summary>动画协调器。</summary>
     private LeonAnimationActionCoordinator animCoordinator;
-    /// <summary>中文含义：当前里昂动画绑定组件。使用位置：LeonController.AnimRig.get、LeonController.InitPipeline()。</summary>
+    /// <summary>当前里昂动画绑定组件。</summary>
     private LeonAnimRig animRig;
-    /// <summary>中文含义：武器视觉表现控制器。使用位置：LeonController.InitPipeline()。</summary>
+    /// <summary>武器视觉表现控制器。</summary>
     private LeonWeaponVisualController weaponVisualController;
-    /// <summary>中文含义：当前里昂配对动作协调器。使用位置：LeonController.ApplyDamage(float, Vector3, LeonHitDirection)、LeonController.InitPipeline()、LeonController.QTECoordinator.get 等共 4 处。</summary>
+    /// <summary>当前里昂配对动作协调器。</summary>
     private LeonQTECoordinator qteCoordinator;
-    /// <summary>中文含义：高处跳落落地。使用位置：LeonController.FixedUpdate()、LeonController.InitPipeline()。</summary>
+    /// <summary>高处跳落落地。</summary>
     private LeonHighDropLanding highDropLanding;
-    /// <summary>中文含义：翻窗通行。使用位置：LeonController.ApplyDamage(float, Vector3, LeonHitDirection)、LeonController.FixedUpdate()、LeonController.InitPipeline()。</summary>
+    /// <summary>翻窗通行。</summary>
     private LeonWindowTraversal windowTraversal;
-    /// <summary>中文含义：输入桥接。使用位置：LeonController.AllowFreeObserve.get、LeonController.BeginDeathSequence()、LeonController.InitPipeline()。</summary>
+    /// <summary>输入桥接。</summary>
     private LeonInputBridge inputBridge;
-    /// <summary>中文含义：玩家音频。使用位置：LeonController.BeginDeathSequence()、LeonController.Start()。</summary>
+    /// <summary>玩家音频。</summary>
     private LeonPlayerAudio playerAudio;
-    /// <summary>中文含义：胶囊碰撞体。使用位置：LeonController.ApplyCrouchState(bool)、LeonController.CanStandUp()、LeonController.GetWorldCapsule(Vector3, float, float, out Vector3, out Vector3, out float) 等共 6 处。</summary>
+    /// <summary>胶囊碰撞体。</summary>
     private CapsuleCollider capsuleCollider;
-    /// <summary>中文含义：站立碰撞体高度。使用位置：作为 LeonController.GetWorldCapsule(Vector3, float, float, out Vector3, out Vector3, out float) 的参数、作为 Mathf.Clamp(float, float, float) 的参数、LeonController.ApplyCrouchState(bool) 等共 4 处。</summary>
+    /// <summary>站立碰撞体高度。</summary>
     private float standingColliderHeight;
-    /// <summary>中文含义：站立碰撞体中心。使用位置：作为 LeonController.GetWorldCapsule(Vector3, float, float, out Vector3, out Vector3, out float) 的参数、LeonController.ApplyCrouchState(bool)、LeonController.InitializeCrouchCollider()。</summary>
+    /// <summary>站立碰撞体中心。</summary>
     private Vector3 standingColliderCenter;
-    /// <summary>中文含义：蹲伏中碰撞体中心。使用位置：作为 LeonController.GetWorldCapsule(Vector3, float, float, out Vector3, out Vector3, out float) 的参数、LeonController.ApplyCrouchState(bool)、LeonController.InitializeCrouchCollider()。</summary>
+    /// <summary>蹲伏中碰撞体中心。</summary>
     private Vector3 crouchingColliderCenter;
-    /// <summary>中文含义：蹲伏重叠结果集合。只读字段，初始化后不由普通写入口替换。使用位置：作为 Physics.OverlapCapsuleNonAlloc(Vector3, Vector3, float, Collider[], int, QueryTriggerInteraction) 的参数、LeonController.CanStandUp()。</summary>
+    /// <summary>蹲伏重叠结果集合。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly Collider[] crouchOverlapResults = new Collider[32];
-    /// <summary>中文含义：新动作管线是否有效。使用位置：LeonController.HandleHealthChanged(float, float)、LeonController.InitPipeline()、LeonController.NewPipelineValid.get 等共 6 处。</summary>
+    /// <summary>新动作管线是否有效。</summary>
     private bool newPipelineValid;
-    /// <summary>中文含义：死亡序号是否已开始。使用位置：LeonController.BeginDeathSequence()、LeonController.HandleDeathAnimationCompleted()、LeonController.ReportDeathCompletion() 等共 4 处。</summary>
+    /// <summary>死亡序号是否已开始。</summary>
     private bool deathSequenceStarted;
-    /// <summary>中文含义：是否死亡完成已报告。使用位置：LeonController.HandleDeathAnimationCompleted()、LeonController.ReportDeathCompletion()、LeonController.WaitForDeathCompletionFallback()。</summary>
+    /// <summary>是否死亡完成已报告。</summary>
     private bool deathCompletionReported;
-    /// <summary>中文含义：死亡完成后备协程。使用位置：作为 MonoBehaviour.StopCoroutine(Coroutine) 的参数、LeonController.BeginDeathSequence()、LeonController.HandleDeathAnimationCompleted() 等共 5 处。</summary>
+    /// <summary>死亡完成后备协程。</summary>
     private Coroutine deathCompletionFallbackRoutine;
-    /// <summary>中文含义：是否伤害分辨率内部进度。使用位置：LeonController.ApplyDamage(float, Vector3, LeonHitDirection)、LeonController.HandleHealthChanged(float, float)。</summary>
+    /// <summary>是否伤害分辨率内部进度。</summary>
     private bool damageResolutionInProgress;
     /// <summary>Unity 首次启用后的启动回调；状态处理与资源交接按函数内顺序执行，下游协作见调用链。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） Component.GetComponent&lt;CapsuleCollider&gt;()、Component.GetComponent&lt;HealthComponent&gt;()、Component.GetComponent&lt;LeonCombat&gt;()、Component.GetComponent&lt;LeonLocomotion&gt;()、Component.GetComponent&lt;LeonPlayerAudio&gt;()、Component.GetComponent&lt;LeonWeaponHandler&gt;()、Component.GetComponent&lt;Rigidbody&gt;() 等共 12 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
@@ -525,18 +546,18 @@ global::RE4RThirdPersonCamera receiverValue12 = receiverValue11.gameplayDriver;
     /// 伤害结算期间不直接修改动画层，由结算流程决定延迟或立即同步。
     /// </summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） Action&lt;float, float&gt;.Invoke(float, float)、LeonAnimatorDriver.RequestInjuredState(bool, bool)、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="current">中文含义：当前。使用位置：作为 Action&lt;float, float&gt;.Invoke(float, float) 的参数、LeonController.HandleHealthChanged(float, float)。</param>
-    /// <param name="max">中文含义：最大。使用位置：作为 Action&lt;float, float&gt;.Invoke(float, float) 的参数、LeonController.HandleHealthChanged(float, float)。</param>
+    /// <param name="current">当前。</param>
+    /// <param name="max">最大。</param>
     private void HandleHealthChanged(float current, float max)
     {
-        // receiverValue14（判空前缓存的生命变化时的通知回调）：从生命变化时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonController.HandleHealthChanged(float, float)。
+        // 判空前缓存的生命变化时的通知回调。
 global::System.Action<float, float> receiverValue14 = OnHealthChanged;
         if (!global::System.Object.ReferenceEquals(receiverValue14, null))
         {
             receiverValue14.Invoke(current, max);
         }
 
-        // ratio（比例）：使用位置：LeonController.HandleHealthChanged(float, float)。
+        // 比例。
 float ratio;
         if (max > 0f)
         {
@@ -564,7 +585,7 @@ float ratio;
         // 治疗或其他非受击生命变化：立即按普通过渡同步受伤层
         if (newPipelineValid)
         {
-            // receiverValue16（判空前缓存的动画驱动器）：从动画驱动器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonController.HandleHealthChanged(float, float)。
+            // 判空前缓存的动画驱动器。
 global::LeonAnimatorDriver receiverValue16 = animDriver;
             if (!global::System.Object.ReferenceEquals(receiverValue16, null))
             {
@@ -623,7 +644,7 @@ global::LeonAnimatorDriver receiverValue16 = animDriver;
         animCoordinator.InitializePlayerState(locomotion, initialState);
         newPipelineValid = true;
         animCoordinator.OnDeathAnimationCompleted += HandleDeathAnimationCompleted;
-        // initialWeapon（初始武器）：使用位置：作为 LeonAnimatorDriver.InitializeAnimatorContract(WeaponType) 的参数、LeonController.InitPipeline()。
+        // 初始武器。
 WeaponType initialWeapon;
         if (currentWeapon == WeaponType.Rifle || currentWeapon == WeaponType.Shotgun || currentWeapon == WeaponType.Knife)
         {
@@ -634,7 +655,7 @@ WeaponType initialWeapon;
             initialWeapon = WeaponType.Pistol;
         }
 
-        // receiverValue18（判空前缓存的管理当前装备与武器切换的组件）：从管理当前装备与武器切换的组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonController.InitPipeline()。
+        // 判空前缓存的管理当前装备与武器切换的组件。
 global::LeonWeaponHandler receiverValue18 = weaponHandler;
         if (!global::System.Object.ReferenceEquals(receiverValue18, null))
         {
@@ -651,7 +672,7 @@ global::LeonWeaponHandler receiverValue18 = weaponHandler;
         }
         else
         {
-            // receiverValue19（判空前缓存的管理当前装备与武器切换的组件）：从管理当前装备与武器切换的组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonController.InitPipeline()。
+            // 判空前缓存的管理当前装备与武器切换的组件。
 global::LeonWeaponHandler receiverValue19 = weaponHandler;
             if (!global::System.Object.ReferenceEquals(receiverValue19, null))
             {
@@ -680,7 +701,7 @@ global::LeonWeaponHandler receiverValue19 = weaponHandler;
     void FixedUpdate()
     {
         UpdateFreeLookState();
-        // receiverValue20（判空前缓存的动画协调器）：从动画协调器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonController.FixedUpdate()。
+        // 判空前缓存的动画协调器。
 global::LeonAnimationActionCoordinator receiverValue20 = animCoordinator;
         if (!global::System.Object.ReferenceEquals(receiverValue20, null))
         {
@@ -708,11 +729,30 @@ global::LeonAnimationActionCoordinator receiverValue20 = animCoordinator;
             inputBridge.RestoreMovementInput();
         }
 
-        // receiverValue21（判空前缓存的移动行为）：从移动行为读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonController.FixedUpdate()。
+        // 判空前缓存的移动行为。
 global::LeonLocomotion receiverValue21 = locomotion;
         if (!global::System.Object.ReferenceEquals(receiverValue21, null))
         {
             receiverValue21.HandleMovement();
+        }
+    }
+
+    /// <summary>动作结束当帧立即恢复常规移动控制凭证并同步持续按住的移动输入。</summary>
+    internal void SyncNormalMovementAuthorityImmediate()
+    {
+        if (currentState == LeonState.Dead)
+        {
+            return;
+        }
+
+        if (animCoordinator != null)
+        {
+            animCoordinator.SynchronizeMotionControlAuthority();
+        }
+
+        if (inputBridge != null)
+        {
+            inputBridge.RestoreMovementInput();
         }
     }
 
@@ -725,13 +765,13 @@ global::LeonLocomotion receiverValue21 = locomotion;
             return;
         }
 
-        // localCamDir（局部摄像机方向）：保存 Transform.InverseTransformDirection(Vector3) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Atan2(float, float) 的参数、作为 Mathf.Clamp(float, float, float) 的参数。
+        // 局部摄像机方向。
 Vector3 localCamDir = transform.InverseTransformDirection(playerCamera.transform.forward);
-        // horAim（横向瞄准）：使用位置：作为 Mathf.Lerp(float, float, float) 的参数。
+        // 横向瞄准。
 float horAim = Mathf.Atan2(localCamDir.x, localCamDir.z) * Mathf.Rad2Deg;
-        // verAim（纵向瞄准）：使用位置：作为 Mathf.Clamp(float, float, float) 的参数、作为 Mathf.Lerp(float, float, float) 的参数、LeonController.UpdateAnimatorParameters()。
+        // 纵向瞄准。
 float verAim = Mathf.Asin(Mathf.Clamp(localCamDir.y, -1f, 1f)) * Mathf.Rad2Deg;
-        // aiming（是否瞄准中）：使用位置：LeonController.UpdateAnimatorParameters()。
+        // 是否瞄准中。
 bool aiming = combat != null && combat.IsAiming;
         if (!aiming)
         {
@@ -761,7 +801,7 @@ bool aiming = combat != null && combat.IsAiming;
             return;
         }
 
-        // cameraDirection（摄像机方向）：保存 Transform.InverseTransformDirection(Vector3) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Atan2(float, float) 的参数、作为 Mathf.Clamp(float, float, float) 的参数。
+        // 摄像机方向。
 Vector3 cameraDirection = transform.InverseTransformDirection(playerCamera.transform.forward);
         smoothHorAim = Mathf.Atan2(cameraDirection.x, cameraDirection.z) * Mathf.Rad2Deg;
         smoothVerAim = Mathf.Clamp(Mathf.Asin(Mathf.Clamp(cameraDirection.y, -1f, 1f)) * Mathf.Rad2Deg * verAimGain, verAimMin, 45f);
@@ -770,7 +810,7 @@ Vector3 cameraDirection = transform.InverseTransformDirection(playerCamera.trans
 
     /// <summary>Heal 的业务处理入口；本方法直接依赖 HealthComponent.Heal(float)、object.ReferenceEquals(object, object)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonController.IItemUseTarget.Healing(float)；下游（含内部回调体） HealthComponent.Heal(float)、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="amount">中文含义：大小。使用位置：作为 HealthComponent.Heal(float) 的参数。</param>
+    /// <param name="amount">大小。</param>
     public void Heal(float amount)
     {
         if (currentState == LeonState.Dead)
@@ -778,7 +818,7 @@ Vector3 cameraDirection = transform.InverseTransformDirection(playerCamera.trans
             return;
         }
 
-        // receiverValue22（判空前缓存的生命）：从生命读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonController.Heal(float)。
+        // 判空前缓存的生命。
 global::HealthComponent receiverValue22 = Health;
         if (!global::System.Object.ReferenceEquals(receiverValue22, null))
         {
@@ -788,7 +828,7 @@ global::HealthComponent receiverValue22 = Health;
 
     /// <summary>ChangeState 的业务处理入口；本方法直接依赖 LeonAnimationActionCoordinator.CommitCompatibleState(LeonState)、object.ReferenceEquals(object, object)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 KnifeCombatModule.ActionSwitch(KnifeAction, long, double)、LeonCombat.ApplyGuardPose()、LeonCombat.EndShoot()、LeonCombat.EndTemporaryKnife(bool)、LeonCombat.ExecuteFirearmAttack() 等共 23 处；下游（含内部回调体） LeonAnimationActionCoordinator.CommitCompatibleState(LeonState)、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="newState">中文含义：新状态。使用位置：作为 LeonAnimationActionCoordinator.CommitCompatibleState(LeonState) 的参数。</param>
+    /// <param name="newState">新状态。</param>
     public void ChangeState(LeonState newState)
     {
         if (currentState == LeonState.Dead)
@@ -802,7 +842,7 @@ global::HealthComponent receiverValue22 = Health;
             inputBridge.RequestMovementInputRefresh();
         }
 
-        // receiverValue23（判空前缓存的动画协调器）：从动画协调器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonController.ChangeState(LeonState)。
+        // 判空前缓存的动画协调器。
 global::LeonAnimationActionCoordinator receiverValue23 = animCoordinator;
         if (!global::System.Object.ReferenceEquals(receiverValue23, null))
         {
@@ -861,7 +901,7 @@ global::LeonAnimationActionCoordinator receiverValue23 = animCoordinator;
 
     /// <summary>TakeDamage 的业务处理入口；本方法直接依赖 LeonController.ApplyDamage(float, Vector3, LeonHitDirection)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 DamageSystem.ApplyDamageToPlayer(float)；下游（含内部回调体） LeonController.ApplyDamage(float, Vector3, LeonHitDirection)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="damage">中文含义：伤害。使用位置：作为 LeonController.ApplyDamage(float, Vector3, LeonHitDirection) 的参数。</param>
+    /// <param name="damage">伤害。</param>
     public void TakeDamage(float damage)
     {
         ApplyDamage(damage, transform.position + Vector3.up, LeonHitDirection.Center);
@@ -880,7 +920,7 @@ global::LeonAnimationActionCoordinator receiverValue23 = animCoordinator;
     /// 请求切换蹲伏姿态。蹲伏只作为姿态标记，不占用角色主状态。
     /// </summary>
     /// <remarks>静态调用链：上游 LeonController.PrepareForQTE()、LeonController.ToggleCrouch()、LeonInputBridge.EnterQTEInput(int)、LeonInputBridge.OnMelee(InputAction.CallbackContext)、LeonInputBridge.OnParry(InputAction.CallbackContext) 等共 6 处；下游（含内部回调体） LeonController.ApplyCrouchState(bool)、LeonController.CanStandUp()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="crouching">中文含义：是否蹲伏中。使用位置：作为 LeonController.ApplyCrouchState(bool) 的参数、LeonController.TrySetCrouching(bool)。</param>
+    /// <param name="crouching">是否蹲伏中。</param>
     public bool TrySetCrouching(bool crouching)
     {
         if (inputState.isCrouching == crouching)
@@ -930,12 +970,12 @@ global::LeonAnimationActionCoordinator receiverValue23 = animCoordinator;
 
         GetWorldCapsule(standingColliderCenter, standingColliderHeight, Mathf.Max(0f, crouchClearancePadding), out Vector3 /* 中文含义：站立顶部。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ standingTop, out _, out float /* 中文含义：半径。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ radius);
         GetWorldCapsule(crouchingColliderCenter, crouchColliderHeight, Mathf.Max(0f, crouchClearancePadding), out Vector3 /* 中文含义：蹲伏中顶部。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ crouchingTop, out _, out _);
-        // count（数量）：保存 Physics.OverlapCapsuleNonAlloc(Vector3, Vector3, float, Collider[], int, QueryTriggerInteraction) 的返回结果，供当前步骤使用。使用位置：LeonController.CanStandUp()。
+        // 数量。
 int count = Physics.OverlapCapsuleNonAlloc(standingTop, crouchingTop, radius, crouchOverlapResults, crouchObstructionMask, QueryTriggerInteraction.Ignore);
-        // i（当前遍历索引）：使用位置：LeonController.CanStandUp()。
+        // 当前遍历索引。
 for (int i = 0; i < count; i++)
         {
-            // hit（命中）：使用位置：LeonController.CanStandUp()。
+            // 命中。
 Collider hit = crouchOverlapResults[i];
             crouchOverlapResults[i] = null;
             if (hit == null || hit == capsuleCollider)
@@ -971,10 +1011,10 @@ Collider hit = crouchOverlapResults[i];
 
         standingColliderHeight = capsuleCollider.height;
         standingColliderCenter = capsuleCollider.center;
-        // minimumHeight（最小高度）：使用位置：作为 Mathf.Clamp(float, float, float) 的参数。
+        // 最小高度。
 float minimumHeight = capsuleCollider.radius * 2f;
         crouchColliderHeight = Mathf.Clamp(crouchColliderHeight, minimumHeight, standingColliderHeight);
-        // standingBottom（站立底部）：使用位置：LeonController.InitializeCrouchCollider()。
+        // 站立底部。
 float standingBottom = standingColliderCenter.y - standingColliderHeight * 0.5f;
         crouchingColliderCenter = standingColliderCenter;
         crouchingColliderCenter.y = standingBottom + crouchColliderHeight * 0.5f;
@@ -982,7 +1022,7 @@ float standingBottom = standingColliderCenter.y - standingColliderHeight * 0.5f;
 
     /// <summary>ApplyCrouchState 的业务处理入口；本方法直接依赖 LeonAnimatorDriver.SetCrouching(bool)、object.ReferenceEquals(object, object)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonController.ForceExitCrouch()、LeonController.TrySetCrouching(bool)；下游（含内部回调体） LeonAnimatorDriver.SetCrouching(bool)、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="crouching">中文含义：是否蹲伏中。使用位置：作为 LeonAnimatorDriver.SetCrouching(bool) 的参数、LeonController.ApplyCrouchState(bool)。</param>
+    /// <param name="crouching">是否蹲伏中。</param>
     private void ApplyCrouchState(bool crouching)
     {
         inputState.isCrouching = crouching;
@@ -991,7 +1031,7 @@ float standingBottom = standingColliderCenter.y - standingColliderHeight * 0.5f;
             inputState.isSprinting = false;
         }
 
-        // assignmentReceiver24（赋值前保存的目标胶囊碰撞体）：从胶囊碰撞体读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：LeonController.ApplyCrouchState(bool)。
+        // 赋值前保存的目标胶囊碰撞体。
 global::UnityEngine.CapsuleCollider assignmentReceiver24 = capsuleCollider;
         if (crouching)
         {
@@ -1002,7 +1042,7 @@ global::UnityEngine.CapsuleCollider assignmentReceiver24 = capsuleCollider;
             assignmentReceiver24.height = standingColliderHeight;
         }
 
-        // assignmentReceiver26（赋值前保存的目标胶囊碰撞体）：从胶囊碰撞体读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：LeonController.ApplyCrouchState(bool)。
+        // 赋值前保存的目标胶囊碰撞体。
 global::UnityEngine.CapsuleCollider assignmentReceiver26 = capsuleCollider;
         if (crouching)
         {
@@ -1013,7 +1053,7 @@ global::UnityEngine.CapsuleCollider assignmentReceiver26 = capsuleCollider;
             assignmentReceiver26.center = standingColliderCenter;
         }
 
-        // receiverValue28（判空前缓存的动画驱动器）：从动画驱动器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonController.ApplyCrouchState(bool)。
+        // 判空前缓存的动画驱动器。
 global::LeonAnimatorDriver receiverValue28 = animDriver;
         if (!global::System.Object.ReferenceEquals(receiverValue28, null))
         {
@@ -1035,12 +1075,12 @@ global::LeonAnimatorDriver receiverValue28 = animDriver;
 
     /// <summary>GetWorldCapsule 的业务处理入口；本方法直接依赖 Mathf.Abs(float)、Mathf.Max(float, float)、Transform.TransformPoint(Vector3)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonController.CanStandUp()；下游（含内部回调体） Mathf.Abs(float)、Mathf.Max(float, float)、Transform.TransformPoint(Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="localCenter">中文含义：局部中心。使用位置：作为 Transform.TransformPoint(Vector3) 的参数。</param>
-    /// <param name="localHeight">中文含义：局部高度。使用位置：作为 Mathf.Max(float, float) 的参数。</param>
-    /// <param name="radiusPadding">中文含义：半径留白。使用位置：LeonController.GetWorldCapsule(Vector3, float, float, out Vector3, out Vector3, out float)。</param>
-    /// <param name="top">中文含义：顶部。输出参数，由本入口写入并交给调用方。使用位置：LeonController.GetWorldCapsule(Vector3, float, float, out Vector3, out Vector3, out float)。</param>
-    /// <param name="bottom">中文含义：底部。输出参数，由本入口写入并交给调用方。使用位置：LeonController.GetWorldCapsule(Vector3, float, float, out Vector3, out Vector3, out float)。</param>
-    /// <param name="radius">中文含义：半径。输出参数，由本入口写入并交给调用方。使用位置：作为 Mathf.Max(float, float) 的参数、LeonController.GetWorldCapsule(Vector3, float, float, out Vector3, out Vector3, out float)。</param>
+    /// <param name="localCenter">局部中心。</param>
+    /// <param name="localHeight">局部高度。</param>
+    /// <param name="radiusPadding">半径留白。</param>
+    /// <param name="top">顶部。输出参数，由本入口写入并交给调用方。</param>
+    /// <param name="bottom">底部。输出参数，由本入口写入并交给调用方。</param>
+    /// <param name="radius">半径。输出参数，由本入口写入并交给调用方。</param>
     internal bool TryGetCurrentWorldCapsule(out Vector3 top, out Vector3 bottom, out float radius)
     {
         top = bottom = default;
@@ -1056,13 +1096,13 @@ global::LeonAnimatorDriver receiverValue28 = animDriver;
 
     private void GetWorldCapsule(Vector3 localCenter, float localHeight, float radiusPadding, out Vector3 top, out Vector3 bottom, out float radius)
     {
-        // scale（缩放）：使用位置：作为 Mathf.Abs(float) 的参数。
+        // 缩放。
 Vector3 scale = transform.lossyScale;
-        // axis（轴）：使用位置：LeonController.GetWorldCapsule(Vector3, float, float, out Vector3, out Vector3, out float)。
+        // 轴。
 Vector3 axis;
-        // heightScale（高度缩放）：使用位置：作为 Mathf.Max(float, float) 的参数、LeonController.GetWorldCapsule(Vector3, float, float, out Vector3, out Vector3, out float)。
+        // 高度缩放。
 float heightScale;
-        // radiusScale（半径缩放）：使用位置：LeonController.GetWorldCapsule(Vector3, float, float, out Vector3, out Vector3, out float)。
+        // 半径缩放。
 float radiusScale;
         switch (capsuleCollider.direction)
         {
@@ -1083,10 +1123,10 @@ float radiusScale;
                 break;
         }
 
-        // worldCenter（世界空间中心）：保存 Transform.TransformPoint(Vector3) 的返回结果，供当前步骤使用。使用位置：LeonController.GetWorldCapsule(Vector3, float, float, out Vector3, out Vector3, out float)。
+        // 世界空间中心。
 Vector3 worldCenter = transform.TransformPoint(localCenter);
         radius = capsuleCollider.radius * radiusScale + radiusPadding;
-        // halfSegment（一半线段）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：LeonController.GetWorldCapsule(Vector3, float, float, out Vector3, out Vector3, out float)。
+        // 一半线段。
 float halfSegment = Mathf.Max(0f, localHeight * heightScale * 0.5f - radius);
         top = worldCenter + axis * halfSegment;
         bottom = worldCenter - axis * halfSegment;
@@ -1094,8 +1134,8 @@ float halfSegment = Mathf.Max(0f, localHeight * heightScale * 0.5f - radius);
 
     /// <summary>TakeDamage 的业务处理入口；本方法直接依赖 LeonController.ApplyDamage(float, Vector3, LeonHitDirection)、LeonController.ResolveHitDirection(Vector3)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） LeonController.ApplyDamage(float, Vector3, LeonHitDirection)、LeonController.ResolveHitDirection(Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="damage">中文含义：伤害。使用位置：作为 LeonController.ApplyDamage(float, Vector3, LeonHitDirection) 的参数。</param>
-    /// <param name="hitPoint">中文含义：命中点位置。使用位置：作为 LeonController.ApplyDamage(float, Vector3, LeonHitDirection) 的参数、作为 LeonController.ResolveHitDirection(Vector3) 的参数。</param>
+    /// <param name="damage">伤害。</param>
+    /// <param name="hitPoint">命中点位置。</param>
     public void TakeDamage(float damage, Vector3 hitPoint)
     {
         ApplyDamage(damage, hitPoint, ResolveHitDirection(hitPoint));
@@ -1105,9 +1145,9 @@ float halfSegment = Mathf.Max(0f, localHeight * heightScale * 0.5f - radius);
     /// 带攻击来源的近战伤害入口，用于选择左、中、右受击动画。
     /// </summary>
     /// <remarks>静态调用链：上游 EnemyCombatModule.ApplyDeadChainsawPulse()、EnemyCombatModule.TryApplyAttackHit(int)、KnifeCombatModule.ResolveIncomingAttack(KnifeIncomingAttackContext)；下游（含内部回调体） LeonController.ApplyDamage(float, Vector3, LeonHitDirection)、LeonController.ResolveHitDirection(Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="damage">中文含义：伤害。使用位置：作为 LeonController.ApplyDamage(float, Vector3, LeonHitDirection) 的参数。</param>
-    /// <param name="damageSourcePosition">中文含义：伤害来源位置。使用位置：作为 LeonController.ResolveHitDirection(Vector3) 的参数。</param>
-    /// <param name="hitPoint">中文含义：命中点位置。使用位置：作为 LeonController.ApplyDamage(float, Vector3, LeonHitDirection) 的参数。</param>
+    /// <param name="damage">伤害。</param>
+    /// <param name="damageSourcePosition">伤害来源位置。</param>
+    /// <param name="hitPoint">命中点位置。</param>
     public void TakeDamageFrom(float damage, Vector3 damageSourcePosition, Vector3 hitPoint)
     {
         ApplyDamage(damage, hitPoint, ResolveHitDirection(damageSourcePosition));
@@ -1146,9 +1186,9 @@ float halfSegment = Mathf.Max(0f, localHeight * heightScale * 0.5f - radius);
 
     /// <summary>ApplyDamage 的业务处理入口；本方法直接依赖 HealthComponent.TakeDamage(float)、LeonAnimatorDriver.ClearPendingInjuredTransition()、LeonAnimatorDriver.RequestInjuredState(bool, bool)、LeonCombat.ForceStopShoot()、LeonCombat.HandleHit(LeonHitDirection)、LeonController.BeginDeathSequence()、LeonController.ForceExitCrouch() 等共 11 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonController.TakeDamage(float, Vector3)、LeonController.TakeDamage(float)、LeonController.TakeDamageFrom(float, Vector3, Vector3)；下游（含内部回调体） HealthComponent.TakeDamage(float)、LeonAnimatorDriver.ClearPendingInjuredTransition()、LeonAnimatorDriver.RequestInjuredState(bool, bool)、LeonCombat.ForceStopShoot()、LeonCombat.HandleHit(LeonHitDirection)、LeonController.BeginDeathSequence()、LeonController.ForceExitCrouch() 等共 11 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="damage">中文含义：伤害。使用位置：作为 HealthComponent.TakeDamage(float) 的参数。</param>
-    /// <param name="hitPoint">中文含义：命中点位置。使用位置：作为 LeonController.PlayDamageFeedback(Vector3) 的参数。</param>
-    /// <param name="hitDirection">中文含义：命中方向。使用位置：作为 LeonCombat.HandleHit(LeonHitDirection) 的参数、作为 LeonWindowTraversal.QueueDeferredHit(LeonHitDirection) 的参数。</param>
+    /// <param name="damage">伤害。</param>
+    /// <param name="hitPoint">命中点位置。</param>
+    /// <param name="hitDirection">命中方向。</param>
     internal void TakeEnvironmentalImpact(float damage, Vector3 source, Vector3 contact, bool knockdown)
     {
         if (Health == null || Health.IsDead)
@@ -1195,6 +1235,11 @@ float halfSegment = Mathf.Max(0f, localHeight * heightScale * 0.5f - radius);
             return;
         }
 
+        if (IsQTEReleaseInvulnerable)
+        {
+            return;
+        }
+
         // 伤害结算期间阻止生命事件直接修改动画层
         damageResolutionInProgress = true;
         float previousHealth = Health.CurrentHealth;
@@ -1213,7 +1258,7 @@ float halfSegment = Mathf.Max(0f, localHeight * heightScale * 0.5f - radius);
         if (Health.IsDead)
         {
             // 死亡优先级最高：清除待处理受伤切换，死亡动画完整覆盖
-            // receiverValue29（判空前缓存的动画驱动器）：从动画驱动器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonController.ApplyDamage(float, Vector3, LeonHitDirection)。
+            // 判空前缓存的动画驱动器。
 global::LeonAnimatorDriver receiverValue29 = // 死亡优先级最高：清除待处理受伤切换，死亡动画完整覆盖
  animDriver;
             if (!global::System.Object.ReferenceEquals(receiverValue29, null))
@@ -1230,7 +1275,7 @@ global::LeonAnimatorDriver receiverValue29 = // 死亡优先级最高：清除�
         else if (windowTraversal != null && windowTraversal.IsTraversing)
         {
             // 翻越中的延迟受击：保留待处理受伤目标，等待延迟受击的恢复阶段
-            // receiverValue30（判空前缓存的动画驱动器）：从动画驱动器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonController.ApplyDamage(float, Vector3, LeonHitDirection)。
+            // 判空前缓存的动画驱动器。
 global::LeonAnimatorDriver receiverValue30 = // 翻越中的延迟受击：保留待处理受伤目标，等待延迟受击的恢复阶段
  animDriver;
             if (!global::System.Object.ReferenceEquals(receiverValue30, null))
@@ -1243,12 +1288,12 @@ global::LeonAnimatorDriver receiverValue30 = // 翻越中的延迟受击：保�
         else
         {
             ForceExitCrouch();
-            // hitStarted（命中是否已开始）：使用位置：LeonController.ApplyDamage(float, Vector3, LeonHitDirection)。
+            // 命中是否已开始。
 bool hitStarted = combat != null && combat.HandleHit(hitDirection);
             if (hitStarted || IsHitAnimationActive())
             {
                 // 受击成功启动（或已有受击动画在播）：只更新待处理目标
-                // receiverValue31（判空前缓存的动画驱动器）：从动画驱动器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonController.ApplyDamage(float, Vector3, LeonHitDirection)。
+                // 判空前缓存的动画驱动器。
 global::LeonAnimatorDriver receiverValue31 = // 受击成功启动（或已有受击动画在播）：只更新待处理目标
  animDriver;
                 if (!global::System.Object.ReferenceEquals(receiverValue31, null))
@@ -1259,7 +1304,7 @@ global::LeonAnimatorDriver receiverValue31 = // 受击成功启动（或已有�
             else
             {
                 // 受击请求失败且无受击动画在播：立即按普通淡入同步受伤层
-                // receiverValue32（判空前缓存的动画驱动器）：从动画驱动器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonController.ApplyDamage(float, Vector3, LeonHitDirection)。
+                // 判空前缓存的动画驱动器。
 global::LeonAnimatorDriver receiverValue32 = // 受击请求失败且无受击动画在播：立即按普通淡入同步受伤层
  animDriver;
                 if (!global::System.Object.ReferenceEquals(receiverValue32, null))
@@ -1282,7 +1327,7 @@ global::LeonAnimatorDriver receiverValue32 = // 受击请求失败且无受击�
     /// 受击请求失败时立即按普通淡入同步受伤层，避免待处理目标永久挂起。
     /// </summary>
     /// <remarks>静态调用链：上游 LeonWindowTraversal.FinishTraversal(bool)；下游（含内部回调体） LeonAnimatorDriver.RequestInjuredState(bool, bool)、LeonCombat.HandleHit(LeonHitDirection)、LeonController.IsHitAnimationActive()、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="hitDirection">中文含义：命中方向。使用位置：作为 LeonCombat.HandleHit(LeonHitDirection) 的参数。</param>
+    /// <param name="hitDirection">命中方向。</param>
     public void HandleDeferredTraversalHit(LeonHitDirection hitDirection)
     {
         if (currentState == LeonState.Dead)
@@ -1290,11 +1335,11 @@ global::LeonAnimatorDriver receiverValue32 = // 受击请求失败且无受击�
             return;
         }
 
-        // hitStarted（命中是否已开始）：使用位置：LeonController.HandleDeferredTraversalHit(LeonHitDirection)。
+        // 命中是否已开始。
 bool hitStarted = combat != null && combat.HandleHit(hitDirection);
         if (hitStarted || IsHitAnimationActive())
         {
-            // receiverValue33（判空前缓存的动画驱动器）：从动画驱动器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonController.HandleDeferredTraversalHit(LeonHitDirection)。
+            // 判空前缓存的动画驱动器。
 global::LeonAnimatorDriver receiverValue33 = animDriver;
             if (!global::System.Object.ReferenceEquals(receiverValue33, null))
             {
@@ -1303,7 +1348,7 @@ global::LeonAnimatorDriver receiverValue33 = animDriver;
         }
         else
         {
-            // receiverValue34（判空前缓存的动画驱动器）：从动画驱动器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonController.HandleDeferredTraversalHit(LeonHitDirection)。
+            // 判空前缓存的动画驱动器。
 global::LeonAnimatorDriver receiverValue34 = animDriver;
             if (!global::System.Object.ReferenceEquals(receiverValue34, null))
             {
@@ -1314,10 +1359,10 @@ global::LeonAnimatorDriver receiverValue34 = animDriver;
 
     /// <summary>ResolveHitDirection 的业务处理入口；本方法直接依赖 Transform.InverseTransformPoint(Vector3)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonController.TakeDamage(float, Vector3)、LeonController.TakeDamageFrom(float, Vector3, Vector3)；下游（含内部回调体） Transform.InverseTransformPoint(Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="damageSourcePosition">中文含义：伤害来源位置。使用位置：作为 Transform.InverseTransformPoint(Vector3) 的参数。</param>
+    /// <param name="damageSourcePosition">伤害来源位置。</param>
     private LeonHitDirection ResolveHitDirection(Vector3 damageSourcePosition)
     {
-        // localSource（局部来源）：保存 Transform.InverseTransformPoint(Vector3) 的返回结果，供当前步骤使用。使用位置：LeonController.ResolveHitDirection(Vector3)。
+        // 局部来源。
 Vector3 localSource = transform.InverseTransformPoint(damageSourcePosition);
         localSource.y = 0f;
         if (localSource.sqrMagnitude <= 0.0001f)
@@ -1325,7 +1370,7 @@ Vector3 localSource = transform.InverseTransformPoint(damageSourcePosition);
             return LeonHitDirection.Center;
         }
 
-        // normalizedHorizontal（归一化水平）：使用位置：LeonController.ResolveHitDirection(Vector3)。
+        // 归一化水平。
 float normalizedHorizontal = localSource.x / localSource.magnitude;
         if (normalizedHorizontal >= hitSideThreshold)
         {
@@ -1345,10 +1390,10 @@ float normalizedHorizontal = localSource.x / localSource.magnitude;
     /// 只有当前失败会话可以消费一次许可，并且不会启动普通受击事务。
     /// </summary>
     /// <remarks>静态调用链：上游 LeonQTECoordinator.CommitBiteDamage(int)；下游（含内部回调体） EnemyHitEffectManager.PlayBloodVisualOnly(Vector3, Vector3)、HealthComponent.TakeDamage(float)、LeonCombat.ForceStopShoot()、LeonController.BeginDeathSequence()、LeonController.PlayDamageFeedback(Vector3)、LeonQTECoordinator.Cancel(int, QTECancelReason)、LeonQTECoordinator.TryConsumeFailureDamageAuthorization(int) 等共 8 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="sessionId">中文含义：会话编号。使用位置：作为 LeonQTECoordinator.Cancel(int, QTECancelReason) 的参数、作为 LeonQTECoordinator.TryConsumeFailureDamageAuthorization(int) 的参数。</param>
-    /// <param name="damage">中文含义：伤害。使用位置：作为 HealthComponent.TakeDamage(float) 的参数。</param>
-    /// <param name="hitPoint">中文含义：命中点位置。使用位置：作为 EnemyHitEffectManager.PlayBloodVisualOnly(Vector3, Vector3) 的参数、作为 LeonController.PlayDamageFeedback(Vector3) 的参数。</param>
-    /// <param name="hitNormal">中文含义：命中表面法线。使用位置：作为 EnemyHitEffectManager.PlayBloodVisualOnly(Vector3, Vector3) 的参数、LeonController.TryApplyQTEFailureDamage(int, float, Vector3, Vector3)。</param>
+    /// <param name="sessionId">会话编号。</param>
+    /// <param name="damage">伤害。</param>
+    /// <param name="hitPoint">命中点位置。</param>
+    /// <param name="hitNormal">命中表面法线。</param>
     public bool TryApplyQTEFailureDamage(int sessionId, float damage, Vector3 hitPoint, Vector3 hitNormal, bool playBlood = true)
     {
         if (Health == null || Health.IsDead || qteCoordinator == null)
@@ -1363,7 +1408,7 @@ float normalizedHorizontal = localSource.x / localSource.magnitude;
 
         float previousHealth = Health.CurrentHealth;
         Health.TakeDamage(damage);
-        // receiverValue35（判空前缓存的战斗）：从战斗读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonController.TryApplyQTEFailureDamage(int, float, Vector3, Vector3)。
+        // 判空前缓存的战斗。
 global::LeonCombat receiverValue35 = combat;
         if (!global::System.Object.ReferenceEquals(receiverValue35, null))
         {
@@ -1376,7 +1421,7 @@ global::LeonCombat receiverValue35 = combat;
             hitNormal = transform.forward;
         }
 
-        // receiverValue36（判空前缓存的敌人命中效果管理器的实例）：从敌人命中效果管理器的实例读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonController.TryApplyQTEFailureDamage(int, float, Vector3, Vector3)。
+        // 判空前缓存的敌人命中效果管理器的实例。
 global::EnemyHitEffectManager receiverValue36 = EnemyHitEffectManager.Instance;
         if (playBlood && previousHealth > Health.CurrentHealth && receiverValue36 != null)
         {
@@ -1424,28 +1469,28 @@ global::EnemyHitEffectManager receiverValue36 = EnemyHitEffectManager.Instance;
         inputState.isSprinting = false;
         inputState.isFreeLooking = false;
         ForceExitCrouch();
-        // receiverValue37（判空前缓存的输入桥接）：从输入桥接读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonController.BeginDeathSequence()。
+        // 判空前缓存的输入桥接。
 global::LeonInputBridge receiverValue37 = inputBridge;
         if (!global::System.Object.ReferenceEquals(receiverValue37, null))
         {
             receiverValue37.LockForDeath();
         }
 
-        // receiverValue38（判空前缓存的动画协调器）：从动画协调器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonController.BeginDeathSequence()。
+        // 判空前缓存的动画协调器。
 global::LeonAnimationActionCoordinator receiverValue38 = animCoordinator;
         if (!global::System.Object.ReferenceEquals(receiverValue38, null))
         {
             receiverValue38.StopCurrentHorizontalMotion();
         }
 
-        // receiverValue39（判空前缓存的战斗）：从战斗读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonController.BeginDeathSequence()。
+        // 判空前缓存的战斗。
 global::LeonCombat receiverValue39 = combat;
         if (!global::System.Object.ReferenceEquals(receiverValue39, null))
         {
             receiverValue39.HandleDeath();
         }
 
-        // receiverValue40（判空前缓存的玩家音频）：从玩家音频读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonController.BeginDeathSequence()。
+        // 判空前缓存的玩家音频。
 global::LeonPlayerAudio receiverValue40 = playerAudio;
         if (!global::System.Object.ReferenceEquals(receiverValue40, null))
         {
@@ -1531,7 +1576,7 @@ global::LeonPlayerAudio receiverValue40 = playerAudio;
 
     /// <summary>PlayDamageFeedback 的业务处理入口；本方法直接依赖 AudioManager.Play3D(string, Vector3)、CombatHUD.HitFlash()、DamageSystem.SpawnHitEffect(Vector3, Vector3, bool)、object.ReferenceEquals(object, object)、RE4CameraController.Shake(float, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonController.ApplyDamage(float, Vector3, LeonHitDirection)、LeonController.TryApplyQTEFailureDamage(int, float, Vector3, Vector3)；下游（含内部回调体） AudioManager.Play3D(string, Vector3)、CombatHUD.HitFlash()、DamageSystem.SpawnHitEffect(Vector3, Vector3, bool)、object.ReferenceEquals(object, object)、RE4CameraController.Shake(float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="hitPoint">中文含义：命中点位置。使用位置：作为 DamageSystem.SpawnHitEffect(Vector3, Vector3, bool) 的参数。</param>
+    /// <param name="hitPoint">命中点位置。</param>
     private void PlayDamageFeedback(Vector3 hitPoint, float healthLost, Vector3 hitNormal = default, bool spawnGenericImpact = true)
     {
         if (playerAudio != null && Health != null && !Health.IsDead && healthLost > 0f)
@@ -1539,7 +1584,7 @@ global::LeonPlayerAudio receiverValue40 = playerAudio;
             playerAudio.PlayHurt(healthLost / Mathf.Max(1f, Health.MaxHealth));
         }
 
-        // receiverValue43（判空前缓存的伤害系统的实例）：从伤害系统的实例读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonController.PlayDamageFeedback(Vector3)。
+        // 判空前缓存的伤害系统的实例。
 global::DamageSystem receiverValue43 = DamageSystem.Instance;
         if (spawnGenericImpact && receiverValue43 != null)
         {
@@ -1551,14 +1596,14 @@ global::DamageSystem receiverValue43 = DamageSystem.Instance;
             receiverValue43.SpawnHitEffect(hitPoint, hitNormal, false);
         }
 
-        // receiverValue44（判空前缓存的战斗战斗显示界面的实例）：从战斗战斗显示界面的实例读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonController.PlayDamageFeedback(Vector3)。
+        // 判空前缓存的战斗战斗显示界面的实例。
 global::CombatHUD receiverValue44 = CombatHUD.Instance;
         if (!global::System.Object.ReferenceEquals(receiverValue44, null))
         {
             receiverValue44.HitFlash();
         }
 
-        // receiverValue45（判空前缓存的摄像机控制器）：从摄像机控制器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonController.PlayDamageFeedback(Vector3)。
+        // 判空前缓存的摄像机控制器。
 global::RE4CameraController receiverValue45 = cameraController;
         if (!global::System.Object.ReferenceEquals(receiverValue45, null))
         {
@@ -1584,7 +1629,7 @@ global::RE4CameraController receiverValue45 = cameraController;
         inputState.lookInput = Vector2.zero;
         inputState.isSprinting = false;
         inputState.isFreeLooking = false;
-        // receiverValue46（判空前缓存的战斗）：从战斗读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonController.PrepareForQTE()。
+        // 判空前缓存的战斗。
 global::LeonCombat receiverValue46 = combat;
         if (!global::System.Object.ReferenceEquals(receiverValue46, null))
         {
@@ -1597,7 +1642,7 @@ global::LeonCombat receiverValue46 = combat;
 
     /// <summary>FinishQTEState 的业务处理入口；本方法直接依赖 LeonController.ChangeState(LeonState)、LeonLocomotion.ResumeAfterQTESuccess()、object.ReferenceEquals(object, object)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonQTECoordinator.ReleasePlayer(int)；下游（含内部回调体） LeonController.ChangeState(LeonState)、LeonLocomotion.ResumeAfterQTESuccess()、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="preserveMovementInput">中文含义：是否保留移动输入。使用位置：LeonController.FinishQTEState(bool)。</param>
+    /// <param name="preserveMovementInput">是否保留移动输入。</param>
     public void FinishQTEState(bool preserveMovementInput = false)
     {
         if (currentState != LeonState.QTE)
@@ -1620,7 +1665,7 @@ global::LeonCombat receiverValue46 = combat;
         ChangeState(LeonState.Idle);
         if (preserveMovementInput)
         {
-            // receiverValue47（判空前缓存的移动行为）：从移动行为读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonController.FinishQTEState(bool)。
+            // 判空前缓存的移动行为。
 global::LeonLocomotion receiverValue47 = locomotion;
             if (!global::System.Object.ReferenceEquals(receiverValue47, null))
             {
@@ -1656,7 +1701,7 @@ global::LeonLocomotion receiverValue47 = locomotion;
 
     /// <summary>IItemUseTarget.IncreaseHealthMaximum 的业务处理入口；本方法直接依赖 HealthComponent.IncreaseMaxHealth(float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） HealthComponent.IncreaseMaxHealth(float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="count">中文含义：数量。使用位置：作为 HealthComponent.IncreaseMaxHealth(float) 的参数。</param>
+    /// <param name="count">数量。</param>
     void IItemUseTarget.IncreaseHealthMaximum(float count)
     {
         if (Health != null)
@@ -1668,15 +1713,15 @@ global::LeonLocomotion receiverValue47 = locomotion;
 
     /// <summary>IItemUseTarget.Healing 的业务处理入口；本方法直接依赖 LeonController.Heal(float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） LeonController.Heal(float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="count">中文含义：数量。使用位置：作为 LeonController.Heal(float) 的参数。</param>
+    /// <param name="count">数量。</param>
     void IItemUseTarget.Healing(float count) => Heal(count);
     /// <summary>IItemUseTarget.IncreaseCompatibleReserveAmmo 的业务处理入口；本方法直接依赖 LeonWeaponHandler.AddReserveAmmo(WeaponType, int)、object.ReferenceEquals(object, object)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） LeonWeaponHandler.AddReserveAmmo(WeaponType, int)、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="type">中文含义：当前武器类别。使用位置：作为 LeonWeaponHandler.AddReserveAmmo(WeaponType, int) 的参数。</param>
-    /// <param name="count">中文含义：数量。使用位置：作为 LeonWeaponHandler.AddReserveAmmo(WeaponType, int) 的参数。</param>
+    /// <param name="type">当前武器类别。</param>
+    /// <param name="count">数量。</param>
     void IItemUseTarget.IncreaseCompatibleReserveAmmo(WeaponType type, int count)
     {
-        // receiverValue49（判空前缓存的管理当前装备与武器切换的组件）：从管理当前装备与武器切换的组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonController.IItemUseTarget.IncreaseCompatibleReserveAmmo(WeaponType, int)。
+        // 判空前缓存的管理当前装备与武器切换的组件。
 global::LeonWeaponHandler receiverValue49 = weaponHandler;
         if (!global::System.Object.ReferenceEquals(receiverValue49, null))
         {
@@ -1696,7 +1741,7 @@ global::LeonWeaponHandler receiverValue49 = weaponHandler;
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） LeonWeaponHandler.CompleteReload()、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     public void CompleteReload()
     {
-        // receiverValue50（判空前缓存的管理当前装备与武器切换的组件）：从管理当前装备与武器切换的组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonController.CompleteReload()。
+        // 判空前缓存的管理当前装备与武器切换的组件。
 global::LeonWeaponHandler receiverValue50 = weaponHandler;
         if (!global::System.Object.ReferenceEquals(receiverValue50, null))
         {
@@ -1708,7 +1753,7 @@ global::LeonWeaponHandler receiverValue50 = weaponHandler;
     /// <remarks>静态调用链：上游 LeonCombat.HandleReload()；下游（含内部回调体） LeonWeaponHandler.StartReload()、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     public void StartReload()
     {
-        // receiverValue51（判空前缓存的管理当前装备与武器切换的组件）：从管理当前装备与武器切换的组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonController.StartReload()。
+        // 判空前缓存的管理当前装备与武器切换的组件。
 global::LeonWeaponHandler receiverValue51 = weaponHandler;
         if (!global::System.Object.ReferenceEquals(receiverValue51, null))
         {
@@ -1753,7 +1798,7 @@ global::LeonWeaponHandler receiverValue51 = weaponHandler;
 
     /// <summary>SwitchWeapon 的业务处理入口；本方法直接依赖 LeonController.TrySwitchWeapon(WeaponType)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） LeonController.TrySwitchWeapon(WeaponType)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="slot">中文含义：槽位。使用位置：作为 LeonController.TrySwitchWeapon(WeaponType) 的参数。</param>
+    /// <param name="slot">槽位。</param>
     public void SwitchWeapon(int slot)
     {
         TrySwitchWeapon((WeaponType)slot);
@@ -1761,7 +1806,7 @@ global::LeonWeaponHandler receiverValue51 = weaponHandler;
 
     /// <summary>TrySwitchWeapon 的业务处理入口；本方法直接依赖 LeonWeaponHandler.SwitchTo(WeaponType)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonController.SwitchWeapon(int)；下游（含内部回调体） LeonWeaponHandler.SwitchTo(WeaponType)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="weaponType">中文含义：武器类型。使用位置：作为 LeonWeaponHandler.SwitchTo(WeaponType) 的参数。</param>
+    /// <param name="weaponType">武器类型。</param>
     public bool TrySwitchWeapon(WeaponType weaponType)
     {
         return weaponHandler != null && weaponHandler.SwitchTo(weaponType);
@@ -1769,18 +1814,18 @@ global::LeonWeaponHandler receiverValue51 = weaponHandler;
 
     /// <summary>中文含义：是否正在射击。</summary>
     public bool IsShooting => currentState == LeonState.Shooting;
-    /// <summary>中文含义：是否正在瞄准。使用位置：作为 FreeLookState.SetKeyBinding(bool, bool, float) 的参数、CrosshairPresenterValue.Update()、CrosshairUI.Update() 等共 7 处。</summary>
+    /// <summary>是否正在瞄准。</summary>
     public bool IsAiming => combat != null && combat.IsAiming;
-    /// <summary>中文含义：是否小刀攻击生效。使用位置：RE4RThirdPersonCamera.UpdateMeleePush(float)。</summary>
+    /// <summary>是否小刀攻击生效。</summary>
     public bool IsKnifeAttackActive => combat != null && combat.IsKnifeAttackActive;
-    /// <summary>中文含义：是否忙碌。使用位置：LeonWindowTraversal.TryBuildPlan(WindowTraversalPoint, out LeonWindowTraversal.TraversalPlan)。</summary>
+    /// <summary>是否忙碌。</summary>
     public bool IsBusy => currentState == LeonState.Shooting || currentState == LeonState.Reloading || currentState == LeonState.QTE || currentState == LeonState.MeleeAttacking || currentState == LeonState.Traversing;
 
     /// <summary>TriggerMeleeCameraPush 的业务处理入口；本方法直接依赖 object.ReferenceEquals(object, object)、RE4CameraController.TriggerMeleePush()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonCombat.StartMeleeAction(FullBodyActionType, int)；下游（含内部回调体） object.ReferenceEquals(object, object)、RE4CameraController.TriggerMeleePush()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     public void TriggerMeleeCameraPush()
     {
-        // receiverValue54（判空前缓存的摄像机控制器）：从摄像机控制器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonController.TriggerMeleeCameraPush()。
+        // 判空前缓存的摄像机控制器。
 global::RE4CameraController receiverValue54 = cameraController;
         if (!global::System.Object.ReferenceEquals(receiverValue54, null))
         {
@@ -1790,9 +1835,9 @@ global::RE4CameraController receiverValue54 = cameraController;
 
     /// <summary>RegisterCameraController 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
     /// <remarks>静态调用链：上游 RE4CameraController.BindPlayer(LeonController, Transform)、RE4CameraController.Start()；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="controllerReference">中文含义：控制器引用。使用位置：LeonController.RegisterCameraController(RE4CameraController, Camera, Transform)。</param>
-    /// <param name="cameraReference">中文含义：摄像机引用。使用位置：LeonController.RegisterCameraController(RE4CameraController, Camera, Transform)。</param>
-    /// <param name="aimTargetReference">中文含义：瞄准目标引用。使用位置：LeonController.RegisterCameraController(RE4CameraController, Camera, Transform)。</param>
+    /// <param name="controllerReference">控制器引用。</param>
+    /// <param name="cameraReference">摄像机引用。</param>
+    /// <param name="aimTargetReference">瞄准目标引用。</param>
     public void RegisterCameraController(RE4CameraController controllerReference, Camera cameraReference, Transform aimTargetReference)
     {
         cameraController = controllerReference;
@@ -1809,7 +1854,7 @@ global::RE4CameraController receiverValue54 = cameraController;
 
     /// <summary>UnregisterCameraController 的业务处理入口；本方法直接依赖 LeonController.ResetFreeView()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 RE4CameraController.BindPlayer(LeonController, Transform)、RE4CameraController.OnDestroy()、RE4CameraController.UnbindPlayer(LeonController)；下游（含内部回调体） LeonController.ResetFreeView()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="controllerReference">中文含义：控制器引用。使用位置：LeonController.UnregisterCameraController(RE4CameraController)。</param>
+    /// <param name="controllerReference">控制器引用。</param>
     public void UnregisterCameraController(RE4CameraController controllerReference)
     {
         if (cameraController != controllerReference)
@@ -1821,7 +1866,7 @@ global::RE4CameraController receiverValue54 = cameraController;
         cameraController = null;
     }
 
-    /// <summary>中文含义：摄像机控制器。使用位置：KnifeCombatModule.ResolveIncomingAttack(KnifeIncomingAttackContext)、LeonCombat.PlayParryFeedback(VillagerController, Vector3, Vector3, KnifeParryResult)、LeonWeaponHandler.Fire() 等共 4 处。</summary>
+    /// <summary>摄像机控制器。</summary>
     public RE4CameraController CameraController => cameraController;
 
     internal void ApplyKnifeCameraHeading(float heading, float pitch)
@@ -1834,6 +1879,13 @@ global::RE4CameraController receiverValue54 = cameraController;
 
     internal bool IsHoldingKnifeGuard => combat != null && combat.knifeModule != null && combat.knifeModule.IsHoldingGuardPose;
     internal bool IsKnifeGuardAiming => combat != null && combat.knifeModule != null && combat.knifeModule.IsGuardAiming;
+    internal bool IsKnifeThrustAttack
+    {
+        get
+        {
+            return combat != null && combat.knifeModule != null && combat.knifeModule.IsThrustAttack;
+        }
+    }
     // === 管线访问器 ===
     /// <summary>中文含义：动画驱动器。</summary>
     public LeonAnimatorDriver AnimDriver => animDriver;
@@ -1843,7 +1895,7 @@ global::RE4CameraController receiverValue54 = cameraController;
     public LeonAnimRig AnimRig => animRig;
     /// <summary>中文含义：配对动作协调器。</summary>
     public LeonQTECoordinator QTECoordinator => qteCoordinator;
-    /// <summary>中文含义：新动作管线是否有效。使用位置：KnifeCombatModule.CanExecute.get、LeonCombat.CanBeginParryAction.get、LeonCombat.ExecuteFirearmAttack() 等共 23 处。</summary>
+    /// <summary>新动作管线是否有效。</summary>
     public bool NewPipelineValid => newPipelineValid;
 
     /// <summary>实现基类的 OnDestroy 重写入口；框架调用后按本方法分支执行，并通过下游成员完成协作。</summary>

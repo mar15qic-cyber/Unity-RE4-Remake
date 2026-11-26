@@ -18,51 +18,51 @@ using UnityEngine;
 public class CrosshairPresenter : MonoBehaviour
 {
     // === 接口源（Inspector 中拖入实现了接口的 MonoBehaviour）===
-    /// <summary>中文含义：数据提供者来源。实现 ICrosshairDataProvider 的组件 (Stage 4: WeaponBase)。使用位置：CrosshairPresenter.ResolveInterfaces()。</summary>
+    /// <summary>数据提供者来源。实现 ICrosshairDataProvider 的组件 (Stage 4: WeaponBase)。</summary>
     [Header("接口引用 (Inspector 拖入)")]
     [Tooltip("实现 ICrosshairDataProvider 的组件 (Stage 4: WeaponBase)")]
     [SerializeField]
     private MonoBehaviour dataProviderSource;
-    /// <summary>中文含义：状态提供者来源。实现 ICrosshairStateProvider 的组件 (Stage 4: 适配器)。使用位置：CrosshairPresenter.ResolveInterfaces()。</summary>
+    /// <summary>状态提供者来源。实现 ICrosshairStateProvider 的组件 (Stage 4: 适配器)。</summary>
     [Tooltip("实现 ICrosshairStateProvider 的组件 (Stage 4: 适配器)")]
     [SerializeField]
     private MonoBehaviour stateProviderSource;
-    /// <summary>中文含义：生命周期提供者来源。实现 ICrosshairLifecycleProvider 的组件 (Stage 4: 适配器)。使用位置：CrosshairPresenter.ResolveInterfaces()。</summary>
+    /// <summary>生命周期提供者来源。实现 ICrosshairLifecycleProvider 的组件 (Stage 4: 适配器)。</summary>
     [Tooltip("实现 ICrosshairLifecycleProvider 的组件 (Stage 4: 适配器)")]
     [SerializeField]
     private MonoBehaviour lifecycleProviderSource;
-    /// <summary>中文含义：武器提供者来源。实现 ICrosshairWeaponProvider 的组件 (Stage 4: LeonWeaponHandler)。使用位置：CrosshairPresenter.ResolveInterfaces()。</summary>
+    /// <summary>武器提供者来源。实现 ICrosshairWeaponProvider 的组件 (Stage 4: LeonWeaponHandler)。</summary>
     [Tooltip("实现 ICrosshairWeaponProvider 的组件 (Stage 4: LeonWeaponHandler)")]
     [SerializeField]
     private MonoBehaviour weaponProviderSource;
-    /// <summary>中文含义：视图。使用位置：CrosshairPresenter.HandleWeaponSwitched(ICrosshairDataProvider)、CrosshairPresenter.InitializeFromProviders()、CrosshairPresenter.Update()。</summary>
+    /// <summary>视图。</summary>
     [Header("View 引用")]
     [SerializeField]
     private CrosshairView view;
     // === 运行时状态 ===
-    /// <summary>中文含义：模型。使用位置：CrosshairPresenter.Awake()、CrosshairPresenter.Model.get。</summary>
+    /// <summary>模型。</summary>
     private CrosshairModel _model;
-    /// <summary>中文含义：数据提供者。使用位置：作为 Mathf.Clamp01(float) 的参数、CrosshairPresenter.HandleWeaponSwitched(ICrosshairDataProvider)、CrosshairPresenter.InitializeFromProviders() 等共 5 处。</summary>
+    /// <summary>数据提供者。</summary>
     private ICrosshairDataProvider _dataProvider;
-    /// <summary>中文含义：状态提供者。使用位置：CrosshairPresenter.HandleReloadingChanged(bool)、CrosshairPresenter.ResolveInterfaces()、CrosshairPresenter.SubscribeEvents() 等共 4 处。</summary>
+    /// <summary>状态提供者。</summary>
     private ICrosshairStateProvider _stateProvider;
-    /// <summary>中文含义：生命周期提供者。使用位置：CrosshairPresenter.InitializeFromProviders()、CrosshairPresenter.ResolveInterfaces()、CrosshairPresenter.SubscribeEvents() 等共 4 处。</summary>
+    /// <summary>生命周期提供者。</summary>
     private ICrosshairLifecycleProvider _lifecycleProvider;
-    /// <summary>中文含义：武器提供者。使用位置：CrosshairPresenter.ResolveInterfaces()、CrosshairPresenter.SubscribeEvents()、CrosshairPresenter.UnsubscribeEvents()。</summary>
+    /// <summary>武器提供者。</summary>
     private ICrosshairWeaponProvider _weaponProvider;
     // 生命周期标志（仅由事件更新，不在 Update 中轮询）
-    /// <summary>中文含义：是否已暂停。使用位置：CrosshairPresenter.HandleLifecycleChanged(CrosshairLifecycleEvent)、CrosshairPresenter.InitializeFromProviders()、CrosshairPresenter.UpdateVisibility()。</summary>
+    /// <summary>是否已暂停。</summary>
     private bool _isPaused;
-    /// <summary>中文含义：是否对局已经结束。使用位置：CrosshairPresenter.HandleLifecycleChanged(CrosshairLifecycleEvent)、CrosshairPresenter.InitializeFromProviders()、CrosshairPresenter.UpdateVisibility()。</summary>
+    /// <summary>是否对局已经结束。</summary>
     private bool _isGameOver;
-    /// <summary>中文含义：是否已打开背包。使用位置：CrosshairPresenter.HandleLifecycleChanged(CrosshairLifecycleEvent)、CrosshairPresenter.InitializeFromProviders()、CrosshairPresenter.UpdateVisibility()。</summary>
+    /// <summary>是否已打开背包。</summary>
     private bool _isInventoryOpen;
     /// <summary>中文含义：模型。Lazy Init 兜底 — Awake 中的初始化仍然存在，此属性仅在 Awake 未执行时自动创建。 场景：Domain Reload / Scene Reload 后 stale delegate 在 Awake 之前触发事件回调。</summary>
     private CrosshairModel Model
     {
         get
         {
-            // availableValue1（空值判断前缓存的模型）：从模型读取一次后保存，供后续分支使用。保存空值判断之前的值，只读取一次，非空时不执行回退分支。使用位置：作为 object.ReferenceEquals(object, object) 的参数、CrosshairPresenter.Model.get。
+            // 空值判断前缓存的模型。
 global::CrosshairModel availableValue1 = _model;
             if (!global::System.Object.ReferenceEquals(availableValue1, null))
             {
@@ -178,7 +178,7 @@ global::CrosshairModel availableValue1 = _model;
         if (_dataProvider != null)
         {
             Model.Config = _dataProvider.GetCrosshairConfig();
-            // receiverValue3（判空前缓存的视图）：从视图读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、CrosshairPresenter.InitializeFromProviders()。
+            // 判空前缓存的视图。
 global::CrosshairView receiverValue3 = view;
             if (!global::System.Object.ReferenceEquals(receiverValue3, null))
             {
@@ -216,7 +216,7 @@ global::CrosshairView receiverValue3 = view;
                 return;
             }
 
-            // receiverValue4（判空前缓存的视图）：从视图读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、CrosshairPresenter.Update()。
+            // 判空前缓存的视图。
 global::CrosshairView receiverValue4 = view;
             if (!global::System.Object.ReferenceEquals(receiverValue4, null))
             {
@@ -227,7 +227,7 @@ global::CrosshairView receiverValue4 = view;
         // 1. 读取真实 Spread（每帧仅 1 次 float）
         Model.CurrentSpread = Mathf.Clamp01(_dataProvider.GetSpreadNormalized());
         // 2. Lerp 平滑
-        // lerpSpeed（插值速度）：使用位置：作为 Mathf.Lerp(float, float, float) 的参数、CrosshairPresenter.Update()。
+        // 插值速度。
 float lerpSpeed;
         if (Model.Config.dynamicSpread)
         {
@@ -240,7 +240,7 @@ float lerpSpeed;
 
         Model.DisplayedSpread = Mathf.Lerp(Model.DisplayedSpread, Model.CurrentSpread, Time.deltaTime * lerpSpeed);
         // 3. 通过 spreadCurve 计算最终 UI 尺寸
-        // curveValue（曲线值）：保存 AnimationCurve.Evaluate(float) 的返回结果，供当前步骤使用。使用位置：CrosshairPresenter.Update()。
+        // 曲线值。
 float curveValue = Model.Config.spreadCurve.Evaluate(Model.DisplayedSpread);
         Model.ComputedSize = Model.Config.minSize + (Model.Config.maxSize - Model.Config.minSize) * curveValue;
         // 4. 命中反馈计时器衰减
@@ -259,7 +259,7 @@ float curveValue = Model.Config.spreadCurve.Evaluate(Model.DisplayedSpread);
         }
 
         // 5. 推送到 View（纯数据推送，不含任何渲染逻辑）
-        // receiverValue6（判空前缓存的视图）：从视图读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、CrosshairPresenter.Update()。
+        // 判空前缓存的视图。
 global::CrosshairView receiverValue6 = // 5. 推送到 View（纯数据推送，不含任何渲染逻辑）
  view;
         if (!global::System.Object.ReferenceEquals(receiverValue6, null))
@@ -271,7 +271,7 @@ global::CrosshairView receiverValue6 = // 5. 推送到 View（纯数据推送，
     // === 事件处理（不在 Update 中轮询）===
     /// <summary>HandleAimChanged 的业务处理入口；本方法直接依赖 CrosshairPresenter.UpdateVisibility()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） CrosshairPresenter.UpdateVisibility()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="isAiming">中文含义：是否正在瞄准。使用位置：CrosshairPresenter.HandleAimChanged(bool)。</param>
+    /// <param name="isAiming">是否正在瞄准。</param>
     private void HandleAimChanged(bool isAiming)
     {
         if (Model.Config == null)
@@ -285,7 +285,7 @@ global::CrosshairView receiverValue6 = // 5. 推送到 View（纯数据推送，
         }
         else
         {
-            // assignmentReceiver7（赋值前保存的目标模型）：从模型读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：CrosshairPresenter.HandleAimChanged(bool)。
+            // 赋值前保存的目标模型。
 global::CrosshairModel assignmentReceiver7 = Model;
             if (Model.Config.showInHipFire)
             {
@@ -302,7 +302,7 @@ global::CrosshairModel assignmentReceiver7 = Model;
 
     /// <summary>HandleReloadingChanged 的业务处理入口；本方法直接依赖 CrosshairPresenter.UpdateVisibility()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） CrosshairPresenter.UpdateVisibility()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="isReloading">中文含义：是否正在换弹。使用位置：CrosshairPresenter.HandleReloadingChanged(bool)。</param>
+    /// <param name="isReloading">是否正在换弹。</param>
     private void HandleReloadingChanged(bool isReloading)
     {
         if (Model.Config == null)
@@ -312,7 +312,7 @@ global::CrosshairModel assignmentReceiver7 = Model;
 
         if (isReloading)
         {
-            // assignmentReceiver9（赋值前保存的目标模型）：从模型读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：CrosshairPresenter.HandleReloadingChanged(bool)。
+            // 赋值前保存的目标模型。
 global::CrosshairModel assignmentReceiver9 = Model;
             if (Model.Config.showInReload)
             {
@@ -326,9 +326,9 @@ global::CrosshairModel assignmentReceiver9 = Model;
         else
         {
             // 换弹完成 — 根据当前瞄准状态恢复
-            // aiming（是否瞄准中）：使用位置：CrosshairPresenter.HandleReloadingChanged(bool)。
+            // 是否瞄准中。
 bool aiming = _stateProvider != null && _stateProvider.IsAiming;
-            // assignmentReceiver11（赋值前保存的目标模型）：从模型读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：CrosshairPresenter.HandleReloadingChanged(bool)。
+            // 赋值前保存的目标模型。
 global::CrosshairModel assignmentReceiver11 = Model;
             if (aiming)
             {
@@ -336,7 +336,7 @@ global::CrosshairModel assignmentReceiver11 = Model;
             }
             else
             {
-                // selectedValue12（分支选出的准星阶段的髋部开火）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：CrosshairPresenter.HandleReloadingChanged(bool)。
+                // 分支选出的准星阶段的髋部开火。
 global::CrosshairPhase selectedValue12;
                 if (Model.Config.showInHipFire)
                 {
@@ -359,7 +359,7 @@ global::CrosshairPhase selectedValue12;
     /// 直接读取 HitResult 中的 isHeadshot / isKill / hitboxType，映射为 HitType。
     /// </summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="result">中文含义：当前命中结果。使用位置：CrosshairPresenter.HandleHitConfirmed(HitResult)。</param>
+    /// <param name="result">当前命中结果。</param>
     private void HandleHitConfirmed(HitResult result)
     {
         if (Model.Config == null)
@@ -368,7 +368,7 @@ global::CrosshairPhase selectedValue12;
         }
 
         // HitResult → HitType 映射
-        // hitType（命中类型）：使用位置：CrosshairPresenter.HandleHitConfirmed(HitResult)。
+        // 命中类型。
 HitType hitType = HitType.Normal;
         if (result.isKill)
         {
@@ -386,7 +386,7 @@ HitType hitType = HitType.Normal;
 
     /// <summary>HandleLifecycleChanged 的业务处理入口；本方法直接依赖 CrosshairPresenter.UpdateVisibility()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） CrosshairPresenter.UpdateVisibility()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="evt">中文含义：当前准星生命周期事件。使用位置：CrosshairPresenter.HandleLifecycleChanged(CrosshairLifecycleEvent)。</param>
+    /// <param name="evt">当前准星生命周期事件。</param>
     private void HandleLifecycleChanged(CrosshairLifecycleEvent evt)
     {
         switch (evt)
@@ -427,7 +427,7 @@ HitType hitType = HitType.Normal;
     /// 命中反馈已迁移至 CombatEventDispatcher，不再需要订阅/取消 OnHit。
     /// </summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） CrosshairPresenter.UpdateVisibility()、CrosshairView.SwitchRenderer(CrosshairConfig)、Debug.LogWarning(object)、ICrosshairDataProvider.GetCrosshairConfig()、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="newProvider">中文含义：新提供者。使用位置：CrosshairPresenter.HandleWeaponSwitched(ICrosshairDataProvider)。</param>
+    /// <param name="newProvider">新提供者。</param>
     public void HandleWeaponSwitched(ICrosshairDataProvider newProvider)
     {
         // newProvider 为 null — 说明 GetCurrentWeapon() 返回了 null
@@ -440,7 +440,7 @@ HitType hitType = HitType.Normal;
 
         _dataProvider = newProvider;
         // 加载新武器配置 + 切换渲染策略
-        // config（当前准星配置）：保存 ICrosshairDataProvider.GetCrosshairConfig() 的返回结果，供当前步骤使用。使用位置：CrosshairPresenter.HandleWeaponSwitched(ICrosshairDataProvider)。
+        // 当前准星配置。
 var config = _dataProvider.GetCrosshairConfig();
         if (config == null)
         {
@@ -449,7 +449,7 @@ var config = _dataProvider.GetCrosshairConfig();
         }
 
         Model.Config = config;
-        // receiverValue14（判空前缓存的视图）：从视图读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、CrosshairPresenter.HandleWeaponSwitched(ICrosshairDataProvider)。
+        // 判空前缓存的视图。
 global::CrosshairView receiverValue14 = view;
         if (!global::System.Object.ReferenceEquals(receiverValue14, null))
         {

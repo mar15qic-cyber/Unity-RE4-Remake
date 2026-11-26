@@ -29,124 +29,124 @@ public enum PathAgentState
 [DefaultExecutionOrder(-100)]
 public class PathAgent : MonoBehaviour
 {
-    /// <summary>中文含义：重新寻路速率。使用位置：作为 Mathf.Max(float, float) 的参数、PathAgent.Update()。</summary>
+    /// <summary>重新寻路速率。</summary>
     [Header("寻路设置")]
     public float repathRate = 0.5f;
-    /// <summary>中文含义：路径点已抵达半径。使用位置：作为 Mathf.Max(float, float) 的参数、作为 Mathf.Min(float, float) 的参数、PathAgent.IsPathHeightValid(List&lt;Vector3&gt;, Vector3, Vector3) 等共 4 处。</summary>
+    /// <summary>路径点已抵达半径。</summary>
     public float waypointReachedRadius = 0.5f;
-    /// <summary>中文含义：目的地变化阈值。使用位置：PathAgent.SetResolvedDestination(Vector3)、SceneStartupEntry.ValidateEnemyTemplate(GameObject, bool)、VillagerController.UpdateChaseProgressRecovery()。</summary>
+    /// <summary>目的地变化阈值。</summary>
     public float destinationChangeThreshold = 0.5f;
-    /// <summary>中文含义：已抵达目的地变化阈值。使用位置：作为 Mathf.Max(float, float) 的参数、PathAgent.SetResolvedDestination(Vector3)、SceneStartupEntry.ValidateEnemyTemplate(GameObject, bool)。</summary>
+    /// <summary>已抵达目的地变化阈值。</summary>
     public float arrivedDestinationChangeThreshold = 0.2f;
-    /// <summary>中文含义：已失败重试延迟。使用位置：PathAgent.MarkPathFailed(bool)。</summary>
+    /// <summary>已失败重试延迟。</summary>
     public float failedRetryDelay = 1f;
-    /// <summary>中文含义：导航图吸附距离。使用位置：作为 Mathf.Max(float, float) 的参数、作为 PathAgent.ReadNormalNavigationPoint(Vector3, float, float) 的参数、PathAgent.isOnNavMesh.get 等共 7 处。</summary>
+    /// <summary>导航图吸附距离。</summary>
     public float graphSnapDistance = 3f;
-    /// <summary>中文含义：导航图吸附高度。使用位置：作为 HouseThreeRegionNavigation.ReadSameSideNavigationPoint(Vector3, bool, float, float) 的参数、作为 Mathf.Max(float, float) 的参数、作为 PathAgent.ReadNormalNavigationPoint(Vector3, float, float) 的参数 等共 4 处。</summary>
+    /// <summary>导航图吸附高度。</summary>
     public float graphSnapHeight = 1f;
-    /// <summary>中文含义：目的地吸附距离。使用位置：作为 HouseThreeRegionNavigation.ReadSameSideNavigationPoint(Vector3, bool, float, float) 的参数、作为 PathAgent.TryResolveDestination(Vector3, float, float, out Vector3) 的参数。</summary>
+    /// <summary>目的地吸附距离。</summary>
     public float destinationSnapDistance = 1.25f;
-    /// <summary>中文含义：目的地吸附高度。使用位置：作为 PathAgent.TryResolveDestination(Vector3, float, float, out Vector3) 的参数。</summary>
+    /// <summary>目的地吸附高度。</summary>
     public float destinationSnapHeight = 1.5f;
-    /// <summary>中文含义：追击目的地吸附距离。使用位置：作为 PathAgent.TryResolveDestinationOnTargetLevel(Vector3, NNInfo, float, float, out Vector3) 的参数。</summary>
+    /// <summary>追击目的地吸附距离。</summary>
     public float pursuitDestinationSnapDistance = 4f;
-    /// <summary>中文含义：追击目的地吸附高度。使用位置：作为 PathAgent.TryResolveDestinationOnTargetLevel(Vector3, NNInfo, float, float, out Vector3) 的参数。</summary>
+    /// <summary>追击目的地吸附高度。</summary>
     public float pursuitDestinationSnapHeight = 2f;
-    /// <summary>中文含义：追击目标级别容差。追击目标投影必须接近目标真实楼层，避免二层目标被投影回楼梯或一层。使用位置：作为 Mathf.Max(float, float) 的参数、PathAgent.SetResolvedDestination(Vector3)。</summary>
+    /// <summary>追击目标级别容差。追击目标投影必须接近目标真实楼层，避免二层目标被投影回楼梯或一层。</summary>
     [Tooltip("追击目标投影必须接近目标真实楼层，避免二层目标被投影回楼梯或一层")]
     [Min(0.1f)]
     public float pursuitTargetLevelTolerance = 0.35f;
-    /// <summary>中文含义：追击地面后备最大掉落。玩家站在谷堆等非法抬高表面时，允许回退到同一区域的较低地面。楼梯采用连续踏面路径。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>追击地面后备最大掉落。玩家站在谷堆等非法抬高表面时，允许回退到同一区域的较低地面。楼梯采用连续踏面路径。</summary>
     [Tooltip("玩家站在谷堆等非法抬高表面时，允许回退到同一区域的较低地面。楼梯采用连续踏面路径。")]
     [Min(0.1f)]
     public float pursuitGroundFallbackMaximumDrop = 1.8f;
-    /// <summary>中文含义：追击目标解析间隔，避免每名敌人每帧遍历整张导航图。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>追击目标解析间隔，避免每名敌人每帧遍历整张导航图。</summary>
     [Tooltip("追击目标解析间隔，避免每名敌人每帧遍历整张导航图。")]
     [Min(0.05f)]
     public float pursuitResolveInterval = 0.2f;
-    /// <summary>中文含义：玩家移动超过该距离时立即重新解析追击目标。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>玩家移动超过该距离时立即重新解析追击目标。</summary>
     [Tooltip("玩家移动超过该距离时立即重新解析追击目标。")]
     [Min(0.05f)]
     public float pursuitResolveMoveThreshold = 0.35f;
-    /// <summary>中文含义：最大普通路径纵向。使用位置：作为 NavigationQueryService.Projection(Vector3, uint, float, float, float, float, out Vector3) 的参数。</summary>
+    /// <summary>最大普通路径纵向。</summary>
     public float maxOrdinaryPathY = 2.75f;
-    /// <summary>中文含义：最大路径高度上方端点集合。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>最大路径高度上方端点集合。</summary>
     public float maxPathHeightAboveEndpoints = 2f;
-    /// <summary>中文含义：最大路径竖直步进。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>最大路径竖直步进。</summary>
     public float maxPathVerticalStep = 0.6f;
-    /// <summary>中文含义：路径点竖直已抵达容差。使用位置：作为 Mathf.Max(float, float) 的参数、SceneStartupEntry.ValidateEnemyTemplate(GameObject, bool)、VillagerController.CanTraverseSupportedNavigationSegment(Vector3, bool) 等共 5 处。</summary>
+    /// <summary>路径点竖直已抵达容差。</summary>
     public float waypointVerticalReachedTolerance = 0.35f;
-    /// <summary>中文含义：最大路径坡度。使用位置：作为 Mathf.Clamp(float, float, float) 的参数。</summary>
+    /// <summary>最大路径坡度。</summary>
     [Range(1f, 89f)]
     public float maxPathSlope = 50f;
-    /// <summary>中文含义：是否启用路径点观察前方。使用位置：PathAgent.AdvanceToVisibleWaypoint()。</summary>
+    /// <summary>是否启用路径点观察前方。</summary>
     [Header("路径拐点裁剪")]
     public bool enableWaypointLookAhead = true;
-    /// <summary>中文含义：最大路径点观察前方。使用位置：作为 Mathf.Clamp(int, int, int) 的参数。</summary>
+    /// <summary>最大路径点观察前方。</summary>
     [Range(1, 12)]
     public int maxWaypointLookAhead = 8;
-    /// <summary>中文含义：是否显示路径辅助线集合。使用位置：PathAgent.OnDrawGizmosSelected()。</summary>
+    /// <summary>是否显示路径辅助线集合。</summary>
     public bool showPathGizmos;
-    /// <summary>中文含义：最大静态障碍危险区集合。使用位置：作为 Mathf.Max(int, int) 的参数。</summary>
+    /// <summary>最大静态障碍危险区集合。</summary>
     [Header("静态障碍路线规避")]
     [Min(1)]
     public int maximumStaticObstacleHazards = 3;
-    /// <summary>中文含义：静态障碍危险区存活时长。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>静态障碍危险区存活时长。</summary>
     [Min(0.1f)]
     public float staticObstacleHazardLifetime = 4f;
-    /// <summary>中文含义：静态障碍危险区留白。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>静态障碍危险区留白。</summary>
     [Min(0.1f)]
     public float staticObstacleHazardPadding = 0.8f;
-    /// <summary>中文含义：静态障碍代价倍率。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>静态障碍代价倍率。</summary>
     [Min(1f)]
     public float staticObstacleCostMultiplier = 12f;
-    /// <summary>中文含义：静态障碍重新寻路延迟。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>静态障碍重新寻路延迟。</summary>
     [Min(0.05f)]
     public float staticObstacleRepathDelay = 0.1f;
-    /// <summary>中文含义：是否当前有效路径始终保持追击主线。首次确认真实静态障碍后只辅助重算一次；当前有效路径始终保持追击主线。使用位置：PathAgent.RegisterStaticObstacleHazard(RaycastHit, float)。</summary>
+    /// <summary>是否当前有效路径始终保持追击主线。首次确认真实静态障碍后只辅助重算一次；当前有效路径始终保持追击主线。</summary>
     [Header("追击辅助重算")]
     [Tooltip("首次确认真实静态障碍后只辅助重算一次；当前有效路径始终保持追击主线。")]
     public bool repathOnNewValidatedHazard = true;
-    /// <summary>中文含义：寻路请求器。使用位置：PathAgent.CancelCalculate()、PathAgent.CancelPath()、PathAgent.ForceRepath() 等共 11 处。</summary>
+    /// <summary>寻路请求器。</summary>
     private Seeker seeker;
-    /// <summary>中文含义：移动控制器。使用位置：PathAgent.AdvanceToVisibleWaypoint()、PathAgent.CanAdvancePastCompressedSteppedWaypoint()、PathAgent.ResolvePendingPathHandoffWaypoint(List&lt;Vector3&gt;) 等共 5 处。</summary>
+    /// <summary>移动控制器。</summary>
     private VillagerController movementController;
-    /// <summary>中文含义：导航连接集合。使用位置：PathAgent.BindingPreciseTraversal(EnemyNavigationPreciseLink[])、PathAgent.IsNavigationLinkEndpoint(Vector3)、PathAgent.Start()。</summary>
+    /// <summary>导航连接集合。</summary>
     private EnemyNavigationPreciseLink[] navigationLinks;
-    /// <summary>中文含义：目的地。使用位置：作为 AstarPath.GetNearest(Vector3, NearestNodeConstraint) 的参数、作为 Mathf.Abs(float) 的参数、PathAgent.Destination.get 等共 5 处。</summary>
+    /// <summary>目的地。</summary>
     private Vector3 destination;
-    /// <summary>中文含义：是否具有目的地。使用位置：PathAgent.ApplyPendingPath()、PathAgent.CancelPath()、PathAgent.ForceRepath() 等共 11 处。</summary>
+    /// <summary>是否具有目的地。</summary>
     private bool hasDestination;
-    /// <summary>中文含义：是否已停止。使用位置：PathAgent.ApplyPendingPath()、PathAgent.desiredDirection.get、PathAgent.ForceRepath() 等共 11 处。</summary>
+    /// <summary>是否已停止。</summary>
     private bool stopped;
-    /// <summary>中文含义：路径。使用位置：作为 Gizmos.DrawLine(Vector3, Vector3) 的参数、作为 Mathf.Abs(float) 的参数、作为 Mathf.Min(int, int) 的参数 等共 29 处。</summary>
+    /// <summary>路径。</summary>
     private List<Vector3> path = new(64);
-    /// <summary>中文含义：局部候选。只读字段，初始化后不由普通写入口替换。使用位置：作为 NavigationQueryService.RecoverCollection(Vector3, float, List&lt;GraphNode&gt;) 的参数、PathAgent.ResolvePhysicallyReachablePathOrigin()。</summary>
+    /// <summary>局部候选。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly List<GraphNode> localCandidate = new(128);
-    /// <summary>中文含义：待处理路径。使用位置：作为 List&lt;Vector3&gt;.this[int] 的参数、作为 Mathf.Abs(float) 的参数、作为 PathAgent.HorizontalDistance(Vector3, Vector3) 的参数 等共 10 处。</summary>
+    /// <summary>待处理路径。</summary>
     private List<Vector3> pendingPath = new(64);
-    /// <summary>中文含义：精确路径点。使用位置：PathAgent.CachePathProperty()、PathAgent.IsWaypointReached(Vector3)、PathAgent.RequiresPrecisePathFollowing.get。</summary>
+    /// <summary>精确路径点。</summary>
     private bool[] preciseWaypoint = new bool[64];
-    /// <summary>中文含义：后续精确路径点。使用位置：PathAgent.AdvanceToVisibleWaypoint()、PathAgent.CachePathProperty()、PathAgent.ResolvePendingPathHandoffWaypoint(List&lt;Vector3&gt;)。</summary>
+    /// <summary>后续精确路径点。</summary>
     private bool[] subsequentPreciseWaypoint = new bool[65];
-    /// <summary>中文含义：剩余线段长型。使用位置：PathAgent.CachePathProperty()、PathAgent.remainingDistance.get。</summary>
+    /// <summary>剩余线段长型。</summary>
     private float[] remainingSegmentLong = new float[64];
-    /// <summary>中文含义：投影图像版本。使用位置：PathAgent.TryResolvePursuitDestination(Vector3, out Vector3)。</summary>
+    /// <summary>投影图像版本。</summary>
     private int projectionImageVersion = -1;
-    /// <summary>中文含义：路径图像版本。使用位置：PathAgent.Update()。</summary>
+    /// <summary>路径图像版本。</summary>
     private int pathImageVersion = -1;
-    /// <summary>中文含义：路径查询服务。使用位置：PathAgent.Update()。</summary>
+    /// <summary>路径查询服务。</summary>
     private NavigationQueryService pathQueryService;
-    /// <summary>中文含义：是否跨越图层请求。使用位置：PathAgent.SetResolvedDestination(Vector3)、PathAgent.TryCommitPathfinding()、PathAgent.UrgentPathfinding.get。</summary>
+    /// <summary>是否跨越图层请求。</summary>
     private bool crossLayerRequest;
-    /// <summary>中文含义：请求对象池。使用位置：PathAgent.Start()、PathAgent.TryCommitPathfinding()。</summary>
+    /// <summary>请求对象池。</summary>
     private RequestContext[] requestPool;
-    /// <summary>中文含义：pathfindingEnqueueTime 表示“寻路入队时间”；latestTrimRequest 表示“最新裁剪请求”。使用位置：作为 Math.Max(double, double) 的参数、NavigationQueryService.CommitRequest()、NavigationQueryService.QueueUp(PathAgent)。；使用位置：NavigationQueryService.RequestTrim(PathAgent)。</summary>
+    /// <summary>pathfindingEnqueueTime 表示“寻路入队时间”；latestTrimRequest 表示“最新裁剪请求”。</summary>
     internal float pathfindingEnqueueTime, latestTrimRequest;
-    /// <summary>中文含义：是否紧急寻路。使用位置：NavigationQueryService.CommitRequest()。</summary>
+    /// <summary>是否紧急寻路。</summary>
     internal bool UrgentPathfinding => !HasUsablePathData() || crossLayerRequest;
 
-    /// <summary>中文含义：查询。使用位置：PathAgent.AdvanceToVisibleWaypoint()、PathAgent.CancelPath()、PathAgent.isStopped.set 等共 13 处。</summary>
+    /// <summary>查询。</summary>
     private NavigationQueryService Query
     {
         get
@@ -162,46 +162,46 @@ public class PathAgent : MonoBehaviour
         }
     }
 
-    /// <summary>中文含义：待处理路径版本。使用位置：PathAgent.ApplyPendingPath()、PathAgent.ClearPathData()、PathAgent.OnPathComplete(Path, PathAgent.RequestContext)。</summary>
+    /// <summary>待处理路径版本。</summary>
     private int pendingPathVersion;
-    /// <summary>中文含义：当前路径点。使用位置：作为 List&lt;Vector3&gt;.this[int] 的参数、作为 Mathf.Min(int, int) 的参数、PathAgent.AdvanceToVisibleWaypoint() 等共 17 处。</summary>
+    /// <summary>当前路径点。</summary>
     private int currentWaypoint;
-    /// <summary>中文含义：请求版本。使用位置：PathAgent.ApplyPendingPath()、PathAgent.CancelPath()、PathAgent.ForceRepath() 等共 11 处。</summary>
+    /// <summary>请求版本。</summary>
     private int requestVersion;
-    /// <summary>中文含义：上一次重新寻路时间。使用位置：PathAgent.ForceRepath()、PathAgent.Start()、PathAgent.StartStaticObstacleRepath() 等共 5 处。</summary>
+    /// <summary>上一次重新寻路时间。</summary>
     private float lastRepathTime;
-    /// <summary>中文含义：下一次重试时间。使用位置：PathAgent.ForceRepath()、PathAgent.MarkPathFailed(bool)、PathAgent.StartStaticObstacleRepath() 等共 5 处。</summary>
+    /// <summary>下一次重试时间。</summary>
     private float nextRetryTime;
-    /// <summary>中文含义：路径请求原点。使用位置：作为 PathAgent.HorizontalDistance(Vector3, Vector3) 的参数、PathAgent.OnPathComplete(Path, PathAgent.RequestContext)、PathAgent.TryCommitPathfinding()。</summary>
+    /// <summary>路径请求原点。</summary>
     private Vector3 pathRequestOrigin;
-    /// <summary>中文含义：静态障碍危险区集合。只读字段，初始化后不由普通写入口替换。使用位置：作为 PathAgent.StaticObstacleTraversalProvider.Set(List&lt;PathAgent.StaticObstacleHazard&gt;, float) 的参数、PathAgent.CancelPath()、PathAgent.IsAvoidingStaticObstacle.get 等共 7 处。</summary>
+    /// <summary>静态障碍危险区集合。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly List<StaticObstacleHazard> staticObstacleHazards = new List<StaticObstacleHazard>();
-    /// <summary>中文含义：下一次静态障碍重新寻路时间。使用位置：PathAgent.RegisterStaticObstacleHazard(RaycastHit, float)、PathAgent.TryStartQueuedStaticObstacleRepath()。</summary>
+    /// <summary>下一次静态障碍重新寻路时间。</summary>
     private float nextStaticObstacleRepathTime;
-    /// <summary>中文含义：是否存在待处理的静态障碍重新寻路。使用位置：PathAgent.CancelPath()、PathAgent.isStopped.set、PathAgent.OnPathComplete(Path, PathAgent.RequestContext) 等共 6 处。</summary>
+    /// <summary>是否存在待处理的静态障碍重新寻路。</summary>
     private bool pendingStaticObstacleRepath;
-    /// <summary>中文含义：是否缓存了待执行的静态障碍重新寻路。使用位置：PathAgent.CancelPath()、PathAgent.isStopped.set、PathAgent.OnPathComplete(Path, PathAgent.RequestContext) 等共 7 处。</summary>
+    /// <summary>是否缓存了待执行的静态障碍重新寻路。</summary>
     private bool queuedStaticObstacleRepath;
-    /// <summary>中文含义：追击分辨率缓存是否已初始化。使用位置：PathAgent.InvalidatePursuitResolutionCache()、PathAgent.TryResolvePursuitDestination(Vector3, out Vector3)。</summary>
+    /// <summary>追击分辨率缓存是否已初始化。</summary>
     private bool pursuitResolutionCacheInitialized;
-    /// <summary>中文含义：是否缓存追击分辨率已成功。使用位置：PathAgent.TryResolvePursuitDestination(Vector3, out Vector3)。</summary>
+    /// <summary>是否缓存追击分辨率已成功。</summary>
     private bool cachedPursuitResolutionSucceeded;
-    /// <summary>中文含义：缓存原始追击目标。使用位置：PathAgent.TryResolvePursuitDestination(Vector3, out Vector3)。</summary>
+    /// <summary>缓存原始追击目标。</summary>
     private Vector3 cachedRawPursuitTarget;
-    /// <summary>中文含义：缓存解算后的追击目标。使用位置：PathAgent.TryResolvePursuitDestination(Vector3, out Vector3)。</summary>
+    /// <summary>缓存解算后的追击目标。</summary>
     private Vector3 cachedResolvedPursuitTarget;
-    /// <summary>中文含义：缓存追击原点区域。使用位置：PathAgent.TryResolvePursuitDestination(Vector3, out Vector3)。</summary>
+    /// <summary>缓存追击原点区域。</summary>
     private uint cachedPursuitOriginArea;
-    /// <summary>中文含义：下一次追击解算时间。使用位置：PathAgent.InvalidatePursuitResolutionCache()、PathAgent.TryResolvePursuitDestination(Vector3, out Vector3)。</summary>
+    /// <summary>下一次追击解算时间。</summary>
     private float nextPursuitResolveTime;
-    /// <summary>中文含义：下一次路径点观察前方时间。使用位置：PathAgent.AdvanceToVisibleWaypoint()、PathAgent.Start()。</summary>
+    /// <summary>下一次路径点观察前方时间。</summary>
     private float nextWaypointLookAheadTime;
-    /// <summary>中文含义：追击分辨率失败开始时间。使用位置：作为 float.IsNegativeInfinity(float) 的参数、PathAgent.ClearPursuitResolutionFailure()、PathAgent.MarkPursuitResolutionFailed() 等共 4 处。</summary>
+    /// <summary>追击分辨率失败开始时间。</summary>
     private float pursuitResolutionFailureStartedTime = float.NegativeInfinity;
-    /// <summary>中文含义：当前路径状态。使用位置：作为 StringBuilder.Append(string) 的参数、EnemyPerceptionModule.ReceiveVillagePursuitOrder(Vector3)、EnemyPerceptionModule.UpdateInvestigation() 等共 30 处。</summary>
+    /// <summary>当前路径状态。</summary>
     public PathAgentState CurrentPathState { get; private set; } = PathAgentState.Idle;
 
-    /// <summary>中文含义：当前路径点索引。使用位置：VillagerController.CollectCombatTimelineSnapshot()。</summary>
+    /// <summary>当前路径点索引。</summary>
     public int CurrentWaypointIndex
     {
         get
@@ -217,17 +217,17 @@ public class PathAgent : MonoBehaviour
         }
     }
 
-    /// <summary>中文含义：路径请求版本。使用位置：VillagerController.CanMoveDirectlyToNavigationPoint(Vector3, bool)、VillagerController.CollectCombatTimelineSnapshot()。</summary>
+    /// <summary>路径请求版本。</summary>
     public int PathRequestVersion => requestVersion;
-    /// <summary>中文含义：是否具有路径。使用位置：作为 StringBuilder.Append(string) 的参数、PathAgent.desiredDirection.get、PathAgent.remainingDistance.get 等共 7 处。</summary>
+    /// <summary>是否具有路径。</summary>
     public bool hasPath => CurrentPathState == PathAgentState.Valid && path != null && currentWaypoint < path.Count;
-    /// <summary>中文含义：是否具有目的地。使用位置：作为 StringBuilder.Append(string) 的参数、EnemyPerceptionModule.ReceiveVillagePursuitOrder(Vector3)、HouseThreeRegionNavigation.WalkDirection(VillagerController, Vector3, Vector3) 等共 5 处。</summary>
+    /// <summary>是否具有目的地。</summary>
     public bool HasDestination => hasDestination;
-    /// <summary>中文含义：目的地。使用位置：作为 DoorController.TryResolveOpenPassageDirection(Vector3, Vector3, float, out Vector3) 的参数、作为 EnemyAIManager.IsStableSurroundArrival(VillagerController, Vector3, Vector3, float) 的参数、作为 VillagerController.HorizontalDistance(Vector3, Vector3) 的参数 等共 6 处。</summary>
+    /// <summary>目的地。</summary>
     public Vector3 Destination => destination;
     /// <summary>中文含义：是否避让中静态障碍。</summary>
     public bool IsAvoidingStaticObstacle => staticObstacleHazards.Count > 0;
-    /// <summary>中文含义：是否具有追击分辨率失败。使用位置：PathAgent.ClearPursuitResolutionFailure()、PathAgent.MarkPursuitResolutionFailed()、PathAgent.PursuitResolutionFailureDuration.get 等共 4 处。</summary>
+    /// <summary>是否具有追击分辨率失败。</summary>
     public bool HasPursuitResolutionFailure { get; private set; }
 
     /// <summary>中文含义：追击分辨率失败持续时间。</summary>
@@ -248,7 +248,7 @@ public class PathAgent : MonoBehaviour
 
     /// <summary>TryGetCurrentWaypoint 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
     /// <remarks>静态调用链：上游 VillagerController.CanTraverseCurrentPathGround(Collider, Vector3, float)、VillagerController.CollectCombatTimelineSnapshot()、VillagerController.IsStandingAttackSurfaceStable()、VillagerController.MoveWithCollision(Vector3, bool, bool)、VillagerController.ResolveAllowedPathStepUp() 等共 6 处；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="waypoint">中文含义：路径点。输出参数，由本入口写入并交给调用方。使用位置：PathAgent.TryGetCurrentWaypoint(out Vector3)。</param>
+    /// <param name="waypoint">路径点。输出参数，由本入口写入并交给调用方。</param>
     public bool TryGetCurrentWaypoint(out Vector3 waypoint)
     {
         waypoint = default;
@@ -261,7 +261,7 @@ public class PathAgent : MonoBehaviour
         return true;
     }
 
-    /// <summary>中文含义：是否已停止。使用位置：作为 EnemyActionCoordinator.DiagLog(string, string) 的参数、作为 StringBuilder.Append(string) 的参数、EnemyActionCoordinator.BeginAlert() 等共 35 处。</summary>
+    /// <summary>是否已停止。</summary>
     public bool isStopped
     {
         get => stopped;
@@ -275,7 +275,7 @@ public class PathAgent : MonoBehaviour
             stopped = value;
             if (stopped)
             {
-                // receiverValue4（判空前缓存的查询）：从查询读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、PathAgent.isStopped.set。
+                // 判空前缓存的查询。
 global::NavigationQueryService receiverValue4 = Query;
                 if (!global::System.Object.ReferenceEquals(receiverValue4, null))
                 {
@@ -298,7 +298,7 @@ global::NavigationQueryService receiverValue4 = Query;
         }
     }
 
-    /// <summary>中文含义：剩余距离。使用位置：作为 StringBuilder.Append(string) 的参数、VillagerController.UpdateChaseProgressRecovery()。</summary>
+    /// <summary>剩余距离。</summary>
     public float remainingDistance
     {
         get
@@ -312,7 +312,7 @@ global::NavigationQueryService receiverValue4 = Query;
         }
     }
 
-    /// <summary>中文含义：期望速度。使用位置：作为 StringBuilder.Append(string) 的参数。</summary>
+    /// <summary>期望速度。</summary>
     public Vector3 desiredVelocity
     {
         get
@@ -321,7 +321,7 @@ global::NavigationQueryService receiverValue4 = Query;
         }
     }
 
-    /// <summary>中文含义：期望方向。使用位置：作为 StringBuilder.Append(string) 的参数、作为 Vector3.Dot(Vector3, Vector3) 的参数、作为 VillagerController.ResolveFacingLimitedStandingDisplacement(Vector3) 的参数 等共 17 处。</summary>
+    /// <summary>期望方向。</summary>
     public Vector3 desiredDirection
     {
         get
@@ -331,10 +331,10 @@ global::NavigationQueryService receiverValue4 = Query;
                 return Vector3.zero;
             }
 
-            // direction（方向）：使用位置：PathAgent.desiredDirection.get。
+            // 方向。
 Vector3 direction = path[currentWaypoint] - transform.position;
             direction.y = 0f;
-            // verticalContinuationRadius（竖直衔接半径）：保存 Mathf.Min(float, float) 的返回结果，供当前步骤使用。使用位置：PathAgent.desiredDirection.get。
+            // 竖直衔接半径。
 float verticalContinuationRadius = Mathf.Min(waypointReachedRadius * 0.25f, 0.08f);
             if (direction.sqrMagnitude <= verticalContinuationRadius * verticalContinuationRadius && Mathf.Abs(path[currentWaypoint].y - transform.position.y) > Mathf.Max(0.05f, waypointVerticalReachedTolerance) && currentWaypoint + 1 < path.Count)
             {
@@ -353,7 +353,7 @@ float verticalContinuationRadius = Mathf.Min(waypointReachedRadius * 0.25f, 0.08
         }
     }
 
-    /// <summary>中文含义：速度。使用位置：作为 Mathf.Max(float, float) 的参数、作为 StringBuilder.Append(string) 的参数、作为 VillagerController.ResolveStandingRootMotionSpeed(float) 的参数 等共 6 处。</summary>
+    /// <summary>速度。</summary>
     public float speed { get; set; } = 3.5f;
 
     /// <summary>中文含义：是否事件导航网格。</summary>
@@ -366,7 +366,7 @@ float verticalContinuationRadius = Mathf.Min(waypointReachedRadius * 0.25f, 0.08
                 return false;
             }
 
-            // nearest（最近）：保存 AstarPath.GetNearest(Vector3, NearestNodeConstraint) 的返回结果，供当前步骤使用。使用位置：作为 Vector3.Distance(Vector3, Vector3) 的参数、PathAgent.isOnNavMesh.get。
+            // 最近。
 NNInfo nearest = AstarPath.active.GetNearest(transform.position, NearestNodeConstraint.Walkable);
             if (nearest.node == null)
             {
@@ -379,7 +379,7 @@ NNInfo nearest = AstarPath.active.GetNearest(transform.position, NearestNodeCons
 
     /// <summary>BindingPreciseTraversal 的业务处理入口；本方法直接依赖 PathAgent.CachePathProperty()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 MissionSpawnExecutor.Generate(GameObject)、PathAgent.Start()；下游（含内部回调体） PathAgent.CachePathProperty()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="traversal">中文含义：通行。使用位置：PathAgent.BindingPreciseTraversal(EnemyNavigationPreciseLink[])。</param>
+    /// <param name="traversal">通行。</param>
     internal void BindingPreciseTraversal(EnemyNavigationPreciseLink[] traversal)
     {
         navigationLinks = traversal;
@@ -406,7 +406,7 @@ NNInfo nearest = AstarPath.active.GetNearest(transform.position, NearestNodeCons
             seeker.detailedGizmos = false;
         }
 
-        // funnel（漏斗）：保存 Component.GetComponent<FunnelModifier>() 的返回结果，供当前步骤使用。使用位置：PathAgent.Start()。
+        // 漏斗。
 FunnelModifier funnel = GetComponent<FunnelModifier>();
         if (funnel != null)
         {
@@ -415,7 +415,7 @@ FunnelModifier funnel = GetComponent<FunnelModifier>();
 
         lastRepathTime = float.NegativeInfinity;
         requestPool = new RequestContext[4];
-        // sequence（序号）：使用位置：PathAgent.Start()。
+        // 序号。
 for (int sequence = 0; sequence < requestPool.Length; sequence++)
         {
             requestPool[sequence] = new RequestContext(this);
@@ -429,7 +429,7 @@ for (int sequence = 0; sequence < requestPool.Length; sequence++)
     void Update()
     {
         PruneExpiredStaticObstacleHazards();
-        // currentQuery（当前查询）：使用位置：PathAgent.Update()。
+        // 当前查询。
 var currentQuery = Query;
         if (currentQuery != null && currentQuery.CanQuery && (pathQueryService != currentQuery || pathImageVersion != currentQuery.Version))
         {
@@ -474,7 +474,7 @@ var currentQuery = Query;
 
     /// <summary>SetDestination 的业务处理入口；本方法直接依赖 PathAgent.ClearPursuitResolutionFailure()、PathAgent.RejectUnreachableDestination()、PathAgent.SetResolvedDestination(Vector3)、PathAgent.TryResolveReachableDestination(Vector3, out Vector3)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyActionCoordinator.RequestPathTarget(Vector3)、EnemyPerceptionModule.UpdateInvestigation()、EnemyWindowTraversal.LateUpdate()、VillagerController.RefreshChaseDestination()；下游（含内部回调体） PathAgent.ClearPursuitResolutionFailure()、PathAgent.RejectUnreachableDestination()、PathAgent.SetResolvedDestination(Vector3)、PathAgent.TryResolveReachableDestination(Vector3, out Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="target">中文含义：目标。使用位置：作为 PathAgent.TryResolveReachableDestination(Vector3, out Vector3) 的参数。</param>
+    /// <param name="target">目标。</param>
     public bool SetDestination(Vector3 target)
     {
         if (Query == null || !Query.CanQuery)
@@ -497,7 +497,7 @@ var currentQuery = Query;
     /// 因此二楼玩家不会被错误投影到一楼或楼梯中段。
     /// </summary>
     /// <remarks>静态调用链：上游 VillagerController.RefreshChaseDestination()；下游（含内部回调体） PathAgent.ClearPursuitResolutionFailure()、PathAgent.MarkPursuitResolutionFailed()、PathAgent.SetResolvedDestination(Vector3)、PathAgent.TryResolvePursuitDestination(Vector3, out Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="target">中文含义：目标。使用位置：作为 PathAgent.TryResolvePursuitDestination(Vector3, out Vector3) 的参数。</param>
+    /// <param name="target">目标。</param>
     public bool SetPursuitDestination(Vector3 target)
     {
         if (Query == null || !Query.CanQuery)
@@ -517,10 +517,10 @@ var currentQuery = Query;
 
     /// <summary>SetResolvedDestination 的业务处理入口；本方法直接依赖 List&lt;Vector3&gt;.Clear()、Mathf.Abs(float)、PathAgent.HasUsablePathData()、PathAgent.RequestPath()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 PathAgent.SetDestination(Vector3)、PathAgent.SetPursuitDestination(Vector3)；下游（含内部回调体） List&lt;Vector3&gt;.Clear()、Mathf.Abs(float)、PathAgent.HasUsablePathData()、PathAgent.RequestPath()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="resolvedTarget">中文含义：解算后的目标。使用位置：作为 Mathf.Abs(float) 的参数、PathAgent.SetResolvedDestination(Vector3)。</param>
+    /// <param name="resolvedTarget">解算后的目标。</param>
     private bool SetResolvedDestination(Vector3 resolvedTarget)
     {
-        // threshold（阈值）：使用位置：PathAgent.SetResolvedDestination(Vector3)。
+        // 阈值。
 float threshold;
         if (CurrentPathState == PathAgentState.Arrived)
         {
@@ -560,7 +560,7 @@ float threshold;
     /// <remarks>静态调用链：上游 PathAgent.SetDestination(Vector3)；下游（含内部回调体） NavigationQueryService.Revoke(PathAgent)、object.ReferenceEquals(object, object)、PathAgent.CancelCalculate()、PathAgent.MarkPathFailed(bool)、Seeker.IsDone()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     private void RejectUnreachableDestination()
     {
-        // receiverValue7（判空前缓存的查询）：从查询读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、PathAgent.RejectUnreachableDestination()。
+        // 判空前缓存的查询。
 global::NavigationQueryService receiverValue7 = Query;
         if (!global::System.Object.ReferenceEquals(receiverValue7, null))
         {
@@ -619,8 +619,8 @@ global::NavigationQueryService receiverValue7 = Query;
 
     /// <summary>TryResolveReachableDestination 的业务处理入口；本方法直接依赖 PathAgent.TryResolveDestination(Vector3, float, float, out Vector3)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 PathAgent.SetDestination(Vector3)、VillagerController.TryResolveReachableNavigationPoint(Vector3, out Vector3)；下游（含内部回调体） PathAgent.TryResolveDestination(Vector3, float, float, out Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="rawTarget">中文含义：原始目标。使用位置：作为 PathAgent.TryResolveDestination(Vector3, float, float, out Vector3) 的参数。</param>
-    /// <param name="resolvedTarget">中文含义：解算后的目标。输出参数，由本入口写入并交给调用方。使用位置：作为 PathAgent.TryResolveDestination(Vector3, float, float, out Vector3) 的参数。</param>
+    /// <param name="rawTarget">原始目标。</param>
+    /// <param name="resolvedTarget">解算后的目标。输出参数，由本入口写入并交给调用方。</param>
     public bool TryResolveReachableDestination(Vector3 rawTarget, out Vector3 resolvedTarget)
     {
         return TryResolveDestination(rawTarget, destinationSnapDistance, destinationSnapHeight, out resolvedTarget);
@@ -628,8 +628,8 @@ global::NavigationQueryService receiverValue7 = Query;
 
     /// <summary>TryResolvePursuitDestination 的业务处理入口；本方法直接依赖 AstarPath.GetNearest(Vector3, NearestNodeConstraint)、Mathf.Abs(float)、Mathf.Max(float, float)、PathAgent.HorizontalDistance(Vector3, Vector3)、PathAgent.TryResolveDestinationOnTargetLevel(Vector3, NNInfo, float, float, out Vector3)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 PathAgent.SetPursuitDestination(Vector3)、VillagerController.TryResolvePursuitNavigationPoint(Vector3, out Vector3)；下游（含内部回调体） AstarPath.GetNearest(Vector3, NearestNodeConstraint)、Mathf.Abs(float)、Mathf.Max(float, float)、PathAgent.HorizontalDistance(Vector3, Vector3)、PathAgent.TryResolveDestinationOnTargetLevel(Vector3, NNInfo, float, float, out Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="rawTarget">中文含义：原始目标。使用位置：作为 PathAgent.TryResolveDestinationOnTargetLevel(Vector3, NNInfo, float, float, out Vector3) 的参数、PathAgent.TryResolvePursuitDestination(Vector3, out Vector3)。</param>
-    /// <param name="resolvedTarget">中文含义：解算后的目标。输出参数，由本入口写入并交给调用方。使用位置：作为 PathAgent.TryResolveDestinationOnTargetLevel(Vector3, NNInfo, float, float, out Vector3) 的参数、PathAgent.TryResolvePursuitDestination(Vector3, out Vector3)。</param>
+    /// <param name="rawTarget">原始目标。</param>
+    /// <param name="resolvedTarget">解算后的目标。输出参数，由本入口写入并交给调用方。</param>
     public bool TryResolvePursuitDestination(Vector3 rawTarget, out Vector3 resolvedTarget)
     {
         resolvedTarget = rawTarget;
@@ -638,14 +638,14 @@ global::NavigationQueryService receiverValue7 = Query;
             return false;
         }
 
-        // originInfo（原点信息）：保存 AstarPath.GetNearest(Vector3, NearestNodeConstraint) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Abs(float) 的参数、作为 PathAgent.HorizontalDistance(Vector3, Vector3) 的参数、作为 PathAgent.TryResolveDestinationOnTargetLevel(Vector3, NNInfo, float, float, out Vector3) 的参数 等共 4 处。
-NNInfo originInfo = AstarPath.active.GetNearest(transform.position, NearestNodeConstraint.Walkable);
+        // originInfo（原点信息）：保存同侧高度约束查询的返回结果，避免穿透薄墙或吸到上方屋檐。
+NNInfo originInfo = ReadNormalNavigationPoint(transform.position, 2.5f, 1.5f);
         if (originInfo.node == null || HorizontalDistance(transform.position, originInfo.position) > graphSnapDistance || Mathf.Abs(transform.position.y - ((Vector3)originInfo.position).y) > Mathf.Max(0.1f, graphSnapHeight))
         {
             return false;
         }
 
-        // imageVersion（图像版本）：使用位置：PathAgent.TryResolvePursuitDestination(Vector3, out Vector3)。
+        // 图像版本。
 int imageVersion;
         if (Query != null)
         {
@@ -662,9 +662,9 @@ int imageVersion;
             projectionImageVersion = imageVersion;
         }
 
-        // moveThreshold（移动阈值）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：PathAgent.TryResolvePursuitDestination(Vector3, out Vector3)。
+        // 移动阈值。
 float moveThreshold = Mathf.Max(0.05f, pursuitResolveMoveThreshold);
-        // sameCachedRequest（是否相同缓存请求）：使用位置：PathAgent.TryResolvePursuitDestination(Vector3, out Vector3)。
+        // 是否相同缓存请求。
 bool sameCachedRequest = pursuitResolutionCacheInitialized && cachedPursuitOriginArea == originInfo.node.Area && (rawTarget - cachedRawPursuitTarget).sqrMagnitude < moveThreshold * moveThreshold;
         if (sameCachedRequest && Time.time < nextPursuitResolveTime)
         {
@@ -672,7 +672,7 @@ bool sameCachedRequest = pursuitResolutionCacheInitialized && cachedPursuitOrigi
             return cachedPursuitResolutionSucceeded;
         }
 
-        // succeeded（是否已成功）：保存 PathAgent.TryResolveDestinationOnTargetLevel(Vector3, NNInfo, float, float, out Vector3) 的返回结果，供当前步骤使用。使用位置：PathAgent.TryResolvePursuitDestination(Vector3, out Vector3)。
+        // 是否已成功。
 bool succeeded = TryResolveDestinationOnTargetLevel(rawTarget, originInfo, pursuitDestinationSnapDistance, pursuitDestinationSnapHeight, out resolvedTarget);
         pursuitResolutionCacheInitialized = true;
         cachedPursuitResolutionSucceeded = succeeded;
@@ -685,11 +685,11 @@ bool succeeded = TryResolveDestinationOnTargetLevel(rawTarget, originInfo, pursu
 
     /// <summary>TryResolveDestinationOnTargetLevel 的业务处理入口；本方法直接依赖 Mathf.Max(float, float)、Mathf.Min(float, float)、NavigationQueryService.Projection(Vector3, uint, float, float, float, float, out Vector3)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 PathAgent.TryResolvePursuitDestination(Vector3, out Vector3)；下游（含内部回调体） Mathf.Max(float, float)、Mathf.Min(float, float)、NavigationQueryService.Projection(Vector3, uint, float, float, float, float, out Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="rawTarget">中文含义：原始目标。使用位置：作为 NavigationQueryService.Projection(Vector3, uint, float, float, float, float, out Vector3) 的参数、PathAgent.TryResolveDestinationOnTargetLevel(Vector3, NNInfo, float, float, out Vector3)。</param>
-    /// <param name="originInfo">中文含义：原点信息。使用位置：作为 NavigationQueryService.Projection(Vector3, uint, float, float, float, float, out Vector3) 的参数。</param>
-    /// <param name="maximumSnapDistance">中文含义：最大吸附距离。使用位置：作为 Mathf.Max(float, float) 的参数。</param>
-    /// <param name="maximumSnapHeight">中文含义：最大吸附高度。使用位置：作为 Mathf.Max(float, float) 的参数。</param>
-    /// <param name="resolvedTarget">中文含义：解算后的目标。输出参数，由本入口写入并交给调用方。使用位置：作为 NavigationQueryService.Projection(Vector3, uint, float, float, float, float, out Vector3) 的参数、PathAgent.TryResolveDestinationOnTargetLevel(Vector3, NNInfo, float, float, out Vector3)。</param>
+    /// <param name="rawTarget">原始目标。</param>
+    /// <param name="originInfo">原点信息。</param>
+    /// <param name="maximumSnapDistance">最大吸附距离。</param>
+    /// <param name="maximumSnapHeight">最大吸附高度。</param>
+    /// <param name="resolvedTarget">解算后的目标。输出参数，由本入口写入并交给调用方。</param>
     private bool TryResolveDestinationOnTargetLevel(Vector3 rawTarget, NNInfo originInfo, float maximumSnapDistance, float maximumSnapHeight, out Vector3 resolvedTarget)
     {
         resolvedTarget = rawTarget;
@@ -698,17 +698,17 @@ bool succeeded = TryResolveDestinationOnTargetLevel(rawTarget, originInfo, pursu
             return false;
         }
 
-        // tolerance（容差）：保存 Mathf.Min(float, float) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Max(float, float) 的参数、作为 NavigationQueryService.Projection(Vector3, uint, float, float, float, float, out Vector3) 的参数。
+        // 容差。
 float tolerance = Mathf.Min(Mathf.Max(.1f, pursuitTargetLevelTolerance), Mathf.Max(.1f, maximumSnapHeight));
         return Query.Projection(rawTarget, originInfo.node.Area, Mathf.Max(.1f, maximumSnapDistance), tolerance, Mathf.Max(tolerance, pursuitGroundFallbackMaximumDrop), maxOrdinaryPathY, out resolvedTarget);
     }
 
     /// <summary>TryResolveDestination 的业务处理入口；本方法直接依赖 Mathf.Abs(float)、Mathf.Max(float, float)、PathAgent.HorizontalDistance(Vector3, Vector3)、PathAgent.ReadNormalNavigationPoint(Vector3, float, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 PathAgent.TryResolveReachableDestination(Vector3, out Vector3)；下游（含内部回调体） Mathf.Abs(float)、Mathf.Max(float, float)、PathAgent.HorizontalDistance(Vector3, Vector3)、PathAgent.ReadNormalNavigationPoint(Vector3, float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="rawTarget">中文含义：原始目标。使用位置：作为 Mathf.Abs(float) 的参数、作为 PathAgent.HorizontalDistance(Vector3, Vector3) 的参数、作为 PathAgent.ReadNormalNavigationPoint(Vector3, float, float) 的参数 等共 4 处。</param>
-    /// <param name="maximumSnapDistance">中文含义：最大吸附距离。使用位置：作为 Mathf.Max(float, float) 的参数、作为 PathAgent.ReadNormalNavigationPoint(Vector3, float, float) 的参数。</param>
-    /// <param name="maximumSnapHeight">中文含义：最大吸附高度。使用位置：作为 Mathf.Max(float, float) 的参数、作为 PathAgent.ReadNormalNavigationPoint(Vector3, float, float) 的参数。</param>
-    /// <param name="resolvedTarget">中文含义：解算后的目标。输出参数，由本入口写入并交给调用方。使用位置：PathAgent.TryResolveDestination(Vector3, float, float, out Vector3)。</param>
+    /// <param name="rawTarget">原始目标。</param>
+    /// <param name="maximumSnapDistance">最大吸附距离。</param>
+    /// <param name="maximumSnapHeight">最大吸附高度。</param>
+    /// <param name="resolvedTarget">解算后的目标。输出参数，由本入口写入并交给调用方。</param>
     private bool TryResolveDestination(Vector3 rawTarget, float maximumSnapDistance, float maximumSnapHeight, out Vector3 resolvedTarget)
     {
         resolvedTarget = rawTarget;
@@ -717,9 +717,9 @@ float tolerance = Mathf.Min(Mathf.Max(.1f, pursuitTargetLevelTolerance), Mathf.M
             return false;
         }
 
-        // originInfo（原点信息）：保存 PathAgent.ReadNormalNavigationPoint(Vector3, float, float) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Abs(float) 的参数、作为 PathAgent.HorizontalDistance(Vector3, Vector3) 的参数、PathAgent.TryResolveDestination(Vector3, float, float, out Vector3)。
+        // 原点信息。
 NNInfo originInfo = ReadNormalNavigationPoint(transform.position, graphSnapDistance, graphSnapHeight);
-        // targetInfo（目标信息）：保存 PathAgent.ReadNormalNavigationPoint(Vector3, float, float) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Abs(float) 的参数、作为 PathAgent.HorizontalDistance(Vector3, Vector3) 的参数、PathAgent.TryResolveDestination(Vector3, float, float, out Vector3)。
+        // 目标信息。
 NNInfo targetInfo = ReadNormalNavigationPoint(rawTarget, maximumSnapDistance, maximumSnapHeight);
         if (originInfo.node == null || targetInfo.node == null)
         {
@@ -736,7 +736,7 @@ NNInfo targetInfo = ReadNormalNavigationPoint(rawTarget, maximumSnapDistance, ma
             return false;
         }
 
-        // snapDistance（吸附距离）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：PathAgent.TryResolveDestination(Vector3, float, float, out Vector3)。
+        // 吸附距离。
 float snapDistance = Mathf.Max(0.1f, maximumSnapDistance);
         if (HorizontalDistance(rawTarget, targetInfo.position) > snapDistance)
         {
@@ -759,16 +759,16 @@ float snapDistance = Mathf.Max(0.1f, maximumSnapDistance);
 
     /// <summary>ReadNormalNavigationPoint 的业务处理入口；本方法直接依赖 AstarPath.GetNearest(Vector3, NearestNodeConstraint)、HouseThreeRegionNavigation.ReadSameSideNavigationPoint(Vector3, bool, float, float)、HouseThreeRegionNavigation.TreadRegion(Vector3)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 PathAgent.TryResolveDestination(Vector3, float, float, out Vector3)；下游（含内部回调体） AstarPath.GetNearest(Vector3, NearestNodeConstraint)、HouseThreeRegionNavigation.ReadSameSideNavigationPoint(Vector3, bool, float, float)、HouseThreeRegionNavigation.TreadRegion(Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="position">中文含义：位置。使用位置：作为 AstarPath.GetNearest(Vector3, NearestNodeConstraint) 的参数、作为 HouseThreeRegionNavigation.ReadSameSideNavigationPoint(Vector3, bool, float, float) 的参数、作为 HouseThreeRegionNavigation.TreadRegion(Vector3) 的参数。</param>
-    /// <param name="distance">中文含义：距离。使用位置：作为 HouseThreeRegionNavigation.ReadSameSideNavigationPoint(Vector3, bool, float, float) 的参数。</param>
-    /// <param name="heightDifference">中文含义：高度差值。使用位置：作为 HouseThreeRegionNavigation.ReadSameSideNavigationPoint(Vector3, bool, float, float) 的参数。</param>
+    /// <param name="position">位置。</param>
+    /// <param name="distance">距离。</param>
+    /// <param name="heightDifference">高度差值。</param>
     private NNInfo ReadNormalNavigationPoint(Vector3 position, float distance, float heightDifference)
     {
-        // region（区域）：使用位置：PathAgent.ReadNormalNavigationPoint(Vector3, float, float)。
+        // 区域。
 var region = HouseThreeRegionNavigation.Current;
         if (region != null)
         {
-            // regionValue（区域值）：保存 HouseThreeRegionNavigation.TreadRegion(Vector3) 的返回结果，供当前步骤使用。使用位置：作为 HouseThreeRegionNavigation.ReadSameSideNavigationPoint(Vector3, bool, float, float) 的参数、PathAgent.ReadNormalNavigationPoint(Vector3, float, float)。
+            // 区域值。
 var regionValue = region.TreadRegion(position);
             if (regionValue == VillageTraversalRegion.SecondFloorIndoors || regionValue == VillageTraversalRegion.SecondFloorOuterPlatform)
             {
@@ -809,8 +809,8 @@ var regionValue = region.TreadRegion(position);
 
     /// <summary>RegisterStaticObstacleHazard 的业务处理入口；本方法直接依赖 List&lt;PathAgent.StaticObstacleHazard&gt;.Add(PathAgent.StaticObstacleHazard)、List&lt;PathAgent.StaticObstacleHazard&gt;.RemoveAt(int)、Mathf.Max(float, float)、Mathf.Max(int, int)、Mathf.Min(float, float)、PathAgent.IsValidatedStaticObstacleHit(RaycastHit, float)、PathAgent.PruneExpiredStaticObstacleHazards() 等共 10 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillagerController.UpdateBlockedMovement(float, Vector3, RaycastHit, VillagerController, float)；下游（含内部回调体） List&lt;PathAgent.StaticObstacleHazard&gt;.Add(PathAgent.StaticObstacleHazard)、List&lt;PathAgent.StaticObstacleHazard&gt;.RemoveAt(int)、Mathf.Max(float, float)、Mathf.Max(int, int)、Mathf.Min(float, float)、PathAgent.IsValidatedStaticObstacleHit(RaycastHit, float)、PathAgent.PruneExpiredStaticObstacleHazards() 等共 10 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="hit">中文含义：命中。使用位置：作为 PathAgent.IsValidatedStaticObstacleHit(RaycastHit, float) 的参数、作为 PathAgent.StaticObstacleHazard.StaticObstacleHazard(Vector3, float, float) 的参数、PathAgent.RegisterStaticObstacleHazard(RaycastHit, float)。</param>
-    /// <param name="bodyRadius">中文含义：身体半径。使用位置：作为 Mathf.Max(float, float) 的参数、作为 PathAgent.IsValidatedStaticObstacleHit(RaycastHit, float) 的参数。</param>
+    /// <param name="hit">命中。</param>
+    /// <param name="bodyRadius">身体半径。</param>
     public bool RegisterStaticObstacleHazard(RaycastHit hit, float bodyRadius)
     {
         if (!IsValidatedStaticObstacleHit(hit, bodyRadius))
@@ -819,18 +819,25 @@ var regionValue = region.TreadRegion(position);
         }
 
         PruneExpiredStaticObstacleHazards();
-        // radius（半径）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Min(float, float) 的参数、作为 PathAgent.StaticObstacleHazard.StaticObstacleHazard(Vector3, float, float) 的参数。
+        // 半径。
 float radius = Mathf.Max(0.5f, bodyRadius + Mathf.Max(0.1f, staticObstacleHazardPadding));
-        // expiryTime（有效期限时间）：使用位置：作为 PathAgent.StaticObstacleHazard.StaticObstacleHazard(Vector3, float, float) 的参数。
+        // 有效期限时间。
 float expiryTime = Time.time + Mathf.Max(0.1f, staticObstacleHazardLifetime);
-        // existingIndex（已有索引）：使用位置：作为 List<PathAgent.StaticObstacleHazard>.this[int] 的参数、PathAgent.RegisterStaticObstacleHazard(RaycastHit, float)。
+        HouseThreeRegionNavigation outerRegion = HouseThreeRegionNavigation.Current;
+        if (outerRegion != null && outerRegion.IsOnSecondFloorOuterPlatform(transform.position))
+        {
+            // 狭窄木板桥与二楼外平台避免单个刮蹭产生大半径长效障碍，防止封死唯一通行通道。
+            radius = Mathf.Min(radius, 0.45f);
+            expiryTime = Time.time + Mathf.Clamp(staticObstacleHazardLifetime, 0.1f, 1.8f);
+        }
+        // 已有索引。
 int existingIndex = -1;
-        // index（当前元素索引）：使用位置：作为 List<PathAgent.StaticObstacleHazard>.this[int] 的参数、PathAgent.RegisterStaticObstacleHazard(RaycastHit, float)。
+        // 当前元素索引。
 for (int index = 0; index < staticObstacleHazards.Count; index++)
         {
-            // existing（已有）：使用位置：作为 Mathf.Min(float, float) 的参数、PathAgent.RegisterStaticObstacleHazard(RaycastHit, float)。
+            // 已有。
 StaticObstacleHazard existing = staticObstacleHazards[index];
-            // offset（偏移量）：使用位置：PathAgent.RegisterStaticObstacleHazard(RaycastHit, float)。
+            // 偏移量。
 Vector3 offset = existing.center - hit.point;
             offset.y = 0f;
             if (offset.sqrMagnitude <= Mathf.Min(existing.radius, radius) * Mathf.Min(existing.radius, radius))
@@ -840,9 +847,9 @@ Vector3 offset = existing.center - hit.point;
             }
         }
 
-        // hazard（危险区）：使用位置：作为 List<PathAgent.StaticObstacleHazard>.Add(PathAgent.StaticObstacleHazard) 的参数、PathAgent.RegisterStaticObstacleHazard(RaycastHit, float)。
+        // 危险区。
 StaticObstacleHazard hazard = new StaticObstacleHazard(hit.point, radius, expiryTime);
-        // isNewHazard（是否新危险区）：使用位置：PathAgent.RegisterStaticObstacleHazard(RaycastHit, float)。
+        // 是否新危险区。
 bool isNewHazard = existingIndex < 0;
         if (!isNewHazard)
         {
@@ -850,7 +857,7 @@ bool isNewHazard = existingIndex < 0;
         }
         else
         {
-            // maximumCount（最大数量）：保存 Mathf.Max(int, int) 的返回结果，供当前步骤使用。使用位置：PathAgent.RegisterStaticObstacleHazard(RaycastHit, float)。
+            // 最大数量。
 int maximumCount = Mathf.Max(1, maximumStaticObstacleHazards);
             if (staticObstacleHazards.Count >= maximumCount)
             {
@@ -890,7 +897,7 @@ int maximumCount = Mathf.Max(1, maximumStaticObstacleHazards);
     /// <remarks>静态调用链：上游 PathAgent.OnDestroy()、PathAgent.OnDisable()、PathAgent.ResetPath()、VillagerController.SetLODActive(bool)、VillagerController.StopAndClearMovement() 等共 6 处；下游（含内部回调体） List&lt;PathAgent.StaticObstacleHazard&gt;.Clear()、NavigationQueryService.Revoke(PathAgent)、object.ReferenceEquals(object, object)、PathAgent.CancelCalculate()、PathAgent.ClearPathData()、PathAgent.ClearPursuitResolutionFailure()、PathAgent.InvalidatePursuitResolutionCache() 等共 8 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     public void CancelPath()
     {
-        // receiverValue9（判空前缓存的查询）：从查询读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、PathAgent.CancelPath()。
+        // 判空前缓存的查询。
 global::NavigationQueryService receiverValue9 = Query;
         if (!global::System.Object.ReferenceEquals(receiverValue9, null))
         {
@@ -915,8 +922,8 @@ global::NavigationQueryService receiverValue9 = Query;
 
     /// <summary>IsValidatedStaticObstacleHit 的业务处理入口；本方法直接依赖 float.IsInfinity(float)、float.IsNaN(float)、Mathf.Max(float, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 PathAgent.RegisterStaticObstacleHazard(RaycastHit, float)；下游（含内部回调体） float.IsInfinity(float)、float.IsNaN(float)、Mathf.Max(float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="hit">中文含义：命中。使用位置：PathAgent.IsValidatedStaticObstacleHit(RaycastHit, float)。</param>
-    /// <param name="bodyRadius">中文含义：身体半径。使用位置：作为 Mathf.Max(float, float) 的参数。</param>
+    /// <param name="hit">命中。</param>
+    /// <param name="bodyRadius">身体半径。</param>
     private bool IsValidatedStaticObstacleHit(RaycastHit hit, float bodyRadius)
     {
         if (hit.collider == null)
@@ -924,24 +931,24 @@ global::NavigationQueryService receiverValue9 = Query;
             return false;
         }
 
-        // minimumDistance（最小距离）：使用位置：PathAgent.IsValidatedStaticObstacleHit(RaycastHit, float)。
+        // 最小距离。
 float minimumDistance = 0.005f;
         if (hit.distance <= minimumDistance)
         {
             return false;
         }
 
-        // point（点）：使用位置：作为 float.IsInfinity(float) 的参数、作为 float.IsNaN(float) 的参数、PathAgent.IsValidatedStaticObstacleHit(RaycastHit, float)。
+        // 点。
 Vector3 point = hit.point;
         if (float.IsNaN(point.x) || float.IsNaN(point.y) || float.IsNaN(point.z) || float.IsInfinity(point.x) || float.IsInfinity(point.y) || float.IsInfinity(point.z))
         {
             return false;
         }
 
-        // offset（偏移量）：使用位置：PathAgent.IsValidatedStaticObstacleHit(RaycastHit, float)。
+        // 偏移量。
 Vector3 offset = point - transform.position;
         offset.y = 0f;
-        // maximumDistance（最大距离）：使用位置：PathAgent.IsValidatedStaticObstacleHit(RaycastHit, float)。
+        // 最大距离。
 float maximumDistance = Mathf.Max(0.5f, bodyRadius) + hit.distance + 0.35f;
         if (offset.sqrMagnitude > maximumDistance * maximumDistance)
         {
@@ -953,7 +960,7 @@ float maximumDistance = Mathf.Max(0.5f, bodyRadius) + hit.distance + 0.35f;
             return false;
         }
 
-        // normal（表面法线）：使用位置：PathAgent.IsValidatedStaticObstacleHit(RaycastHit, float)。
+        // 表面法线。
 Vector3 normal = hit.normal;
         return normal.sqrMagnitude > 0.0001f;
     }
@@ -989,6 +996,17 @@ Vector3 normal = hit.normal;
 
     /// <summary>RequestPath 的业务处理入口；本方法直接依赖 NavigationQueryService.QueueUp(PathAgent)、PathAgent.HasUsablePathData()、PathAgent.MarkPathFailed(bool)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 PathAgent.ForceRepath()、PathAgent.OnPathComplete(Path, PathAgent.RequestContext)、PathAgent.SetResolvedDestination(Vector3)、PathAgent.StartStaticObstacleRepath()、PathAgent.Update()；下游（含内部回调体） NavigationQueryService.QueueUp(PathAgent)、PathAgent.HasUsablePathData()、PathAgent.MarkPathFailed(bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
+    /// <summary>在完成翻窗退出或通行切换后立即请求重新寻路，不受常规重寻路间隔节流。</summary>
+    public void RequestImmediateRepath()
+    {
+        lastRepathTime = float.NegativeInfinity;
+        nextRetryTime = 0f;
+        if (hasDestination)
+        {
+            RequestPath();
+        }
+    }
+
     private void RequestPath()
     {
         if (Query == null)
@@ -1017,7 +1035,7 @@ Vector3 normal = hit.normal;
             return false;
         }
 
-        if (!crossLayerRequest && Time.time - lastRepathTime < Mathf.Max(.05f, repathRate))
+        if (!crossLayerRequest && HasUsablePathData() && Time.time - lastRepathTime < Mathf.Max(.05f, repathRate))
         {
             return false;
         }
@@ -1027,7 +1045,7 @@ Vector3 normal = hit.normal;
             return false;
         }
 
-        // context（上下文）：使用位置：作为 ABPath.Construct(Vector3, Vector3, OnPathDelegate) 的参数、PathAgent.TryCommitPathfinding()。
+        // 上下文。
 RequestContext context = null;
         // item（当前请求上下文）：每轮从请求对象池取得一个元素，仅代表当前这一项。使用位置：PathAgent.TryCommitPathfinding()。
 foreach (var item in requestPool)
@@ -1054,7 +1072,7 @@ foreach (var item in requestPool)
         crossLayerRequest = false;
         PruneExpiredStaticObstacleHazards();
         context.avoid.Set(staticObstacleHazards, Mathf.Max(1, staticObstacleCostMultiplier));
-        // request（请求）：保存 ABPath.Construct(Vector3, Vector3, OnPathDelegate) 的返回结果，供当前步骤使用。使用位置：作为 Seeker.StartPath(Path) 的参数、PathAgent.TryCommitPathfinding()。
+        // 请求。
 ABPath request = ABPath.Construct(context.startPoint, context.endPoint, context.callback);
         context.request = request;
         context.pathIdentifier = request.pathID;
@@ -1078,25 +1096,25 @@ ABPath request = ABPath.Construct(context.startPoint, context.endPoint, context.
     [UnityEngine.Scripting.APIUpdating.MovedFrom(true, "", "Assembly-CSharp", "PathAgent+请求上下文")]
     private sealed class RequestContext
     {
-        /// <summary>中文含义：请求。使用位置：作为 object.ReferenceEquals(object, object) 的参数、PathAgent.TryCommitPathfinding()。</summary>
+        /// <summary>请求。</summary>
         internal Path request;
-        /// <summary>中文含义：路径标识符。使用位置：PathAgent.RequestContext.Complete(Path)、PathAgent.TryCommitPathfinding()。</summary>
+        /// <summary>路径标识符。</summary>
         internal ushort pathIdentifier;
-        /// <summary>中文含义：version 表示“版本”；imageVersion 表示“图像版本”。使用位置：PathAgent.OnPathComplete(Path, PathAgent.RequestContext)、PathAgent.TryCommitPathfinding()。；使用位置：PathAgent.OnPathComplete(Path, PathAgent.RequestContext)、PathAgent.TryCommitPathfinding()。</summary>
+        /// <summary>version 表示“版本”；imageVersion 表示“图像版本”。</summary>
         internal int version, imageVersion;
-        /// <summary>中文含义：图像服务。使用位置：PathAgent.OnPathComplete(Path, PathAgent.RequestContext)、PathAgent.TryCommitPathfinding()。</summary>
+        /// <summary>图像服务。</summary>
         internal NavigationQueryService imageService;
-        /// <summary>中文含义：startPoint 表示“起始点”；endPoint 表示“结束点”。使用位置：作为 ABPath.Construct(Vector3, Vector3, OnPathDelegate) 的参数、作为 PathAgent.IsPathHeightValid(List&lt;Vector3&gt;, Vector3, Vector3) 的参数、PathAgent.OnPathComplete(Path, PathAgent.RequestContext) 等共 4 处。；使用位置：作为 ABPath.Construct(Vector3, Vector3, OnPathDelegate) 的参数、PathAgent.OnPathComplete(Path, PathAgent.RequestContext)、PathAgent.TryCommitPathfinding()。</summary>
+        /// <summary>startPoint 表示“起始点”；endPoint 表示“结束点”。</summary>
         internal Vector3 startPoint, endPoint;
-        /// <summary>中文含义：回调。只读字段，初始化后不由普通写入口替换。使用位置：作为 ABPath.Construct(Vector3, Vector3, OnPathDelegate) 的参数、PathAgent.RequestContext.RequestContext(PathAgent)。</summary>
+        /// <summary>回调。只读字段，初始化后不由普通写入口替换。</summary>
         internal readonly OnPathDelegate callback;
-        /// <summary>中文含义：避开。只读字段，初始化后不由普通写入口替换。使用位置：PathAgent.TryCommitPathfinding()。</summary>
+        /// <summary>避开。只读字段，初始化后不由普通写入口替换。</summary>
         internal readonly StaticObstacleTraversalProvider avoid = new();
-        /// <summary>中文含义：所属寻路代理。只读字段，初始化后不由普通写入口替换。使用位置：PathAgent.RequestContext.Complete(Path)、PathAgent.RequestContext.RequestContext(PathAgent)。</summary>
+        /// <summary>所属寻路代理。只读字段，初始化后不由普通写入口替换。</summary>
         private readonly PathAgent host;
         /// <summary>构造并初始化 RequestContext 的声明状态；具体外部协作见静态调用链。</summary>
         /// <remarks>静态调用链：上游 PathAgent.Start()；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-        /// <param name="host">中文含义：所属寻路代理。使用位置：PathAgent.RequestContext.RequestContext(PathAgent)。</param>
+        /// <param name="host">所属寻路代理。</param>
         internal RequestContext(PathAgent host)
         {
             this.host = host;
@@ -1105,7 +1123,7 @@ ABPath request = ABPath.Construct(context.startPoint, context.endPoint, context.
 
         /// <summary>Complete 的业务处理入口；本方法直接依赖 object.ReferenceEquals(object, object)、PathAgent.OnPathComplete(Path, PathAgent.RequestContext)，调用方通过参数与返回结果交接本次处理。</summary>
         /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） object.ReferenceEquals(object, object)、PathAgent.OnPathComplete(Path, PathAgent.RequestContext)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-        /// <param name="result">中文含义：当前路径。使用位置：作为 object.ReferenceEquals(object, object) 的参数、作为 PathAgent.OnPathComplete(Path, PathAgent.RequestContext) 的参数、PathAgent.RequestContext.Complete(Path)。</param>
+        /// <param name="result">当前路径。</param>
         private void Complete(Path result)
         {
             if (host != null && ReferenceEquals(request, result) && result.pathID == pathIdentifier)
@@ -1124,14 +1142,14 @@ ABPath request = ABPath.Construct(context.startPoint, context.endPoint, context.
             return transform.position;
         }
 
-        var target = AstarPath.active.GetNearest(destination, NearestNodeConstraint.Walkable);
+        var target = ReadNormalNavigationPoint(destination, 2.5f, 1.5f);
         if (TryFindConnectedPathOrigin(target, out Vector3 entry))
         {
             return entry;
         }
 
         // 保留原有重试入口。角色仍须通过实际运动检查才能沿路走过去。
-        var nearest = AstarPath.active.GetNearest(transform.position, NearestNodeConstraint.Walkable);
+        var nearest = ReadNormalNavigationPoint(transform.position, 2.5f, 1.5f);
         if (target.node != null && nearest.node != null && nearest.node.Area == target.node.Area)
         {
             return nearest.position;
@@ -1152,7 +1170,7 @@ ABPath request = ABPath.Construct(context.startPoint, context.endPoint, context.
 
     private bool TryFindConnectedPathOrigin(NNInfo targetInfo, out Vector3 origin)
     {
-        // currentPosition（当前位置）：使用位置：作为 AstarPath.GetNearest(Vector3, NearestNodeConstraint) 的参数、作为 GraphNode.ClosestPointOnNode(Vector3) 的参数、作为 Mathf.Abs(float) 的参数 等共 5 处。
+        // 当前位置。
 Vector3 currentPosition = transform.position;
         origin = currentPosition;
         if (movementController == null || AstarPath.active == null || targetInfo.node == null)
@@ -1160,8 +1178,8 @@ Vector3 currentPosition = transform.position;
             return false;
         }
 
-        // nearestInfo（最近信息）：保存 AstarPath.GetNearest(Vector3, NearestNodeConstraint) 的返回结果，供当前步骤使用。使用位置：作为 PathAgent.LocatedInStaticHazardZone(Vector3) 的参数、作为 VillagerController.CanMoveDirectlyToNavigationPoint(Vector3, bool) 的参数、PathAgent.ResolvePhysicallyReachablePathOrigin()。
-NNInfo nearestInfo = AstarPath.active.GetNearest(currentPosition, NearestNodeConstraint.Walkable);
+        // 最近信息。
+NNInfo nearestInfo = ReadNormalNavigationPoint(currentPosition, 2.5f, 1.5f);
         if (nearestInfo.node != null && nearestInfo.node.Area == targetInfo.node.Area)
         {
             if (HorizontalDistance(currentPosition, nearestInfo.position) <= graphSnapDistance
@@ -1175,13 +1193,13 @@ NNInfo nearestInfo = AstarPath.active.GetNearest(currentPosition, NearestNodeCon
         // 否则贴住台沿时每次重算都会再次把角色交给同一个障碍后方。
         }
 
-        // maximumDistance（最大距离）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：作为 NavigationQueryService.RecoverCollection(Vector3, float, List<GraphNode>) 的参数、PathAgent.ResolvePhysicallyReachablePathOrigin()。
+        // 最大距离。
 float maximumDistance = Mathf.Max(0.5f, graphSnapDistance);
-        // bestDistanceSqr（最佳距离平方）：使用位置：PathAgent.ResolvePhysicallyReachablePathOrigin()。
+        // 最佳距离平方。
 float bestDistanceSqr = maximumDistance * maximumDistance;
-        // bestPoint（最佳点）：使用位置：PathAgent.ResolvePhysicallyReachablePathOrigin()。
+        // 最佳点。
 Vector3 bestPoint = currentPosition;
-        // found（是否已找到）：使用位置：PathAgent.ResolvePhysicallyReachablePathOrigin()。
+        // 是否已找到。
 bool found = false;
         if (Query == null || !Query.RecoverCollection(currentPosition, maximumDistance, localCandidate))
         {
@@ -1197,7 +1215,7 @@ foreach (var node in localCandidate)
             }
 
             // 接入节点的实际表面，而非可能位于角色身后很远的三角形中心。
-            // point（点）：保存 GraphNode.ClosestPointOnNode(Vector3) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Abs(float) 的参数、作为 PathAgent.LocatedInStaticHazardZone(Vector3) 的参数、作为 VillagerController.CanMoveDirectlyToNavigationPoint(Vector3, bool) 的参数 等共 4 处。
+            // 点。
 Vector3 point = node.ClosestPointOnNode(currentPosition);
             if (LocatedInStaticHazardZone(point))
             {
@@ -1209,7 +1227,7 @@ Vector3 point = node.ClosestPointOnNode(currentPosition);
                 continue;
             }
 
-            // distanceSqr（距离平方）：使用位置：PathAgent.ResolvePhysicallyReachablePathOrigin()。
+            // 距离平方。
 float distanceSqr = (point - currentPosition).sqrMagnitude;
             if (distanceSqr >= bestDistanceSqr || !movementController.CanMoveDirectlyToNavigationPoint(point, true))
             {
@@ -1227,13 +1245,13 @@ float distanceSqr = (point - currentPosition).sqrMagnitude;
 
     /// <summary>LocatedInStaticHazardZone 的业务处理入口；本方法直接依赖 Mathf.Abs(float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 PathAgent.ResolvePhysicallyReachablePathOrigin()；下游（含内部回调体） Mathf.Abs(float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="position">中文含义：位置。使用位置：PathAgent.LocatedInStaticHazardZone(Vector3)。</param>
+    /// <param name="position">位置。</param>
     private bool LocatedInStaticHazardZone(Vector3 position)
     {
         // obstacle（障碍）：每轮从静态障碍危险区集合取得一个元素，仅代表当前这一项。使用位置：PathAgent.LocatedInStaticHazardZone(Vector3)。
 foreach (var obstacle in staticObstacleHazards)
         {
-            // offset（偏移量）：使用位置：作为 Mathf.Abs(float) 的参数、PathAgent.LocatedInStaticHazardZone(Vector3)。
+            // 偏移量。
 var offset = position - obstacle.center;
             if (Mathf.Abs(offset.y) > graphSnapHeight)
             {
@@ -1252,8 +1270,8 @@ var offset = position - obstacle.center;
 
     /// <summary>OnPathComplete 的业务处理入口；本方法直接依赖 HouseThreeTraversalGeometry.TryResolveStairHeight(Vector3, out float)、List&lt;Vector3&gt;.Add(Vector3)、List&lt;Vector3&gt;.AddRange(IEnumerable&lt;Vector3&gt;)、List&lt;Vector3&gt;.Clear()、Mathf.Abs(float)、Mathf.NextPowerOfTwo(int)、PathAgent.HasUsablePathData() 等共 13 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 PathAgent.RequestContext.Complete(Path)；下游（含内部回调体） HouseThreeTraversalGeometry.TryResolveStairHeight(Vector3, out float)、List&lt;Vector3&gt;.Add(Vector3)、List&lt;Vector3&gt;.AddRange(IEnumerable&lt;Vector3&gt;)、List&lt;Vector3&gt;.Clear()、Mathf.Abs(float)、Mathf.NextPowerOfTwo(int)、PathAgent.HasUsablePathData() 等共 13 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="result">中文含义：当前路径。使用位置：作为 List&lt;Vector3&gt;.AddRange(IEnumerable&lt;Vector3&gt;) 的参数、PathAgent.OnPathComplete(Path, PathAgent.RequestContext)。</param>
-    /// <param name="context">中文含义：上下文。使用位置：作为 PathAgent.IsPathHeightValid(List&lt;Vector3&gt;, Vector3, Vector3) 的参数、PathAgent.OnPathComplete(Path, PathAgent.RequestContext)。</param>
+    /// <param name="result">当前路径。</param>
+    /// <param name="context">上下文。</param>
     private void OnPathComplete(Path result, RequestContext context)
     {
         if (!isActiveAndEnabled || stopped || !hasDestination || context.version != requestVersion)
@@ -1282,7 +1300,7 @@ var offset = position - obstacle.center;
             }
 
             pendingPath.Clear();
-            // capacity（容量）：使用位置：作为 Mathf.NextPowerOfTwo(int) 的参数、PathAgent.OnPathComplete(Path, PathAgent.RequestContext)。
+            // 容量。
 int capacity = result.vectorPath.Count + 1;
             if (pendingPath.Capacity < capacity)
             {
@@ -1291,21 +1309,21 @@ int capacity = result.vectorPath.Count + 1;
             }
 
             pendingPath.AddRange(result.vectorPath);
-            // endPoint（结束点）：使用位置：作为 List<Vector3>.Add(Vector3) 的参数、作为 Mathf.Abs(float) 的参数、作为 PathAgent.HorizontalDistance(Vector3, Vector3) 的参数 等共 4 处。
+            // 结束点。
 Vector3 endPoint = context.endPoint;
             if (HorizontalDistance(pendingPath[pendingPath.Count - 1], endPoint) > .05f || Mathf.Abs(pendingPath[pendingPath.Count - 1].y - endPoint.y) > .05f)
             {
                 pendingPath.Add(endPoint);
             }
 
-            // region（区域）：使用位置：PathAgent.OnPathComplete(Path, PathAgent.RequestContext)。
+            // 区域。
 var region = HouseThreeRegionNavigation.Current;
             if (region != null)
             {
-                // sequence（序号）：使用位置：作为 List<Vector3>.this[int] 的参数、PathAgent.OnPathComplete(Path, PathAgent.RequestContext)。
+                // 序号。
 for (int sequence = 0; sequence < pendingPath.Count; sequence++)
                 {
-                    // waypoint（路径点）：使用位置：作为 HouseThreeTraversalGeometry.TryResolveStairHeight(Vector3, out float) 的参数、作为 Mathf.Abs(float) 的参数、作为 Vector3.Vector3(float, float, float) 的参数。
+                    // 路径点。
 Vector3 waypoint = pendingPath[sequence];
                     if (region.traversal.TryResolveStairHeight(waypoint, out float /* 中文含义：踏面。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ tread) && Mathf.Abs(waypoint.y - tread) < .38f)
                     {
@@ -1341,7 +1359,7 @@ Vector3 waypoint = pendingPath[sequence];
             return;
         }
 
-        // previousBuffer（前一次缓冲区）：使用位置：PathAgent.ApplyPendingPath()。
+        // 前一次缓冲区。
 var previousBuffer = path;
         path = pendingPath;
         pendingPath = previousBuffer;
@@ -1359,7 +1377,7 @@ var previousBuffer = path;
     {
         if (preciseWaypoint.Length < path.Count)
         {
-            // capacity（容量）：保存 Mathf.NextPowerOfTwo(int) 的返回结果，供当前步骤使用。使用位置：PathAgent.CachePathProperty()。
+            // 容量。
 int capacity = Mathf.NextPowerOfTwo(path.Count);
             preciseWaypoint = new bool[capacity];
             subsequentPreciseWaypoint = new bool[capacity + 1];
@@ -1368,14 +1386,14 @@ int capacity = Mathf.NextPowerOfTwo(path.Count);
         }
 
         subsequentPreciseWaypoint[path.Count] = false;
-        // sequence（序号）：使用位置：作为 List<Vector3>.this[int] 的参数、PathAgent.CachePathProperty()。
+        // 序号。
 for (int sequence = path.Count - 1; sequence >= 0; sequence--)
         {
             preciseWaypoint[sequence] = IsNavigationLinkEndpoint(path[sequence]);
             subsequentPreciseWaypoint[sequence] = preciseWaypoint[sequence] || subsequentPreciseWaypoint[sequence + 1];
-            // assignmentReceiver12（赋值前保存的目标剩余线段长型）：从剩余线段长型读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：PathAgent.CachePathProperty()。
+            // 赋值前保存的目标剩余线段长型。
 float[] assignmentReceiver12 = remainingSegmentLong;
-            // assignmentIndex13（赋值前保存的索引序号）：从序号读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：PathAgent.CachePathProperty()。
+            // 赋值前保存的索引序号。
 int assignmentIndex13 = sequence;
             if (sequence + 1 < path.Count)
             {
@@ -1390,7 +1408,7 @@ int assignmentIndex13 = sequence;
 
     /// <summary>ResolvePendingPathHandoffWaypoint 的业务处理入口；本方法直接依赖 Mathf.Abs(float)、Mathf.Clamp01(float)、Mathf.Max(float, float)、PathAgent.HorizontalDistance(Vector3, Vector3)、Vector3.Dot(Vector3, Vector3)、VillagerController.CanMoveDirectlyToNavigationPoint(Vector3, bool)、VillagerController.HasContinuousSteppedNavigationGround(Vector3)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 PathAgent.ApplyPendingPath()；下游（含内部回调体） Mathf.Abs(float)、Mathf.Clamp01(float)、Mathf.Max(float, float)、PathAgent.HorizontalDistance(Vector3, Vector3)、Vector3.Dot(Vector3, Vector3)、VillagerController.CanMoveDirectlyToNavigationPoint(Vector3, bool)、VillagerController.HasContinuousSteppedNavigationGround(Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="completedPath">中文含义：已完成路径。使用位置：PathAgent.ResolvePendingPathHandoffWaypoint(List&lt;Vector3&gt;)。</param>
+    /// <param name="completedPath">已完成路径。</param>
     private int ResolvePendingPathHandoffWaypoint(List<Vector3> completedPath)
     {
         if (completedPath == null || completedPath.Count <= 1)
@@ -1401,55 +1419,55 @@ int assignmentIndex13 = sequence;
         // 交接点必须与角色当前可抵达的高度层一致。此前这里允许的
         // 高度差高于拐点抵达判定，重算路径会把角色交给一个悬在头顶的
         // 拐点；角色只能围着该点横向绕行，随后又因停滞再次重算。
-        // allowedVerticalDifference（允许的竖直差值）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：PathAgent.ResolvePendingPathHandoffWaypoint(List<Vector3>)。
+        // 允许的竖直差值。
 float allowedVerticalDifference = Mathf.Max(0.05f, waypointVerticalReachedTolerance);
-        // handoffDistance（交接距离）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：PathAgent.ResolvePendingPathHandoffWaypoint(List<Vector3>)。
+        // 交接距离。
 float handoffDistance = Mathf.Max(1.1f, HorizontalDistance(transform.position, pathRequestOrigin) + waypointReachedRadius * 1.5f);
-        // maximumDistanceSqr（最大距离平方）：使用位置：PathAgent.ResolvePendingPathHandoffWaypoint(List<Vector3>)。
+        // 最大距离平方。
 float maximumDistanceSqr = handoffDistance * handoffDistance;
-        // bestFollowingWaypoint（最佳跟随中路径点）：使用位置：PathAgent.ResolvePendingPathHandoffWaypoint(List<Vector3>)。
+        // 最佳跟随中路径点。
 int bestFollowingWaypoint = 0;
-        // bestDistanceSqr（最佳距离平方）：使用位置：PathAgent.ResolvePendingPathHandoffWaypoint(List<Vector3>)。
+        // 最佳距离平方。
 float bestDistanceSqr = float.PositiveInfinity;
-        // currentPosition（当前位置）：使用位置：作为 Mathf.Abs(float) 的参数、PathAgent.ResolvePendingPathHandoffWaypoint(List<Vector3>)。
+        // 当前位置。
 Vector3 currentPosition = transform.position;
-        // containsPreciseLink（是否包含精确连接）：使用位置：PathAgent.ResolvePendingPathHandoffWaypoint(List<Vector3>)。
+        // 是否包含精确连接。
 bool containsPreciseLink = subsequentPreciseWaypoint[0];
-        // index（当前元素索引）：使用位置：作为 List<Vector3>.this[int] 的参数、PathAgent.ResolvePendingPathHandoffWaypoint(List<Vector3>)。
+        // 当前元素索引。
 for (int index = 0; index < completedPath.Count - 1; index++)
         {
-            // start（起始）：使用位置：作为 Mathf.Abs(float) 的参数、PathAgent.ResolvePendingPathHandoffWaypoint(List<Vector3>)。
+            // 起始。
 Vector3 start = completedPath[index];
-            // end（结束）：使用位置：作为 Mathf.Abs(float) 的参数、作为 VillagerController.CanMoveDirectlyToNavigationPoint(Vector3, bool) 的参数、作为 VillagerController.HasContinuousSteppedNavigationGround(Vector3) 的参数 等共 4 处。
+            // 结束。
 Vector3 end = completedPath[index + 1];
             if (Mathf.Abs(currentPosition.y - start.y) > allowedVerticalDifference || Mathf.Abs(currentPosition.y - end.y) > allowedVerticalDifference)
             {
                 continue;
             }
 
-            // horizontalStart（水平起始）：使用位置：作为 Vector3.Dot(Vector3, Vector3) 的参数、PathAgent.ResolvePendingPathHandoffWaypoint(List<Vector3>)。
+            // 水平起始。
 Vector3 horizontalStart = start;
-            // horizontalEnd（水平结束）：使用位置：PathAgent.ResolvePendingPathHandoffWaypoint(List<Vector3>)。
+            // 水平结束。
 Vector3 horizontalEnd = end;
-            // horizontalCurrent（水平当前）：使用位置：作为 Vector3.Dot(Vector3, Vector3) 的参数、PathAgent.ResolvePendingPathHandoffWaypoint(List<Vector3>)。
+            // 水平当前。
 Vector3 horizontalCurrent = currentPosition;
             horizontalStart.y = 0f;
             horizontalEnd.y = 0f;
             horizontalCurrent.y = 0f;
-            // segment（线段）：使用位置：作为 Vector3.Dot(Vector3, Vector3) 的参数、PathAgent.ResolvePendingPathHandoffWaypoint(List<Vector3>)。
+            // 线段。
 Vector3 segment = horizontalEnd - horizontalStart;
-            // segmentLengthSqr（线段长度平方）：使用位置：作为 Mathf.Clamp01(float) 的参数、PathAgent.ResolvePendingPathHandoffWaypoint(List<Vector3>)。
+            // 线段长度平方。
 float segmentLengthSqr = segment.sqrMagnitude;
             if (segmentLengthSqr <= 0.0001f)
             {
                 continue;
             }
 
-            // segmentProgress（线段进度）：保存 Mathf.Clamp01(float) 的返回结果，供当前步骤使用。使用位置：PathAgent.ResolvePendingPathHandoffWaypoint(List<Vector3>)。
+            // 线段进度。
 float segmentProgress = Mathf.Clamp01(Vector3.Dot(horizontalCurrent - horizontalStart, segment) / segmentLengthSqr);
-            // closestPoint（最近点）：使用位置：PathAgent.ResolvePendingPathHandoffWaypoint(List<Vector3>)。
+            // 最近点。
 Vector3 closestPoint = horizontalStart + segment * segmentProgress;
-            // distanceSqr（距离平方）：使用位置：PathAgent.ResolvePendingPathHandoffWaypoint(List<Vector3>)。
+            // 距离平方。
 float distanceSqr = (horizontalCurrent - closestPoint).sqrMagnitude;
             if (distanceSqr >= bestDistanceSqr || distanceSqr > maximumDistanceSqr)
             {
@@ -1469,10 +1487,26 @@ float distanceSqr = (horizontalCurrent - closestPoint).sqrMagnitude;
         {
             return bestFollowingWaypoint;
         }
-        else
+
+        if (completedPath.Count >= 2 && HouseThreeRegionNavigation.Current != null
+            && HouseThreeRegionNavigation.Current.IsOnSecondFloorOuterPlatform(currentPosition))
         {
-            return 0;
+            Vector3 wp0 = completedPath[0];
+            Vector3 wp1 = completedPath[1];
+            Vector3 cur = currentPosition;
+            wp0.y = 0f;
+            wp1.y = 0f;
+            cur.y = 0f;
+            Vector3 seg = wp1 - wp0;
+            Vector3 toWp0 = wp0 - cur;
+            if (seg.sqrMagnitude > 0.0001f && Vector3.Dot(toWp0, seg) < -0.02f
+                && (wp1 - cur).sqrMagnitude <= 1.15f * 1.15f)
+            {
+                return 1;
+            }
         }
+
+        return 0;
     }
 
     /// <summary>AdvanceWaypoint 的业务处理入口；本方法直接依赖 PathAgent.AdvanceToVisibleWaypoint()、PathAgent.CanAdvancePastCompressedSteppedWaypoint()、PathAgent.ClearPathData()、PathAgent.IsWaypointReached(Vector3)，调用方通过参数与返回结果交接本次处理。</summary>
@@ -1487,6 +1521,36 @@ float distanceSqr = (horizontalCurrent - closestPoint).sqrMagnitude;
         while (currentWaypoint < path.Count && (IsWaypointReached(path[currentWaypoint]) || CanAdvancePastCompressedSteppedWaypoint()))
         {
             currentWaypoint++;
+        }
+
+        // 若路径起点落在角色后方（例如重算起点回落到最近节点），而后续非精确拐点已在抵达半径内，
+        // 直接推进到其下一路点，避免角色为触碰身后的 wp[0] 原地调头并迎面撞死后方同伴。
+        if (currentWaypoint < path.Count && !RequiresPrecisePathFollowing)
+        {
+            int maxProbe = Mathf.Min(path.Count - 1, currentWaypoint + 2);
+            for (int probe = maxProbe; probe > currentWaypoint; probe--)
+            {
+                bool crossesPrecise = false;
+                for (int check = currentWaypoint; check <= probe; check++)
+                {
+                    if (preciseWaypoint[check])
+                    {
+                        crossesPrecise = true;
+                        break;
+                    }
+                }
+
+                if (crossesPrecise)
+                {
+                    continue;
+                }
+
+                if (IsWaypointReached(path[probe]))
+                {
+                    currentWaypoint = probe + 1;
+                    break;
+                }
+            }
         }
 
         if (currentWaypoint >= path.Count)
@@ -1508,14 +1572,14 @@ float distanceSqr = (horizontalCurrent - closestPoint).sqrMagnitude;
             return;
         }
 
-        // tailPoint（尾部点）：使用位置：作为 Mathf.Min(int, int) 的参数。
+        // 尾部点。
 int tailPoint = path.Count - 1;
-        // candidatePoint（候选点）：保存 Mathf.Min(int, int) 的返回结果，供当前步骤使用。使用位置：PathAgent.AdvanceToVisibleWaypoint()。
+        // 候选点。
 int candidatePoint = Mathf.Min(tailPoint, currentWaypoint + Mathf.Clamp(maxWaypointLookAhead, 1, 12));
-        // tryValue（尝试值）：使用位置：PathAgent.AdvanceToVisibleWaypoint()。
+        // 尝试值。
 int tryValue = 0;
         // 一次最多两个候选且全局两段；预算不足只保留原路径，绝不放宽地面检测。
-        // point（点）：使用位置：作为 List<Vector3>.this[int] 的参数、PathAgent.AdvanceToVisibleWaypoint()。
+        // 点。
 for (int point = candidatePoint; point > currentWaypoint && tryValue < 2; point--)
         {
             if (HorizontalDistance(transform.position, path[point]) > 6f)
@@ -1546,10 +1610,10 @@ for (int point = candidatePoint; point > currentWaypoint && tryValue < 2; point-
 
     /// <summary>IsWaypointReached 的业务处理入口；本方法直接依赖 Mathf.Abs(float)、Mathf.Max(float, float)、Mathf.Min(float, float)、PathAgent.HorizontalDistance(Vector3, Vector3)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 PathAgent.AdvanceWaypoint()；下游（含内部回调体） Mathf.Abs(float)、Mathf.Max(float, float)、Mathf.Min(float, float)、PathAgent.HorizontalDistance(Vector3, Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="waypoint">中文含义：路径点。使用位置：作为 Mathf.Abs(float) 的参数、作为 PathAgent.HorizontalDistance(Vector3, Vector3) 的参数。</param>
+    /// <param name="waypoint">路径点。</param>
     private bool IsWaypointReached(Vector3 waypoint)
     {
-        // radius（半径）：使用位置：PathAgent.IsWaypointReached(Vector3)。
+        // 半径。
 float radius;
         if (currentWaypoint < path.Count && preciseWaypoint[currentWaypoint])
         {
@@ -1564,12 +1628,12 @@ float radius;
     }
 
     // 人工连接的端点位于实际通路中心，不能用普通路点半米的容差切角。
-    /// <summary>中文含义：是否需要精确路径跟随中。使用位置：PathAgent.AdvanceToVisibleWaypoint()、VillagerController.ResolveCrowdOverlap()、VillagerController.ResolveStandingPathDirectionForCurrentFrame() 等共 5 处。</summary>
+    /// <summary>是否需要精确路径跟随中。</summary>
     public bool RequiresPrecisePathFollowing => path != null && currentWaypoint < path.Count && (preciseWaypoint[currentWaypoint] || (currentWaypoint > 0 && preciseWaypoint[currentWaypoint - 1]));
 
     /// <summary>IsNavigationLinkEndpoint 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
     /// <remarks>静态调用链：上游 PathAgent.CachePathProperty()；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="waypoint">中文含义：路径点。使用位置：PathAgent.IsNavigationLinkEndpoint(Vector3)。</param>
+    /// <param name="waypoint">路径点。</param>
     private bool IsNavigationLinkEndpoint(Vector3 waypoint)
     {
         if (navigationLinks == null)
@@ -1585,7 +1649,7 @@ foreach (EnemyNavigationPreciseLink preciseLink in navigationLinks)
                 continue;
             }
 
-            // link（连接）：使用位置：PathAgent.IsNavigationLinkEndpoint(Vector3)。
+            // 连接。
 NodeLink2 link = preciseLink.link;
             if (link == null || !link.isActiveAndEnabled || link.end == null)
             {
@@ -1615,7 +1679,7 @@ NodeLink2 link = preciseLink.link;
             return false;
         }
 
-        // waypoint（路径点）：使用位置：作为 Mathf.Abs(float) 的参数、作为 PathAgent.HorizontalDistance(Vector3, Vector3) 的参数、作为 VillagerController.CanAdvancePastCompressedSteppedWaypoint(Vector3, Vector3) 的参数。
+        // 路径点。
 Vector3 waypoint = path[currentWaypoint];
         if (HorizontalDistance(transform.position, waypoint) > Mathf.Max(0.05f, waypointReachedRadius) || Mathf.Abs(transform.position.y - waypoint.y) <= Mathf.Max(0.05f, waypointVerticalReachedTolerance))
         {
@@ -1627,7 +1691,7 @@ Vector3 waypoint = path[currentWaypoint];
 
     /// <summary>MarkPathFailed 的业务处理入口；本方法直接依赖 PathAgent.ClearPathData()、PathAgent.HasUsablePathData()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 PathAgent.MarkPursuitResolutionFailed()、PathAgent.OnPathComplete(Path, PathAgent.RequestContext)、PathAgent.RejectUnreachableDestination()、PathAgent.RequestPath()；下游（含内部回调体） PathAgent.ClearPathData()、PathAgent.HasUsablePathData()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="preserveCurrentPath">中文含义：是否保留当前路径。使用位置：PathAgent.MarkPathFailed(bool)。</param>
+    /// <param name="preserveCurrentPath">是否保留当前路径。</param>
     private void MarkPathFailed(bool preserveCurrentPath = false)
     {
         if (preserveCurrentPath && HasUsablePathData())
@@ -1661,9 +1725,9 @@ Vector3 waypoint = path[currentWaypoint];
 
     /// <summary>IsPathHeightValid 的业务处理入口；本方法直接依赖 Mathf.Abs(float)、Mathf.Atan2(float, float)、Mathf.Clamp(float, float, float)、Mathf.Max(float, float)、PathAgent.HorizontalDistance(Vector3, Vector3)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 PathAgent.OnPathComplete(Path, PathAgent.RequestContext)；下游（含内部回调体） Mathf.Abs(float)、Mathf.Atan2(float, float)、Mathf.Clamp(float, float, float)、Mathf.Max(float, float)、PathAgent.HorizontalDistance(Vector3, Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="points">中文含义：点集合。使用位置：PathAgent.IsPathHeightValid(List&lt;Vector3&gt;, Vector3, Vector3)。</param>
-    /// <param name="startPoint">中文含义：起始点。使用位置：作为 Mathf.Max(float, float) 的参数、PathAgent.IsPathHeightValid(List&lt;Vector3&gt;, Vector3, Vector3)。</param>
-    /// <param name="endPoint">中文含义：结束点。使用位置：作为 Mathf.Max(float, float) 的参数。</param>
+    /// <param name="points">点集合。</param>
+    /// <param name="startPoint">起始点。</param>
+    /// <param name="endPoint">结束点。</param>
     private bool IsPathHeightValid(List<Vector3> points, Vector3 startPoint, Vector3 endPoint)
     {
         if (points == null || points.Count == 0)
@@ -1671,12 +1735,12 @@ Vector3 waypoint = path[currentWaypoint];
             return false;
         }
 
-        // endpointCeiling（端点天花板）：使用位置：PathAgent.IsPathHeightValid(List<Vector3>, Vector3, Vector3)。
+        // 端点天花板。
 float endpointCeiling = Mathf.Max(startPoint.y, endPoint.y) + Mathf.Max(0.1f, maxPathHeightAboveEndpoints);
-        // i（当前遍历索引）：使用位置：作为 List<Vector3>.this[int] 的参数、PathAgent.IsPathHeightValid(List<Vector3>, Vector3, Vector3)。
+        // 当前遍历索引。
 for (int i = 0; i < points.Count; i++)
         {
-            // point（点）：使用位置：作为 Mathf.Abs(float) 的参数、作为 PathAgent.HorizontalDistance(Vector3, Vector3) 的参数、PathAgent.IsPathHeightValid(List<Vector3>, Vector3, Vector3)。
+            // 点。
 Vector3 point = points[i];
             if (point.y > endpointCeiling)
             {
@@ -1686,7 +1750,7 @@ Vector3 point = points[i];
             // 漏掉起点到第一拐点的校验，会让漏斗裁剪后的首个高点绕过
             // 高差和坡度限制。它正是角色在平地追击时反复对准高处节点
             // 的来源之一。
-            // previous（前一次）：使用位置：作为 Mathf.Abs(float) 的参数、作为 PathAgent.HorizontalDistance(Vector3, Vector3) 的参数、PathAgent.IsPathHeightValid(List<Vector3>, Vector3, Vector3)。
+            // 前一次。
 Vector3 previous;
             if (i == 0)
             {
@@ -1697,13 +1761,13 @@ Vector3 previous;
                 previous = points[i - 1];
             }
 
-            // verticalDistance（竖直距离）：保存 Mathf.Abs(float) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Atan2(float, float) 的参数、PathAgent.IsPathHeightValid(List<Vector3>, Vector3, Vector3)。
+            // 竖直距离。
 float verticalDistance = Mathf.Abs(point.y - previous.y);
-            // horizontalDistance（水平距离）：保存 PathAgent.HorizontalDistance(Vector3, Vector3) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Max(float, float) 的参数、PathAgent.IsPathHeightValid(List<Vector3>, Vector3, Vector3)。
+            // 水平距离。
 float horizontalDistance = HorizontalDistance(previous, point);
-            // slope（坡度）：使用位置：PathAgent.IsPathHeightValid(List<Vector3>, Vector3, Vector3)。
+            // 坡度。
 float slope = Mathf.Atan2(verticalDistance, Mathf.Max(0.001f, horizontalDistance)) * Mathf.Rad2Deg;
-            // maximumVerticalStep（最大竖直步进）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：PathAgent.IsPathHeightValid(List<Vector3>, Vector3, Vector3)。
+            // 最大竖直步进。
 float maximumVerticalStep = Mathf.Max(0.1f, maxPathVerticalStep);
             if (verticalDistance > maximumVerticalStep && (horizontalDistance <= waypointReachedRadius * 0.5f || slope > Mathf.Clamp(maxPathSlope, 1f, 89f)))
             {
@@ -1718,9 +1782,9 @@ float maximumVerticalStep = Mathf.Max(0.1f, maxPathVerticalStep);
     /// <remarks>静态调用链：上游 PathAgent.RegisterStaticObstacleHazard(RaycastHit, float)、PathAgent.TryCommitPathfinding()、PathAgent.Update()；下游（含内部回调体） List&lt;PathAgent.StaticObstacleHazard&gt;.RemoveAt(int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     private void PruneExpiredStaticObstacleHazards()
     {
-        // now（当前时间）：使用位置：PathAgent.PruneExpiredStaticObstacleHazards()。
+        // 当前时间。
 float now = Time.time;
-        // index（当前元素索引）：使用位置：作为 List<PathAgent.StaticObstacleHazard>.RemoveAt(int) 的参数、作为 List<PathAgent.StaticObstacleHazard>.this[int] 的参数、PathAgent.PruneExpiredStaticObstacleHazards()。
+        // 当前元素索引。
 for (int index = staticObstacleHazards.Count - 1; index >= 0; index--)
         {
             if (staticObstacleHazards[index].expiryTime <= now)
@@ -1733,17 +1797,17 @@ for (int index = staticObstacleHazards.Count - 1; index >= 0; index--)
     /// <summary>敌人行为、动作与通行的结构化数据 StaticObstacleHazard；声明字段保存该步骤需要的值，具体读写由使用方执行。</summary>
     private struct StaticObstacleHazard
     {
-        /// <summary>中文含义：中心。使用位置：作为 PathAgent.StaticObstacleHazardSnapshot.StaticObstacleHazardSnapshot(Vector3, float) 的参数、PathAgent.LocatedInStaticHazardZone(Vector3)、PathAgent.RegisterStaticObstacleHazard(RaycastHit, float) 等共 4 处。</summary>
+        /// <summary>中心。</summary>
         public Vector3 center;
-        /// <summary>中文含义：半径。使用位置：作为 Mathf.Min(float, float) 的参数、作为 PathAgent.StaticObstacleHazardSnapshot.StaticObstacleHazardSnapshot(Vector3, float) 的参数、PathAgent.LocatedInStaticHazardZone(Vector3) 等共 4 处。</summary>
+        /// <summary>半径。</summary>
         public float radius;
-        /// <summary>中文含义：有效期限时间。使用位置：PathAgent.PruneExpiredStaticObstacleHazards()、PathAgent.StaticObstacleHazard.StaticObstacleHazard(Vector3, float, float)。</summary>
+        /// <summary>有效期限时间。</summary>
         public float expiryTime;
         /// <summary>构造并初始化 StaticObstacleHazard 的声明状态；具体外部协作见静态调用链。</summary>
         /// <remarks>静态调用链：上游 PathAgent.RegisterStaticObstacleHazard(RaycastHit, float)；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-        /// <param name="center">中文含义：中心。使用位置：PathAgent.StaticObstacleHazard.StaticObstacleHazard(Vector3, float, float)。</param>
-        /// <param name="radius">中文含义：半径。使用位置：PathAgent.StaticObstacleHazard.StaticObstacleHazard(Vector3, float, float)。</param>
-        /// <param name="expiryTime">中文含义：有效期限时间。使用位置：PathAgent.StaticObstacleHazard.StaticObstacleHazard(Vector3, float, float)。</param>
+        /// <param name="center">中心。</param>
+        /// <param name="radius">半径。</param>
+        /// <param name="expiryTime">有效期限时间。</param>
         public StaticObstacleHazard(Vector3 center, float radius, float expiryTime)
         {
             this.center = center;
@@ -1755,14 +1819,14 @@ for (int index = staticObstacleHazards.Count - 1; index >= 0; index--)
     /// <summary>敌人行为、动作与通行的结构化数据 StaticObstacleHazardSnapshot；声明字段保存该步骤需要的值，具体读写由使用方执行。</summary>
     private struct StaticObstacleHazardSnapshot
     {
-        /// <summary>中文含义：中心。只读字段，初始化后不由普通写入口替换。使用位置：PathAgent.StaticObstacleHazardSnapshot.StaticObstacleHazardSnapshot(Vector3, float)、PathAgent.StaticObstacleTraversalProvider.GetTraversalCostMultiplier(ref TraversalCosts, GraphNode)。</summary>
+        /// <summary>中心。只读字段，初始化后不由普通写入口替换。</summary>
         public readonly Vector3 center;
-        /// <summary>中文含义：半径。只读字段，初始化后不由普通写入口替换。使用位置：PathAgent.StaticObstacleHazardSnapshot.StaticObstacleHazardSnapshot(Vector3, float)、PathAgent.StaticObstacleTraversalProvider.GetTraversalCostMultiplier(ref TraversalCosts, GraphNode)。</summary>
+        /// <summary>半径。只读字段，初始化后不由普通写入口替换。</summary>
         public readonly float radius;
         /// <summary>构造并初始化 StaticObstacleHazardSnapshot 的声明状态；具体外部协作见静态调用链。</summary>
         /// <remarks>静态调用链：上游 PathAgent.StaticObstacleTraversalProvider.Set(List&lt;PathAgent.StaticObstacleHazard&gt;, float)；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-        /// <param name="center">中文含义：中心。使用位置：PathAgent.StaticObstacleHazardSnapshot.StaticObstacleHazardSnapshot(Vector3, float)。</param>
-        /// <param name="radius">中文含义：半径。使用位置：PathAgent.StaticObstacleHazardSnapshot.StaticObstacleHazardSnapshot(Vector3, float)。</param>
+        /// <param name="center">中心。</param>
+        /// <param name="radius">半径。</param>
         public StaticObstacleHazardSnapshot(Vector3 center, float radius)
         {
             this.center = center;
@@ -1773,16 +1837,16 @@ for (int index = staticObstacleHazards.Count - 1; index >= 0; index--)
     /// <summary>敌人行为、动作与通行模块 StaticObstacleTraversalProvider；通过方法参数、返回值及声明成员与调用方通信，静态调用索引记录可解析的直接依赖。</summary>
     private sealed class StaticObstacleTraversalProvider : ITraversalProvider
     {
-        /// <summary>中文含义：危险区集合。使用位置：PathAgent.StaticObstacleTraversalProvider.GetTraversalCostMultiplier(ref TraversalCosts, GraphNode)、PathAgent.StaticObstacleTraversalProvider.Set(List&lt;PathAgent.StaticObstacleHazard&gt;, float)。</summary>
+        /// <summary>危险区集合。</summary>
         private StaticObstacleHazardSnapshot[] hazards = new StaticObstacleHazardSnapshot[3];
-        /// <summary>中文含义：障碍数量。使用位置：PathAgent.StaticObstacleTraversalProvider.GetTraversalCostMultiplier(ref TraversalCosts, GraphNode)、PathAgent.StaticObstacleTraversalProvider.Set(List&lt;PathAgent.StaticObstacleHazard&gt;, float)。</summary>
+        /// <summary>障碍数量。</summary>
         private int obstacleCount;
-        /// <summary>中文含义：代价倍率。使用位置：PathAgent.StaticObstacleTraversalProvider.GetTraversalCostMultiplier(ref TraversalCosts, GraphNode)、PathAgent.StaticObstacleTraversalProvider.Set(List&lt;PathAgent.StaticObstacleHazard&gt;, float)。</summary>
+        /// <summary>代价倍率。</summary>
         private float costMultiplier;
         /// <summary>Set 的业务处理入口；本方法直接依赖 Mathf.NextPowerOfTwo(int)、PathAgent.StaticObstacleHazardSnapshot.StaticObstacleHazardSnapshot(Vector3, float)，调用方通过参数与返回结果交接本次处理。</summary>
         /// <remarks>静态调用链：上游 PathAgent.TryCommitPathfinding()；下游（含内部回调体） Mathf.NextPowerOfTwo(int)、PathAgent.StaticObstacleHazardSnapshot.StaticObstacleHazardSnapshot(Vector3, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-        /// <param name="obstacle">中文含义：障碍。使用位置：作为 Mathf.NextPowerOfTwo(int) 的参数、作为 PathAgent.StaticObstacleHazardSnapshot.StaticObstacleHazardSnapshot(Vector3, float) 的参数、PathAgent.StaticObstacleTraversalProvider.Set(List&lt;PathAgent.StaticObstacleHazard&gt;, float)。</param>
-        /// <param name="multiplier">中文含义：倍率。使用位置：PathAgent.StaticObstacleTraversalProvider.Set(List&lt;PathAgent.StaticObstacleHazard&gt;, float)。</param>
+        /// <param name="obstacle">障碍。</param>
+        /// <param name="multiplier">倍率。</param>
         internal void Set(List<StaticObstacleHazard> obstacle, float multiplier)
         {
             if (hazards.Length < obstacle.Count)
@@ -1793,7 +1857,7 @@ for (int index = staticObstacleHazards.Count - 1; index >= 0; index--)
 
             obstacleCount = obstacle.Count;
             costMultiplier = multiplier;
-            // sequence（序号）：使用位置：作为 List<PathAgent.StaticObstacleHazard>.this[int] 的参数、PathAgent.StaticObstacleTraversalProvider.Set(List<PathAgent.StaticObstacleHazard>, float)。
+            // 序号。
 for (int sequence = 0; sequence < obstacleCount; sequence++)
             {
                 hazards[sequence] = new StaticObstacleHazardSnapshot(obstacle[sequence].center, obstacle[sequence].radius);
@@ -1802,8 +1866,8 @@ for (int sequence = 0; sequence < obstacleCount; sequence++)
 
         /// <summary>CanTraverse 的业务处理入口；本方法直接依赖 DefaultITraversalProvider.CanTraverse(ref TraversalConstraint, GraphNode)，调用方通过参数与返回结果交接本次处理。</summary>
         /// <remarks>静态调用链：上游 PathAgent.StaticObstacleTraversalProvider.CanTraverse(ref TraversalConstraint, GraphNode, GraphNode)；下游（含内部回调体） DefaultITraversalProvider.CanTraverse(ref TraversalConstraint, GraphNode)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-        /// <param name="traversalConstraint">中文含义：通行约束。按引用传入，读写会作用于调用方原存储位置。使用位置：作为 DefaultITraversalProvider.CanTraverse(ref TraversalConstraint, GraphNode) 的参数。</param>
-        /// <param name="node">中文含义：节点。使用位置：作为 DefaultITraversalProvider.CanTraverse(ref TraversalConstraint, GraphNode) 的参数。</param>
+        /// <param name="traversalConstraint">通行约束。按引用传入，读写会作用于调用方原存储位置。</param>
+        /// <param name="node">节点。</param>
         public bool CanTraverse(ref TraversalConstraint traversalConstraint, GraphNode node)
         {
             return DefaultITraversalProvider.CanTraverse(ref traversalConstraint, node);
@@ -1811,9 +1875,9 @@ for (int sequence = 0; sequence < obstacleCount; sequence++)
 
         /// <summary>CanTraverse 的业务处理入口；本方法直接依赖 PathAgent.StaticObstacleTraversalProvider.CanTraverse(ref TraversalConstraint, GraphNode)，调用方通过参数与返回结果交接本次处理。</summary>
         /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） PathAgent.StaticObstacleTraversalProvider.CanTraverse(ref TraversalConstraint, GraphNode)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-        /// <param name="traversalConstraint">中文含义：通行约束。按引用传入，读写会作用于调用方原存储位置。使用位置：作为 PathAgent.StaticObstacleTraversalProvider.CanTraverse(ref TraversalConstraint, GraphNode) 的参数。</param>
+        /// <param name="traversalConstraint">通行约束。按引用传入，读写会作用于调用方原存储位置。</param>
         /// <param name="from">中文含义：来源。</param>
-        /// <param name="to">中文含义：目标。使用位置：作为 PathAgent.StaticObstacleTraversalProvider.CanTraverse(ref TraversalConstraint, GraphNode) 的参数。</param>
+        /// <param name="to">目标。</param>
         public bool CanTraverse(ref TraversalConstraint traversalConstraint, GraphNode from, GraphNode to)
         {
             return CanTraverse(ref traversalConstraint, to);
@@ -1821,9 +1885,9 @@ for (int sequence = 0; sequence < obstacleCount; sequence++)
 
         /// <summary>GetConnectionCost 的业务处理入口；本方法直接依赖 DefaultITraversalProvider.GetConnectionCost(ref TraversalCosts, GraphNode, GraphNode)，调用方通过参数与返回结果交接本次处理。</summary>
         /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） DefaultITraversalProvider.GetConnectionCost(ref TraversalCosts, GraphNode, GraphNode)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-        /// <param name="traversalCosts">中文含义：通行代价集合。按引用传入，读写会作用于调用方原存储位置。使用位置：作为 DefaultITraversalProvider.GetConnectionCost(ref TraversalCosts, GraphNode, GraphNode) 的参数。</param>
-        /// <param name="from">中文含义：来源。使用位置：作为 DefaultITraversalProvider.GetConnectionCost(ref TraversalCosts, GraphNode, GraphNode) 的参数。</param>
-        /// <param name="to">中文含义：目标。使用位置：作为 DefaultITraversalProvider.GetConnectionCost(ref TraversalCosts, GraphNode, GraphNode) 的参数。</param>
+        /// <param name="traversalCosts">通行代价集合。按引用传入，读写会作用于调用方原存储位置。</param>
+        /// <param name="from">来源。</param>
+        /// <param name="to">目标。</param>
         public uint GetConnectionCost(ref TraversalCosts traversalCosts, GraphNode from, GraphNode to)
         {
             return DefaultITraversalProvider.GetConnectionCost(ref traversalCosts, from, to);
@@ -1831,18 +1895,18 @@ for (int sequence = 0; sequence < obstacleCount; sequence++)
 
         /// <summary>GetTraversalCostMultiplier 的业务处理入口；本方法直接依赖 DefaultITraversalProvider.GetTraversalCostMultiplier(ref TraversalCosts, GraphNode)，调用方通过参数与返回结果交接本次处理。</summary>
         /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） DefaultITraversalProvider.GetTraversalCostMultiplier(ref TraversalCosts, GraphNode)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-        /// <param name="traversalCosts">中文含义：通行代价集合。按引用传入，读写会作用于调用方原存储位置。使用位置：作为 DefaultITraversalProvider.GetTraversalCostMultiplier(ref TraversalCosts, GraphNode) 的参数。</param>
-        /// <param name="node">中文含义：节点。使用位置：作为 DefaultITraversalProvider.GetTraversalCostMultiplier(ref TraversalCosts, GraphNode) 的参数、PathAgent.StaticObstacleTraversalProvider.GetTraversalCostMultiplier(ref TraversalCosts, GraphNode)。</param>
+        /// <param name="traversalCosts">通行代价集合。按引用传入，读写会作用于调用方原存储位置。</param>
+        /// <param name="node">节点。</param>
         public float GetTraversalCostMultiplier(ref TraversalCosts traversalCosts, GraphNode node)
         {
-            // baseMultiplier（基础倍率）：保存 DefaultITraversalProvider.GetTraversalCostMultiplier(ref TraversalCosts, GraphNode) 的返回结果，供当前步骤使用。使用位置：PathAgent.StaticObstacleTraversalProvider.GetTraversalCostMultiplier(ref TraversalCosts, GraphNode)。
+            // 基础倍率。
 float baseMultiplier = DefaultITraversalProvider.GetTraversalCostMultiplier(ref traversalCosts, node);
-            // point（点）：使用位置：PathAgent.StaticObstacleTraversalProvider.GetTraversalCostMultiplier(ref TraversalCosts, GraphNode)。
+            // 点。
 Vector3 point = (Vector3)node.position;
-            // index（当前元素索引）：使用位置：PathAgent.StaticObstacleTraversalProvider.GetTraversalCostMultiplier(ref TraversalCosts, GraphNode)。
+            // 当前元素索引。
 for (int index = 0; index < obstacleCount; index++)
             {
-                // offset（偏移量）：使用位置：PathAgent.StaticObstacleTraversalProvider.GetTraversalCostMultiplier(ref TraversalCosts, GraphNode)。
+                // 偏移量。
 Vector3 offset = point - hazards[index].center;
                 offset.y = 0f;
                 if (offset.sqrMagnitude <= hazards[index].radius * hazards[index].radius)
@@ -1857,8 +1921,8 @@ Vector3 offset = point - hazards[index].center;
 
     /// <summary>HorizontalDistance 的业务处理入口；本方法直接依赖 Vector3.Distance(Vector3, Vector3)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 PathAgent.AdvanceToVisibleWaypoint()、PathAgent.CanAdvancePastCompressedSteppedWaypoint()、PathAgent.IsPathHeightValid(List&lt;Vector3&gt;, Vector3, Vector3)、PathAgent.IsWaypointReached(Vector3)、PathAgent.OnPathComplete(Path, PathAgent.RequestContext) 等共 8 处；下游（含内部回调体） Vector3.Distance(Vector3, Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="first">中文含义：首个。使用位置：作为 Vector3.Distance(Vector3, Vector3) 的参数、PathAgent.HorizontalDistance(Vector3, Vector3)。</param>
-    /// <param name="second">中文含义：第二。使用位置：作为 Vector3.Distance(Vector3, Vector3) 的参数、PathAgent.HorizontalDistance(Vector3, Vector3)。</param>
+    /// <param name="first">首个。</param>
+    /// <param name="second">第二。</param>
     private static float HorizontalDistance(Vector3 first, Vector3 second)
     {
         first.y = 0f;
@@ -1890,9 +1954,9 @@ Vector3 offset = point - hazards[index].center;
         }
 
         Gizmos.color = Color.cyan;
-        // previous（前一次）：使用位置：作为 Gizmos.DrawLine(Vector3, Vector3) 的参数、PathAgent.OnDrawGizmosSelected()。
+        // 前一次。
 Vector3 previous = transform.position;
-        // i（当前遍历索引）：使用位置：作为 List<Vector3>.this[int] 的参数、PathAgent.OnDrawGizmosSelected()。
+        // 当前遍历索引。
 for (int i = currentWaypoint; i < path.Count; i++)
         {
             Gizmos.DrawLine(previous, path[i]);

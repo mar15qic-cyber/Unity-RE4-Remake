@@ -38,7 +38,7 @@ public sealed partial class EnemyAnimationAdapter
         return playable;
     }
 
-    internal void PresentNativeCombat(AnimationClip clip, float time, bool releaseMiss = false)
+    internal void PresentNativeCombat(AnimationClip clip, float time, bool releaseMiss = false, float entryBlendSeconds = 0f)
     {
         if (clip != null && !clip.name.StartsWith("Revived_", System.StringComparison.Ordinal))
         {
@@ -76,7 +76,19 @@ public sealed partial class EnemyAnimationAdapter
                 grabOutgoing = default;
             }
         }
-        float outputWeight = releaseMiss ? Mathf.SmoothStep(0f, 1f, (clip.length - time) / MissBlendTime) : 1f;
+        float releaseWeight = 1f;
+        if (releaseMiss)
+        {
+            releaseWeight = Mathf.SmoothStep(0f, 1f, (clip.length - time) / MissBlendTime);
+        }
+
+        float entryWeight = 1f;
+        if (entryBlendSeconds > 0f && time < entryBlendSeconds)
+        {
+            entryWeight = Mathf.SmoothStep(0f, 1f, time / entryBlendSeconds);
+        }
+
+        float outputWeight = releaseWeight * entryWeight;
         nativeCombatOutput.SetWeight(outputWeight);
     }
 

@@ -9,32 +9,32 @@ using System.Collections.Generic;
 [DisallowMultipleComponent]
 public class LeonActionMotionDriver : MonoBehaviour
 {
-    /// <summary>中文含义：动画控制器。使用位置：LeonActionMotionDriver.BeginDeathMotion()、LeonActionMotionDriver.BeginHitMotion()、LeonActionMotionDriver.CancelAllMotion() 等共 9 处。</summary>
+    /// <summary>动画控制器。</summary>
     [Header("组件引用")]
     public Animator animator;
-    /// <summary>中文含义：身体。使用位置：LeonActionMotionDriver.BeginHitMotion()、LeonActionMotionDriver.ClearHorizontalVelocity()、LeonActionMotionDriver.CommitAngleSpeed(MotionControlToken, Vector3) 等共 11 处。</summary>
+    /// <summary>身体。</summary>
     public Rigidbody body;
     [Tooltip("可穿过的散石和碎木碰撞体，仅作用于里昂的胶囊和地面探测。")]
     [SerializeField] private Collider[] walkThroughDetails = System.Array.Empty<Collider>();
     private readonly HashSet<Collider> walkDetailSet = new HashSet<Collider>();
     private readonly List<Collider> ownedIgnorePairs = new List<Collider>();
-    /// <summary>中文含义：命中运动是否生效。使用位置：LeonActionMotionDriver.BeginDeathMotion()、LeonActionMotionDriver.BeginHitMotion()、LeonActionMotionDriver.CancelAllMotion() 等共 8 处。</summary>
+    /// <summary>命中运动是否生效。</summary>
     private bool hitMotionActive;
     private bool footHeldByTrap;
-    /// <summary>中文含义：死亡运动是否生效。使用位置：LeonActionMotionDriver.AuthorizeMotion(MotionSource, int)、LeonActionMotionDriver.BeginDeathMotion()、LeonActionMotionDriver.BeginHitMotion() 等共 13 处。</summary>
+    /// <summary>死亡运动是否生效。</summary>
     private bool deathMotionActive;
     private readonly CorpseBodyPhysics corpsePhysics = new CorpseBodyPhysics();
     private bool corpseBodyWasKinematic;
     internal bool CorpseFalling => corpsePhysics.Falling;
-    /// <summary>中文含义：运动租用版本。使用位置：作为 ObjectIdentity.ObjectIdentity(int, long) 的参数、LeonActionMotionDriver.AuthorizeMotion(MotionSource, int)、LeonActionMotionDriver.OnEnable()。</summary>
+    /// <summary>运动租用版本。</summary>
     private long motionLeaseVersion;
-    /// <summary>中文含义：运动交接编号。使用位置：LeonActionMotionDriver.AuthorizeMotion(MotionSource, int)。</summary>
+    /// <summary>运动交接编号。</summary>
     private long motionHandoffId;
-    /// <summary>中文含义：运动关联编号。使用位置：LeonActionMotionDriver.AuthorizeMotion(MotionSource, int)、LeonActionMotionDriver.CommitPairedActionPose(int, Vector3, Quaternion, bool)。</summary>
+    /// <summary>运动关联编号。</summary>
     private int motionAssociationId;
-    /// <summary>中文含义：当前运动。使用位置：作为 LeonActionMotionDriver.TokenValid(MotionControlToken) 的参数、LeonActionMotionDriver.AuthorizeMotion(MotionSource, int)、LeonActionMotionDriver.CancelAllMotion() 等共 12 处。</summary>
+    /// <summary>当前运动。</summary>
     private MotionControlToken currentMotion;
-    /// <summary>中文含义：当前运动凭证。使用位置：作为 LeonActionMotionDriver.CommitNormalOrientation(MotionControlToken, Quaternion) 的参数、作为 LeonActionMotionDriver.StopHorizontalSpeed(MotionControlToken) 的参数、LeonFootAction.AllowGroundContact.get 等共 5 处。</summary>
+    /// <summary>当前运动凭证。</summary>
     public MotionControlToken CurrentMotionToken => currentMotion;
 
     /// <summary>Unity 组件启用回调；状态处理与资源交接按函数内顺序执行，下游协作见调用链。</summary>
@@ -51,8 +51,8 @@ public class LeonActionMotionDriver : MonoBehaviour
 
     /// <summary>AuthorizeMotion 的业务处理入口；本方法直接依赖 ActionHandle.ActionHandle(ObjectIdentity, long)、MotionControlToken.MotionControlToken(ActionHandle, MotionSource, long)、Object.GetInstanceID()、ObjectIdentity.ObjectIdentity(int, long)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonActionMotionDriver.BeginDeathMotion()、LeonActionMotionDriver.BeginHitMotion()、LeonActionMotionDriver.RequestPairedActionMotion(int)、LeonActionMotionDriver.SynchronizeNormalMotionPermission(LeonState)、LeonHighDropLanding.BeginDrop() 等共 6 处；下游（含内部回调体） ActionHandle.ActionHandle(ObjectIdentity, long)、MotionControlToken.MotionControlToken(ActionHandle, MotionSource, long)、Object.GetInstanceID()、ObjectIdentity.ObjectIdentity(int, long)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="source">中文含义：来源运动来源。使用位置：作为 MotionControlToken.MotionControlToken(ActionHandle, MotionSource, long) 的参数、LeonActionMotionDriver.AuthorizeMotion(MotionSource, int)。</param>
-    /// <param name="associationId">中文含义：关联编号。使用位置：LeonActionMotionDriver.AuthorizeMotion(MotionSource, int)。</param>
+    /// <param name="source">来源运动来源。</param>
+    /// <param name="associationId">关联编号。</param>
     public MotionControlToken AuthorizeMotion(MotionSource source, int associationId)
     {
         if (!isActiveAndEnabled || motionLeaseVersion <= 0 || source == MotionSource.None)
@@ -78,9 +78,9 @@ public class LeonActionMotionDriver : MonoBehaviour
         // 先撤销，再授权。旧固定更新、动画或通行回调持有的凭证立即失效。
         currentMotion = default;
         motionAssociationId = associationId;
-        // id（编号）：使用位置：作为 ActionHandle.ActionHandle(ObjectIdentity, long) 的参数、作为 MotionControlToken.MotionControlToken(ActionHandle, MotionSource, long) 的参数。
+        // 编号。
 long id = ++motionHandoffId;
-        // identity（身份标识）：使用位置：作为 ActionHandle.ActionHandle(ObjectIdentity, long) 的参数。
+        // 身份标识。
 var identity = new ObjectIdentity(GetInstanceID(), motionLeaseVersion);
         currentMotion = new MotionControlToken(new ActionHandle(identity, id), source, id);
         return currentMotion;
@@ -88,11 +88,11 @@ var identity = new ObjectIdentity(GetInstanceID(), motionLeaseVersion);
 
     /// <summary>TokenValid 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
     /// <remarks>静态调用链：上游 LeonActionMotionDriver.CommitAngleSpeed(MotionControlToken, Vector3)、LeonActionMotionDriver.CommitNormalOrientation(MotionControlToken, Quaternion)、LeonActionMotionDriver.CommitPairedActionPose(int, Vector3, Quaternion, bool)、LeonActionMotionDriver.CommitPosition(MotionControlToken, Vector3)、LeonActionMotionDriver.CommitSpeed(MotionControlToken, Vector3) 等共 9 处；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="token">中文含义：凭证。使用位置：LeonActionMotionDriver.TokenValid(MotionControlToken)。</param>
+    /// <param name="token">凭证。</param>
     public bool TokenValid(MotionControlToken token) => isActiveAndEnabled && token.Valid && token.Action == currentMotion.Action && token.Source == currentMotion.Source && token.HandoffId == currentMotion.HandoffId;
     /// <summary>StopHorizontalSpeed 的业务处理入口；本方法直接依赖 LeonActionMotionDriver.ClearHorizontalVelocity()、LeonActionMotionDriver.TokenValid(MotionControlToken)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonAnimationActionCoordinator.StopCurrentHorizontalMotion()；下游（含内部回调体） LeonActionMotionDriver.ClearHorizontalVelocity()、LeonActionMotionDriver.TokenValid(MotionControlToken)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="token">中文含义：凭证。使用位置：作为 LeonActionMotionDriver.TokenValid(MotionControlToken) 的参数。</param>
+    /// <param name="token">凭证。</param>
     public void StopHorizontalSpeed(MotionControlToken token)
     {
         if (TokenValid(token))
@@ -103,8 +103,8 @@ var identity = new ObjectIdentity(GetInstanceID(), motionLeaseVersion);
 
     /// <summary>CommitSpeed 的业务处理入口；本方法直接依赖 LeonActionMotionDriver.TokenValid(MotionControlToken)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonHighDropLanding.UpdateActiveDrop()、LeonLocomotion.HandleMovement()、LeonPlayerStairRampRuntime.ApplyPlayerMotionAssistInternal(LeonController, Rigidbody, CapsuleCollider, Vector3, LeonActionMotionDriver, MotionControlToken)、LeonWindowTraversal.BeginAutomaticDrop()、LeonWindowTraversal.BeginTraversalPhysics() 等共 9 处；下游（含内部回调体） LeonActionMotionDriver.TokenValid(MotionControlToken)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="token">中文含义：凭证。使用位置：作为 LeonActionMotionDriver.TokenValid(MotionControlToken) 的参数。</param>
-    /// <param name="speed">中文含义：速度。使用位置：LeonActionMotionDriver.CommitSpeed(MotionControlToken, Vector3)。</param>
+    /// <param name="token">凭证。</param>
+    /// <param name="speed">速度。</param>
     public bool CommitSpeed(MotionControlToken token, Vector3 speed)
     {
         if (!TokenValid(token) || body == null)
@@ -118,8 +118,8 @@ var identity = new ObjectIdentity(GetInstanceID(), motionLeaseVersion);
 
     /// <summary>CommitAngleSpeed 的业务处理入口；本方法直接依赖 LeonActionMotionDriver.TokenValid(MotionControlToken)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonWindowTraversal.BeginAutomaticDrop()、LeonWindowTraversal.BeginTraversalPhysics()、LeonWindowTraversal.EndTraversalPhysics()；下游（含内部回调体） LeonActionMotionDriver.TokenValid(MotionControlToken)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="token">中文含义：凭证。使用位置：作为 LeonActionMotionDriver.TokenValid(MotionControlToken) 的参数。</param>
-    /// <param name="speed">中文含义：速度。使用位置：LeonActionMotionDriver.CommitAngleSpeed(MotionControlToken, Vector3)。</param>
+    /// <param name="token">凭证。</param>
+    /// <param name="speed">速度。</param>
     public bool CommitAngleSpeed(MotionControlToken token, Vector3 speed)
     {
         if (!TokenValid(token) || body == null)
@@ -133,8 +133,8 @@ var identity = new ObjectIdentity(GetInstanceID(), motionLeaseVersion);
 
     /// <summary>CommitPosition 的业务处理入口；本方法直接依赖 LeonActionMotionDriver.TokenValid(MotionControlToken)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonWindowTraversal.CommitDropImpact()；下游（含内部回调体） LeonActionMotionDriver.TokenValid(MotionControlToken)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="token">中文含义：凭证。使用位置：作为 LeonActionMotionDriver.TokenValid(MotionControlToken) 的参数。</param>
-    /// <param name="positionValue">中文含义：位置值。使用位置：LeonActionMotionDriver.CommitPosition(MotionControlToken, Vector3)。</param>
+    /// <param name="token">凭证。</param>
+    /// <param name="positionValue">位置值。</param>
     public bool CommitPosition(MotionControlToken token, Vector3 positionValue)
     {
         if (!TokenValid(token))
@@ -156,8 +156,8 @@ var identity = new ObjectIdentity(GetInstanceID(), motionLeaseVersion);
 
     /// <summary>CommitNormalOrientation 的业务处理入口；本方法直接依赖 LeonActionMotionDriver.TokenValid(MotionControlToken)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonAnimationActionCoordinator.CommitKnifeAssistOrientation(Quaternion)、LeonLocomotion.HandleRotation(Vector3, Camera, bool, bool, bool, bool, bool, Vector3)、LeonLocomotion.UpdateTurnAngleFromCamera(Camera, bool, bool, bool, bool)；下游（含内部回调体） LeonActionMotionDriver.TokenValid(MotionControlToken)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="token">中文含义：凭证。使用位置：作为 LeonActionMotionDriver.TokenValid(MotionControlToken) 的参数、LeonActionMotionDriver.CommitNormalOrientation(MotionControlToken, Quaternion)。</param>
-    /// <param name="orientation">中文含义：朝向。使用位置：LeonActionMotionDriver.CommitNormalOrientation(MotionControlToken, Quaternion)。</param>
+    /// <param name="token">凭证。</param>
+    /// <param name="orientation">朝向。</param>
     public bool CommitNormalOrientation(MotionControlToken token, Quaternion orientation)
     {
         if (!TokenValid(token) || token.Source != MotionSource.NormalMovement)
@@ -187,9 +187,9 @@ var identity = new ObjectIdentity(GetInstanceID(), motionLeaseVersion);
 
     /// <summary>CommitTraversalPose 的业务处理入口；本方法直接依赖 LeonActionMotionDriver.TokenValid(MotionControlToken)、Transform.SetPositionAndRotation(Vector3, Quaternion)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonWindowTraversal.SetBodyPose(Vector3, Quaternion)；下游（含内部回调体） LeonActionMotionDriver.TokenValid(MotionControlToken)、Transform.SetPositionAndRotation(Vector3, Quaternion)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="token">中文含义：凭证。使用位置：作为 LeonActionMotionDriver.TokenValid(MotionControlToken) 的参数、LeonActionMotionDriver.CommitTraversalPose(MotionControlToken, Vector3, Quaternion)。</param>
-    /// <param name="positionValue">中文含义：位置值。使用位置：作为 Transform.SetPositionAndRotation(Vector3, Quaternion) 的参数、LeonActionMotionDriver.CommitTraversalPose(MotionControlToken, Vector3, Quaternion)。</param>
-    /// <param name="orientation">中文含义：朝向。使用位置：作为 Transform.SetPositionAndRotation(Vector3, Quaternion) 的参数、LeonActionMotionDriver.CommitTraversalPose(MotionControlToken, Vector3, Quaternion)。</param>
+    /// <param name="token">凭证。</param>
+    /// <param name="positionValue">位置值。</param>
+    /// <param name="orientation">朝向。</param>
     public bool CommitTraversalPose(MotionControlToken token, Vector3 positionValue, Quaternion orientation, bool interpolate = false)
     {
         if (!TokenValid(token) || token.Source != MotionSource.Traversal)
@@ -234,7 +234,7 @@ var identity = new ObjectIdentity(GetInstanceID(), motionLeaseVersion);
 
     /// <summary>ReleaseMotion 的业务处理入口；本方法直接依赖 LeonActionMotionDriver.TokenValid(MotionControlToken)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonHighDropLanding.FinishDrop()、LeonWindowTraversal.ClearActiveTraversal()；下游（含内部回调体） LeonActionMotionDriver.TokenValid(MotionControlToken)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="token">中文含义：凭证。使用位置：作为 LeonActionMotionDriver.TokenValid(MotionControlToken) 的参数。</param>
+    /// <param name="token">凭证。</param>
     public void ReleaseMotion(MotionControlToken token)
     {
         if (TokenValid(token))
@@ -245,7 +245,7 @@ var identity = new ObjectIdentity(GetInstanceID(), motionLeaseVersion);
 
     /// <summary>SynchronizeNormalMotionPermission 的业务处理入口；本方法直接依赖 LeonActionMotionDriver.AuthorizeMotion(MotionSource, int)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonAnimationActionCoordinator.SynchronizeMotionControlAuthority()；下游（含内部回调体） LeonActionMotionDriver.AuthorizeMotion(MotionSource, int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="state">中文含义：当前里昂状态。使用位置：LeonActionMotionDriver.SynchronizeNormalMotionPermission(LeonState)。</param>
+    /// <param name="state">当前里昂状态。</param>
     public void SynchronizeNormalMotionPermission(LeonState state)
     {
         if (footHeldByTrap || pairedActionSession != 0 || hitMotionActive || deathMotionActive || state == LeonState.Traversing || state == LeonState.Staggered || state == LeonState.QTE || state == LeonState.Dead)
@@ -256,18 +256,18 @@ var identity = new ObjectIdentity(GetInstanceID(), motionLeaseVersion);
         AuthorizeMotion(MotionSource.NormalMovement, 0);
     }
 
-    /// <summary>中文含义：已配对动作会话。使用位置：作为 LeonActionMotionDriver.ReleasePairedActionMotion(int) 的参数、LeonActionMotionDriver.AuthorizeMotion(MotionSource, int)、LeonActionMotionDriver.CommitPairedActionPose(int, Vector3, Quaternion, bool) 等共 8 处。</summary>
+    /// <summary>已配对动作会话。</summary>
     private int pairedActionSession;
-    /// <summary>中文含义：已配对动作前方约束。使用位置：LeonActionMotionDriver.ReleasePairedActionMotion(int)、LeonActionMotionDriver.RequestPairedActionMotion(int)。</summary>
+    /// <summary>已配对动作前方约束。</summary>
     private RigidbodyConstraints pairedActionFrontConstraint;
-    /// <summary>中文含义：是否已配对动作前方根运动。使用位置：LeonActionMotionDriver.ReleasePairedActionMotion(int)、LeonActionMotionDriver.RequestPairedActionMotion(int)。</summary>
+    /// <summary>是否已配对动作前方根运动。</summary>
     private bool pairedActionFrontRootMotion;
     /// <summary>中文含义：当前已配对动作会话。</summary>
     public int CurrentPairedActionSession => pairedActionSession;
 
     /// <summary>RequestPairedActionMotion 的业务处理入口；本方法直接依赖 LeonActionMotionDriver.AuthorizeMotion(MotionSource, int)、LeonActionMotionDriver.ClearHorizontalVelocity()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonQTECoordinator.CacheAndLockPlayer()；下游（含内部回调体） LeonActionMotionDriver.AuthorizeMotion(MotionSource, int)、LeonActionMotionDriver.ClearHorizontalVelocity()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="session">中文含义：会话。使用位置：作为 LeonActionMotionDriver.AuthorizeMotion(MotionSource, int) 的参数、LeonActionMotionDriver.RequestPairedActionMotion(int)。</param>
+    /// <param name="session">会话。</param>
     public bool RequestPairedActionMotion(int session)
     {
         if (session <= 0 || deathMotionActive || pairedActionSession != 0)
@@ -303,10 +303,10 @@ var identity = new ObjectIdentity(GetInstanceID(), motionLeaseVersion);
 
     /// <summary>CommitPairedActionPose 的业务处理入口；本方法直接依赖 LeonActionMotionDriver.TokenValid(MotionControlToken)、Transform.SetPositionAndRotation(Vector3, Quaternion)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonQTECoordinator.SetPlayerWorldPose(Vector3, Quaternion)、LeonQTECoordinator.SetPlayerWorldPosition(Vector3)；下游（含内部回调体） LeonActionMotionDriver.TokenValid(MotionControlToken)、Transform.SetPositionAndRotation(Vector3, Quaternion)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="session">中文含义：会话。使用位置：LeonActionMotionDriver.CommitPairedActionPose(int, Vector3, Quaternion, bool)。</param>
-    /// <param name="positionValue">中文含义：位置值。使用位置：作为 Transform.SetPositionAndRotation(Vector3, Quaternion) 的参数、LeonActionMotionDriver.CommitPairedActionPose(int, Vector3, Quaternion, bool)。</param>
-    /// <param name="orientation">中文含义：朝向。使用位置：作为 Transform.SetPositionAndRotation(Vector3, Quaternion) 的参数、LeonActionMotionDriver.CommitPairedActionPose(int, Vector3, Quaternion, bool)。</param>
-    /// <param name="updateOrientation">中文含义：是否更新朝向。使用位置：LeonActionMotionDriver.CommitPairedActionPose(int, Vector3, Quaternion, bool)。</param>
+    /// <param name="session">会话。</param>
+    /// <param name="positionValue">位置值。</param>
+    /// <param name="orientation">朝向。</param>
+    /// <param name="updateOrientation">是否更新朝向。</param>
     public bool CommitPairedActionPose(int session, Vector3 positionValue, Quaternion orientation, bool updateOrientation)
     {
         if (session <= 0 || session != pairedActionSession || deathMotionActive || currentMotion.Source != MotionSource.PairedActionAction || motionAssociationId != session || !TokenValid(currentMotion))
@@ -337,7 +337,7 @@ var identity = new ObjectIdentity(GetInstanceID(), motionLeaseVersion);
 
     /// <summary>ReleasePairedActionMotion 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
     /// <remarks>静态调用链：上游 LeonActionMotionDriver.BeginDeathMotion()、LeonActionMotionDriver.CancelAllMotion()、LeonQTECoordinator.RestorePlayerLock()；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="session">中文含义：会话。使用位置：LeonActionMotionDriver.ReleasePairedActionMotion(int)。</param>
+    /// <param name="session">会话。</param>
     public void ReleasePairedActionMotion(int session)
     {
         if (session <= 0 || session != pairedActionSession)
@@ -419,7 +419,7 @@ var identity = new ObjectIdentity(GetInstanceID(), motionLeaseVersion);
 
         if (body != null)
         {
-            // velocity（速度）：使用位置：作为 Vector3.Vector3(float, float, float) 的参数。
+            // 速度。
 Vector3 velocity = body.linearVelocity;
             body.linearVelocity = new Vector3(0f, velocity.y, 0f);
         }
@@ -558,7 +558,7 @@ Vector3 velocity = body.linearVelocity;
             return;
         }
 
-        // velocity（速度）：使用位置：作为 Vector3.Vector3(float, float, float) 的参数。
+        // 速度。
 Vector3 velocity = body.linearVelocity;
         body.linearVelocity = new Vector3(0f, velocity.y, 0f);
     }
@@ -581,17 +581,69 @@ Vector3 velocity = body.linearVelocity;
 
     private void ApplyWalkThroughDetails()
     {
-        if (nativeGaitCapsule == null || walkThroughDetails == null)
+        if (nativeGaitCapsule == null)
         {
             return;
         }
-        foreach (Collider detail in walkThroughDetails)
+        if (walkThroughDetails != null)
         {
-            if (detail != null)
+            foreach (Collider detail in walkThroughDetails)
             {
-                RegisterWalkThroughDetail(detail);
+                if (detail != null)
+                {
+                    RegisterWalkThroughDetail(detail);
+                }
             }
         }
+
+        // 放行场景中原版草丛与散石碎木变体的网格碰撞体，避免平地跑步被低矮装饰物虚空阻挡。
+        MeshCollider[] sceneMeshColliders = FindObjectsByType<MeshCollider>(FindObjectsSortMode.None);
+        for (int i = 0; i < sceneMeshColliders.Length; i++)
+        {
+            MeshCollider candidate = sceneMeshColliders[i];
+            if (IsWalkThroughDecorationMesh(candidate))
+            {
+                RegisterWalkThroughDetail(candidate);
+            }
+        }
+    }
+
+    private static bool IsWalkThroughDecorationMesh(MeshCollider obstacle)
+    {
+        if (obstacle == null || !obstacle.enabled || obstacle.isTrigger)
+        {
+            return false;
+        }
+
+        string objectName = obstacle.name;
+        if (objectName == "sm13_521_01" && obstacle.sharedMesh != null
+            && obstacle.sharedMesh.name == "6defebdab5550d57f8b7")
+        {
+            return true;
+        }
+
+        if (objectName == "sm13_502_01" || objectName == "sm13_502_04"
+            || objectName == "sm11_512_01" || objectName == "sm11_513_00"
+            || objectName.StartsWith("sm13_518_", System.StringComparison.Ordinal))
+        {
+            return true;
+        }
+
+        if ((objectName == "sm25_518_00" || objectName == "sm25_534_00" || objectName == "sm25_534_01"
+            || objectName == "sm55_550_00" || objectName == "sm55_550_01" || objectName == "sm53_510_00"
+            || objectName == "sm53_512_00" || objectName == "sm33_520_01")
+            && obstacle.bounds.size.y <= 0.25f)
+        {
+            return true;
+        }
+
+        Transform parent = obstacle.transform.parent;
+        if (parent != null && parent.name == "Grass")
+        {
+            return true;
+        }
+
+        return false;
     }
 
     private void RegisterWalkThroughDetail(Collider detail)
@@ -605,10 +657,9 @@ Vector3 velocity = body.linearVelocity;
 
     private void OnCollisionEnter(Collision collision)
     {
-        // 原版摆放表中的枯藤沿村路重复使用；只放行这一件装饰网格与里昂胶囊的碰撞。
-        if (nativeGaitCapsule != null && collision.collider is MeshCollider obstacle &&
-            obstacle.name == "sm13_521_01" && obstacle.sharedMesh != null &&
-            obstacle.sharedMesh.name == "6defebdab5550d57f8b7")
+        // 原版摆放表中的枯藤、草丛与散落杂物沿村路重复使用；放行这些装饰网格与里昂胶囊的碰撞。
+        if (nativeGaitCapsule != null && collision.collider is MeshCollider obstacle
+            && IsWalkThroughDecorationMesh(obstacle))
         {
             RegisterWalkThroughDetail(obstacle);
         }
@@ -640,7 +691,7 @@ Vector3 velocity = body.linearVelocity;
             return;
         }
 
-        // rootMotion（动画根运动）：使用位置：LeonActionMotionDriver.OnAnimatorMove()。
+        // 动画根运动。
 Vector3 rootMotion = animator.deltaPosition;
         rootMotion.y = 0f;
         if (body != null)
@@ -702,7 +753,7 @@ Vector3 rootMotion = animator.deltaPosition;
             }
             if (nativePickupEntrySpeed > 0f && Vector3.Dot(velocity, heading) < nativePickupEntrySpeed)
             {
-                // 上身拾取覆盖层会压低 Animator 根增量，短动作期间沿当前输入维持入场步速。
+                // 上身拾取覆盖层及其淡出期会压低 Animator 根增量，期间沿当前输入维持基础步速。
                 velocity = heading * nativePickupEntrySpeed;
             }
         }
@@ -728,11 +779,21 @@ Vector3 rootMotion = animator.deltaPosition;
 
     private Vector3 nativeGaitIncomingVelocity;
     private float nativePickupEntrySpeed;
+    private bool nativePickupProtected;
+    private float pickupObstructionGraceUntil = float.NegativeInfinity;
 
-    internal void PrepareNativeGaitStep(MotionControlToken token, Vector3 incomingVelocity, float pickupEntrySpeed)
+    internal void PrepareNativeGaitStep(MotionControlToken token, Vector3 incomingVelocity, float pickupEntrySpeed, bool pickupProtected = false)
     {
         nativeGaitIncomingVelocity = incomingVelocity;
         nativePickupEntrySpeed = pickupEntrySpeed;
+        nativePickupProtected = pickupProtected;
+        if (pickupProtected)
+        {
+            pickupObstructionGraceUntil = Time.fixedTime + 0.18f;
+            nativeBlocked = false;
+            nativeBlockedHeading = Vector3.zero;
+            nativeBlockedTime = 0f;
+        }
         if (nativeBlocked || nativeGaitDriver == null || !nativeGaitDriver.IsBasicGaitActive
             || !nativeGaitDriver.TryReadNativeGaitDirection(out _))
         {
@@ -742,6 +803,37 @@ Vector3 rootMotion = animator.deltaPosition;
 
     internal bool CheckNativeGaitObstruction(Vector3 heading)
     {
+        if (nativePickupProtected || Time.fixedTime <= pickupObstructionGraceUntil)
+        {
+            nativeStepDistance = 0f;
+            nativeBlockedTime = 0f;
+            nativeBlocked = false;
+            nativeBlockedHeading = Vector3.zero;
+            return false;
+        }
+        bool isInjured;
+        if (nativeLocomotion != null && nativeLocomotion.IsInjuredActive)
+        {
+            isInjured = true;
+        }
+        else
+        {
+            isInjured = false;
+        }
+
+        float actualRatioThreshold;
+        float blockedTriggerDuration;
+        if (isInjured)
+        {
+            actualRatioThreshold = 0.45f;
+            blockedTriggerDuration = 0.03f;
+        }
+        else
+        {
+            actualRatioThreshold = 0.30f;
+            blockedTriggerDuration = 0.06f;
+        }
+
         bool sameBlockedHeading = Vector3.Dot(nativeBlockedHeading, heading) > 0.8f;
         if (nativeBlocked && !sameBlockedHeading)
         {
@@ -750,7 +842,18 @@ Vector3 rootMotion = animator.deltaPosition;
         if (nativeStepDistance > 0.004f)
         {
             float actual = Vector3.Dot(body.position - nativeStepOrigin, nativeStepDirection);
-            if (actual < nativeStepDistance * 0.20f)
+            if (actual < nativeStepDistance * actualRatioThreshold)
+            {
+                nativeBlockedTime += Time.fixedDeltaTime;
+            }
+            else
+            {
+                nativeBlockedTime = 0f;
+            }
+        }
+        else if (isInjured && heading.sqrMagnitude > 0.01f)
+        {
+            if (HasNativeGaitObstacle(heading))
             {
                 nativeBlockedTime += Time.fixedDeltaTime;
             }
@@ -760,7 +863,8 @@ Vector3 rootMotion = animator.deltaPosition;
             }
         }
         nativeStepDistance = 0f;
-        if ((nativeBlockedTime >= 0.12f || nativeBlocked && sameBlockedHeading) && heading.sqrMagnitude > 0.01f
+
+        if ((nativeBlockedTime >= blockedTriggerDuration || nativeBlocked && sameBlockedHeading) && heading.sqrMagnitude > 0.01f
             && !TryStepOntoOuterPlatformSeam(heading) && !TryStepOntoLowTerrainEdge(heading)
             && HasNativeGaitObstacle(heading))
         {
@@ -778,6 +882,8 @@ Vector3 rootMotion = animator.deltaPosition;
     }
 
     private Vector3 nativeBlockedHeading;
+    /// <summary>下次允许自动抬脚跨坎的物理时间，避免连续帧反复叠加水平前推造成加速感。</summary>
+    private float nextTerrainStepTime;
 
     private Vector3 lastWalkPosition;
     private Vector3 lastWalkHeading;
@@ -793,7 +899,7 @@ Vector3 rootMotion = animator.deltaPosition;
         Vector3 position = body.position;
         bool consecutive = Mathf.Abs(Time.fixedTime - lastWalkTime - Time.fixedDeltaTime) < 0.001f;
         bool stalled = consecutive && Vector3.Dot(lastWalkHeading, heading) > 0.85f &&
-            Vector3.Dot(position - lastWalkPosition, lastWalkHeading) < expectedWalkDistance * 0.25f;
+            Vector3.Dot(position - lastWalkPosition, lastWalkHeading) < expectedWalkDistance * 0.35f;
         lastWalkPosition = position;
         lastWalkHeading = heading;
         expectedWalkDistance = speed * Time.fixedDeltaTime;
@@ -827,12 +933,22 @@ Vector3 rootMotion = animator.deltaPosition;
 
     private bool TryStepOntoLowTerrainEdge(Vector3 heading)
     {
-        const float maxRise = 0.24f;
+        const float maxRise = 0.26f;
         if (body == null || nativeGaitCapsule == null || !nativeGaitCapsule.enabled
             || currentMotion.Source != MotionSource.NormalMovement || nativeLocomotion == null
             || !nativeLocomotion.HasGroundForTerrainStep)
         {
             return false;
+        }
+
+        bool isInjured;
+        if (nativeLocomotion.IsInjuredActive)
+        {
+            isInjured = true;
+        }
+        else
+        {
+            isInjured = false;
         }
 
         Bounds bounds = nativeGaitCapsule.bounds;
@@ -861,10 +977,17 @@ Vector3 rootMotion = animator.deltaPosition;
 
             Vector3 side = Vector3.Cross(Vector3.up, heading).normalized * radius * 0.4f;
             Vector3 forward = heading * 0.08f;
-            if (TryFindTerrainTread(high + forward + side, maxRise + .05f, out RaycastHit left) &&
-                TryFindTerrainTread(high + forward - side, maxRise + .05f, out RaycastHit right) &&
-                Mathf.Abs(left.point.y - tread.point.y) < 0.045f && Mathf.Abs(right.point.y - tread.point.y) < 0.045f &&
-                TryCommitTerrainRise(heading, bounds, radius, rise, true))
+            bool leftMatched = TryFindTerrainTread(high + forward + side, maxRise + .05f, out RaycastHit left)
+                && Mathf.Abs(left.point.y - tread.point.y) < 0.065f;
+            bool rightMatched = TryFindTerrainTread(high + forward - side, maxRise + .05f, out RaycastHit right)
+                && Mathf.Abs(right.point.y - tread.point.y) < 0.065f;
+            bool sideSupported = leftMatched && rightMatched;
+            if (!sideSupported && (isInjured || rise <= 0.20f))
+            {
+                sideSupported = leftMatched || rightMatched;
+            }
+
+            if (sideSupported && TryCommitTerrainRise(heading, bounds, radius, rise, true))
             {
                 return true;
             }
@@ -875,51 +998,62 @@ Vector3 rootMotion = animator.deltaPosition;
 
     private bool TryCrossLowRidge(Vector3 heading, Vector3 foot, Bounds bounds, float radius, float maxRise)
     {
-        // 窄藤或碎石的顶面可能落在两个踏面采样点之间。先找挡脚的侧面，再检查另一侧的落脚地面。
+        // 窄棱、单块砖或碎石的顶面可能落在两个踏面采样点之间。采用高低双探针与多步落地探测跨越。
         var region = HouseThreeRegionNavigation.Current;
         Vector3 side = Vector3.Cross(Vector3.up, heading).normalized * radius * .45f;
-        for (int lane = -1; lane <= 1; lane++)
-        {
-            Vector3 origin = foot + side * lane + Vector3.up * .055f;
-            int count = Physics.RaycastNonAlloc(origin, heading, nativeGaitHits, radius + .16f,
-                Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore);
-            float distance = float.PositiveInfinity;
-            for (int i = 0; i < count; i++)
-            {
-                RaycastHit hit = nativeGaitHits[i];
-                if (hit.rigidbody == null && hit.distance < distance && hit.normal.y < .65f &&
-                    Vector3.Dot(hit.normal, heading) < -.2f && !IsWalkThroughDetail(hit.collider) &&
-                    !Physics.GetIgnoreLayerCollision(nativeGaitCapsule.gameObject.layer, hit.collider.gameObject.layer) &&
-                    !Physics.GetIgnoreCollision(nativeGaitCapsule, hit.collider))
-                {
-                    distance = hit.distance;
-                }
-            }
-            if (float.IsInfinity(distance))
-            {
-                continue;
-            }
+        float[] probeHeights = { 0.035f, 0.105f };
+        float[] landingSpans = { 0.16f, 0.28f, 0.42f };
 
-            Vector3 high = origin + heading * (distance + .025f);
-            high.y = foot.y + maxRise + .05f;
-            if (!TryFindTerrainTread(high, maxRise + .07f, out var crest))
+        for (int h = 0; h < probeHeights.Length; h++)
+        {
+            for (int lane = -1; lane <= 1; lane++)
             {
-                continue;
-            }
-            float rise = crest.point.y - foot.y;
-            if (rise < .025f || rise > maxRise)
-            {
-                continue;
-            }
-            Vector3 landing = foot + heading * (distance + .24f) + Vector3.up * (maxRise + .05f);
-            if (TryFindTerrainTread(landing + side, maxRise + .11f, out var left) &&
-                TryFindTerrainTread(landing - side, maxRise + .11f, out var right) &&
-                left.point.y <= crest.point.y + .035f && right.point.y <= crest.point.y + .035f &&
-                (region == null || (region.TreadRegion(left.point) == region.TreadRegion(foot) &&
-                region.TreadRegion(right.point) == region.TreadRegion(foot))) &&
-                TryCommitTerrainRise(heading, bounds, radius, rise, true))
-            {
-                return true;
+                Vector3 origin = foot + side * lane + Vector3.up * probeHeights[h];
+                int count = Physics.RaycastNonAlloc(origin, heading, nativeGaitHits, radius + .18f,
+                    Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore);
+                float distance = float.PositiveInfinity;
+                for (int i = 0; i < count; i++)
+                {
+                    RaycastHit hit = nativeGaitHits[i];
+                    if (hit.rigidbody == null && hit.distance < distance && hit.normal.y < .65f &&
+                        Vector3.Dot(hit.normal, heading) < -.2f && !IsWalkThroughDetail(hit.collider) &&
+                        !Physics.GetIgnoreLayerCollision(nativeGaitCapsule.gameObject.layer, hit.collider.gameObject.layer) &&
+                        !Physics.GetIgnoreCollision(nativeGaitCapsule, hit.collider))
+                    {
+                        distance = hit.distance;
+                    }
+                }
+                if (float.IsInfinity(distance))
+                {
+                    continue;
+                }
+
+                Vector3 high = origin + heading * (distance + .03f);
+                high.y = foot.y + maxRise + .05f;
+                if (!TryFindTerrainTread(high, maxRise + .07f, out var crest))
+                {
+                    continue;
+                }
+                float rise = crest.point.y - foot.y;
+                if (rise < .018f || rise > maxRise)
+                {
+                    continue;
+                }
+
+                for (int s = 0; s < landingSpans.Length; s++)
+                {
+                    Vector3 landing = foot + heading * (distance + landingSpans[s]) + Vector3.up * (maxRise + .05f);
+                    bool hasLeft = TryFindTerrainTread(landing + side, maxRise + .12f, out var left)
+                        && left.point.y <= crest.point.y + .05f
+                        && (region == null || region.TreadRegion(left.point) == region.TreadRegion(foot));
+                    bool hasRight = TryFindTerrainTread(landing - side, maxRise + .12f, out var right)
+                        && right.point.y <= crest.point.y + .05f
+                        && (region == null || region.TreadRegion(right.point) == region.TreadRegion(foot));
+                    if ((hasLeft || hasRight) && TryCommitTerrainRise(heading, bounds, radius, rise, true))
+                    {
+                        return true;
+                    }
+                }
             }
         }
         return false;
@@ -954,6 +1088,11 @@ Vector3 rootMotion = animator.deltaPosition;
 
     private bool TryCommitTerrainRise(Vector3 heading, Bounds bounds, float radius, float rise, bool requireSupport = false)
     {
+        if (Time.fixedTime < nextTerrainStepTime)
+        {
+            return false;
+        }
+
         Vector3 raise = Vector3.up * (rise + 0.02f);
         float sweepRadius = Mathf.Max(0.01f, radius - 0.01f);
         Vector3 halfSegment = Vector3.up * Mathf.Max(0f, bounds.extents.y - radius);
@@ -979,6 +1118,7 @@ Vector3 rootMotion = animator.deltaPosition;
             RaycastHit hit = nativeGaitHits[i];
             if (hit.collider.attachedRigidbody != body && hit.normal.y < 0.65f &&
                 Vector3.Dot(hit.normal, heading) < -0.2f &&
+                !IsWalkThroughDetail(hit.collider) &&
                 !Physics.GetIgnoreLayerCollision(nativeGaitCapsule.gameObject.layer, hit.collider.gameObject.layer) &&
                 !Physics.GetIgnoreCollision(nativeGaitCapsule, hit.collider))
             {
@@ -989,11 +1129,25 @@ Vector3 rootMotion = animator.deltaPosition;
         Vector3 raisedPosition = body.position + raise;
         if (requireSupport)
         {
-            // 越过胶囊接触公差，让物理步接住踏面，而非抬起后落回原地。
-            raisedPosition += heading * 0.045f;
+            float stepForward;
+            if (expectedWalkDistance > 0f)
+            {
+                stepForward = Mathf.Min(0.03f, expectedWalkDistance * 0.5f);
+            }
+            else
+            {
+                stepForward = 0.025f;
+            }
+            // 越过胶囊接触公差，让物理步接住踏面，同时限制最大半步前推，避免出现地面加速感。
+            raisedPosition += heading * stepForward;
         }
         nativeBlockedTime = 0f;
-        return CommitPosition(currentMotion, raisedPosition);
+        bool committed = CommitPosition(currentMotion, raisedPosition);
+        if (committed)
+        {
+            nextTerrainStepTime = Time.fixedTime + 0.12f;
+        }
+        return committed;
     }
 
     private bool HasNativeGaitObstacle(Vector3 heading)
@@ -1022,6 +1176,7 @@ Vector3 rootMotion = animator.deltaPosition;
             var hit = nativeGaitHits[index];
             if (hit.collider.attachedRigidbody != body && hit.normal.y < .65f
                 && Vector3.Dot(hit.normal, heading) < -.2f
+                && !IsWalkThroughDetail(hit.collider)
                 && !Physics.GetIgnoreLayerCollision(nativeGaitCapsule.gameObject.layer, hit.collider.gameObject.layer)
                 && !Physics.GetIgnoreCollision(nativeGaitCapsule, hit.collider))
             {
@@ -1038,5 +1193,6 @@ Vector3 rootMotion = animator.deltaPosition;
         nativeBlockedTime = 0f;
         nativeBlocked = false;
         nativeBlockedHeading = Vector3.zero;
+        nextTerrainStepTime = 0f;
     }
 }

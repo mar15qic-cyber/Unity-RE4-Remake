@@ -16,7 +16,7 @@ public interface IWeaponFireAnimation
 /// </summary>
 public interface IWeaponFireCadenceProvider
 {
-    /// <summary>中文含义：开火间隔。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>开火间隔。</summary>
     float FireInterval { get; }
 }
 
@@ -24,40 +24,40 @@ public interface IWeaponFireCadenceProvider
 /// <remarks>枪械射线与散弹命中的引擎宿主，弹匣、装填和冷却沿 WeaponRuntimeModule 提交，命中经 EnemyHitbox 与 DamageResolutionModule 结算，再发送表现事实。</remarks>
 public partial class WeaponBase : MonoBehaviour, ICrosshairDataProvider
 {
-    /// <summary>中文含义：当前武器配置。使用位置：作为 AudioManager.PlaySFX3D(AudioClip, Vector3) 的参数、作为 CombatEventDispatcher.PublishWeaponFired(Vector3, float) 的参数、作为 DamageResolutionModule.CommitEnemyHit(VillagerController, HitboxType, float, Vector3, Vector3) 的参数 等共 47 处。</summary>
+    /// <summary>当前武器配置。</summary>
     public WeaponData data;
-    /// <summary>中文含义：视觉表现模型。使用位置：WeaponBase.VisualModel.get。</summary>
+    /// <summary>视觉表现模型。</summary>
     [Header("视觉模型引用（Inspector 绑定）")]
     [SerializeField]
     private GameObject visualModel;
-    /// <summary>中文含义：武器音频。使用位置：WeaponBase.FireInternal(Vector3, Vector3)、WeaponBase.Initialize(LeonController)、WeaponBase.StartReload() 等共 4 处。</summary>
+    /// <summary>武器音频。</summary>
     [SerializeField]
     private WeaponAudio weaponAudio;
-    /// <summary>中文含义：视觉表现开火。使用位置：WeaponBase.Initialize(LeonController)。</summary>
+    /// <summary>视觉表现开火。</summary>
     [SerializeField]
     private MonoBehaviour visualFire;
-    /// <summary>中文含义：枪口点。使用位置：WeaponBase.FireAt(Vector3)。</summary>
+    /// <summary>枪口点。</summary>
     [Header("枪口")]
     public Transform muzzlePoint;
-    /// <summary>中文含义：射击遮罩。使用位置：WeaponBase.FireInternal(Vector3, Vector3)。</summary>
+    /// <summary>射击遮罩。</summary>
     [Header("命中检测")]
     public LayerMask shotMask;
-    /// <summary>中文含义：当前弹匣弹量。使用位置：作为 Action&lt;WeaponType, int, int&gt;.Invoke(WeaponType, int, int) 的参数、LeonWeaponHandler.CanLoadOneRoundFromReserve(WeaponType)、LeonWeaponHandler.CanReload() 等共 9 处。</summary>
+    /// <summary>当前弹匣弹量。</summary>
     public int currentAmmo => runtimeModule.Query(GetInstanceID()).magazine;
-    /// <summary>中文含义：是否正在换弹。使用位置：LeonWeaponHandler.StartReload()、WeaponBase.CanReload()。</summary>
+    /// <summary>是否正在换弹。</summary>
     public bool isReloading => runtimeModule.Query(GetInstanceID()).isReload;
 
-    /// <summary>中文含义：运行时模块。使用位置：WeaponBase.BeginReload(int)、WeaponBase.CancelReload()、WeaponBase.CanFire() 等共 8 处。</summary>
+    /// <summary>运行时模块。</summary>
     private WeaponRuntimeModule runtimeModule = new WeaponRuntimeModule();
-    /// <summary>中文含义：兼容换弹事务。使用位置：作为 WeaponBase.BeginReload(int) 的参数、WeaponBase.Reload()。</summary>
+    /// <summary>兼容换弹事务。</summary>
     private int compatibleReloadTransaction;
-    /// <summary>中文含义：待处理完成兼容事务。使用位置：作为 WeaponBase.CommitReload(int, int, bool, Action&lt;int&gt;) 的参数、WeaponBase.CancelReload()、WeaponBase.FinishReload() 等共 4 处。</summary>
+    /// <summary>待处理完成兼容事务。</summary>
     private int pendingCompleteCompatibleTransaction = -1;
-    /// <summary>中文含义：射击编号。使用位置：作为 ActionHandle.ActionHandle(ObjectIdentity, long) 的参数、作为 RequestContext.RequestContext(string, ObjectIdentity, ObjectIdentity, long) 的参数、WeaponBase.FireInternal(Vector3, Vector3)。</summary>
+    /// <summary>射击编号。</summary>
     private long shootId;
-    /// <summary>中文含义：武器租用版本。使用位置：作为 ObjectIdentity.ObjectIdentity(int, long) 的参数、WeaponBase.Initialize(LeonController)、WeaponBase.OnEnable()。</summary>
+    /// <summary>武器租用版本。</summary>
     private long weaponLeaseVersion;
-    /// <summary>中文含义：命中序号。使用位置：作为 DamageRequest.DamageRequest(RequestContext, ActionHandle, int, float, int, Vector3) 的参数、WeaponBase.FireInternal(Vector3, Vector3)。</summary>
+    /// <summary>命中序号。</summary>
     private int hitSequence;
     // 暴击判定使用独立随机源，避免改变既有弹道散布和敌人复起的随机序列。
     private static readonly System.Random pistolCriticalRandom = new System.Random();
@@ -68,9 +68,9 @@ public partial class WeaponBase : MonoBehaviour, ICrosshairDataProvider
         = new System.Collections.Generic.Dictionary<VillagerController, ShotgunTerminalHit>();
     private readonly System.Collections.Generic.Dictionary<VillagerController, (Vector3 position, bool head)> pelletImpacts
         = new System.Collections.Generic.Dictionary<VillagerController, (Vector3 position, bool head)>();
-    /// <summary>中文含义：里昂玩家控制器。使用位置：WeaponBase.FireAt(Vector3)、WeaponBase.FireInternal(Vector3, Vector3)、WeaponBase.Initialize(LeonController)。</summary>
+    /// <summary>里昂玩家控制器。</summary>
     protected LeonController controller;
-    /// <summary>中文含义：当前散布。使用位置：作为 Mathf.Clamp01(float) 的参数、作为 Mathf.Max(float, float) 的参数、作为 Mathf.Min(float, float) 的参数 等共 6 处。</summary>
+    /// <summary>当前散布。</summary>
     protected float currentSpread;
     /// <summary>中文含义：武器音频引用。缓存 Inspector 绑定的 WeaponAudio</summary>
     public WeaponAudio WeaponAudioRef => weaponAudio;
@@ -79,15 +79,15 @@ public partial class WeaponBase : MonoBehaviour, ICrosshairDataProvider
 
     /// <summary>中文含义：视觉表现开火。缓存 Inspector 绑定的开火动画控制器</summary>
     private IWeaponFireAnimation _visualFire;
-    /// <summary>中文含义：视觉表现开火射击节奏。使用位置：作为 Mathf.Max(float, float) 的参数、WeaponBase.GetFireInterval()、WeaponBase.Initialize(LeonController)。</summary>
+    /// <summary>视觉表现开火射击节奏。</summary>
     private IWeaponFireCadenceProvider visualFireCadence;
     /// <summary>中文含义：命中通知回调。旧武器查询接口的局部命中通知，保留原基础伤害语义。新的受击表现订阅已结算命中。</summary>
     public event System.Action<HitInfo> OnHit;
     /// <summary>中文含义：已开火时的通知回调。成功开火事件 — 用于驱动本地准心开火扩张等即时反馈</summary>
     public event System.Action OnFired;
-    /// <summary>中文含义：默认射击图层遮罩。使用位置：WeaponBase.AddLayerToMask(string)、WeaponBase.GetDefaultShotMask()。</summary>
+    /// <summary>默认射击图层遮罩。</summary>
     private static int defaultShotLayerMask = -1;
-    /// <summary>中文含义：是否缺失的枪口已警告。使用位置：WeaponBase.FireAt(Vector3)。</summary>
+    /// <summary>是否缺失的枪口已警告。</summary>
     private bool missingMuzzleWarned;
     /// <summary>GetDefaultShotMask 的业务处理入口；本方法直接依赖 WeaponBase.AddLayerToMask(string)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 WeaponBase.FireInternal(Vector3, Vector3)；下游（含内部回调体） WeaponBase.AddLayerToMask(string)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
@@ -105,10 +105,10 @@ public partial class WeaponBase : MonoBehaviour, ICrosshairDataProvider
 
     /// <summary>AddLayerToMask 的业务处理入口；本方法直接依赖 LayerMask.NameToLayer(string)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 WeaponBase.GetDefaultShotMask()；下游（含内部回调体） LayerMask.NameToLayer(string)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="layerName">中文含义：图层名称。使用位置：作为 LayerMask.NameToLayer(string) 的参数。</param>
+    /// <param name="layerName">图层名称。</param>
     private static void AddLayerToMask(string layerName)
     {
-        // layer（图层）：保存 LayerMask.NameToLayer(string) 的返回结果，供当前步骤使用。使用位置：WeaponBase.AddLayerToMask(string)。
+        // 图层。
 int layer = LayerMask.NameToLayer(layerName);
         if (layer >= 0)
         {
@@ -118,7 +118,7 @@ int layer = LayerMask.NameToLayer(layerName);
 
     /// <summary>Initialize 的业务处理入口；本方法直接依赖 Component.GetComponent&lt;LeonWeaponHandler&gt;()、Debug.LogWarning(object, Object)、Object.GetInstanceID()、Resources.Load&lt;WeaponData&gt;(string)、WeaponRuntimeModule.InitializeWeapon(int, int)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonWeaponHandler.Start()、PerformanceSamplingEntry.Drive(int, double)；下游（含内部回调体） Component.GetComponent&lt;LeonWeaponHandler&gt;()、Debug.LogWarning(object, Object)、Object.GetInstanceID()、Resources.Load&lt;WeaponData&gt;(string)、WeaponRuntimeModule.InitializeWeapon(int, int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="ctrl">中文含义：角色控制器。使用位置：WeaponBase.Initialize(LeonController)。</param>
+    /// <param name="ctrl">角色控制器。</param>
     public virtual void Initialize(LeonController ctrl)
     {
         controller = ctrl;
@@ -134,7 +134,7 @@ int layer = LayerMask.NameToLayer(layerName);
 
         if (ctrl != null)
         {
-            // holder（持有者）：保存 Component.GetComponent<LeonWeaponHandler>() 的返回结果，供当前步骤使用。使用位置：WeaponBase.Initialize(LeonController)。
+            // 持有者。
 var holder = ctrl.GetComponent<LeonWeaponHandler>();
             if (holder != null)
             {
@@ -142,11 +142,11 @@ var holder = ctrl.GetComponent<LeonWeaponHandler>();
             }
         }
 
-        // callReceiver3（调用前缓存的运行时模块）：从运行时模块读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：WeaponBase.Initialize(LeonController)。
+        // 调用前缓存的运行时模块。
 global::WeaponRuntimeModule callReceiver3 = runtimeModule;
-        // argumentValue2（按原顺序缓存的实参整数计算）：按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 WeaponRuntimeModule.InitializeWeapon(int, int) 的参数。
+        // 按原顺序缓存的实参整数计算。
 int argumentValue2 = GetInstanceID();
-        // selectedValue1（分支选出的数据的弹匣尺寸）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：作为 WeaponRuntimeModule.InitializeWeapon(int, int) 的参数、WeaponBase.Initialize(LeonController)。
+        // 分支选出的数据的弹匣尺寸。
 int selectedValue1;
         if (data != null)
         {
@@ -191,7 +191,7 @@ int selectedValue1;
     /// <remarks>静态调用链：上游 LeonCombat.GetShootLockDuration(WeaponBase)、WeaponBase.CanFire()、WeaponBase.FireInternal(Vector3, Vector3)；下游（含内部回调体） Mathf.Max(float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     public float GetFireInterval()
     {
-        // interval（间隔）：使用位置：作为 Mathf.Max(float, float) 的参数、WeaponBase.GetFireInterval()。
+        // 间隔。
 float interval;
         if (data != null)
         {
@@ -212,8 +212,8 @@ float interval;
 
     /// <summary>Fire 的业务处理入口；本方法直接依赖 WeaponBase.FireInternal(Vector3, Vector3)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） WeaponBase.FireInternal(Vector3, Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="origin">中文含义：原点。使用位置：作为 WeaponBase.FireInternal(Vector3, Vector3) 的参数。</param>
-    /// <param name="direction">中文含义：方向。使用位置：作为 WeaponBase.FireInternal(Vector3, Vector3) 的参数。</param>
+    /// <param name="origin">原点。</param>
+    /// <param name="direction">方向。</param>
     public virtual bool Fire(Vector3 origin, Vector3 direction)
     {
         return FireInternal(origin, direction);
@@ -221,12 +221,12 @@ float interval;
 
     /// <summary>FireAt 的业务处理入口；本方法直接依赖 Debug.LogWarning(object, Object)、WeaponBase.FireInternal(Vector3, Vector3)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonCombat.OnMeleeHitWindow(AnimationActionTransaction)、LeonWeaponHandler.Fire()；下游（含内部回调体） Debug.LogWarning(object, Object)、WeaponBase.FireInternal(Vector3, Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="aimPoint">中文含义：瞄准点。使用位置：WeaponBase.FireAt(Vector3)。</param>
+    /// <param name="aimPoint">瞄准点。</param>
     public virtual bool FireAt(Vector3 aimPoint)
     {
         if (data != null && data.weaponType == WeaponType.Knife)
         {
-            // meleeOrigin（近战原点）：使用位置：作为 WeaponBase.FireInternal(Vector3, Vector3) 的参数、WeaponBase.FireAt(Vector3)。
+            // 近战原点。
 Vector3 meleeOrigin;
             if (controller != null)
             {
@@ -237,7 +237,7 @@ Vector3 meleeOrigin;
                 meleeOrigin = transform.position;
             }
 
-            // meleeDirection（近战方向）：使用位置：作为 WeaponBase.FireInternal(Vector3, Vector3) 的参数、WeaponBase.FireAt(Vector3)。
+            // 近战方向。
 Vector3 meleeDirection;
             if (controller != null)
             {
@@ -251,7 +251,7 @@ Vector3 meleeDirection;
             return FireInternal(meleeOrigin, meleeDirection);
         }
 
-        // originTransform（原点变换）：使用位置：作为 WeaponBase.FireInternal(Vector3, Vector3) 的参数、WeaponBase.FireAt(Vector3)。
+        // 原点变换。
 Transform originTransform;
         if (muzzlePoint != null)
         {
@@ -313,8 +313,8 @@ Transform originTransform;
 
     /// <summary>FireInternal 的业务处理入口；本方法直接依赖 Action.Invoke()、AudioManager.PlaySFX3D(AudioClip, Vector3)、CombatEventDispatcher.PublishWeaponFired(Vector3, float)、IWeaponFireAnimation.TriggerFireAnimation()、Mathf.Min(float, float)、Object.GetInstanceID()、object.ReferenceEquals(object, object) 等共 19 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 WeaponBase.Fire(Vector3, Vector3)、WeaponBase.FireAt(Vector3)；下游（含内部回调体） Action.Invoke()、AudioManager.PlaySFX3D(AudioClip, Vector3)、CombatEventDispatcher.PublishWeaponFired(Vector3, float)、IWeaponFireAnimation.TriggerFireAnimation()、Mathf.Min(float, float)、Object.GetInstanceID()、object.ReferenceEquals(object, object) 等共 19 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="origin">中文含义：原点。使用位置：作为 CombatEventDispatcher.PublishWeaponFired(Vector3, float) 的参数、作为 WeaponBase.TryResolveRayHit(Vector3, Vector3, float, int, out RaycastHit) 的参数、作为 WeaponBase.TryResolveSphereHit(Vector3, float, Vector3, float, int, out RaycastHit) 的参数。</param>
-    /// <param name="direction">中文含义：方向。使用位置：作为 WeaponBase.ApplySpread(Vector3) 的参数、作为 WeaponBase.TryResolveSphereHit(Vector3, float, Vector3, float, int, out RaycastHit) 的参数、WeaponBase.FireInternal(Vector3, Vector3)。</param>
+    /// <param name="origin">原点。</param>
+    /// <param name="direction">方向。</param>
     bool FireInternal(Vector3 origin, Vector3 direction)
     {
         if (!CanFire())
@@ -331,7 +331,7 @@ Transform originTransform;
         hitSequence = 0;
         if (data.fireSound != null)
         {
-            // receiverValue8（判空前缓存的音频管理器的实例）：从音频管理器的实例读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、WeaponBase.FireInternal(Vector3, Vector3)。
+            // 判空前缓存的音频管理器的实例。
 global::AudioManager receiverValue8 = AudioManager.Instance;
             if (!global::System.Object.ReferenceEquals(receiverValue8, null))
             {
@@ -340,7 +340,7 @@ global::AudioManager receiverValue8 = AudioManager.Instance;
         }
         else
         {
-            // receiverValue9（判空前缓存的武器音频）：从武器音频读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、WeaponBase.FireInternal(Vector3, Vector3)。
+            // 判空前缓存的武器音频。
 global::WeaponAudio receiverValue9 = weaponAudio;
             if (!global::System.Object.ReferenceEquals(receiverValue9, null))
             {
@@ -348,14 +348,14 @@ global::WeaponAudio receiverValue9 = weaponAudio;
             }
         }
 
-        // receiverValue10（判空前缓存的视觉表现开火）：从视觉表现开火读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、WeaponBase.FireInternal(Vector3, Vector3)。
+        // 判空前缓存的视觉表现开火。
 global::IWeaponFireAnimation receiverValue10 = _visualFire;
         if (!global::System.Object.ReferenceEquals(receiverValue10, null))
         {
             receiverValue10.TriggerFireAnimation();
         }
 
-        // receiverValue11（判空前缓存的已开火时的通知回调）：从已开火时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、WeaponBase.FireInternal(Vector3, Vector3)。
+        // 判空前缓存的已开火时的通知回调。
 global::System.Action receiverValue11 = OnFired;
         if (!global::System.Object.ReferenceEquals(receiverValue11, null))
         {
@@ -368,7 +368,7 @@ global::System.Action receiverValue11 = OnFired;
             CombatEventDispatcher.PublishWeaponFired(origin, data.gunshotHearingRadius);
         }
 
-        // mask（遮罩）：使用位置：作为 WeaponBase.TryResolveRayHit(Vector3, Vector3, float, int, out RaycastHit) 的参数、作为 WeaponBase.TryResolveSphereHit(Vector3, float, Vector3, float, int, out RaycastHit) 的参数、WeaponBase.FireInternal(Vector3, Vector3)。
+        // 遮罩。
 int mask;
         if (shotMask.value != 0)
         {
@@ -379,11 +379,11 @@ int mask;
             mask = GetDefaultShotMask();
         }
 
-        // receiverValue13（判空前缓存的里昂玩家控制器）：从控制器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、WeaponBase.FireInternal(Vector3, Vector3)。
+        // 判空前缓存的里昂玩家控制器。
 global::LeonController receiverValue13 = controller;
         if (!global::System.Object.ReferenceEquals(receiverValue13, null))
         {
-            // receiverValue14（判空前缓存的接收者值13的摄像机控制器）：从接收者值13的摄像机控制器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、WeaponBase.FireInternal(Vector3, Vector3)。
+            // 判空前缓存的接收者值13的摄像机控制器。
 global::RE4CameraController receiverValue14 = receiverValue13.CameraController;
             if (!global::System.Object.ReferenceEquals(receiverValue14, null))
             {
@@ -393,7 +393,7 @@ global::RE4CameraController receiverValue14 = receiverValue13.CameraController;
 
         if (data.weaponType == WeaponType.Knife)
         {
-            // hitResolved（是否命中解算后的）：保存 WeaponBase.TryResolveSphereHit(Vector3, float, Vector3, float, int, out RaycastHit) 的返回结果，供当前步骤使用。使用位置：WeaponBase.FireInternal(Vector3, Vector3)。
+            // 是否命中解算后的。
 bool hitResolved = TryResolveSphereHit(origin, 0.5f, direction, 2f, mask, out RaycastHit /* 中文含义：命中。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ hit);
             if (hitResolved)
             {
@@ -419,7 +419,7 @@ bool hitResolved = TryResolveSphereHit(origin, 0.5f, direction, 2f, mask, out Ra
             Vector3 up = Vector3.Cross(forward, right);
             float rotation = Random.value * 2f * Mathf.PI;
             var reactionShots = new System.Collections.Generic.Dictionary<VillagerController, FirearmBodyTechniqueShot>();
-            // i（当前遍历索引）：使用位置：WeaponBase.FireInternal(Vector3, Vector3)。
+            // 当前遍历索引。
 for (int i = 0; i < data.pelletCount; i++)
             {
                 // a1（起点1）：使用位置：作为 Quaternion.Euler(float, float, float) 的参数。
@@ -465,7 +465,7 @@ for (int i = 0; i < data.pelletCount; i++)
             return true;
         }
 
-        // spreadDir（散布方向）：保存 WeaponBase.ApplySpread(Vector3) 的返回结果，供当前步骤使用。使用位置：作为 WeaponBase.TryResolveRayHit(Vector3, Vector3, float, int, out RaycastHit) 的参数。
+        // 散布方向。
 Vector3 spreadDir = ApplySpread(direction);
         if (TryResolveRayHit(origin, spreadDir, data.range, mask, out RaycastHit /* 中文含义：命中2。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ hit2))
         {
@@ -475,44 +475,44 @@ Vector3 spreadDir = ApplySpread(direction);
         return true;
     }
 
-    /// <summary>中文含义：命中查询集合。只读字段，初始化后不由普通写入口替换。使用位置：WeaponBase.TryResolveRayHit(Vector3, Vector3, float, int, out RaycastHit)、WeaponBase.TryResolveSphereHit(Vector3, float, Vector3, float, int, out RaycastHit)。</summary>
+    /// <summary>命中查询集合。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly HitQueryBuffer hitQueries = new HitQueryBuffer();
-    /// <summary>中文含义：命中距离比较器。只读字段，初始化后不由普通写入口替换。使用位置：作为 Array.Sort&lt;RaycastHit&gt;(RaycastHit[], int, int, IComparer&lt;RaycastHit&gt;) 的参数。</summary>
+    /// <summary>命中距离比较器。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly System.Collections.Generic.IComparer<RaycastHit> hitDistanceComparer = System.Collections.Generic.Comparer<RaycastHit>.Create(( /* 中文含义：第一个射线命中结果。 */first, /* 中文含义：第二个射线命中结果。 */ second) => first.distance.CompareTo(second.distance));
     /// <summary>TryResolveRayHit 的业务处理入口；本方法直接依赖 HitQueryBuffer.Raycast(Vector3, Vector3, float, int, QueryTriggerInteraction, out int)、WeaponBase.TrySelectCombatHit(RaycastHit[], int, out RaycastHit)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 WeaponBase.FireInternal(Vector3, Vector3)；下游（含内部回调体） HitQueryBuffer.Raycast(Vector3, Vector3, float, int, QueryTriggerInteraction, out int)、WeaponBase.TrySelectCombatHit(RaycastHit[], int, out RaycastHit)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="origin">中文含义：原点。使用位置：作为 HitQueryBuffer.Raycast(Vector3, Vector3, float, int, QueryTriggerInteraction, out int) 的参数。</param>
-    /// <param name="direction">中文含义：方向。使用位置：作为 HitQueryBuffer.Raycast(Vector3, Vector3, float, int, QueryTriggerInteraction, out int) 的参数。</param>
-    /// <param name="distance">中文含义：距离。使用位置：作为 HitQueryBuffer.Raycast(Vector3, Vector3, float, int, QueryTriggerInteraction, out int) 的参数。</param>
-    /// <param name="mask">中文含义：遮罩。使用位置：作为 HitQueryBuffer.Raycast(Vector3, Vector3, float, int, QueryTriggerInteraction, out int) 的参数。</param>
-    /// <param name="resolvedHit">中文含义：解算后的命中。输出参数，由本入口写入并交给调用方。使用位置：作为 WeaponBase.TrySelectCombatHit(RaycastHit[], int, out RaycastHit) 的参数。</param>
+    /// <param name="origin">原点。</param>
+    /// <param name="direction">方向。</param>
+    /// <param name="distance">距离。</param>
+    /// <param name="mask">遮罩。</param>
+    /// <param name="resolvedHit">解算后的命中。输出参数，由本入口写入并交给调用方。</param>
     private bool TryResolveRayHit(Vector3 origin, Vector3 direction, float distance, int mask, out RaycastHit resolvedHit)
     {
-        // hits（命中结果）：保存 HitQueryBuffer.Raycast(Vector3, Vector3, float, int, QueryTriggerInteraction, out int) 的返回结果，供当前步骤使用。使用位置：作为 WeaponBase.TrySelectCombatHit(RaycastHit[], int, out RaycastHit) 的参数。
+        // 命中结果。
 RaycastHit[] hits = hitQueries.Raycast(origin, direction, distance, mask, QueryTriggerInteraction.Collide, out int /* 中文含义：命中数量。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ hitCount);
         return TrySelectCombatHit(hits, hitCount, out resolvedHit);
     }
 
     /// <summary>TryResolveSphereHit 的业务处理入口；本方法直接依赖 HitQueryBuffer.SphereCast(Vector3, float, Vector3, float, int, QueryTriggerInteraction, out int)、WeaponBase.TrySelectCombatHit(RaycastHit[], int, out RaycastHit)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 WeaponBase.FireInternal(Vector3, Vector3)；下游（含内部回调体） HitQueryBuffer.SphereCast(Vector3, float, Vector3, float, int, QueryTriggerInteraction, out int)、WeaponBase.TrySelectCombatHit(RaycastHit[], int, out RaycastHit)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="origin">中文含义：原点。使用位置：作为 HitQueryBuffer.SphereCast(Vector3, float, Vector3, float, int, QueryTriggerInteraction, out int) 的参数。</param>
-    /// <param name="radius">中文含义：半径。使用位置：作为 HitQueryBuffer.SphereCast(Vector3, float, Vector3, float, int, QueryTriggerInteraction, out int) 的参数。</param>
-    /// <param name="direction">中文含义：方向。使用位置：作为 HitQueryBuffer.SphereCast(Vector3, float, Vector3, float, int, QueryTriggerInteraction, out int) 的参数。</param>
-    /// <param name="distance">中文含义：距离。使用位置：作为 HitQueryBuffer.SphereCast(Vector3, float, Vector3, float, int, QueryTriggerInteraction, out int) 的参数。</param>
-    /// <param name="mask">中文含义：遮罩。使用位置：作为 HitQueryBuffer.SphereCast(Vector3, float, Vector3, float, int, QueryTriggerInteraction, out int) 的参数。</param>
-    /// <param name="resolvedHit">中文含义：解算后的命中。输出参数，由本入口写入并交给调用方。使用位置：作为 WeaponBase.TrySelectCombatHit(RaycastHit[], int, out RaycastHit) 的参数。</param>
+    /// <param name="origin">原点。</param>
+    /// <param name="radius">半径。</param>
+    /// <param name="direction">方向。</param>
+    /// <param name="distance">距离。</param>
+    /// <param name="mask">遮罩。</param>
+    /// <param name="resolvedHit">解算后的命中。输出参数，由本入口写入并交给调用方。</param>
     private bool TryResolveSphereHit(Vector3 origin, float radius, Vector3 direction, float distance, int mask, out RaycastHit resolvedHit)
     {
-        // hits（命中结果）：保存 HitQueryBuffer.SphereCast(Vector3, float, Vector3, float, int, QueryTriggerInteraction, out int) 的返回结果，供当前步骤使用。使用位置：作为 WeaponBase.TrySelectCombatHit(RaycastHit[], int, out RaycastHit) 的参数。
+        // 命中结果。
 RaycastHit[] hits = hitQueries.SphereCast(origin, radius, direction, distance, mask, QueryTriggerInteraction.Collide, out int /* 中文含义：命中数量。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ hitCount);
         return TrySelectCombatHit(hits, hitCount, out resolvedHit);
     }
 
     /// <summary>TrySelectCombatHit 的业务处理入口；本方法直接依赖 Array.Sort&lt;RaycastHit&gt;(RaycastHit[], int, int, IComparer&lt;RaycastHit&gt;)、Component.GetComponent&lt;EnemyHitbox&gt;()、Component.GetComponentInParent&lt;VillagerController&gt;()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 WeaponBase.TryResolveRayHit(Vector3, Vector3, float, int, out RaycastHit)、WeaponBase.TryResolveSphereHit(Vector3, float, Vector3, float, int, out RaycastHit)；下游（含内部回调体） Array.Sort&lt;RaycastHit&gt;(RaycastHit[], int, int, IComparer&lt;RaycastHit&gt;)、Component.GetComponent&lt;EnemyHitbox&gt;()、Component.GetComponentInParent&lt;VillagerController&gt;()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="hits">中文含义：命中结果。使用位置：作为 Array.Sort&lt;RaycastHit&gt;(RaycastHit[], int, int, IComparer&lt;RaycastHit&gt;) 的参数、WeaponBase.TrySelectCombatHit(RaycastHit[], int, out RaycastHit)。</param>
-    /// <param name="hitCount">中文含义：命中数量。使用位置：作为 Array.Sort&lt;RaycastHit&gt;(RaycastHit[], int, int, IComparer&lt;RaycastHit&gt;) 的参数、WeaponBase.TrySelectCombatHit(RaycastHit[], int, out RaycastHit)。</param>
-    /// <param name="resolvedHit">中文含义：解算后的命中。输出参数，由本入口写入并交给调用方。使用位置：WeaponBase.TrySelectCombatHit(RaycastHit[], int, out RaycastHit)。</param>
+    /// <param name="hits">命中结果。</param>
+    /// <param name="hitCount">命中数量。</param>
+    /// <param name="resolvedHit">解算后的命中。输出参数，由本入口写入并交给调用方。</param>
     internal static bool TrySelectCombatHit(RaycastHit[] hits, int hitCount, out RaycastHit resolvedHit)
     {
         resolvedHit = default;
@@ -565,18 +565,18 @@ RaycastHit[] hits = hitQueries.SphereCast(origin, radius, direction, distance, m
     /// 处理命中：优先走 Bone Hitbox，回退到 IDamageable。
     /// </summary>
     /// <remarks>静态调用链：上游 WeaponBase.FireInternal(Vector3, Vector3)；下游（含内部回调体） Action&lt;HitInfo&gt;.Invoke(HitInfo)、Component.GetComponent&lt;EnemyHitbox&gt;()、Component.GetComponentInParent&lt;IDamageable&gt;()、Component.GetComponentInParent&lt;VillagerController&gt;()、DamageResolutionModule.CommitNormalHit(IDamageable, float, Vector3)、HitInfo.HitInfo(HitType, Vector3, float)、object.ReferenceEquals(object, object) 等共 9 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="hit">中文含义：命中。使用位置：作为 DamageResolutionModule.CommitNormalHit(IDamageable, float, Vector3) 的参数、作为 HitInfo.HitInfo(HitType, Vector3, float) 的参数、作为 VillagerController.ResolveFallbackHitboxType(Vector3) 的参数 等共 5 处。</param>
-    /// <param name="baseDamage">中文含义：基础伤害。使用位置：作为 DamageResolutionModule.CommitNormalHit(IDamageable, float, Vector3) 的参数、作为 HitInfo.HitInfo(HitType, Vector3, float) 的参数、作为 WeaponBase.CommitEnemyDamage(VillagerController, HitboxType, float, Vector3, Vector3) 的参数。</param>
+    /// <param name="hit">命中。</param>
+    /// <param name="baseDamage">基础伤害。</param>
     void ProcessHit(RaycastHit hit, float baseDamage,
         System.Collections.Generic.Dictionary<VillagerController, FirearmBodyTechniqueShot> reactionShots = null)
     {
         // 优先检查 EnemyHitbox（Bone Hitbox 系统）
-        // hitbox（命中盒）：保存 Component.GetComponent<EnemyHitbox>() 的返回结果，供当前步骤使用。使用位置：作为 WeaponBase.CommitEnemyDamage(VillagerController, HitboxType, float, Vector3, Vector3) 的参数、WeaponBase.ProcessHit(RaycastHit, float)。
+        // 命中盒。
 var hitbox = hit.collider.GetComponent<EnemyHitbox>();
         if (hitbox != null)
         {
             CommitEnemyDamage(hitbox.Owner, hitbox.hitboxType, baseDamage, hit.point, hit.normal, reactionShots, hasBodyPartHitbox: true);
-            // receiverValue15（判空前缓存的命中通知回调）：从命中通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、WeaponBase.ProcessHit(RaycastHit, float)。
+            // 判空前缓存的命中通知回调。
 global::System.Action<global::HitInfo> receiverValue15 = OnHit;
             if (!global::System.Object.ReferenceEquals(receiverValue15, null))
             {
@@ -586,14 +586,14 @@ global::System.Action<global::HitInfo> receiverValue15 = OnHit;
             return;
         }
 
-        // villager（村民）：保存 Component.GetComponentInParent<VillagerController>() 的返回结果，供当前步骤使用。使用位置：作为 WeaponBase.CommitEnemyDamage(VillagerController, HitboxType, float, Vector3, Vector3) 的参数、WeaponBase.ProcessHit(RaycastHit, float)。
+        // 村民。
 var villager = hit.collider.GetComponentInParent<VillagerController>();
         if (villager != null)
         {
-            // resolvedType（解算后的类型）：保存 VillagerController.ResolveFallbackHitboxType(Vector3) 的返回结果，供当前步骤使用。使用位置：作为 WeaponBase.CommitEnemyDamage(VillagerController, HitboxType, float, Vector3, Vector3) 的参数。
+            // 解算后的类型。
 HitboxType resolvedType = villager.ResolveFallbackHitboxType(hit.point);
             CommitEnemyDamage(villager, resolvedType, baseDamage, hit.point, hit.normal, reactionShots, hasBodyPartHitbox: false);
-            // receiverValue16（判空前缓存的命中通知回调）：从命中通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、WeaponBase.ProcessHit(RaycastHit, float)。
+            // 判空前缓存的命中通知回调。
 global::System.Action<global::HitInfo> receiverValue16 = OnHit;
             if (!global::System.Object.ReferenceEquals(receiverValue16, null))
             {
@@ -604,7 +604,7 @@ global::System.Action<global::HitInfo> receiverValue16 = OnHit;
         }
 
         // 回退：IDamageable（玩家或其他未使用 Hitbox 的对象）
-        // d（当前索引可受伤对象）：保存 Component.GetComponentInParent<IDamageable>() 的返回结果，供当前步骤使用。使用位置：作为 DamageResolutionModule.CommitNormalHit(IDamageable, float, Vector3) 的参数、WeaponBase.ProcessHit(RaycastHit, float)。
+        // 当前索引可受伤对象。
 var d = hit.collider.GetComponentInParent<IDamageable>();
         if (d == null)
         {
@@ -622,11 +622,11 @@ var d = hit.collider.GetComponentInParent<IDamageable>();
 
     /// <summary>CommitEnemyDamage 的业务处理入口；本方法直接依赖 ActionHandle.ActionHandle(ObjectIdentity, long)、DamageRequest.DamageRequest(RequestContext, ActionHandle, int, float, int, Vector3)、DamageResolutionModule.Commit(DamageRequest, VillagerController, HitboxType, Vector3)、Object.GetInstanceID()、ObjectIdentity.ObjectIdentity(int, long)、RequestContext.RequestContext(string, ObjectIdentity, ObjectIdentity, long)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 WeaponBase.ProcessHit(RaycastHit, float)；下游（含内部回调体） ActionHandle.ActionHandle(ObjectIdentity, long)、DamageRequest.DamageRequest(RequestContext, ActionHandle, int, float, int, Vector3)、DamageResolutionModule.Commit(DamageRequest, VillagerController, HitboxType, Vector3)、Object.GetInstanceID()、ObjectIdentity.ObjectIdentity(int, long)、RequestContext.RequestContext(string, ObjectIdentity, ObjectIdentity, long)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="target">中文含义：目标村民敌人控制器。使用位置：作为 DamageResolutionModule.Commit(DamageRequest, VillagerController, HitboxType, Vector3) 的参数、作为 RequestContext.RequestContext(string, ObjectIdentity, ObjectIdentity, long) 的参数、WeaponBase.CommitEnemyDamage(VillagerController, HitboxType, float, Vector3, Vector3)。</param>
-    /// <param name="bodyPart">中文含义：身体部位。使用位置：作为 DamageRequest.DamageRequest(RequestContext, ActionHandle, int, float, int, Vector3) 的参数、作为 DamageResolutionModule.Commit(DamageRequest, VillagerController, HitboxType, Vector3) 的参数。</param>
-    /// <param name="baseDamage">中文含义：基础伤害。使用位置：作为 DamageRequest.DamageRequest(RequestContext, ActionHandle, int, float, int, Vector3) 的参数。</param>
-    /// <param name="position">中文含义：位置。使用位置：作为 DamageRequest.DamageRequest(RequestContext, ActionHandle, int, float, int, Vector3) 的参数。</param>
-    /// <param name="normal">中文含义：表面法线。使用位置：作为 DamageResolutionModule.Commit(DamageRequest, VillagerController, HitboxType, Vector3) 的参数。</param>
+    /// <param name="target">目标村民敌人控制器。</param>
+    /// <param name="bodyPart">身体部位。</param>
+    /// <param name="baseDamage">基础伤害。</param>
+    /// <param name="position">位置。</param>
+    /// <param name="normal">表面法线。</param>
     private void CommitEnemyDamage(VillagerController target, HitboxType bodyPart, float baseDamage, Vector3 position, Vector3 normal,
         System.Collections.Generic.Dictionary<VillagerController, FirearmBodyTechniqueShot> reactionShots, bool hasBodyPartHitbox)
     {
@@ -640,11 +640,11 @@ var d = hit.collider.GetComponentInParent<IDamageable>();
             && TryRollPistolCritical(target, bodyPart, out criticalMultiplier);
         float requestedDamage = baseDamage * criticalMultiplier;
 
-        // identity（身份标识）：使用位置：作为 ActionHandle.ActionHandle(ObjectIdentity, long) 的参数、作为 RequestContext.RequestContext(string, ObjectIdentity, ObjectIdentity, long) 的参数。
+        // 身份标识。
 var identity = new GameArchitecture.ObjectIdentity(GetInstanceID(), weaponLeaseVersion);
-        // context（上下文）：使用位置：作为 DamageRequest.DamageRequest(RequestContext, ActionHandle, int, float, int, Vector3) 的参数。
+        // 上下文。
 var context = new GameArchitecture.RequestContext("武器命中", identity, target.actionCoordinator.Identity, shootId);
-        // request（请求）：使用位置：作为 DamageResolutionModule.Commit(DamageRequest, VillagerController, HitboxType, Vector3) 的参数。
+        // 请求。
         var request = new GameArchitecture.DamageRequest(context, new GameArchitecture.ActionHandle(identity, shootId),
             hitSequence++, requestedDamage, (int)bodyPart, position);
         bool hasImpactAudio = weaponAudio != null && weaponAudio.HasBulletImpact && data.weaponType != WeaponType.Knife;
@@ -811,16 +811,18 @@ var context = new GameArchitecture.RequestContext("武器命中", identity, targ
 
     /// <summary>ApplySpread 的业务处理入口；本方法直接依赖 Quaternion.Euler(float, float, float)、Random.Range(float, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 WeaponBase.FireInternal(Vector3, Vector3)；下游（含内部回调体） Quaternion.Euler(float, float, float)、Random.Range(float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="dir">中文含义：方向。使用位置：WeaponBase.ApplySpread(Vector3)。</param>
+    /// <param name="dir">方向。</param>
     protected virtual Vector3 ApplySpread(Vector3 dir)
     {
-        // angle（角度）：使用位置：作为 Random.Range(float, float) 的参数。
+        // 角度。
 float angle = currentSpread * Random.Range(-1f, 1f);
         return Quaternion.Euler(Random.Range(-angle, angle), Random.Range(-angle, angle), 0) * dir;
     }
 
     /// <summary>Reload 的业务处理入口；本方法直接依赖 MonoBehaviour.Invoke(string, float)、WeaponBase.BeginReload(int)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） MonoBehaviour.Invoke(string, float)、WeaponBase.BeginReload(int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
+    private float compatibleReloadDeadline = float.PositiveInfinity;
+
     public virtual void Reload()
     {
         if (!BeginReload(++compatibleReloadTransaction))
@@ -829,13 +831,14 @@ float angle = currentSpread * Random.Range(-1f, 1f);
         }
 
         pendingCompleteCompatibleTransaction = compatibleReloadTransaction;
-        Invoke(nameof(FinishReload), data.reloadTime);
+        compatibleReloadDeadline = Time.time + Mathf.Max(0f, data.reloadTime);
     }
 
     /// <summary>FinishReload 的业务处理入口；本方法直接依赖 WeaponBase.CommitReload(int, int, bool, Action&lt;int&gt;)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 WeaponBase.CompleteReload()；下游（含内部回调体） WeaponBase.CommitReload(int, int, bool, Action&lt;int&gt;)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     protected virtual void FinishReload()
     {
+        compatibleReloadDeadline = float.PositiveInfinity;
         if (data == null)
         {
             return;
@@ -858,7 +861,7 @@ float angle = currentSpread * Random.Range(-1f, 1f);
     {
         if (BeginReload(++compatibleReloadTransaction))
         {
-            // receiverValue18（判空前缓存的武器音频）：从武器音频读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、WeaponBase.StartReload()。
+            // 判空前缓存的武器音频。
 global::WeaponAudio receiverValue18 = weaponAudio;
             if (!global::System.Object.ReferenceEquals(receiverValue18, null))
             {
@@ -869,7 +872,7 @@ global::WeaponAudio receiverValue18 = weaponAudio;
 
     /// <summary>BeginReload 的业务处理入口；本方法直接依赖 Object.GetInstanceID()、WeaponRuntimeModule.BeginReload(int, int, int)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonWeaponHandler.StartReload()、WeaponBase.Reload()、WeaponBase.StartReload()；下游（含内部回调体） Object.GetInstanceID()、WeaponRuntimeModule.BeginReload(int, int, int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="transaction">中文含义：事务。使用位置：作为 WeaponRuntimeModule.BeginReload(int, int, int) 的参数。</param>
+    /// <param name="transaction">事务。</param>
     public bool BeginReload(int transaction)
     {
         return data != null && runtimeModule.BeginReload(GetInstanceID(), data.magazineSize, transaction);
@@ -877,10 +880,10 @@ global::WeaponAudio receiverValue18 = weaponAudio;
 
     /// <summary>CommitReload 的业务处理入口；本方法直接依赖 Object.GetInstanceID()、WeaponRuntimeModule.CommitReload(int, int, int, int, bool, Action&lt;int&gt;)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonWeaponHandler.CompleteReload(int)、LeonWeaponHandler.LoadOneRoundFromReserve(WeaponType, int)、WeaponBase.FinishReload()；下游（含内部回调体） Object.GetInstanceID()、WeaponRuntimeModule.CommitReload(int, int, int, int, bool, Action&lt;int&gt;)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="transaction">中文含义：事务。使用位置：作为 WeaponRuntimeModule.CommitReload(int, int, int, int, bool, Action&lt;int&gt;) 的参数。</param>
-    /// <param name="reserveAmmo">中文含义：背包备弹。使用位置：作为 WeaponRuntimeModule.CommitReload(int, int, int, int, bool, Action&lt;int&gt;) 的参数。</param>
-    /// <param name="singleShot">中文含义：是否单一射击。使用位置：作为 WeaponRuntimeModule.CommitReload(int, int, int, int, bool, Action&lt;int&gt;) 的参数。</param>
-    /// <param name="deductReserveAmmo">中文含义：扣除背包备弹。使用位置：作为 WeaponRuntimeModule.CommitReload(int, int, int, int, bool, Action&lt;int&gt;) 的参数。</param>
+    /// <param name="transaction">事务。</param>
+    /// <param name="reserveAmmo">背包备弹。</param>
+    /// <param name="singleShot">是否单一射击。</param>
+    /// <param name="deductReserveAmmo">扣除背包备弹。</param>
     public int CommitReload(int transaction, int reserveAmmo, bool singleShot, System.Action<int> deductReserveAmmo)
     {
         if (data == null)
@@ -897,7 +900,7 @@ global::WeaponAudio receiverValue18 = weaponAudio;
     /// <remarks>静态调用链：上游 LeonWeaponHandler.CancelReload(WeaponType)、LeonWeaponHandler.OnDisable()、WeaponBase.OnDisable()；下游（含内部回调体） MonoBehaviour.CancelInvoke(string)、Object.GetInstanceID()、WeaponRuntimeModule.CancelReload(int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     public void CancelReload()
     {
-        CancelInvoke(nameof(FinishReload));
+        compatibleReloadDeadline = float.PositiveInfinity;
         pendingCompleteCompatibleTransaction = -1;
         runtimeModule.CancelReload(GetInstanceID());
     }
@@ -929,6 +932,12 @@ global::WeaponAudio receiverValue18 = weaponAudio;
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） Mathf.Max(float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     void Update()
     {
+        if (Time.time >= compatibleReloadDeadline)
+        {
+            compatibleReloadDeadline = float.PositiveInfinity;
+            FinishReload();
+        }
+
         if (data == null)
         {
             return;

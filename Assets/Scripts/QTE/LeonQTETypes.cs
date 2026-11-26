@@ -29,53 +29,53 @@ public enum QTEKind
 [Serializable]
 public sealed class QTEAnimationVariant
 {
-    /// <summary>中文含义：种类。使用位置：LeonExpandedQTESetupUtility.BuildKnifeVariant()、LeonExpandedQTESetupUtility.BuildLegBiteVariant()、LeonExpandedQTESetupUtility.BuildRearBiteVariant() 等共 4 处。</summary>
+    /// <summary>种类。</summary>
     public QTEKind kind = QTEKind.FrontGrab;
-    /// <summary>中文含义：玩家进入。使用位置：作为 QTEAnimatorOverrideScope.Apply(Animator, AnimationClip, AnimationClip, AnimationClip, AnimationClip) 的参数、LeonExpandedQTESetupUtility.BuildKnifeVariant()、LeonExpandedQTESetupUtility.BuildLegBiteVariant() 等共 5 处。</summary>
+    /// <summary>玩家进入。</summary>
     public AnimationClip playerEnter;
-    /// <summary>中文含义：玩家保持。使用位置：作为 QTEAnimatorOverrideScope.Apply(Animator, AnimationClip, AnimationClip, AnimationClip, AnimationClip) 的参数、LeonExpandedQTESetupUtility.BuildKnifeVariant()、LeonExpandedQTESetupUtility.BuildLegBiteVariant() 等共 5 处。</summary>
+    /// <summary>玩家保持。</summary>
     public AnimationClip playerHold;
-    /// <summary>中文含义：玩家成功。使用位置：作为 QTEAnimatorOverrideScope.Apply(Animator, AnimationClip, AnimationClip, AnimationClip, AnimationClip) 的参数、LeonExpandedQTESetupUtility.BuildKnifeVariant()、LeonExpandedQTESetupUtility.BuildLegBiteVariant() 等共 5 处。</summary>
+    /// <summary>玩家成功。</summary>
     public AnimationClip playerSuccess;
-    /// <summary>中文含义：玩家失败。使用位置：作为 QTEAnimatorOverrideScope.Apply(Animator, AnimationClip, AnimationClip, AnimationClip, AnimationClip) 的参数、LeonExpandedQTESetupUtility.BuildKnifeVariant()、LeonExpandedQTESetupUtility.BuildLegBiteVariant() 等共 5 处。</summary>
+    /// <summary>玩家失败。</summary>
     public AnimationClip playerFailure;
-    /// <summary>中文含义：敌人进入。使用位置：作为 QTEAnimatorOverrideScope.Apply(Animator, AnimationClip, AnimationClip, AnimationClip, AnimationClip) 的参数、LeonExpandedQTESetupUtility.BuildKnifeVariant()、LeonExpandedQTESetupUtility.BuildLegBiteVariant() 等共 5 处。</summary>
+    /// <summary>敌人进入。</summary>
     public AnimationClip enemyEnter;
-    /// <summary>中文含义：敌人保持。使用位置：作为 QTEAnimatorOverrideScope.Apply(Animator, AnimationClip, AnimationClip, AnimationClip, AnimationClip) 的参数、LeonExpandedQTESetupUtility.BuildKnifeVariant()、LeonExpandedQTESetupUtility.BuildLegBiteVariant() 等共 5 处。</summary>
+    /// <summary>敌人保持。</summary>
     public AnimationClip enemyHold;
-    /// <summary>中文含义：敌人成功。使用位置：作为 QTEAnimatorOverrideScope.Apply(Animator, AnimationClip, AnimationClip, AnimationClip, AnimationClip) 的参数、LeonExpandedQTESetupUtility.BuildKnifeVariant()、LeonExpandedQTESetupUtility.BuildLegBiteVariant() 等共 5 处。</summary>
+    /// <summary>敌人成功。</summary>
     public AnimationClip enemySuccess;
-    /// <summary>中文含义：敌人失败。使用位置：作为 QTEAnimatorOverrideScope.Apply(Animator, AnimationClip, AnimationClip, AnimationClip, AnimationClip) 的参数、LeonExpandedQTESetupUtility.BuildKnifeVariant()、LeonExpandedQTESetupUtility.BuildLegBiteVariant() 等共 5 处。</summary>
+    /// <summary>敌人失败。</summary>
     public AnimationClip enemyFailure;
-    /// <summary>中文含义：起始音频事件。使用位置：LeonQTECoordinator.PlayQTEAudioForPhase(QTEPhase)。</summary>
+    /// <summary>起始音频事件。</summary>
     public AudioEventData startAudioEvent;
-    /// <summary>中文含义：挣脱音频事件。使用位置：LeonQTECoordinator.PlayQTEAudioForPhase(QTEPhase)。</summary>
+    /// <summary>挣脱音频事件。</summary>
     public AudioEventData struggleAudioEvent;
-    /// <summary>中文含义：失败音频事件。使用位置：LeonQTECoordinator.PlayQTEAudioForPhase(QTEPhase)。</summary>
+    /// <summary>失败音频事件。</summary>
     public AudioEventData failureAudioEvent;
-    /// <summary>中文含义：配对中距离。使用位置：LeonExpandedQTESetupUtility.BuildKnifeVariant()、LeonExpandedQTESetupUtility.BuildLegBiteVariant()、LeonExpandedQTESetupUtility.BuildRearBiteVariant() 等共 5 处。</summary>
+    /// <summary>配对中距离。</summary>
     [Min(0.2f)]
     public float pairingDistance = 0.68f;
-    /// <summary>中文含义：失败伤害。使用位置：LeonExpandedQTESetupUtility.BuildKnifeVariant()、LeonExpandedQTESetupUtility.BuildLegBiteVariant()、LeonExpandedQTESetupUtility.BuildRearBiteVariant() 等共 5 处。</summary>
+    /// <summary>失败伤害。</summary>
     [Min(0f)]
     public float failureDamage = 20f;
-    /// <summary>中文含义：玩家是否攻击者。使用位置：LeonExpandedQTESetupUtility.BuildKnifeVariant()。</summary>
+    /// <summary>玩家是否攻击者。</summary>
     public bool playerIsAttacker;
-    /// <summary>中文含义：是否自动成功。使用位置：LeonExpandedQTESetupUtility.BuildKnifeVariant()、LeonQTECoordinator.SubmitEscapePress(int)、LeonQTECoordinator.TryAdvanceAfterPairCompletion()。</summary>
+    /// <summary>是否自动成功。</summary>
     public bool automaticSuccess;
-    /// <summary>中文含义：是否自动失败。使用位置：作为 LeonQTECoordinator.BeginResult(bool) 的参数、LeonQTECoordinator.TryAdvanceAfterPairCompletion()。</summary>
+    /// <summary>是否自动失败。</summary>
     public bool automaticFailure;
-    /// <summary>中文含义：是否单一射击。使用位置：LeonExpandedQTESetupUtility.BuildKnifeVariant()、LeonQTECoordinator.IsSingleShotAssassination()、LeonQTECoordinator.TryAdvanceAfterPairCompletion()。</summary>
+    /// <summary>是否单一射击。</summary>
     public bool singleShot;
-    /// <summary>中文含义：是否需要爬行中敌人。使用位置：LeonExpandedQTESetupUtility.BuildLegBiteVariant()。</summary>
+    /// <summary>是否需要爬行中敌人。</summary>
     public bool requiresCrawlingEnemy;
-    /// <summary>中文含义：是否需要后侧接近。使用位置：LeonExpandedQTESetupUtility.BuildKnifeVariant()、LeonExpandedQTESetupUtility.BuildRearBiteVariant()。</summary>
+    /// <summary>是否需要后侧接近。</summary>
     public bool requiresRearApproach;
-    /// <summary>中文含义：是否具有玩家动画片段集合。使用位置：QTEAnimationVariant.IsComplete.get。</summary>
+    /// <summary>是否具有玩家动画片段集合。</summary>
     public bool HasPlayerClips => playerEnter != null && playerHold != null && playerSuccess != null && playerFailure != null;
-    /// <summary>中文含义：是否具有敌人动画片段集合。使用位置：QTEAnimationVariant.IsComplete.get。</summary>
+    /// <summary>是否具有敌人动画片段集合。</summary>
     public bool HasEnemyClips => enemyEnter != null && enemyHold != null && enemySuccess != null && enemyFailure != null;
-    /// <summary>中文含义：是否完成。使用位置：LeonQTECoordinator.CanStart(QTEKind, IEnemyQTEParticipant, out QTECancelReason)、LeonQTECoordinator.TryStart(QTEKind, IEnemyQTEParticipant, out int)、VillagerQTEParticipant.ApplyAnimationVariant(QTEAnimationVariant)。</summary>
+    /// <summary>是否完成。</summary>
     public bool IsComplete => HasPlayerClips && HasEnemyClips;
 }
 
@@ -170,27 +170,27 @@ public enum QTECancelReason
 /// </summary>
 public readonly struct QTESessionContext
 {
-    /// <summary>中文含义：会话编号。只读字段，初始化后不由普通写入口替换。使用位置：QTESessionContext.IsValid.get、QTESessionContext.QTESessionContext(int, QTEKind, Transform, Animator, Transform, Animator)。</summary>
+    /// <summary>会话编号。只读字段，初始化后不由普通写入口替换。</summary>
     public readonly int sessionId;
-    /// <summary>中文含义：种类。只读字段，初始化后不由普通写入口替换。使用位置：QTECameraPresenter.ApplyFocusPosition(Vector3, QTECameraProfile, bool)、QTECameraPresenter.BeginEntry()、QTECameraPresenter.BeginResult(bool) 等共 9 处。</summary>
+    /// <summary>种类。只读字段，初始化后不由普通写入口替换。</summary>
     public readonly QTEKind kind;
-    /// <summary>中文含义：玩家根节点。只读字段，初始化后不由普通写入口替换。使用位置：作为 QTECameraPresenter.GetBonePosition(Transform, Transform, Transform, float) 的参数、作为 Transform.IsChildOf(Transform) 的参数、作为 Transform.SetPositionAndRotation(Vector3, Quaternion) 的参数 等共 11 处。</summary>
+    /// <summary>玩家根节点。只读字段，初始化后不由普通写入口替换。</summary>
     public readonly Transform playerRoot;
-    /// <summary>中文含义：玩家动画控制器。只读字段，初始化后不由普通写入口替换。使用位置：作为 QTECameraPresenter.GetHumanBone(Animator, HumanBodyBones) 的参数、QTESessionContext.QTESessionContext(int, QTEKind, Transform, Animator, Transform, Animator)。</summary>
+    /// <summary>玩家动画控制器。只读字段，初始化后不由普通写入口替换。</summary>
     public readonly Animator playerAnimator;
-    /// <summary>中文含义：敌人根节点。只读字段，初始化后不由普通写入口替换。使用位置：作为 QTECameraPresenter.GetBonePosition(Transform, Transform, Transform, float) 的参数、作为 Transform.IsChildOf(Transform) 的参数、QTECameraPresenter.CanUseRearGrabCamera(QTESessionContext) 等共 9 处。</summary>
+    /// <summary>敌人根节点。只读字段，初始化后不由普通写入口替换。</summary>
     public readonly Transform enemyRoot;
-    /// <summary>中文含义：敌人动画控制器。只读字段，初始化后不由普通写入口替换。使用位置：作为 QTECameraPresenter.GetHumanBone(Animator, HumanBodyBones) 的参数、QTESessionContext.QTESessionContext(int, QTEKind, Transform, Animator, Transform, Animator)。</summary>
+    /// <summary>敌人动画控制器。只读字段，初始化后不由普通写入口替换。</summary>
     public readonly Animator enemyAnimator;
     public readonly bool startedCrouching;
     /// <summary>构造并初始化 QTESessionContext 的声明状态；具体外部协作见静态调用链。</summary>
     /// <remarks>静态调用链：上游 LeonQTECoordinator.TryGetSessionContext(int, out QTESessionContext)；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="sessionId">中文含义：会话编号。使用位置：QTESessionContext.QTESessionContext(int, QTEKind, Transform, Animator, Transform, Animator)。</param>
-    /// <param name="kind">中文含义：种类。使用位置：QTESessionContext.QTESessionContext(int, QTEKind, Transform, Animator, Transform, Animator)。</param>
-    /// <param name="playerRoot">中文含义：玩家根节点。使用位置：QTESessionContext.QTESessionContext(int, QTEKind, Transform, Animator, Transform, Animator)。</param>
-    /// <param name="playerAnimator">中文含义：玩家动画控制器。使用位置：QTESessionContext.QTESessionContext(int, QTEKind, Transform, Animator, Transform, Animator)。</param>
-    /// <param name="enemyRoot">中文含义：敌人根节点。使用位置：QTESessionContext.QTESessionContext(int, QTEKind, Transform, Animator, Transform, Animator)。</param>
-    /// <param name="enemyAnimator">中文含义：敌人动画控制器。使用位置：QTESessionContext.QTESessionContext(int, QTEKind, Transform, Animator, Transform, Animator)。</param>
+    /// <param name="sessionId">会话编号。</param>
+    /// <param name="kind">种类。</param>
+    /// <param name="playerRoot">玩家根节点。</param>
+    /// <param name="playerAnimator">玩家动画控制器。</param>
+    /// <param name="enemyRoot">敌人根节点。</param>
+    /// <param name="enemyAnimator">敌人动画控制器。</param>
     public QTESessionContext(int sessionId, QTEKind kind, Transform playerRoot, Animator playerAnimator, Transform enemyRoot, Animator enemyAnimator, bool startedCrouching = false)
     {
         this.sessionId = sessionId;
@@ -202,7 +202,7 @@ public readonly struct QTESessionContext
         this.startedCrouching = startedCrouching;
     }
 
-    /// <summary>中文含义：是否有效。使用位置：LeonQTECoordinator.TryGetSessionContext(int, out QTESessionContext)、QTECameraPresenter.LateUpdate()。</summary>
+    /// <summary>是否有效。</summary>
     public bool IsValid => sessionId != 0 && playerRoot != null && enemyRoot != null;
 }
 
@@ -211,23 +211,23 @@ public readonly struct QTESessionContext
 /// </summary>
 public readonly struct QTEProgressInfo
 {
-    /// <summary>中文含义：会话编号。只读字段，初始化后不由普通写入口替换。使用位置：QTEProgressInfo.QTEProgressInfo(int, int, int, float, float)、QTEPromptView.HandleProgressChanged(QTEProgressInfo)。</summary>
+    /// <summary>会话编号。只读字段，初始化后不由普通写入口替换。</summary>
     public readonly int sessionId;
-    /// <summary>中文含义：按下次数。只读字段，初始化后不由普通写入口替换。使用位置：作为 Math.Min(float, float) 的参数、作为 QTEPromptView.SetProgress(int) 的参数、QTEProgressInfo.QTEProgressInfo(int, int, int, float, float)。</summary>
+    /// <summary>按下次数。只读字段，初始化后不由普通写入口替换。</summary>
     public readonly int presses;
-    /// <summary>中文含义：所需按下次数。只读字段，初始化后不由普通写入口替换。使用位置：作为 Math.Min(float, float) 的参数、QTEProgressInfo.NormalizedProgress.get、QTEProgressInfo.QTEProgressInfo(int, int, int, float, float)。</summary>
+    /// <summary>所需按下次数。只读字段，初始化后不由普通写入口替换。</summary>
     public readonly int requiredPresses;
-    /// <summary>中文含义：剩余时间。只读字段，初始化后不由普通写入口替换。使用位置：作为 Math.Min(float, float) 的参数、QTEProgressInfo.QTEProgressInfo(int, int, int, float, float)、QTEPromptView.HandleProgressChanged(QTEProgressInfo)。</summary>
+    /// <summary>剩余时间。只读字段，初始化后不由普通写入口替换。</summary>
     public readonly float remainingTime;
-    /// <summary>中文含义：持续时间。只读字段，初始化后不由普通写入口替换。使用位置：作为 Math.Min(float, float) 的参数、QTEProgressInfo.NormalizedTime.get、QTEProgressInfo.QTEProgressInfo(int, int, int, float, float)。</summary>
+    /// <summary>持续时间。只读字段，初始化后不由普通写入口替换。</summary>
     public readonly float duration;
     /// <summary>构造并初始化 QTEProgressInfo 的声明状态；具体外部协作见静态调用链。</summary>
     /// <remarks>静态调用链：上游 LeonQTECoordinator.PublishProgress()；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="sessionId">中文含义：会话编号。使用位置：QTEProgressInfo.QTEProgressInfo(int, int, int, float, float)。</param>
-    /// <param name="presses">中文含义：按下次数。使用位置：QTEProgressInfo.QTEProgressInfo(int, int, int, float, float)。</param>
-    /// <param name="requiredPresses">中文含义：所需按下次数。使用位置：QTEProgressInfo.QTEProgressInfo(int, int, int, float, float)。</param>
-    /// <param name="remainingTime">中文含义：剩余时间。使用位置：QTEProgressInfo.QTEProgressInfo(int, int, int, float, float)。</param>
-    /// <param name="duration">中文含义：持续时间。使用位置：QTEProgressInfo.QTEProgressInfo(int, int, int, float, float)。</param>
+    /// <param name="sessionId">会话编号。</param>
+    /// <param name="presses">按下次数。</param>
+    /// <param name="requiredPresses">所需按下次数。</param>
+    /// <param name="remainingTime">剩余时间。</param>
+    /// <param name="duration">持续时间。</param>
     public QTEProgressInfo(int sessionId, int presses, int requiredPresses, float remainingTime, float duration)
     {
         this.sessionId = sessionId;
@@ -237,7 +237,7 @@ public readonly struct QTEProgressInfo
         this.duration = duration;
     }
 
-    /// <summary>中文含义：归一化进度。使用位置：QTEPromptView.HandleProgressChanged(QTEProgressInfo)。</summary>
+    /// <summary>归一化进度。</summary>
     public float NormalizedProgress
     {
         get
@@ -253,7 +253,7 @@ public readonly struct QTEProgressInfo
         }
     }
 
-    /// <summary>中文含义：归一化时间。使用位置：QTEPromptView.HandleProgressChanged(QTEProgressInfo)。</summary>
+    /// <summary>归一化时间。</summary>
     public float NormalizedTime
     {
         get
@@ -275,20 +275,20 @@ public readonly struct QTEProgressInfo
 /// </summary>
 public readonly struct QTESessionEndInfo
 {
-    /// <summary>中文含义：会话编号。只读字段，初始化后不由普通写入口替换。使用位置：QTECameraPresenter.HandleSessionEnded(QTESessionEndInfo)、QTEPromptView.HandleSessionEnded(QTESessionEndInfo)、QTESessionEndInfo.QTESessionEndInfo(int, QTEResult, QTECancelReason, bool)。</summary>
+    /// <summary>会话编号。只读字段，初始化后不由普通写入口替换。</summary>
     public readonly int sessionId;
-    /// <summary>中文含义：当前配对动作结果。只读字段，初始化后不由普通写入口替换。使用位置：QTESessionEndInfo.QTESessionEndInfo(int, QTEResult, QTECancelReason, bool)。</summary>
+    /// <summary>当前配对动作结果。只读字段，初始化后不由普通写入口替换。</summary>
     public readonly QTEResult result;
-    /// <summary>中文含义：取消原因。只读字段，初始化后不由普通写入口替换。使用位置：QTESessionEndInfo.QTESessionEndInfo(int, QTEResult, QTECancelReason, bool)。</summary>
+    /// <summary>取消原因。只读字段，初始化后不由普通写入口替换。</summary>
     public readonly QTECancelReason cancelReason;
-    /// <summary>中文含义：是否伤害已提交。只读字段，初始化后不由普通写入口替换。使用位置：QTESessionEndInfo.QTESessionEndInfo(int, QTEResult, QTECancelReason, bool)。</summary>
+    /// <summary>是否伤害已提交。只读字段，初始化后不由普通写入口替换。</summary>
     public readonly bool damageCommitted;
     /// <summary>构造并初始化 QTESessionEndInfo 的声明状态；具体外部协作见静态调用链。</summary>
     /// <remarks>静态调用链：上游 LeonQTECoordinator.FinishCleanup(QTEResult, QTECancelReason)；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="sessionId">中文含义：会话编号。使用位置：QTESessionEndInfo.QTESessionEndInfo(int, QTEResult, QTECancelReason, bool)。</param>
-    /// <param name="result">中文含义：当前配对动作结果。使用位置：QTESessionEndInfo.QTESessionEndInfo(int, QTEResult, QTECancelReason, bool)。</param>
-    /// <param name="cancelReason">中文含义：取消原因。使用位置：QTESessionEndInfo.QTESessionEndInfo(int, QTEResult, QTECancelReason, bool)。</param>
-    /// <param name="damageCommitted">中文含义：是否伤害已提交。使用位置：QTESessionEndInfo.QTESessionEndInfo(int, QTEResult, QTECancelReason, bool)。</param>
+    /// <param name="sessionId">会话编号。</param>
+    /// <param name="result">当前配对动作结果。</param>
+    /// <param name="cancelReason">取消原因。</param>
+    /// <param name="damageCommitted">是否伤害已提交。</param>
     public QTESessionEndInfo(int sessionId, QTEResult result, QTECancelReason cancelReason, bool damageCommitted)
     {
         this.sessionId = sessionId;

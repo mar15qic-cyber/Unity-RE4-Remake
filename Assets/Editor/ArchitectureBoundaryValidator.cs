@@ -16,42 +16,42 @@ public static class ArchitectureBoundaryValidator
     [UnityEngine.Scripting.APIUpdating.MovedFrom(true, "", "Assembly-CSharp-Editor", "架构边界校验器+边界记录")]
     public sealed class BoundaryRecord
     {
-        /// <summary>中文含义：类别。使用位置：作为 IEnumerable&lt;ArchitectureBoundaryValidator.BoundaryRecord&gt;.Where&lt;ArchitectureBoundaryValidator.BoundaryRecord&gt;(Func&lt;ArchitectureBoundaryValidator.BoundaryRecord, bool&gt;) 的参数、ArchitectureBoundaryValidator.Scan()、ArchitectureBoundaryValidator.ValidateStateExclusiveWrite(IEnumerable&lt;ArchitectureBoundaryValidator.BoundaryRecord&gt;, Type, IEnumerable&lt;string&gt;, List&lt;string&gt;) 等共 5 处。</summary>
+        /// <summary>类别。</summary>
         [UnityEngine.Serialization.FormerlySerializedAs("类别")]
         [UnityEngine.InspectorName("类别")]
         [Newtonsoft.Json.JsonProperty("类别")]
         public string category;
-        /// <summary>中文含义：调用类型。使用位置：作为 IEnumerable&lt;Type&gt;.Any&lt;Type&gt;(Func&lt;Type, bool&gt;) 的参数、作为 List&lt;string&gt;.Add(string) 的参数、ArchitectureBoundaryValidator.Scan() 等共 5 处。</summary>
+        /// <summary>调用类型。</summary>
         [UnityEngine.Serialization.FormerlySerializedAs("调用类型")]
         [UnityEngine.InspectorName("调用类型")]
         [Newtonsoft.Json.JsonProperty("调用类型")]
         public string invokeType;
-        /// <summary>中文含义：调用方法。使用位置：作为 List&lt;string&gt;.Add(string) 的参数、ArchitectureBoundaryValidator.Scan()、PlayerModuleBoundaryValidator.Validate(List&lt;string&gt;)。</summary>
+        /// <summary>调用方法。</summary>
         [UnityEngine.Serialization.FormerlySerializedAs("调用方法")]
         [UnityEngine.InspectorName("调用方法")]
         [Newtonsoft.Json.JsonProperty("调用方法")]
         public string invokeMethod;
-        /// <summary>中文含义：目标类型。使用位置：作为 List&lt;string&gt;.Add(string) 的参数、ArchitectureBoundaryValidator.Scan()、ArchitectureBoundaryValidator.ValidateStateExclusiveWrite(IEnumerable&lt;ArchitectureBoundaryValidator.BoundaryRecord&gt;, Type, IEnumerable&lt;string&gt;, List&lt;string&gt;)。</summary>
+        /// <summary>目标类型。</summary>
         [UnityEngine.Serialization.FormerlySerializedAs("目标类型")]
         [UnityEngine.InspectorName("目标类型")]
         [Newtonsoft.Json.JsonProperty("目标类型")]
         public string targetType;
-        /// <summary>中文含义：目标成员。使用位置：作为 HashSet&lt;string&gt;.Contains(string) 的参数、作为 List&lt;string&gt;.Add(string) 的参数、ArchitectureBoundaryValidator.Scan()。</summary>
+        /// <summary>目标成员。</summary>
         [UnityEngine.Serialization.FormerlySerializedAs("目标成员")]
         [UnityEngine.InspectorName("目标成员")]
         [Newtonsoft.Json.JsonProperty("目标成员")]
         public string targetMember;
-        /// <summary>中文含义：源文件。使用位置：作为 List&lt;string&gt;.Add(string) 的参数、ArchitectureBoundaryValidator.Scan()。</summary>
+        /// <summary>源文件。</summary>
         [UnityEngine.Serialization.FormerlySerializedAs("源文件")]
         [UnityEngine.InspectorName("源文件")]
         [Newtonsoft.Json.JsonProperty("源文件")]
         public string sourceFile;
-        /// <summary>中文含义：指令偏移。使用位置：作为 List&lt;string&gt;.Add(string) 的参数、ArchitectureBoundaryValidator.Scan()。</summary>
+        /// <summary>指令偏移。</summary>
         [UnityEngine.Serialization.FormerlySerializedAs("指令偏移")]
         [UnityEngine.InspectorName("指令偏移")]
         [Newtonsoft.Json.JsonProperty("指令偏移")]
         public int instructionOffset;
-        /// <summary>中文含义：是否跨类型。使用位置：ArchitectureBoundaryValidator.Scan()、ArchitectureBoundaryValidator.ValidateStateExclusiveWrite(IEnumerable&lt;ArchitectureBoundaryValidator.BoundaryRecord&gt;, Type, IEnumerable&lt;string&gt;, List&lt;string&gt;)。</summary>
+        /// <summary>是否跨类型。</summary>
         [UnityEngine.Serialization.FormerlySerializedAs("跨类型")]
         [UnityEngine.InspectorName("跨类型")]
         [Newtonsoft.Json.JsonProperty("跨类型")]
@@ -68,16 +68,16 @@ public static class ArchitectureBoundaryValidator
         [UnityEngine.InspectorName("说明")]
         [Newtonsoft.Json.JsonProperty("说明")]
         public string description = "实际编译结果中的直接访问；字段地址记录表示可能的间接写入。集合内部变化、反射调用和外部插件内部访问仍需结合词法清单与人工核对。未迁移的跨类型访问仅登记，不自动视为错误。";
-        /// <summary>中文含义：记录。使用位置：作为 JsonUtility.ToJson(object, bool) 的参数。</summary>
+        /// <summary>记录。</summary>
         [UnityEngine.Serialization.FormerlySerializedAs("记录")]
         [UnityEngine.InspectorName("记录")]
         [Newtonsoft.Json.JsonProperty("记录")]
         public List<BoundaryRecord> record;
     }
 
-    /// <summary>中文含义：指令。只读字段，初始化后不由普通写入口替换。使用位置：ArchitectureBoundaryValidator.Scan()。</summary>
+    /// <summary>指令。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly Dictionary<short, OpCode> instruction = typeof(OpCodes).GetFields(BindingFlags.Public | BindingFlags.Static).Where( /* 中文含义：字段。 */field => field.FieldType == typeof(OpCode)).Select( /* 中文含义：字段。 */field => (OpCode)field.GetValue(null)).GroupBy( /* 中文含义：代码。 */code => code.Value).ToDictionary( /* 中文含义：分组。 */group => group.Key, /* 中文含义：分组。 */ group => group.First());
-    /// <summary>中文含义：状态类型。只读字段，初始化后不由普通写入口替换。使用位置：ArchitectureBoundaryValidator.Scan()。</summary>
+    /// <summary>状态类型。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly HashSet<string> stateType = new HashSet<string>
     {
         "VillagerController",
@@ -113,16 +113,16 @@ public static class ArchitectureBoundaryValidator
     /// <remarks>静态调用链：上游 ArchitectureBoundaryValidator.Export()、EnemyAIIntegrationContractValidator.ValidateLifeOwnership(List&lt;string&gt;)、EnemyModuleBoundaryValidator.ValidateCode(List&lt;string&gt;)、PhaseSevenCompilationBoundary.Validate(List&lt;string&gt;)、PlayerModuleBoundaryValidator.Validate(List&lt;string&gt;)；下游（含内部回调体） ArchitectureBoundaryValidator.BoundaryRecord.BoundaryRecord()、ArchitectureBoundaryValidator.OperandByteCount(OperandType, byte[], int)、Assembly.GetTypes()、AssetDatabase.FindAssets(string, string[])、AssetDatabase.GUIDToAssetPath(string)、AssetDatabase.LoadAssetAtPath&lt;MonoScript&gt;(string)、BitConverter.ToInt32(byte[], int) 等共 25 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     public static List<BoundaryRecord> Scan()
     {
-        // sourceFile（来源文件）：使用位置：ArchitectureBoundaryValidator.Scan()。
+        // 来源文件。
 var sourceFile = new Dictionary<Type, string>();
         // id（编号）：每轮从被遍历的集合取得一个元素，仅代表当前这一项。使用位置：作为 AssetDatabase.GUIDToAssetPath(string) 的参数。
 foreach (string id in AssetDatabase.FindAssets("t:MonoScript", new[] { "Assets/Scripts", "Assets/Editor" }))
         {
-            // path（路径）：保存 AssetDatabase.GUIDToAssetPath(string) 的返回结果，供当前步骤使用。使用位置：作为 AssetDatabase.LoadAssetAtPath<MonoScript>(string) 的参数、ArchitectureBoundaryValidator.Scan()。
+            // 路径。
 string path = AssetDatabase.GUIDToAssetPath(id);
-            // receiverValue1（判空前缓存的加载资源所在路径的返回结果）：从加载资源所在路径的返回结果读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、ArchitectureBoundaryValidator.Scan()。
+            // 判空前缓存的加载资源所在路径的返回结果。
 global::UnityEditor.MonoScript receiverValue1 = AssetDatabase.LoadAssetAtPath<MonoScript>(path);
-            // type（反射操作使用的类型信息）：使用位置：作为 Dictionary<Type, string>.this[Type] 的参数、ArchitectureBoundaryValidator.Scan()。
+            // 反射操作使用的类型信息。
 Type type;
             if (!global::System.Object.ReferenceEquals(receiverValue1, null))
             {
@@ -139,9 +139,9 @@ Type type;
             }
         }
 
-        // result（当前边界记录集合）：使用位置：ArchitectureBoundaryValidator.Scan()。
+        // 当前边界记录集合。
 var result = new List<BoundaryRecord>();
-        // assemblyList（程序集列表）：使用位置：ArchitectureBoundaryValidator.Scan()。
+        // 程序集列表。
 var assemblyList = new[]
         {
             typeof(VillagerController).Assembly,
@@ -157,7 +157,7 @@ foreach (var assembly in assemblyList)
             // type（反射操作使用的类型信息）：每轮从被遍历的集合取得一个元素，仅代表当前这一项。使用位置：作为 IEnumerable<MethodBase>.Concat<MethodBase>(IEnumerable<MethodBase>) 的参数、作为 PhaseSevenCompilationBoundary.OutOfBoundsInvoke(Type, MemberInfo) 的参数、ArchitectureBoundaryValidator.Scan()。
 foreach (Type type in assembly.GetTypes())
             {
-                // rootType（根节点类型）：使用位置：作为 Dictionary<Type, string>.TryGetValue(Type, out string) 的参数、ArchitectureBoundaryValidator.Scan()。
+                // 根节点类型。
 var rootType = type;
                 while (rootType.DeclaringType != null)
                 {
@@ -169,14 +169,14 @@ var rootType = type;
                     continue;
                 }
 
-                // methodList（方法列表）：保存 IEnumerable<MethodBase>.Concat<MethodBase>(IEnumerable<MethodBase>) 的返回结果，供当前步骤使用。使用位置：ArchitectureBoundaryValidator.Scan()。
+                // 方法列表。
 var methodList = type.GetMethods(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly).Cast<MethodBase>().Concat(type.GetConstructors(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic));
                 // method（方法）：每轮从方法列表取得一个元素，仅代表当前这一项。使用位置：ArchitectureBoundaryValidator.Scan()。
 foreach (MethodBase method in methodList)
                 {
-                    // receiverValue3（判空前缓存的取得方法身体的返回结果）：从取得方法身体的返回结果读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、ArchitectureBoundaryValidator.Scan()。
+                    // 判空前缓存的取得方法身体的返回结果。
 global::System.Reflection.MethodBody receiverValue3 = method.GetMethodBody();
-                    // content（内容）：使用位置：作为 ArchitectureBoundaryValidator.OperandByteCount(OperandType, byte[], int) 的参数、作为 BitConverter.ToInt32(byte[], int) 的参数、ArchitectureBoundaryValidator.Scan()。
+                    // 内容。
 byte[] content;
                     if (!global::System.Object.ReferenceEquals(receiverValue3, null))
                     {
@@ -192,28 +192,28 @@ byte[] content;
                         continue;
                     }
 
-                    // position（位置）：使用位置：作为 ArchitectureBoundaryValidator.OperandByteCount(OperandType, byte[], int) 的参数、作为 BitConverter.ToInt32(byte[], int) 的参数、ArchitectureBoundaryValidator.Scan()。
+                    // 位置。
 int position = 0;
                     while (position < content.Length)
                     {
-                        // startPoint（起始点）：使用位置：ArchitectureBoundaryValidator.Scan()。
+                        // 起始点。
 int startPoint = position;
-                        // id（编号）：使用位置：作为 Dictionary<short, OpCode>.this[short] 的参数、ArchitectureBoundaryValidator.Scan()。
+                        // 编号。
 short id = content[position++];
                         if (id == 0xfe)
                         {
                             id = unchecked((short)(0xfe00 | content[position++]));
                         }
 
-                        // code（代码）：使用位置：作为 ArchitectureBoundaryValidator.OperandByteCount(OperandType, byte[], int) 的参数、ArchitectureBoundaryValidator.Scan()。
+                        // 代码。
 OpCode code = instruction[id];
                         if (code.OperandType == OperandType.InlineField || code.OperandType == OperandType.InlineMethod)
                         {
-                            // callReceiver9（调用前缓存的方法的模块）：从方法的模块读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：ArchitectureBoundaryValidator.Scan()。
+                            // 调用前缓存的方法的模块。
 global::System.Reflection.Module callReceiver9 = method.Module;
-                            // argumentValue7（按原顺序缓存的实参目标整数32的返回结果）：从目标整数32的返回结果读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 Module.ResolveMember(int, Type[], Type[]) 的参数。
+                            // 按原顺序缓存的实参目标整数32的返回结果。
 int argumentValue7 = BitConverter.ToInt32(content, position);
-                            // argumentValue8（按原顺序缓存的实参反射类型数组）：按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 Module.ResolveMember(int, Type[], Type[]) 的参数、ArchitectureBoundaryValidator.Scan()。
+                            // 按原顺序缓存的实参反射类型数组。
 global::System.Type[] argumentValue8;
                             if (type.IsGenericType)
                             {
@@ -224,7 +224,7 @@ global::System.Type[] argumentValue8;
                                 argumentValue8 = null;
                             }
 
-                            // selectedValue6（分支选出的反射类型数组）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：作为 Module.ResolveMember(int, Type[], Type[]) 的参数、ArchitectureBoundaryValidator.Scan()。
+                            // 分支选出的反射类型数组。
 global::System.Type[] selectedValue6;
                             if (method.IsGenericMethod)
                             {
@@ -235,9 +235,9 @@ global::System.Type[] selectedValue6;
                                 selectedValue6 = null;
                             }
 
-                            // member（成员）：保存 Module.ResolveMember(int, Type[], Type[]) 的返回结果，供当前步骤使用。使用位置：作为 PhaseSevenCompilationBoundary.OutOfBoundsInvoke(Type, MemberInfo) 的参数、ArchitectureBoundaryValidator.Scan()。
+                            // 成员。
 MemberInfo member = callReceiver9.ResolveMember(argumentValue7, argumentValue8, selectedValue6);
-                            // category（类别）：使用位置：ArchitectureBoundaryValidator.Scan()。
+                            // 类别。
 string category = null;
                             if (PhaseSevenCompilationBoundary.OutOfBoundsInvoke(type, member))
                             {
@@ -277,9 +277,9 @@ string category = null;
 
                             if (category != null)
                             {
-                                // callReceiver12（调用前缓存的当前边界记录集合）：从结果读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：ArchitectureBoundaryValidator.Scan()。
+                                // 调用前缓存的当前边界记录集合。
 global::System.Collections.Generic.List<global::ArchitectureBoundaryValidator.BoundaryRecord> callReceiver12 = result;
-                                // createdValue10（本次新建的边界记录）：保存本次创建实例，按原先顺序完成逐项初始化后交给后续使用方。使用位置：作为 List<ArchitectureBoundaryValidator.BoundaryRecord>.Add(ArchitectureBoundaryValidator.BoundaryRecord) 的参数、ArchitectureBoundaryValidator.Scan()。
+                                // 本次新建的边界记录。
 global::ArchitectureBoundaryValidator.BoundaryRecord createdValue10 = new BoundaryRecord();
                                 createdValue10.category = category;
                                 createdValue10.invokeType = type.FullName;
@@ -312,9 +312,9 @@ global::ArchitectureBoundaryValidator.BoundaryRecord createdValue10 = new Bounda
 
     /// <summary>OperandByteCount 的业务处理入口；本方法直接依赖 BitConverter.ToInt32(byte[], int)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 ArchitectureBoundaryValidator.Scan()；下游（含内部回调体） BitConverter.ToInt32(byte[], int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="type">中文含义：当前运算项类型。使用位置：ArchitectureBoundaryValidator.OperandByteCount(OperandType, byte[], int)。</param>
-    /// <param name="content">中文含义：内容。使用位置：作为 BitConverter.ToInt32(byte[], int) 的参数。</param>
-    /// <param name="position">中文含义：位置。使用位置：作为 BitConverter.ToInt32(byte[], int) 的参数。</param>
+    /// <param name="type">当前运算项类型。</param>
+    /// <param name="content">内容。</param>
+    /// <param name="position">位置。</param>
     private static int OperandByteCount(OperandType type, byte[] content, int position)
     {
         switch (type)
@@ -339,10 +339,10 @@ global::ArchitectureBoundaryValidator.BoundaryRecord createdValue10 = new Bounda
 
     /// <summary>ValidateNewContract 的业务处理入口；本方法直接依赖 List&lt;string&gt;.Add(string)、PropertyInfo.GetSetMethod(bool)、Type.GetFields(BindingFlags)、Type.GetProperties()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyAIIntegrationContractValidator.Validate()；下游（含内部回调体） List&lt;string&gt;.Add(string)、PropertyInfo.GetSetMethod(bool)、Type.GetFields(BindingFlags)、Type.GetProperties()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="failure">中文含义：失败。使用位置：ArchitectureBoundaryValidator.ValidateNewContract(List&lt;string&gt;)。</param>
+    /// <param name="failure">失败。</param>
     public static void ValidateNewContract(List<string> failure)
     {
-        // snapshotType（快照类型）：使用位置：ArchitectureBoundaryValidator.ValidateNewContract(List<string>)。
+        // 快照类型。
 Type[] snapshotType =
         {
             typeof(GameArchitecture.ObjectIdentity),
@@ -385,13 +385,13 @@ foreach (var property in type.GetProperties())
 
     /// <summary>迁移某个拥有者后登记其字段名单；历史未迁移字段不会被一并误判为新回归。</summary>
     /// <remarks>静态调用链：上游 EnemyAIIntegrationContractValidator.ValidateLifeOwnership(List&lt;string&gt;)、EnemyModuleBoundaryValidator.ValidateCode(List&lt;string&gt;)；下游（含内部回调体） HashSet&lt;string&gt;.Contains(string)、HashSet&lt;string&gt;.HashSet(IEnumerable&lt;string&gt;)、List&lt;string&gt;.Add(string)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="record">中文含义：当前边界记录集合。使用位置：ArchitectureBoundaryValidator.ValidateStateExclusiveWrite(IEnumerable&lt;ArchitectureBoundaryValidator.BoundaryRecord&gt;, Type, IEnumerable&lt;string&gt;, List&lt;string&gt;)。</param>
-    /// <param name="owner">中文含义：拥有者。使用位置：ArchitectureBoundaryValidator.ValidateStateExclusiveWrite(IEnumerable&lt;ArchitectureBoundaryValidator.BoundaryRecord&gt;, Type, IEnumerable&lt;string&gt;, List&lt;string&gt;)。</param>
-    /// <param name="fieldName">中文含义：字段名称。使用位置：作为 HashSet&lt;string&gt;.HashSet(IEnumerable&lt;string&gt;) 的参数。</param>
-    /// <param name="failure">中文含义：失败。使用位置：ArchitectureBoundaryValidator.ValidateStateExclusiveWrite(IEnumerable&lt;ArchitectureBoundaryValidator.BoundaryRecord&gt;, Type, IEnumerable&lt;string&gt;, List&lt;string&gt;)。</param>
+    /// <param name="record">当前边界记录集合。</param>
+    /// <param name="owner">拥有者。</param>
+    /// <param name="fieldName">字段名称。</param>
+    /// <param name="failure">失败。</param>
     public static void ValidateStateExclusiveWrite(IEnumerable<BoundaryRecord> record, Type owner, IEnumerable<string> fieldName, List<string> failure)
     {
-        // nameSingle（名称单一）：使用位置：ArchitectureBoundaryValidator.ValidateStateExclusiveWrite(IEnumerable<ArchitectureBoundaryValidator.BoundaryRecord>, Type, IEnumerable<string>, List<string>)。
+        // 名称单一。
 var nameSingle = new HashSet<string>(fieldName);
         // item（当前边界记录）：每轮从记录取得一个元素，仅代表当前这一项。使用位置：作为 HashSet<string>.Contains(string) 的参数、作为 List<string>.Add(string) 的参数、ArchitectureBoundaryValidator.ValidateStateExclusiveWrite(IEnumerable<ArchitectureBoundaryValidator.BoundaryRecord>, Type, IEnumerable<string>, List<string>)。
 foreach (var item in record)
@@ -416,7 +416,7 @@ foreach (var item in record)
         }
 
         Directory.CreateDirectory("Docs/架构改造/检查结果");
-        // record（当前边界记录集合）：保存 ArchitectureBoundaryValidator.Scan() 的返回结果，供当前步骤使用。使用位置：作为 Debug.Log(object) 的参数、作为 JsonUtility.ToJson(object, bool) 的参数。
+        // 当前边界记录集合。
 var record = Scan();
         File.WriteAllText("Docs/架构改造/检查结果/编译后边界清单.json", JsonUtility.ToJson(new BoundaryReport { record = record }, true));
         Debug.Log("已导出编译后的边界清单，记录数：" + record.Count);

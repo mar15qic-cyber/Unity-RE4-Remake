@@ -65,20 +65,20 @@ public class ZombieAudioProfile : ScriptableObject
     [System.Serializable]
     public class VoiceEntry
     {
-        /// <summary>中文含义：语音类型。使用位置：作为 Dictionary&lt;ZombieVoiceType, AudioEventData&gt;.ContainsKey(ZombieVoiceType) 的参数、作为 Dictionary&lt;ZombieVoiceType, AudioEventData&gt;.this[ZombieVoiceType] 的参数。</summary>
+        /// <summary>语音类型。</summary>
         [Tooltip("语音类型")]
         public ZombieVoiceType voiceType;
-        /// <summary>中文含义：对应的音效事件数据。使用位置：ZombieAudioProfile.Initialize()。</summary>
+        /// <summary>对应的音效事件数据。</summary>
         [Tooltip("对应的音效事件数据")]
         public AudioEventData eventData;
     }
 
-    /// <summary>中文含义：按语音类型配置的音效事件。使用位置：ZombieAudioProfile.Initialize()。</summary>
+    /// <summary>按语音类型配置的音效事件。</summary>
     [Header("语音列表")]
     [Tooltip("按语音类型配置的音效事件")]
     public List<VoiceEntry> voices = new List<VoiceEntry>();
     // 运行时查找字典
-    /// <summary>中文含义：查找表。使用位置：ZombieAudioProfile.GetEvent(ZombieVoiceType)、ZombieAudioProfile.Initialize()。</summary>
+    /// <summary>查找表。</summary>
     private Dictionary<ZombieVoiceType, AudioEventData> lookup;
     /// <summary>
     /// 初始化查找字典
@@ -92,10 +92,10 @@ public class ZombieAudioProfile : ScriptableObject
             return;
         }
 
-        // i（当前遍历索引）：使用位置：作为 List<ZombieAudioProfile.VoiceEntry>.this[int] 的参数、ZombieAudioProfile.Initialize()。
+        // 当前遍历索引。
 for (int i = 0; i < voices.Count; i++)
         {
-            // entry（当前语音入口）：使用位置：作为 Dictionary<ZombieVoiceType, AudioEventData>.ContainsKey(ZombieVoiceType) 的参数、作为 Dictionary<ZombieVoiceType, AudioEventData>.this[ZombieVoiceType] 的参数、ZombieAudioProfile.Initialize()。
+            // 当前语音入口。
 var entry = voices[i];
             if (entry == null || entry.eventData == null)
             {
@@ -113,7 +113,7 @@ var entry = voices[i];
     /// 根据语音类型查找音效事件
     /// </summary>
     /// <remarks>静态调用链：上游 EnemyAnimationAdapter.PlayVoice(ZombieVoiceType)；下游（含内部回调体） Dictionary&lt;ZombieVoiceType, AudioEventData&gt;.TryGetValue(ZombieVoiceType, out AudioEventData)、ZombieAudioProfile.Initialize()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="voiceType">中文含义：语音类型。使用位置：作为 Dictionary&lt;ZombieVoiceType, AudioEventData&gt;.TryGetValue(ZombieVoiceType, out AudioEventData) 的参数。</param>
+    /// <param name="voiceType">语音类型。</param>
     public AudioEventData GetEvent(ZombieVoiceType voiceType)
     {
         if (lookup == null)

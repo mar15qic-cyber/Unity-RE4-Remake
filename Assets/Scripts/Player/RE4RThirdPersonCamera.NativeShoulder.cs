@@ -14,6 +14,11 @@ public partial class RE4RThirdPersonCamera
     private Transform framingSpine;
     private Transform framingLeftShoulder;
     private Transform framingRightShoulder;
+    private Transform framingRightUpperArm;
+    private Transform framingRightForearm;
+    private Transform framingRightWrist;
+    private Vector3 reticleClearanceOffset;
+    private Vector3 reticleClearanceVelocity;
     private readonly Vector3[] raisedShoulderPoints = new Vector3[4];
     private Vector3 nativeAnchorDelta;
     private float nativePoseWeight;
@@ -35,8 +40,33 @@ public partial class RE4RThirdPersonCamera
     private const float ShoulderFitClearance = .045f;
 
     private bool UsesPistolShoulder => controller != null
-        && (controller.currentWeapon == WeaponType.Pistol || controller.currentWeapon == WeaponType.Shotgun)
+        && (controller.currentWeapon == WeaponType.Pistol
+            || controller.currentWeapon == WeaponType.Shotgun
+            || controller.currentWeapon == WeaponType.Rifle)
         && (activeProfile == null || activeProfile.allowAim);
+
+    internal float PistolFramingWeight
+    {
+        get { return pistolFramingWeight; }
+    }
+
+    internal Vector3 CurrentAimWorldForward
+    {
+        get
+        {
+            if (!isLocked && !inputSuppressed && followPivot != null && panTilt != null)
+            {
+                Quaternion orientation = followPivot.rotation
+                    * Quaternion.Euler(panTilt.TiltAxis.Value, panTilt.PanAxis.Value, 0f);
+                return orientation * Vector3.forward;
+            }
+            if (cam != null)
+            {
+                return cam.transform.forward;
+            }
+            return Vector3.forward;
+        }
+    }
 
     private float ReadPitchOrbitHeight()
     {
@@ -48,14 +78,22 @@ public partial class RE4RThirdPersonCamera
         return Mathf.Lerp(1.32f, 1.02f, crouchCameraWeight);
     }
 
-    private bool TracksHeldKnifeInput => !isLocked && !inputSuppressed && controller != null
-        && controller.IsHoldingKnifeGuard && !controller.IsolateObserveCameraSteering;
+    private bool TracksHeldKnifeInput
+    {
+        get
+        {
+            return !isLocked && !inputSuppressed && controller != null
+                && (controller.IsHoldingKnifeGuard || controller.IsKnifeThrustAttack)
+                && !controller.IsolateObserveCameraSteering;
+        }
+    }
 
     private void UpdateShoulderOrbit(float dt)
     {
         float targetKnifeFraming = 0f;
         float targetPistolFraming = 0f;
-        if (controller != null && controller.IsKnifeGuardAiming && !controller.IsolateObserveCameraSteering)
+        if (controller != null && (controller.IsKnifeGuardAiming || controller.IsKnifeThrustAttack)
+            && !controller.IsolateObserveCameraSteering)
         {
             targetKnifeFraming = 1f;
         }
@@ -88,9 +126,13 @@ public partial class RE4RThirdPersonCamera
             requestedPitch *= upperAngle / inputRange;
         }
         if (TracksHeldKnifeInput)
+        {
             shoulderLookPitch = requestedPitch;
+        }
         else
+        {
             shoulderLookPitch = Mathf.Lerp(shoulderLookPitch, requestedPitch, 1f - Mathf.Exp(-dt / 0.065f));
+        }
         shoulderOrbitPitch = ResolveShoulderOrbitPitch(shoulderLookPitch);
     }
 
@@ -106,32 +148,87 @@ public partial class RE4RThirdPersonCamera
 
     internal void SnapAfterVillageEntrance(Quaternion facing)
     {
-        if (target == null || vcam == null)
+        if (target == null || vcam == null || followPivot == null || panTilt == null || cam == null)
         {
             return;
         }
         SetVillageViewAngles(facing);
-        // 将跟随点和遮挡历史一起切到里昂的新站位。
-        vcam.PreviousStateIsValid = false;
-        SnapToInitialCameraPose();
-        vcam.InternalUpdateCameraState(Vector3.up, -1f);
+        // 复用平滑末镜已收敛的肩位与避障历史，不再重置碰撞状态，避免交接瞬间左右震荡。
+        nativeAnchorDelta = Vector3.zero;
+        basePivotPos = target.position + nativeAnchorDelta;
+        pivotVel = Vector3.zero;
+        unlockBoost = 0f;
+        breathPhase = 0f;
+        idleTimer = 0f;
+        idleBreathWeight = 0f;
+        idleBreathVelocity = 0f;
+        currentEnemyZoom = 1f;
+        enemyProximityHoldUntil = 0f;
+        lastTargetYaw = GetCharacterYaw();
+        turnLagTimer = 0f;
+        framingPitchInitialized = false;
+        smoothedFramingPitchOffset = 0f;
+        framingPitchOffsetVelocity = 0f;
+        externalHandoffSmoothPitchTimer = 0.45f;
+        reticleClearanceOffset = Vector3.zero;
+        reticleClearanceVelocity = Vector3.zero;
+        AlignShoulderRig(basePivotPos);
+        vcam.PreviousStateIsValid = true;
+        Vector3 savedDamping = Vector3.zero;
+        if (tpf != null)
+        {
+            savedDamping = tpf.Damping;
+            tpf.Damping = Vector3.zero;
+        }
+        try
+        {
+            vcam.InternalUpdateCameraState(Vector3.up, Mathf.Max(0.001f, Time.unscaledDeltaTime));
+        }
+        finally
+        {
+            if (tpf != null)
+            {
+                tpf.Damping = savedDamping;
+            }
+        }
         var state = vcam.State;
         cam.transform.SetPositionAndRotation(state.GetFinalPosition(), state.GetFinalOrientation());
         cam.fieldOfView = state.Lens.FieldOfView;
     }
 
-    internal bool TrySampleVillageShoulder(Vector3 exitPosition, Quaternion facing, out CameraState state)
+    internal bool TrySampleVillageShoulder(Vector3 exitPosition, Quaternion facing, bool resetCollisionState, out CameraState state)
     {
         state = default;
         if (vcam == null || followPivot == null || tpf == null || panTilt == null || target == null)
         {
             return false;
         }
-        // 暂停期间刚体的显示位置可能仍在门口，使用源演员本帧的交还站位采样。
+        // 暂停期间刚体的显示位置可能仍在门口，使用源演员本帧的交还站位采样并同步避障观察原点。
         SetVillageViewAngles(facing);
         AlignShoulderRig(exitPosition);
-        vcam.InternalUpdateCameraState(Vector3.up, -1f);
-        state = vcam.State;
+        SetOverrideCollisionFocusRoot(true, exitPosition);
+        Vector3 savedDamping = tpf.Damping;
+        tpf.Damping = Vector3.zero;
+        vcam.PreviousStateIsValid = !resetCollisionState;
+        float sampleDeltaTime;
+        if (resetCollisionState)
+        {
+            sampleDeltaTime = -1f;
+        }
+        else
+        {
+            sampleDeltaTime = Mathf.Max(0.001f, Time.unscaledDeltaTime);
+        }
+        try
+        {
+            vcam.InternalUpdateCameraState(Vector3.up, sampleDeltaTime);
+            state = vcam.State;
+        }
+        finally
+        {
+            tpf.Damping = savedDamping;
+            SetOverrideCollisionFocusRoot(false, Vector3.zero);
+        }
         return true;
     }
 
@@ -172,7 +269,7 @@ public partial class RE4RThirdPersonCamera
         yaw = angles.x;
         pitch = Mathf.Clamp(angles.y, pitchRange.x, pitchRange.y);
         pivotVel = Vector3.zero;
-        unlockBoost = 1f;
+        unlockBoost = 0f;
         RefreshShoulderAfterExternalCamera();
     }
 
@@ -188,12 +285,31 @@ public partial class RE4RThirdPersonCamera
         {
             return;
         }
-        // 在 Cinemachine 计算交接之前同步越肩机位，避免混合先读到接管前的朝向。
+        // 在 Cinemachine 计算交接之前完整对齐越肩支点并清空残余晃动/避障历史，避免交接瞬间抽动。
+        basePivotPos = target.position + nativeAnchorDelta;
+        pivotVel = Vector3.zero;
+        unlockBoost = 0f;
+        breathPhase = 0f;
+        idleTimer = 0f;
+        idleBreathWeight = 0f;
+        idleBreathVelocity = 0f;
+        currentEnemyZoom = 1f;
+        enemyProximityHoldUntil = 0f;
         lastTargetYaw = GetCharacterYaw();
         turnLagTimer = 0f;
+        framingPitchInitialized = false;
+        smoothedFramingPitchOffset = 0f;
+        framingPitchOffsetVelocity = 0f;
+        externalHandoffSmoothPitchTimer = 0.45f;
+        reticleClearanceOffset = Vector3.zero;
+        reticleClearanceVelocity = Vector3.zero;
         SnapShoulderPitch();
-        followPivot.rotation = Quaternion.Euler(shoulderOrbitPitch, yaw, 0f);
+        ApplyCameraParams();
+        followPivot.SetPositionAndRotation(
+            basePivotPos + Vector3.up * ReadPitchOrbitHeight(),
+            Quaternion.Euler(shoulderOrbitPitch, yaw, 0f));
         UpdatePanTilt(0f);
+        vcam.PreviousStateIsValid = false;
         vcam.InternalUpdateCameraState(Vector3.up, -1f);
     }
 
@@ -262,13 +378,264 @@ public partial class RE4RThirdPersonCamera
                 frustumScale, nearDepth, knifeFramingWeight);
         }
 
-        // 枪械瞄准以同一个屏幕肩点解算机位。大俯角才稍稍拉开，让近地目标露出来。
-        float down = Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(38f, 65f, shoulderLookPitch));
-        float distance = Mathf.Abs(aimOffset.z);
-        float depth = Mathf.Max(nearDepth, distance) + .14f * down + weaponRecoilDistanceOffset;
-        Vector3 shoulderFrame = new Vector3(-.56f * tanX, Mathf.Lerp(-.38f, -.26f, down) * tanY, 1f);
-        Vector3 gunPosition = shoulders - orientation * (shoulderFrame * depth);
+        bool isLongGun = controller.currentWeapon == WeaponType.Shotgun || controller.currentWeapon == WeaponType.Rifle;
+        Vector3 earLevelAnchor = Vector3.Lerp(shoulders, framingHead.position, 0.52f);
+        Vector3 torsoAxisAnchor = new Vector3(stableTorso.x, earLevelAnchor.y, stableTorso.z);
+        Vector3 gunPosition = SolveOverShoulderAimPosition(
+            earLevelAnchor,
+            torsoAxisAnchor,
+            orientation,
+            tanX,
+            tanY,
+            nearDepth,
+            shoulderLookPitch,
+            isLongGun,
+            weaponRecoilDistanceOffset);
+
+        Vector3 rightElbowPos = Vector3.zero;
+        bool hasRightElbow = false;
+        if (framingRightForearm != null)
+        {
+            rightElbowPos = framingRightForearm.position;
+            hasRightElbow = true;
+        }
+        else if (framingRightUpperArm != null)
+        {
+            rightElbowPos = framingRightUpperArm.position;
+            hasRightElbow = true;
+        }
+
+        Vector3 targetClearance = Vector3.zero;
+        if (pistolFramingWeight > 0.001f)
+        {
+            targetClearance = ComputeReticleClearanceLocalOffset(
+                gunPosition,
+                orientation,
+                tanX,
+                tanY,
+                shoulderLookPitch,
+                framingRightShoulder.position,
+                framingRightShoulder != null,
+                rightElbowPos,
+                hasRightElbow,
+                framingHead.position,
+                framingHead != null);
+        }
+
+        if (!previousStateValid || dt <= 0.0001f)
+        {
+            reticleClearanceOffset = targetClearance;
+            reticleClearanceVelocity = Vector3.zero;
+        }
+        else
+        {
+            reticleClearanceOffset = Vector3.SmoothDamp(
+                reticleClearanceOffset,
+                targetClearance,
+                ref reticleClearanceVelocity,
+                0.10f,
+                2.8f,
+                dt);
+        }
+
+        gunPosition += orientation * reticleClearanceOffset;
         return Vector3.Lerp(cameraPosition, gunPosition, pistolFramingWeight);
+    }
+
+    /// <summary>
+    /// 求解越肩 ADS 机位：平视高贴耳增强沉浸感，大俯角压低并外推角色锚点以避免躯干与长枪左偏遮挡视野。
+    /// </summary>
+    public static Vector3 SolveOverShoulderAimPosition(
+        Vector3 earLevelAnchor,
+        Vector3 torsoAxisAnchor,
+        Quaternion orientation,
+        float tanX,
+        float tanY,
+        float nearDepth,
+        float lookPitch,
+        bool isLongGun,
+        float recoilDistanceOffset)
+    {
+        float axisBlend;
+        if (isLongGun)
+        {
+            axisBlend = 0.38f;
+        }
+        else
+        {
+            axisBlend = 0.25f;
+        }
+
+        Vector3 stableAnchor = Vector3.Lerp(earLevelAnchor, torsoAxisAnchor, axisBlend);
+        float steepDown = Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(20f, 68f, lookPitch));
+
+        float baseDepth;
+        float downPullback;
+        float screenX;
+        float screenY;
+        if (isLongGun)
+        {
+            baseDepth = 0.76f;
+            downPullback = 0.26f;
+            screenX = Mathf.Lerp(-0.61f, -0.69f, steepDown);
+            screenY = Mathf.Lerp(-0.26f, -0.61f, steepDown);
+        }
+        else
+        {
+            baseDepth = 0.67f;
+            downPullback = 0.20f;
+            screenX = Mathf.Lerp(-0.58f, -0.65f, steepDown);
+            screenY = Mathf.Lerp(-0.24f, -0.55f, steepDown);
+        }
+
+        float depth = Mathf.Max(nearDepth, baseDepth) + downPullback * steepDown + recoilDistanceOffset;
+        Vector3 shoulderFrame = new Vector3(screenX * tanX, screenY * tanY, 1f);
+        return stableAnchor - orientation * (shoulderFrame * depth);
+    }
+
+    /// <summary>
+    /// 实时监测右肩、右肘与头部外廓在视锥中的投影，若侵占中心准星区则计算相机局部让位偏移。
+    /// </summary>
+    public static Vector3 ComputeReticleClearanceLocalOffset(
+        Vector3 baseGunPosition,
+        Quaternion orientation,
+        float tanX,
+        float tanY,
+        float lookPitch,
+        Vector3 rightShoulderPos,
+        bool hasRightShoulder,
+        Vector3 rightElbowPos,
+        bool hasRightElbow,
+        Vector3 headPos,
+        bool hasHead)
+    {
+        const float safeRightNdc = -0.15f;
+        const float safeTopNdc = -0.20f;
+
+        Quaternion toCamera = Quaternion.Inverse(orientation);
+        float downWeight = Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(15f, 60f, lookPitch));
+
+        float maxRight = 0f;
+        float maxUp = 0f;
+        float maxBack = 0f;
+
+        EvaluateClearancePoint(
+            rightShoulderPos,
+            hasRightShoulder,
+            0.11f,
+            baseGunPosition,
+            toCamera,
+            tanX,
+            tanY,
+            downWeight,
+            safeRightNdc,
+            safeTopNdc,
+            ref maxRight,
+            ref maxUp,
+            ref maxBack);
+
+        EvaluateClearancePoint(
+            rightElbowPos,
+            hasRightElbow,
+            0.13f,
+            baseGunPosition,
+            toCamera,
+            tanX,
+            tanY,
+            downWeight,
+            safeRightNdc,
+            safeTopNdc,
+            ref maxRight,
+            ref maxUp,
+            ref maxBack);
+
+        EvaluateClearancePoint(
+            headPos,
+            hasHead,
+            0.11f,
+            baseGunPosition,
+            toCamera,
+            tanX,
+            tanY,
+            downWeight,
+            safeRightNdc,
+            safeTopNdc,
+            ref maxRight,
+            ref maxUp,
+            ref maxBack);
+
+        maxRight = Mathf.Clamp(maxRight, 0f, 0.34f);
+        maxUp = Mathf.Clamp(maxUp, 0f, 0.24f);
+        maxBack = Mathf.Clamp(maxBack, 0f, 0.12f);
+
+        return new Vector3(maxRight, maxUp, -maxBack);
+    }
+
+    private static void EvaluateClearancePoint(
+        Vector3 worldPoint,
+        bool valid,
+        float radius,
+        Vector3 baseGunPosition,
+        Quaternion toCamera,
+        float tanX,
+        float tanY,
+        float downWeight,
+        float safeRightNdc,
+        float safeTopNdc,
+        ref float maxRight,
+        ref float maxUp,
+        ref float maxBack)
+    {
+        if (!valid)
+        {
+            return;
+        }
+
+        Vector3 local = toCamera * (worldPoint - baseGunPosition);
+        if (local.z <= 0.06f)
+        {
+            return;
+        }
+
+        float safeTanX = Mathf.Max(0.05f, tanX);
+        float safeTanY = Mathf.Max(0.05f, tanY);
+        float halfW = local.z * safeTanX;
+        float halfH = local.z * safeTanY;
+        float ndcRight = (local.x + radius) / halfW;
+        float ndcTop = (local.y + radius) / halfH;
+
+        // 平视保持贴耳构图不被右下臂部微动反复推开，大俯角收敛至完整准星避让框并做双轴连续平滑过渡。
+        float activeSafeRight = Mathf.Lerp(-0.04f, safeRightNdc, downWeight);
+        float activeSafeTop = Mathf.Lerp(-0.06f, safeTopNdc, downWeight);
+        const float transitionBand = 0.16f;
+        float rightIntrusion = Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(activeSafeRight - transitionBand, activeSafeRight, ndcRight));
+        float topIntrusion = Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(activeSafeTop - transitionBand, activeSafeTop, ndcTop));
+        float intrusionWeight = rightIntrusion * topIntrusion;
+        if (intrusionWeight <= 0.0001f)
+        {
+            return;
+        }
+
+        float rawPushRight = Mathf.Max(0f, (ndcRight - activeSafeRight) * halfW);
+        float pushBack = Mathf.Min(0.10f, rawPushRight * 0.25f) * downWeight * intrusionWeight;
+        float expandedHalfW = (local.z + pushBack) * safeTanX;
+        float pushRight = Mathf.Max(0f, (local.x + radius) - activeSafeRight * expandedHalfW) * intrusionWeight;
+        float pushUp = Mathf.Max(0f, (ndcTop - activeSafeTop) * halfH) * Mathf.Lerp(0.25f, 0.55f, downWeight) * intrusionWeight;
+
+        if (pushRight > maxRight)
+        {
+            maxRight = pushRight;
+        }
+
+        if (pushUp > maxUp)
+        {
+            maxUp = pushUp;
+        }
+
+        if (pushBack > maxBack)
+        {
+            maxBack = pushBack;
+        }
     }
 
     private Vector3 FitRaisedShoulderPosition(Vector3 basePosition, Vector3 baseOffset, Quaternion orientation,
@@ -324,7 +691,7 @@ public partial class RE4RThirdPersonCamera
         depth = Mathf.Max(depth, (clearance + vertical - edge * point.z) / (edge - center.y));
     }
 
-    internal void KeepUpperBodyInFrame(ref CameraState state)
+    internal void KeepUpperBodyInFrame(ref CameraState state, float deltaTime)
     {
         if (controller == null || isLocked || inputSuppressed || controller.currentState == LeonState.Dead
             || controller.currentState == LeonState.QTE)
@@ -376,13 +743,52 @@ public partial class RE4RThirdPersonCamera
         float raisedViewWeight = modeWeight * Mathf.SmoothStep(0f, 1f, -shoulderLookPitch / 6f);
         float inputPitchWeight = Mathf.Max(raisedViewWeight, ReadPistolCloseWeight());
         correctedPitch = Mathf.Lerp(correctedPitch, viewPitch, inputPitchWeight);
+
+        // 对避障导致的构图俯仰差值做时间阻尼与角速度限制，并在强压缩时衰减俯仰扭转，防止画面垂直抖动致晕。
+        float rawFramingDelta = correctedPitch - viewPitch;
+        float compressionAttenuation = 1f - Mathf.SmoothStep(0.15f, 0.75f, currentCollisionCompression) * 0.7f;
+        float targetFramingDelta = rawFramingDelta * compressionAttenuation;
+        float frameDt = deltaTime;
+        if (!framingPitchInitialized)
+        {
+            if (externalHandoffSmoothPitchTimer > 0f)
+            {
+                // 外部镜头交回越肩后从零偏移平滑过渡，避免首帧单帧硬切产生俯仰跳动。
+                smoothedFramingPitchOffset = 0f;
+                framingPitchOffsetVelocity = 0f;
+                framingPitchInitialized = true;
+            }
+            else
+            {
+                smoothedFramingPitchOffset = targetFramingDelta;
+                framingPitchOffsetVelocity = 0f;
+                framingPitchInitialized = true;
+            }
+        }
+
+        if (frameDt > 0.0001f)
+        {
+            float smoothTime = 0.09f;
+            if (externalHandoffSmoothPitchTimer > 0f)
+            {
+                smoothTime = 0.14f;
+            }
+            smoothedFramingPitchOffset = Mathf.SmoothDamp(
+                smoothedFramingPitchOffset,
+                targetFramingDelta,
+                ref framingPitchOffsetVelocity,
+                smoothTime,
+                140f,
+                frameDt);
+        }
+
         // 后坐力只加到最终视线，机位解算和构图限制始终使用稳定的瞄准方向。
-        correctedPitch += visibleWeaponRecoilPitch;
+        float finalFramingPitch = viewPitch + smoothedFramingPitchOffset + visibleWeaponRecoilPitch;
 
         // 碰撞或姿态变化时给取景留少量修正余量，输入仍受原俯仰范围约束。
         float correctedLimitUp = Mathf.Max(-88f, pitchRange.x - 8f);
         float correctedLimitDown = Mathf.Min(88f, pitchRange.y + 8f);
-        var corrected = Quaternion.Euler(Mathf.Clamp(correctedPitch, correctedLimitUp, correctedLimitDown), angles.y, angles.z);
+        var corrected = Quaternion.Euler(Mathf.Clamp(finalFramingPitch, correctedLimitUp, correctedLimitDown), angles.y, angles.z);
         state.OrientationCorrection = Quaternion.Inverse(state.RawOrientation) * corrected;
     }
 
@@ -520,6 +926,9 @@ public partial class RE4RThirdPersonCamera
         framingSpine = null;
         framingLeftShoulder = null;
         framingRightShoulder = null;
+        framingRightUpperArm = null;
+        framingRightForearm = null;
+        framingRightWrist = null;
         foreach (var bone in nativeAnchorOwner.GetComponentsInChildren<Transform>(true))
         {
             if (bone.name == "head")
@@ -537,6 +946,18 @@ public partial class RE4RThirdPersonCamera
             else if (bone.name == "arm right shoulder")
             {
                 framingRightShoulder = bone;
+            }
+            else if (bone.name == "arm right upperarm")
+            {
+                framingRightUpperArm = bone;
+            }
+            else if (bone.name == "arm right forearm")
+            {
+                framingRightForearm = bone;
+            }
+            else if (bone.name == "arm right wrist")
+            {
+                framingRightWrist = bone;
             }
         }
     }

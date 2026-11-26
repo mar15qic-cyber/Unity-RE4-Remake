@@ -19,25 +19,25 @@ public static class AudioEventNames
     public const string RifleReload = "rifle_reload";
     /// <summary>中文含义：近战攻击。编译期常量，保持既有值与消费者映射。</summary>
     public const string MeleeAttack = "melee_attack";
-    /// <summary>中文含义：近战命中。编译期常量，保持既有值与消费者映射。使用位置：作为 AudioManager.Play3D(string, Vector3) 的参数。</summary>
+    /// <summary>近战命中。编译期常量，保持既有值与消费者映射。</summary>
     public const string MeleeHit = "melee_hit";
     public const string MeleeHitNormal = "melee_hit_normal";
     public const string MeleeHitCritical = "melee_hit_critical";
     public const string MeleeHitCriticalCrack = "melee_hit_critical_crack";
     public const string MeleeHitCriticalTail = "melee_hit_critical_tail";
-    /// <summary>中文含义：村庄门打开。编译期常量，保持既有值与消费者映射。使用位置：作为 AudioManager.Play3D(string, Vector3) 的参数。</summary>
+    /// <summary>村庄门打开。编译期常量，保持既有值与消费者映射。</summary>
     public const string VillageDoorOpen = "village_door_open";
-    /// <summary>中文含义：电锯起始。编译期常量，保持既有值与消费者映射。使用位置：作为 ChainsawManAnimationBridge.PlayOneShot(AudioEventData, string) 的参数。</summary>
+    /// <summary>电锯起始。编译期常量，保持既有值与消费者映射。</summary>
     public const string ChainsawStart = "chainsaw_start";
-    /// <summary>中文含义：电锯待机循环。编译期常量，保持既有值与消费者映射。使用位置：作为 ChainsawManAnimationBridge.ResolveAudioEvent(AudioEventData, string) 的参数。</summary>
+    /// <summary>电锯待机循环。编译期常量，保持既有值与消费者映射。</summary>
     public const string ChainsawIdleLoop = "chainsaw_idle_loop";
-    /// <summary>中文含义：电锯反向。编译期常量，保持既有值与消费者映射。使用位置：作为 ChainsawManAnimationBridge.PlayTemporaryChainsawAudio(AudioEventData, string) 的参数。</summary>
+    /// <summary>电锯反向。编译期常量，保持既有值与消费者映射。</summary>
     public const string ChainsawRev = "chainsaw_rev";
-    /// <summary>中文含义：电锯攻击。编译期常量，保持既有值与消费者映射。使用位置：作为 ChainsawManAnimationBridge.PlayTemporaryChainsawAudio(AudioEventData, string) 的参数。</summary>
+    /// <summary>电锯攻击。编译期常量，保持既有值与消费者映射。</summary>
     public const string ChainsawAttack = "chainsaw_attack";
-    /// <summary>中文含义：电锯命中。编译期常量，保持既有值与消费者映射。使用位置：作为 AudioManager.Play3D(string, Vector3) 的参数、作为 ChainsawManAnimationBridge.PlayOneShot(AudioEventData, string) 的参数、作为 ChainsawManAnimationBridge.PlayTemporaryChainsawAudio(AudioEventData, string) 的参数。</summary>
+    /// <summary>电锯命中。编译期常量，保持既有值与消费者映射。</summary>
     public const string ChainsawHit = "chainsaw_hit";
-    /// <summary>中文含义：电锯停止。编译期常量，保持既有值与消费者映射。使用位置：作为 ChainsawManAnimationBridge.PlayOneShot(AudioEventData, string) 的参数。</summary>
+    /// <summary>电锯停止。编译期常量，保持既有值与消费者映射。</summary>
     public const string ChainsawStop = "chainsaw_stop";
     // 脚步
     /// <summary>中文含义：脚步声行走。编译期常量，保持既有值与消费者映射。</summary>
@@ -88,22 +88,22 @@ public static class AudioEventNames
     public const string HitHead = "hit_head";
     /// <summary>中文含义：命中肢体。编译期常量，保持既有值与消费者映射。</summary>
     public const string HitLimb = "hit_limb";
-    /// <summary>中文含义：玩家命中。编译期常量，保持既有值与消费者映射。使用位置：作为 AudioManager.Play3D(string, Vector3) 的参数。</summary>
+    /// <summary>玩家命中。编译期常量，保持既有值与消费者映射。</summary>
     public const string PlayerHit = "player_hit";
     public const string PlayerHitLight = "player_hit_light";
     public const string PlayerHitHeavy = "player_hit_heavy";
-    /// <summary>中文含义：玩家死亡。编译期常量，保持既有值与消费者映射。使用位置：LeonPlayerAudio.deathEventName。</summary>
+    /// <summary>玩家死亡。编译期常量，保持既有值与消费者映射。</summary>
     public const string PlayerDeath = "player_death";
-    /// <summary>中文含义：玩家呼吸。编译期常量，保持既有值与消费者映射。使用位置：LeonPlayerAudio.breathingEventName。</summary>
+    /// <summary>玩家呼吸。编译期常量，保持既有值与消费者映射。</summary>
     public const string PlayerBreathing = "player_breathing";
-    /// <summary>中文含义：玩家运行呼吸。编译期常量，保持既有值与消费者映射。使用位置：LeonPlayerAudio.runBreathingEventName。</summary>
+    /// <summary>玩家运行呼吸。编译期常量，保持既有值与消费者映射。</summary>
     public const string PlayerRunBreathing = "player_run_breathing";
-    /// <summary>中文含义：玩家武器切换。编译期常量，保持既有值与消费者映射。使用位置：LeonPlayerAudio.weaponSwitchEventName。</summary>
+    /// <summary>玩家武器切换。编译期常量，保持既有值与消费者映射。</summary>
     public const string PlayerWeaponSwitch = "player_weapon_switch";
     // 界面
-    /// <summary>中文含义：界面悬停。编译期常量，保持既有值与消费者映射。使用位置：作为 AudioManager.PlaySfx(string) 的参数。</summary>
+    /// <summary>界面悬停。编译期常量，保持既有值与消费者映射。</summary>
     public const string UIHover = "ui_hover";
-    /// <summary>中文含义：界面确认。编译期常量，保持既有值与消费者映射。使用位置：作为 AudioManager.PlaySfx(string) 的参数。</summary>
+    /// <summary>界面确认。编译期常量，保持既有值与消费者映射。</summary>
     public const string UIConfirm = "ui_confirm";
     /// <summary>中文含义：界面取消。编译期常量，保持既有值与消费者映射。</summary>
     public const string UICancel = "ui_cancel";

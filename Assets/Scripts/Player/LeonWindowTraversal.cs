@@ -8,129 +8,129 @@ using UnityEngine;
 [RequireComponent(typeof(LeonController))]
 public class LeonWindowTraversal : MonoBehaviour
 {
-    /// <summary>中文含义：里昂玩家控制器。使用位置：LeonWindowTraversal.CacheComponents()、LeonWindowTraversal.FinishTraversal(bool)、LeonWindowTraversal.ReleaseNormalTraversalGameplay() 等共 6 处。</summary>
+    /// <summary>里昂玩家控制器。</summary>
     [Header("组件引用")]
     public LeonController controller;
-    /// <summary>中文含义：战斗。使用位置：LeonWindowTraversal.CacheComponents()、LeonWindowTraversal.TryStartTraversal(WindowTraversalPoint)、LeonWindowTraversalSetupUtility.ConfigureLeon(GameObject)。</summary>
+    /// <summary>战斗。</summary>
     public LeonCombat combat;
-    /// <summary>中文含义：当前玩家动画动作协调器。使用位置：LeonWindowTraversal.BeginAutomaticDrop()、LeonWindowTraversal.BindEvents()、LeonWindowTraversal.CacheComponents() 等共 10 处。</summary>
+    /// <summary>当前玩家动画动作协调器。</summary>
     public LeonAnimationActionCoordinator coordinator;
-    /// <summary>中文含义：武器视觉表现控制器。使用位置：LeonWindowTraversal.CacheComponents()、LeonWindowTraversal.FinishTraversal(bool)、LeonWindowTraversal.ReleaseNormalTraversalGameplay() 等共 5 处。</summary>
+    /// <summary>武器视觉表现控制器。</summary>
     public LeonWeaponVisualController weaponVisualController;
-    /// <summary>中文含义：动画控制器。使用位置：LeonWindowTraversal.CacheComponents()、LeonWindowTraversalSetupUtility.ConfigureLeon(GameObject)。</summary>
+    /// <summary>动画控制器。</summary>
     public Animator animator;
-    /// <summary>中文含义：身体。使用位置：作为 Mathf.Max(float, float) 的参数、LeonWindowTraversal.BeginAutomaticDrop()、LeonWindowTraversal.BeginTraversalPhysics() 等共 11 处。</summary>
+    /// <summary>身体。</summary>
     public Rigidbody body;
-    /// <summary>中文含义：角色运动执行器。使用位置：LeonWindowTraversal.BeginAutomaticDrop()、LeonWindowTraversal.BeginTraversalPhysics()、LeonWindowTraversal.CacheComponents() 等共 10 处。</summary>
+    /// <summary>角色运动执行器。</summary>
     [UnityEngine.Serialization.FormerlySerializedAs("运动执行")]
     [UnityEngine.InspectorName("运动执行")]
     public LeonActionMotionDriver motionExecutor;
     [Tooltip("当前地图的窗口、楼层与外平台归属。")]
     public HouseThreeRegionNavigation platformNavigation;
-    /// <summary>中文含义：通行运动。使用位置：作为 LeonActionMotionDriver.CommitAngleSpeed(MotionControlToken, Vector3) 的参数、作为 LeonActionMotionDriver.CommitPosition(MotionControlToken, Vector3) 的参数、作为 LeonActionMotionDriver.CommitSpeed(MotionControlToken, Vector3) 的参数 等共 7 处。</summary>
+    /// <summary>通行运动。</summary>
     private GameArchitecture.MotionControlToken traversalMotion;
-    /// <summary>中文含义：掉落摄像机。使用位置：LeonWindowTraversal.BeginAutomaticDrop()、LeonWindowTraversal.CacheComponents()、LeonWindowTraversal.CommitDropImpact() 等共 5 处。</summary>
+    /// <summary>掉落摄像机。</summary>
     public RE4RThirdPersonCamera dropCamera;
-    /// <summary>中文含义：掉落过渡时长。使用位置：作为 LeonAnimationActionCoordinator.AdvanceTraversalAction(FullBodyActionType, float, float) 的参数。</summary>
+    /// <summary>掉落过渡时长。</summary>
     [Header("高落差着地")]
     [Range(0.05f, 0.25f)]
     public float dropTransitionDuration = 0.09f;
-    /// <summary>中文含义：落地预测提前量时间。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>落地预测提前量时间。</summary>
     [Range(0.1f, 0.5f)]
     public float landingPredictionLeadTime = 0.28f;
-    /// <summary>中文含义：落地接触距离。使用位置：作为 Mathf.Max(float, float) 的参数、LeonWindowTraversal.UpdateAutomaticFall()。</summary>
+    /// <summary>落地接触距离。</summary>
     [Min(0.02f)]
     public float landingContactDistance = 0.12f;
-    /// <summary>中文含义：落地速度阻尼。使用位置：作为 Vector3.MoveTowards(Vector3, Vector3, float) 的参数。</summary>
+    /// <summary>落地速度阻尼。</summary>
     [Min(0.1f)]
     public float landingVelocityDamping = 12f;
-    /// <summary>中文含义：身体碰撞体。使用位置：作为 Mathf.Abs(float) 的参数、作为 Transform.TransformPoint(Vector3) 的参数、LeonWindowTraversal.BeginAutomaticDrop() 等共 11 处。</summary>
+    /// <summary>身体碰撞体。</summary>
     public CapsuleCollider bodyCollider;
-    /// <summary>中文含义：最小开口宽度。使用位置：LeonWindowTraversal.TryBuildPlan(WindowTraversalPoint, out LeonWindowTraversal.TraversalPlan)。</summary>
+    /// <summary>最小开口宽度。</summary>
     [Header("窗口资格")]
     [Min(0.1f)]
     public float minimumOpeningWidth = 0.8f;
-    /// <summary>中文含义：最小开口高度。使用位置：LeonWindowTraversal.TryBuildPlan(WindowTraversalPoint, out LeonWindowTraversal.TraversalPlan)。</summary>
+    /// <summary>最小开口高度。</summary>
     [Min(0.1f)]
     public float minimumOpeningHeight = 1f;
-    /// <summary>中文含义：最小窗台高度。使用位置：LeonWindowTraversal.TryBuildPlan(WindowTraversalPoint, out LeonWindowTraversal.TraversalPlan)。</summary>
+    /// <summary>最小窗台高度。</summary>
     [Min(0f)]
     public float minimumSillHeight = 0.55f;
-    /// <summary>中文含义：最大窗台高度。使用位置：LeonWindowTraversal.TryBuildPlan(WindowTraversalPoint, out LeonWindowTraversal.TraversalPlan)。</summary>
+    /// <summary>最大窗台高度。</summary>
     [Min(0.1f)]
     public float maximumSillHeight = 1.25f;
-    /// <summary>中文含义：最大墙体厚度。使用位置：LeonWindowTraversal.TryBuildPlan(WindowTraversalPoint, out LeonWindowTraversal.TraversalPlan)。</summary>
+    /// <summary>最大墙体厚度。</summary>
     [Min(0.05f)]
     public float maximumWallThickness = 0.65f;
-    /// <summary>中文含义：最大朝向角度。使用位置：作为 WindowTraversalPoint.ResolveMaximumFacingAngle(float) 的参数。</summary>
+    /// <summary>最大朝向角度。</summary>
     [Range(0f, 90f)]
     public float maximumFacingAngle = 45f;
-    /// <summary>中文含义：最大落地高度差值。使用位置：作为 WindowTraversalPoint.ResolveMaximumLandingHeightDifference(float) 的参数。</summary>
+    /// <summary>最大落地高度差值。</summary>
     [Min(0f)]
     public float maximumLandingHeightDifference = 1f;
-    /// <summary>中文含义：通行持续时间。使用位置：LeonWindowTraversal.HandleFixedUpdate()。</summary>
+    /// <summary>通行持续时间。</summary>
     [Header("运动轨迹")]
     [Min(0.1f)]
     public float traversalDuration = 1.07f;
-    /// <summary>中文含义：弧线净空。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>弧线净空。</summary>
     [Min(0f)]
     public float arcClearance = 0.18f;
-    /// <summary>中文含义：路径校验采样集合。使用位置：作为 Mathf.Max(int, int) 的参数。</summary>
+    /// <summary>路径校验采样集合。</summary>
     [Range(3, 12)]
     public int pathValidationSamples = 7;
-    /// <summary>中文含义：通行胶囊高度。使用位置：作为 Mathf.Min(float, float) 的参数。</summary>
+    /// <summary>通行胶囊高度。</summary>
     [Min(0.5f)]
     public float traversalCapsuleHeight = 1.05f;
-    /// <summary>中文含义：请求超时。使用位置：LeonWindowTraversal.Update()。</summary>
+    /// <summary>请求超时。</summary>
     [Min(0.1f)]
     public float requestTimeout = 1.5f;
-    /// <summary>中文含义：通行超时。使用位置：LeonWindowTraversal.Update()。</summary>
+    /// <summary>通行超时。</summary>
     [Min(0.5f)]
     public float traversalTimeout = 3f;
     private bool isOnEnemyPlatformRegion;
-    /// <summary>中文含义：生效窗口。使用位置：作为 LeonActionMotionDriver.CommitSpeed(MotionControlToken, Vector3) 的参数、作为 Mathf.Clamp(float, float, float) 的参数、作为 Physics.SphereCastAll(Vector3, float, Vector3, float, int, QueryTriggerInteraction) 的参数 等共 10 处。</summary>
+    /// <summary>生效窗口。</summary>
     private WindowTraversalPoint activeWindow;
-    /// <summary>中文含义：生效方案。使用位置：作为 LeonActionMotionDriver.CommitSpeed(MotionControlToken, Vector3) 的参数、作为 LeonWindowTraversal.EvaluateQuadratic(LeonWindowTraversal.TraversalPlan, float) 的参数、作为 LeonWindowTraversal.SetBodyPose(Vector3, Quaternion) 的参数 等共 12 处。</summary>
+    /// <summary>生效方案。</summary>
     private TraversalPlan activePlan;
-    /// <summary>中文含义：请求是否仍待处理。使用位置：LeonWindowTraversal.ClearActiveTraversal()、LeonWindowTraversal.HandleFixedUpdate()、LeonWindowTraversal.HandleTraversalEntered(AnimationActionTransaction) 等共 6 处。</summary>
+    /// <summary>请求是否仍待处理。</summary>
     private bool requestPending;
-    /// <summary>中文含义：通行是否已开始。使用位置：LeonWindowTraversal.ClearActiveTraversal()、LeonWindowTraversal.FinishTraversal(bool)、LeonWindowTraversal.HandleFixedUpdate() 等共 8 处。</summary>
+    /// <summary>通行是否已开始。</summary>
     private bool traversalStarted;
-    /// <summary>中文含义：移动是否已完成。使用位置：LeonWindowTraversal.ClearActiveTraversal()、LeonWindowTraversal.HandleTraversalCompleted(AnimationActionTransaction)、LeonWindowTraversal.HandleTraversalEntered(AnimationActionTransaction) 等共 5 处。</summary>
+    /// <summary>移动是否已完成。</summary>
     private bool movementCompleted;
-    /// <summary>中文含义：请求开始时间。使用位置：LeonWindowTraversal.TryStartTraversal(WindowTraversalPoint)、LeonWindowTraversal.Update()。</summary>
+    /// <summary>请求开始时间。</summary>
     private float requestStartedTime;
     private RE4.ChapterOne.ChapterOnePairMotion traversalTracks;
-    /// <summary>中文含义：通行开始时间。使用位置：LeonWindowTraversal.HandleFixedUpdate()、LeonWindowTraversal.HandleTraversalEntered(AnimationActionTransaction)、LeonWindowTraversal.Update()。</summary>
+    /// <summary>通行开始时间。</summary>
     private float traversalStartedTime;
-    /// <summary>中文含义：生效事务编号。使用位置：作为 LeonActionMotionDriver.AuthorizeMotion(MotionSource, int) 的参数、LeonWindowTraversal.ClearActiveTraversal()、LeonWindowTraversal.HandleTraversalCompleted(AnimationActionTransaction) 等共 7 处。</summary>
+    /// <summary>生效事务编号。</summary>
     private int activeTransactionId;
-    /// <summary>中文含义：是否已绑定事件。使用位置：LeonWindowTraversal.BindEvents()、LeonWindowTraversal.UnbindEvents()。</summary>
+    /// <summary>是否已绑定事件。</summary>
     private bool eventsBound;
-    /// <summary>中文含义：是否前一次运动学。使用位置：LeonWindowTraversal.BeginAutomaticDrop()、LeonWindowTraversal.BeginTraversalPhysics()、LeonWindowTraversal.EndTraversalPhysics()。</summary>
+    /// <summary>是否前一次运动学。</summary>
     private bool previousKinematic;
-    /// <summary>中文含义：是否前一次使用重力。使用位置：LeonWindowTraversal.BeginAutomaticDrop()、LeonWindowTraversal.BeginTraversalPhysics()、LeonWindowTraversal.EndTraversalPhysics()。</summary>
+    /// <summary>是否前一次使用重力。</summary>
     private bool previousUseGravity;
-    /// <summary>中文含义：前一次身体碰撞体是否启用。使用位置：LeonWindowTraversal.BeginAutomaticDrop()、LeonWindowTraversal.BeginTraversalPhysics()、LeonWindowTraversal.EndTraversalPhysics()。</summary>
+    /// <summary>前一次身体碰撞体是否启用。</summary>
     private bool previousBodyColliderEnabled;
-    /// <summary>中文含义：是否具有延后的命中。使用位置：LeonWindowTraversal.ClearActiveTraversal()、LeonWindowTraversal.FinishTraversal(bool)、LeonWindowTraversal.QueueDeferredHit(LeonHitDirection) 等共 4 处。</summary>
+    /// <summary>是否具有延后的命中。</summary>
     private bool hasDeferredHit;
-    /// <summary>中文含义：运动阶段。使用位置：LeonWindowTraversal.BeginAutomaticDrop()、LeonWindowTraversal.ClearActiveTraversal()、LeonWindowTraversal.CommitDropImpact() 等共 6 处。</summary>
+    /// <summary>运动阶段。</summary>
     private TraversalMotionPhase motionPhase;
-    /// <summary>中文含义：是否玩法已释放。使用位置：LeonWindowTraversal.ClearActiveTraversal()、LeonWindowTraversal.FinishTraversal(bool)、LeonWindowTraversal.HandleFixedUpdate() 等共 4 处。</summary>
+    /// <summary>是否玩法已释放。</summary>
     private bool gameplayReleased;
-    /// <summary>中文含义：是否通行物理已捕获。使用位置：LeonWindowTraversal.BeginTraversalPhysics()、LeonWindowTraversal.ClearActiveTraversal()、LeonWindowTraversal.EndTraversalPhysics()。</summary>
+    /// <summary>是否通行物理已捕获。</summary>
     private bool traversalPhysicsCaptured;
-    /// <summary>中文含义：是否已经申请本次落地动作。使用位置：LeonWindowTraversal.BeginAutomaticDrop()、LeonWindowTraversal.ClearActiveTraversal()、LeonWindowTraversal.CommitDropImpact() 等共 5 处。</summary>
+    /// <summary>是否已经申请本次落地动作。</summary>
     private bool landingActionRequested;
-    /// <summary>中文含义：最快向下速度。使用位置：作为 Mathf.Abs(float) 的参数、作为 Mathf.Min(float, float) 的参数、LeonWindowTraversal.BeginAutomaticDrop() 等共 5 处。</summary>
+    /// <summary>最快向下速度。</summary>
     private float fastestDownwardVelocity;
     private float landingRollElapsed;
-    /// <summary>中文含义：掉落开始时间。使用位置：LeonWindowTraversal.BeginAutomaticDrop()、LeonWindowTraversal.ClearActiveTraversal()、LeonWindowTraversal.UpdateAutomaticFall()。</summary>
+    /// <summary>掉落开始时间。</summary>
     private float dropStartedTime;
-    /// <summary>中文含义：延后的命中方向。使用位置：LeonWindowTraversal.ClearActiveTraversal()、LeonWindowTraversal.FinishTraversal(bool)、LeonWindowTraversal.QueueDeferredHit(LeonHitDirection)。</summary>
+    /// <summary>延后的命中方向。</summary>
     private LeonHitDirection deferredHitDirection;
-    /// <summary>中文含义：是否通行中。使用位置：LeonController.ApplyDamage(float, Vector3, LeonHitDirection)、LeonHighDropLanding.HandleFixedUpdate()、LeonWindowTraversal.FinishTraversal(bool) 等共 7 处。</summary>
+    /// <summary>是否通行中。</summary>
     public bool IsTraversing => requestPending || traversalStarted;
 
     /// <summary>玩家控制、动作与运动使用的 TraversalMotionPhase 分类枚举；保持原成员顺序和数值，调用方据此选择业务分支。</summary>
@@ -149,21 +149,21 @@ public class LeonWindowTraversal : MonoBehaviour
     /// <summary>玩家控制、动作与运动的结构化数据 TraversalPlan；声明字段保存该步骤需要的值，具体读写由使用方执行。</summary>
     private struct TraversalPlan
     {
-        /// <summary>中文含义：起始位置。使用位置：作为 LeonWindowTraversal.SetBodyPose(Vector3, Quaternion) 的参数、LeonWindowTraversal.EvaluateQuadratic(LeonWindowTraversal.TraversalPlan, float)、LeonWindowTraversal.TryBuildPlan(WindowTraversalPoint, out LeonWindowTraversal.TraversalPlan)。</summary>
+        /// <summary>起始位置。</summary>
         public Vector3 startPosition;
-        /// <summary>中文含义：控制位置。使用位置：LeonWindowTraversal.EvaluateQuadratic(LeonWindowTraversal.TraversalPlan, float)、LeonWindowTraversal.TryBuildPlan(WindowTraversalPoint, out LeonWindowTraversal.TraversalPlan)。</summary>
+        /// <summary>控制位置。</summary>
         public Vector3 controlPosition;
-        /// <summary>中文含义：结束位置。使用位置：作为 LeonWindowTraversal.SetBodyPose(Vector3, Quaternion) 的参数、LeonWindowTraversal.EvaluateQuadratic(LeonWindowTraversal.TraversalPlan, float)、LeonWindowTraversal.FinishTraversal(bool) 等共 4 处。</summary>
+        /// <summary>结束位置。</summary>
         public Vector3 endPosition;
-        /// <summary>中文含义：落地位置。使用位置：LeonWindowTraversal.CommitDropImpact()、LeonWindowTraversal.FinishTraversal(bool)、LeonWindowTraversal.TryBuildPlan(WindowTraversalPoint, out LeonWindowTraversal.TraversalPlan)。</summary>
+        /// <summary>落地位置。</summary>
         public Vector3 landingPosition;
-        /// <summary>中文含义：行进方向。使用位置：作为 LeonActionMotionDriver.CommitSpeed(MotionControlToken, Vector3) 的参数、LeonWindowTraversal.TryBuildPlan(WindowTraversalPoint, out LeonWindowTraversal.TraversalPlan)、LeonWindowTraversal.UpdateAutomaticFall()。</summary>
+        /// <summary>行进方向。</summary>
         public Vector3 travelDirection;
-        /// <summary>中文含义：朝向旋转。使用位置：作为 LeonWindowTraversal.SetBodyPose(Vector3, Quaternion) 的参数、LeonWindowTraversal.TryBuildPlan(WindowTraversalPoint, out LeonWindowTraversal.TraversalPlan)。</summary>
+        /// <summary>朝向旋转。</summary>
         public Quaternion facingRotation;
-        /// <summary>中文含义：是否自动掉落。使用位置：LeonWindowTraversal.FinishTraversal(bool)、LeonWindowTraversal.HandleFixedUpdate()、LeonWindowTraversal.HandleTraversalCompleted(AnimationActionTransaction) 等共 5 处。</summary>
+        /// <summary>是否自动掉落。</summary>
         public bool automaticDrop;
-        /// <summary>中文含义：掉落高度。使用位置：LeonWindowTraversal.TryBuildPlan(WindowTraversalPoint, out LeonWindowTraversal.TraversalPlan)。</summary>
+        /// <summary>掉落高度。</summary>
         public float dropHeight;
         public RE4.ChapterOne.ChapterOnePairMotion.Track track;
         public float trackEndTime;
@@ -230,9 +230,9 @@ public class LeonWindowTraversal : MonoBehaviour
     {
         if (requestPending && Time.time - requestStartedTime > requestTimeout)
         {
-            // receiverValue2（判空前缓存的当前玩家动画动作协调器）：从动作协调组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonWindowTraversal.Update()。
+            // 判空前缓存的当前玩家动画动作协调器。
 global::LeonAnimationActionCoordinator receiverValue2 = coordinator;
-            // optionalValue3（条件访问得到的取消通行的返回结果）：保存条件访问的结果，接收者为空时保持默认空值，非空时才执行原成员访问。使用位置：LeonWindowTraversal.Update()。
+            // 条件访问得到的取消通行的返回结果。
 bool? optionalValue3;
             if (!global::System.Object.ReferenceEquals(receiverValue2, null))
             {
@@ -249,9 +249,9 @@ bool? optionalValue3;
 
         if (traversalStarted && Time.time - traversalStartedTime > traversalTimeout)
         {
-            // receiverValue4（判空前缓存的当前玩家动画动作协调器）：从动作协调组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonWindowTraversal.Update()。
+            // 判空前缓存的当前玩家动画动作协调器。
 global::LeonAnimationActionCoordinator receiverValue4 = coordinator;
-            // optionalValue5（条件访问得到的取消通行的返回结果）：保存条件访问的结果，接收者为空时保持默认空值，非空时才执行原成员访问。使用位置：LeonWindowTraversal.Update()。
+            // 条件访问得到的取消通行的返回结果。
 bool? optionalValue5;
             if (!global::System.Object.ReferenceEquals(receiverValue4, null))
             {
@@ -372,7 +372,7 @@ bool? optionalValue5;
 
     /// <summary>CanTraverse 的业务处理入口；本方法直接依赖 LeonWindowTraversal.TryBuildPlan(WindowTraversalPoint, out LeonWindowTraversal.TraversalPlan)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 WindowTraversalPoint.CanInteract(Transform)；下游（含内部回调体） LeonWindowTraversal.TryBuildPlan(WindowTraversalPoint, out LeonWindowTraversal.TraversalPlan)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="window">中文含义：窗口。使用位置：作为 LeonWindowTraversal.TryBuildPlan(WindowTraversalPoint, out LeonWindowTraversal.TraversalPlan) 的参数。</param>
+    /// <param name="window">窗口。</param>
     private int previewFrame = -1;
     private WindowTraversalPoint previewWindow;
     private TraversalPlan previewPlan;
@@ -396,7 +396,7 @@ bool? optionalValue5;
 
     /// <summary>TryStartTraversal 的业务处理入口；本方法直接依赖 LeonActionMotionDriver.AuthorizeMotion(MotionSource, int)、LeonAnimationActionCoordinator.RequestTraversal()、LeonCombat.InterruptForQTE()、LeonController.ChangeState(LeonState)、LeonController.SetFreeLooking(bool)、LeonController.SetLookInput(Vector2)、LeonController.SetMoveInput(Vector3) 等共 14 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 WindowTraversalPoint.Interact()；下游（含内部回调体） LeonActionMotionDriver.AuthorizeMotion(MotionSource, int)、LeonAnimationActionCoordinator.RequestTraversal()、LeonCombat.InterruptForQTE()、LeonController.ChangeState(LeonState)、LeonController.SetFreeLooking(bool)、LeonController.SetLookInput(Vector2)、LeonController.SetMoveInput(Vector3) 等共 14 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="window">中文含义：窗口。使用位置：作为 LeonWindowTraversal.TryBuildPlan(WindowTraversalPoint, out LeonWindowTraversal.TraversalPlan) 的参数、LeonWindowTraversal.TryStartTraversal(WindowTraversalPoint)。</param>
+    /// <param name="window">窗口。</param>
     public bool TryStartTraversal(WindowTraversalPoint window)
     {
         CacheComponents();
@@ -454,7 +454,7 @@ bool? optionalValue5;
         }
 
         controller.ChangeState(LeonState.Traversing);
-        // receiverValue7（判空前缓存的武器视觉表现控制器）：从武器视觉表现控制器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonWindowTraversal.TryStartTraversal(WindowTraversalPoint)。
+        // 判空前缓存的武器视觉表现控制器。
 global::LeonWeaponVisualController receiverValue7 = weaponVisualController;
         if (!global::System.Object.ReferenceEquals(receiverValue7, null))
         {
@@ -466,7 +466,7 @@ global::LeonWeaponVisualController receiverValue7 = weaponVisualController;
 
     /// <summary>QueueDeferredHit 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
     /// <remarks>静态调用链：上游 LeonController.ApplyDamage(float, Vector3, LeonHitDirection)；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="direction">中文含义：方向。使用位置：LeonWindowTraversal.QueueDeferredHit(LeonHitDirection)。</param>
+    /// <param name="direction">方向。</param>
     public void QueueDeferredHit(LeonHitDirection direction)
     {
         if (!IsTraversing)
@@ -480,8 +480,8 @@ global::LeonWeaponVisualController receiverValue7 = weaponVisualController;
 
     /// <summary>TryBuildPlan 的业务处理入口；本方法直接依赖 LeonController.CanAct()、LeonWindowTraversal.CacheComponents()、LeonWindowTraversal.GetRootPositionOnGround(Vector3)、LeonWindowTraversal.HasStandingClearance(Vector3, WindowTraversalPoint)、LeonWindowTraversal.IsPathClear(LeonWindowTraversal.TraversalPlan, WindowTraversalPoint)、LeonWindowTraversal.ResolveTraversalSourceSide(WindowTraversalPoint)、LeonWindowTraversal.TraversalPlan.TraversalPlan() 等共 21 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonWindowTraversal.CanTraverse(WindowTraversalPoint)、LeonWindowTraversal.TryStartTraversal(WindowTraversalPoint)；下游（含内部回调体） LeonController.CanAct()、LeonWindowTraversal.CacheComponents()、LeonWindowTraversal.GetRootPositionOnGround(Vector3)、LeonWindowTraversal.HasStandingClearance(Vector3, WindowTraversalPoint)、LeonWindowTraversal.IsPathClear(LeonWindowTraversal.TraversalPlan, WindowTraversalPoint)、LeonWindowTraversal.ResolveTraversalSourceSide(WindowTraversalPoint)、LeonWindowTraversal.TraversalPlan.TraversalPlan() 等共 21 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="window">中文含义：窗口。使用位置：作为 LeonWindowTraversal.HasStandingClearance(Vector3, WindowTraversalPoint) 的参数、作为 LeonWindowTraversal.IsPathClear(LeonWindowTraversal.TraversalPlan, WindowTraversalPoint) 的参数、作为 LeonWindowTraversal.ResolveTraversalSourceSide(WindowTraversalPoint) 的参数 等共 5 处。</param>
-    /// <param name="plan">中文含义：方案。输出参数，由本入口写入并交给调用方。使用位置：作为 LeonWindowTraversal.IsPathClear(LeonWindowTraversal.TraversalPlan, WindowTraversalPoint) 的参数、LeonWindowTraversal.TryBuildPlan(WindowTraversalPoint, out LeonWindowTraversal.TraversalPlan)。</param>
+    /// <param name="window">窗口。</param>
+    /// <param name="plan">方案。输出参数，由本入口写入并交给调用方。</param>
     private bool TryBuildPlan(WindowTraversalPoint window, out TraversalPlan plan)
     {
         plan = default;
@@ -511,11 +511,11 @@ global::LeonWeaponVisualController receiverValue7 = weaponVisualController;
             return false;
         }
 
-        // center（中心）：使用位置：LeonWindowTraversal.TryBuildPlan(WindowTraversalPoint, out LeonWindowTraversal.TraversalPlan)。
+        // 中心。
 Vector3 center = window.OpeningCenterWorld;
-        // normal（表面法线）：使用位置：LeonWindowTraversal.TryBuildPlan(WindowTraversalPoint, out LeonWindowTraversal.TraversalPlan)。
+        // 表面法线。
 Vector3 normal = window.NormalWorld;
-        // sideSign（侧边符号）：保存 LeonWindowTraversal.ResolveTraversalSourceSide(WindowTraversalPoint) 的返回结果，供当前步骤使用。使用位置：作为 WindowTraversalPoint.GetApproachProbePosition(int) 的参数、作为 WindowTraversalPoint.GetAutomaticDropReleasePosition(int) 的参数、作为 WindowTraversalPoint.GetLandingProbePosition(int) 的参数 等共 4 处。
+        // 侧边符号。
 int sideSign = ResolveTraversalSourceSide(window);
         if (!window.isFence)
         {
@@ -534,7 +534,7 @@ int sideSign = ResolveTraversalSourceSide(window);
             return false;
         }
 
-        // travelDirection（行进方向）：使用位置：作为 Quaternion.LookRotation(Vector3, Vector3) 的参数、作为 Vector3.Angle(Vector3, Vector3) 的参数、LeonWindowTraversal.TryBuildPlan(WindowTraversalPoint, out LeonWindowTraversal.TraversalPlan)。
+        // 行进方向。
 Vector3 travelDirection = -normal * sideSign;
         travelDirection.y = 0f;
         if (travelDirection.sqrMagnitude < 0.001f)
@@ -543,7 +543,7 @@ Vector3 travelDirection = -normal * sideSign;
         }
 
         travelDirection.Normalize();
-        // facing（朝向）：保存 Vector3.ProjectOnPlane(Vector3, Vector3) 的返回结果，供当前步骤使用。使用位置：作为 Vector3.Angle(Vector3, Vector3) 的参数、LeonWindowTraversal.TryBuildPlan(WindowTraversalPoint, out LeonWindowTraversal.TraversalPlan)。
+        // 朝向。
 Vector3 facing = Vector3.ProjectOnPlane(transform.forward, Vector3.up);
         if (facing.sqrMagnitude < 0.001f)
         {
@@ -566,29 +566,29 @@ Vector3 facing = Vector3.ProjectOnPlane(transform.forward, Vector3.up);
             return false;
         }
 
-        // startPosition（起始位置）：保存 LeonWindowTraversal.GetRootPositionOnGround(Vector3) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Max(float, float) 的参数、作为 Vector3.Distance(Vector3, Vector3) 的参数、作为 Vector3.Vector3(float, float, float) 的参数 等共 4 处。
+        // 起始位置。
 Vector3 startPosition = GetRootPositionOnGround(sourceGround);
-        // landingPosition（落地位置）：保存 LeonWindowTraversal.GetRootPositionOnGround(Vector3) 的返回结果，供当前步骤使用。使用位置：作为 LeonWindowTraversal.HasStandingClearance(Vector3, WindowTraversalPoint) 的参数、LeonWindowTraversal.TryBuildPlan(WindowTraversalPoint, out LeonWindowTraversal.TraversalPlan)。
+        // 落地位置。
 Vector3 landingPosition = GetRootPositionOnGround(destinationGround);
         if (Vector3.Distance(transform.position, startPosition) > window.interactRange)
         {
             return false;
         }
 
-        // sillTop（窗台顶部）：使用位置：作为 Mathf.Max(float, float) 的参数、LeonWindowTraversal.TryBuildPlan(WindowTraversalPoint, out LeonWindowTraversal.TraversalPlan)。
+        // 窗台顶部。
 float sillTop = center.y - window.openingHeight * 0.5f;
-        // sillHeight（窗台高度）：使用位置：LeonWindowTraversal.TryBuildPlan(WindowTraversalPoint, out LeonWindowTraversal.TraversalPlan)。
+        // 窗台高度。
 float sillHeight = sillTop - sourceGround.y;
         if (sillHeight < minimumSillHeight || sillHeight > maximumSillHeight)
         {
             return false;
         }
 
-        // descendingHeight（下降高度）：使用位置：作为 Mathf.Max(float, float) 的参数、LeonWindowTraversal.TryBuildPlan(WindowTraversalPoint, out LeonWindowTraversal.TraversalPlan)。
+        // 下降高度。
 float descendingHeight = sourceGround.y - destinationGround.y;
-        // automaticDrop（是否自动掉落）：使用位置：LeonWindowTraversal.TryBuildPlan(WindowTraversalPoint, out LeonWindowTraversal.TraversalPlan)。
+        // 是否自动掉落。
 bool automaticDrop = window.enableAutomaticDropLanding && descendingHeight >= window.minimumAutomaticDropHeight;
-        // allowedHeightDifference（允许的高度差值）：保存 WindowTraversalPoint.ResolveMaximumLandingHeightDifference(float) 的返回结果，供当前步骤使用。使用位置：LeonWindowTraversal.TryBuildPlan(WindowTraversalPoint, out LeonWindowTraversal.TraversalPlan)。
+        // 允许的高度差值。
 float allowedHeightDifference = window.ResolveMaximumLandingHeightDifference(maximumLandingHeightDifference);
         if (!automaticDrop && Mathf.Abs(destinationGround.y - sourceGround.y) > allowedHeightDifference)
         {
@@ -600,18 +600,18 @@ float allowedHeightDifference = window.ResolveMaximumLandingHeightDifference(max
             return false;
         }
 
-        // endPosition（结束位置）：使用位置：作为 Mathf.Max(float, float) 的参数、LeonWindowTraversal.TryBuildPlan(WindowTraversalPoint, out LeonWindowTraversal.TraversalPlan)。
+        // 结束位置。
 Vector3 endPosition = landingPosition;
         if (automaticDrop)
         {
-            // release（释放）：保存 WindowTraversalPoint.GetAutomaticDropReleasePosition(int) 的返回结果，供当前步骤使用。使用位置：作为 Vector3.Vector3(float, float, float) 的参数。
+            // 释放。
 Vector3 release = window.GetAutomaticDropReleasePosition(sideSign);
             endPosition = new Vector3(release.x, startPosition.y - 0.08f, release.z);
         }
 
-        // controlPosition（控制位置）：使用位置：LeonWindowTraversal.TryBuildPlan(WindowTraversalPoint, out LeonWindowTraversal.TraversalPlan)。
+        // 控制位置。
 Vector3 controlPosition = (startPosition + endPosition) * 0.5f;
-        // desiredApex（期望顶点）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：LeonWindowTraversal.TryBuildPlan(WindowTraversalPoint, out LeonWindowTraversal.TraversalPlan)。
+        // 期望顶点。
 float desiredApex = Mathf.Max(Mathf.Max(startPosition.y, endPosition.y), sillTop + arcClearance);
         controlPosition.y = desiredApex * 2f - (startPosition.y + endPosition.y) * 0.5f;
         plan = new TraversalPlan
@@ -701,16 +701,16 @@ float desiredApex = Mathf.Max(Mathf.Max(startPosition.y, endPosition.y), sillTop
 
     /// <summary>ResolveTraversalSourceSide 的业务处理入口；本方法直接依赖 Component.GetComponent&lt;EnemyWindowTraversalRoute&gt;()、LeonWindowTraversal.TryGetEnemyPlatformRegionState(string, out bool)、Vector3.Dot(Vector3, Vector3)、Vector3.ProjectOnPlane(Vector3, Vector3)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonWindowTraversal.TryBuildPlan(WindowTraversalPoint, out LeonWindowTraversal.TraversalPlan)；下游（含内部回调体） Component.GetComponent&lt;EnemyWindowTraversalRoute&gt;()、LeonWindowTraversal.TryGetEnemyPlatformRegionState(string, out bool)、Vector3.Dot(Vector3, Vector3)、Vector3.ProjectOnPlane(Vector3, Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="window">中文含义：窗口。使用位置：作为 Vector3.Dot(Vector3, Vector3) 的参数、作为 Vector3.ProjectOnPlane(Vector3, Vector3) 的参数、LeonWindowTraversal.ResolveTraversalSourceSide(WindowTraversalPoint)。</param>
+    /// <param name="window">窗口。</param>
     private int ResolveTraversalSourceSide(WindowTraversalPoint window)
     {
         // 斜窗的无限延伸平面会穿过室内。靠窗侧移时，即使没有越过墙体，
         // 点积也可能换号；有明确平台归属的窗口必须沿用已完成翻越的区域状态。
-        // route（路线）：保存 Component.GetComponent<EnemyWindowTraversalRoute>() 的返回结果，供当前步骤使用。使用位置：作为 LeonWindowTraversal.TryGetEnemyPlatformRegionState(string, out bool) 的参数、LeonWindowTraversal.ResolveTraversalSourceSide(WindowTraversalPoint)。
+        // 路线。
 EnemyWindowTraversalRoute route = window.GetComponent<EnemyWindowTraversalRoute>();
         if (route != null && route.isActiveAndEnabled && TryGetEnemyPlatformRegionState(route.platformRegionId, out bool /* 中文含义：是否平台时的通知回调。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ onPlatform))
         {
-            // platformSign（平台符号）：使用位置：LeonWindowTraversal.ResolveTraversalSourceSide(WindowTraversalPoint)。
+            // 平台符号。
 int platformSign;
             if (route.platformSideSign >= 0)
             {
@@ -731,9 +731,9 @@ int platformSign;
             }
         }
 
-        // normal（表面法线）：保存 Vector3.ProjectOnPlane(Vector3, Vector3) 的返回结果，供当前步骤使用。使用位置：作为 Vector3.Dot(Vector3, Vector3) 的参数。
+        // 表面法线。
 Vector3 normal = Vector3.ProjectOnPlane(window.NormalWorld, Vector3.up);
-        // position（位置）：使用位置：作为 Vector3.Dot(Vector3, Vector3) 的参数、LeonWindowTraversal.ResolveTraversalSourceSide(WindowTraversalPoint)。
+        // 位置。
 Vector3 position;
         if (body != null)
         {
@@ -756,25 +756,25 @@ Vector3 position;
 
     /// <summary>TryFindGround 的业务处理入口；本方法直接依赖 Component.GetComponentInParent&lt;LeonController&gt;()、Component.GetComponentInParent&lt;VillagerController&gt;()、Physics.RaycastAll(Vector3, Vector3, float, int, QueryTriggerInteraction)、Transform.IsChildOf(Transform)、WindowTraversalPoint.ShouldIgnoreCollider(Collider)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonWindowTraversal.TryBuildPlan(WindowTraversalPoint, out LeonWindowTraversal.TraversalPlan)；下游（含内部回调体） Component.GetComponentInParent&lt;LeonController&gt;()、Component.GetComponentInParent&lt;VillagerController&gt;()、Physics.RaycastAll(Vector3, Vector3, float, int, QueryTriggerInteraction)、Transform.IsChildOf(Transform)、WindowTraversalPoint.ShouldIgnoreCollider(Collider)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="window">中文含义：窗口。使用位置：作为 Physics.RaycastAll(Vector3, Vector3, float, int, QueryTriggerInteraction) 的参数、LeonWindowTraversal.TryFindGround(WindowTraversalPoint, Vector3, out Vector3)。</param>
-    /// <param name="probePosition">中文含义：探测位置。使用位置：LeonWindowTraversal.TryFindGround(WindowTraversalPoint, Vector3, out Vector3)。</param>
-    /// <param name="groundPoint">中文含义：地面点。输出参数，由本入口写入并交给调用方。使用位置：LeonWindowTraversal.TryFindGround(WindowTraversalPoint, Vector3, out Vector3)。</param>
+    /// <param name="window">窗口。</param>
+    /// <param name="probePosition">探测位置。</param>
+    /// <param name="groundPoint">地面点。输出参数，由本入口写入并交给调用方。</param>
     private bool TryFindGround(WindowTraversalPoint window, Vector3 probePosition, out Vector3 groundPoint)
     {
-        // origin（原点）：使用位置：作为 Physics.RaycastAll(Vector3, Vector3, float, int, QueryTriggerInteraction) 的参数、LeonWindowTraversal.TryFindGround(WindowTraversalPoint, Vector3, out Vector3)。
+        // 原点。
 Vector3 origin = probePosition;
         origin.y = window.OpeningCenterWorld.y + window.openingHeight * 0.5f + window.groundProbeHeight;
-        // hits（命中结果）：保存 Physics.RaycastAll(Vector3, Vector3, float, int, QueryTriggerInteraction) 的返回结果，供当前步骤使用。使用位置：LeonWindowTraversal.TryFindGround(WindowTraversalPoint, Vector3, out Vector3)。
+        // 命中结果。
 RaycastHit[] hits = Physics.RaycastAll(origin, Vector3.down, window.groundProbeDistance, window.groundMask, QueryTriggerInteraction.Ignore);
-        // nearestDistance（最近距离）：使用位置：LeonWindowTraversal.TryFindGround(WindowTraversalPoint, Vector3, out Vector3)。
+        // 最近距离。
 float nearestDistance = float.MaxValue;
-        // foundGround（是否找到的地面）：使用位置：LeonWindowTraversal.TryFindGround(WindowTraversalPoint, Vector3, out Vector3)。
+        // 是否找到的地面。
 bool foundGround = false;
         groundPoint = default;
-        // i（当前遍历索引）：使用位置：LeonWindowTraversal.TryFindGround(WindowTraversalPoint, Vector3, out Vector3)。
+        // 当前遍历索引。
 for (int i = 0; i < hits.Length; i++)
         {
-            // candidate（候选）：使用位置：作为 WindowTraversalPoint.ShouldIgnoreCollider(Collider) 的参数、LeonWindowTraversal.TryFindGround(WindowTraversalPoint, Vector3, out Vector3)。
+            // 候选。
 Collider candidate = hits[i].collider;
             if (candidate == null)
             {
@@ -812,16 +812,16 @@ Collider candidate = hits[i].collider;
 
     /// <summary>GetRootPositionOnGround 的业务处理入口；本方法直接依赖 Mathf.Abs(float)、Transform.TransformPoint(Vector3)、Vector3.Vector3(float, float, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonWindowTraversal.TryBuildPlan(WindowTraversalPoint, out LeonWindowTraversal.TraversalPlan)；下游（含内部回调体） Mathf.Abs(float)、Transform.TransformPoint(Vector3)、Vector3.Vector3(float, float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="groundPoint">中文含义：地面点。使用位置：作为 Vector3.Vector3(float, float, float) 的参数。</param>
+    /// <param name="groundPoint">地面点。</param>
     private Vector3 GetRootPositionOnGround(Vector3 groundPoint)
     {
-        // bottomOffset（底部偏移量）：使用位置：作为 Vector3.Vector3(float, float, float) 的参数、LeonWindowTraversal.GetRootPositionOnGround(Vector3)。
+        // 底部偏移量。
 float bottomOffset = 0f;
         if (bodyCollider != null && bodyCollider.direction == 1)
         {
-            // scaledHeight（缩放后的高度）：使用位置：LeonWindowTraversal.GetRootPositionOnGround(Vector3)。
+            // 缩放后的高度。
 float scaledHeight = bodyCollider.height * Mathf.Abs(bodyCollider.transform.lossyScale.y);
-            // bottomWorld（底部世界空间）：使用位置：LeonWindowTraversal.GetRootPositionOnGround(Vector3)。
+            // 底部世界空间。
 float bottomWorld = bodyCollider.transform.TransformPoint(bodyCollider.center).y - scaledHeight * 0.5f;
             bottomOffset = bottomWorld - transform.position.y;
         }
@@ -831,44 +831,44 @@ float bottomWorld = bodyCollider.transform.TransformPoint(bodyCollider.center).y
 
     /// <summary>HasStandingClearance 的业务处理入口；本方法直接依赖 LeonWindowTraversal.ContainsBlockingCollider(Collider[], WindowTraversalPoint)、LeonWindowTraversal.GetCapsuleHeight()、LeonWindowTraversal.GetCapsulePoints(Vector3, float, float, out Vector3, out Vector3)、LeonWindowTraversal.GetCapsuleRadius()、Physics.OverlapCapsule(Vector3, Vector3, float, int, QueryTriggerInteraction)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonWindowTraversal.TryBuildPlan(WindowTraversalPoint, out LeonWindowTraversal.TraversalPlan)；下游（含内部回调体） LeonWindowTraversal.ContainsBlockingCollider(Collider[], WindowTraversalPoint)、LeonWindowTraversal.GetCapsuleHeight()、LeonWindowTraversal.GetCapsulePoints(Vector3, float, float, out Vector3, out Vector3)、LeonWindowTraversal.GetCapsuleRadius()、Physics.OverlapCapsule(Vector3, Vector3, float, int, QueryTriggerInteraction)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="rootPosition">中文含义：根节点位置。使用位置：作为 LeonWindowTraversal.GetCapsulePoints(Vector3, float, float, out Vector3, out Vector3) 的参数。</param>
-    /// <param name="window">中文含义：窗口。使用位置：作为 LeonWindowTraversal.ContainsBlockingCollider(Collider[], WindowTraversalPoint) 的参数、作为 Physics.OverlapCapsule(Vector3, Vector3, float, int, QueryTriggerInteraction) 的参数。</param>
+    /// <param name="rootPosition">根节点位置。</param>
+    /// <param name="window">窗口。</param>
     private bool HasStandingClearance(Vector3 rootPosition, WindowTraversalPoint window)
     {
-        // radius（半径）：保存 LeonWindowTraversal.GetCapsuleRadius() 的返回结果，供当前步骤使用。使用位置：作为 LeonWindowTraversal.GetCapsulePoints(Vector3, float, float, out Vector3, out Vector3) 的参数、作为 Physics.OverlapCapsule(Vector3, Vector3, float, int, QueryTriggerInteraction) 的参数。
+        // 半径。
 float radius = GetCapsuleRadius();
-        // height（高度）：保存 LeonWindowTraversal.GetCapsuleHeight() 的返回结果，供当前步骤使用。使用位置：作为 LeonWindowTraversal.GetCapsulePoints(Vector3, float, float, out Vector3, out Vector3) 的参数。
+        // 高度。
 float height = GetCapsuleHeight();
         GetCapsulePoints(rootPosition, height, radius, out Vector3 /* 中文含义：底部。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ bottom, out Vector3 /* 中文含义：顶部。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ top);
-        // overlaps（重叠结果）：保存 Physics.OverlapCapsule(Vector3, Vector3, float, int, QueryTriggerInteraction) 的返回结果，供当前步骤使用。使用位置：作为 LeonWindowTraversal.ContainsBlockingCollider(Collider[], WindowTraversalPoint) 的参数。
+        // 重叠结果。
 Collider[] overlaps = Physics.OverlapCapsule(bottom, top, radius, window.obstacleMask, QueryTriggerInteraction.Ignore);
         return !ContainsBlockingCollider(overlaps, window);
     }
 
     /// <summary>IsPathClear 的业务处理入口；本方法直接依赖 LeonWindowTraversal.ContainsBlockingCollider(Collider[], WindowTraversalPoint)、LeonWindowTraversal.EvaluateQuadratic(LeonWindowTraversal.TraversalPlan, float)、LeonWindowTraversal.GetCapsulePoints(Vector3, float, float, out Vector3, out Vector3)、LeonWindowTraversal.GetCapsuleRadius()、Mathf.Max(float, float)、Mathf.Max(int, int)、Mathf.Min(float, float) 等共 8 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonWindowTraversal.TryBuildPlan(WindowTraversalPoint, out LeonWindowTraversal.TraversalPlan)；下游（含内部回调体） LeonWindowTraversal.ContainsBlockingCollider(Collider[], WindowTraversalPoint)、LeonWindowTraversal.EvaluateQuadratic(LeonWindowTraversal.TraversalPlan, float)、LeonWindowTraversal.GetCapsulePoints(Vector3, float, float, out Vector3, out Vector3)、LeonWindowTraversal.GetCapsuleRadius()、Mathf.Max(float, float)、Mathf.Max(int, int)、Mathf.Min(float, float) 等共 8 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="plan">中文含义：方案。使用位置：作为 LeonWindowTraversal.EvaluateQuadratic(LeonWindowTraversal.TraversalPlan, float) 的参数。</param>
-    /// <param name="window">中文含义：窗口。使用位置：作为 LeonWindowTraversal.ContainsBlockingCollider(Collider[], WindowTraversalPoint) 的参数、作为 Mathf.Min(float, float) 的参数、作为 Physics.OverlapCapsule(Vector3, Vector3, float, int, QueryTriggerInteraction) 的参数。</param>
+    /// <param name="plan">方案。</param>
+    /// <param name="window">窗口。</param>
     private bool IsPathClear(TraversalPlan plan, WindowTraversalPoint window)
     {
-        // radius（半径）：保存 Mathf.Min(float, float) 的返回结果，供当前步骤使用。使用位置：作为 LeonWindowTraversal.GetCapsulePoints(Vector3, float, float, out Vector3, out Vector3) 的参数、作为 Mathf.Max(float, float) 的参数、作为 Physics.OverlapCapsule(Vector3, Vector3, float, int, QueryTriggerInteraction) 的参数 等共 4 处。
+        // 半径。
 float radius = Mathf.Min(GetCapsuleRadius() * 0.9f, window.openingWidth * 0.5f - 0.06f);
         if (radius <= 0.05f)
         {
             return false;
         }
 
-        // height（高度）：保存 Mathf.Min(float, float) 的返回结果，供当前步骤使用。使用位置：作为 LeonWindowTraversal.GetCapsulePoints(Vector3, float, float, out Vector3, out Vector3) 的参数、作为 Mathf.Max(float, float) 的参数、LeonWindowTraversal.IsPathClear(LeonWindowTraversal.TraversalPlan, WindowTraversalPoint)。
+        // 高度。
 float height = Mathf.Min(traversalCapsuleHeight, window.openingHeight - 0.06f);
         height = Mathf.Max(height, radius * 2f + 0.02f);
-        // sampleCount（采样数量）：保存 Mathf.Max(int, int) 的返回结果，供当前步骤使用。使用位置：LeonWindowTraversal.IsPathClear(LeonWindowTraversal.TraversalPlan, WindowTraversalPoint)。
+        // 采样数量。
 int sampleCount = Mathf.Max(3, pathValidationSamples);
-        // i（当前遍历索引）：使用位置：LeonWindowTraversal.IsPathClear(LeonWindowTraversal.TraversalPlan, WindowTraversalPoint)。
+        // 当前遍历索引。
 for (int i = 1; i < sampleCount - 1; i++)
         {
-            // progress（进度）：使用位置：作为 LeonWindowTraversal.EvaluateQuadratic(LeonWindowTraversal.TraversalPlan, float) 的参数。
+            // 进度。
 float progress = i / (float)(sampleCount - 1);
-            // rootPosition（根节点位置）：保存 LeonWindowTraversal.EvaluateQuadratic(LeonWindowTraversal.TraversalPlan, float) 的返回结果，供当前步骤使用。使用位置：作为 LeonWindowTraversal.GetCapsulePoints(Vector3, float, float, out Vector3, out Vector3) 的参数。
+            // 根节点位置。
             Vector3 rootPosition = EvaluateQuadratic(plan, progress);
             // 窗口根轨沿地面移动，窗台净空按角色翻身经过的弧线验证。
             if (window.isFence && plan.track != null)
@@ -876,7 +876,7 @@ float progress = i / (float)(sampleCount - 1);
                 rootPosition = SampleTraversalPosition(plan, progress);
             }
             GetCapsulePoints(rootPosition, height, radius, out Vector3 /* 中文含义：底部。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ bottom, out Vector3 /* 中文含义：顶部。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ top);
-            // overlaps（重叠结果）：保存 Physics.OverlapCapsule(Vector3, Vector3, float, int, QueryTriggerInteraction) 的返回结果，供当前步骤使用。使用位置：作为 LeonWindowTraversal.ContainsBlockingCollider(Collider[], WindowTraversalPoint) 的参数。
+            // 重叠结果。
 Collider[] overlaps = Physics.OverlapCapsule(bottom, top, radius, window.obstacleMask, QueryTriggerInteraction.Ignore);
             if (ContainsBlockingCollider(overlaps, window))
             {
@@ -889,14 +889,14 @@ Collider[] overlaps = Physics.OverlapCapsule(bottom, top, radius, window.obstacl
 
     /// <summary>ContainsBlockingCollider 的业务处理入口；本方法直接依赖 Transform.IsChildOf(Transform)、WindowTraversalPoint.ShouldIgnorePathCollider(Collider)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonWindowTraversal.HasStandingClearance(Vector3, WindowTraversalPoint)、LeonWindowTraversal.IsPathClear(LeonWindowTraversal.TraversalPlan, WindowTraversalPoint)；下游（含内部回调体） Transform.IsChildOf(Transform)、WindowTraversalPoint.ShouldIgnorePathCollider(Collider)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="overlaps">中文含义：重叠结果。使用位置：LeonWindowTraversal.ContainsBlockingCollider(Collider[], WindowTraversalPoint)。</param>
-    /// <param name="window">中文含义：窗口。使用位置：LeonWindowTraversal.ContainsBlockingCollider(Collider[], WindowTraversalPoint)。</param>
+    /// <param name="overlaps">重叠结果。</param>
+    /// <param name="window">窗口。</param>
     private bool ContainsBlockingCollider(Collider[] overlaps, WindowTraversalPoint window)
     {
-        // i（当前遍历索引）：使用位置：LeonWindowTraversal.ContainsBlockingCollider(Collider[], WindowTraversalPoint)。
+        // 当前遍历索引。
 for (int i = 0; i < overlaps.Length; i++)
         {
-            // candidate（候选）：使用位置：作为 WindowTraversalPoint.ShouldIgnorePathCollider(Collider) 的参数、LeonWindowTraversal.ContainsBlockingCollider(Collider[], WindowTraversalPoint)。
+            // 候选。
 Collider candidate = overlaps[i];
             if (candidate == null)
             {
@@ -921,25 +921,25 @@ Collider candidate = overlaps[i];
 
     /// <summary>GetCapsulePoints 的业务处理入口；本方法直接依赖 Mathf.Abs(float)、Mathf.Max(float, float)、Transform.TransformPoint(Vector3)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonWindowTraversal.HasStandingClearance(Vector3, WindowTraversalPoint)、LeonWindowTraversal.IsPathClear(LeonWindowTraversal.TraversalPlan, WindowTraversalPoint)；下游（含内部回调体） Mathf.Abs(float)、Mathf.Max(float, float)、Transform.TransformPoint(Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="rootPosition">中文含义：根节点位置。使用位置：LeonWindowTraversal.GetCapsulePoints(Vector3, float, float, out Vector3, out Vector3)。</param>
-    /// <param name="height">中文含义：高度。使用位置：作为 Mathf.Max(float, float) 的参数。</param>
-    /// <param name="radius">中文含义：半径。使用位置：作为 Mathf.Max(float, float) 的参数、LeonWindowTraversal.GetCapsulePoints(Vector3, float, float, out Vector3, out Vector3)。</param>
-    /// <param name="bottom">中文含义：底部。输出参数，由本入口写入并交给调用方。使用位置：LeonWindowTraversal.GetCapsulePoints(Vector3, float, float, out Vector3, out Vector3)。</param>
-    /// <param name="top">中文含义：顶部。输出参数，由本入口写入并交给调用方。使用位置：LeonWindowTraversal.GetCapsulePoints(Vector3, float, float, out Vector3, out Vector3)。</param>
+    /// <param name="rootPosition">根节点位置。</param>
+    /// <param name="height">高度。</param>
+    /// <param name="radius">半径。</param>
+    /// <param name="bottom">底部。输出参数，由本入口写入并交给调用方。</param>
+    /// <param name="top">顶部。输出参数，由本入口写入并交给调用方。</param>
     private void GetCapsulePoints(Vector3 rootPosition, float height, float radius, out Vector3 bottom, out Vector3 top)
     {
-        // rootToBottom（根节点目标底部）：使用位置：LeonWindowTraversal.GetCapsulePoints(Vector3, float, float, out Vector3, out Vector3)。
+        // 根节点目标底部。
 float rootToBottom = 0.04f;
         if (bodyCollider != null && bodyCollider.direction == 1)
         {
-            // scaledHeight（缩放后的高度）：使用位置：LeonWindowTraversal.GetCapsulePoints(Vector3, float, float, out Vector3, out Vector3)。
+            // 缩放后的高度。
 float scaledHeight = bodyCollider.height * Mathf.Abs(bodyCollider.transform.lossyScale.y);
-            // bottomWorld（底部世界空间）：使用位置：作为 Mathf.Max(float, float) 的参数。
+            // 底部世界空间。
 float bottomWorld = bodyCollider.transform.TransformPoint(bodyCollider.center).y - scaledHeight * 0.5f;
             rootToBottom = Mathf.Max(0.02f, bottomWorld - transform.position.y + 0.04f);
         }
 
-        // segment（线段）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：LeonWindowTraversal.GetCapsulePoints(Vector3, float, float, out Vector3, out Vector3)。
+        // 线段。
 float segment = Mathf.Max(0f, height - radius * 2f);
         bottom = rootPosition + Vector3.up * (rootToBottom + radius);
         top = bottom + Vector3.up * segment;
@@ -954,9 +954,9 @@ float segment = Mathf.Max(0f, height - radius * 2f);
             return 0.35f;
         }
 
-        // scale（缩放）：使用位置：作为 Mathf.Abs(float) 的参数。
+        // 缩放。
 Vector3 scale = bodyCollider.transform.lossyScale;
-        // radialScale（径向缩放）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：LeonWindowTraversal.GetCapsuleRadius()。
+        // 径向缩放。
 float radialScale = Mathf.Max(Mathf.Abs(scale.x), Mathf.Abs(scale.z));
         return bodyCollider.radius * radialScale;
     }
@@ -975,7 +975,7 @@ float radialScale = Mathf.Max(Mathf.Abs(scale.x), Mathf.Abs(scale.z));
 
     /// <summary>HandleTraversalEntered 的业务处理入口；本方法直接依赖 LeonWindowTraversal.BeginTraversalPhysics()、LeonWindowTraversal.SetBodyPose(Vector3, Quaternion)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） LeonWindowTraversal.BeginTraversalPhysics()、LeonWindowTraversal.SetBodyPose(Vector3, Quaternion)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="transaction">中文含义：事务。使用位置：LeonWindowTraversal.HandleTraversalEntered(AnimationActionTransaction)。</param>
+    /// <param name="transaction">事务。</param>
     private void HandleTraversalEntered(AnimationActionTransaction transaction)
     {
         if (transaction.transactionId != activeTransactionId)
@@ -1000,11 +1000,15 @@ float radialScale = Mathf.Max(Mathf.Abs(scale.x), Mathf.Abs(scale.z));
         traversalStartedTime = Time.time;
         BeginTraversalPhysics();
         SetBodyPose(activePlan.startPosition, activePlan.facingRotation);
+        if (dropCamera != null)
+        {
+            dropCamera.BeginWindowTraversalCamera(activeWindow);
+        }
     }
 
     /// <summary>HandleTraversalCompleted 的业务处理入口；本方法直接依赖 LeonWindowTraversal.ReleaseNormalTraversalGameplay()、object.ReferenceEquals(object, object)、RE4RThirdPersonCamera.EndDropCamera()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） LeonWindowTraversal.ReleaseNormalTraversalGameplay()、object.ReferenceEquals(object, object)、RE4RThirdPersonCamera.EndDropCamera()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="transaction">中文含义：事务。使用位置：LeonWindowTraversal.HandleTraversalCompleted(AnimationActionTransaction)。</param>
+    /// <param name="transaction">事务。</param>
     private void HandleTraversalCompleted(AnimationActionTransaction transaction)
     {
         if (!traversalStarted || transaction.transactionId != activeTransactionId)
@@ -1022,7 +1026,7 @@ float radialScale = Mathf.Max(Mathf.Abs(scale.x), Mathf.Abs(scale.z));
             && motionPhase == TraversalMotionPhase.Landing)
         {
             movementCompleted = true;
-            // receiverValue12（判空前缓存的掉落摄像机）：从掉落摄像机读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonWindowTraversal.HandleTraversalCompleted(AnimationActionTransaction)。
+            // 判空前缓存的掉落摄像机。
 global::RE4RThirdPersonCamera receiverValue12 = dropCamera;
             if (!global::System.Object.ReferenceEquals(receiverValue12, null))
             {
@@ -1033,7 +1037,7 @@ global::RE4RThirdPersonCamera receiverValue12 = dropCamera;
 
     /// <summary>HandleTraversalExited 的业务处理入口；本方法直接依赖 LeonWindowTraversal.FinishTraversal(bool)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） LeonWindowTraversal.FinishTraversal(bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="transaction">中文含义：事务。使用位置：LeonWindowTraversal.HandleTraversalExited(AnimationActionTransaction)。</param>
+    /// <param name="transaction">事务。</param>
     private void HandleTraversalExited(AnimationActionTransaction transaction)
     {
         if (transaction.transactionId != activeTransactionId)
@@ -1046,7 +1050,7 @@ global::RE4RThirdPersonCamera receiverValue12 = dropCamera;
 
     /// <summary>HandleTraversalInterrupted 的业务处理入口；本方法直接依赖 LeonWindowTraversal.FinishTraversal(bool)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） LeonWindowTraversal.FinishTraversal(bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="transaction">中文含义：事务。使用位置：LeonWindowTraversal.HandleTraversalInterrupted(AnimationActionTransaction)。</param>
+    /// <param name="transaction">事务。</param>
     private void HandleTraversalInterrupted(AnimationActionTransaction transaction)
     {
         if (transaction.transactionId != activeTransactionId)
@@ -1059,10 +1063,10 @@ global::RE4RThirdPersonCamera receiverValue12 = dropCamera;
 
     /// <summary>MoveAlongPlan 的业务处理入口；本方法直接依赖 LeonWindowTraversal.EvaluateQuadratic(LeonWindowTraversal.TraversalPlan, float)、LeonWindowTraversal.SetBodyPose(Vector3, Quaternion)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonWindowTraversal.HandleFixedUpdate()；下游（含内部回调体） LeonWindowTraversal.EvaluateQuadratic(LeonWindowTraversal.TraversalPlan, float)、LeonWindowTraversal.SetBodyPose(Vector3, Quaternion)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="progress">中文含义：进度。使用位置：作为 LeonWindowTraversal.EvaluateQuadratic(LeonWindowTraversal.TraversalPlan, float) 的参数。</param>
+    /// <param name="progress">进度。</param>
     private void MoveAlongPlan(float progress, float elapsed)
     {
-        // position（位置）：保存 LeonWindowTraversal.EvaluateQuadratic(LeonWindowTraversal.TraversalPlan, float) 的返回结果，供当前步骤使用。使用位置：作为 LeonWindowTraversal.SetBodyPose(Vector3, Quaternion) 的参数。
+        // 位置。
         Vector3 position = EvaluateQuadratic(activePlan, progress);
         CommitWindowFracture(elapsed, position);
         SetBodyPose(position, activePlan.facingRotation);
@@ -1083,7 +1087,7 @@ global::RE4RThirdPersonCamera receiverValue12 = dropCamera;
 
         EndTraversalPhysics();
         gameplayReleased = true;
-        // receiverValue13（判空前缓存的武器视觉表现控制器）：从武器视觉表现控制器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonWindowTraversal.ReleaseNormalTraversalGameplay()。
+        // 判空前缓存的武器视觉表现控制器。
 global::LeonWeaponVisualController receiverValue13 = weaponVisualController;
         if (!global::System.Object.ReferenceEquals(receiverValue13, null))
         {
@@ -1094,6 +1098,11 @@ global::LeonWeaponVisualController receiverValue13 = weaponVisualController;
         {
             controller.ChangeState(LeonState.Idle);
         }
+
+        if (dropCamera != null)
+        {
+            dropCamera.EndWindowTraversalCamera(activeWindow, true);
+        }
     }
 
     /// <summary>BeginAutomaticDrop 的业务处理入口；本方法直接依赖 LeonActionMotionDriver.CommitAngleSpeed(MotionControlToken, Vector3)、LeonActionMotionDriver.CommitSpeed(MotionControlToken, Vector3)、LeonAnimationActionCoordinator.AdvanceTraversalAction(FullBodyActionType, float, float)、LeonAnimationActionCoordinator.CancelTraversal()、LeonWindowTraversal.FinishTraversal(bool)、LeonWindowTraversal.SetBodyPose(Vector3, Quaternion)、object.ReferenceEquals(object, object) 等共 8 处，调用方通过参数与返回结果交接本次处理。</summary>
@@ -1102,9 +1111,9 @@ global::LeonWeaponVisualController receiverValue13 = weaponVisualController;
     {
         if (activeWindow == null || body == null)
         {
-            // receiverValue14（判空前缓存的当前玩家动画动作协调器）：从动作协调组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonWindowTraversal.BeginAutomaticDrop()。
+            // 判空前缓存的当前玩家动画动作协调器。
 global::LeonAnimationActionCoordinator receiverValue14 = coordinator;
-            // optionalValue15（条件访问得到的取消通行的返回结果）：保存条件访问的结果，接收者为空时保持默认空值，非空时才执行原成员访问。使用位置：LeonWindowTraversal.BeginAutomaticDrop()。
+            // 条件访问得到的取消通行的返回结果。
 bool? optionalValue15;
             if (!global::System.Object.ReferenceEquals(receiverValue14, null))
             {
@@ -1122,9 +1131,9 @@ bool? optionalValue15;
         SetBodyPose(activePlan.endPosition, activePlan.facingRotation);
         if (!coordinator.AdvanceTraversalAction(FullBodyActionType.WindowDropFall, dropTransitionDuration))
         {
-            // receiverValue16（判空前缓存的当前玩家动画动作协调器）：从动作协调组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonWindowTraversal.BeginAutomaticDrop()。
+            // 判空前缓存的当前玩家动画动作协调器。
 global::LeonAnimationActionCoordinator receiverValue16 = coordinator;
-            // optionalValue17（条件访问得到的取消通行的返回结果）：保存条件访问的结果，接收者为空时保持默认空值，非空时才执行原成员访问。使用位置：LeonWindowTraversal.BeginAutomaticDrop()。
+            // 条件访问得到的取消通行的返回结果。
 bool? optionalValue17;
             if (!global::System.Object.ReferenceEquals(receiverValue16, null))
             {
@@ -1146,9 +1155,9 @@ bool? optionalValue17;
 
         body.isKinematic = previousKinematic;
         body.useGravity = previousUseGravity;
-        // receiverValue18（判空前缓存的角色运动执行器）：从角色运动执行器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonWindowTraversal.BeginAutomaticDrop()。
+        // 判空前缓存的角色运动执行器。
 global::LeonActionMotionDriver receiverValue18 = motionExecutor;
-        // optionalValue19（条件访问得到的提交角度速度的返回结果）：保存条件访问的结果，接收者为空时保持默认空值，非空时才执行原成员访问。使用位置：LeonWindowTraversal.BeginAutomaticDrop()。
+        // 条件访问得到的提交角度速度的返回结果。
 bool? optionalValue19;
         if (!global::System.Object.ReferenceEquals(receiverValue18, null))
         {
@@ -1159,9 +1168,9 @@ bool? optionalValue19;
             optionalValue19 = default;
         }
 
-        // receiverValue20（判空前缓存的角色运动执行器）：从角色运动执行器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonWindowTraversal.BeginAutomaticDrop()。
+        // 判空前缓存的角色运动执行器。
 global::LeonActionMotionDriver receiverValue20 = motionExecutor;
-        // optionalValue21（条件访问得到的移动速度是否成功提交）：保存条件访问的结果，接收者为空时保持默认空值，非空时才执行原成员访问。使用位置：LeonWindowTraversal.BeginAutomaticDrop()。
+        // 条件访问得到的移动速度是否成功提交。
 bool? optionalValue21;
         if (!global::System.Object.ReferenceEquals(receiverValue20, null))
         {
@@ -1176,10 +1185,11 @@ bool? optionalValue21;
         landingActionRequested = false;
         fastestDownwardVelocity = body.linearVelocity.y;
         dropStartedTime = Time.time;
-        // receiverValue22（判空前缓存的掉落摄像机）：从掉落摄像机读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonWindowTraversal.BeginAutomaticDrop()。
+        // 判空前缓存的掉落摄像机。
 global::RE4RThirdPersonCamera receiverValue22 = dropCamera;
         if (!global::System.Object.ReferenceEquals(receiverValue22, null))
         {
+            receiverValue22.EndWindowTraversalCamera(activeWindow, true);
             receiverValue22.BeginDropCamera();
         }
     }
@@ -1255,24 +1265,24 @@ global::RE4RThirdPersonCamera receiverValue22 = dropCamera;
 
     /// <summary>EvaluateQuadratic 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
     /// <remarks>静态调用链：上游 LeonWindowTraversal.IsPathClear(LeonWindowTraversal.TraversalPlan, WindowTraversalPoint)、LeonWindowTraversal.MoveAlongPlan(float)；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="plan">中文含义：方案。使用位置：LeonWindowTraversal.EvaluateQuadratic(LeonWindowTraversal.TraversalPlan, float)。</param>
-    /// <param name="progress">中文含义：进度。使用位置：LeonWindowTraversal.EvaluateQuadratic(LeonWindowTraversal.TraversalPlan, float)。</param>
+    /// <param name="plan">方案。</param>
+    /// <param name="progress">进度。</param>
     private static Vector3 EvaluateQuadratic(TraversalPlan plan, float progress)
     {
-        // remaining（剩余）：使用位置：LeonWindowTraversal.EvaluateQuadratic(LeonWindowTraversal.TraversalPlan, float)。
+        // 剩余。
 float remaining = 1f - progress;
         return remaining * remaining * plan.startPosition + 2f * remaining * progress * plan.controlPosition + progress * progress * plan.endPosition;
     }
 
     /// <summary>SetBodyPose 的业务处理入口；本方法直接依赖 LeonActionMotionDriver.CommitTraversalPose(MotionControlToken, Vector3, Quaternion)、object.ReferenceEquals(object, object)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonWindowTraversal.BeginAutomaticDrop()、LeonWindowTraversal.FinishTraversal(bool)、LeonWindowTraversal.HandleTraversalEntered(AnimationActionTransaction)、LeonWindowTraversal.MoveAlongPlan(float)、LeonWindowTraversal.ReleaseNormalTraversalGameplay()；下游（含内部回调体） LeonActionMotionDriver.CommitTraversalPose(MotionControlToken, Vector3, Quaternion)、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="position">中文含义：位置。使用位置：作为 LeonActionMotionDriver.CommitTraversalPose(MotionControlToken, Vector3, Quaternion) 的参数。</param>
-    /// <param name="rotation">中文含义：旋转。使用位置：作为 LeonActionMotionDriver.CommitTraversalPose(MotionControlToken, Vector3, Quaternion) 的参数。</param>
+    /// <param name="position">位置。</param>
+    /// <param name="rotation">旋转。</param>
     private void SetBodyPose(Vector3 position, Quaternion rotation)
     {
-        // receiverValue32（判空前缓存的角色运动执行器）：从角色运动执行器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonWindowTraversal.SetBodyPose(Vector3, Quaternion)。
+        // 判空前缓存的角色运动执行器。
 global::LeonActionMotionDriver receiverValue32 = motionExecutor;
-        // optionalValue33（条件访问得到的提交通行姿态的返回结果）：保存条件访问的结果，接收者为空时保持默认空值，非空时才执行原成员访问。使用位置：LeonWindowTraversal.SetBodyPose(Vector3, Quaternion)。
+        // 条件访问得到的提交通行姿态的返回结果。
 bool? optionalValue33;
         if (!global::System.Object.ReferenceEquals(receiverValue32, null))
         {
@@ -1293,9 +1303,9 @@ bool? optionalValue33;
         {
             previousKinematic = body.isKinematic;
             previousUseGravity = body.useGravity;
-            // receiverValue34（判空前缓存的角色运动执行器）：从角色运动执行器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonWindowTraversal.BeginTraversalPhysics()。
+            // 判空前缓存的角色运动执行器。
 global::LeonActionMotionDriver receiverValue34 = motionExecutor;
-            // optionalValue35（条件访问得到的移动速度是否成功提交）：保存条件访问的结果，接收者为空时保持默认空值，非空时才执行原成员访问。使用位置：LeonWindowTraversal.BeginTraversalPhysics()。
+            // 条件访问得到的移动速度是否成功提交。
 bool? optionalValue35;
             if (!global::System.Object.ReferenceEquals(receiverValue34, null))
             {
@@ -1306,9 +1316,9 @@ bool? optionalValue35;
                 optionalValue35 = default;
             }
 
-            // receiverValue36（判空前缓存的角色运动执行器）：从角色运动执行器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonWindowTraversal.BeginTraversalPhysics()。
+            // 判空前缓存的角色运动执行器。
 global::LeonActionMotionDriver receiverValue36 = motionExecutor;
-            // optionalValue37（条件访问得到的提交角度速度的返回结果）：保存条件访问的结果，接收者为空时保持默认空值，非空时才执行原成员访问。使用位置：LeonWindowTraversal.BeginTraversalPhysics()。
+            // 条件访问得到的提交角度速度的返回结果。
 bool? optionalValue37;
             if (!global::System.Object.ReferenceEquals(receiverValue36, null))
             {
@@ -1348,9 +1358,9 @@ bool? optionalValue37;
         {
             body.isKinematic = previousKinematic;
             body.useGravity = previousUseGravity;
-            // receiverValue38（判空前缓存的角色运动执行器）：从角色运动执行器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonWindowTraversal.EndTraversalPhysics()。
+            // 判空前缓存的角色运动执行器。
 global::LeonActionMotionDriver receiverValue38 = motionExecutor;
-            // optionalValue39（条件访问得到的移动速度是否成功提交）：保存条件访问的结果，接收者为空时保持默认空值，非空时才执行原成员访问。使用位置：LeonWindowTraversal.EndTraversalPhysics()。
+            // 条件访问得到的移动速度是否成功提交。
 bool? optionalValue39;
             if (!global::System.Object.ReferenceEquals(receiverValue38, null))
             {
@@ -1361,9 +1371,9 @@ bool? optionalValue39;
                 optionalValue39 = default;
             }
 
-            // receiverValue40（判空前缓存的角色运动执行器）：从角色运动执行器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonWindowTraversal.EndTraversalPhysics()。
+            // 判空前缓存的角色运动执行器。
 global::LeonActionMotionDriver receiverValue40 = motionExecutor;
-            // optionalValue41（条件访问得到的提交角度速度的返回结果）：保存条件访问的结果，接收者为空时保持默认空值，非空时才执行原成员访问。使用位置：LeonWindowTraversal.EndTraversalPhysics()。
+            // 条件访问得到的提交角度速度的返回结果。
 bool? optionalValue41;
             if (!global::System.Object.ReferenceEquals(receiverValue40, null))
             {
@@ -1380,14 +1390,14 @@ bool? optionalValue41;
 
     /// <summary>FinishTraversal 的业务处理入口；本方法直接依赖 LeonController.ChangeState(LeonState)、LeonController.HandleDeferredTraversalHit(LeonHitDirection)、LeonWeaponVisualController.SetTraversalWeaponVisible(bool)、LeonWindowTraversal.ClearActiveTraversal()、LeonWindowTraversal.RefreshPlatformOwnership()、LeonWindowTraversal.EndTraversalPhysics()、LeonWindowTraversal.SetBodyPose(Vector3, Quaternion) 等共 9 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonWindowTraversal.BeginAutomaticDrop()、LeonWindowTraversal.HandleTraversalExited(AnimationActionTransaction)、LeonWindowTraversal.HandleTraversalInterrupted(AnimationActionTransaction)、LeonWindowTraversal.OnDisable()、LeonWindowTraversal.Update()；下游（含内部回调体） LeonController.ChangeState(LeonState)、LeonController.HandleDeferredTraversalHit(LeonHitDirection)、LeonWeaponVisualController.SetTraversalWeaponVisible(bool)、LeonWindowTraversal.ClearActiveTraversal()、LeonWindowTraversal.RefreshPlatformOwnership()、LeonWindowTraversal.EndTraversalPhysics()、LeonWindowTraversal.SetBodyPose(Vector3, Quaternion) 等共 9 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="reachedDestination">中文含义：是否已抵达目的地。使用位置：LeonWindowTraversal.FinishTraversal(bool)。</param>
+    /// <param name="reachedDestination">是否已抵达目的地。</param>
     private void FinishTraversal(bool reachedDestination)
     {
-        // wasActive（之前是否生效）：使用位置：LeonWindowTraversal.FinishTraversal(bool)。
+        // 之前是否生效。
 bool wasActive = IsTraversing;
         // wasAutomaticDrop（之前是否自动掉落）：使用位置：LeonWindowTraversal.FinishTraversal(bool)。
 bool shouldPlayDeferredHit = hasDeferredHit && controller != null && controller.currentState != LeonState.Dead;
-        // hitDirection（命中方向）：使用位置：作为 LeonController.HandleDeferredTraversalHit(LeonHitDirection) 的参数。
+        // 命中方向。
 LeonHitDirection hitDirection = deferredHitDirection;
         if (traversalStarted)
         {
@@ -1404,14 +1414,15 @@ LeonHitDirection hitDirection = deferredHitDirection;
             EndTraversalPhysics();
         }
 
-        // receiverValue43（判空前缓存的掉落摄像机）：从掉落摄像机读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonWindowTraversal.FinishTraversal(bool)。
+        // 判空前缓存的掉落摄像机。
 global::RE4RThirdPersonCamera receiverValue43 = dropCamera;
         if (!global::System.Object.ReferenceEquals(receiverValue43, null))
         {
+            receiverValue43.EndWindowTraversalCamera(activeWindow, true);
             receiverValue43.EndDropCamera();
         }
 
-        // receiverValue44（判空前缓存的武器视觉表现控制器）：从武器视觉表现控制器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonWindowTraversal.FinishTraversal(bool)。
+        // 判空前缓存的武器视觉表现控制器。
 global::LeonWeaponVisualController receiverValue44 = weaponVisualController;
         if (!global::System.Object.ReferenceEquals(receiverValue44, null))
         {
@@ -1434,7 +1445,7 @@ global::LeonWeaponVisualController receiverValue44 = weaponVisualController;
     /// <remarks>静态调用链：上游 LeonWindowTraversal.FinishTraversal(bool)、LeonWindowTraversal.TryStartTraversal(WindowTraversalPoint)；下游（含内部回调体） LeonActionMotionDriver.ReleaseMotion(MotionControlToken)、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     private void ClearActiveTraversal()
     {
-        // receiverValue45（判空前缓存的角色运动执行器）：从角色运动执行器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonWindowTraversal.ClearActiveTraversal()。
+        // 判空前缓存的角色运动执行器。
 global::LeonActionMotionDriver receiverValue45 = motionExecutor;
         if (!global::System.Object.ReferenceEquals(receiverValue45, null))
         {

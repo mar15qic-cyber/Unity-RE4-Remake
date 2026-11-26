@@ -88,6 +88,17 @@ public partial class EnemyWindowTraversal
     private readonly Collider[] nativeWindowLandingHits = new Collider[24];
     private static readonly float[] NativeLandingOffsets = { 0.32f, -0.32f, 0.56f, -0.56f };
 
+    internal bool IsWindowLandingClear(EnemyWindowTraversalPlan plan)
+    {
+        if (plan.route == null || plan.route.windowPoint == null)
+        {
+            return false;
+        }
+
+        EnemyWindowTraversalPlan probePlan = plan;
+        return TryResolveNativeWindowLanding(ref probePlan);
+    }
+
     private bool TryResolveNativeWindowLanding(ref EnemyWindowTraversalPlan plan)
     {
         Vector3 landing = plan.destinationGround;

@@ -31,439 +31,500 @@ using Unity.Cinemachine;
 [DefaultExecutionOrder(-100)]
 public partial class RE4RThirdPersonCamera : MonoBehaviour
 {
+    private static readonly int AimParameterHash = Animator.StringToHash("Aim");
+
     // ========================================================================
     // 模块 1：跟随设置
     // ========================================================================
-    /// <summary>中文含义：目标角色 Transform，为空则使用本物体。使用位置：作为 Gizmos.DrawWireSphere(Vector3, float) 的参数、作为 Mathf.SmoothDamp(float, float, ref float, float, float, float) 的参数、作为 RE4RThirdPersonCamera.IsFinite(Quaternion) 的参数 等共 16 处。</summary>
+    /// <summary>目标角色 Transform，为空则使用本物体。</summary>
     [Header("【1】跟随设置")]
     [Tooltip("目标角色 Transform，为空则使用本物体")]
     [SerializeField]
     private Transform target;
-    /// <summary>中文含义：常态相机偏移（X=左右肩, Y=高度, Z=-距离）。使用位置：作为 RE4RThirdPersonCamera.Sanitize(float, float) 的参数、作为 RE4RThirdPersonCamera.SanitizePositive(float, float) 的参数、RE4RThirdPersonCamera.ApplyProfile(CameraProfile) 等共 5 处。</summary>
+    /// <summary>常态相机偏移（X=左右肩, Y=高度, Z=-距离）。</summary>
     [Tooltip("常态相机偏移（X=左右肩, Y=高度, Z=-距离）")]
     [SerializeField]
     private Vector3 normalOffset = new Vector3(0.5f, 1.6f, -1.8f);
-    /// <summary>中文含义：瞄准时相机偏移（拉近 + 专属肩位）。使用位置：RE4RThirdPersonCamera.ApplyProfile(CameraProfile)、RE4RThirdPersonCamera.BuildStates()。</summary>
+    /// <summary>瞄准时相机偏移（拉近 + 专属肩位）。</summary>
     [Tooltip("瞄准时相机偏移（拉近 + 专属肩位）")]
     [SerializeField]
     private Vector3 aimOffset = new Vector3(0.62f, 1.56f, -0.82f);
-    /// <summary>中文含义：奔跑时相机偏移（轻微拉远）。使用位置：RE4RThirdPersonCamera.ApplyProfile(CameraProfile)、RE4RThirdPersonCamera.BuildStates()。</summary>
+    /// <summary>奔跑时相机偏移（轻微拉远）。</summary>
     [Tooltip("奔跑时相机偏移（轻微拉远）")]
     [SerializeField]
     private Vector3 sprintOffset = new Vector3(0.5f, 1.65f, -2.0f);
-    /// <summary>中文含义：非瞄准蹲伏时的垂直臂偏移。使用位置：RE4RThirdPersonCamera.ApplyCameraParams()。</summary>
+    /// <summary>非瞄准蹲伏时的垂直臂偏移。</summary>
     [Header("蹲伏镜头")]
     [Tooltip("非瞄准蹲伏时的垂直臂偏移")]
     [SerializeField]
     private float crouchExploreVerticalOffset = -0.42f;
-    /// <summary>中文含义：瞄准蹲伏时的垂直臂偏移。使用位置：RE4RThirdPersonCamera.ApplyCameraParams()。</summary>
+    /// <summary>瞄准蹲伏时的垂直臂偏移。</summary>
     [Tooltip("瞄准蹲伏时的垂直臂偏移")]
     [SerializeField]
     private float crouchAimVerticalOffset = -0.36f;
-    /// <summary>中文含义：蹲伏时额外拉远的距离。使用位置：RE4RThirdPersonCamera.ApplyCameraParams()。</summary>
+    /// <summary>蹲伏时额外拉远的距离。</summary>
     [Tooltip("蹲伏时额外拉远的距离")]
     [SerializeField]
     private float crouchDistanceOffset = 0.1f;
-    /// <summary>中文含义：蹲伏镜头过渡速度。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>蹲伏镜头过渡速度。</summary>
     [Tooltip("蹲伏镜头过渡速度")]
     [SerializeField, Min(0.01f)]
     private float crouchCameraBlendSpeed = 8f;
-    /// <summary>中文含义：位置阻尼时间（秒，越小越跟手）。使用位置：作为 Mathf.Max(float, float) 的参数、RE4RThirdPersonCamera.UpdateFollowPivot(float)。</summary>
+    /// <summary>位置阻尼时间（秒，越小越跟手）。</summary>
     [Tooltip("位置阻尼时间（秒，越小越跟手）")]
     [SerializeField]
     private float positionDamping = 0.12f;
-    /// <summary>中文含义：瞄准时位置阻尼时间（更紧密）。使用位置：RE4RThirdPersonCamera.UpdateFollowPivot(float)。</summary>
+    /// <summary>瞄准时位置阻尼时间（更紧密）。</summary>
     [Tooltip("瞄准时位置阻尼时间（更紧密）")]
     [SerializeField]
     private float aimPositionDamping = 0.05f;
-    /// <summary>中文含义：旋转平滑速度（越大越快收敛）。使用位置：作为 Quaternion.Slerp(Quaternion, Quaternion, float) 的参数。</summary>
+    /// <summary>旋转平滑速度（越大越快收敛）。</summary>
     [Tooltip("旋转平滑速度（越大越快收敛）")]
     [SerializeField]
     private float rotationSmoothing = 10f;
-    /// <summary>中文含义：角色转向时相机自动对齐速度（0=禁用）。使用位置：作为 Mathf.LerpAngle(float, float, float) 的参数、RE4RThirdPersonCamera.DriveInput(float)。</summary>
+    /// <summary>角色转向时相机自动对齐速度（0=禁用）。</summary>
     [Tooltip("角色转向时相机自动对齐速度（0=禁用）")]
     [Range(0f, 5f)]
     [SerializeField]
     private float autoAlignSpeed = 0.5f;
-    /// <summary>中文含义：转向延迟时间（秒，RE4 经典滞后跟随手感）。使用位置：RE4RThirdPersonCamera.DriveInput(float)。</summary>
+    /// <summary>转向延迟时间（秒，RE4 经典滞后跟随手感）。</summary>
     [Tooltip("转向延迟时间（秒，RE4 经典滞后跟随手感）")]
     [Range(0f, 1f)]
     [SerializeField]
     private float turnLagDelay = 0.15f;
-    /// <summary>中文含义：自由视角回正时长。松开自由视角键后，水平回到角色背后的时长；移动鼠标会立即打断。使用位置：作为 LeonController.AdvanceFreeViewRecentering(float, float) 的参数。</summary>
+    /// <summary>自由视角回正时长。松开自由视角键后，水平回到角色背后的时长；移动鼠标会立即打断。</summary>
     [Header("自由视角回正")]
     [Tooltip("松开自由视角键后，水平回到角色背后的时长；移动鼠标会立即打断")]
     [Min(0.01f)]
     [UnityEngine.Serialization.FormerlySerializedAs("自由视角回正时长")]
     [UnityEngine.InspectorName("自由视角回正时长")]
     public float freeViewRecenteringDuration = 0.3f;
-    /// <summary>中文含义：当前帧是否回正。使用位置：RE4RThirdPersonCamera.DriveInput(float)、RE4RThirdPersonCamera.LateUpdate()、RE4RThirdPersonCamera.UpdateFollowPivot(float)。</summary>
+    /// <summary>当前帧是否回正。</summary>
     private bool currentFrameIsRecentering;
-    /// <summary>中文含义：瞄准接管帧。使用位置：RE4RThirdPersonCamera.DriveInput(float)、RE4RThirdPersonCamera.SynchronizeObserveDirection(bool)。</summary>
+    /// <summary>瞄准接管帧。</summary>
     private int aimTakeOverFrame = -1;
     // ========================================================================
     // 模块 2：鼠标旋转
     // ========================================================================
-    /// <summary>中文含义：是否反转纵向。使用位置：RE4RThirdPersonCamera.DriveInput(float)、RE4RThirdPersonCamera.IsVerticalLookInverted.get、RE4RThirdPersonCamera.ReloadInvertY() 等共 4 处。</summary>
+    /// <summary>是否反转纵向。</summary>
     [Header("【2】鼠标旋转")]
     [SerializeField]
     private bool invertY = false;
-    /// <summary>中文含义：随机音高变化范围。使用位置：作为 Mathf.Clamp(float, float, float) 的参数、作为 Mathf.Max(float, float) 的参数、作为 Vector2.Vector2(float, float) 的参数。</summary>
+    /// <summary>随机音高变化范围。</summary>
     [SerializeField]
     private Vector2 pitchRange = new Vector2(-65f, 70f);
-    /// <summary>中文含义：抬头达到上限时，相机相对基础高度下降的距离。使用位置：作为 Mathf.Min(float, float) 的参数。</summary>
+    /// <summary>抬头达到上限时，相机相对基础高度下降的距离。</summary>
     [Header("瞄准俯仰高度联动")]
     [Tooltip("抬头达到上限时，相机相对基础高度下降的距离")]
     [SerializeField]
     private float aimLookUpHeightOffset = -0.22f;
-    /// <summary>中文含义：低头达到下限时，相机相对基础高度升高的距离。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>低头达到下限时，相机相对基础高度升高的距离。</summary>
     [Tooltip("低头达到下限时，相机相对基础高度升高的距离")]
     [SerializeField]
     private float aimLookDownHeightOffset = 0.32f;
-    /// <summary>中文含义：水平附近不触发高度联动的角度范围。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>水平附近不触发高度联动的角度范围。</summary>
     [Tooltip("水平附近不触发高度联动的角度范围")]
     [SerializeField, Min(0f)]
     private float pitchHeightDeadZone = 2.5f;
-    /// <summary>中文含义：俯仰高度联动的平滑时间。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>俯仰高度联动的平滑时间。</summary>
     [Tooltip("俯仰高度联动的平滑时间")]
     [SerializeField, Min(0.01f)]
     private float pitchHeightSmoothTime = 0.07f;
-    /// <summary>中文含义：是否使用相机碰撞层约束俯仰产生的垂直位移。使用相机碰撞层约束俯仰产生的垂直位移。使用位置：RE4RThirdPersonCamera.ResolveSafePitchHeightOffset(float, float, float, float)。</summary>
+    /// <summary>是否使用相机碰撞层约束俯仰产生的垂直位移。使用相机碰撞层约束俯仰产生的垂直位移。</summary>
     [Tooltip("使用相机碰撞层约束俯仰产生的垂直位移")]
     [SerializeField]
     private bool constrainPitchHeightByCollision = true;
-    /// <summary>中文含义：水平灵敏度偏好键。编译期常量，保持既有值与消费者映射。使用位置：作为 GameSettingsData.ReadSmallCount(string, float) 的参数、作为 GameSettingsData.WriteSmallCount(string, float) 的参数、作为 PlayerPrefs.GetFloat(string, float) 的参数 等共 4 处。</summary>
+    /// <summary>水平灵敏度偏好键。编译期常量，保持既有值与消费者映射。</summary>
     public const string HorizontalSensitivityPreferenceKey = "Sensitivity_X";
-    /// <summary>中文含义：竖直灵敏度偏好键。编译期常量，保持既有值与消费者映射。使用位置：作为 GameSettingsData.ReadSmallCount(string, float) 的参数、作为 GameSettingsData.WriteSmallCount(string, float) 的参数、作为 PlayerPrefs.GetFloat(string, float) 的参数 等共 4 处。</summary>
+    /// <summary>竖直灵敏度偏好键。编译期常量，保持既有值与消费者映射。</summary>
     public const string VerticalSensitivityPreferenceKey = "Sensitivity_Y";
-    /// <summary>中文含义：瞄准灵敏度偏好键。编译期常量，保持既有值与消费者映射。使用位置：作为 GameSettingsData.ReadSmallCount(string, float) 的参数、作为 GameSettingsData.WriteSmallCount(string, float) 的参数、作为 PlayerPrefs.GetFloat(string, float) 的参数 等共 4 处。</summary>
+    /// <summary>瞄准灵敏度偏好键。编译期常量，保持既有值与消费者映射。</summary>
     public const string AimSensitivityPreferenceKey = "AimSensitivity";
-    /// <summary>中文含义：最小观察灵敏度。编译期常量，保持既有值与消费者映射。使用位置：作为 Mathf.Clamp(float, float, float) 的参数、RE4CameraController.MinimumLookSensitivity。</summary>
+    /// <summary>最小观察灵敏度。编译期常量，保持既有值与消费者映射。</summary>
     public const float MinimumLookSensitivity = 0.1f;
-    /// <summary>中文含义：最大观察灵敏度。编译期常量，保持既有值与消费者映射。使用位置：作为 Mathf.Clamp(float, float, float) 的参数、RE4CameraController.MaximumLookSensitivity。</summary>
+    /// <summary>最大观察灵敏度。编译期常量，保持既有值与消费者映射。</summary>
     public const float MaximumLookSensitivity = 3f;
-    /// <summary>中文含义：最大瞄准灵敏度。编译期常量，保持既有值与消费者映射。使用位置：作为 Mathf.Clamp(float, float, float) 的参数、RE4CameraController.MaximumAimSensitivity。</summary>
+    /// <summary>最大瞄准灵敏度。编译期常量，保持既有值与消费者映射。</summary>
     public const float MaximumAimSensitivity = 1f;
-    /// <summary>中文含义：默认水平灵敏度。编译期常量，保持既有值与消费者映射。使用位置：作为 GameSettingsData.ReadSmallCount(string, float) 的参数、作为 PlayerPrefs.GetFloat(string, float) 的参数、OptionsTabManager.RestoreDefaults() 等共 6 处。</summary>
+    /// <summary>默认水平灵敏度。编译期常量，保持既有值与消费者映射。</summary>
     public const float DefaultHorizontalSensitivity = 1f;
-    /// <summary>中文含义：默认竖直灵敏度。编译期常量，保持既有值与消费者映射。使用位置：作为 GameSettingsData.ReadSmallCount(string, float) 的参数、作为 PlayerPrefs.GetFloat(string, float) 的参数、OptionsTabManager.RestoreDefaults() 等共 6 处。</summary>
+    /// <summary>默认竖直灵敏度。编译期常量，保持既有值与消费者映射。</summary>
     public const float DefaultVerticalSensitivity = 1f;
-    /// <summary>中文含义：默认瞄准灵敏度。编译期常量，保持既有值与消费者映射。使用位置：作为 GameSettingsData.ReadSmallCount(string, float) 的参数、作为 PlayerPrefs.GetFloat(string, float) 的参数、OptionsTabManager.RestoreDefaults() 等共 6 处。</summary>
+    /// <summary>默认瞄准灵敏度。编译期常量，保持既有值与消费者映射。</summary>
     public const float DefaultAimSensitivity = 0.5f;
-    /// <summary>中文含义：水平度每次像素。编译期常量，保持既有值与消费者映射。使用位置：RE4RThirdPersonCamera.DriveInput(float)。</summary>
+    /// <summary>水平度每次像素。编译期常量，保持既有值与消费者映射。</summary>
     private const float HorizontalDegreesPerPixel = 0.08f;
-    /// <summary>中文含义：竖直度每次像素。编译期常量，保持既有值与消费者映射。使用位置：RE4RThirdPersonCamera.DriveInput(float)。</summary>
+    /// <summary>竖直度每次像素。编译期常量，保持既有值与消费者映射。</summary>
     private const float VerticalDegreesPerPixel = 0.06f;
-    /// <summary>中文含义：水平灵敏度。使用位置：作为 PlayerPrefs.SetFloat(string, float) 的参数、作为 RE4RThirdPersonCamera.SetLookSensitivity(float, float, float, bool) 的参数、RE4RThirdPersonCamera.DriveInput(float) 等共 5 处。</summary>
+    /// <summary>水平灵敏度。</summary>
     private float horizontalSensitivity = DefaultHorizontalSensitivity;
-    /// <summary>中文含义：竖直灵敏度。使用位置：作为 PlayerPrefs.SetFloat(string, float) 的参数、作为 RE4RThirdPersonCamera.SetLookSensitivity(float, float, float, bool) 的参数、RE4RThirdPersonCamera.DriveInput(float) 等共 5 处。</summary>
+    /// <summary>竖直灵敏度。</summary>
     private float verticalSensitivity = DefaultVerticalSensitivity;
-    /// <summary>中文含义：瞄准灵敏度。使用位置：作为 PlayerPrefs.SetFloat(string, float) 的参数、作为 RE4RThirdPersonCamera.SetLookSensitivity(float, float, float, bool) 的参数、RE4RThirdPersonCamera.AimLookSensitivity.get 等共 5 处。</summary>
+    /// <summary>瞄准灵敏度。</summary>
     private float aimSensitivity = DefaultAimSensitivity;
     // ========================================================================
     // 模块 3：碰撞检测
     // ========================================================================
-    /// <summary>中文含义：碰撞检测层（Start 中自动排除玩家自身层）。使用位置：RE4RThirdPersonCamera.ApplyCollisionSettings()、RE4RThirdPersonCamera.ResolveSafePitchHeightOffset(float, float, float, float)、RE4RThirdPersonCamera.SetCollisionMask(LayerMask)。</summary>
+    /// <summary>碰撞检测层（Start 中自动排除玩家自身层）。</summary>
     [Header("【3】碰撞检测")]
     [Tooltip("碰撞检测层（Start 中自动排除玩家自身层）")]
     [SerializeField]
     private LayerMask collisionMask = ~0;
-    /// <summary>中文含义：球形碰撞检测半径。使用位置：作为 Gizmos.DrawWireSphere(Vector3, float) 的参数、作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>球形碰撞检测半径。</summary>
     [Tooltip("球形碰撞检测半径")]
     [SerializeField]
     private float collisionRadius = 0.25f;
-    /// <summary>中文含义：碰撞安全边距，防止镜头贴住墙面。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>碰撞安全边距，防止镜头贴住墙面。</summary>
     [Tooltip("碰撞安全边距，防止镜头贴住墙面")]
     [SerializeField]
     private float collisionSkin = 0.06f;
-    /// <summary>中文含义：上身观察点占镜头臂高度的比例。使用位置：作为 RE4StableCameraCollision.Configure(Transform, CinemachineThirdPersonFollow, LayerMask, float, float, float, float, float, float) 的参数。</summary>
+    /// <summary>上身观察点占镜头臂高度的比例。</summary>
     [Tooltip("上身观察点占镜头臂高度的比例")]
     [Range(0.5f, 1f)]
     [SerializeField]
     private float collisionFocusHeightRatio = 0.85f;
-    /// <summary>中文含义：战斗镜头距离下限，防止近战或遮挡把镜头压得过近。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>战斗镜头距离下限，防止近战或遮挡把镜头压得过近。</summary>
     [Tooltip("战斗镜头距离下限，防止近战或遮挡把镜头压得过近")]
     [SerializeField]
     private float cameraDistanceFloor = 0.72f;
-    /// <summary>中文含义：遭遇墙体遮挡时镜头仍须保持在角色体积外的最短距离。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>遭遇墙体遮挡时镜头仍须保持在角色体积外的最短距离。</summary>
     [Tooltip("遭遇墙体遮挡时镜头仍须保持在角色体积外的最短距离")]
     [SerializeField, Min(0.35f)]
     private float minimumExternalCameraDistance = 0.72f;
-    /// <summary>中文含义：是否保护玩家蒙皮渲染器集合。使用位置：RE4RThirdPersonCamera.ApplyPlayerRendererVisibilityGuard()。</summary>
+    /// <summary>是否保护玩家蒙皮渲染器集合。</summary>
     [Header("角色渲染保护")]
     [SerializeField]
     private bool protectPlayerSkinnedRenderers = true;
-    /// <summary>中文含义：最小玩家渲染器包围盒半尺寸。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>最小玩家渲染器包围盒半尺寸。</summary>
     [SerializeField]
     private Vector3 minimumPlayerRendererBoundsExtents = new Vector3(2f, 2.5f, 2f);
-    /// <summary>中文含义：玩法近裁剪面。使用位置：作为 Mathf.Clamp(float, float, float) 的参数。</summary>
+    /// <summary>玩法近裁剪面。</summary>
     [SerializeField]
     private float gameplayNearClipPlane = 0.01f;
-    /// <summary>中文含义：是否对齐后方玩家事件起始。使用位置：RE4RThirdPersonCamera.ResolveInitialYaw()。</summary>
+    /// <summary>是否对齐后方玩家事件起始。</summary>
     [Header("开局镜头")]
     [SerializeField]
     private bool alignBehindPlayerOnStart = true;
-    /// <summary>中文含义：起始俯仰。使用位置：作为 Mathf.Clamp(float, float, float) 的参数、作为 RE4RThirdPersonCamera.IsFinite(float) 的参数。</summary>
+    /// <summary>起始俯仰。</summary>
     [SerializeField]
     private float startPitch = 0f;
-    /// <summary>中文含义：离开遮挡后恢复正常距离的阻尼时间。使用位置：作为 RE4StableCameraCollision.Configure(Transform, CinemachineThirdPersonFollow, LayerMask, float, float, float, float, float, float) 的参数。</summary>
+    /// <summary>离开遮挡后恢复正常距离的阻尼时间。</summary>
     [Header("遮挡平滑")]
     [Tooltip("离开遮挡后恢复正常距离的阻尼时间")]
     [SerializeField]
     private float collisionDamping = 0.18f;
-    /// <summary>中文含义：失去碰撞命中后保持当前距离的时间，防止门框边缘反复切换。使用位置：作为 RE4StableCameraCollision.Configure(Transform, CinemachineThirdPersonFollow, LayerMask, float, float, float, float, float, float) 的参数。</summary>
+    /// <summary>失去碰撞命中后保持当前距离的时间，防止门框边缘反复切换。</summary>
     [Tooltip("失去碰撞命中后保持当前距离的时间，防止门框边缘反复切换")]
     [SerializeField]
     private float collisionReleaseDelay = 0.12f;
+    [Tooltip("离开窗洞或狭窄通道后的出口舒展平滑时长")]
+    [SerializeField, Range(0.15f, 1.0f)]
+    private float exitEaseDuration = 0.42f;
+    [Tooltip("出口舒展期允许的最大相机拉远速度")]
+    [SerializeField, Range(1.5f, 10.0f)]
+    private float exitMaxRecoverySpeed = 4.2f;
+    [Tooltip("头顶遇到低矮天花板或房梁时允许向下压低的最大高度")]
+    [SerializeField, Range(0.1f, 0.8f)]
+    private float ceilingDropLimit = 0.52f;
+    [Tooltip("是否在 Scene 视图绘制三级避障求解器调试线")]
+    [SerializeField]
+    private bool debugDrawCollisionSolver = false;
     // ========================================================================
     // 模块 4：瞄准模式 / 状态 FOV
     // ========================================================================
-    /// <summary>中文含义：常规视野角度。使用位置：作为 RE4RThirdPersonCamera.Sanitize(float, float) 的参数、RE4RThirdPersonCamera.ApplyProfile(CameraProfile)、RE4RThirdPersonCamera.BuildStates()。</summary>
+    /// <summary>常规视野角度。</summary>
     [Header("【4】瞄准模式")]
     [SerializeField]
     private float normalFOV = 48f;
-    /// <summary>中文含义：瞄准视野角度。使用位置：RE4RThirdPersonCamera.ApplyProfile(CameraProfile)、RE4RThirdPersonCamera.BuildStates()。</summary>
+    /// <summary>瞄准视野角度。</summary>
     [SerializeField]
     private float aimFOV = 40f;
-    /// <summary>中文含义：冲刺视野角度。使用位置：RE4RThirdPersonCamera.ApplyProfile(CameraProfile)、RE4RThirdPersonCamera.BuildStates()。</summary>
+    /// <summary>冲刺视野角度。</summary>
     [SerializeField]
     private float sprintFOV = 55f;
-    /// <summary>中文含义：参数混合速度。使用位置：作为 Mathf.Lerp(float, float, float) 的参数、RE4RThirdPersonCamera.ApplyProfile(CameraProfile)。</summary>
+    /// <summary>参数混合速度。</summary>
     [SerializeField]
     private float paramBlendSpeed = 8f;
     // ========================================================================
     // 模块 5：镜头震动
     // ========================================================================
-    /// <summary>中文含义：默认晃动持续时间。使用位置：RE4RThirdPersonCamera.CameraShake(float, float)。</summary>
+    /// <summary>默认晃动持续时间。</summary>
     [Header("【5】镜头震动")]
     [SerializeField]
     private float defaultShakeDuration = 0.3f;
     // ========================================================================
     // 模块 6：剧情锁定
     // ========================================================================
-    /// <summary>中文含义：解锁恢复速度。使用位置：RE4RThirdPersonCamera.UpdateFollowPivot(float)。</summary>
+    /// <summary>解锁恢复速度。</summary>
     [Header("【6】剧情锁定")]
     [SerializeField]
     private float unlockRecoverSpeed = 3f;
     // ========================================================================
     // 模块 7：奔跑效果
     // ========================================================================
-    /// <summary>中文含义：冲刺晃动强度。使用位置：RE4RThirdPersonCamera.UpdateFollowPivot(float)。</summary>
+    /// <summary>冲刺晃动强度。</summary>
     [Header("【7】奔跑效果")]
     [SerializeField]
     private float sprintShakeIntensity = 0.03f;
-    /// <summary>中文含义：冲刺晃动频率。使用位置：作为 Mathf.PerlinNoise(float, float) 的参数。</summary>
+    /// <summary>冲刺晃动频率。</summary>
     [SerializeField]
     private float sprintShakeFrequency = 8f;
-    /// <summary>中文含义：实际水平速度达到此值后才进入奔跑镜头。使用位置：作为 Mathf.Max(float, float) 的参数、作为 Mathf.Min(float, float) 的参数。</summary>
+    /// <summary>实际水平速度达到此值后才进入奔跑镜头。</summary>
     [Header("有效奔跑镜头")]
     [Tooltip("实际水平速度达到此值后才进入奔跑镜头")]
     [SerializeField, Min(0.1f)]
     private float sprintCameraEnterSpeed = 2.25f;
-    /// <summary>中文含义：实际水平速度低于此值后退出奔跑镜头，避免临界速度反复切换。使用位置：作为 Mathf.Max(float, float) 的参数、作为 Mathf.Min(float, float) 的参数。</summary>
+    /// <summary>实际水平速度低于此值后退出奔跑镜头，避免临界速度反复切换。</summary>
     [Tooltip("实际水平速度低于此值后退出奔跑镜头，避免临界速度反复切换")]
     [SerializeField, Min(0.05f)]
     private float sprintCameraExitSpeed = 1.8f;
     // ========================================================================
     // 模块 8：待机呼吸
     // ========================================================================
-    /// <summary>中文含义：待机呼吸幅度。使用位置：RE4RThirdPersonCamera.UpdateFollowPivot(float)。</summary>
+    /// <summary>待机呼吸幅度。</summary>
     [Header("【8】待机呼吸")]
     [SerializeField]
     private float idleBreathAmplitude = 1.5f;
-    /// <summary>中文含义：待机呼吸速度。使用位置：RE4RThirdPersonCamera.UpdateIdleBreathing(float)。</summary>
+    /// <summary>待机呼吸速度。</summary>
     [SerializeField]
     private float idleBreathSpeed = 0.3f;
-    /// <summary>中文含义：待机上下起伏幅度。使用位置：RE4RThirdPersonCamera.UpdateFollowPivot(float)。</summary>
+    /// <summary>待机上下起伏幅度。</summary>
     [SerializeField]
     private float idleBobAmplitude = 0.03f;
-    /// <summary>中文含义：瞄准呼吸偏航幅度。使用位置：RE4RThirdPersonCamera.UpdateFollowPivot(float)。</summary>
+    /// <summary>瞄准呼吸偏航幅度。</summary>
     [SerializeField]
     private float aimBreathYawAmplitude = 0.35f;
-    /// <summary>中文含义：瞄准呼吸俯仰幅度。使用位置：RE4RThirdPersonCamera.UpdatePanTilt()。</summary>
+    /// <summary>瞄准呼吸俯仰幅度。</summary>
     [SerializeField]
     private float aimBreathPitchAmplitude = 0.22f;
-    /// <summary>中文含义：瞄准呼吸上下起伏幅度。使用位置：RE4RThirdPersonCamera.UpdateFollowPivot(float)。</summary>
+    /// <summary>瞄准呼吸上下起伏幅度。</summary>
     [SerializeField]
     private float aimBreathBobAmplitude = 0.012f;
-    /// <summary>中文含义：瞄准呼吸速度。使用位置：RE4RThirdPersonCamera.UpdateAimBreathing(float)。</summary>
+    /// <summary>瞄准呼吸速度。</summary>
     [SerializeField]
     private float aimBreathSpeed = 1.15f;
-    /// <summary>中文含义：瞄准呼吸混合速度。使用位置：作为 Mathf.MoveTowards(float, float, float) 的参数。</summary>
+    /// <summary>瞄准呼吸混合速度。</summary>
     [SerializeField]
     private float aimBreathBlendSpeed = 4f;
-    /// <summary>中文含义：武器后坐力俯仰缩放。使用位置：作为 Mathf.Lerp(float, float, float) 的参数。</summary>
+    /// <summary>武器后坐力俯仰缩放。</summary>
     [Header("开火反冲")]
     [SerializeField]
     private float weaponRecoilPitchScale = 0.95f;
-    /// <summary>中文含义：武器后坐力偏航缩放。使用位置：作为 Mathf.Lerp(float, float, float) 的参数。</summary>
+    /// <summary>武器后坐力偏航缩放。</summary>
     [SerializeField]
     private float weaponRecoilYawScale = 0.02f;
-    /// <summary>中文含义：武器后坐力最小俯仰。使用位置：作为 Mathf.Clamp(float, float, float) 的参数。</summary>
+    /// <summary>武器后坐力最小俯仰。</summary>
     [SerializeField]
     private float weaponRecoilMinimumPitch = 1.1f;
-    /// <summary>中文含义：武器后坐力最大俯仰。使用位置：作为 Mathf.Lerp(float, float, float) 的参数。</summary>
+    /// <summary>武器后坐力最大俯仰。</summary>
     [SerializeField]
     private float weaponRecoilMaximumPitch = 4.8f;
-    /// <summary>中文含义：武器后坐力返回时间。使用位置：作为 Mathf.Lerp(float, float, float) 的参数、RE4RThirdPersonCamera.SnapToInitialCameraPose()、RE4RThirdPersonCamera.UpdateWeaponRecoil(float)。</summary>
+    /// <summary>武器后坐力返回时间。</summary>
     [SerializeField]
     private float weaponRecoilReturnTime = 0.17f;
-    /// <summary>中文含义：武器后坐力晃动缩放。使用位置：作为 Mathf.Lerp(float, float, float) 的参数。</summary>
+    /// <summary>武器后坐力晃动缩放。</summary>
     [SerializeField]
     private float weaponRecoilShakeScale = 0.25f;
-    /// <summary>中文含义：武器后坐力最大晃动。使用位置：作为 Mathf.Min(float, float) 的参数。</summary>
+    /// <summary>武器后坐力最大晃动。</summary>
     [SerializeField]
     private float weaponRecoilMaximumShake = 0.45f;
-    /// <summary>中文含义：武器后坐力晃动持续时间。使用位置：作为 RE4RThirdPersonCamera.CameraShake(float, float) 的参数。</summary>
+    /// <summary>武器后坐力晃动持续时间。</summary>
     [SerializeField]
     private float weaponRecoilShakeDuration = 0.075f;
-    /// <summary>中文含义：重型后坐力阈值。使用位置：作为 Mathf.InverseLerp(float, float, float) 的参数。</summary>
+    /// <summary>重型后坐力阈值。</summary>
     [SerializeField]
     private float heavyRecoilThreshold = 3f;
-    /// <summary>中文含义：重型后坐力最大俯仰。使用位置：作为 Mathf.Lerp(float, float, float) 的参数。</summary>
+    /// <summary>重型后坐力最大俯仰。</summary>
     [SerializeField]
     private float heavyRecoilMaximumPitch = 5.6f;
-    /// <summary>中文含义：重型后坐力返回时间。使用位置：作为 Mathf.Lerp(float, float, float) 的参数。</summary>
+    /// <summary>重型后坐力返回时间。</summary>
     [SerializeField]
     private float heavyRecoilReturnTime = 0.2f;
-    /// <summary>中文含义：重型后坐力视野角度缩放。使用位置：作为 Mathf.Min(float, float) 的参数。</summary>
+    /// <summary>重型后坐力视野角度缩放。</summary>
     [SerializeField]
     private float heavyRecoilFOVScale = 0.03f;
-    /// <summary>中文含义：重型后坐力最大视野角度。使用位置：作为 Mathf.Min(float, float) 的参数。</summary>
+    /// <summary>重型后坐力最大视野角度。</summary>
     [SerializeField]
     private float heavyRecoilMaximumFOV = 0.12f;
-    /// <summary>中文含义：重型后坐力距离缩放。使用位置：作为 Mathf.Min(float, float) 的参数。</summary>
+    /// <summary>重型后坐力距离缩放。</summary>
     [SerializeField]
     private float heavyRecoilDistanceScale = 0f;
-    /// <summary>中文含义：重型后坐力最大距离。使用位置：作为 Mathf.Min(float, float) 的参数。</summary>
+    /// <summary>重型后坐力最大距离。</summary>
     [SerializeField]
     private float heavyRecoilMaximumDistance = 0f;
-    /// <summary>中文含义：重型后坐力肩部缩放。使用位置：作为 Mathf.Min(float, float) 的参数。</summary>
+    /// <summary>重型后坐力肩部缩放。</summary>
     [SerializeField]
     private float heavyRecoilShoulderScale = 0f;
-    /// <summary>中文含义：重型后坐力最大肩部。使用位置：作为 Mathf.Clamp(float, float, float) 的参数、作为 Mathf.Min(float, float) 的参数。</summary>
+    /// <summary>重型后坐力最大肩部。</summary>
     [SerializeField]
     private float heavyRecoilMaximumShoulder = 0f;
     // ========================================================================
     // 模块 9：近战镜头微推
     // ========================================================================
-    /// <summary>中文含义：近战推开距离。使用位置：RE4RThirdPersonCamera.ApplyCameraParams()。</summary>
+    /// <summary>近战推开距离。</summary>
     [Header("【9】近战镜头微推")]
     [SerializeField]
     private float meleePushDistance = 0.3f;
-    /// <summary>中文含义：近战推开持续时间。使用位置：作为 RE4RThirdPersonCamera.CameraShake(float, float) 的参数、RE4RThirdPersonCamera.TriggerMeleePush()、RE4RThirdPersonCamera.UpdateMeleePush(float)。</summary>
+    /// <summary>近战推开持续时间。</summary>
     [SerializeField]
     private float meleePushDuration = 0.1f;
-    /// <summary>中文含义：近战恢复持续时间。使用位置：RE4RThirdPersonCamera.TriggerMeleePush()、RE4RThirdPersonCamera.UpdateMeleePush(float)。</summary>
+    /// <summary>近战恢复持续时间。</summary>
     [SerializeField]
     private float meleeRecoverDuration = 0.3f;
-    /// <summary>中文含义：近战晃动强度。使用位置：作为 RE4RThirdPersonCamera.CameraShake(float, float) 的参数。</summary>
+    /// <summary>近战晃动强度。</summary>
     [SerializeField]
     private float meleeShakeIntensity = 0.5f;
-    /// <summary>中文含义：是否自动检测近战。使用位置：RE4RThirdPersonCamera.UpdateMeleePush(float)。</summary>
+    /// <summary>是否自动检测近战。</summary>
     [SerializeField]
     private bool autoDetectMelee = true;
     // ========================================================================
     // 模块 10：敌人近距离自动拉远
     // ========================================================================
-    /// <summary>中文含义：掉落水平阻尼。使用位置：作为 Mathf.Lerp(float, float, float) 的参数。</summary>
+    /// <summary>掉落水平阻尼。</summary>
     [Header("【11】窗口高落差镜头")]
     [SerializeField, Range(0.05f, 0.5f)]
     private float dropHorizontalDamping = 0.12f;
-    /// <summary>中文含义：掉落竖直阻尼。使用位置：作为 Mathf.Lerp(float, float, float) 的参数。</summary>
+    /// <summary>掉落竖直阻尼。</summary>
     [SerializeField, Range(0.1f, 0.8f)]
     private float dropVerticalDamping = 0.36f;
-    /// <summary>中文含义：掉落摄像机回拉。使用位置：RE4RThirdPersonCamera.ApplyCameraParams()。</summary>
+    /// <summary>掉落摄像机回拉。</summary>
     [SerializeField, Range(0f, 0.8f)]
     private float dropCameraPullback = 0.2f;
-    /// <summary>中文含义：掉落观察向下角度。使用位置：RE4RThirdPersonCamera.UpdatePanTilt()。</summary>
+    /// <summary>掉落观察向下角度。</summary>
     [SerializeField, Range(0f, 10f)]
     private float dropLookDownAngle = 4f;
-    /// <summary>中文含义：掉落冲击压缩。使用位置：RE4RThirdPersonCamera.UpdateFollowPivot(float)。</summary>
+    /// <summary>掉落冲击压缩。</summary>
     [SerializeField, Range(0f, 0.4f)]
     private float dropImpactCompression = 0.12f;
-    /// <summary>中文含义：掉落冲击俯仰。使用位置：RE4RThirdPersonCamera.UpdatePanTilt()。</summary>
+    /// <summary>掉落冲击俯仰。</summary>
     [SerializeField, Range(0f, 8f)]
     private float dropImpactPitch = 2f;
-    /// <summary>中文含义：掉落冲击持续时间。使用位置：作为 RE4RThirdPersonCamera.SanitizePositive(float, float) 的参数。</summary>
+    /// <summary>掉落冲击持续时间。</summary>
     [SerializeField, Range(0.05f, 0.5f)]
     private float dropImpactDuration = 0.22f;
-    /// <summary>中文含义：掉落恢复持续时间。使用位置：作为 RE4RThirdPersonCamera.SanitizePositive(float, float) 的参数。</summary>
+    /// <summary>掉落恢复持续时间。</summary>
     [SerializeField, Range(0.1f, 1f)]
     private float dropRecoveryDuration = 0.42f;
-    /// <summary>中文含义：最小掉落冲击速度。使用位置：作为 Mathf.InverseLerp(float, float, float) 的参数、作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>最小掉落冲击速度。</summary>
     [SerializeField, Range(2f, 10f)]
     private float minimumDropImpactSpeed = 4f;
-    /// <summary>中文含义：最大掉落冲击速度。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>最大掉落冲击速度。</summary>
     [SerializeField, Range(4f, 14f)]
     private float maximumDropImpactSpeed = 8f;
-    /// <summary>中文含义：敌人图层遮罩。使用位置：作为 Physics.CheckSphere(Vector3, float, int, QueryTriggerInteraction) 的参数、RE4RThirdPersonCamera.OnDrawGizmosSelected()、RE4RThirdPersonCamera.UpdateEnemyProximity(float)。</summary>
+    /// <summary>敌人图层遮罩。</summary>
     [Header("【10】敌人近距离自动拉远")]
     [SerializeField]
     private LayerMask enemyLayerMask = 0;
-    /// <summary>中文含义：敌人临近程度范围。使用位置：作为 Gizmos.DrawWireSphere(Vector3, float) 的参数、作为 Physics.CheckSphere(Vector3, float, int, QueryTriggerInteraction) 的参数。</summary>
+    /// <summary>敌人临近程度范围。</summary>
     [SerializeField]
     private float enemyProximityRange = 3f;
-    /// <summary>中文含义：敌人缩放视野输出系数。使用位置：RE4RThirdPersonCamera.UpdateEnemyProximity(float)。</summary>
+    /// <summary>敌人缩放视野输出系数。</summary>
     [SerializeField]
     private float enemyZoomOutFactor = 1.3f;
-    /// <summary>中文含义：敌人缩放视野速度。使用位置：作为 Mathf.Lerp(float, float, float) 的参数。</summary>
+    /// <summary>敌人缩放视野速度。</summary>
     [SerializeField]
     private float enemyZoomSpeed = 3f;
-    /// <summary>中文含义：敌人检查帧间隔。使用位置：作为 Mathf.Max(int, int) 的参数、RE4RThirdPersonCamera.OnValidate()、RE4RThirdPersonCamera.UpdateEnemyProximity(float)。</summary>
+    /// <summary>敌人检查帧间隔。</summary>
     [SerializeField]
     private int enemyCheckFrameInterval = 5;
     // ========================================================================
     // 内部状态
     // ========================================================================
-    /// <summary>中文含义：里昂玩家控制器。使用位置：作为 RE4RThirdPersonCamera.IsFinite(float) 的参数、作为 RE4RThirdPersonCamera.IsFinite(Vector3) 的参数、作为 Transform.IsChildOf(Transform) 的参数 等共 20 处。</summary>
+    /// <summary>里昂玩家控制器。</summary>
     private LeonController controller;
-    /// <summary>中文含义：动画控制器。使用位置：RE4RThirdPersonCamera.ConfigureSceneRig(LeonController, Transform, Camera, CinemachineCamera, CinemachineThirdPersonFollow, CinemachinePanTilt, CinemachineDeoccluder, Transform)、RE4RThirdPersonCamera.IsAiming.get。</summary>
+    /// <summary>动画控制器。</summary>
     private Animator anim;
-    /// <summary>中文含义：摄像机。使用位置：作为 Mathf.Lerp(float, float, float) 的参数、作为 Quaternion.Slerp(Quaternion, Quaternion, float) 的参数、作为 RE4RThirdPersonCamera.IsFinite(float) 的参数 等共 20 处。</summary>
+    /// <summary>摄像机。</summary>
     private Camera cam;
     // Cinemachine 组件
-    /// <summary>中文含义：虚拟摄像机。使用位置：作为 Mathf.Lerp(float, float, float) 的参数、RE4RThirdPersonCamera.ApplyCollisionSettings()、RE4RThirdPersonCamera.ApplyFOV(float) 等共 12 处。</summary>
+    /// <summary>虚拟摄像机。</summary>
     private CinemachineCamera vcam;
-    /// <summary>中文含义：第三人称跟随。使用位置：作为 RE4RThirdPersonCamera.IsFinite(float) 的参数、作为 RE4RThirdPersonCamera.IsFinite(Vector3) 的参数、作为 RE4StableCameraCollision.Configure(Transform, CinemachineThirdPersonFollow, LayerMask, float, float, float, float, float, float) 的参数 等共 11 处。</summary>
+    /// <summary>第三人称跟随。</summary>
     private CinemachineThirdPersonFollow tpf;
-    /// <summary>中文含义：水平转动竖直转动。使用位置：RE4RThirdPersonCamera.ConfigureSceneRig(LeonController, Transform, Camera, CinemachineCamera, CinemachineThirdPersonFollow, CinemachinePanTilt, CinemachineDeoccluder, Transform)、RE4RThirdPersonCamera.RecoverFiniteCameraState()、RE4RThirdPersonCamera.SnapToInitialCameraPose() 等共 5 处。</summary>
+    /// <summary>水平转动竖直转动。</summary>
     private CinemachinePanTilt panTilt;
-    /// <summary>中文含义：遮挡解除器。使用位置：RE4RThirdPersonCamera.ApplyCollisionSettings()、RE4RThirdPersonCamera.ConfigureSceneRig(LeonController, Transform, Camera, CinemachineCamera, CinemachineThirdPersonFollow, CinemachinePanTilt, CinemachineDeoccluder, Transform)、RE4RThirdPersonCamera.Start()。</summary>
+    /// <summary>遮挡解除器。</summary>
     private CinemachineDeoccluder deoccluder;
-    /// <summary>中文含义：稳定碰撞。使用位置：RE4RThirdPersonCamera.ApplyCollisionSettings()。</summary>
+    /// <summary>稳定碰撞。</summary>
     private RE4StableCameraCollision stableCollision;
-    /// <summary>中文含义：跟随轴心。使用位置：作为 Quaternion.Slerp(Quaternion, Quaternion, float) 的参数、作为 RE4RThirdPersonCamera.IsFinite(Quaternion) 的参数、作为 RE4RThirdPersonCamera.IsFinite(Vector3) 的参数 等共 13 处。</summary>
+    /// <summary>跟随轴心。</summary>
     private Transform followPivot;
     // 位置
-    /// <summary>中文含义：基础轴心位置。使用位置：作为 Mathf.SmoothDamp(float, float, ref float, float, float, float) 的参数、作为 RE4RThirdPersonCamera.IsFinite(Vector3) 的参数、作为 Transform.SetPositionAndRotation(Vector3, Quaternion) 的参数 等共 10 处。</summary>
+    /// <summary>基础轴心位置。</summary>
     private Vector3 basePivotPos; // SmoothDamp 后的基础位置
-    /// <summary>中文含义：掉落摄像机阶段。使用位置：RE4RThirdPersonCamera.BeginDropCamera()、RE4RThirdPersonCamera.ClearDropCameraImmediate()、RE4RThirdPersonCamera.EndDropCamera() 等共 5 处。</summary>
+    /// <summary>掉落摄像机阶段。</summary>
     private DropCameraPhase dropCameraPhase;
-    /// <summary>中文含义：掉落摄像机权重。使用位置：作为 Mathf.Lerp(float, float, float) 的参数、作为 Mathf.MoveTowards(float, float, float) 的参数、作为 RE4RThirdPersonCamera.IsFinite(float) 的参数 等共 7 处。</summary>
+    /// <summary>掉落摄像机权重。</summary>
     private float dropCameraWeight;
-    /// <summary>中文含义：掉落冲击已用。使用位置：作为 Mathf.Clamp01(float) 的参数、作为 RE4RThirdPersonCamera.IsFinite(float) 的参数、RE4RThirdPersonCamera.BeginDropCamera() 等共 6 处。</summary>
+    /// <summary>掉落冲击已用。</summary>
     private float dropImpactElapsed;
-    /// <summary>中文含义：掉落冲击强度。使用位置：作为 RE4RThirdPersonCamera.IsFinite(float) 的参数、RE4RThirdPersonCamera.BeginDropCamera()、RE4RThirdPersonCamera.ClearDropCameraImmediate() 等共 6 处。</summary>
+    /// <summary>掉落冲击强度。</summary>
     private float dropImpactStrength;
-    /// <summary>中文含义：掉落冲击脉冲。使用位置：作为 RE4RThirdPersonCamera.IsFinite(float) 的参数、RE4RThirdPersonCamera.BeginDropCamera()、RE4RThirdPersonCamera.ClearDropCameraImmediate() 等共 7 处。</summary>
+    /// <summary>掉落冲击脉冲。</summary>
     private float dropImpactPulse;
-    /// <summary>中文含义：轴心速度。使用位置：作为 RE4RThirdPersonCamera.IsFinite(Vector3) 的参数、作为 Vector3.Vector3(float, float, float) 的参数、RE4RThirdPersonCamera.RecoverFiniteCameraState() 等共 7 处。</summary>
+    /// <summary>轴心速度。</summary>
     private Vector3 pivotVel; // SmoothDamp 速度
     // 旋转
-    /// <summary>中文含义：偏航。使用位置：作为 Mathf.DeltaAngle(float, float) 的参数、作为 Mathf.LerpAngle(float, float, float) 的参数、作为 Mathf.Repeat(float, float) 的参数 等共 12 处。</summary>
+    /// <summary>偏航。</summary>
     private float yaw;
-    /// <summary>中文含义：俯仰。使用位置：作为 Mathf.Clamp(float, float, float) 的参数、作为 Mathf.InverseLerp(float, float, float) 的参数、作为 Quaternion.Euler(float, float, float) 的参数 等共 11 处。</summary>
+    /// <summary>俯仰。</summary>
     private float pitch;
     private float passageCameraWeight;
     private float aimPushWeight;
     private Vector3 gateFollowOffset;
     private bool gateFollowActive;
+    private WindowTraversalPoint activeTraversalWindow;
+    private float exitEaseRemaining;
+    private float currentCollisionCompression;
+    private bool wasInPassage;
+    private float enemyProximityHoldUntil;
+    private float smoothedFramingPitchOffset;
+    private float framingPitchOffsetVelocity;
+    private bool framingPitchInitialized;
+    private float externalHandoffSmoothPitchTimer;
+    private bool hasOverrideCollisionFocus;
+    private Vector3 overrideCollisionFocusRoot;
+    private bool externalVillageCameraSampling;
+
+    internal void SetExternalVillageCameraSampling(bool active)
+    {
+        externalVillageCameraSampling = active;
+    }
     internal float PassageCameraWeight => passageCameraWeight;
+    internal WindowTraversalPoint ActiveTraversalWindow => activeTraversalWindow;
+    internal float ExitEaseWeight
+    {
+        get
+        {
+            if (exitEaseDuration <= 0.001f)
+            {
+                return 0f;
+            }
+
+            return Mathf.Clamp01(exitEaseRemaining / exitEaseDuration);
+        }
+    }
+    internal float CollisionCompressionRatio => currentCollisionCompression;
+    internal float AimShoulderLockWeight
+    {
+        get { return ReadShoulderModeWeight(); }
+    }
+    internal Transform ControllerTransform
+    {
+        get
+        {
+            if (controller != null)
+            {
+                return controller.transform;
+            }
+
+            return null;
+        }
+    }
     // 转向延迟
-    /// <summary>中文含义：转向滞后计时器。使用位置：RE4RThirdPersonCamera.DriveInput(float)、RE4RThirdPersonCamera.SynchronizeObserveDirection(bool)。</summary>
+    /// <summary>转向滞后计时器。</summary>
     private float turnLagTimer;
-    /// <summary>中文含义：上一次目标偏航。使用位置：作为 Mathf.DeltaAngle(float, float) 的参数、RE4RThirdPersonCamera.DriveInput(float)、RE4RThirdPersonCamera.Start() 等共 4 处。</summary>
+    /// <summary>上一次目标偏航。</summary>
     private float lastTargetYaw;
     /// <summary>玩家控制、动作与运动使用的 DropCameraPhase 分类枚举；保持原成员顺序和数值，调用方据此选择业务分支。</summary>
     private enum DropCameraPhase
@@ -481,68 +542,68 @@ public partial class RE4RThirdPersonCamera : MonoBehaviour
     /// <summary>玩家控制、动作与运动的结构化数据 StateParams；声明字段保存该步骤需要的值，具体读写由使用方执行。</summary>
     private struct StateParams
     {
-        /// <summary>中文含义：视野角度。使用位置：作为 Mathf.Lerp(float, float, float) 的参数、RE4RThirdPersonCamera.ApplyStateParams(RE4RThirdPersonCamera.StateParams)、RE4RThirdPersonCamera.BuildStates() 等共 6 处。</summary>
+        /// <summary>视野角度。</summary>
         public float fov;
-        /// <summary>中文含义：摄像机距离。使用位置：作为 Mathf.Lerp(float, float, float) 的参数、RE4RThirdPersonCamera.ApplyStateParams(RE4RThirdPersonCamera.StateParams)、RE4RThirdPersonCamera.BuildStates() 等共 6 处。</summary>
+        /// <summary>摄像机距离。</summary>
         public float cameraDistance;
-        /// <summary>中文含义：竖直手臂。使用位置：作为 Mathf.Lerp(float, float, float) 的参数、RE4RThirdPersonCamera.ApplyStateParams(RE4RThirdPersonCamera.StateParams)、RE4RThirdPersonCamera.BuildStates() 等共 6 处。</summary>
+        /// <summary>竖直手臂。</summary>
         public float verticalArm;
-        /// <summary>中文含义：肩部横向。使用位置：作为 Mathf.Lerp(float, float, float) 的参数、RE4RThirdPersonCamera.ApplyStateParams(RE4RThirdPersonCamera.StateParams)、RE4RThirdPersonCamera.BuildStates() 等共 6 处。</summary>
+        /// <summary>肩部横向。</summary>
         public float shoulderX;
-        /// <summary>中文含义：阻尼。使用位置：作为 Vector3.Lerp(Vector3, Vector3, float) 的参数、RE4RThirdPersonCamera.ApplyStateParams(RE4RThirdPersonCamera.StateParams)、RE4RThirdPersonCamera.BuildStates() 等共 6 处。</summary>
+        /// <summary>阻尼。</summary>
         public Vector3 damping;
     }
 
-    /// <summary>中文含义：状态集合。使用位置：作为 Mathf.Clamp(int, int, int) 的参数、作为 RE4RThirdPersonCamera.LerpStateParams(RE4RThirdPersonCamera.StateParams, RE4RThirdPersonCamera.StateParams, float) 的参数、RE4RThirdPersonCamera.ApplyProfile(CameraProfile) 等共 5 处。</summary>
+    /// <summary>状态集合。</summary>
     private StateParams[] states;
     // 当前插值后的参数（供其他模块使用）
-    /// <summary>中文含义：当前距离。使用位置：作为 Mathf.Max(float, float) 的参数、作为 RE4RThirdPersonCamera.IsFinite(float) 的参数、作为 Vector3.Vector3(float, float, float) 的参数 等共 8 处。</summary>
+    /// <summary>当前距离。</summary>
     private float curDistance;
-    /// <summary>中文含义：当前竖直手臂。使用位置：作为 RE4RThirdPersonCamera.IsFinite(float) 的参数、作为 Vector3.Vector3(float, float, float) 的参数、RE4RThirdPersonCamera.ApplyCameraParams() 等共 7 处。</summary>
+    /// <summary>当前竖直手臂。</summary>
     private float curVerticalArm;
-    /// <summary>中文含义：当前肩部横向。使用位置：作为 RE4RThirdPersonCamera.IsFinite(float) 的参数、作为 RE4RThirdPersonCamera.ResolveSafePitchHeightOffset(float, float, float, float) 的参数、作为 Vector3.Vector3(float, float, float) 的参数 等共 8 处。</summary>
+    /// <summary>当前肩部横向。</summary>
     private float curShoulderX;
-    /// <summary>中文含义：当前视野角度。使用位置：作为 Mathf.Lerp(float, float, float) 的参数、作为 RE4RThirdPersonCamera.IsFinite(float) 的参数、RE4RThirdPersonCamera.ApplyStateParams(RE4RThirdPersonCamera.StateParams) 等共 7 处。</summary>
+    /// <summary>当前视野角度。</summary>
     private float curFOV;
-    /// <summary>中文含义：当前阻尼。使用位置：作为 RE4RThirdPersonCamera.IsFinite(Vector3) 的参数、作为 RE4RThirdPersonCamera.SanitizeVector(Vector3, Vector3) 的参数、RE4RThirdPersonCamera.ApplyCameraParams() 等共 7 处。</summary>
+    /// <summary>当前阻尼。</summary>
     private Vector3 curDamping = new Vector3(0.1f, 0.1f, 0.1f);
     // 场景级摄像机系统
-    /// <summary>中文含义：是否场景绑定已配置。使用位置：RE4RThirdPersonCamera.ApplyProfile(CameraProfile)、RE4RThirdPersonCamera.ConfigureSceneRig(LeonController, Transform, Camera, CinemachineCamera, CinemachineThirdPersonFollow, CinemachinePanTilt, CinemachineDeoccluder, Transform)、RE4RThirdPersonCamera.Start()。</summary>
+    /// <summary>是否场景绑定已配置。</summary>
     private bool sceneRigConfigured;
-    /// <summary>中文含义：是否输入已抑制。使用位置：RE4RThirdPersonCamera.BeginDropCamera()、RE4RThirdPersonCamera.LateUpdate()、RE4RThirdPersonCamera.SetInputSuppressed(bool)。</summary>
+    /// <summary>是否输入已抑制。</summary>
     private bool inputSuppressed;
-    /// <summary>中文含义：生效配置档。使用位置：RE4RThirdPersonCamera.ApplyProfile(CameraProfile)、RE4RThirdPersonCamera.BuildStates()、RE4RThirdPersonCamera.IsAiming.get。</summary>
+    /// <summary>生效配置档。</summary>
     private CameraProfile activeProfile;
     // 震动
-    /// <summary>中文含义：晃动计时器。使用位置：作为 Mathf.Max(float, float) 的参数、RE4RThirdPersonCamera.ApplyShake(float)、RE4RThirdPersonCamera.CameraShake(float, float)。</summary>
+    /// <summary>晃动计时器。</summary>
     private float shakeTimer;
-    /// <summary>中文含义：晃动起始持续时间。使用位置：作为 Mathf.Max(float, float) 的参数、RE4RThirdPersonCamera.ApplyShake(float)、RE4RThirdPersonCamera.CameraShake(float, float)。</summary>
+    /// <summary>晃动起始持续时间。</summary>
     private float shakeStartDuration;
-    /// <summary>中文含义：当前晃动弹匣。使用位置：RE4RThirdPersonCamera.ApplyShake(float)、RE4RThirdPersonCamera.CameraShake(float, float)。</summary>
+    /// <summary>当前晃动弹匣。</summary>
     private float currentShakeMag;
     // 剧情锁定
-    /// <summary>中文含义：是否锁定。使用位置：RE4RThirdPersonCamera.BeginDropCamera()、RE4RThirdPersonCamera.IsLocked.get、RE4RThirdPersonCamera.LateUpdate() 等共 5 处。</summary>
+    /// <summary>是否锁定。</summary>
     private bool isLocked;
-    /// <summary>中文含义：锁定位置。使用位置：作为 Vector3.Lerp(Vector3, Vector3, float) 的参数、RE4RThirdPersonCamera.LockCamera(Vector3, Quaternion, float)。</summary>
+    /// <summary>锁定位置。</summary>
     private Vector3 lockedPosition;
-    /// <summary>中文含义：锁定旋转。使用位置：作为 Quaternion.Slerp(Quaternion, Quaternion, float) 的参数、RE4RThirdPersonCamera.LockCamera(Vector3, Quaternion, float)。</summary>
+    /// <summary>锁定旋转。</summary>
     private Quaternion lockedRotation;
-    /// <summary>中文含义：锁定视野角度。使用位置：作为 Mathf.Lerp(float, float, float) 的参数、RE4RThirdPersonCamera.LockCamera(Vector3, Quaternion, float)。</summary>
+    /// <summary>锁定视野角度。</summary>
     private float lockedFOV;
     // 待机
-    /// <summary>中文含义：待机计时器。使用位置：RE4RThirdPersonCamera.RecoverFiniteCameraState()、RE4RThirdPersonCamera.ShouldIdleBreath.get、RE4RThirdPersonCamera.SnapToInitialCameraPose() 等共 4 处。</summary>
+    /// <summary>待机计时器。</summary>
     private float idleTimer;
-    /// <summary>中文含义：呼吸阶段。使用位置：作为 Mathf.Abs(float) 的参数、作为 Mathf.Lerp(float, float, float) 的参数、作为 Mathf.Sin(float) 的参数 等共 6 处。</summary>
+    /// <summary>呼吸阶段。</summary>
     private float breathPhase;
-    /// <summary>中文含义：之前是否待机。使用位置：RE4RThirdPersonCamera.ShouldIdleBreath.get、RE4RThirdPersonCamera.SnapToInitialCameraPose()、RE4RThirdPersonCamera.UpdateIdleBreathing(float)。</summary>
+    /// <summary>之前是否待机。</summary>
     private float idleBreathWeight;
     private float idleBreathVelocity;
-    /// <summary>中文含义：瞄准呼吸阶段。使用位置：作为 Mathf.Sin(float) 的参数、RE4RThirdPersonCamera.RecoverFiniteCameraState()、RE4RThirdPersonCamera.SnapToInitialCameraPose() 等共 4 处。</summary>
+    /// <summary>瞄准呼吸阶段。</summary>
     private float aimBreathPhase;
-    /// <summary>中文含义：瞄准呼吸权重。使用位置：作为 Mathf.MoveTowards(float, float, float) 的参数、RE4RThirdPersonCamera.RecoverFiniteCameraState()、RE4RThirdPersonCamera.SnapToInitialCameraPose() 等共 6 处。</summary>
+    /// <summary>瞄准呼吸权重。</summary>
     private float aimBreathWeight;
     // 开火后坐会临时叠加到 PanTilt，随后快速回中。
-    /// <summary>中文含义：武器后坐力俯仰偏移量。使用位置：作为 Mathf.Clamp(float, float, float) 的参数、作为 Mathf.SmoothDamp(float, float, ref float, float, float, float) 的参数、作为 RE4RThirdPersonCamera.IsFinite(float) 的参数 等共 7 处。</summary>
+    /// <summary>武器后坐力俯仰偏移量。</summary>
     private float weaponRecoilPitchOffset;
     private float visibleWeaponRecoilPitch;
     private float pistolRetainedPitch;
@@ -552,66 +613,66 @@ public partial class RE4RThirdPersonCamera : MonoBehaviour
     private float pistolRecoilRetention = .55f;
     [SerializeField, Min(0f), Tooltip("最后一发后保留上扬角的时间（秒）。")]
     private float pistolRecoilHoldTime = .65f;
-    /// <summary>中文含义：武器后坐力偏航偏移量。使用位置：作为 Mathf.Clamp(float, float, float) 的参数、作为 Mathf.SmoothDamp(float, float, ref float, float, float, float) 的参数、作为 RE4RThirdPersonCamera.IsFinite(float) 的参数 等共 8 处。</summary>
+    /// <summary>武器后坐力偏航偏移量。</summary>
     private float weaponRecoilYawOffset;
-    /// <summary>中文含义：武器后坐力视野角度偏移量。使用位置：作为 Mathf.Lerp(float, float, float) 的参数、作为 Mathf.Max(float, float) 的参数、作为 Mathf.SmoothDamp(float, float, ref float, float, float, float) 的参数 等共 8 处。</summary>
+    /// <summary>武器后坐力视野角度偏移量。</summary>
     private float weaponRecoilFOVOffset;
-    /// <summary>中文含义：武器后坐力距离偏移量。使用位置：作为 Mathf.Max(float, float) 的参数、作为 Mathf.SmoothDamp(float, float, ref float, float, float, float) 的参数、作为 RE4RThirdPersonCamera.IsFinite(float) 的参数 等共 8 处。</summary>
+    /// <summary>武器后坐力距离偏移量。</summary>
     private float weaponRecoilDistanceOffset;
-    /// <summary>中文含义：武器后坐力肩部偏移量。使用位置：作为 Mathf.Clamp(float, float, float) 的参数、作为 Mathf.SmoothDamp(float, float, ref float, float, float, float) 的参数、作为 RE4RThirdPersonCamera.IsFinite(float) 的参数 等共 9 处。</summary>
+    /// <summary>武器后坐力肩部偏移量。</summary>
     private float weaponRecoilShoulderOffset;
-    /// <summary>中文含义：蹲伏摄像机权重。使用位置：作为 Mathf.MoveTowards(float, float, float) 的参数、作为 RE4RThirdPersonCamera.IsFinite(float) 的参数、RE4RThirdPersonCamera.ApplyCameraParams() 等共 5 处。</summary>
+    /// <summary>蹲伏摄像机权重。</summary>
     private float crouchCameraWeight;
-    /// <summary>中文含义：俯仰高度偏移量。使用位置：作为 Mathf.Abs(float) 的参数、作为 Mathf.SmoothDamp(float, float, ref float, float, float, float) 的参数、作为 RE4RThirdPersonCamera.IsFinite(float) 的参数 等共 8 处。</summary>
+    /// <summary>俯仰高度偏移量。</summary>
     private float pitchHeightOffset;
-    /// <summary>中文含义：俯仰高度速度。使用位置：作为 Mathf.SmoothDamp(float, float, ref float, float, float, float) 的参数、作为 RE4RThirdPersonCamera.IsFinite(float) 的参数、RE4RThirdPersonCamera.ApplyCameraParams() 等共 6 处。</summary>
+    /// <summary>俯仰高度速度。</summary>
     private float pitchHeightVelocity;
-    /// <summary>中文含义：武器后坐力俯仰速度。使用位置：作为 Mathf.SmoothDamp(float, float, ref float, float, float, float) 的参数、RE4RThirdPersonCamera.RecoverFiniteCameraState()、RE4RThirdPersonCamera.SnapToInitialCameraPose() 等共 4 处。</summary>
+    /// <summary>武器后坐力俯仰速度。</summary>
     private float weaponRecoilPitchVelocity;
-    /// <summary>中文含义：武器后坐力偏航速度。使用位置：作为 Mathf.SmoothDamp(float, float, ref float, float, float, float) 的参数、RE4RThirdPersonCamera.RecoverFiniteCameraState()、RE4RThirdPersonCamera.SnapToInitialCameraPose() 等共 4 处。</summary>
+    /// <summary>武器后坐力偏航速度。</summary>
     private float weaponRecoilYawVelocity;
-    /// <summary>中文含义：武器后坐力视野角度速度。使用位置：作为 Mathf.SmoothDamp(float, float, ref float, float, float, float) 的参数、RE4RThirdPersonCamera.RecoverFiniteCameraState()、RE4RThirdPersonCamera.SnapToInitialCameraPose() 等共 4 处。</summary>
+    /// <summary>武器后坐力视野角度速度。</summary>
     private float weaponRecoilFOVVelocity;
-    /// <summary>中文含义：武器后坐力距离速度。使用位置：作为 Mathf.SmoothDamp(float, float, ref float, float, float, float) 的参数、RE4RThirdPersonCamera.RecoverFiniteCameraState()、RE4RThirdPersonCamera.SnapToInitialCameraPose() 等共 4 处。</summary>
+    /// <summary>武器后坐力距离速度。</summary>
     private float weaponRecoilDistanceVelocity;
-    /// <summary>中文含义：武器后坐力肩部速度。使用位置：作为 Mathf.SmoothDamp(float, float, ref float, float, float, float) 的参数、RE4RThirdPersonCamera.RecoverFiniteCameraState()、RE4RThirdPersonCamera.SnapToInitialCameraPose() 等共 4 处。</summary>
+    /// <summary>武器后坐力肩部速度。</summary>
     private float weaponRecoilShoulderVelocity;
-    /// <summary>中文含义：当前武器后坐力返回时间。使用位置：RE4RThirdPersonCamera.SnapToInitialCameraPose()、RE4RThirdPersonCamera.TriggerWeaponRecoil(float, float, float, float)、RE4RThirdPersonCamera.UpdateWeaponRecoil(float)。</summary>
+    /// <summary>当前武器后坐力返回时间。</summary>
     private float currentWeaponRecoilReturnTime;
-    /// <summary>中文含义：上一次有限失败帧。使用位置：RE4RThirdPersonCamera.LogRecoveredFiniteWarning(string, string)、RE4RThirdPersonCamera.ValidateFiniteCameraState(string)。</summary>
+    /// <summary>上一次有限失败帧。</summary>
     private int lastFiniteFailureFrame = -1;
-    /// <summary>中文含义：下一次有限警告时间。使用位置：RE4RThirdPersonCamera.LogRecoveredFiniteWarning(string, string)。</summary>
+    /// <summary>下一次有限警告时间。</summary>
     private float nextFiniteWarningTime;
     // 解锁回弹
-    /// <summary>中文含义：解锁增强。使用位置：RE4RThirdPersonCamera.SnapToInitialCameraPose()、RE4RThirdPersonCamera.SynchronizeFromCamera()、RE4RThirdPersonCamera.UnlockCamera() 等共 4 处。</summary>
+    /// <summary>解锁增强。</summary>
     private float unlockBoost;
     // 近战推近
-    /// <summary>中文含义：近战推开计时器。使用位置：RE4RThirdPersonCamera.RecoverFiniteCameraState()、RE4RThirdPersonCamera.TriggerMeleePush()、RE4RThirdPersonCamera.UpdateMeleePush(float)。</summary>
+    /// <summary>近战推开计时器。</summary>
     private float meleePushTimer;
-    /// <summary>中文含义：近战推开比例。使用位置：作为 RE4RThirdPersonCamera.IsFinite(float) 的参数、RE4RThirdPersonCamera.ApplyCameraParams()、RE4RThirdPersonCamera.RecoverFiniteCameraState() 等共 4 处。</summary>
+    /// <summary>近战推开比例。</summary>
     private float meleePushRatio;
-    /// <summary>中文含义：之前是否近战。使用位置：RE4RThirdPersonCamera.UpdateMeleePush(float)。</summary>
+    /// <summary>之前是否近战。</summary>
     private bool wasMelee;
     // 敌人拉远
-    /// <summary>中文含义：当前敌人缩放视野。使用位置：作为 Mathf.Lerp(float, float, float) 的参数、作为 RE4RThirdPersonCamera.IsFinite(float) 的参数、RE4RThirdPersonCamera.ApplyCameraParams() 等共 5 处。</summary>
+    /// <summary>当前敌人缩放视野。</summary>
     private float currentEnemyZoom = 1f;
-    /// <summary>中文含义：敌人帧计数器。使用位置：RE4RThirdPersonCamera.UpdateEnemyProximity(float)。</summary>
+    /// <summary>敌人帧计数器。</summary>
     private int enemyFrameCounter;
-    /// <summary>中文含义：是否具有附近敌人。使用位置：RE4RThirdPersonCamera.UpdateEnemyProximity(float)。</summary>
+    /// <summary>是否具有附近敌人。</summary>
     private bool hasNearbyEnemy;
-    /// <summary>中文含义：摄像机冲刺是否生效。使用位置：RE4RThirdPersonCamera.IsSprinting.get、RE4RThirdPersonCamera.UpdateCameraSprintState()。</summary>
+    /// <summary>摄像机冲刺是否生效。</summary>
     private bool cameraSprintActive;
     // ========================== 公共 API ==========================
     /// <summary>震屏（兼容旧接口：duration, magnitude）</summary>
     /// <remarks>静态调用链：上游 RE4CameraController.BindPlayer(LeonController, Transform)、RE4CameraController.Start()；下游（含内部回调体） Component.GetComponent&lt;Animator&gt;()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="playerController">中文含义：玩家控制器。使用位置：RE4RThirdPersonCamera.ConfigureSceneRig(LeonController, Transform, Camera, CinemachineCamera, CinemachineThirdPersonFollow, CinemachinePanTilt, CinemachineDeoccluder, Transform)。</param>
-    /// <param name="cameraAnchor">中文含义：摄像机锚点。使用位置：RE4RThirdPersonCamera.ConfigureSceneRig(LeonController, Transform, Camera, CinemachineCamera, CinemachineThirdPersonFollow, CinemachinePanTilt, CinemachineDeoccluder, Transform)。</param>
-    /// <param name="mainCamera">中文含义：主摄像机。使用位置：RE4RThirdPersonCamera.ConfigureSceneRig(LeonController, Transform, Camera, CinemachineCamera, CinemachineThirdPersonFollow, CinemachinePanTilt, CinemachineDeoccluder, Transform)。</param>
-    /// <param name="gameplayCamera">中文含义：玩法摄像机。使用位置：RE4RThirdPersonCamera.ConfigureSceneRig(LeonController, Transform, Camera, CinemachineCamera, CinemachineThirdPersonFollow, CinemachinePanTilt, CinemachineDeoccluder, Transform)。</param>
-    /// <param name="thirdPersonFollow">中文含义：第三人称跟随。使用位置：RE4RThirdPersonCamera.ConfigureSceneRig(LeonController, Transform, Camera, CinemachineCamera, CinemachineThirdPersonFollow, CinemachinePanTilt, CinemachineDeoccluder, Transform)。</param>
-    /// <param name="cameraPanTilt">中文含义：摄像机水平转动竖直转动。使用位置：RE4RThirdPersonCamera.ConfigureSceneRig(LeonController, Transform, Camera, CinemachineCamera, CinemachineThirdPersonFollow, CinemachinePanTilt, CinemachineDeoccluder, Transform)。</param>
-    /// <param name="cameraDeoccluder">中文含义：摄像机遮挡解除器。使用位置：RE4RThirdPersonCamera.ConfigureSceneRig(LeonController, Transform, Camera, CinemachineCamera, CinemachineThirdPersonFollow, CinemachinePanTilt, CinemachineDeoccluder, Transform)。</param>
-    /// <param name="cameraFollowTarget">中文含义：摄像机跟随目标。使用位置：RE4RThirdPersonCamera.ConfigureSceneRig(LeonController, Transform, Camera, CinemachineCamera, CinemachineThirdPersonFollow, CinemachinePanTilt, CinemachineDeoccluder, Transform)。</param>
+    /// <param name="playerController">玩家控制器。</param>
+    /// <param name="cameraAnchor">摄像机锚点。</param>
+    /// <param name="mainCamera">主摄像机。</param>
+    /// <param name="gameplayCamera">玩法摄像机。</param>
+    /// <param name="thirdPersonFollow">第三人称跟随。</param>
+    /// <param name="cameraPanTilt">摄像机水平转动竖直转动。</param>
+    /// <param name="cameraDeoccluder">摄像机遮挡解除器。</param>
+    /// <param name="cameraFollowTarget">摄像机跟随目标。</param>
     public void ConfigureSceneRig(LeonController playerController, Transform cameraAnchor, Camera mainCamera, CinemachineCamera gameplayCamera, CinemachineThirdPersonFollow thirdPersonFollow, CinemachinePanTilt cameraPanTilt, CinemachineDeoccluder cameraDeoccluder, Transform cameraFollowTarget)
     {
         controller = playerController;
@@ -636,7 +697,7 @@ public partial class RE4RThirdPersonCamera : MonoBehaviour
 
     /// <summary>ApplyProfile 的业务处理入口；本方法直接依赖 Mathf.Max(float, float)、RE4RThirdPersonCamera.BuildStates()、RE4RThirdPersonCamera.CaptureCurrentStateParams()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 RE4CameraController.ApplyWeaponProfile(WeaponType)；下游（含内部回调体） Mathf.Max(float, float)、RE4RThirdPersonCamera.BuildStates()、RE4RThirdPersonCamera.CaptureCurrentStateParams()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="profile">中文含义：配置档。使用位置：作为 Mathf.Max(float, float) 的参数、RE4RThirdPersonCamera.ApplyProfile(CameraProfile)。</param>
+    /// <param name="profile">配置档。</param>
     public void ApplyProfile(CameraProfile profile)
     {
         if (profile == null)
@@ -644,7 +705,7 @@ public partial class RE4RThirdPersonCamera : MonoBehaviour
             return;
         }
 
-        // shouldBlendFromCurrent（是否应当混合来源当前）：使用位置：RE4RThirdPersonCamera.ApplyProfile(CameraProfile)。
+        // 是否应当混合来源当前。
 bool shouldBlendFromCurrent = states != null && Application.isPlaying && sceneRigConfigured;
         activeProfile = profile;
         normalOffset = profile.explorePose.offset;
@@ -666,13 +727,13 @@ bool shouldBlendFromCurrent = states != null && Application.isPlaying && sceneRi
 
     /// <summary>SetInputSuppressed 的业务处理入口；本方法直接依赖 LeonController.ResetFreeView()、object.ReferenceEquals(object, object)、RE4RThirdPersonCamera.ClearDropCameraImmediate()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 RE4CameraController.ReleaseExternalCamera(Object)、RE4CameraController.RequestExternalCamera(Object, CinemachineCamera, bool)；下游（含内部回调体） LeonController.ResetFreeView()、object.ReferenceEquals(object, object)、RE4RThirdPersonCamera.ClearDropCameraImmediate()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="value">中文含义：是否值。使用位置：RE4RThirdPersonCamera.SetInputSuppressed(bool)。</param>
+    /// <param name="value">是否值。</param>
     public void SetInputSuppressed(bool value)
     {
         inputSuppressed = value;
         if (value)
         {
-            // receiverValue3（判空前缓存的里昂玩家控制器）：从控制器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、RE4RThirdPersonCamera.SetInputSuppressed(bool)。
+            // 判空前缓存的里昂玩家控制器。
 global::LeonController receiverValue3 = controller;
             if (!global::System.Object.ReferenceEquals(receiverValue3, null))
             {
@@ -700,7 +761,7 @@ global::LeonController receiverValue3 = controller;
 
     /// <summary>NotifyDropImpact 的业务处理入口；本方法直接依赖 Mathf.Clamp01(float)、Mathf.InverseLerp(float, float, float)、Mathf.Max(float, float)、RE4RThirdPersonCamera.IsFinite(float)、RE4RThirdPersonCamera.LogRecoveredFiniteWarning(string, string)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonHighDropLanding.UpdateActiveDrop()、LeonWindowTraversal.CommitDropImpact()；下游（含内部回调体） Mathf.Clamp01(float)、Mathf.InverseLerp(float, float, float)、Mathf.Max(float, float)、RE4RThirdPersonCamera.IsFinite(float)、RE4RThirdPersonCamera.LogRecoveredFiniteWarning(string, string)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="downwardSpeed">中文含义：向下速度。使用位置：作为 Mathf.InverseLerp(float, float, float) 的参数、作为 Mathf.Max(float, float) 的参数、作为 RE4RThirdPersonCamera.IsFinite(float) 的参数 等共 4 处。</param>
+    /// <param name="downwardSpeed">向下速度。</param>
     public void NotifyDropImpact(float downwardSpeed)
     {
         if (dropCameraPhase == DropCameraPhase.None)
@@ -747,9 +808,98 @@ global::LeonController receiverValue3 = controller;
         dropImpactPulse = 0f;
     }
 
+    /// <summary>翻窗或通道动作进入时记录当前穿越窗口，避免窗框与碎玻璃触发近距避障闪烁。</summary>
+    /// <param name="window">中文含义：当前穿越的窗口点。</param>
+    public void BeginWindowTraversalCamera(WindowTraversalPoint window)
+    {
+        activeTraversalWindow = window;
+    }
+
+    /// <summary>翻窗或通道动作退出时释放窗口上下文，并触发窄到宽的出口舒展期。</summary>
+    /// <param name="window">中文含义：结束穿越的窗口点。</param>
+    /// <param name="triggerExitEase">中文含义：是否开启出口舒展过渡。</param>
+    public void EndWindowTraversalCamera(WindowTraversalPoint window, bool triggerExitEase = true)
+    {
+        if (window == null || activeTraversalWindow == window)
+        {
+            activeTraversalWindow = null;
+        }
+
+        if (triggerExitEase && exitEaseDuration > 0.001f)
+        {
+            exitEaseRemaining = Mathf.Max(exitEaseRemaining, exitEaseDuration);
+        }
+    }
+
+    internal void SetOverrideCollisionFocusRoot(bool enabled, Vector3 rootPosition)
+    {
+        hasOverrideCollisionFocus = enabled;
+        overrideCollisionFocusRoot = rootPosition;
+    }
+
+    internal Vector3 ReadStableCollisionFocusPosition(Vector3 up)
+    {
+        Vector3 safeUp;
+        if (up.sqrMagnitude > 0.001f)
+        {
+            safeUp = up.normalized;
+        }
+        else
+        {
+            safeUp = Vector3.up;
+        }
+
+        float torsoHeight = Mathf.Lerp(1.36f, 1.04f, crouchCameraWeight);
+        if (hasOverrideCollisionFocus)
+        {
+            return overrideCollisionFocusRoot + safeUp * torsoHeight;
+        }
+
+        if ((inputSuppressed || isLocked || gateFollowActive) && followPivot != null)
+        {
+            return followPivot.position;
+        }
+
+        if (controller != null)
+        {
+            return controller.transform.position + nativeAnchorDelta + safeUp * torsoHeight;
+        }
+
+        if (target != null)
+        {
+            return target.position + safeUp * torsoHeight;
+        }
+
+        if (followPivot != null)
+        {
+            return followPivot.position;
+        }
+
+        return transform.position + safeUp * torsoHeight;
+    }
+
+    internal void SetCollisionCompressionRatio(float ratio)
+    {
+        if (IsFinite(ratio))
+        {
+            currentCollisionCompression = Mathf.Clamp01(ratio);
+        }
+    }
+
+    internal CameraCollisionSolver.SolveSettings ReadCollisionSolverSettings()
+    {
+        CameraCollisionSolver.SolveSettings settings = CameraCollisionSolver.SolveSettings.CreateDefault();
+        settings.releaseDelay = Mathf.Clamp(collisionReleaseDelay, 0f, 0.25f);
+        settings.normalRecoveryDamping = Mathf.Max(0.05f, collisionDamping);
+        settings.exitEaseRecoveryDamping = Mathf.Max(settings.normalRecoveryDamping, exitEaseDuration * 0.58f);
+        settings.maxExitRecoverySpeed = Mathf.Max(1.0f, exitMaxRecoverySpeed);
+        settings.ceilingDropLimit = Mathf.Max(0.05f, ceilingDropLimit);
+        return settings;
+    }
+
     /// <summary>UpdateDropCamera 的业务处理入口；本方法直接依赖 Mathf.Clamp01(float)、Mathf.MoveTowards(float, float, float)、Mathf.Sin(float)、RE4RThirdPersonCamera.ClearDropCameraImmediate()、RE4RThirdPersonCamera.IsFinite(float)、RE4RThirdPersonCamera.LogRecoveredFiniteWarning(string, string)、RE4RThirdPersonCamera.SanitizePositive(float, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 RE4RThirdPersonCamera.LateUpdate()；下游（含内部回调体） Mathf.Clamp01(float)、Mathf.MoveTowards(float, float, float)、Mathf.Sin(float)、RE4RThirdPersonCamera.ClearDropCameraImmediate()、RE4RThirdPersonCamera.IsFinite(float)、RE4RThirdPersonCamera.LogRecoveredFiniteWarning(string, string)、RE4RThirdPersonCamera.SanitizePositive(float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="dt">中文含义：本次计算的时间步长。使用位置：作为 Mathf.MoveTowards(float, float, float) 的参数、RE4RThirdPersonCamera.UpdateDropCamera(float)。</param>
+    /// <param name="dt">本次计算的时间步长。</param>
     private void UpdateDropCamera(float dt)
     {
         if (!IsFinite(dropCameraWeight) || !IsFinite(dropImpactElapsed) || !IsFinite(dropImpactStrength) || !IsFinite(dropImpactPulse))
@@ -768,9 +918,9 @@ global::LeonController receiverValue3 = controller;
             case DropCameraPhase.Impact:
                 dropCameraWeight = 1f;
                 dropImpactElapsed += dt;
-                // safeImpactDuration（安全冲击持续时间）：保存 RE4RThirdPersonCamera.SanitizePositive(float, float) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Clamp01(float) 的参数。
+                // 安全冲击持续时间。
 float safeImpactDuration = SanitizePositive(dropImpactDuration, 0.12f);
-                // impactProgress（冲击进度）：保存 Mathf.Clamp01(float) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Sin(float) 的参数、RE4RThirdPersonCamera.UpdateDropCamera(float)。
+                // 冲击进度。
 float impactProgress = Mathf.Clamp01(dropImpactElapsed / safeImpactDuration);
                 dropImpactPulse = Mathf.Sin(impactProgress * Mathf.PI);
                 if (impactProgress >= 1f)
@@ -782,7 +932,7 @@ float impactProgress = Mathf.Clamp01(dropImpactElapsed / safeImpactDuration);
                 break;
             case DropCameraPhase.Recovering:
                 dropImpactPulse = 0f;
-                // safeRecoveryDuration（安全恢复持续时间）：保存 RE4RThirdPersonCamera.SanitizePositive(float, float) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.MoveTowards(float, float, float) 的参数。
+                // 安全恢复持续时间。
 float safeRecoveryDuration = SanitizePositive(dropRecoveryDuration, 0.35f);
                 dropCameraWeight = Mathf.MoveTowards(dropCameraWeight, 0f, dt / safeRecoveryDuration);
                 if (dropCameraWeight <= 0.001f)
@@ -800,7 +950,7 @@ float safeRecoveryDuration = SanitizePositive(dropRecoveryDuration, 0.35f);
 
     /// <summary>从玩家正在看到的方向接管，保留跟随位置和碰撞状态。</summary>
     /// <remarks>静态调用链：上游 LeonController.InterruptFreeViewRecentering()、LeonController.SetFreeLooking(bool)、LeonController.TakeOverFreeViewAim()；下游（含内部回调体） Mathf.Clamp(float, float, float)、Mathf.DeltaAngle(float, float)、Quaternion.Euler(float, float, float)、RE4RThirdPersonCamera.GetCharacterYaw()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="aimTakeOver">中文含义：是否瞄准接管。使用位置：RE4RThirdPersonCamera.SynchronizeObserveDirection(bool)。</param>
+    /// <param name="aimTakeOver">是否瞄准接管。</param>
     public void SynchronizeObserveDirection(bool aimTakeOver = false)
     {
         if (cam == null)
@@ -808,7 +958,7 @@ float safeRecoveryDuration = SanitizePositive(dropRecoveryDuration, 0.35f);
             return;
         }
 
-        // angle（角度）：使用位置：作为 Mathf.DeltaAngle(float, float) 的参数。
+        // 角度。
 Vector3 angle = cam.transform.eulerAngles;
         yaw = Mathf.DeltaAngle(0f, angle.y);
         pitch = Mathf.Clamp(Mathf.DeltaAngle(0f, angle.x), pitchRange.x, pitchRange.y);
@@ -834,10 +984,10 @@ Vector3 angle = cam.transform.eulerAngles;
             return;
         }
 
-        // euler（欧拉）：使用位置：作为 Mathf.Repeat(float, float) 的参数、RE4RThirdPersonCamera.SynchronizeFromCamera()。
+        // 欧拉。
 Vector3 euler = cam.transform.eulerAngles;
         yaw = Mathf.Repeat(euler.y + 180f, 360f) - 180f;
-        // cameraPitch（摄像机俯仰）：使用位置：作为 Mathf.Clamp(float, float, float) 的参数、RE4RThirdPersonCamera.SynchronizeFromCamera()。
+        // 摄像机俯仰。
 float cameraPitch = euler.x;
         if (cameraPitch > 180f)
         {
@@ -846,12 +996,12 @@ float cameraPitch = euler.x;
 
         pitch = Mathf.Clamp(cameraPitch, pitchRange.x, pitchRange.y);
         pivotVel = Vector3.zero;
-        unlockBoost = 1f;
+        unlockBoost = 0f;
     }
 
     /// <summary>SetCollisionMask 的业务处理入口；本方法直接依赖 RE4RThirdPersonCamera.ApplyCollisionSettings()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 RE4CameraController.Start()；下游（含内部回调体） RE4RThirdPersonCamera.ApplyCollisionSettings()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="mask">中文含义：遮罩。使用位置：RE4RThirdPersonCamera.SetCollisionMask(LayerMask)。</param>
+    /// <param name="mask">遮罩。</param>
     public void SetCollisionMask(LayerMask mask)
     {
         collisionMask = mask;
@@ -860,13 +1010,13 @@ float cameraPitch = euler.x;
 
     /// <summary>Shake 的业务处理入口；本方法直接依赖 RE4RThirdPersonCamera.CameraShake(float, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 RE4CameraController.Shake(float, float)；下游（含内部回调体） RE4RThirdPersonCamera.CameraShake(float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="duration">中文含义：持续时间。使用位置：作为 RE4RThirdPersonCamera.CameraShake(float, float) 的参数。</param>
-    /// <param name="magnitude">中文含义：长度。使用位置：作为 RE4RThirdPersonCamera.CameraShake(float, float) 的参数。</param>
+    /// <param name="duration">持续时间。</param>
+    /// <param name="magnitude">长度。</param>
     public void Shake(float duration, float magnitude) => CameraShake(magnitude, duration);
     /// <summary>震屏公共方法 — 外部调用</summary>
     /// <remarks>静态调用链：上游 RE4CameraController.CameraShake(float, float)、RE4RThirdPersonCamera.Shake(float, float)、RE4RThirdPersonCamera.TriggerMeleePush()、RE4RThirdPersonCamera.TriggerWeaponRecoil(float, float, float, float)；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="intensity">中文含义：强度。使用位置：RE4RThirdPersonCamera.CameraShake(float, float)。</param>
-    /// <param name="duration">中文含义：持续时间。使用位置：RE4RThirdPersonCamera.CameraShake(float, float)。</param>
+    /// <param name="intensity">强度。</param>
+    /// <param name="duration">持续时间。</param>
     public void CameraShake(float intensity, float duration)
     {
         if (duration <= 0f)
@@ -884,10 +1034,10 @@ float cameraPitch = euler.x;
 
     /// <summary>触发武器开火后坐反馈</summary>
     /// <remarks>静态调用链：上游 RE4CameraController.AddWeaponRecoil(float)；下游（含内部回调体） Mathf.Clamp(float, float, float)、Mathf.InverseLerp(float, float, float)、Mathf.Lerp(float, float, float)、Mathf.Max(float, float)、Mathf.Min(float, float)、Random.Range(float, float)、RE4RThirdPersonCamera.CameraShake(float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="recoilAmount">中文含义：后坐力大小。使用位置：作为 Mathf.Max(float, float) 的参数。</param>
-    /// <param name="shakeMultiplier">中文含义：晃动倍率。使用位置：作为 Mathf.Max(float, float) 的参数。</param>
-    /// <param name="accumulatedAngleMaximum">中文含义：累计角度最大。使用位置：RE4RThirdPersonCamera.TriggerWeaponRecoil(float, float, float, float)。</param>
-    /// <param name="recenteringTime">中文含义：回正时间。使用位置：RE4RThirdPersonCamera.TriggerWeaponRecoil(float, float, float, float)。</param>
+    /// <param name="recoilAmount">后坐力大小。</param>
+    /// <param name="shakeMultiplier">晃动倍率。</param>
+    /// <param name="accumulatedAngleMaximum">累计角度最大。</param>
+    /// <param name="recenteringTime">回正时间。</param>
     public void TriggerWeaponRecoil(float recoilAmount, float shakeMultiplier = 1f, float accumulatedAngleMaximum = 0f, float recenteringTime = 0f)
     {
         float amount = Mathf.Max(0f, recoilAmount);
@@ -980,12 +1130,12 @@ float cameraPitch = euler.x;
 
     /// <summary>锁定相机到指定位置/旋转（剧情用）</summary>
     /// <remarks>静态调用链：上游 RE4RThirdPersonCamera.LockCamera(Transform, float)；下游（含内部回调体） Component.GetComponent&lt;CinemachineBrain&gt;()、Component.GetComponent&lt;RE4CameraController&gt;()、LeonController.ResetFreeView()、object.ReferenceEquals(object, object)、RE4CameraController.LockCamera(Vector3, Quaternion, float)、RE4RThirdPersonCamera.ClearDropCameraImmediate()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="position">中文含义：位置。使用位置：作为 RE4CameraController.LockCamera(Vector3, Quaternion, float) 的参数、RE4RThirdPersonCamera.LockCamera(Vector3, Quaternion, float)。</param>
-    /// <param name="rotation">中文含义：旋转。使用位置：作为 RE4CameraController.LockCamera(Vector3, Quaternion, float) 的参数、RE4RThirdPersonCamera.LockCamera(Vector3, Quaternion, float)。</param>
-    /// <param name="fov">中文含义：视野角度。使用位置：作为 RE4CameraController.LockCamera(Vector3, Quaternion, float) 的参数、RE4RThirdPersonCamera.LockCamera(Vector3, Quaternion, float)。</param>
+    /// <param name="position">位置。</param>
+    /// <param name="rotation">旋转。</param>
+    /// <param name="fov">视野角度。</param>
     public void LockCamera(Vector3 position, Quaternion rotation, float fov = 55f)
     {
-        // receiverValue7（判空前缓存的里昂玩家控制器）：从控制器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、RE4RThirdPersonCamera.LockCamera(Vector3, Quaternion, float)。
+        // 判空前缓存的里昂玩家控制器。
 global::LeonController receiverValue7 = controller;
         if (!global::System.Object.ReferenceEquals(receiverValue7, null))
         {
@@ -993,7 +1143,7 @@ global::LeonController receiverValue7 = controller;
         }
 
         ClearDropCameraImmediate();
-        // sceneController（场景控制器）：保存 Component.GetComponent<RE4CameraController>() 的返回结果，供当前步骤使用。使用位置：RE4RThirdPersonCamera.LockCamera(Vector3, Quaternion, float)。
+        // 场景控制器。
 var sceneController = GetComponent<RE4CameraController>();
         if (sceneController != null)
         {
@@ -1010,7 +1160,7 @@ var sceneController = GetComponent<RE4CameraController>();
             vcam.enabled = false;
         }
 
-        // brain（镜头脑）：使用位置：RE4RThirdPersonCamera.LockCamera(Vector3, Quaternion, float)。
+        // 镜头脑。
 global::Unity.Cinemachine.CinemachineBrain brain;
         if (cam != null)
         {
@@ -1029,14 +1179,14 @@ global::Unity.Cinemachine.CinemachineBrain brain;
 
     /// <summary>锁定相机到指定 Transform</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） RE4RThirdPersonCamera.LockCamera(Vector3, Quaternion, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="lockTransform">中文含义：锁定变换。使用位置：作为 RE4RThirdPersonCamera.LockCamera(Vector3, Quaternion, float) 的参数。</param>
-    /// <param name="fov">中文含义：视野角度。使用位置：作为 RE4RThirdPersonCamera.LockCamera(Vector3, Quaternion, float) 的参数。</param>
+    /// <param name="lockTransform">锁定变换。</param>
+    /// <param name="fov">视野角度。</param>
     public void LockCamera(Transform lockTransform, float fov = 55f) => LockCamera(lockTransform.position, lockTransform.rotation, fov);
     /// <summary>解除锁定，平滑回弹至跟随状态</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） Component.GetComponent&lt;CinemachineBrain&gt;()、Component.GetComponent&lt;RE4CameraController&gt;()、Mathf.Clamp(float, float, float)、Mathf.Repeat(float, float)、Quaternion.Euler(float, float, float)、RE4CameraController.UnlockCamera()、Vector3.Vector3(float, float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     public void UnlockCamera()
     {
-        // sceneController（场景控制器）：保存 Component.GetComponent<RE4CameraController>() 的返回结果，供当前步骤使用。使用位置：RE4RThirdPersonCamera.UnlockCamera()。
+        // 场景控制器。
 var sceneController = GetComponent<RE4CameraController>();
         if (sceneController != null)
         {
@@ -1056,7 +1206,7 @@ var sceneController = GetComponent<RE4CameraController>();
             vcam.enabled = true;
         }
 
-        // brain（镜头脑）：使用位置：RE4RThirdPersonCamera.UnlockCamera()。
+        // 镜头脑。
 global::Unity.Cinemachine.CinemachineBrain brain;
         if (cam != null)
         {
@@ -1073,10 +1223,10 @@ global::Unity.Cinemachine.CinemachineBrain brain;
         }
 
         // 从当前相机位置恢复，避免跳变
-        // e（摄像机的变换的欧拉角度集合）：使用位置：作为 Mathf.Repeat(float, float) 的参数、RE4RThirdPersonCamera.UnlockCamera()。
+        // 摄像机的变换的欧拉角度集合。
 Vector3 e = cam.transform.eulerAngles;
         yaw = Mathf.Repeat(e.y + 180f, 360f) - 180f;
-        // p（镜头的俯仰角）：使用位置：作为 Mathf.Clamp(float, float, float) 的参数、RE4RThirdPersonCamera.UnlockCamera()。
+        // 镜头的俯仰角。
 float p = e.x;
         if (p > 180f)
         {
@@ -1085,9 +1235,9 @@ float p = e.x;
 
         pitch = Mathf.Clamp(p, pitchRange.x, pitchRange.y);
         // 近似还原 FollowPivot 位置，让 VCam 从当前相机位置开始过渡
-        // yawRot（偏航旋转）：保存 Quaternion.Euler(float, float, float) 的返回结果，供当前步骤使用。使用位置：RE4RThirdPersonCamera.UnlockCamera()。
+        // 偏航旋转。
 Quaternion yawRot = Quaternion.Euler(0f, yaw, 0f);
-        // offset（偏移量）：使用位置：RE4RThirdPersonCamera.UnlockCamera()。
+        // 偏移量。
 Vector3 offset = yawRot * new Vector3(curShoulderX, curVerticalArm, -curDistance);
         basePivotPos = cam.transform.position - offset;
         SnapShoulderPitch();
@@ -1098,11 +1248,11 @@ Vector3 offset = yawRot * new Vector3(curShoulderX, curVerticalArm, -curDistance
     public bool IsLocked => isLocked;
     /// <summary>中文含义：距离缩放。</summary>
     public float DistanceScale => 1f;
-    /// <summary>中文含义：水平观察灵敏度。使用位置：RE4CameraController.HorizontalLookSensitivity.get。</summary>
+    /// <summary>水平观察灵敏度。</summary>
     public float HorizontalLookSensitivity => horizontalSensitivity;
-    /// <summary>中文含义：竖直观察灵敏度。使用位置：RE4CameraController.VerticalLookSensitivity.get。</summary>
+    /// <summary>竖直观察灵敏度。</summary>
     public float VerticalLookSensitivity => verticalSensitivity;
-    /// <summary>中文含义：瞄准观察灵敏度。使用位置：RE4CameraController.AimLookSensitivity.get。</summary>
+    /// <summary>瞄准观察灵敏度。</summary>
     public float AimLookSensitivity => aimSensitivity;
     /// <summary>中文含义：是否竖直观察反转后的。</summary>
     public bool IsVerticalLookInverted => invertY;
@@ -1111,8 +1261,8 @@ Vector3 offset = yawRot * new Vector3(curShoulderX, curVerticalArm, -curDistance
     /// 立即应用纵轴反转设置，避免设置界面只保存选项却不更新当前镜头。
     /// </summary>
     /// <remarks>静态调用链：上游 RE4CameraController.SetInvertY(bool, bool)、RE4RThirdPersonCamera.ReloadInvertY()；下游（含内部回调体） PlayerPrefs.Save()、PlayerPrefs.SetInt(string, int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="inverted">中文含义：是否反转后的。使用位置：RE4RThirdPersonCamera.SetInvertY(bool, bool)。</param>
-    /// <param name="saveToPreferences">中文含义：是否保存到用户偏好。使用位置：RE4RThirdPersonCamera.SetInvertY(bool, bool)。</param>
+    /// <param name="inverted">是否反转后的。</param>
+    /// <param name="saveToPreferences">是否保存到用户偏好。</param>
     public void SetInvertY(bool inverted, bool saveToPreferences = true)
     {
         invertY = inverted;
@@ -1121,9 +1271,9 @@ Vector3 offset = yawRot * new Vector3(curShoulderX, curVerticalArm, -curDistance
             return;
         }
 
-        // argumentValue11（按原顺序缓存的实参文字“InvertY”）：从文字“InvertY”读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 PlayerPrefs.SetInt(string, int) 的参数。
+        // 按原顺序缓存的实参文字“InvertY”。
 string argumentValue11 = "InvertY";
-        // selectedValue10（分支选出的1）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：作为 PlayerPrefs.SetInt(string, int) 的参数、RE4RThirdPersonCamera.SetInvertY(bool, bool)。
+        // 分支选出的1。
 int selectedValue10;
         if (inverted)
         {
@@ -1142,9 +1292,9 @@ int selectedValue10;
     /// <remarks>静态调用链：上游 RE4CameraController.ReloadInvertY()、RE4RThirdPersonCamera.Start()；下游（含内部回调体） PlayerPrefs.GetInt(string, int)、RE4RThirdPersonCamera.SetInvertY(bool, bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     public void ReloadInvertY()
     {
-        // argumentValue13（按原顺序缓存的实参文字“InvertY”）：从文字“InvertY”读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 PlayerPrefs.GetInt(string, int) 的参数。
+        // 按原顺序缓存的实参文字“InvertY”。
 string argumentValue13 = "InvertY";
-        // selectedValue12（分支选出的1）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：作为 PlayerPrefs.GetInt(string, int) 的参数、RE4RThirdPersonCamera.ReloadInvertY()。
+        // 分支选出的1。
 int selectedValue12;
         if (invertY)
         {
@@ -1162,10 +1312,10 @@ int selectedValue12;
     /// 同时设置横向、纵向与瞄准灵敏度，供设置界面统一提交。
     /// </summary>
     /// <remarks>静态调用链：上游 RE4CameraController.SetLookSensitivity(float, float, float, bool)、RE4RThirdPersonCamera.ReloadLookSensitivity()、RE4RThirdPersonCamera.SetAimLookSensitivity(float, bool)、RE4RThirdPersonCamera.SetHorizontalLookSensitivity(float, bool)、RE4RThirdPersonCamera.SetVerticalLookSensitivity(float, bool)；下游（含内部回调体） Mathf.Clamp(float, float, float)、PlayerPrefs.Save()、PlayerPrefs.SetFloat(string, float)、RE4RThirdPersonCamera.IsFinite(float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="horizontal">中文含义：水平。使用位置：作为 Mathf.Clamp(float, float, float) 的参数、作为 RE4RThirdPersonCamera.IsFinite(float) 的参数、RE4RThirdPersonCamera.SetLookSensitivity(float, float, float, bool)。</param>
-    /// <param name="vertical">中文含义：竖直。使用位置：作为 Mathf.Clamp(float, float, float) 的参数、作为 RE4RThirdPersonCamera.IsFinite(float) 的参数、RE4RThirdPersonCamera.SetLookSensitivity(float, float, float, bool)。</param>
-    /// <param name="aim">中文含义：瞄准。使用位置：作为 Mathf.Clamp(float, float, float) 的参数、作为 RE4RThirdPersonCamera.IsFinite(float) 的参数、RE4RThirdPersonCamera.SetLookSensitivity(float, float, float, bool)。</param>
-    /// <param name="saveToPreferences">中文含义：是否保存到用户偏好。使用位置：RE4RThirdPersonCamera.SetLookSensitivity(float, float, float, bool)。</param>
+    /// <param name="horizontal">水平。</param>
+    /// <param name="vertical">竖直。</param>
+    /// <param name="aim">瞄准。</param>
+    /// <param name="saveToPreferences">是否保存到用户偏好。</param>
     public void SetLookSensitivity(float horizontal, float vertical, float aim, bool saveToPreferences = true)
     {
         if (!IsFinite(horizontal))
@@ -1199,8 +1349,8 @@ int selectedValue12;
 
     /// <summary>SetHorizontalLookSensitivity 的业务处理入口；本方法直接依赖 RE4RThirdPersonCamera.SetLookSensitivity(float, float, float, bool)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 RE4CameraController.SetHorizontalLookSensitivity(float, bool)；下游（含内部回调体） RE4RThirdPersonCamera.SetLookSensitivity(float, float, float, bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="value">中文含义：值。使用位置：作为 RE4RThirdPersonCamera.SetLookSensitivity(float, float, float, bool) 的参数。</param>
-    /// <param name="saveToPreferences">中文含义：是否保存到用户偏好。使用位置：作为 RE4RThirdPersonCamera.SetLookSensitivity(float, float, float, bool) 的参数。</param>
+    /// <param name="value">值。</param>
+    /// <param name="saveToPreferences">是否保存到用户偏好。</param>
     public void SetHorizontalLookSensitivity(float value, bool saveToPreferences = true)
     {
         SetLookSensitivity(value, verticalSensitivity, aimSensitivity, saveToPreferences);
@@ -1208,8 +1358,8 @@ int selectedValue12;
 
     /// <summary>SetVerticalLookSensitivity 的业务处理入口；本方法直接依赖 RE4RThirdPersonCamera.SetLookSensitivity(float, float, float, bool)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 RE4CameraController.SetVerticalLookSensitivity(float, bool)；下游（含内部回调体） RE4RThirdPersonCamera.SetLookSensitivity(float, float, float, bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="value">中文含义：值。使用位置：作为 RE4RThirdPersonCamera.SetLookSensitivity(float, float, float, bool) 的参数。</param>
-    /// <param name="saveToPreferences">中文含义：是否保存到用户偏好。使用位置：作为 RE4RThirdPersonCamera.SetLookSensitivity(float, float, float, bool) 的参数。</param>
+    /// <param name="value">值。</param>
+    /// <param name="saveToPreferences">是否保存到用户偏好。</param>
     public void SetVerticalLookSensitivity(float value, bool saveToPreferences = true)
     {
         SetLookSensitivity(horizontalSensitivity, value, aimSensitivity, saveToPreferences);
@@ -1217,8 +1367,8 @@ int selectedValue12;
 
     /// <summary>SetAimLookSensitivity 的业务处理入口；本方法直接依赖 RE4RThirdPersonCamera.SetLookSensitivity(float, float, float, bool)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 RE4CameraController.SetAimLookSensitivity(float, bool)；下游（含内部回调体） RE4RThirdPersonCamera.SetLookSensitivity(float, float, float, bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="value">中文含义：值。使用位置：作为 RE4RThirdPersonCamera.SetLookSensitivity(float, float, float, bool) 的参数。</param>
-    /// <param name="saveToPreferences">中文含义：是否保存到用户偏好。使用位置：作为 RE4RThirdPersonCamera.SetLookSensitivity(float, float, float, bool) 的参数。</param>
+    /// <param name="value">值。</param>
+    /// <param name="saveToPreferences">是否保存到用户偏好。</param>
     public void SetAimLookSensitivity(float value, bool saveToPreferences = true)
     {
         SetLookSensitivity(horizontalSensitivity, verticalSensitivity, value, saveToPreferences);
@@ -1291,7 +1441,7 @@ int selectedValue12;
         ApplyLensSafetySettings();
         ApplyPlayerRendererVisibilityGuard();
         SnapToInitialCameraPose();
-        // receiverValue14（判空前缓存的界面光标管理器的实例）：从界面光标管理器的实例读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、RE4RThirdPersonCamera.Start()。
+        // 判空前缓存的界面光标管理器的实例。
 global::UICursorManager receiverValue14 = UICursorManager.Instance;
         if (!global::System.Object.ReferenceEquals(receiverValue14, null))
         {
@@ -1303,14 +1453,14 @@ global::UICursorManager receiverValue14 = UICursorManager.Instance;
     /// <remarks>静态调用链：上游 RE4RThirdPersonCamera.ApplyProfile(CameraProfile)、RE4RThirdPersonCamera.Start()；下游（含内部回调体） RE4RThirdPersonCamera.StateParams.StateParams()、Vector3.Vector3(float, float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     void BuildStates()
     {
-        // defaultDamping（默认阻尼）：使用位置：RE4RThirdPersonCamera.BuildStates()。
+        // 默认阻尼。
 Vector3 defaultDamping = new Vector3(0.1f, 0.1f, 0.1f);
         states = new StateParams[3];
-        // assignmentReceiver15（赋值前保存的目标状态集合）：从状态集合读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：RE4RThirdPersonCamera.BuildStates()。
+        // 赋值前保存的目标状态集合。
 global::RE4RThirdPersonCamera.StateParams[] assignmentReceiver15 = states;
-        // assignmentIndex16（赋值前保存的索引0）：从0读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：RE4RThirdPersonCamera.BuildStates()。
+        // 赋值前保存的索引0。
 int assignmentIndex16 = 0;
-        // createdValue17（本次新建的状态参数集合）：保存本次创建实例，按原先顺序完成逐项初始化后交给后续使用方。使用位置：RE4RThirdPersonCamera.BuildStates()。
+        // 本次新建的状态参数集合。
 global::RE4RThirdPersonCamera.StateParams createdValue17 = new StateParams();
         createdValue17.fov = normalFOV;
         createdValue17.cameraDistance = -normalOffset.z;
@@ -1326,11 +1476,11 @@ global::RE4RThirdPersonCamera.StateParams createdValue17 = new StateParams();
         }
 
         assignmentReceiver15[assignmentIndex16] = createdValue17;
-        // assignmentReceiver19（赋值前保存的目标状态集合）：从状态集合读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：RE4RThirdPersonCamera.BuildStates()。
+        // 赋值前保存的目标状态集合。
 global::RE4RThirdPersonCamera.StateParams[] assignmentReceiver19 = states;
-        // assignmentIndex20（赋值前保存的索引1）：从1读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：RE4RThirdPersonCamera.BuildStates()。
+        // 赋值前保存的索引1。
 int assignmentIndex20 = 1;
-        // createdValue21（本次新建的状态参数集合）：保存本次创建实例，按原先顺序完成逐项初始化后交给后续使用方。使用位置：RE4RThirdPersonCamera.BuildStates()。
+        // 本次新建的状态参数集合。
 global::RE4RThirdPersonCamera.StateParams createdValue21 = new StateParams();
         createdValue21.fov = aimFOV;
         createdValue21.cameraDistance = -aimOffset.z;
@@ -1346,11 +1496,11 @@ global::RE4RThirdPersonCamera.StateParams createdValue21 = new StateParams();
         }
 
         assignmentReceiver19[assignmentIndex20] = createdValue21;
-        // assignmentReceiver23（赋值前保存的目标状态集合）：从状态集合读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：RE4RThirdPersonCamera.BuildStates()。
+        // 赋值前保存的目标状态集合。
 global::RE4RThirdPersonCamera.StateParams[] assignmentReceiver23 = states;
-        // assignmentIndex24（赋值前保存的索引2）：从2读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：RE4RThirdPersonCamera.BuildStates()。
+        // 赋值前保存的索引2。
 int assignmentIndex24 = 2;
-        // createdValue25（本次新建的状态参数集合）：保存本次创建实例，按原先顺序完成逐项初始化后交给后续使用方。使用位置：RE4RThirdPersonCamera.BuildStates()。
+        // 本次新建的状态参数集合。
 global::RE4RThirdPersonCamera.StateParams createdValue25 = new StateParams();
         createdValue25.fov = sprintFOV;
         createdValue25.cameraDistance = -sprintOffset.z;
@@ -1442,15 +1592,27 @@ global::RE4RThirdPersonCamera.StateParams createdValue25 = new StateParams();
         weaponRecoilDistanceVelocity = 0f;
         weaponRecoilShoulderVelocity = 0f;
         currentWeaponRecoilReturnTime = weaponRecoilReturnTime;
+        activeTraversalWindow = null;
+        exitEaseRemaining = 0f;
+        currentCollisionCompression = 0f;
+        wasInPassage = false;
+        hasOverrideCollisionFocus = false;
+        overrideCollisionFocusRoot = Vector3.zero;
+        framingPitchInitialized = false;
+        externalHandoffSmoothPitchTimer = 0f;
+        smoothedFramingPitchOffset = 0f;
+        framingPitchOffsetVelocity = 0f;
+        reticleClearanceOffset = Vector3.zero;
+        reticleClearanceVelocity = Vector3.zero;
         AlignShoulderRig(basePivotPos);
         if (cam == null)
         {
             return;
         }
 
-        // cameraOffset（摄像机偏移量）：使用位置：作为 Transform.SetPositionAndRotation(Vector3, Quaternion) 的参数。
+        // 摄像机偏移量。
 Vector3 cameraOffset = Quaternion.Euler(0f, yaw, 0f) * new Vector3(curShoulderX, curVerticalArm, -curDistance);
-        // cameraRotation（摄像机旋转）：保存 Quaternion.Euler(float, float, float) 的返回结果，供当前步骤使用。使用位置：作为 Transform.SetPositionAndRotation(Vector3, Quaternion) 的参数。
+        // 摄像机旋转。
 Quaternion cameraRotation = Quaternion.Euler(pitch, yaw, 0f);
         cam.transform.SetPositionAndRotation(basePivotPos + cameraOffset, cameraRotation);
         cam.fieldOfView = curFOV;
@@ -1465,9 +1627,9 @@ Quaternion cameraRotation = Quaternion.Euler(pitch, yaw, 0f);
             return;
         }
 
-        // effectiveMask（实际生效的遮罩）：使用位置：作为 RE4StableCameraCollision.Configure(Transform, CinemachineThirdPersonFollow, LayerMask, float, float, float, float, float, float) 的参数、RE4RThirdPersonCamera.ApplyCollisionSettings()。
+        // 实际生效的遮罩。
 LayerMask effectiveMask = collisionMask;
-        // playerLayer（玩家图层）：保存 LayerMask.NameToLayer(string) 的返回结果，供当前步骤使用。使用位置：RE4RThirdPersonCamera.ApplyCollisionSettings()。
+        // 玩家图层。
 int playerLayer = LayerMask.NameToLayer("player");
         if (playerLayer >= 0)
         {
@@ -1476,7 +1638,7 @@ int playerLayer = LayerMask.NameToLayer("player");
 
         // 内置检测会先把肩部支点压回角色根点，再检测镜头臂。
         // 门框或复杂网格会让第一段命中逐帧切换，导致支点高度和横向位置突变。
-        // followObstacleSettings（跟随障碍设置）：使用位置：RE4RThirdPersonCamera.ApplyCollisionSettings()。
+        // 跟随障碍设置。
 var followObstacleSettings = tpf.AvoidObstacles;
         followObstacleSettings.Enabled = false;
         followObstacleSettings.CollisionFilter = effectiveMask;
@@ -1484,7 +1646,7 @@ var followObstacleSettings = tpf.AvoidObstacles;
         tpf.AvoidObstacles = followObstacleSettings;
         // 遮挡扩展的多方向寻路在门框、墙角和复杂网格上会反复切换解。
         // 关闭它的位置修正，仅由上方的镜头臂碰撞负责避障。
-        // deoccluderSettings（遮挡解除器设置）：使用位置：RE4RThirdPersonCamera.ApplyCollisionSettings()。
+        // 遮挡解除器设置。
 var deoccluderSettings = deoccluder.AvoidObstacles;
         deoccluderSettings.Enabled = false;
         deoccluder.AvoidObstacles = deoccluderSettings;
@@ -1500,14 +1662,16 @@ var deoccluderSettings = deoccluder.AvoidObstacles;
             stableCollision = vcam.gameObject.AddComponent<RE4StableCameraCollision>();
         }
 
-        stableCollision.Configure(this, followPivot, tpf, effectiveMask, Mathf.Max(0.25f, collisionRadius), Mathf.Max(0.06f, collisionSkin), collisionFocusHeightRatio, collisionReleaseDelay, collisionDamping, Mathf.Max(cameraDistanceFloor, minimumExternalCameraDistance));
+        float configuredRadius = Mathf.Max(0.14f, collisionRadius);
+        float configuredSkin = Mathf.Max(0.03f, collisionSkin);
+        stableCollision.Configure(this, followPivot, tpf, effectiveMask, configuredRadius, configuredSkin, collisionFocusHeightRatio, collisionReleaseDelay, collisionDamping, Mathf.Max(cameraDistanceFloor, minimumExternalCameraDistance));
     }
 
     /// <summary>ApplyLensSafetySettings 的业务处理入口；本方法直接依赖 Mathf.Clamp(float, float, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 RE4RThirdPersonCamera.Start()；下游（含内部回调体） Mathf.Clamp(float, float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     void ApplyLensSafetySettings()
     {
-        // nearClip（近端动画片段）：保存 Mathf.Clamp(float, float, float) 的返回结果，供当前步骤使用。使用位置：RE4RThirdPersonCamera.ApplyLensSafetySettings()。
+        // 近端动画片段。
 float nearClip = Mathf.Clamp(gameplayNearClipPlane, 0.001f, 0.1f);
         if (cam != null)
         {
@@ -1519,7 +1683,7 @@ float nearClip = Mathf.Clamp(gameplayNearClipPlane, 0.001f, 0.1f);
             return;
         }
 
-        // lens（镜头）：使用位置：RE4RThirdPersonCamera.ApplyLensSafetySettings()。
+        // 镜头。
 var lens = vcam.Lens;
         lens.NearClipPlane = nearClip;
         vcam.Lens = lens;
@@ -1534,12 +1698,12 @@ var lens = vcam.Lens;
             return;
         }
 
-        // renderers（渲染器集合）：保存 Component.GetComponentsInChildren<SkinnedMeshRenderer>(bool) 的返回结果，供当前步骤使用。使用位置：RE4RThirdPersonCamera.ApplyPlayerRendererVisibilityGuard()。
+        // 渲染器集合。
 SkinnedMeshRenderer[] renderers = controller.GetComponentsInChildren<SkinnedMeshRenderer>(true);
-        // i（当前遍历索引）：使用位置：RE4RThirdPersonCamera.ApplyPlayerRendererVisibilityGuard()。
+        // 当前遍历索引。
 for (int i = 0; i < renderers.Length; i++)
         {
-            // renderer（渲染器）：使用位置：RE4RThirdPersonCamera.ApplyPlayerRendererVisibilityGuard()。
+            // 渲染器。
 SkinnedMeshRenderer renderer = renderers[i];
             if (renderer == null)
             {
@@ -1547,9 +1711,9 @@ SkinnedMeshRenderer renderer = renderers[i];
             }
 
             renderer.updateWhenOffscreen = true;
-            // bounds（包围盒）：使用位置：RE4RThirdPersonCamera.ApplyPlayerRendererVisibilityGuard()。
+            // 包围盒。
 Bounds bounds = renderer.localBounds;
-            // extents（半尺寸）：使用位置：作为 Mathf.Max(float, float) 的参数、RE4RThirdPersonCamera.ApplyPlayerRendererVisibilityGuard()。
+            // 半尺寸。
 Vector3 extents = bounds.extents;
             extents.x = Mathf.Max(extents.x, minimumPlayerRendererBoundsExtents.x);
             extents.y = Mathf.Max(extents.y, minimumPlayerRendererBoundsExtents.y);
@@ -1583,7 +1747,7 @@ Vector3 extents = bounds.extents;
             BuildStates();
         }
 
-        // receiverValue29（判空前缓存的里昂玩家控制器）：从控制器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、RE4RThirdPersonCamera.LateUpdate()。
+        // 判空前缓存的里昂玩家控制器。
 global::LeonController receiverValue29 = controller;
         if (!global::System.Object.ReferenceEquals(receiverValue29, null))
         {
@@ -1593,7 +1757,7 @@ global::LeonController receiverValue29 = controller;
         currentFrameIsRecentering = false;
         if (isLocked || inputSuppressed)
         {
-            // receiverValue30（判空前缓存的里昂玩家控制器）：从控制器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、RE4RThirdPersonCamera.LateUpdate()。
+            // 判空前缓存的里昂玩家控制器。
 global::LeonController receiverValue30 = controller;
             if (!global::System.Object.ReferenceEquals(receiverValue30, null))
             {
@@ -1601,7 +1765,7 @@ global::LeonController receiverValue30 = controller;
             }
         }
 
-        // dt（本次计算的时间步长）：使用位置：作为 RE4RThirdPersonCamera.ApplyFOV(float) 的参数、作为 RE4RThirdPersonCamera.ApplyLockedCamera(float) 的参数、作为 RE4RThirdPersonCamera.ApplyShake(float) 的参数 等共 16 处。
+        // 本次计算的时间步长。
 float dt = Time.deltaTime;
         if (!IsFinite(dt) || dt < 0f)
         {
@@ -1618,8 +1782,31 @@ float dt = Time.deltaTime;
         bool openingGate = controller != null && controller.AnimCoordinator != null
             && controller.AnimCoordinator.IsVillageGateOpening;
         bool traversing = controller != null && controller.currentState == LeonState.Traversing;
+        bool inPassage = openingGate || traversing;
+        if (wasInPassage && !inPassage && exitEaseDuration > 0.001f)
+        {
+            exitEaseRemaining = Mathf.Max(exitEaseRemaining, exitEaseDuration);
+        }
+
+        wasInPassage = inPassage;
+        if (exitEaseRemaining > 0f)
+        {
+            exitEaseRemaining = Mathf.Max(0f, exitEaseRemaining - dt);
+        }
+
+        bool inQteCameraFreeze = false;
+        if (controller != null && controller.currentState == LeonState.QTE)
+        {
+            inQteCameraFreeze = true;
+        }
+
+        if (externalHandoffSmoothPitchTimer > 0f && !inQteCameraFreeze)
+        {
+            externalHandoffSmoothPitchTimer = Mathf.Max(0f, externalHandoffSmoothPitchTimer - dt);
+        }
+
         float passageTarget = 0f;
-        if (openingGate || traversing)
+        if (inPassage)
         {
             passageTarget = 1f;
         }
@@ -1641,6 +1828,11 @@ float dt = Time.deltaTime;
         }
 
         if (!ValidateFiniteCameraState("输入更新后"))
+        {
+            return;
+        }
+
+        if (externalVillageCameraSampling)
         {
             return;
         }
@@ -1681,12 +1873,12 @@ float dt = Time.deltaTime;
     // ========================== 模块 1：跟随 ==========================
     /// <summary>UpdateFollowPivot 的业务处理入口；本方法直接依赖 Mathf.Lerp(float, float, float)、Mathf.Max(float, float)、Mathf.Min(float, float)、Mathf.PerlinNoise(float, float)、Mathf.Sin(float)、Mathf.SmoothDamp(float, float, ref float, float, float, float)、Quaternion.Euler(float, float, float) 等共 10 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 RE4RThirdPersonCamera.LateUpdate()；下游（含内部回调体） Mathf.Lerp(float, float, float)、Mathf.Max(float, float)、Mathf.Min(float, float)、Mathf.PerlinNoise(float, float)、Mathf.Sin(float)、Mathf.SmoothDamp(float, float, ref float, float, float, float)、Quaternion.Euler(float, float, float) 等共 10 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="dt">中文含义：本次计算的时间步长。使用位置：作为 Mathf.SmoothDamp(float, float, ref float, float, float, float) 的参数、作为 Quaternion.Slerp(Quaternion, Quaternion, float) 的参数、作为 Vector3.SmoothDamp(Vector3, Vector3, ref Vector3, float, float, float) 的参数 等共 4 处。</param>
+    /// <param name="dt">本次计算的时间步长。</param>
     void UpdateFollowPivot(float dt)
     {
-        // isAiming（是否正在瞄准）：使用位置：RE4RThirdPersonCamera.UpdateFollowPivot(float)。
+        // 是否正在瞄准。
 bool isAiming = IsAiming;
-        // normalDamping（常规阻尼）：使用位置：作为 Mathf.Lerp(float, float, float) 的参数、作为 Mathf.Max(float, float) 的参数、RE4RThirdPersonCamera.UpdateFollowPivot(float)。
+        // 常规阻尼。
 float normalDamping;
         if (isAiming)
         {
@@ -1697,12 +1889,12 @@ float normalDamping;
             normalDamping = positionDamping;
         }
 
-        // horizontalDamping（水平阻尼）：保存 Mathf.Lerp(float, float, float) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Min(float, float) 的参数、作为 Vector3.SmoothDamp(Vector3, Vector3, ref Vector3, float, float, float) 的参数、RE4RThirdPersonCamera.UpdateFollowPivot(float)。
+        // 水平阻尼。
 float horizontalDamping = Mathf.Lerp(normalDamping, dropHorizontalDamping, dropCameraWeight);
         // 倒退瞄准跨过阶沿时，只放缓根节点高度传递到越肩镜头的速度。
-        // backwardAim（是否后退瞄准）：使用位置：RE4RThirdPersonCamera.UpdateFollowPivot(float)。
+        // 是否后退瞄准。
 bool backwardAim = isAiming && controller && controller.IsGrounded && controller.MoveInput.z < -.1f;
-        // selectedValue32（分支选出的最大的返回结果）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：作为 Mathf.Lerp(float, float, float) 的参数、RE4RThirdPersonCamera.UpdateFollowPivot(float)。
+        // 分支选出的最大的返回结果。
 float selectedValue32;
         if (backwardAim)
         {
@@ -1713,7 +1905,7 @@ float selectedValue32;
             selectedValue32 = normalDamping;
         }
 
-        // verticalDamping（竖直阻尼）：保存 Mathf.Lerp(float, float, float) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Min(float, float) 的参数、作为 Mathf.SmoothDamp(float, float, ref float, float, float, float) 的参数、RE4RThirdPersonCamera.UpdateFollowPivot(float)。
+        // 竖直阻尼。
 float verticalDamping = Mathf.Lerp(selectedValue32, dropVerticalDamping, dropCameraWeight);
         if (UsesPistolShoulder && !nativePoseActive)
         {
@@ -1739,61 +1931,66 @@ float verticalDamping = Mathf.Lerp(selectedValue32, dropVerticalDamping, dropCam
             anchorPosition = controller.transform.position + gateFollowOffset;
         }
         Vector3 horizontalTarget = new Vector3(anchorPosition.x, basePivotPos.y, anchorPosition.z);
-        // horizontalVelocity（水平速度）：使用位置：作为 Vector3.SmoothDamp(Vector3, Vector3, ref Vector3, float, float, float) 的参数、RE4RThirdPersonCamera.UpdateFollowPivot(float)。
+        // 水平速度。
 Vector3 horizontalVelocity = new Vector3(pivotVel.x, 0f, pivotVel.z);
         basePivotPos = Vector3.SmoothDamp(basePivotPos, horizontalTarget, ref horizontalVelocity, horizontalDamping, Mathf.Infinity, dt);
         pivotVel.x = horizontalVelocity.x;
         pivotVel.z = horizontalVelocity.z;
-        // verticalVelocity（竖直速度）：使用位置：作为 Mathf.SmoothDamp(float, float, ref float, float, float, float) 的参数、RE4RThirdPersonCamera.UpdateFollowPivot(float)。
+        // 竖直速度。
 float verticalVelocity = pivotVel.y;
         basePivotPos.y = Mathf.SmoothDamp(basePivotPos.y, anchorPosition.y, ref verticalVelocity, verticalDamping, Mathf.Infinity, dt);
-        if (dropCameraWeight > .001f)
+        if (dropCameraWeight > 0.001f && dt > 0.0001f)
         {
-            // 高差过渡时限制参考点滞后，避免落地后避障仍从楼上开始探测。
-            float maximumLag = Mathf.Lerp(.80f, .34f, dropCameraWeight);
-            if (Mathf.Abs(basePivotPos.y - anchorPosition.y) > maximumLag)
+            // 高差过渡时软性收敛超出最大滞后阈值的垂直偏差，避免硬截断造成镜头顿挫。
+            float maximumLag = Mathf.Lerp(0.80f, 0.34f, dropCameraWeight);
+            float verticalOffset = basePivotPos.y - anchorPosition.y;
+            float absOffset = Mathf.Abs(verticalOffset);
+            if (absOffset > maximumLag)
             {
-                basePivotPos.y = Mathf.MoveTowards(anchorPosition.y, basePivotPos.y, maximumLag);
-                verticalVelocity = 0f;
+                float excess = absOffset - maximumLag;
+                float softPull = excess * (1f - Mathf.Exp(-dt * 18f));
+                basePivotPos.y -= Mathf.Sign(verticalOffset) * softPull;
             }
         }
         pivotVel.y = verticalVelocity;
-        // finalPos（最终位置）：使用位置：RE4RThirdPersonCamera.UpdateFollowPivot(float)。
+        // 近距避障压缩时按比例衰减微幅抖动，减轻贴墙与狭小空间下的眩晕感。
+        float shakeAttenuation = 1f - Mathf.Clamp01(currentCollisionCompression * 0.85f);
+        // 最终位置。
 Vector3 finalPos = basePivotPos;
         finalPos.y -= dropImpactCompression * dropImpactPulse * dropImpactStrength;
-        finalPos.y += Mathf.Sin(breathPhase) * idleBobAmplitude * idleBreathWeight;
+        finalPos.y += Mathf.Sin(breathPhase) * idleBobAmplitude * idleBreathWeight * shakeAttenuation;
 
         if (proceduralAimBreathWeight > 0f)
         {
-            // aimBob（瞄准上下起伏）：使用位置：RE4RThirdPersonCamera.UpdateFollowPivot(float)。
-float aimBob = Mathf.Sin(aimBreathPhase) * aimBreathBobAmplitude * proceduralAimBreathWeight;
-            // aimSide（瞄准侧边）：使用位置：RE4RThirdPersonCamera.UpdateFollowPivot(float)。
-float aimSide = Mathf.Sin(aimBreathPhase + Mathf.PI * 0.4f) * aimBreathBobAmplitude * 0.45f * proceduralAimBreathWeight;
+            // 瞄准上下起伏。
+float aimBob = Mathf.Sin(aimBreathPhase) * aimBreathBobAmplitude * proceduralAimBreathWeight * shakeAttenuation;
+            // 瞄准侧边。
+float aimSide = Mathf.Sin(aimBreathPhase + Mathf.PI * 0.4f) * aimBreathBobAmplitude * 0.45f * proceduralAimBreathWeight * shakeAttenuation;
             finalPos += Vector3.up * aimBob + followPivot.right * aimSide;
         }
 
         if (IsSprinting && !isAiming)
         {
-            // sx（横向缩放）：使用位置：RE4RThirdPersonCamera.UpdateFollowPivot(float)。
-float sx = (Mathf.PerlinNoise(Time.time * sprintShakeFrequency, 0f) - 0.5f) * sprintShakeIntensity;
-            // sy（纵向缩放）：使用位置：RE4RThirdPersonCamera.UpdateFollowPivot(float)。
-float sy = (Mathf.PerlinNoise(0f, Time.time * sprintShakeFrequency) - 0.5f) * sprintShakeIntensity;
+            // 横向缩放。
+float sx = (Mathf.PerlinNoise(Time.time * sprintShakeFrequency, 0f) - 0.5f) * sprintShakeIntensity * shakeAttenuation;
+            // 纵向缩放。
+float sy = (Mathf.PerlinNoise(0f, Time.time * sprintShakeFrequency) - 0.5f) * sprintShakeIntensity * shakeAttenuation;
             finalPos += followPivot.right * sx + Vector3.up * sy;
         }
 
         followPivot.position = finalPos + Vector3.up * ReadPitchOrbitHeight();
-        // breathYaw（呼吸偏航）：使用位置：作为 Quaternion.Euler(float, float, float) 的参数、RE4RThirdPersonCamera.UpdateFollowPivot(float)。
+        // 呼吸偏航。
 float breathYaw;
         if (!currentFrameIsRecentering)
         {
-            breathYaw = Mathf.Sin(breathPhase) * idleBreathAmplitude * idleBreathWeight;
+            breathYaw = Mathf.Sin(breathPhase) * idleBreathAmplitude * idleBreathWeight * shakeAttenuation;
         }
         else
         {
             breathYaw = 0f;
         }
 
-        breathYaw += Mathf.Sin(aimBreathPhase + Mathf.PI * 0.25f) * aimBreathYawAmplitude * proceduralAimBreathWeight;
+        breathYaw += Mathf.Sin(aimBreathPhase + Mathf.PI * 0.25f) * aimBreathYawAmplitude * proceduralAimBreathWeight * shakeAttenuation;
         // yawRotation（偏航旋转）：保存 Quaternion.Euler(float, float, float) 的返回结果，供当前步骤使用。使用位置：作为 Quaternion.Slerp(Quaternion, Quaternion, float) 的参数、RE4RThirdPersonCamera.UpdateFollowPivot(float)。
         if (TracksHeldKnifeInput)
         {
@@ -1802,7 +1999,7 @@ float breathYaw;
         }
         Quaternion yawRotation = Quaternion.Euler(shoulderOrbitPitch, yaw + breathYaw, 0f);
         // 回正自身已有定时平滑，避免再次阻尼使实际画面迟于移动参考交接。
-        // assignmentReceiver34（赋值前保存的目标跟随轴心）：从跟随轴心读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：RE4RThirdPersonCamera.UpdateFollowPivot(float)。
+        // 赋值前保存的目标跟随轴心。
 global::UnityEngine.Transform assignmentReceiver34 = // 回正自身已有定时平滑，避免再次阻尼使实际画面迟于移动参考交接。
  followPivot;
         if (currentFrameIsRecentering)
@@ -1820,10 +2017,10 @@ global::UnityEngine.Transform assignmentReceiver34 = // 回正自身已有定时
     // ========================== 模块 2：鼠标旋转 ==========================
     /// <summary>DriveInput 的业务处理入口；本方法直接依赖 LeonController.AdvanceFreeViewRecentering(float, float)、LeonController.InterruptFreeViewRecentering()、Mathf.Abs(float)、Mathf.Clamp(float, float, float)、Mathf.DeltaAngle(float, float)、Mathf.LerpAngle(float, float, float)、Mathf.Repeat(float, float) 等共 11 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 RE4RThirdPersonCamera.LateUpdate()；下游（含内部回调体） LeonController.AdvanceFreeViewRecentering(float, float)、LeonController.InterruptFreeViewRecentering()、Mathf.Abs(float)、Mathf.Clamp(float, float, float)、Mathf.DeltaAngle(float, float)、Mathf.LerpAngle(float, float, float)、Mathf.Repeat(float, float) 等共 11 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="dt">中文含义：本次计算的时间步长。使用位置：作为 LeonController.AdvanceFreeViewRecentering(float, float) 的参数、作为 Mathf.LerpAngle(float, float, float) 的参数、RE4RThirdPersonCamera.DriveInput(float)。</param>
+    /// <param name="dt">本次计算的时间步长。</param>
     void DriveInput(float dt)
     {
-        // look（观察）：保存 RE4RThirdPersonCamera.GetLookInput() 的返回结果，供当前步骤使用。使用位置：作为 RE4RThirdPersonCamera.IsFinite(float) 的参数、RE4RThirdPersonCamera.DriveInput(float)。
+        // 观察。
 Vector2 look = GetLookInput();
         if (!IsFinite(look.x) || !IsFinite(look.y))
         {
@@ -1850,7 +2047,7 @@ Vector2 look = GetLookInput();
             }
         }
 
-        // inputScale（输入缩放）：使用位置：RE4RThirdPersonCamera.DriveInput(float)。
+        // 输入缩放。
 float inputScale;
         if (controller != null)
         {
@@ -1861,7 +2058,7 @@ float inputScale;
             inputScale = dt;
         }
 
-        // aimMultiplier（瞄准倍率）：使用位置：RE4RThirdPersonCamera.DriveInput(float)。
+        // 瞄准倍率。
 float aimMultiplier;
         if (IsAiming)
         {
@@ -1873,7 +2070,7 @@ float aimMultiplier;
         }
 
         yaw += look.x * HorizontalDegreesPerPixel * horizontalSensitivity * aimMultiplier * inputScale;
-        // pitchInput（俯仰输入）：使用位置：RE4RThirdPersonCamera.DriveInput(float)。
+        // 俯仰输入。
 float pitchInput;
         if (invertY)
         {
@@ -1901,9 +2098,9 @@ float pitchInput;
         }
         if (!TracksHeldKnifeInput && autoAlignSpeed > 0f && alignWeight > .001f && GetMoveMagnitude() > 0.1f && allowAutoAlign)
         {
-            // targetYaw（目标偏航）：保存 RE4RThirdPersonCamera.GetCharacterYaw() 的返回结果，供当前步骤使用。使用位置：作为 Mathf.DeltaAngle(float, float) 的参数、作为 Mathf.LerpAngle(float, float, float) 的参数、RE4RThirdPersonCamera.DriveInput(float)。
+            // 目标偏航。
 float targetYaw = GetCharacterYaw();
-            // targetDelta（目标增量）：保存 Mathf.DeltaAngle(float, float) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Abs(float) 的参数。
+            // 目标增量。
 float targetDelta = Mathf.DeltaAngle(lastTargetYaw, targetYaw);
             if (Mathf.Abs(targetDelta) > 1f)
             {
@@ -1917,7 +2114,7 @@ float targetDelta = Mathf.DeltaAngle(lastTargetYaw, targetYaw);
             }
             else
             {
-                // yawDiff（偏航差值）：保存 Mathf.DeltaAngle(float, float) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Abs(float) 的参数。
+                // 偏航差值。
 float yawDiff = Mathf.DeltaAngle(yaw, targetYaw);
                 if (Mathf.Abs(yawDiff) > 45f)
                 {
@@ -1932,7 +2129,7 @@ float yawDiff = Mathf.DeltaAngle(yaw, targetYaw);
     // ========================== 模块 4：瞄准模式 / 状态插值 ==========================
     /// <summary>UpdateStateBlend 的业务处理入口；本方法直接依赖 Mathf.Lerp(float, float, float)、Mathf.SmoothStep(float, float, float)、RE4RThirdPersonCamera.ApplyStateParams(RE4RThirdPersonCamera.StateParams)、RE4RThirdPersonCamera.LerpStateParams(RE4RThirdPersonCamera.StateParams, RE4RThirdPersonCamera.StateParams, float)、RE4RThirdPersonCamera.ResolveCameraStateIndex()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 RE4RThirdPersonCamera.LateUpdate()；下游（含内部回调体） Mathf.Lerp(float, float, float)、Mathf.SmoothStep(float, float, float)、RE4RThirdPersonCamera.ApplyStateParams(RE4RThirdPersonCamera.StateParams)、RE4RThirdPersonCamera.LerpStateParams(RE4RThirdPersonCamera.StateParams, RE4RThirdPersonCamera.StateParams, float)、RE4RThirdPersonCamera.ResolveCameraStateIndex()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="dt">中文含义：本次计算的时间步长。使用位置：作为 Mathf.Lerp(float, float, float) 的参数。</param>
+    /// <param name="dt">本次计算的时间步长。</param>
     void UpdateStateBlend(float dt)
     {
         if (UpdateNativeShoulderCamera(dt))
@@ -1954,9 +2151,9 @@ float yawDiff = Mathf.DeltaAngle(yaw, targetYaw);
     /// <remarks>静态调用链：上游 RE4RThirdPersonCamera.BeginProfileBlend(RE4RThirdPersonCamera.StateParams)、RE4RThirdPersonCamera.UpdateStateBlend(float)；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     int ResolveCameraStateIndex()
     {
-        // isAiming（是否正在瞄准）：使用位置：RE4RThirdPersonCamera.ResolveCameraStateIndex()。
+        // 是否正在瞄准。
 bool isAiming = IsAiming;
-        // isSprinting（是否正在冲刺）：使用位置：RE4RThirdPersonCamera.ResolveCameraStateIndex()。
+        // 是否正在冲刺。
 bool isSprinting = IsSprinting && !isAiming;
         if (isAiming)
         {
@@ -1964,7 +2161,7 @@ bool isSprinting = IsSprinting && !isAiming;
         }
         else
         {
-            // selectedValue39（分支选出的2）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：RE4RThirdPersonCamera.ResolveCameraStateIndex()。
+            // 分支选出的2。
 int selectedValue39;
             if (isSprinting)
             {
@@ -1992,9 +2189,9 @@ int selectedValue39;
             return;
         }
 
-        // canSprint（是否可以冲刺）：使用位置：RE4RThirdPersonCamera.UpdateCameraSprintState()。
+        // 是否可以冲刺。
 bool canSprint = controller.IsEffectiveSprinting && !IsAiming;
-        // threshold（阈值）：使用位置：RE4RThirdPersonCamera.UpdateCameraSprintState()。
+        // 阈值。
 float threshold;
         if (cameraSprintActive)
         {
@@ -2024,9 +2221,9 @@ float threshold;
 
     /// <summary>LerpStateParams 的业务处理入口；本方法直接依赖 Mathf.Lerp(float, float, float)、RE4RThirdPersonCamera.StateParams.StateParams()、Vector3.Lerp(Vector3, Vector3, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 RE4RThirdPersonCamera.UpdateStateBlend(float)；下游（含内部回调体） Mathf.Lerp(float, float, float)、RE4RThirdPersonCamera.StateParams.StateParams()、Vector3.Lerp(Vector3, Vector3, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="from">中文含义：来源。使用位置：作为 Mathf.Lerp(float, float, float) 的参数、作为 Vector3.Lerp(Vector3, Vector3, float) 的参数。</param>
-    /// <param name="to">中文含义：目标。使用位置：作为 Mathf.Lerp(float, float, float) 的参数、作为 Vector3.Lerp(Vector3, Vector3, float) 的参数。</param>
-    /// <param name="t">中文含义：镜头状态参数的插值比例。使用位置：作为 Mathf.Lerp(float, float, float) 的参数、作为 Vector3.Lerp(Vector3, Vector3, float) 的参数。</param>
+    /// <param name="from">来源。</param>
+    /// <param name="to">目标。</param>
+    /// <param name="t">镜头状态参数的插值比例。</param>
     static StateParams LerpStateParams(StateParams from, StateParams to, float t)
     {
         return new StateParams
@@ -2041,7 +2238,7 @@ float threshold;
 
     /// <summary>ApplyStateParams 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
     /// <remarks>静态调用链：上游 RE4RThirdPersonCamera.UpdateStateBlend(float)；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="parameters">中文含义：参数集合。使用位置：RE4RThirdPersonCamera.ApplyStateParams(RE4RThirdPersonCamera.StateParams)。</param>
+    /// <param name="parameters">参数集合。</param>
     void ApplyStateParams(StateParams parameters)
     {
         curDistance = parameters.cameraDistance;
@@ -2056,7 +2253,7 @@ float threshold;
     void ApplyCameraParams()
     {
         // 近战推近：缩短距离
-        // finalDist（最终距离）：使用位置：作为 Mathf.Max(float, float) 的参数、作为 RE4RThirdPersonCamera.ResolveSafePitchHeightOffset(float, float, float, float) 的参数、RE4RThirdPersonCamera.ApplyCameraParams()。
+        // 最终距离。
         float finalDist = Mathf.Max(curDistance, ReadMinimumShoulderDistance());
         float verticalArm = curVerticalArm;
         float shoulderX = curShoulderX;
@@ -2064,15 +2261,13 @@ float threshold;
         Vector3 damping = curDamping;
         if (UsesPistolShoulder && !nativePoseActive)
         {
+            // 过渡期间基础机位直接从探索构图线性交接给 PlaceShoulderCamera 的新越肩构图，不再绕道旧 aimPose。
             StateParams aim = states[1];
-            float closeWeight = ReadPistolCloseWeight();
-            finalDist = Mathf.Lerp(finalDist, aim.cameraDistance, closeWeight);
-            verticalArm = Mathf.Lerp(verticalArm, aim.verticalArm, closeWeight);
-            shoulderX = Mathf.Lerp(shoulderX, aim.shoulderX, closeWeight);
             damping = Vector3.Lerp(damping, aim.damping, pistolFramingWeight);
             enemyZoom = Mathf.Lerp(enemyZoom, 1f, pistolFramingWeight);
         }
-        finalDist -= meleePushDistance * meleePushRatio;
+        float meleeAttenuation = 1f - Mathf.Clamp01(currentCollisionCompression * 0.85f);
+        finalDist -= meleePushDistance * meleePushRatio * meleeAttenuation;
         // 敌人拉远：放大距离
         finalDist *= enemyZoom;
         finalDist += weaponRecoilDistanceOffset;
@@ -2085,7 +2280,7 @@ float threshold;
         finalDist -= .16f * Mathf.SmoothStep(0f, 1f, aimPushWeight);
         finalDist = Mathf.Max(cameraDistanceFloor, finalDist);
         tpf.CameraDistance = finalDist;
-        // crouchVerticalOffset（蹲伏竖直偏移量）：使用位置：RE4RThirdPersonCamera.ApplyCameraParams()。
+        // 蹲伏竖直偏移量。
         float crouchVerticalOffset;
         if (UsesPistolShoulder && !nativePoseActive)
         {
@@ -2100,11 +2295,11 @@ float threshold;
             crouchVerticalOffset = crouchExploreVerticalOffset;
         }
 
-        // baseVerticalArm（基础竖直手臂）：使用位置：作为 RE4RThirdPersonCamera.ResolveSafePitchHeightOffset(float, float, float, float) 的参数、RE4RThirdPersonCamera.ApplyCameraParams()。
+        // 基础竖直手臂。
         float baseVerticalArm = verticalArm + crouchVerticalOffset * crouchCameraWeight * (1f - nativePoseWeight) - ReadPitchOrbitHeight();
         float shoulderOffset = shoulderX + weaponRecoilShoulderOffset;
         shoulderOffset += .04f * lookingUp;
-        // safePitchHeightOffset（安全俯仰高度偏移量）：保存 RE4RThirdPersonCamera.ResolveSafePitchHeightOffset(float, float, float, float) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Abs(float) 的参数、RE4RThirdPersonCamera.ApplyCameraParams()。
+        // 安全俯仰高度偏移量。
         float safePitchHeightOffset = ResolveSafePitchHeightOffset(baseVerticalArm, finalDist, shoulderOffset, pitchHeightOffset);
         tpf.VerticalArmLength = baseVerticalArm + safePitchHeightOffset;
         tpf.ShoulderOffset = new Vector3(shoulderOffset, 0f, 0f);
@@ -2113,7 +2308,7 @@ float threshold;
 
     /// <summary>ValidateFiniteCameraState 的业务处理入口；本方法直接依赖 Debug.LogError(object, Object)、RE4RThirdPersonCamera.GetFirstInvalidCameraStateName()、RE4RThirdPersonCamera.IsFiniteCameraState()、RE4RThirdPersonCamera.LogRecoveredFiniteWarning(string, string)、RE4RThirdPersonCamera.RecoverFiniteCameraState()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 RE4RThirdPersonCamera.LateUpdate()、RE4RThirdPersonCamera.Start()；下游（含内部回调体） Debug.LogError(object, Object)、RE4RThirdPersonCamera.GetFirstInvalidCameraStateName()、RE4RThirdPersonCamera.IsFiniteCameraState()、RE4RThirdPersonCamera.LogRecoveredFiniteWarning(string, string)、RE4RThirdPersonCamera.RecoverFiniteCameraState()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="stage">中文含义：阶段。使用位置：作为 Debug.LogError(object, Object) 的参数、作为 RE4RThirdPersonCamera.LogRecoveredFiniteWarning(string, string) 的参数。</param>
+    /// <param name="stage">阶段。</param>
     private bool ValidateFiniteCameraState(string stage)
     {
         if (IsFiniteCameraState())
@@ -2121,7 +2316,7 @@ float threshold;
             return true;
         }
 
-        // invalidField（无效字段）：保存 RE4RThirdPersonCamera.GetFirstInvalidCameraStateName() 的返回结果，供当前步骤使用。使用位置：作为 RE4RThirdPersonCamera.LogRecoveredFiniteWarning(string, string) 的参数。
+        // 无效字段。
 string invalidField = GetFirstInvalidCameraStateName();
         RecoverFiniteCameraState();
         if (!IsFiniteCameraState())
@@ -2144,7 +2339,7 @@ string invalidField = GetFirstInvalidCameraStateName();
     private void RecoverFiniteCameraState()
     {
         ClearDropCameraImmediate();
-        // safeTargetPosition（安全目标位置）：使用位置：作为 Transform.SetPositionAndRotation(Vector3, Quaternion) 的参数、RE4RThirdPersonCamera.RecoverFiniteCameraState()。
+        // 安全目标位置。
 Vector3 safeTargetPosition;
         if (target != null && IsFinite(target.position))
         {
@@ -2162,7 +2357,7 @@ Vector3 safeTargetPosition;
             }
         }
 
-        // safeYaw（安全偏航）：使用位置：作为 Quaternion.Euler(float, float, float) 的参数、RE4RThirdPersonCamera.RecoverFiniteCameraState()。
+        // 安全偏航。
 float safeYaw;
         if (controller != null && IsFinite(controller.transform.eulerAngles.y))
         {
@@ -2173,7 +2368,7 @@ float safeYaw;
             safeYaw = 0f;
         }
 
-        // safePitch（安全俯仰）：使用位置：作为 Quaternion.Euler(float, float, float) 的参数、RE4RThirdPersonCamera.RecoverFiniteCameraState()。
+        // 安全俯仰。
 float safePitch;
         if (IsFinite(startPitch))
         {
@@ -2245,9 +2440,9 @@ float safePitch;
             panTilt.TiltAxis.Value = safePitch;
         }
 
-        // safeRotation（安全旋转）：保存 Quaternion.Euler(float, float, float) 的返回结果，供当前步骤使用。使用位置：作为 Transform.SetPositionAndRotation(Vector3, Quaternion) 的参数。
+        // 安全旋转。
 Quaternion safeRotation = Quaternion.Euler(safePitch, safeYaw, 0f);
-        // safeOffset（安全偏移量）：使用位置：作为 Transform.SetPositionAndRotation(Vector3, Quaternion) 的参数。
+        // 安全偏移量。
 Vector3 safeOffset = Quaternion.Euler(0f, safeYaw, 0f) * new Vector3(curShoulderX, curVerticalArm, -curDistance);
         if (cam != null)
         {
@@ -2260,7 +2455,7 @@ Vector3 safeOffset = Quaternion.Euler(0f, safeYaw, 0f) * new Vector3(curShoulder
 
         if (vcam != null)
         {
-            // lens（镜头）：使用位置：RE4RThirdPersonCamera.RecoverFiniteCameraState()。
+            // 镜头。
 var lens = vcam.Lens;
             lens.FieldOfView = curFOV;
             lens.NearClipPlane = Mathf.Clamp(gameplayNearClipPlane, 0.001f, 0.1f);
@@ -2270,8 +2465,8 @@ var lens = vcam.Lens;
 
     /// <summary>Sanitize 的业务处理入口；本方法直接依赖 RE4RThirdPersonCamera.IsFinite(float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 RE4RThirdPersonCamera.RecoverFiniteCameraState()；下游（含内部回调体） RE4RThirdPersonCamera.IsFinite(float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="value">中文含义：值。使用位置：作为 RE4RThirdPersonCamera.IsFinite(float) 的参数、RE4RThirdPersonCamera.Sanitize(float, float)。</param>
-    /// <param name="fallback">中文含义：后备。使用位置：RE4RThirdPersonCamera.Sanitize(float, float)。</param>
+    /// <param name="value">值。</param>
+    /// <param name="fallback">后备。</param>
     private static float Sanitize(float value, float fallback)
     {
         if (IsFinite(value))
@@ -2286,8 +2481,8 @@ var lens = vcam.Lens;
 
     /// <summary>SanitizePositive 的业务处理入口；本方法直接依赖 RE4RThirdPersonCamera.IsFinite(float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 RE4RThirdPersonCamera.RecoverFiniteCameraState()、RE4RThirdPersonCamera.UpdateDropCamera(float)；下游（含内部回调体） RE4RThirdPersonCamera.IsFinite(float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="value">中文含义：值。使用位置：作为 RE4RThirdPersonCamera.IsFinite(float) 的参数、RE4RThirdPersonCamera.SanitizePositive(float, float)。</param>
-    /// <param name="fallback">中文含义：后备。使用位置：RE4RThirdPersonCamera.SanitizePositive(float, float)。</param>
+    /// <param name="value">值。</param>
+    /// <param name="fallback">后备。</param>
     private static float SanitizePositive(float value, float fallback)
     {
         if (IsFinite(value) && value > 0f)
@@ -2302,8 +2497,8 @@ var lens = vcam.Lens;
 
     /// <summary>SanitizeVector 的业务处理入口；本方法直接依赖 RE4RThirdPersonCamera.IsFinite(Vector3)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 RE4RThirdPersonCamera.RecoverFiniteCameraState()；下游（含内部回调体） RE4RThirdPersonCamera.IsFinite(Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="value">中文含义：值。使用位置：作为 RE4RThirdPersonCamera.IsFinite(Vector3) 的参数、RE4RThirdPersonCamera.SanitizeVector(Vector3, Vector3)。</param>
-    /// <param name="fallback">中文含义：后备。使用位置：RE4RThirdPersonCamera.SanitizeVector(Vector3, Vector3)。</param>
+    /// <param name="value">值。</param>
+    /// <param name="fallback">后备。</param>
     private static Vector3 SanitizeVector(Vector3 value, Vector3 fallback)
     {
         if (IsFinite(value))
@@ -2318,7 +2513,7 @@ var lens = vcam.Lens;
 
     /// <summary>IsFinite 的业务处理入口；本方法直接依赖 float.IsInfinity(float)、float.IsNaN(float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 RE4RThirdPersonCamera.DriveInput(float)、RE4RThirdPersonCamera.GetFirstInvalidCameraStateName()、RE4RThirdPersonCamera.IsFinite(Matrix4x4)、RE4RThirdPersonCamera.IsFinite(Quaternion)、RE4RThirdPersonCamera.IsFinite(Vector3) 等共 13 处；下游（含内部回调体） float.IsInfinity(float)、float.IsNaN(float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="value">中文含义：值。使用位置：作为 float.IsInfinity(float) 的参数、作为 float.IsNaN(float) 的参数。</param>
+    /// <param name="value">值。</param>
     private static bool IsFinite(float value)
     {
         return !float.IsNaN(value) && !float.IsInfinity(value);
@@ -2326,7 +2521,7 @@ var lens = vcam.Lens;
 
     /// <summary>IsFinite 的业务处理入口；本方法直接依赖 RE4RThirdPersonCamera.IsFinite(float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 RE4RThirdPersonCamera.GetFirstInvalidCameraStateName()、RE4RThirdPersonCamera.IsFiniteCameraState()、RE4RThirdPersonCamera.RecoverFiniteCameraState()、RE4RThirdPersonCamera.SanitizeVector(Vector3, Vector3)；下游（含内部回调体） RE4RThirdPersonCamera.IsFinite(float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="value">中文含义：值。使用位置：作为 RE4RThirdPersonCamera.IsFinite(float) 的参数。</param>
+    /// <param name="value">值。</param>
     private static bool IsFinite(Vector3 value)
     {
         return IsFinite(value.x) && IsFinite(value.y) && IsFinite(value.z);
@@ -2334,7 +2529,7 @@ var lens = vcam.Lens;
 
     /// <summary>IsFinite 的业务处理入口；本方法直接依赖 RE4RThirdPersonCamera.IsFinite(float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 RE4RThirdPersonCamera.GetFirstInvalidCameraStateName()、RE4RThirdPersonCamera.IsFiniteCameraState()；下游（含内部回调体） RE4RThirdPersonCamera.IsFinite(float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="value">中文含义：值。使用位置：作为 RE4RThirdPersonCamera.IsFinite(float) 的参数。</param>
+    /// <param name="value">值。</param>
     private static bool IsFinite(Quaternion value)
     {
         return IsFinite(value.x) && IsFinite(value.y) && IsFinite(value.z) && IsFinite(value.w);
@@ -2342,13 +2537,13 @@ var lens = vcam.Lens;
 
     /// <summary>IsFinite 的业务处理入口；本方法直接依赖 RE4RThirdPersonCamera.IsFinite(float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 RE4RThirdPersonCamera.GetFirstInvalidCameraStateName()、RE4RThirdPersonCamera.IsFiniteCameraState()；下游（含内部回调体） RE4RThirdPersonCamera.IsFinite(float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="value">中文含义：当前矩阵4横向4。使用位置：作为 RE4RThirdPersonCamera.IsFinite(float) 的参数。</param>
+    /// <param name="value">当前矩阵4横向4。</param>
     private static bool IsFinite(Matrix4x4 value)
     {
-        // row（行）：使用位置：作为 Matrix4x4.this[int, int] 的参数、RE4RThirdPersonCamera.IsFinite(Matrix4x4)。
+        // 行。
 for (int row = 0; row < 4; row++)
         {
-            // column（列）：使用位置：作为 Matrix4x4.this[int, int] 的参数、RE4RThirdPersonCamera.IsFinite(Matrix4x4)。
+            // 列。
 for (int column = 0; column < 4; column++)
             {
                 if (!IsFinite(value[row, column]))
@@ -2363,10 +2558,10 @@ for (int column = 0; column < 4; column++)
 
     /// <summary>UpdateCrouchCamera 的业务处理入口；本方法直接依赖 Mathf.Max(float, float)、Mathf.MoveTowards(float, float, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 RE4RThirdPersonCamera.LateUpdate()；下游（含内部回调体） Mathf.Max(float, float)、Mathf.MoveTowards(float, float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="dt">中文含义：本次计算的时间步长。使用位置：作为 Mathf.MoveTowards(float, float, float) 的参数。</param>
+    /// <param name="dt">本次计算的时间步长。</param>
     void UpdateCrouchCamera(float dt)
     {
-        // targetWeight（目标权重）：使用位置：作为 Mathf.MoveTowards(float, float, float) 的参数、RE4RThirdPersonCamera.UpdateCrouchCamera(float)。
+        // 目标权重。
 float targetWeight;
         if (controller != null && controller.IsCrouching)
         {
@@ -2382,7 +2577,7 @@ float targetWeight;
 
     /// <summary>UpdatePitchHeight 的业务处理入口；本方法直接依赖 Mathf.InverseLerp(float, float, float)、Mathf.Lerp(float, float, float)、Mathf.Max(float, float)、Mathf.Min(float, float)、Mathf.SmoothDamp(float, float, ref float, float, float, float)、Mathf.SmoothStep(float, float, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 RE4RThirdPersonCamera.LateUpdate()；下游（含内部回调体） Mathf.InverseLerp(float, float, float)、Mathf.Lerp(float, float, float)、Mathf.Max(float, float)、Mathf.Min(float, float)、Mathf.SmoothDamp(float, float, ref float, float, float, float)、Mathf.SmoothStep(float, float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="dt">中文含义：本次计算的时间步长。使用位置：作为 Mathf.SmoothDamp(float, float, ref float, float, float, float) 的参数、RE4RThirdPersonCamera.UpdatePitchHeight(float)。</param>
+    /// <param name="dt">本次计算的时间步长。</param>
     void UpdatePitchHeight(float dt)
     {
         float aimWeight = 0f;
@@ -2397,21 +2592,21 @@ float targetWeight;
         float targetOffset = 0f;
         if (aimWeight > 0f)
         {
-            // deadZone（死亡区）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.InverseLerp(float, float, float) 的参数、作为 Mathf.Max(float, float) 的参数、RE4RThirdPersonCamera.UpdatePitchHeight(float)。
+            // 死亡区。
 float deadZone = Mathf.Max(0f, pitchHeightDeadZone);
             if (pitch > deadZone)
             {
-                // maximumDownPitch（最大向下俯仰）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.InverseLerp(float, float, float) 的参数。
+                // 最大向下俯仰。
 float maximumDownPitch = Mathf.Max(deadZone + 0.01f, pitchRange.y);
-                // weight（权重）：保存 Mathf.InverseLerp(float, float, float) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.SmoothStep(float, float, float) 的参数。
+                // 权重。
 float weight = Mathf.InverseLerp(deadZone, maximumDownPitch, pitch);
                 targetOffset = Mathf.Lerp(0f, Mathf.Max(0f, aimLookDownHeightOffset), Mathf.SmoothStep(0f, 1f, weight));
             }
             else if (pitch < -deadZone)
             {
-                // maximumUpPitch（最大向上俯仰）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.InverseLerp(float, float, float) 的参数。
+                // 最大向上俯仰。
 float maximumUpPitch = Mathf.Max(deadZone + 0.01f, -pitchRange.x);
-                // weight（权重）：保存 Mathf.InverseLerp(float, float, float) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.SmoothStep(float, float, float) 的参数。
+                // 权重。
 float weight = Mathf.InverseLerp(deadZone, maximumUpPitch, -pitch);
                 targetOffset = Mathf.Lerp(0f, Mathf.Min(0f, aimLookUpHeightOffset), Mathf.SmoothStep(0f, 1f, weight));
             }
@@ -2429,10 +2624,10 @@ float weight = Mathf.InverseLerp(deadZone, maximumUpPitch, -pitch);
 
     /// <summary>ResolveSafePitchHeightOffset 的业务处理入口；本方法直接依赖 LayerMask.NameToLayer(string)、Mathf.Abs(float)、Mathf.Max(float, float)、Mathf.Min(float, float)、Mathf.Sign(float)、Physics.SphereCast(Vector3, float, Vector3, out RaycastHit, float, int, QueryTriggerInteraction)、Transform.IsChildOf(Transform) 等共 8 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 RE4RThirdPersonCamera.ApplyCameraParams()；下游（含内部回调体） LayerMask.NameToLayer(string)、Mathf.Abs(float)、Mathf.Max(float, float)、Mathf.Min(float, float)、Mathf.Sign(float)、Physics.SphereCast(Vector3, float, Vector3, out RaycastHit, float, int, QueryTriggerInteraction)、Transform.IsChildOf(Transform) 等共 8 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="baseVerticalArm">中文含义：基础竖直手臂。使用位置：作为 Vector3.Vector3(float, float, float) 的参数。</param>
-    /// <param name="cameraDistance">中文含义：摄像机距离。使用位置：作为 Vector3.Vector3(float, float, float) 的参数。</param>
-    /// <param name="shoulderOffset">中文含义：肩部偏移量。使用位置：作为 Vector3.Vector3(float, float, float) 的参数。</param>
-    /// <param name="desiredOffset">中文含义：期望偏移量。使用位置：作为 Mathf.Abs(float) 的参数、作为 Mathf.Sign(float) 的参数、RE4RThirdPersonCamera.ResolveSafePitchHeightOffset(float, float, float, float)。</param>
+    /// <param name="baseVerticalArm">基础竖直手臂。</param>
+    /// <param name="cameraDistance">摄像机距离。</param>
+    /// <param name="shoulderOffset">肩部偏移量。</param>
+    /// <param name="desiredOffset">期望偏移量。</param>
     float ResolveSafePitchHeightOffset(float baseVerticalArm, float cameraDistance, float shoulderOffset, float desiredOffset)
     {
         if (!constrainPitchHeightByCollision || Mathf.Abs(desiredOffset) <= 0.0001f || followPivot == null || collisionMask.value == 0)
@@ -2440,22 +2635,22 @@ float weight = Mathf.InverseLerp(deadZone, maximumUpPitch, -pitch);
             return desiredOffset;
         }
 
-        // pivotRotation（轴心旋转）：使用位置：RE4RThirdPersonCamera.ResolveSafePitchHeightOffset(float, float, float, float)。
+        // 轴心旋转。
 Quaternion pivotRotation = followPivot.rotation;
-        // baseCameraPosition（基础摄像机位置）：使用位置：作为 Physics.SphereCast(Vector3, float, Vector3, out RaycastHit, float, int, QueryTriggerInteraction) 的参数。
+        // 基础摄像机位置。
 Vector3 baseCameraPosition = followPivot.position + pivotRotation * new Vector3(shoulderOffset, baseVerticalArm, -cameraDistance);
-        // movement（移动）：使用位置：作为 Physics.SphereCast(Vector3, float, Vector3, out RaycastHit, float, int, QueryTriggerInteraction) 的参数、RE4RThirdPersonCamera.ResolveSafePitchHeightOffset(float, float, float, float)。
+        // 移动。
 Vector3 movement = pivotRotation * Vector3.up * desiredOffset;
-        // distance（距离）：使用位置：作为 Mathf.Min(float, float) 的参数、作为 Physics.SphereCast(Vector3, float, Vector3, out RaycastHit, float, int, QueryTriggerInteraction) 的参数、RE4RThirdPersonCamera.ResolveSafePitchHeightOffset(float, float, float, float)。
+        // 距离。
 float distance = movement.magnitude;
         if (distance <= 0.0001f)
         {
             return desiredOffset;
         }
 
-        // effectiveMask（实际生效的遮罩）：使用位置：作为 Physics.SphereCast(Vector3, float, Vector3, out RaycastHit, float, int, QueryTriggerInteraction) 的参数、RE4RThirdPersonCamera.ResolveSafePitchHeightOffset(float, float, float, float)。
+        // 实际生效的遮罩。
 int effectiveMask = collisionMask.value;
-        // playerLayer（玩家图层）：保存 LayerMask.NameToLayer(string) 的返回结果，供当前步骤使用。使用位置：RE4RThirdPersonCamera.ResolveSafePitchHeightOffset(float, float, float, float)。
+        // 玩家图层。
 int playerLayer = LayerMask.NameToLayer("player");
         if (playerLayer >= 0)
         {
@@ -2472,14 +2667,14 @@ int playerLayer = LayerMask.NameToLayer("player");
             return desiredOffset;
         }
 
-        // safeDistance（安全距离）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Min(float, float) 的参数。
+        // 安全距离。
 float safeDistance = Mathf.Max(0f, hit.distance - collisionSkin);
         return Mathf.Sign(desiredOffset) * Mathf.Min(distance, safeDistance);
     }
 
     /// <summary>ApplyFOV 的业务处理入口；本方法直接依赖 Mathf.Lerp(float, float, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 RE4RThirdPersonCamera.LateUpdate()；下游（含内部回调体） Mathf.Lerp(float, float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="dt">中文含义：本次计算的时间步长。使用位置：作为 Mathf.Lerp(float, float, float) 的参数。</param>
+    /// <param name="dt">本次计算的时间步长。</param>
     void ApplyFOV(float dt)
     {
         if (UsesPistolShoulder && !nativePoseActive)
@@ -2495,13 +2690,13 @@ float safeDistance = Mathf.Max(0f, hit.distance - collisionSkin);
     // ========================== 模块 5：镜头震动 ==========================
     /// <summary>ApplyShake 的业务处理入口；本方法直接依赖 Mathf.Max(float, float)、Mathf.PerlinNoise(float, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 RE4RThirdPersonCamera.LateUpdate()；下游（含内部回调体） Mathf.Max(float, float)、Mathf.PerlinNoise(float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="dt">中文含义：本次计算的时间步长。使用位置：RE4RThirdPersonCamera.ApplyShake(float)。</param>
+    /// <param name="dt">本次计算的时间步长。</param>
     void ApplyShake(float dt)
     {
         if (shakeTimer > 0f)
         {
             shakeTimer -= dt;
-            // ratio（比例）：使用位置：RE4RThirdPersonCamera.ApplyShake(float)。
+            // 比例。
 float ratio;
             if (shakeStartDuration > 0f)
             {
@@ -2512,16 +2707,16 @@ float ratio;
                 ratio = 0f;
             }
 
-            // shake（晃动）：使用位置：RE4RThirdPersonCamera.ApplyShake(float)。
+            // 晃动。
 float shake = (Mathf.PerlinNoise(Time.time * 25f, 0f) - 0.5f) * currentShakeMag * ratio;
-            // lens（镜头）：使用位置：RE4RThirdPersonCamera.ApplyShake(float)。
+            // 镜头。
 var lens = vcam.Lens;
             lens.Dutch = shake * 2f;
             vcam.Lens = lens;
         }
         else if (vcam.Lens.Dutch != 0f)
         {
-            // lens（镜头）：使用位置：RE4RThirdPersonCamera.ApplyShake(float)。
+            // 镜头。
 var lens = vcam.Lens;
             lens.Dutch = 0f;
             vcam.Lens = lens;
@@ -2531,10 +2726,10 @@ var lens = vcam.Lens;
     // ========================== 模块 6：剧情锁定 ==========================
     /// <summary>ApplyLockedCamera 的业务处理入口；本方法直接依赖 Mathf.Lerp(float, float, float)、Quaternion.Slerp(Quaternion, Quaternion, float)、Vector3.Lerp(Vector3, Vector3, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 RE4RThirdPersonCamera.LateUpdate()；下游（含内部回调体） Mathf.Lerp(float, float, float)、Quaternion.Slerp(Quaternion, Quaternion, float)、Vector3.Lerp(Vector3, Vector3, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="dt">中文含义：本次计算的时间步长。使用位置：RE4RThirdPersonCamera.ApplyLockedCamera(float)。</param>
+    /// <param name="dt">本次计算的时间步长。</param>
     void ApplyLockedCamera(float dt)
     {
-        // k（候选遍历索引）：使用位置：作为 Mathf.Lerp(float, float, float) 的参数、作为 Quaternion.Slerp(Quaternion, Quaternion, float) 的参数、作为 Vector3.Lerp(Vector3, Vector3, float) 的参数。
+        // 候选遍历索引。
 float k = dt * 5f;
         cam.transform.position = Vector3.Lerp(cam.transform.position, lockedPosition, k);
         cam.transform.rotation = Quaternion.Slerp(cam.transform.rotation, lockedRotation, k);
@@ -2546,7 +2741,7 @@ float k = dt * 5f;
     // ========================== 模块 8：待机呼吸 ==========================
     /// <summary>UpdateIdleBreathing 的业务处理入口；本方法直接依赖 Mathf.Abs(float)、Mathf.Lerp(float, float, float)、RE4RThirdPersonCamera.GetMoveMagnitude()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 RE4RThirdPersonCamera.LateUpdate()；下游（含内部回调体） Mathf.Abs(float)、Mathf.Lerp(float, float, float)、RE4RThirdPersonCamera.GetMoveMagnitude()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="dt">中文含义：本次计算的时间步长。使用位置：作为 Mathf.Lerp(float, float, float) 的参数、RE4RThirdPersonCamera.UpdateIdleBreathing(float)。</param>
+    /// <param name="dt">本次计算的时间步长。</param>
     void UpdateIdleBreathing(float dt)
     {
         float targetWeight = 0f;
@@ -2583,10 +2778,10 @@ float k = dt * 5f;
 
     /// <summary>UpdateAimBreathing 的业务处理入口；本方法直接依赖 Mathf.Clamp01(float)、Mathf.Lerp(float, float, float)、Mathf.MoveTowards(float, float, float)、RE4RThirdPersonCamera.GetMoveMagnitude()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 RE4RThirdPersonCamera.LateUpdate()；下游（含内部回调体） Mathf.Clamp01(float)、Mathf.Lerp(float, float, float)、Mathf.MoveTowards(float, float, float)、RE4RThirdPersonCamera.GetMoveMagnitude()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="dt">中文含义：本次计算的时间步长。使用位置：作为 Mathf.MoveTowards(float, float, float) 的参数、RE4RThirdPersonCamera.UpdateAimBreathing(float)。</param>
+    /// <param name="dt">本次计算的时间步长。</param>
     void UpdateAimBreathing(float dt)
     {
-        // targetWeight（目标权重）：使用位置：作为 Mathf.MoveTowards(float, float, float) 的参数、RE4RThirdPersonCamera.UpdateAimBreathing(float)。
+        // 目标权重。
 float targetWeight;
         if (UsesPistolShoulder && !nativePoseActive)
         {
@@ -2606,7 +2801,7 @@ float targetWeight;
             targetWeight *= 0.25f;
         }
 
-        // moveFade（移动淡入淡出）：保存 Mathf.Clamp01(float) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Lerp(float, float, float) 的参数。
+        // 移动淡入淡出。
 float moveFade = Mathf.Clamp01(GetMoveMagnitude());
         targetWeight *= Mathf.Lerp(1f, 0.45f, moveFade);
         aimBreathWeight = Mathf.MoveTowards(aimBreathWeight, targetWeight, dt * aimBreathBlendSpeed);
@@ -2628,12 +2823,12 @@ float moveFade = Mathf.Clamp01(GetMoveMagnitude());
 
     /// <summary>UpdateWeaponRecoil 的业务处理入口；本方法直接依赖 Mathf.Max(float, float)、Mathf.SmoothDamp(float, float, ref float, float, float, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 RE4RThirdPersonCamera.LateUpdate()；下游（含内部回调体） Mathf.Max(float, float)、Mathf.SmoothDamp(float, float, ref float, float, float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="dt">中文含义：本次计算的时间步长。使用位置：作为 Mathf.SmoothDamp(float, float, ref float, float, float, float) 的参数。</param>
+    /// <param name="dt">本次计算的时间步长。</param>
     void UpdateWeaponRecoil(float dt)
     {
-        // argumentValue55（按原顺序缓存的实参0.01f）：从0.01f读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 Mathf.Max(float, float) 的参数。
+        // 按原顺序缓存的实参0.01f。
 float argumentValue55 = 0.01f;
-        // selectedValue54（分支选出的当前武器后坐力返回时间）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：作为 Mathf.Max(float, float) 的参数、RE4RThirdPersonCamera.UpdateWeaponRecoil(float)。
+        // 分支选出的当前武器后坐力返回时间。
 float selectedValue54;
         if (currentWeaponRecoilReturnTime > 0f)
         {
@@ -2644,7 +2839,7 @@ float selectedValue54;
             selectedValue54 = weaponRecoilReturnTime;
         }
 
-        // returnTime（返回时间）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.SmoothDamp(float, float, ref float, float, float, float) 的参数。
+        // 返回时间。
 float returnTime = Mathf.Max(argumentValue55, selectedValue54);
         bool pistolAiming = IsAiming && controller != null && controller.currentWeapon == WeaponType.Pistol;
         if (!pistolAiming) pistolRecoilHoldUntil = 0f;
@@ -2672,12 +2867,12 @@ float returnTime = Mathf.Max(argumentValue55, selectedValue54);
     // ========================== 模块 9：近战镜头微推 ==========================
     /// <summary>UpdateMeleePush 的业务处理入口；本方法直接依赖 RE4RThirdPersonCamera.TriggerMeleePush()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 RE4RThirdPersonCamera.LateUpdate()；下游（含内部回调体） RE4RThirdPersonCamera.TriggerMeleePush()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="dt">中文含义：本次计算的时间步长。使用位置：RE4RThirdPersonCamera.UpdateMeleePush(float)。</param>
+    /// <param name="dt">本次计算的时间步长。</param>
     void UpdateMeleePush(float dt)
     {
         if (autoDetectMelee && controller != null)
         {
-            // isMelee（是否近战）：使用位置：RE4RThirdPersonCamera.UpdateMeleePush(float)。
+            // 是否近战。
 bool isMelee = controller.currentState == LeonState.MeleeAttacking;
             if (isMelee && !wasMelee && !controller.IsKnifeAttackActive)
             {
@@ -2690,19 +2885,19 @@ bool isMelee = controller.currentState == LeonState.MeleeAttacking;
         if (meleePushTimer > 0f)
         {
             meleePushTimer -= dt;
-            // totalDuration（总计持续时间）：使用位置：RE4RThirdPersonCamera.UpdateMeleePush(float)。
+            // 总计持续时间。
 float totalDuration = meleePushDuration + meleeRecoverDuration;
-            // elapsed（已用）：使用位置：RE4RThirdPersonCamera.UpdateMeleePush(float)。
+            // 已用。
 float elapsed = totalDuration - meleePushTimer;
             if (elapsed <= meleePushDuration)
             {
-                // t（近战镜头前推阶段的进度）：使用位置：RE4RThirdPersonCamera.UpdateMeleePush(float)。
+                // 近战镜头前推阶段的进度。
 float t = elapsed / meleePushDuration;
                 meleePushRatio = t * t * (3f - 2f * t);
             }
             else
             {
-                // t（近战镜头回退阶段的进度）：使用位置：RE4RThirdPersonCamera.UpdateMeleePush(float)。
+                // 近战镜头回退阶段的进度。
 float t = (elapsed - meleePushDuration) / meleeRecoverDuration;
                 meleePushRatio = 1f - (t * t * (3f - 2f * t));
             }
@@ -2722,7 +2917,7 @@ float t = (elapsed - meleePushDuration) / meleeRecoverDuration;
     // ========================== 模块 10：敌人近距离自动拉远 ==========================
     /// <summary>UpdateEnemyProximity 的业务处理入口；本方法直接依赖 Mathf.Lerp(float, float, float)、Mathf.Max(int, int)、Physics.CheckSphere(Vector3, float, int, QueryTriggerInteraction)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 RE4RThirdPersonCamera.LateUpdate()；下游（含内部回调体） Mathf.Lerp(float, float, float)、Mathf.Max(int, int)、Physics.CheckSphere(Vector3, float, int, QueryTriggerInteraction)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="dt">中文含义：本次计算的时间步长。使用位置：作为 Mathf.Lerp(float, float, float) 的参数。</param>
+    /// <param name="dt">本次计算的时间步长。</param>
     void UpdateEnemyProximity(float dt)
     {
         if (enemyLayerMask == 0)
@@ -2734,19 +2929,27 @@ float t = (elapsed - meleePushDuration) / meleeRecoverDuration;
         enemyFrameCounter++;
         if (enemyFrameCounter % enemyCheckFrameInterval == 0)
         {
-            // center（中心）：使用位置：作为 Physics.CheckSphere(Vector3, float, int, QueryTriggerInteraction) 的参数。
+            // 中心。
 Vector3 center = target.position + Vector3.up * 1f;
-            hasNearbyEnemy = Physics.CheckSphere(center, enemyProximityRange, enemyLayerMask, QueryTriggerInteraction.UseGlobal);
+            if (Physics.CheckSphere(center, enemyProximityRange, enemyLayerMask, QueryTriggerInteraction.UseGlobal))
+            {
+                hasNearbyEnemy = true;
+                enemyProximityHoldUntil = Time.time + 0.35f;
+            }
+            else if (Time.time >= enemyProximityHoldUntil)
+            {
+                hasNearbyEnemy = false;
+            }
         }
 
-        // targetZoom（目标缩放视野）：使用位置：作为 Mathf.Lerp(float, float, float) 的参数、RE4RThirdPersonCamera.UpdateEnemyProximity(float)。
+        // 目标缩放视野。
 float targetZoom;
-        // 瞄准镜头保留原有肩距，近敌拉远仅用于一般观察。
-        // 敌人接近先更新探索端的距离，手枪瞄准按同一个过渡权重逐步去除拉远效果。
+        // 瞄准镜头保留原有肩距，近敌拉远仅用于一般观察；室内或贴墙受阻时自动衰减，防止与避障互相拉扯。
         bool tracksExploreZoom = !IsAiming || UsesPistolShoulder && !nativePoseActive;
         if (hasNearbyEnemy && tracksExploreZoom && knifeFramingWeight <= 0.01f)
         {
-            targetZoom = enemyZoomOutFactor;
+            float openSpaceWeight = 1f - Mathf.SmoothStep(0.10f, 0.45f, currentCollisionCompression);
+            targetZoom = Mathf.Lerp(1f, enemyZoomOutFactor, openSpaceWeight);
         }
         else
         {
@@ -2764,11 +2967,11 @@ float targetZoom;
 
     void UpdatePanTilt(float dt)
     {
-        // aimBreathPitch（瞄准呼吸俯仰）：使用位置：作为 Mathf.Clamp(float, float, float) 的参数。
+        // 瞄准呼吸俯仰。
 float aimBreathPitch = Mathf.Sin(aimBreathPhase) * aimBreathPitchAmplitude * proceduralAimBreathWeight - nativeAimBreathAngles.y;
-        // dropPitch（掉落俯仰）：使用位置：作为 Mathf.Clamp(float, float, float) 的参数。
+        // 掉落俯仰。
 float dropPitch = dropLookDownAngle * dropCameraWeight + dropImpactPitch * dropImpactPulse * dropImpactStrength;
-        // finalPitch（最终俯仰）：保存 Mathf.Clamp(float, float, float) 的返回结果，供当前步骤使用。使用位置：RE4RThirdPersonCamera.UpdatePanTilt()。
+        // 最终俯仰。
         float finalPitch = Mathf.Clamp(shoulderLookPitch + aimBreathPitch
             + dropPitch, pitchRange.x, pitchRange.y);
         panTilt.PanAxis.Value = weaponRecoilYawOffset + nativeAimBreathAngles.x;
@@ -2777,7 +2980,7 @@ float dropPitch = dropLookDownAngle * dropCameraWeight + dropImpactPitch * dropI
     }
 
     // ========================== 辅助方法 ==========================
-    /// <summary>中文含义：是否正在瞄准。使用位置：RE4RThirdPersonCamera.ApplyCameraParams()、RE4RThirdPersonCamera.DriveInput(float)、RE4RThirdPersonCamera.ResolveCameraStateIndex() 等共 9 处。</summary>
+    /// <summary>是否正在瞄准。</summary>
     bool IsAiming
     {
         get
@@ -2789,11 +2992,11 @@ float dropPitch = dropLookDownAngle * dropCameraWeight + dropImpactPitch * dropI
 
             if ((activeProfile == null || activeProfile.allowAim))
             {
-                // selectedValue57（分支选出的取得浮点的返回结果）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：RE4RThirdPersonCamera.IsAiming.get。
+                // 分支选出的取得浮点的返回结果。
 bool selectedValue57;
                 if (anim != null)
                 {
-                    selectedValue57 = anim.GetFloat("Aim") > 0.5f;
+                    selectedValue57 = anim.GetFloat(AimParameterHash) > 0.5f;
                 }
                 else
                 {
@@ -2809,7 +3012,7 @@ bool selectedValue57;
         }
     }
 
-    /// <summary>中文含义：是否正在冲刺。使用位置：RE4RThirdPersonCamera.ResolveCameraStateIndex()、RE4RThirdPersonCamera.UpdateAimBreathing(float)、RE4RThirdPersonCamera.UpdateFollowPivot(float) 等共 4 处。</summary>
+    /// <summary>是否正在冲刺。</summary>
     bool IsSprinting => cameraSprintActive;
 
     /// <summary>GetLookInput 的业务处理入口；本方法直接依赖 Input.GetAxis(string)、Vector2.Vector2(float, float)，调用方通过参数与返回结果交接本次处理。</summary>
@@ -2833,9 +3036,9 @@ bool selectedValue57;
             return controller.MoveInput.magnitude;
         }
 
-        // h（水平移动输入）：保存 Input.GetAxis(string) 的返回结果，供当前步骤使用。使用位置：作为 Vector2.Vector2(float, float) 的参数。
+        // 水平移动输入。
 float h = Input.GetAxis("Horizontal");
-        // v（纵向移动输入）：保存 Input.GetAxis(string) 的返回结果，供当前步骤使用。使用位置：作为 Vector2.Vector2(float, float) 的参数。
+        // 纵向移动输入。
 float v = Input.GetAxis("Vertical");
         return new Vector2(h, v).magnitude;
     }
@@ -2850,9 +3053,9 @@ float v = Input.GetAxis("Vertical");
             return;
         }
 
-        // argumentValue60（按原顺序缓存的实参0f）：从0f读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 Quaternion.Euler(float, float, float) 的参数。
+        // 按原顺序缓存的实参0f。
 float argumentValue60 = 0f;
-        // selectedValue59（分支选出的偏航）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：作为 Quaternion.Euler(float, float, float) 的参数、RE4RThirdPersonCamera.OnDrawGizmosSelected()。
+        // 分支选出的偏航。
 float selectedValue59;
         if (Application.isPlaying)
         {
@@ -2863,9 +3066,9 @@ float selectedValue59;
             selectedValue59 = transform.eulerAngles.y;
         }
 
-        // yawRot（偏航旋转）：保存 Quaternion.Euler(float, float, float) 的返回结果，供当前步骤使用。使用位置：RE4RThirdPersonCamera.OnDrawGizmosSelected()。
+        // 偏航旋转。
 Quaternion yawRot = Quaternion.Euler(argumentValue60, selectedValue59, 0f);
-        // offset（偏移量）：使用位置：作为 Vector3.Vector3(float, float, float) 的参数、RE4RThirdPersonCamera.OnDrawGizmosSelected()。
+        // 偏移量。
 Vector3 offset;
         if (Application.isPlaying)
         {
@@ -2876,9 +3079,9 @@ Vector3 offset;
             offset = normalOffset;
         }
 
-        // armPos（手臂位置）：使用位置：作为 Gizmos.DrawLine(Vector3, Vector3) 的参数、作为 Gizmos.DrawWireSphere(Vector3, float) 的参数、RE4RThirdPersonCamera.OnDrawGizmosSelected()。
+        // 手臂位置。
 Vector3 armPos = target.position + Vector3.up * offset.y;
-        // camPos（摄像机位置）：使用位置：作为 Gizmos.DrawLine(Vector3, Vector3) 的参数、作为 Gizmos.DrawWireSphere(Vector3, float) 的参数。
+        // 摄像机位置。
 Vector3 camPos = armPos + yawRot * new Vector3(offset.x, 0f, offset.z);
         Gizmos.color = Color.cyan;
         Gizmos.DrawLine(armPos, camPos);
@@ -2890,12 +3093,35 @@ Vector3 camPos = armPos + yawRot * new Vector3(offset.x, 0f, offset.z);
             Gizmos.color = Color.red;
             Gizmos.DrawWireSphere(target.position + Vector3.up, enemyProximityRange);
         }
+
+        if (debugDrawCollisionSolver && Application.isPlaying && stableCollision != null)
+        {
+            CameraCollisionSolver.DebugSnapshot snapshot = stableCollision.LastSnapshot;
+            if (snapshot.valid)
+            {
+                Gizmos.color = Color.green;
+                Gizmos.DrawWireSphere(snapshot.focusPosition, 0.08f);
+                Gizmos.color = Color.magenta;
+                Gizmos.DrawLine(snapshot.focusPosition, snapshot.ceilingAdjustedPosition);
+                Gizmos.DrawLine(snapshot.ceilingAdjustedPosition, snapshot.shoulderAdjustedPosition);
+                if (snapshot.blocked)
+                {
+                    Gizmos.color = new Color(1f, 0.45f, 0f, 1f);
+                }
+                else
+                {
+                    Gizmos.color = Color.white;
+                }
+                Gizmos.DrawLine(snapshot.focusPosition, snapshot.finalPosition);
+                Gizmos.DrawWireSphere(snapshot.finalPosition, collisionRadius);
+            }
+        }
     }
 
     /// <summary>LogRecoveredFiniteWarning 的业务处理入口；本方法直接依赖 Debug.LogWarning(object, Object)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 RE4RThirdPersonCamera.NotifyDropImpact(float)、RE4RThirdPersonCamera.UpdateDropCamera(float)、RE4RThirdPersonCamera.ValidateFiniteCameraState(string)；下游（含内部回调体） Debug.LogWarning(object, Object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="stage">中文含义：阶段。使用位置：作为 Debug.LogWarning(object, Object) 的参数。</param>
-    /// <param name="invalidField">中文含义：无效字段。使用位置：作为 Debug.LogWarning(object, Object) 的参数。</param>
+    /// <param name="stage">阶段。</param>
+    /// <param name="invalidField">无效字段。</param>
     private void LogRecoveredFiniteWarning(string stage, string invalidField)
     {
         if (lastFiniteFailureFrame == Time.frameCount)
@@ -2904,7 +3130,7 @@ Vector3 camPos = armPos + yawRot * new Vector3(offset.x, 0f, offset.z);
         }
 
         lastFiniteFailureFrame = Time.frameCount;
-        // now（当前时间）：使用位置：RE4RThirdPersonCamera.LogRecoveredFiniteWarning(string, string)。
+        // 当前时间。
 float now = Time.realtimeSinceStartup;
         if (now < nextFiniteWarningTime)
         {
@@ -3031,77 +3257,47 @@ float now = Time.realtimeSinceStartup;
 }
 
 /// <summary>
-/// 从稳定上身观察点到期望镜头位置执行单段碰撞检测。
-/// 只改变观察点到镜头的距离，不再让建筑碰撞改变肩部支点。
+/// 从稳定上身观察点到期望镜头位置执行三自由度连续避障求解。
+/// 优先忽略敌人与动态刚体，顶头时下压高度、贴墙时内收肩位并平滑舒展恢复。
 /// </summary>
 [DisallowMultipleComponent]
 sealed class RE4StableCameraCollision : CinemachineExtension
 {
-    private RE4RThirdPersonCamera gameplayDriver;
-    /// <summary>中文含义：最大命中数量。编译期常量，保持既有值与消费者映射。使用位置：RE4StableCameraCollision.hitBuffer、RE4StableCameraCollision.overlapBuffer。</summary>
-    private const int MaximumHitCount = 16;
-    /// <summary>中文含义：碰撞探测步数。编译期常量，保持既有值与消费者映射。使用位置：作为 Mathf.Lerp(float, float, float) 的参数、RE4StableCameraCollision.FindFirstOverlapSafeDistance(Vector3, Vector3, float)。</summary>
-    private const int CollisionProbeSteps = 12;
-    /// <summary>中文含义：碰撞精修步数。编译期常量，保持既有值与消费者映射。使用位置：RE4StableCameraCollision.FindFirstOverlapSafeDistance(Vector3, Vector3, float)。</summary>
-    private const int CollisionRefinementSteps = 5;
-    /// <summary>中文含义：绝对最小摄像机距离。编译期常量，保持既有值与消费者映射。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
     private const float AbsoluteMinimumCameraDistance = 0.12f;
-    /// <summary>中文含义：命中缓冲区。只读字段，初始化后不由普通写入口替换。使用位置：作为 Physics.SphereCastNonAlloc(Vector3, float, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 的参数、RE4StableCameraCollision.TryGetSafeDistance(Vector3, Vector3, float, out float)。</summary>
-    private readonly RaycastHit[] hitBuffer = new RaycastHit[MaximumHitCount];
-    /// <summary>中文含义：重叠缓冲区。只读字段，初始化后不由普通写入口替换。使用位置：作为 Physics.OverlapSphereNonAlloc(Vector3, float, Collider[], int, QueryTriggerInteraction) 的参数。</summary>
-    private readonly Collider[] overlapBuffer = new Collider[MaximumHitCount];
-    /// <summary>中文含义：跟随目标。使用位置：RE4StableCameraCollision.Configure(Transform, CinemachineThirdPersonFollow, LayerMask, float, float, float, float, float, float)、RE4StableCameraCollision.PostPipelineStageCallback(CinemachineVirtualCameraBase, CinemachineCore.Stage, ref CameraState, float)。</summary>
+    private readonly CameraCollisionSolver solver = new CameraCollisionSolver();
+    private RE4RThirdPersonCamera gameplayDriver;
     private Transform followTarget;
-    /// <summary>中文含义：第三人称跟随。使用位置：作为 Mathf.Max(float, float) 的参数、RE4StableCameraCollision.Configure(Transform, CinemachineThirdPersonFollow, LayerMask, float, float, float, float, float, float)、RE4StableCameraCollision.PostPipelineStageCallback(CinemachineVirtualCameraBase, CinemachineCore.Stage, ref CameraState, float)。</summary>
     private CinemachineThirdPersonFollow thirdPersonFollow;
-    /// <summary>中文含义：碰撞遮罩。使用位置：作为 Physics.OverlapSphereNonAlloc(Vector3, float, Collider[], int, QueryTriggerInteraction) 的参数、作为 Physics.SphereCastNonAlloc(Vector3, float, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 的参数、RE4StableCameraCollision.Configure(Transform, CinemachineThirdPersonFollow, LayerMask, float, float, float, float, float, float) 等共 4 处。</summary>
     private LayerMask collisionMask;
-    /// <summary>中文含义：摄像机半径。使用位置：作为 Physics.OverlapSphereNonAlloc(Vector3, float, Collider[], int, QueryTriggerInteraction) 的参数、作为 Physics.SphereCastNonAlloc(Vector3, float, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 的参数、RE4StableCameraCollision.Configure(Transform, CinemachineThirdPersonFollow, LayerMask, float, float, float, float, float, float)。</summary>
     private float cameraRadius;
-    /// <summary>中文含义：安全性皮肤。使用位置：作为 Mathf.Max(float, float) 的参数、RE4StableCameraCollision.Configure(Transform, CinemachineThirdPersonFollow, LayerMask, float, float, float, float, float, float)。</summary>
     private float safetySkin;
-    /// <summary>中文含义：焦点高度比例。使用位置：作为 Mathf.Max(float, float) 的参数、RE4StableCameraCollision.Configure(Transform, CinemachineThirdPersonFollow, LayerMask, float, float, float, float, float, float)。</summary>
     private float focusHeightRatio;
-    /// <summary>中文含义：释放延迟。使用位置：RE4StableCameraCollision.Configure(Transform, CinemachineThirdPersonFollow, LayerMask, float, float, float, float, float, float)、RE4StableCameraCollision.PostPipelineStageCallback(CinemachineVirtualCameraBase, CinemachineCore.Stage, ref CameraState, float)。</summary>
     private float releaseDelay;
-    /// <summary>中文含义：恢复阻尼。使用位置：作为 Mathf.SmoothDamp(float, float, ref float, float, float, float) 的参数、RE4StableCameraCollision.Configure(Transform, CinemachineThirdPersonFollow, LayerMask, float, float, float, float, float, float)。</summary>
     private float recoveryDamping;
-    /// <summary>中文含义：最小外部距离。使用位置：作为 Mathf.Max(float, float) 的参数、RE4StableCameraCollision.Configure(Transform, CinemachineThirdPersonFollow, LayerMask, float, float, float, float, float, float)。</summary>
     private float minimumExternalDistance;
-    private Vector3 lastSafeCameraPosition;
-    private Vector3 lastSafeFocus;
-    private bool hasSafeCameraPosition;
-    private bool recoveringFromBlockedPoint;
-    private float nearPlaneRadius;
-    /// <summary>中文含义：状态是否已初始化。使用位置：RE4StableCameraCollision.PostPipelineStageCallback(CinemachineVirtualCameraBase, CinemachineCore.Stage, ref CameraState, float)、RE4StableCameraCollision.ResetCollisionState()。</summary>
-    private bool stateInitialized;
-    /// <summary>中文含义：当前距离。使用位置：作为 Mathf.Clamp(float, float, float) 的参数、作为 Mathf.SmoothDamp(float, float, ref float, float, float, float) 的参数、作为 RE4StableCameraCollision.IsFinite(float) 的参数 等共 5 处。</summary>
-    private float currentDistance;
-    /// <summary>中文含义：距离速度。使用位置：作为 Mathf.SmoothDamp(float, float, ref float, float, float, float) 的参数、作为 RE4StableCameraCollision.IsFinite(float) 的参数、RE4StableCameraCollision.PostPipelineStageCallback(CinemachineVirtualCameraBase, CinemachineCore.Stage, ref CameraState, float) 等共 4 处。</summary>
-    private float distanceVelocity;
-    /// <summary>中文含义：按住阻挡距离。使用位置：作为 Mathf.Min(float, float) 的参数、RE4StableCameraCollision.PostPipelineStageCallback(CinemachineVirtualCameraBase, CinemachineCore.Stage, ref CameraState, float)、RE4StableCameraCollision.ResetCollisionState()。</summary>
-    private float heldBlockedDistance;
-    private float previousDesiredDistance;
-    /// <summary>中文含义：上一次阻挡时间。使用位置：RE4StableCameraCollision.PostPipelineStageCallback(CinemachineVirtualCameraBase, CinemachineCore.Stage, ref CameraState, float)、RE4StableCameraCollision.ResetCollisionState()。</summary>
-    private float lastBlockedTime = float.NegativeInfinity;
-    /// <summary>Configure 的业务处理入口；本方法直接依赖 Mathf.Clamp(float, float, float)、Mathf.Max(float, float)、RE4StableCameraCollision.ResetCollisionState()，调用方通过参数与返回结果交接本次处理。</summary>
-    /// <remarks>静态调用链：上游 RE4RThirdPersonCamera.ApplyCollisionSettings()；下游（含内部回调体） Mathf.Clamp(float, float, float)、Mathf.Max(float, float)、RE4StableCameraCollision.ResetCollisionState()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="target">中文含义：目标变换节点。使用位置：RE4StableCameraCollision.Configure(Transform, CinemachineThirdPersonFollow, LayerMask, float, float, float, float, float, float)。</param>
-    /// <param name="follow">中文含义：跟随。使用位置：RE4StableCameraCollision.Configure(Transform, CinemachineThirdPersonFollow, LayerMask, float, float, float, float, float, float)。</param>
-    /// <param name="mask">中文含义：遮罩。使用位置：RE4StableCameraCollision.Configure(Transform, CinemachineThirdPersonFollow, LayerMask, float, float, float, float, float, float)。</param>
-    /// <param name="radius">中文含义：半径。使用位置：作为 Mathf.Max(float, float) 的参数。</param>
-    /// <param name="skin">中文含义：皮肤。使用位置：作为 Mathf.Max(float, float) 的参数。</param>
-    /// <param name="heightRatio">中文含义：高度比例。使用位置：作为 Mathf.Clamp(float, float, float) 的参数。</param>
-    /// <param name="obstructionReleaseDelay">中文含义：遮挡释放延迟。使用位置：作为 Mathf.Max(float, float) 的参数。</param>
-    /// <param name="obstructionRecoveryDamping">中文含义：遮挡恢复阻尼。使用位置：作为 Mathf.Max(float, float) 的参数。</param>
-    /// <param name="externalDistance">中文含义：外部距离。使用位置：作为 Mathf.Max(float, float) 的参数。</param>
-    public void Configure(RE4RThirdPersonCamera driver, Transform target, CinemachineThirdPersonFollow follow, LayerMask mask, float radius, float skin, float heightRatio, float obstructionReleaseDelay, float obstructionRecoveryDamping, float externalDistance)
+
+    internal CameraCollisionSolver.DebugSnapshot LastSnapshot
+    {
+        get { return solver.LastSnapshot; }
+    }
+
+    public void Configure(
+        RE4RThirdPersonCamera driver,
+        Transform target,
+        CinemachineThirdPersonFollow follow,
+        LayerMask mask,
+        float radius,
+        float skin,
+        float heightRatio,
+        float obstructionReleaseDelay,
+        float obstructionRecoveryDamping,
+        float externalDistance)
     {
         gameplayDriver = driver;
         followTarget = target;
         thirdPersonFollow = follow;
         collisionMask = mask;
-        cameraRadius = Mathf.Max(0.01f, radius);
+        cameraRadius = Mathf.Max(0.05f, radius);
         safetySkin = Mathf.Max(0f, skin);
         focusHeightRatio = Mathf.Clamp(heightRatio, 0.5f, 1f);
         releaseDelay = Mathf.Max(0f, obstructionReleaseDelay);
@@ -3111,25 +3307,21 @@ sealed class RE4StableCameraCollision : CinemachineExtension
         enabled = true;
     }
 
-    /// <summary>实现基类的 OnEnable 重写入口；框架调用后按本方法分支执行，并通过下游成员完成协作。</summary>
-    /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） CinemachineExtension.OnEnable()、RE4StableCameraCollision.ResetCollisionState()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     protected override void OnEnable()
     {
         base.OnEnable();
         ResetCollisionState();
     }
 
-    /// <summary>实现基类的 PostPipelineStageCallback 重写入口；框架调用后按本方法分支执行，并通过下游成员完成协作。</summary>
-    /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） CameraState.GetCorrectedPosition()、Mathf.Clamp(float, float, float)、Mathf.Max(float, float)、Mathf.Min(float, float)、Mathf.SmoothDamp(float, float, ref float, float, float, float)、RE4StableCameraCollision.IsFinite(float)、RE4StableCameraCollision.IsFinite(Vector3) 等共 9 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="vcam">中文含义：虚拟摄像机。使用位置：RE4StableCameraCollision.PostPipelineStageCallback(CinemachineVirtualCameraBase, CinemachineCore.Stage, ref CameraState, float)。</param>
-    /// <param name="stage">中文含义：阶段。使用位置：RE4StableCameraCollision.PostPipelineStageCallback(CinemachineVirtualCameraBase, CinemachineCore.Stage, ref CameraState, float)。</param>
-    /// <param name="state">中文含义：当前摄像机状态。按引用传入，读写会作用于调用方原存储位置。使用位置：RE4StableCameraCollision.PostPipelineStageCallback(CinemachineVirtualCameraBase, CinemachineCore.Stage, ref CameraState, float)。</param>
-    /// <param name="deltaTime">中文含义：本帧时间间隔。使用位置：作为 Mathf.SmoothDamp(float, float, ref float, float, float, float) 的参数、作为 RE4StableCameraCollision.IsFinite(float) 的参数、RE4StableCameraCollision.PostPipelineStageCallback(CinemachineVirtualCameraBase, CinemachineCore.Stage, ref CameraState, float)。</param>
-    protected override void PostPipelineStageCallback(CinemachineVirtualCameraBase vcam, CinemachineCore.Stage stage, ref CameraState state, float deltaTime)
+    protected override void PostPipelineStageCallback(
+        CinemachineVirtualCameraBase vcam,
+        CinemachineCore.Stage stage,
+        ref CameraState state,
+        float deltaTime)
     {
         if (stage == CinemachineCore.Stage.Finalize && gameplayDriver != null)
         {
-            gameplayDriver.KeepUpperBodyInFrame(ref state);
+            gameplayDriver.KeepUpperBodyInFrame(ref state, deltaTime);
             return;
         }
 
@@ -3144,13 +3336,17 @@ sealed class RE4StableCameraCollision : CinemachineExtension
             Vector3 raisedPosition = gameplayDriver.PlaceShoulderCamera(in state, basePosition, deltaTime, vcam.PreviousStateIsValid);
             state.RawPosition += raisedPosition - basePosition;
         }
+
         if (collisionMask.value == 0)
         {
+            if (gameplayDriver != null)
+            {
+                gameplayDriver.SetCollisionCompressionRatio(0f);
+            }
             return;
         }
 
-        // up（向上）：使用位置：RE4StableCameraCollision.PostPipelineStageCallback(CinemachineVirtualCameraBase, CinemachineCore.Stage, ref CameraState, float)。
-Vector3 up;
+        Vector3 up;
         if (state.ReferenceUp.sqrMagnitude > 0.001f)
         {
             up = state.ReferenceUp.normalized;
@@ -3160,351 +3356,98 @@ Vector3 up;
             up = Vector3.up;
         }
 
-        // focusHeight（焦点高度）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：RE4StableCameraCollision.PostPipelineStageCallback(CinemachineVirtualCameraBase, CinemachineCore.Stage, ref CameraState, float)。
-float focusHeight = Mathf.Max(0f, thirdPersonFollow.VerticalArmLength) * focusHeightRatio;
-        // focusPosition（焦点位置）：使用位置：作为 RE4StableCameraCollision.IsFinite(Vector3) 的参数、作为 RE4StableCameraCollision.TryGetSafeDistance(Vector3, Vector3, float, out float) 的参数、RE4StableCameraCollision.PostPipelineStageCallback(CinemachineVirtualCameraBase, CinemachineCore.Stage, ref CameraState, float)。
-Vector3 focusPosition = followTarget.position + up * focusHeight;
-        // desiredPosition（期望位置）：保存 CameraState.GetCorrectedPosition() 的返回结果，供当前步骤使用。使用位置：作为 RE4StableCameraCollision.IsFinite(Vector3) 的参数、RE4StableCameraCollision.PostPipelineStageCallback(CinemachineVirtualCameraBase, CinemachineCore.Stage, ref CameraState, float)。
-Vector3 desiredPosition = state.GetCorrectedPosition();
-        if (!IsFinite(focusPosition) || !IsFinite(desiredPosition))
+        Vector3 focusPosition;
+        if (gameplayDriver != null)
         {
-            ResetCollisionState();
-            return;
-        }
-
-        // boom（镜头支臂）：使用位置：RE4StableCameraCollision.PostPipelineStageCallback(CinemachineVirtualCameraBase, CinemachineCore.Stage, ref CameraState, float)。
-Vector3 boom = desiredPosition - focusPosition;
-        // desiredDistance（期望距离）：使用位置：作为 Mathf.Clamp(float, float, float) 的参数、作为 Mathf.Min(float, float) 的参数、作为 RE4StableCameraCollision.IsFinite(float) 的参数 等共 5 处。
-float desiredDistance = boom.magnitude;
-        if (!IsFinite(desiredDistance) || desiredDistance <= Epsilon)
-        {
-            return;
-        }
-
-        // boomDirection（镜头支臂方向）：使用位置：作为 RE4StableCameraCollision.TryGetSafeDistance(Vector3, Vector3, float, out float) 的参数、RE4StableCameraCollision.PostPipelineStageCallback(CinemachineVirtualCameraBase, CinemachineCore.Stage, ref CameraState, float)。
-        Vector3 boomDirection = boom / desiredDistance;
-        bool blocked = TryGetSafeDistance(focusPosition, boomDirection, desiredDistance, out float safeDistance);
-        // mustReset（是否必须重置）：使用位置：RE4StableCameraCollision.PostPipelineStageCallback(CinemachineVirtualCameraBase, CinemachineCore.Stage, ref CameraState, float)。
-bool mustReset = !stateInitialized || deltaTime < 0f || !vcam.PreviousStateIsValid;
-        float desiredDistanceChange = desiredDistance - previousDesiredDistance;
-        previousDesiredDistance = desiredDistance;
-        if (mustReset)
-        {
-            hasSafeCameraPosition = false;
-            recoveringFromBlockedPoint = false;
-            lastBlockedTime = float.NegativeInfinity;
-            currentDistance = safeDistance;
-            heldBlockedDistance = safeDistance;
-            distanceVelocity = 0f;
-            stateInitialized = true;
-            if (blocked)
-            {
-                lastBlockedTime = Time.time;
-            }
+            focusPosition = gameplayDriver.ReadStableCollisionFocusPosition(up);
         }
         else
         {
-            // 编辑器暂停后仍会重绘游戏窗口，Cinemachine 此时传入零增量时间。
-            // SmoothDamp 在零增量时间下可能把速度污染为非数值，继而破坏相机矩阵。
-            if (!IsFinite(deltaTime) || deltaTime <= Epsilon)
-            {
-                distanceVelocity = 0f;
-                if (IsFinite(currentDistance))
-                {
-                    currentDistance = Mathf.Clamp(currentDistance, MinimumDistance, desiredDistance);
-                }
-                else
-                {
-                    currentDistance = safeDistance;
-                }
-
-                // pausedCorrectedPosition（已暂停校正后的位置）：使用位置：RE4StableCameraCollision.PostPipelineStageCallback(CinemachineVirtualCameraBase, CinemachineCore.Stage, ref CameraState, float)。
-Vector3 pausedCorrectedPosition = focusPosition + boomDirection * currentDistance;
-                state.RawPosition += pausedCorrectedPosition - desiredPosition;
-                return;
-            }
-
-            // targetDistance（目标距离）：使用位置：作为 Mathf.SmoothDamp(float, float, ref float, float, float, float) 的参数、RE4StableCameraCollision.PostPipelineStageCallback(CinemachineVirtualCameraBase, CinemachineCore.Stage, ref CameraState, float)。
-float targetDistance = desiredDistance;
-            if (blocked)
-            {
-                lastBlockedTime = Time.time;
-                heldBlockedDistance = safeDistance;
-                // 新障碍必须立即满足安全距离，不能用阻尼把镜头留在墙内。
-                if (safeDistance < currentDistance)
-                {
-                    currentDistance = safeDistance;
-                    distanceVelocity = 0f;
-                }
-
-                targetDistance = safeDistance;
-            }
-            else if (Time.time - lastBlockedTime < releaseDelay)
-            {
-                // 门框边缘短暂丢失命中时保持距离，消除逐帧伸缩。
-                targetDistance = Mathf.Min(desiredDistance, heldBlockedDistance);
-            }
-            else
-            {
-                // 让无障碍的支臂长度直接随构图变化，只对残余的避障压缩做恢复阻尼。
-                currentDistance = Mathf.Clamp(currentDistance + desiredDistanceChange, MinimumDistance, desiredDistance);
-            }
-
-            if (targetDistance >= currentDistance)
-            {
-                currentDistance = Mathf.SmoothDamp(currentDistance, targetDistance, ref distanceVelocity, recoveryDamping, Mathf.Infinity, deltaTime);
-            }
-
-            if (!IsFinite(currentDistance) || !IsFinite(distanceVelocity))
-            {
-                currentDistance = safeDistance;
-                heldBlockedDistance = safeDistance;
-                distanceVelocity = 0f;
-            }
-
-            currentDistance = Mathf.Clamp(currentDistance, MinimumDistance, desiredDistance);
+            float focusHeight = Mathf.Max(0f, thirdPersonFollow.VerticalArmLength) * focusHeightRatio;
+            focusPosition = followTarget.position + up * focusHeight;
         }
 
-        // correctedPosition（校正后的位置）：使用位置：RE4StableCameraCollision.PostPipelineStageCallback(CinemachineVirtualCameraBase, CinemachineCore.Stage, ref CameraState, float)。
-        Vector3 correctedPosition = focusPosition + boomDirection * currentDistance;
-        float near = Mathf.Max(.01f, state.Lens.NearClipPlane);
-        float halfHeight = near * Mathf.Tan(state.Lens.FieldOfView * Mathf.Deg2Rad * .5f);
-        nearPlaneRadius = Mathf.Max(cameraRadius, Mathf.Sqrt(near * near + halfHeight * halfHeight * (1f + state.Lens.Aspect * state.Lens.Aspect)));
-        correctedPosition = ResolveFinalCameraPosition(focusPosition, correctedPosition, up, deltaTime);
+        Vector3 desiredPosition = state.GetCorrectedPosition();
+        float near = Mathf.Max(0.01f, state.Lens.NearClipPlane);
+        float halfHeight = near * Mathf.Tan(state.Lens.FieldOfView * Mathf.Deg2Rad * 0.5f);
+        float nearPlaneRadius = Mathf.Max(
+            cameraRadius,
+            Mathf.Sqrt(near * near + halfHeight * halfHeight * (1f + state.Lens.Aspect * state.Lens.Aspect)));
+
+        CameraCollisionSolver.SolveSettings settings;
+        Transform playerRoot = null;
+        WindowTraversalPoint activeWindow = null;
+        bool inPassage = false;
+        float exitEaseWeight = 0f;
+        float aimShoulderLockWeight = 0f;
+
+        if (gameplayDriver != null)
+        {
+            settings = gameplayDriver.ReadCollisionSolverSettings();
+            playerRoot = gameplayDriver.ControllerTransform;
+            activeWindow = gameplayDriver.ActiveTraversalWindow;
+            inPassage = gameplayDriver.PassageCameraWeight > 0.01f;
+            exitEaseWeight = gameplayDriver.ExitEaseWeight;
+            aimShoulderLockWeight = gameplayDriver.AimShoulderLockWeight;
+        }
+        else
+        {
+            settings = CameraCollisionSolver.SolveSettings.CreateDefault();
+            settings.releaseDelay = releaseDelay;
+            settings.normalRecoveryDamping = recoveryDamping;
+        }
+
+        float actualShoulderOffset = Mathf.Max(0f, Vector3.Dot(desiredPosition - focusPosition, followTarget.right));
+        float effectiveDesiredShoulderOffset = thirdPersonFollow.ShoulderOffset.x;
+        if (gameplayDriver != null && gameplayDriver.PistolFramingWeight > 0.001f)
+        {
+            effectiveDesiredShoulderOffset = Mathf.Lerp(
+                effectiveDesiredShoulderOffset,
+                actualShoulderOffset,
+                gameplayDriver.PistolFramingWeight);
+        }
+
+        CameraCollisionSolver.SolveRequest request = new CameraCollisionSolver.SolveRequest
+        {
+            focusPosition = focusPosition,
+            desiredPosition = desiredPosition,
+            referenceUp = up,
+            cameraRight = followTarget.right,
+            desiredShoulderOffset = effectiveDesiredShoulderOffset,
+            cameraRadius = cameraRadius,
+            safetySkin = safetySkin,
+            nearPlaneRadius = nearPlaneRadius,
+            minimumDistance = MinimumDistance,
+            collisionMask = collisionMask.value,
+            playerRoot = playerRoot,
+            activeWindow = activeWindow,
+            inPassage = inPassage,
+            exitEaseWeight = exitEaseWeight,
+            deltaTime = deltaTime,
+            resetState = !vcam.PreviousStateIsValid,
+            aimShoulderLockWeight = aimShoulderLockWeight
+        };
+
+        Vector3 correctedPosition = solver.Solve(in request, in settings);
+        if (gameplayDriver != null)
+        {
+            gameplayDriver.SetCollisionCompressionRatio(solver.CompressionRatio);
+        }
+
         state.RawPosition += correctedPosition - desiredPosition;
     }
 
-    private Vector3 ResolveFinalCameraPosition(Vector3 focus, Vector3 desired, Vector3 up, float deltaTime)
+    private float MinimumDistance
     {
-        Vector3 candidate = desired;
-        if (!IsClearCameraPoint(focus, candidate))
+        get { return Mathf.Max(AbsoluteMinimumCameraDistance, minimumExternalDistance); }
+    }
+
+    private void ResetCollisionState()
+    {
+        solver.Reset();
+        if (gameplayDriver != null)
         {
-            recoveringFromBlockedPoint = true;
-            Vector3 offset = desired - focus;
-            bool found = false;
-            for (int height = 0; height <= 3 && !found; height++)
-            {
-                for (int step = 0; step <= 8; step++)
-                {
-                    candidate = focus + offset * (1f - step * .11f) + up * (height * .25f);
-                    if (IsClearCameraPoint(focus, candidate))
-                    {
-                        found = true;
-                        break;
-                    }
-                }
-            }
-            if (!found)
-            {
-                // 极窄空间仍从人物附近找机位，不把相机写回可能在墙里的探测原点。
-                Vector3 raisedFocus = focus + up * .35f;
-                candidate = raisedFocus;
-                Vector3 radial = Vector3.ProjectOnPlane(offset, up).normalized;
-                Vector3 side = Vector3.Cross(up, radial);
-                for (int sample = 0; sample < 8; sample++)
-                {
-                    float angle = sample * Mathf.PI * .25f;
-                    Vector3 direction = radial * Mathf.Cos(angle) + side * Mathf.Sin(angle);
-                    Vector3 probe = raisedFocus + direction * .48f;
-                    if (IsClearCameraPoint(raisedFocus, probe))
-                    {
-                        candidate = probe;
-                        break;
-                    }
-                }
-                Vector3 carried = lastSafeCameraPosition + focus - lastSafeFocus;
-                if (HasBlockingOverlap(candidate, nearPlaneRadius) && hasSafeCameraPosition
-                    && IsClearCameraPoint(raisedFocus, carried))
-                {
-                    candidate = carried;
-                }
-            }
+            gameplayDriver.SetCollisionCompressionRatio(0f);
         }
-
-        if (hasSafeCameraPosition)
-        {
-            // 上帧安全点随人物平移，避免避障把镜头留在旧世界位置。
-            Vector3 previous = lastSafeCameraPosition + focus - lastSafeFocus;
-            float passageWeight = 0f;
-            if (gameplayDriver != null)
-            {
-                passageWeight = gameplayDriver.PassageCameraWeight;
-            }
-            if ((recoveringFromBlockedPoint || passageWeight > .01f) && deltaTime > 0f)
-            {
-                float speed = Mathf.Lerp(20f, 3.8f, passageWeight);
-                if (recoveringFromBlockedPoint)
-                {
-                    speed = 3.8f;
-                }
-                Vector3 blended = Vector3.MoveTowards(previous, candidate, speed * deltaTime);
-                if (IsClearCameraPoint(focus, previous) && IsClearCameraPoint(focus, blended))
-                {
-                    if (recoveringFromBlockedPoint)
-                    {
-                        recoveringFromBlockedPoint = (candidate - blended).sqrMagnitude > .0001f;
-                    }
-                    candidate = blended;
-                }
-            }
-            Vector3 delta = candidate - previous;
-            if (!HasBlockingOverlap(previous, nearPlaneRadius) && delta.sqrMagnitude > .0001f
-                && Physics.SphereCast(previous, nearPlaneRadius, delta.normalized, out RaycastHit hit,
-                    delta.magnitude, collisionMask, QueryTriggerInteraction.Ignore))
-            {
-                Vector3 stopped = previous + delta.normalized * Mathf.Max(0f, hit.distance - safetySkin);
-                if (IsClearCameraPoint(focus, stopped))
-                {
-                    candidate = stopped;
-                }
-            }
-        }
-        hasSafeCameraPosition = !HasBlockingOverlap(candidate, nearPlaneRadius);
-        lastSafeCameraPosition = candidate;
-        lastSafeFocus = focus;
-        return candidate;
-    }
-
-    private bool IsClearCameraPoint(Vector3 focus, Vector3 position)
-    {
-        return !HasBlockingOverlap(position, nearPlaneRadius)
-            && !Physics.Linecast(focus, position, collisionMask, QueryTriggerInteraction.Ignore);
-    }
-
-    /// <summary>IsFinite 的业务处理入口；本方法直接依赖 float.IsInfinity(float)、float.IsNaN(float)，调用方通过参数与返回结果交接本次处理。</summary>
-    /// <remarks>静态调用链：上游 RE4StableCameraCollision.IsFinite(Vector3)、RE4StableCameraCollision.PostPipelineStageCallback(CinemachineVirtualCameraBase, CinemachineCore.Stage, ref CameraState, float)；下游（含内部回调体） float.IsInfinity(float)、float.IsNaN(float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="value">中文含义：值。使用位置：作为 float.IsInfinity(float) 的参数、作为 float.IsNaN(float) 的参数。</param>
-    private static bool IsFinite(float value)
-    {
-        return !float.IsNaN(value) && !float.IsInfinity(value);
-    }
-
-    /// <summary>IsFinite 的业务处理入口；本方法直接依赖 RE4StableCameraCollision.IsFinite(float)，调用方通过参数与返回结果交接本次处理。</summary>
-    /// <remarks>静态调用链：上游 RE4StableCameraCollision.PostPipelineStageCallback(CinemachineVirtualCameraBase, CinemachineCore.Stage, ref CameraState, float)；下游（含内部回调体） RE4StableCameraCollision.IsFinite(float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="value">中文含义：值。使用位置：作为 RE4StableCameraCollision.IsFinite(float) 的参数。</param>
-    private static bool IsFinite(Vector3 value)
-    {
-        return IsFinite(value.x) && IsFinite(value.y) && IsFinite(value.z);
-    }
-
-    /// <summary>TryGetSafeDistance 的业务处理入口；本方法直接依赖 Mathf.Max(float, float)、Physics.SphereCastNonAlloc(Vector3, float, Vector3, RaycastHit[], float, int, QueryTriggerInteraction)、RE4StableCameraCollision.FindFirstOverlapSafeDistance(Vector3, Vector3, float)，调用方通过参数与返回结果交接本次处理。</summary>
-    /// <remarks>静态调用链：上游 RE4StableCameraCollision.PostPipelineStageCallback(CinemachineVirtualCameraBase, CinemachineCore.Stage, ref CameraState, float)；下游（含内部回调体） Mathf.Max(float, float)、Physics.SphereCastNonAlloc(Vector3, float, Vector3, RaycastHit[], float, int, QueryTriggerInteraction)、RE4StableCameraCollision.FindFirstOverlapSafeDistance(Vector3, Vector3, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="origin">中文含义：原点。使用位置：作为 Physics.SphereCastNonAlloc(Vector3, float, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 的参数、作为 RE4StableCameraCollision.FindFirstOverlapSafeDistance(Vector3, Vector3, float) 的参数。</param>
-    /// <param name="direction">中文含义：方向。使用位置：作为 Physics.SphereCastNonAlloc(Vector3, float, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 的参数、作为 RE4StableCameraCollision.FindFirstOverlapSafeDistance(Vector3, Vector3, float) 的参数。</param>
-    /// <param name="desiredDistance">中文含义：期望距离。使用位置：作为 Physics.SphereCastNonAlloc(Vector3, float, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 的参数、作为 RE4StableCameraCollision.FindFirstOverlapSafeDistance(Vector3, Vector3, float) 的参数、RE4StableCameraCollision.TryGetSafeDistance(Vector3, Vector3, float, out float)。</param>
-    /// <param name="safeDistance">中文含义：安全距离。输出参数，由本入口写入并交给调用方。使用位置：RE4StableCameraCollision.TryGetSafeDistance(Vector3, Vector3, float, out float)。</param>
-    private bool TryGetSafeDistance(Vector3 origin, Vector3 direction, float desiredDistance, out float safeDistance)
-    {
-        safeDistance = desiredDistance;
-        // hitCount（命中数量）：保存 Physics.SphereCastNonAlloc(Vector3, float, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 的返回结果，供当前步骤使用。使用位置：RE4StableCameraCollision.TryGetSafeDistance(Vector3, Vector3, float, out float)。
-int hitCount = Physics.SphereCastNonAlloc(origin, cameraRadius, direction, hitBuffer, desiredDistance, collisionMask, QueryTriggerInteraction.Ignore);
-        // blocked（是否受阻）：使用位置：RE4StableCameraCollision.TryGetSafeDistance(Vector3, Vector3, float, out float)。
-bool blocked = false;
-        // i（当前遍历索引）：使用位置：RE4StableCameraCollision.TryGetSafeDistance(Vector3, Vector3, float, out float)。
-for (int i = 0; i < hitCount; i++)
-        {
-            // hit（命中）：使用位置：作为 Mathf.Max(float, float) 的参数、RE4StableCameraCollision.TryGetSafeDistance(Vector3, Vector3, float, out float)。
-RaycastHit hit = hitBuffer[i];
-            if (hit.collider == null)
-            {
-                continue;
-            }
-
-            // candidateDistance（候选距离）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：RE4StableCameraCollision.TryGetSafeDistance(Vector3, Vector3, float, out float)。
-float candidateDistance = Mathf.Max(MinimumDistance, hit.distance - safetySkin);
-            if (candidateDistance >= safeDistance)
-            {
-                continue;
-            }
-
-            safeDistance = candidateDistance;
-            blocked = true;
-        }
-
-        // 球形投射从已与墙面重叠的位置开始时，物理系统可能不会返回命中。
-        // 沿镜头臂补做离散体积检测，并二分定位第一个阻挡点，覆盖贴墙、墙角和薄墙。
-        // overlapSafeDistance（重叠安全距离）：保存 RE4StableCameraCollision.FindFirstOverlapSafeDistance(Vector3, Vector3, float) 的返回结果，供当前步骤使用。使用位置：RE4StableCameraCollision.TryGetSafeDistance(Vector3, Vector3, float, out float)。
-float overlapSafeDistance = FindFirstOverlapSafeDistance(origin, direction, desiredDistance, cameraRadius);
-        if (overlapSafeDistance < safeDistance)
-        {
-            safeDistance = overlapSafeDistance;
-            blocked = true;
-        }
-
-        return blocked;
-    }
-
-    /// <summary>FindFirstOverlapSafeDistance 的业务处理入口；本方法直接依赖 Mathf.Lerp(float, float, float)、Mathf.Max(float, float)、RE4StableCameraCollision.HasBlockingOverlap(Vector3)，调用方通过参数与返回结果交接本次处理。</summary>
-    /// <remarks>静态调用链：上游 RE4StableCameraCollision.TryGetSafeDistance(Vector3, Vector3, float, out float)；下游（含内部回调体） Mathf.Lerp(float, float, float)、Mathf.Max(float, float)、RE4StableCameraCollision.HasBlockingOverlap(Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="origin">中文含义：原点。使用位置：作为 RE4StableCameraCollision.HasBlockingOverlap(Vector3) 的参数。</param>
-    /// <param name="direction">中文含义：方向。使用位置：作为 RE4StableCameraCollision.HasBlockingOverlap(Vector3) 的参数。</param>
-    /// <param name="desiredDistance">中文含义：期望距离。使用位置：作为 Mathf.Lerp(float, float, float) 的参数、RE4StableCameraCollision.FindFirstOverlapSafeDistance(Vector3, Vector3, float)。</param>
-    private float FindFirstOverlapSafeDistance(Vector3 origin, Vector3 direction, float desiredDistance, float radius)
-    {
-        // previousDistance（前一次距离）：使用位置：作为 RE4StableCameraCollision.HasBlockingOverlap(Vector3) 的参数、RE4StableCameraCollision.FindFirstOverlapSafeDistance(Vector3, Vector3, float)。
-float previousDistance = MinimumDistance;
-        if (HasBlockingOverlap(origin + direction * previousDistance, radius))
-        {
-            return MinimumDistance;
-        }
-
-        // i（当前遍历索引）：使用位置：作为 Mathf.Lerp(float, float, float) 的参数、RE4StableCameraCollision.FindFirstOverlapSafeDistance(Vector3, Vector3, float)。
-for (int i = 1; i <= CollisionProbeSteps; i++)
-        {
-            // probeDistance（探测距离）：保存 Mathf.Lerp(float, float, float) 的返回结果，供当前步骤使用。使用位置：作为 RE4StableCameraCollision.HasBlockingOverlap(Vector3) 的参数、RE4StableCameraCollision.FindFirstOverlapSafeDistance(Vector3, Vector3, float)。
-float probeDistance = Mathf.Lerp(MinimumDistance, desiredDistance, i / (float)CollisionProbeSteps);
-            if (!HasBlockingOverlap(origin + direction * probeDistance, radius))
-            {
-                previousDistance = probeDistance;
-                continue;
-            }
-
-            // lower（下部）：使用位置：作为 Mathf.Max(float, float) 的参数、RE4StableCameraCollision.FindFirstOverlapSafeDistance(Vector3, Vector3, float)。
-float lower = previousDistance;
-            // upper（上部）：使用位置：RE4StableCameraCollision.FindFirstOverlapSafeDistance(Vector3, Vector3, float)。
-float upper = probeDistance;
-            // refinement（精修）：使用位置：RE4StableCameraCollision.FindFirstOverlapSafeDistance(Vector3, Vector3, float)。
-for (int refinement = 0; refinement < CollisionRefinementSteps; refinement++)
-            {
-                // middle（中间）：使用位置：作为 RE4StableCameraCollision.HasBlockingOverlap(Vector3) 的参数、RE4StableCameraCollision.FindFirstOverlapSafeDistance(Vector3, Vector3, float)。
-float middle = (lower + upper) * 0.5f;
-                if (HasBlockingOverlap(origin + direction * middle, radius))
-                {
-                    upper = middle;
-                }
-                else
-                {
-                    lower = middle;
-                }
-            }
-
-            return Mathf.Max(MinimumDistance, lower - safetySkin);
-        }
-
-        return desiredDistance;
-    }
-
-    /// <summary>中文含义：最小距离。使用位置：作为 Mathf.Clamp(float, float, float) 的参数、作为 Mathf.Lerp(float, float, float) 的参数、作为 Mathf.Max(float, float) 的参数 等共 4 处。</summary>
-    private float MinimumDistance => Mathf.Max(AbsoluteMinimumCameraDistance, minimumExternalDistance);
-
-    /// <summary>HasBlockingOverlap 的业务处理入口；本方法直接依赖 Physics.OverlapSphereNonAlloc(Vector3, float, Collider[], int, QueryTriggerInteraction)，调用方通过参数与返回结果交接本次处理。</summary>
-    /// <remarks>静态调用链：上游 RE4StableCameraCollision.FindFirstOverlapSafeDistance(Vector3, Vector3, float)；下游（含内部回调体） Physics.OverlapSphereNonAlloc(Vector3, float, Collider[], int, QueryTriggerInteraction)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="position">中文含义：位置。使用位置：作为 Physics.OverlapSphereNonAlloc(Vector3, float, Collider[], int, QueryTriggerInteraction) 的参数。</param>
-    private bool HasBlockingOverlap(Vector3 position, float radius)
-    {
-        return Physics.OverlapSphereNonAlloc(position, radius, overlapBuffer, collisionMask, QueryTriggerInteraction.Ignore) > 0;
-    }
-
-    /// <summary>ResetCollisionState 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
-    /// <remarks>静态调用链：上游 RE4StableCameraCollision.Configure(Transform, CinemachineThirdPersonFollow, LayerMask, float, float, float, float, float, float)、RE4StableCameraCollision.OnEnable()、RE4StableCameraCollision.PostPipelineStageCallback(CinemachineVirtualCameraBase, CinemachineCore.Stage, ref CameraState, float)；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    void ResetCollisionState()
-    {
-        hasSafeCameraPosition = false;
-        stateInitialized = false;
-        currentDistance = 0f;
-        distanceVelocity = 0f;
-        heldBlockedDistance = 0f;
-        previousDesiredDistance = 0f;
-        lastBlockedTime = float.NegativeInfinity;
     }
 }

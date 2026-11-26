@@ -4,12 +4,12 @@
 /// <remarks>玩家刚体运动宿主，结合控制器输入、自由环顾移动参考与动作许可执行移动，并把运动参数交给现有动画适配器。</remarks>
 public class LeonLocomotion : MonoBehaviour
 {
-    /// <summary>中文含义：当前移动阶段。使用位置：LeonAnimationActionCoordinator.PlayerSnapshot.get、LeonLocomotion.CommitMovementPhase(LeonState)。</summary>
+    /// <summary>当前移动阶段。</summary>
     public LeonState MovementPhase { get; private set; } = LeonState.Idle;
 
     /// <summary>CommitMovementPhase 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
     /// <remarks>静态调用链：上游 LeonAnimationActionCoordinator.CommitCompatibleState(LeonState)、LeonAnimationActionCoordinator.OnDisable()；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="phase">中文含义：阶段。使用位置：LeonLocomotion.CommitMovementPhase(LeonState)。</param>
+    /// <param name="phase">阶段。</param>
     internal void CommitMovementPhase(LeonState phase)
     {
         if (phase == LeonState.Idle || phase == LeonState.Walking || phase == LeonState.Running || phase == LeonState.Sprinting)
@@ -18,89 +18,89 @@ public class LeonLocomotion : MonoBehaviour
         }
     }
 
-    /// <summary>中文含义：角色运动执行器。使用位置：作为 LeonPlayerStairRampRuntime.ApplyPlayerMotionAssist(LeonController, Rigidbody, CapsuleCollider, Vector3, LeonActionMotionDriver, MotionControlToken) 的参数、LeonLocomotion.HandleMovement()、LeonLocomotion.HandleRotation(Vector3, Camera, bool, bool, bool, bool, bool, Vector3) 等共 5 处。</summary>
+    /// <summary>角色运动执行器。</summary>
     [Header("运动执行引用")]
     [UnityEngine.Serialization.FormerlySerializedAs("运动执行")]
     [UnityEngine.InspectorName("运动执行")]
     public LeonActionMotionDriver motionExecutor;
-    /// <summary>中文含义：常规移动控制凭证。使用位置：作为 LeonActionMotionDriver.CommitNormalOrientation(MotionControlToken, Quaternion) 的参数、作为 LeonActionMotionDriver.CommitSpeed(MotionControlToken, Vector3) 的参数、作为 LeonPlayerStairRampRuntime.ApplyPlayerMotionAssist(LeonController, Rigidbody, CapsuleCollider, Vector3, LeonActionMotionDriver, MotionControlToken) 的参数 等共 4 处。</summary>
+    /// <summary>常规移动控制凭证。</summary>
     private GameArchitecture.MotionControlToken movementToken;
-    /// <summary>中文含义：里昂玩家控制器。使用位置：作为 LeonAnimatorDriver.SetMovement(float, float, float, bool) 的参数、作为 LeonPlayerStairRampRuntime.ApplyPlayerMotionAssist(LeonController, Rigidbody, CapsuleCollider, Vector3, LeonActionMotionDriver, MotionControlToken) 的参数、作为 Quaternion.Lerp(Quaternion, Quaternion, float) 的参数 等共 8 处。</summary>
+    /// <summary>里昂玩家控制器。</summary>
     private LeonController controller;
-    /// <summary>中文含义：战斗。使用位置：LeonLocomotion.HandleMovement()、LeonLocomotion.HandleRotation(Vector3, Camera, bool, bool, bool, bool, bool, Vector3)、LeonLocomotion.Start()。</summary>
+    /// <summary>战斗。</summary>
     private LeonCombat combat;
-    /// <summary>中文含义：运动刚体。使用位置：作为 LeonPlayerStairRampRuntime.ApplyPlayerMotionAssist(LeonController, Rigidbody, CapsuleCollider, Vector3, LeonActionMotionDriver, MotionControlToken) 的参数、作为 Vector3.Vector3(float, float, float) 的参数、LeonLocomotion.HandleMovement() 等共 4 处。</summary>
+    /// <summary>运动刚体。</summary>
     private Rigidbody rb;
-    /// <summary>中文含义：胶囊碰撞体。使用位置：作为 LeonPlayerStairRampRuntime.ApplyPlayerMotionAssist(LeonController, Rigidbody, CapsuleCollider, Vector3, LeonActionMotionDriver, MotionControlToken) 的参数、LeonLocomotion.Start()。</summary>
+    /// <summary>胶囊碰撞体。</summary>
     private CapsuleCollider capsuleCollider;
     // 上帧速度，用于平滑过渡
-    /// <summary>中文含义：当前平滑后的移动速度。使用位置：作为 Mathf.Lerp(float, float, float) 的参数、LeonLocomotion.DampToZero()、LeonLocomotion.HandleMovement() 等共 4 处。</summary>
+    /// <summary>当前平滑后的移动速度。</summary>
     private float currentSpeed;
     // 新管线移动值缓存（不再从Animator读取）
-    /// <summary>中文含义：平滑后的水平移动输入。使用位置：作为 LeonAnimatorDriver.SetMovement(float, float, float, bool) 的参数、作为 Mathf.Lerp(float, float, float) 的参数、LeonLocomotion.DampToZero() 等共 6 处。</summary>
+    /// <summary>平滑后的水平移动输入。</summary>
     private float smoothHorizontal;
-    /// <summary>中文含义：平滑后的纵向移动输入。使用位置：作为 LeonAnimatorDriver.SetMovement(float, float, float, bool) 的参数、作为 Mathf.Lerp(float, float, float) 的参数、LeonLocomotion.DampToZero() 等共 6 处。</summary>
+    /// <summary>平滑后的纵向移动输入。</summary>
     private float smoothVertical;
-    /// <summary>中文含义：平滑输入长度。使用位置：作为 LeonAnimatorDriver.SetMovement(float, float, float, bool) 的参数、作为 Mathf.Clamp01(float) 的参数、作为 Mathf.Lerp(float, float, float) 的参数 等共 7 处。</summary>
+    /// <summary>平滑输入长度。</summary>
     private float smoothInputMagnitude;
     // 新管线组件引用
     private LeonAnimatorDriver driver;
-    /// <summary>中文含义：蹲伏速度。使用位置：LeonLocomotion.HandleMovement()。</summary>
+    /// <summary>蹲伏速度。</summary>
     [Header("蹲伏移动")]
     [SerializeField, Min(0f)]
     private float crouchSpeed = 1.35f;
-    /// <summary>中文含义：受伤行走前向速度。使用位置：作为 LeonLocomotion.ComputeDirectionalSpeed(Vector3, float, float, float, float) 的参数。</summary>
+    /// <summary>受伤行走前向速度。</summary>
     [Header("受伤移动速度（受伤且非蹲伏时生效）")]
     [SerializeField, Min(0f)]
     private float injuredWalkForwardSpeed = 1.35f;
-    /// <summary>中文含义：受伤行走后退速度。使用位置：作为 LeonLocomotion.ComputeDirectionalSpeed(Vector3, float, float, float, float) 的参数。</summary>
+    /// <summary>受伤行走后退速度。</summary>
     [SerializeField, Min(0f)]
     private float injuredWalkBackwardSpeed = 1.10f;
-    /// <summary>中文含义：受伤横移速度。使用位置：作为 LeonLocomotion.ComputeDirectionalSpeed(Vector3, float, float, float, float) 的参数。</summary>
+    /// <summary>受伤横移速度。</summary>
     [SerializeField, Min(0f)]
     private float injuredStrafeSpeed = 0.95f;
-    /// <summary>中文含义：受伤慢跑速度。使用位置：LeonLocomotion.HandleMovement()。</summary>
+    /// <summary>受伤慢跑速度。</summary>
     [SerializeField, Min(0f)]
     private float injuredJogSpeed = 2.35f;
-    /// <summary>中文含义：受伤输入阻尼系数。受伤状态下移动输入方向与幅度的平滑系数（正常状态为每秒10）。使用位置：LeonLocomotion.HandleMovement()。</summary>
+    /// <summary>受伤输入阻尼系数。受伤状态下移动输入方向与幅度的平滑系数（正常状态为每秒10）。</summary>
     [Tooltip("受伤状态下移动输入方向与幅度的平滑系数（正常状态为每秒10）")]
     [SerializeField, Range(1f, 15f)]
     private float injuredInputDampFactor = 6f;
-    /// <summary>中文含义：当前转向角度。使用位置：作为 LeonAnimatorDriver.SetTurnAngle(float) 的参数、作为 Mathf.Abs(float) 的参数、作为 Mathf.Approximately(float, float) 的参数 等共 7 处。</summary>
+    /// <summary>当前转向角度。</summary>
     private float currentTurnAngle;
-    /// <summary>中文含义：冲刺起步动作期间，从当前速度平滑提升至冲刺速度的时长。使用位置：作为 Mathf.Max(float, float) 的参数、作为 Mathf.Min(float, float) 的参数。</summary>
+    /// <summary>冲刺起步动作期间，从当前速度平滑提升至冲刺速度的时长。</summary>
     [Header("冲刺起停惯性")]
     [Tooltip("冲刺起步动作期间，从当前速度平滑提升至冲刺速度的时长")]
     [SerializeField, Range(0.1f, 1f)]
     private float sprintStartDuration = 0.36f;
-    /// <summary>中文含义：冲刺急停动作期间保留向前惯性并完成减速的时长。使用位置：作为 Mathf.Max(float, float) 的参数、作为 Mathf.Min(float, float) 的参数。</summary>
+    /// <summary>冲刺急停动作期间保留向前惯性并完成减速的时长。</summary>
     [Tooltip("冲刺急停动作期间保留向前惯性并完成减速的时长")]
     [SerializeField, Range(0.1f, 1f)]
     private float sprintStopDuration = 0.38f;
-    /// <summary>中文含义：输入低于该值时视为松开移动键，开始冲刺急停惯性。使用位置：LeonLocomotion.UpdateSprintTransitionState(bool, float)。</summary>
+    /// <summary>输入低于该值时视为松开移动键，开始冲刺急停惯性。</summary>
     [Tooltip("输入低于该值时视为松开移动键，开始冲刺急停惯性")]
     [SerializeField, Range(0.01f, 0.2f)]
     private float sprintStopInputThreshold = 0.05f;
-    /// <summary>中文含义：是否前一次实际生效的冲刺中。使用位置：LeonLocomotion.Start()、LeonLocomotion.UpdateSprintTransitionState(bool, float)。</summary>
+    /// <summary>是否前一次实际生效的冲刺中。</summary>
     private bool previousEffectiveSprinting;
-    /// <summary>中文含义：冲刺起始是否生效。使用位置：LeonLocomotion.HandleMovement()、LeonLocomotion.Start()、LeonLocomotion.UpdateSprintTransitionState(bool, float)。</summary>
+    /// <summary>冲刺起始是否生效。</summary>
     private bool sprintStartActive;
-    /// <summary>中文含义：冲刺起始已用。使用位置：作为 Mathf.Min(float, float) 的参数、LeonLocomotion.HandleMovement()、LeonLocomotion.UpdateSprintTransitionState(bool, float)。</summary>
+    /// <summary>冲刺起始已用。</summary>
     private float sprintStartElapsed;
-    /// <summary>中文含义：冲刺起始速度。使用位置：作为 Mathf.Lerp(float, float, float) 的参数、LeonLocomotion.UpdateSprintTransitionState(bool, float)。</summary>
+    /// <summary>冲刺起始速度。</summary>
     private float sprintStartSpeed;
-    /// <summary>中文含义：冲刺停止是否生效。使用位置：LeonLocomotion.HandleMovement()、LeonLocomotion.IsQuickStopDeceleration.get、LeonLocomotion.Start() 等共 4 处。</summary>
+    /// <summary>冲刺停止是否生效。</summary>
     private bool sprintStopActive;
-    /// <summary>中文含义：是否快速停止减速度。使用位置：LeonFootAction.IsStepping.get。</summary>
+    /// <summary>是否快速停止减速度。</summary>
     public bool IsQuickStopDeceleration => sprintStopActive || driver != null && driver.IsNativeSprintStopping;
 
-    /// <summary>中文含义：冲刺停止已用。使用位置：作为 Mathf.Min(float, float) 的参数、LeonLocomotion.HandleMovement()、LeonLocomotion.UpdateSprintTransitionState(bool, float)。</summary>
+    /// <summary>冲刺停止已用。</summary>
     private float sprintStopElapsed;
-    /// <summary>中文含义：冲刺停止速度。使用位置：LeonLocomotion.HandleMovement()、LeonLocomotion.UpdateSprintTransitionState(bool, float)。</summary>
+    /// <summary>冲刺停止速度。</summary>
     private float sprintStopSpeed;
-    /// <summary>中文含义：冲刺停止方向。使用位置：LeonLocomotion.HandleMovement()、LeonLocomotion.UpdateSprintTransitionState(bool, float)。</summary>
+    /// <summary>冲刺停止方向。</summary>
     private Vector3 sprintStopDirection;
-    /// <summary>中文含义：上一次移动方向。使用位置：LeonLocomotion.HandleMovement()、LeonLocomotion.Start()、LeonLocomotion.UpdateSprintTransitionState(bool, float)。</summary>
+    /// <summary>上一次移动方向。</summary>
     private Vector3 lastMoveDirection;
     private LeonItemPickup itemPickup;
     /// <summary>Unity 首次启用后的启动回调；状态处理与资源交接按函数内顺序执行，下游协作见调用链。</summary>
@@ -171,13 +171,13 @@ public class LeonLocomotion : MonoBehaviour
             return;
         }
 
-        // state（当前里昂状态）：使用位置：LeonLocomotion.HandleMovement()。
+        // 当前里昂状态。
 var state = controller.currentState;
         if (state == LeonState.Staggered && driver != null && driver.HitMovementReleased)
             state = LeonState.Walking;
-        // input（输入数据）：使用位置：作为 LeonController.CalculateMovementDirection(Vector3) 的参数、作为 LeonLocomotion.HandleRotation(Vector3, Camera, bool, bool, bool, bool, bool, Vector3) 的参数、LeonLocomotion.HandleMovement()。
+        // 输入数据。
 var input = controller.MoveInput;
-        // cam（摄像机）：使用位置：作为 LeonLocomotion.HandleRotation(Vector3, Camera, bool, bool, bool, bool, bool, Vector3) 的参数、作为 LeonLocomotion.UpdateTurnAngleFromCamera(Camera, bool, bool, bool, bool) 的参数。
+        // 摄像机。
 var cam = controller.playerCamera;
         // 死亡、受击期间限制移动
         if (combat != null && combat.IsPositionedMelee)
@@ -209,15 +209,26 @@ var cam = controller.playerCamera;
 
         if (state == LeonState.Dead || state == LeonState.Staggered || state == LeonState.QTE || state == LeonState.Traversing)
         {
-            if (driver != null)
+            bool isItemPickup = state == LeonState.Traversing
+                && controller.AnimCoordinator != null
+                && controller.AnimCoordinator.IsItemPickupActive;
+            bool isMovingItemPickup = isItemPickup && itemPickup != null && itemPickup.IsMovingPickup;
+            if (driver != null && !isMovingItemPickup)
             {
                 driver.ReleaseNativeGait(false);
             }
+
+            if (isItemPickup && !isMovingItemPickup)
+            {
+                sprintStartActive = false;
+                sprintStopActive = false;
+                previousEffectiveSprinting = false;
+            }
             ResetTurnAngle();
             DampToZero();
-            // receiverValue2（判空前缓存的角色运动执行器）：从角色运动执行器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonLocomotion.HandleMovement()。
+            // 判空前缓存的角色运动执行器。
 global::LeonActionMotionDriver receiverValue2 = motionExecutor;
-            // optionalValue3（条件访问得到的移动速度是否成功提交）：保存条件访问的结果，接收者为空时保持默认空值，非空时才执行原成员访问。使用位置：LeonLocomotion.HandleMovement()。
+            // 条件访问得到的移动速度是否成功提交。
 bool? optionalValue3;
             if (!global::System.Object.ReferenceEquals(receiverValue2, null))
             {
@@ -231,17 +242,17 @@ bool? optionalValue3;
             return;
         }
 
-        // isShooting（是否正在射击）：使用位置：作为 LeonLocomotion.HandleRotation(Vector3, Camera, bool, bool, bool, bool, bool, Vector3) 的参数、作为 LeonLocomotion.UpdateTurnAngleFromCamera(Camera, bool, bool, bool, bool) 的参数、LeonLocomotion.HandleMovement()。
+        // 是否正在射击。
 bool isShooting = state == LeonState.Shooting;
-        // isAiming（是否正在瞄准）：使用位置：作为 LeonLocomotion.HandleRotation(Vector3, Camera, bool, bool, bool, bool, bool, Vector3) 的参数、作为 LeonLocomotion.UpdateTurnAngleFromCamera(Camera, bool, bool, bool, bool) 的参数、LeonLocomotion.HandleMovement()。
+        // 是否正在瞄准。
 bool isAiming = controller.IsAiming;
-        // isReloading（是否正在换弹）：使用位置：作为 LeonLocomotion.HandleRotation(Vector3, Camera, bool, bool, bool, bool, bool, Vector3) 的参数、作为 LeonLocomotion.UpdateTurnAngleFromCamera(Camera, bool, bool, bool, bool) 的参数、LeonLocomotion.HandleMovement()。
+        // 是否正在换弹。
 bool isReloading = state == LeonState.Reloading;
-        // isMeleeing（是否近战中）：使用位置：作为 LeonLocomotion.HandleRotation(Vector3, Camera, bool, bool, bool, bool, bool, Vector3) 的参数、作为 LeonLocomotion.UpdateTurnAngleFromCamera(Camera, bool, bool, bool, bool) 的参数、LeonLocomotion.HandleMovement()。
+        // 是否近战中。
 bool isMeleeing = state == LeonState.MeleeAttacking || combat != null && combat.knifeModule != null && combat.knifeModule.Active;
-        // isKnifeAttack（是否小刀攻击）：使用位置：作为 LeonLocomotion.HandleRotation(Vector3, Camera, bool, bool, bool, bool, bool, Vector3) 的参数。
+        // 是否小刀攻击。
 bool isKnifeAttack = combat != null && combat.IsKnifeAttackActive;
-        // isCrouching（是否正在蹲伏）：使用位置：LeonLocomotion.HandleMovement()。
+        // 是否正在蹲伏。
 bool isCrouching = controller.IsCrouching;
         // 原地举枪继续使用持枪待机的骨盆和脊椎。方向输入仍交给瞄准步态。
         bool keepNativeAimIdle = driver != null && !driver.IsNativeGaitMoving && input.sqrMagnitude <= 0.0025f
@@ -296,14 +307,14 @@ bool isCrouching = controller.IsCrouching;
             lastMoveDirection = moveDir;
         }
 
-        // localMove（局部移动）：保存 Transform.InverseTransformDirection(Vector3) 的返回结果，供当前步骤使用。使用位置：作为 LeonLocomotion.ComputeDirectionalSpeed(Vector3, float, float, float, float) 的参数、作为 Mathf.Lerp(float, float, float) 的参数。
+        // 局部移动。
 Vector3 localMove = Quaternion.Inverse(rb.rotation) * moveDir;
-        // inputMag（输入弹匣）：使用位置：作为 LeonLocomotion.UpdateSprintTransitionState(bool, float) 的参数、作为 Mathf.Min(float, float) 的参数、LeonLocomotion.HandleMovement()。
+        // 输入弹匣。
 float inputMag = input.magnitude;
         // 受伤时输入方向平滑从每秒 10 降为每秒 6，正常状态继续使用原值
-        // leftOperand7（计算前缓存的左侧物理步时间间隔）：从物理步时间间隔读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：LeonLocomotion.HandleMovement()。
+        // 计算前缓存的左侧物理步时间间隔。
 float leftOperand7 = Time.fixedDeltaTime;
-        // selectedValue6（分支选出的受伤输入阻尼系数）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：LeonLocomotion.HandleMovement()。
+        // 分支选出的受伤输入阻尼系数。
 float selectedValue6;
         if (controller.IsInjured)
         {
@@ -315,30 +326,30 @@ float selectedValue6;
         }
 
         // 受伤时输入方向平滑从每秒 10 降为每秒 6，正常状态继续使用原值
-        // dampFactor（阻尼系数）：使用位置：作为 Mathf.Lerp(float, float, float) 的参数。
+        // 阻尼系数。
 float dampFactor = leftOperand7 * (selectedValue6);
-        // walkFwd（行走前向）：使用位置：作为 LeonLocomotion.ComputeDirectionalSpeed(Vector3, float, float, float, float) 的参数。
+        // 行走前向。
 float walkFwd = 1.83f;
-        // walkBwd（行走后向）：使用位置：作为 LeonLocomotion.ComputeDirectionalSpeed(Vector3, float, float, float, float) 的参数。
+        // 行走后向。
 float walkBwd = 1.68f;
-        // strafeLeft（横移左侧）：使用位置：作为 LeonLocomotion.ComputeDirectionalSpeed(Vector3, float, float, float, float) 的参数。
+        // 横移左侧。
 float strafeLeft = 1.51f;
-        // strafeRight（横移右侧）：使用位置：作为 LeonLocomotion.ComputeDirectionalSpeed(Vector3, float, float, float, float) 的参数。
+        // 横移右侧。
 float strafeRight = 1.95f;
-        // runFwd（运行前向）：使用位置：作为 LeonLocomotion.ComputeDirectionalSpeed(Vector3, float, float, float, float) 的参数。
+        // 运行前向。
 float runFwd = 3.24f;
-        // runBwd（运行后向）：使用位置：作为 LeonLocomotion.ComputeDirectionalSpeed(Vector3, float, float, float, float) 的参数。
+        // 运行后向。
 float runBwd = 3.24f;
-        // strafeRunLeft（横移运行左侧）：使用位置：作为 LeonLocomotion.ComputeDirectionalSpeed(Vector3, float, float, float, float) 的参数。
+        // 横移运行左侧。
 float strafeRunLeft = 3.24f;
-        // strafeRunRight（横移运行右侧）：使用位置：作为 LeonLocomotion.ComputeDirectionalSpeed(Vector3, float, float, float, float) 的参数。
+        // 横移运行右侧。
 float strafeRunRight = 3.24f;
-        // knifeActive（小刀是否生效）：使用位置：LeonLocomotion.HandleMovement()。
+        // 小刀是否生效。
 bool knifeActive = combat != null && combat.knifeModule != null && combat.knifeModule.Active;
-        // isSprinting（是否正在冲刺）：使用位置：作为 LeonAnimatorDriver.SetMovement(float, float, float, bool) 的参数、作为 LeonLocomotion.UpdateSprintTransitionState(bool, float) 的参数、LeonLocomotion.HandleMovement()。
+        // 是否正在冲刺。
 bool isSprinting = controller.IsEffectiveSprinting && !knifeActive && !directionalInput;
         UpdateSprintTransitionState(isSprinting, inputMag);
-        // targetInputMag（目标输入弹匣）：使用位置：作为 Mathf.Lerp(float, float, float) 的参数、LeonLocomotion.HandleMovement()。
+        // 目标输入弹匣。
 float targetInputMag;
         if (knifeActive)
         {
@@ -439,12 +450,49 @@ float targetInputMag;
                         rb.rotation, Quaternion.LookRotation(desiredFacing), 540f * Time.fixedDeltaTime));
                 }
             }
-            float pickupEntrySpeed = 0f;
-            if (!obstructed && paceInput > 0.05f && itemPickup != null)
+            float desiredPickupSpeed = 0f;
+            if (!obstructed && paceInput > 0.05f)
             {
-                pickupEntrySpeed = itemPickup.MovingEntrySpeed * Mathf.Clamp01(paceInput);
+                float baseSpeed;
+                if (isCrouching)
+                {
+                    baseSpeed = crouchSpeed;
+                }
+                else if (injured)
+                {
+                    if (isSprinting)
+                    {
+                        baseSpeed = injuredJogSpeed;
+                    }
+                    else
+                    {
+                        baseSpeed = injuredWalkForwardSpeed;
+                    }
+                }
+                else if (isSprinting || running)
+                {
+                    baseSpeed = controller.runSpeed;
+                }
+                else if (basicGait)
+                {
+                    baseSpeed = controller.walkSpeed;
+                }
+                else
+                {
+                    baseSpeed = runFwd;
+                }
+
+                desiredPickupSpeed = baseSpeed * Mathf.Clamp01(paceInput);
             }
-            motionExecutor.PrepareNativeGaitStep(movementToken, planarVelocity, pickupEntrySpeed);
+
+            float pickupSpeedFloor = 0f;
+            bool pickupProtected = false;
+            if (itemPickup != null)
+            {
+                pickupSpeedFloor = itemPickup.ReadPickupSpeedFloor(desiredPickupSpeed);
+                pickupProtected = itemPickup.IsPickupMotionProtected;
+            }
+            motionExecutor.PrepareNativeGaitStep(movementToken, planarVelocity, pickupSpeedFloor, pickupProtected);
             return;
         }
         if (driver != null && !keepNativeInjuryDuringKnife)
@@ -458,7 +506,7 @@ float targetInputMag;
         // 速度计算（使用自身缓存的InputMagnitude）
         // 受伤且非蹲伏时使用受伤步速/慢跑速度；瞄准、射击与换弹也用受伤步行速度。
         // 刚体仍是唯一位移来源，不读取受伤动画根位移。
-        // loopSpeed（循环速度）：使用位置：LeonLocomotion.HandleMovement()。
+        // 循环速度。
 float loopSpeed;
         if (isCrouching)
         {
@@ -488,11 +536,11 @@ float loopSpeed;
         {
             if (smoothInputMagnitude > 0.5f)
             {
-                // blend（混合）：保存 Mathf.Clamp01(float) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Lerp(float, float, float) 的参数。
+                // 混合。
 float blend = Mathf.Clamp01((smoothInputMagnitude - 0.5f) / 0.5f);
-                // walkSpd（行走速度）：保存 LeonLocomotion.ComputeDirectionalSpeed(Vector3, float, float, float, float) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Lerp(float, float, float) 的参数。
+                // 行走速度。
 float walkSpd = ComputeDirectionalSpeed(localMove, walkFwd, walkBwd, strafeLeft, strafeRight);
-                // runSpd（运行速度）：保存 LeonLocomotion.ComputeDirectionalSpeed(Vector3, float, float, float, float) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Lerp(float, float, float) 的参数。
+                // 运行速度。
 float runSpd = ComputeDirectionalSpeed(localMove, runFwd, runBwd, strafeRunLeft, strafeRunRight);
                 loopSpeed = Mathf.Lerp(walkSpd, runSpd, blend);
             }
@@ -507,19 +555,19 @@ float runSpd = ComputeDirectionalSpeed(localMove, runFwd, runBwd, strafeRunLeft,
             loopSpeed = ComputeDirectionalSpeed(localMove, walkFwd, walkBwd, strafeLeft, strafeRight) * combat.knifeModule.MovementRatio;
         }
 
-        // targetSpeed（目标速度）：使用位置：作为 Mathf.Lerp(float, float, float) 的参数、作为 Mathf.Min(float, float) 的参数。
+        // 目标速度。
 float targetSpeed = inputMag * loopSpeed;
-        // velocityDirection（速度方向）：使用位置：作为 LeonPlayerStairRampRuntime.ApplyPlayerMotionAssist(LeonController, Rigidbody, CapsuleCollider, Vector3, LeonActionMotionDriver, MotionControlToken) 的参数、LeonLocomotion.HandleMovement()。
+        // 速度方向。
 Vector3 velocityDirection = moveDir;
-        // finalSpeed（最终速度）：使用位置：作为 Mathf.Min(float, float) 的参数、LeonLocomotion.HandleMovement()。
+        // 最终速度。
 float finalSpeed;
         if (sprintStopActive)
         {
             sprintStopElapsed = Mathf.Min(sprintStopElapsed + Time.fixedDeltaTime, sprintStopDuration);
-            // progress（进度）：使用位置：作为 Mathf.SmoothStep(float, float, float) 的参数、LeonLocomotion.HandleMovement()。
+            // 进度。
 float progress = sprintStopElapsed / Mathf.Max(0.01f, sprintStopDuration);
             // 前半段保留较多速度，后半段快速刹停，贴合急停动作的重心前送。
-            // remainingSpeed（剩余速度）：使用位置：LeonLocomotion.HandleMovement()。
+            // 剩余速度。
 float remainingSpeed = 1f - Mathf.SmoothStep(0f, 1f, progress);
             finalSpeed = sprintStopSpeed * remainingSpeed;
             velocityDirection = sprintStopDirection;
@@ -531,7 +579,7 @@ float remainingSpeed = 1f - Mathf.SmoothStep(0f, 1f, progress);
         else if (sprintStartActive)
         {
             sprintStartElapsed = Mathf.Min(sprintStartElapsed + Time.fixedDeltaTime, sprintStartDuration);
-            // progress（进度）：使用位置：作为 Mathf.SmoothStep(float, float, float) 的参数、LeonLocomotion.HandleMovement()。
+            // 进度。
 float progress = sprintStartElapsed / Mathf.Max(0.01f, sprintStartDuration);
             // 起步先让重心压低，再逐步把位移提升到循环冲刺速度。
             finalSpeed = Mathf.Lerp(sprintStartSpeed, targetSpeed, Mathf.SmoothStep(0f, 1f, progress));
@@ -545,7 +593,7 @@ float progress = sprintStartElapsed / Mathf.Max(0.01f, sprintStartDuration);
             finalSpeed = Mathf.Lerp(currentSpeed, targetSpeed, dampFactor);
             if (driver != null && inputMag > 0f && !isSprinting && !controller.IsInjured && !isCrouching && !isMeleeing && !isReloading && !isAiming && !isShooting)
             {
-                // startStepRatio（起始步进比例）：保存 LeonAnimatorDriver.ReadStartStepDisplacementRatio() 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Min(float, float) 的参数、LeonLocomotion.HandleMovement()。
+                // 起始步进比例。
 float startStepRatio = driver.ReadStartStepDisplacementRatio();
                 if (startStepRatio < 1f)
                 {
@@ -560,12 +608,12 @@ float startStepRatio = driver.ReadStartStepDisplacementRatio();
         }
 
         currentSpeed = finalSpeed;
-        // velocity（速度）：使用位置：作为 LeonActionMotionDriver.CommitSpeed(MotionControlToken, Vector3) 的参数、LeonLocomotion.HandleMovement()。
+        // 速度。
 Vector3 velocity = velocityDirection * finalSpeed;
         velocity.y = rb.linearVelocity.y;
-        // receiverValue10（判空前缓存的角色运动执行器）：从角色运动执行器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonLocomotion.HandleMovement()。
+        // 判空前缓存的角色运动执行器。
 global::LeonActionMotionDriver receiverValue10 = motionExecutor;
-        // optionalValue11（条件访问得到的移动速度是否成功提交）：保存条件访问的结果，接收者为空时保持默认空值，非空时才执行原成员访问。使用位置：LeonLocomotion.HandleMovement()。
+        // 条件访问得到的移动速度是否成功提交。
 bool? optionalValue11;
         if (!global::System.Object.ReferenceEquals(receiverValue10, null))
         {
@@ -590,6 +638,20 @@ bool? optionalValue11;
 
     internal bool HasGroundForTerrainStep => controller != null && controller.IsGrounded;
 
+    /// <summary>中文含义：当前是否处于低血量受伤步态。</summary>
+    internal bool IsInjuredActive
+    {
+        get
+        {
+            if (controller != null)
+            {
+                return controller.IsInjured;
+            }
+
+            return false;
+        }
+    }
+
     private static bool IsBasicMovementState(LeonState state)
     {
         return state == LeonState.Idle || state == LeonState.Walking
@@ -601,8 +663,8 @@ bool? optionalValue11;
     /// 急停只在松开移动键时触发；松开冲刺键但继续移动会自然降回普通跑步。
     /// </summary>
     /// <remarks>静态调用链：上游 LeonLocomotion.HandleMovement()；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="isSprinting">中文含义：是否正在冲刺。使用位置：LeonLocomotion.UpdateSprintTransitionState(bool, float)。</param>
-    /// <param name="inputMagnitude">中文含义：输入长度。使用位置：LeonLocomotion.UpdateSprintTransitionState(bool, float)。</param>
+    /// <param name="isSprinting">是否正在冲刺。</param>
+    /// <param name="inputMagnitude">输入长度。</param>
     private void UpdateSprintTransitionState(bool isSprinting, float inputMagnitude)
     {
         if (isSprinting && !previousEffectiveSprinting)
@@ -655,9 +717,9 @@ bool? optionalValue11;
             return;
         }
 
-        // input（输入数据）：使用位置：LeonLocomotion.ResumeAfterQTESuccess()。
+        // 输入数据。
 Vector3 input = controller.MoveInput;
-        // playerCamera（玩家摄像机）：使用位置：作为 Vector3.ProjectOnPlane(Vector3, Vector3) 的参数、LeonLocomotion.ResumeAfterQTESuccess()。
+        // 玩家摄像机。
 Camera playerCamera = controller.playerCamera;
         if (input.sqrMagnitude <= 0.0001f || playerCamera == null)
         {
@@ -668,13 +730,13 @@ Camera playerCamera = controller.playerCamera;
             return;
         }
 
-        // cameraForward（摄像机前向）：使用位置：LeonLocomotion.ResumeAfterQTESuccess()。
+        // 摄像机前向。
 Vector3 cameraForward = Vector3.ProjectOnPlane(playerCamera.transform.forward, Vector3.up).normalized;
-        // cameraRight（摄像机右侧）：使用位置：LeonLocomotion.ResumeAfterQTESuccess()。
+        // 摄像机右侧。
 Vector3 cameraRight = Vector3.ProjectOnPlane(playerCamera.transform.right, Vector3.up).normalized;
-        // moveDirection（移动方向）：使用位置：作为 Transform.InverseTransformDirection(Vector3) 的参数。
+        // 移动方向。
 Vector3 moveDirection = (cameraForward * input.z + cameraRight * input.x).normalized;
-        // localMove（局部移动）：保存 Transform.InverseTransformDirection(Vector3) 的返回结果，供当前步骤使用。使用位置：LeonLocomotion.ResumeAfterQTESuccess()。
+        // 局部移动。
 Vector3 localMove = transform.InverseTransformDirection(moveDirection);
         smoothHorizontal = localMove.x;
         smoothVertical = localMove.z;
@@ -995,14 +1057,14 @@ Vector3 localMove = transform.InverseTransformDirection(moveDirection);
 
     /// <summary>HandleRotation 的业务处理入口；本方法直接依赖 LeonActionMotionDriver.CommitNormalOrientation(MotionControlToken, Quaternion)、object.ReferenceEquals(object, object)、Quaternion.Euler(float, float, float)、Quaternion.Lerp(Quaternion, Quaternion, float)、Quaternion.LookRotation(Vector3)、Quaternion.RotateTowards(Quaternion, Quaternion, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonLocomotion.HandleMovement()；下游（含内部回调体） LeonActionMotionDriver.CommitNormalOrientation(MotionControlToken, Quaternion)、object.ReferenceEquals(object, object)、Quaternion.Euler(float, float, float)、Quaternion.Lerp(Quaternion, Quaternion, float)、Quaternion.LookRotation(Vector3)、Quaternion.RotateTowards(Quaternion, Quaternion, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="input">中文含义：输入数据。使用位置：LeonLocomotion.HandleRotation(Vector3, Camera, bool, bool, bool, bool, bool, Vector3)。</param>
-    /// <param name="cam">中文含义：摄像机。使用位置：作为 Quaternion.Euler(float, float, float) 的参数、LeonLocomotion.HandleRotation(Vector3, Camera, bool, bool, bool, bool, bool, Vector3)。</param>
-    /// <param name="isShooting">中文含义：是否正在射击。使用位置：LeonLocomotion.HandleRotation(Vector3, Camera, bool, bool, bool, bool, bool, Vector3)。</param>
-    /// <param name="isAiming">中文含义：是否正在瞄准。使用位置：LeonLocomotion.HandleRotation(Vector3, Camera, bool, bool, bool, bool, bool, Vector3)。</param>
-    /// <param name="isReloading">中文含义：是否正在换弹。使用位置：LeonLocomotion.HandleRotation(Vector3, Camera, bool, bool, bool, bool, bool, Vector3)。</param>
-    /// <param name="isMeleeing">中文含义：是否近战中。使用位置：LeonLocomotion.HandleRotation(Vector3, Camera, bool, bool, bool, bool, bool, Vector3)。</param>
-    /// <param name="isKnifeAttack">中文含义：是否小刀攻击。使用位置：LeonLocomotion.HandleRotation(Vector3, Camera, bool, bool, bool, bool, bool, Vector3)。</param>
-    /// <param name="moveDir">中文含义：移动方向。使用位置：作为 Quaternion.LookRotation(Vector3) 的参数、LeonLocomotion.HandleRotation(Vector3, Camera, bool, bool, bool, bool, bool, Vector3)。</param>
+    /// <param name="input">输入数据。</param>
+    /// <param name="cam">摄像机。</param>
+    /// <param name="isShooting">是否正在射击。</param>
+    /// <param name="isAiming">是否正在瞄准。</param>
+    /// <param name="isReloading">是否正在换弹。</param>
+    /// <param name="isMeleeing">是否近战中。</param>
+    /// <param name="isKnifeAttack">是否小刀攻击。</param>
+    /// <param name="moveDir">移动方向。</param>
     void HandleRotation(Vector3 input, Camera cam, bool isShooting, bool isAiming, bool isReloading, bool isMeleeing,
         bool isKnifeAttack, Vector3 moveDir, bool directionalInput)
     {
@@ -1016,9 +1078,9 @@ Vector3 localMove = transform.InverseTransformDirection(moveDirection);
             // 环顾、回正和持续按键的交接阶段只允许移动输入主动改变身体朝向。
             if (input.magnitude > 0.1f && moveDir.sqrMagnitude > 0.0001f)
             {
-                // receiverValue15（判空前缓存的角色运动执行器）：从角色运动执行器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonLocomotion.HandleRotation(Vector3, Camera, bool, bool, bool, bool, bool, Vector3)。
+                // 判空前缓存的角色运动执行器。
 global::LeonActionMotionDriver receiverValue15 = motionExecutor;
-                // optionalValue16（条件访问得到的常规朝向是否成功提交）：保存条件访问的结果，接收者为空时保持默认空值，非空时才执行原成员访问。使用位置：LeonLocomotion.HandleRotation(Vector3, Camera, bool, bool, bool, bool, bool, Vector3)。
+                // 条件访问得到的常规朝向是否成功提交。
 bool? optionalValue16;
                 if (!global::System.Object.ReferenceEquals(receiverValue15, null))
                 {
@@ -1047,11 +1109,11 @@ bool? optionalValue16;
             }
             else if (!isShooting && !isAiming && !isReloading && (!isMeleeing || isKnifeAttack))
             {
-                // targetRot（目标旋转）：保存 Quaternion.LookRotation(Vector3) 的返回结果，供当前步骤使用。使用位置：作为 Quaternion.Lerp(Quaternion, Quaternion, float) 的参数。
+                // 目标旋转。
 var targetRot = Quaternion.LookRotation(moveDir);
-                // receiverValue17（判空前缓存的角色运动执行器）：从角色运动执行器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonLocomotion.HandleRotation(Vector3, Camera, bool, bool, bool, bool, bool, Vector3)。
+                // 判空前缓存的角色运动执行器。
 global::LeonActionMotionDriver receiverValue17 = motionExecutor;
-                // optionalValue18（条件访问得到的常规朝向是否成功提交）：保存条件访问的结果，接收者为空时保持默认空值，非空时才执行原成员访问。使用位置：LeonLocomotion.HandleRotation(Vector3, Camera, bool, bool, bool, bool, bool, Vector3)。
+                // 条件访问得到的常规朝向是否成功提交。
 bool? optionalValue18;
                 if (!global::System.Object.ReferenceEquals(receiverValue17, null))
                 {
@@ -1064,13 +1126,13 @@ bool? optionalValue18;
             }
             else if (isShooting || isAiming || isReloading)
             {
-                // camY（摄像机纵向）：使用位置：作为 Quaternion.Euler(float, float, float) 的参数。
+                // 摄像机纵向。
 var camY = cam.transform.eulerAngles.y;
-                // targetRot（目标旋转）：保存 Quaternion.Euler(float, float, float) 的返回结果，供当前步骤使用。使用位置：作为 Quaternion.Lerp(Quaternion, Quaternion, float) 的参数。
+                // 目标旋转。
 var targetRot = Quaternion.Euler(0, camY, 0);
-                // receiverValue19（判空前缓存的角色运动执行器）：从角色运动执行器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonLocomotion.HandleRotation(Vector3, Camera, bool, bool, bool, bool, bool, Vector3)。
+                // 判空前缓存的角色运动执行器。
 global::LeonActionMotionDriver receiverValue19 = motionExecutor;
-                // optionalValue20（条件访问得到的常规朝向是否成功提交）：保存条件访问的结果，接收者为空时保持默认空值，非空时才执行原成员访问。使用位置：LeonLocomotion.HandleRotation(Vector3, Camera, bool, bool, bool, bool, bool, Vector3)。
+                // 条件访问得到的常规朝向是否成功提交。
 bool? optionalValue20;
                 if (!global::System.Object.ReferenceEquals(receiverValue19, null))
                 {
@@ -1104,7 +1166,7 @@ bool? optionalValue20;
         }
 
         currentTurnAngle = 0f;
-        // receiverValue27（判空前缓存的里昂动画控制器驱动器）：从驱动组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonLocomotion.ResetTurnAngle()。
+        // 判空前缓存的里昂动画控制器驱动器。
 global::LeonAnimatorDriver receiverValue27 = driver;
         if (!global::System.Object.ReferenceEquals(receiverValue27, null))
         {
@@ -1112,11 +1174,40 @@ global::LeonAnimatorDriver receiverValue27 = driver;
         }
     }
 
+    internal void ResetLocomotionForCinematicHandoff()
+    {
+        currentSpeed = 0f;
+        smoothHorizontal = 0f;
+        smoothVertical = 0f;
+        smoothInputMagnitude = 0f;
+        ResetTurnAngle();
+        sprintStartActive = false;
+        sprintStartElapsed = 0f;
+        sprintStartSpeed = 0f;
+        sprintStopActive = false;
+        sprintStopElapsed = 0f;
+        sprintStopSpeed = 0f;
+        sprintStopDirection = Vector3.zero;
+        previousEffectiveSprinting = false;
+        lastMoveDirection = transform.forward;
+        if (motionExecutor != null)
+        {
+            motionExecutor.ClearNativeGaitObstruction();
+        }
+        if (driver != null)
+        {
+            driver.ResetNativeGaitToIdleImmediate();
+        }
+    }
+
     /// <summary>DampToZero 的业务处理入口；本方法直接依赖 LeonAnimatorDriver.SetMovement(float, float, float, bool)、Mathf.Lerp(float, float, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonLocomotion.HandleMovement()；下游（含内部回调体） LeonAnimatorDriver.SetMovement(float, float, float, bool)、Mathf.Lerp(float, float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     void DampToZero()
     {
-        // damp（阻尼）：使用位置：作为 Mathf.Lerp(float, float, float) 的参数。
+        sprintStartActive = false;
+        sprintStopActive = false;
+        previousEffectiveSprinting = false;
+        // 阻尼。
 float damp = Time.fixedDeltaTime * 15f;
         smoothHorizontal = Mathf.Lerp(smoothHorizontal, 0f, damp);
         smoothVertical = Mathf.Lerp(smoothVertical, 0f, damp);
@@ -1130,25 +1221,25 @@ float damp = Time.fixedDeltaTime * 15f;
 
     /// <summary>ComputeDirectionalSpeed 的业务处理入口；本方法直接依赖 Mathf.Abs(float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonLocomotion.HandleMovement()；下游（含内部回调体） Mathf.Abs(float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="localMove">中文含义：局部移动。使用位置：作为 Mathf.Abs(float) 的参数、LeonLocomotion.ComputeDirectionalSpeed(Vector3, float, float, float, float)。</param>
-    /// <param name="fwd">中文含义：前向。使用位置：LeonLocomotion.ComputeDirectionalSpeed(Vector3, float, float, float, float)。</param>
-    /// <param name="bwd">中文含义：后向。使用位置：LeonLocomotion.ComputeDirectionalSpeed(Vector3, float, float, float, float)。</param>
-    /// <param name="left">中文含义：左侧。使用位置：LeonLocomotion.ComputeDirectionalSpeed(Vector3, float, float, float, float)。</param>
-    /// <param name="right">中文含义：右侧。使用位置：LeonLocomotion.ComputeDirectionalSpeed(Vector3, float, float, float, float)。</param>
+    /// <param name="localMove">局部移动。</param>
+    /// <param name="fwd">前向。</param>
+    /// <param name="bwd">后向。</param>
+    /// <param name="left">左侧。</param>
+    /// <param name="right">右侧。</param>
     float ComputeDirectionalSpeed(Vector3 localMove, float fwd, float bwd, float left, float right)
     {
-        // absX（绝对值横向）：保存 Mathf.Abs(float) 的返回结果，供当前步骤使用。使用位置：LeonLocomotion.ComputeDirectionalSpeed(Vector3, float, float, float, float)。
+        // 绝对值横向。
 float absX = Mathf.Abs(localMove.x);
-        // absZ（绝对值深度）：保存 Mathf.Abs(float) 的返回结果，供当前步骤使用。使用位置：LeonLocomotion.ComputeDirectionalSpeed(Vector3, float, float, float, float)。
+        // 绝对值深度。
 float absZ = Mathf.Abs(localMove.z);
-        // total（总计）：使用位置：LeonLocomotion.ComputeDirectionalSpeed(Vector3, float, float, float, float)。
+        // 总计。
 float total = absX + absZ;
         if (total < 0.001f)
         {
             return 0f;
         }
 
-        // zSpeed（深度速度）：使用位置：LeonLocomotion.ComputeDirectionalSpeed(Vector3, float, float, float, float)。
+        // 深度速度。
 float zSpeed;
         if (localMove.z >= 0)
         {
@@ -1159,7 +1250,7 @@ float zSpeed;
             zSpeed = bwd;
         }
 
-        // xSpeed（横向速度）：使用位置：LeonLocomotion.ComputeDirectionalSpeed(Vector3, float, float, float, float)。
+        // 横向速度。
 float xSpeed;
         if (localMove.x >= 0)
         {

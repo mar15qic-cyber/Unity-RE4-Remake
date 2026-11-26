@@ -14,17 +14,17 @@ using Object = UnityEngine.Object;
 /// </summary>
 public static class LeonExpandedQTESetupUtility
 {
-    /// <summary>中文含义：配置路径。编译期常量，保持既有值与消费者映射。使用位置：作为 AssetDatabase.CreateAsset(Object, string) 的参数、作为 AssetDatabase.LoadAssetAtPath&lt;LeonQTEConfig&gt;(string) 的参数。</summary>
+    /// <summary>配置路径。编译期常量，保持既有值与消费者映射。</summary>
     private const string ConfigPath = "Assets/Settings/QTE/里昂正面抓取配置.asset";
-    /// <summary>中文含义：提示预制件路径。编译期常量，保持既有值与消费者映射。使用位置：作为 PrefabUtility.LoadPrefabContents(string) 的参数、作为 PrefabUtility.SaveAsPrefabAsset(GameObject, string) 的参数。</summary>
+    /// <summary>提示预制件路径。编译期常量，保持既有值与消费者映射。</summary>
     private const string PromptPrefabPath = "Assets/Prefab/通用/QTE/QTEPrompt.prefab";
-    /// <summary>中文含义：村民预制件路径。编译期常量，保持既有值与消费者映射。使用位置：作为 File.Exists(string) 的参数、作为 PrefabUtility.LoadPrefabContents(string) 的参数、作为 PrefabUtility.SaveAsPrefabAsset(GameObject, string) 的参数。</summary>
+    /// <summary>村民预制件路径。编译期常量，保持既有值与消费者映射。</summary>
     private const string VillagerPrefabPath = "Assets/Prefab/Villager.prefab";
-    /// <summary>中文含义：来源根节点。编译期常量，保持既有值与消费者映射。使用位置：作为 LeonExpandedQTESetupUtility.CloneClip(string, string, bool, bool) 的参数。</summary>
+    /// <summary>来源根节点。编译期常量，保持既有值与消费者映射。</summary>
     private const string SourceRoot = "Assets/素材库/动画/Zombie_Animations/Animations/";
-    /// <summary>中文含义：扩展后的根节点。编译期常量，保持既有值与消费者映射。使用位置：作为 LeonExpandedQTESetupUtility.EnsureFolder(string, string) 的参数、LeonExpandedQTESetupUtility.BuildKnifeVariant()、LeonExpandedQTESetupUtility.BuildLegBiteVariant() 等共 4 处。</summary>
+    /// <summary>扩展后的根节点。编译期常量，保持既有值与消费者映射。</summary>
     private const string ExpandedRoot = "Assets/Animations/QTE/Expanded/";
-    /// <summary>中文含义：图片路径。编译期常量，保持既有值与消费者映射。使用位置：作为 AssetDatabase.LoadAllAssetsAtPath(string) 的参数。</summary>
+    /// <summary>图片路径。编译期常量，保持既有值与消费者映射。</summary>
     private const string PicturePath = "Assets/Resources/Pictures/cs_ui0000_iam.tex.png";
     /// <summary>编辑器菜单调用入口 Build；按当前参数和已绑定配置执行资源操作，下游调用见静态索引。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） AssetDatabase.Refresh()、AssetDatabase.SaveAssets()、Debug.Log(object)、EditorUtility.SetDirty(Object)、LeonExpandedQTESetupUtility.BuildKnifeVariant()、LeonExpandedQTESetupUtility.BuildLegBiteVariant()、LeonExpandedQTESetupUtility.BuildRearBiteVariant() 等共 14 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
@@ -33,9 +33,9 @@ public static class LeonExpandedQTESetupUtility
     {
         EnsureFolder("Assets/Settings", "QTE");
         EnsureFolder("Assets/Animations/QTE", "Expanded");
-        // config（当前里昂配对动作配置）：保存 LeonExpandedQTESetupUtility.LoadOrCreateConfig() 的返回结果，供当前步骤使用。使用位置：作为 EditorUtility.SetDirty(Object) 的参数、作为 LeonExpandedQTESetupUtility.SetupTestScene(LeonQTEConfig) 的参数、LeonExpandedQTESetupUtility.Build()。
+        // 当前里昂配对动作配置。
 LeonQTEConfig config = LoadOrCreateConfig();
-        // variants（变体集合）：使用位置：LeonExpandedQTESetupUtility.Build()。
+        // 变体集合。
 var variants = new List<QTEAnimationVariant>
         {
             BuildRearBiteVariant(),
@@ -57,7 +57,7 @@ var variants = new List<QTEAnimationVariant>
     /// <remarks>静态调用链：上游 LeonExpandedQTESetupUtility.Build()；下游（含内部回调体） LeonExpandedQTESetupUtility.CloneClip(string, string, bool, bool)、LeonExpandedQTESetupUtility.EnsureFolder(string, string)、QTEAnimationVariant.QTEAnimationVariant()、string.TrimEnd(char)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     private static QTEAnimationVariant BuildRearBiteVariant()
     {
-        // root（根节点）：使用位置：作为 LeonExpandedQTESetupUtility.CloneClip(string, string, bool, bool) 的参数。
+        // 根节点。
 string root = ExpandedRoot + "背后咬脖子/";
         EnsureFolder(ExpandedRoot.TrimEnd('/'), "背后咬脖子");
         return new QTEAnimationVariant
@@ -81,7 +81,7 @@ string root = ExpandedRoot + "背后咬脖子/";
     /// <remarks>静态调用链：上游 LeonExpandedQTESetupUtility.Build()；下游（含内部回调体） LeonExpandedQTESetupUtility.CloneClip(string, string, bool, bool)、LeonExpandedQTESetupUtility.EnsureFolder(string, string)、QTEAnimationVariant.QTEAnimationVariant()、string.TrimEnd(char)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     private static QTEAnimationVariant BuildLegBiteVariant()
     {
-        // root（根节点）：使用位置：作为 LeonExpandedQTESetupUtility.CloneClip(string, string, bool, bool) 的参数。
+        // 根节点。
 string root = ExpandedRoot + "倒地咬腿/";
         EnsureFolder(ExpandedRoot.TrimEnd('/'), "倒地咬腿");
         return new QTEAnimationVariant
@@ -105,12 +105,12 @@ string root = ExpandedRoot + "倒地咬腿/";
     /// <remarks>静态调用链：上游 LeonExpandedQTESetupUtility.Build()；下游（含内部回调体） LeonExpandedQTESetupUtility.AddContactEvent(AnimationClip, string, float)、LeonExpandedQTESetupUtility.CloneClip(string, string, bool, bool)、LeonExpandedQTESetupUtility.EnsureFolder(string, string)、QTEAnimationVariant.QTEAnimationVariant()、string.TrimEnd(char)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     private static QTEAnimationVariant BuildKnifeVariant()
     {
-        // root（根节点）：使用位置：作为 LeonExpandedQTESetupUtility.CloneClip(string, string, bool, bool) 的参数。
+        // 根节点。
 string root = ExpandedRoot + "持刀暗杀/";
         EnsureFolder(ExpandedRoot.TrimEnd('/'), "持刀暗杀");
-        // player（玩家）：保存 LeonExpandedQTESetupUtility.CloneClip(string, string, bool, bool) 的返回结果，供当前步骤使用。使用位置：LeonExpandedQTESetupUtility.BuildKnifeVariant()。
+        // 玩家。
 AnimationClip player = CloneClip("Assets/素材库/动画/StealthFinishers_Knife_and_Hand/Animations/Knife_Stealth/Paired_Knife_Stealth_ClavicleStabDown_Att.FBX", root + "里昂_锁骨刺击.anim", false, false);
-        // victim（受击者）：保存 LeonExpandedQTESetupUtility.CloneClip(string, string, bool, bool) 的返回结果，供当前步骤使用。使用位置：作为 LeonExpandedQTESetupUtility.AddContactEvent(AnimationClip, string, float) 的参数、LeonExpandedQTESetupUtility.BuildKnifeVariant()。
+        // 受击者。
 AnimationClip victim = CloneClip("Assets/素材库/动画/StealthFinishers_Knife_and_Hand/Animations/Knife_Stealth/Paired_Knife_Stealth_ClavicleStabDown_Vic.FBX", root + "村民_锁骨受击.anim", false, false);
         return new QTEAnimationVariant
         {
@@ -136,7 +136,7 @@ AnimationClip victim = CloneClip("Assets/素材库/动画/StealthFinishers_Knife
     /// <remarks>静态调用链：上游 LeonExpandedQTESetupUtility.Build()；下游（含内部回调体） AssetDatabase.CreateAsset(Object, string)、AssetDatabase.LoadAssetAtPath&lt;LeonQTEConfig&gt;(string)、ScriptableObject.CreateInstance&lt;LeonQTEConfig&gt;()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     private static LeonQTEConfig LoadOrCreateConfig()
     {
-        // config（当前里昂配对动作配置）：保存 AssetDatabase.LoadAssetAtPath<LeonQTEConfig>(string) 的返回结果，供当前步骤使用。使用位置：作为 AssetDatabase.CreateAsset(Object, string) 的参数、LeonExpandedQTESetupUtility.LoadOrCreateConfig()。
+        // 当前里昂配对动作配置。
 LeonQTEConfig config = AssetDatabase.LoadAssetAtPath<LeonQTEConfig>(ConfigPath);
         if (config == null)
         {
@@ -149,20 +149,20 @@ LeonQTEConfig config = AssetDatabase.LoadAssetAtPath<LeonQTEConfig>(ConfigPath);
 
     /// <summary>CloneClip 的业务处理入口；本方法直接依赖 AnimationEvent.AnimationEvent()、AnimationUtility.GetAnimationClipSettings(AnimationClip)、AnimationUtility.SetAnimationClipSettings(AnimationClip, AnimationClipSettings)、AnimationUtility.SetAnimationEvents(AnimationClip, AnimationEvent[])、Array.Empty&lt;AnimationEvent&gt;()、AssetDatabase.CreateAsset(Object, string)、AssetDatabase.LoadAllAssetsAtPath(string) 等共 16 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonExpandedQTESetupUtility.BuildKnifeVariant()、LeonExpandedQTESetupUtility.BuildLegBiteVariant()、LeonExpandedQTESetupUtility.BuildRearBiteVariant()；下游（含内部回调体） AnimationEvent.AnimationEvent()、AnimationUtility.GetAnimationClipSettings(AnimationClip)、AnimationUtility.SetAnimationClipSettings(AnimationClip, AnimationClipSettings)、AnimationUtility.SetAnimationEvents(AnimationClip, AnimationEvent[])、Array.Empty&lt;AnimationEvent&gt;()、AssetDatabase.CreateAsset(Object, string)、AssetDatabase.LoadAllAssetsAtPath(string) 等共 16 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="sourcePath">中文含义：来源路径。使用位置：作为 AssetDatabase.LoadAllAssetsAtPath(string) 的参数、作为 InvalidOperationException.InvalidOperationException(string) 的参数。</param>
-    /// <param name="destinationPath">中文含义：目的地路径。使用位置：作为 AssetDatabase.CreateAsset(Object, string) 的参数、作为 AssetDatabase.LoadAssetAtPath&lt;AnimationClip&gt;(string) 的参数、作为 Path.GetFileNameWithoutExtension(string) 的参数。</param>
-    /// <param name="loop">中文含义：是否循环。使用位置：LeonExpandedQTESetupUtility.CloneClip(string, string, bool, bool)。</param>
-    /// <param name="addBiteContact">中文含义：是否添加撕咬接触。使用位置：LeonExpandedQTESetupUtility.CloneClip(string, string, bool, bool)。</param>
+    /// <param name="sourcePath">来源路径。</param>
+    /// <param name="destinationPath">目的地路径。</param>
+    /// <param name="loop">是否循环。</param>
+    /// <param name="addBiteContact">是否添加撕咬接触。</param>
     private static AnimationClip CloneClip(string sourcePath, string destinationPath, bool loop, bool addBiteContact)
     {
-        // source（来源动画片段）：保存 IEnumerable<AnimationClip>.FirstOrDefault<AnimationClip>(Func<AnimationClip, bool>) 的返回结果，供当前步骤使用。使用位置：作为 EditorUtility.CopySerialized(Object, Object) 的参数、作为 Object.Instantiate<AnimationClip>(AnimationClip) 的参数、LeonExpandedQTESetupUtility.CloneClip(string, string, bool, bool)。
+        // 来源动画片段。
 AnimationClip source = AssetDatabase.LoadAllAssetsAtPath(sourcePath).OfType<AnimationClip>().FirstOrDefault( /* 中文含义：动画片段。 */clip => !clip.name.StartsWith("__preview__", StringComparison.Ordinal));
         if (source == null)
         {
             throw new InvalidOperationException("找不到动画片段：" + sourcePath);
         }
 
-        // destination（目的地）：保存 AssetDatabase.LoadAssetAtPath<AnimationClip>(string) 的返回结果，供当前步骤使用。使用位置：作为 AnimationUtility.GetAnimationClipSettings(AnimationClip) 的参数、作为 AnimationUtility.SetAnimationClipSettings(AnimationClip, AnimationClipSettings) 的参数、作为 AssetDatabase.CreateAsset(Object, string) 的参数 等共 6 处。
+        // 目的地。
 AnimationClip destination = AssetDatabase.LoadAssetAtPath<AnimationClip>(destinationPath);
         if (destination == null)
         {
@@ -177,14 +177,14 @@ AnimationClip destination = AssetDatabase.LoadAssetAtPath<AnimationClip>(destina
             destination.name = System.IO.Path.GetFileNameWithoutExtension(destinationPath);
         }
 
-        // settings（设置）：保存 AnimationUtility.GetAnimationClipSettings(AnimationClip) 的返回结果，供当前步骤使用。使用位置：作为 AnimationUtility.SetAnimationClipSettings(AnimationClip, AnimationClipSettings) 的参数、LeonExpandedQTESetupUtility.CloneClip(string, string, bool, bool)。
+        // 设置。
 AnimationClipSettings settings = AnimationUtility.GetAnimationClipSettings(destination);
         settings.loopTime = loop;
         settings.loopBlend = loop;
         AnimationUtility.SetAnimationClipSettings(destination, settings);
-        // argumentValue2（按原顺序缓存的实参目的地）：从目的地读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 AnimationUtility.SetAnimationEvents(AnimationClip, AnimationEvent[]) 的参数。
+        // 按原顺序缓存的实参目的地。
 global::UnityEngine.AnimationClip argumentValue2 = destination;
-        // selectedValue1（分支选出的空的返回结果）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：作为 AnimationUtility.SetAnimationEvents(AnimationClip, AnimationEvent[]) 的参数、LeonExpandedQTESetupUtility.CloneClip(string, string, bool, bool)。
+        // 分支选出的空的返回结果。
 global::UnityEngine.AnimationEvent[] selectedValue1;
         if (addBiteContact)
         {
@@ -209,9 +209,9 @@ global::UnityEngine.AnimationEvent[] selectedValue1;
 
     /// <summary>AddContactEvent 的业务处理入口；本方法直接依赖 AnimationEvent.AnimationEvent()、AnimationUtility.SetAnimationEvents(AnimationClip, AnimationEvent[])、EditorUtility.SetDirty(Object)、Mathf.Clamp01(float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonExpandedQTESetupUtility.BuildKnifeVariant()；下游（含内部回调体） AnimationEvent.AnimationEvent()、AnimationUtility.SetAnimationEvents(AnimationClip, AnimationEvent[])、EditorUtility.SetDirty(Object)、Mathf.Clamp01(float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="clip">中文含义：动画片段。使用位置：作为 AnimationUtility.SetAnimationEvents(AnimationClip, AnimationEvent[]) 的参数、作为 EditorUtility.SetDirty(Object) 的参数、LeonExpandedQTESetupUtility.AddContactEvent(AnimationClip, string, float)。</param>
-    /// <param name="functionName">中文含义：函数名称。使用位置：作为 AnimationUtility.SetAnimationEvents(AnimationClip, AnimationEvent[]) 的参数。</param>
-    /// <param name="normalizedTime">中文含义：动画归一化播放时间。使用位置：作为 Mathf.Clamp01(float) 的参数。</param>
+    /// <param name="clip">动画片段。</param>
+    /// <param name="functionName">函数名称。</param>
+    /// <param name="normalizedTime">动画归一化播放时间。</param>
     private static AnimationClip AddContactEvent(AnimationClip clip, string functionName, float normalizedTime)
     {
         if (clip == null)
@@ -233,18 +233,18 @@ global::UnityEngine.AnimationEvent[] selectedValue1;
             return;
         }
 
-        // root（根游戏对象）：保存 PrefabUtility.LoadPrefabContents(string) 的返回结果，供当前步骤使用。使用位置：作为 PrefabUtility.SaveAsPrefabAsset(GameObject, string) 的参数、作为 PrefabUtility.UnloadPrefabContents(GameObject) 的参数、LeonExpandedQTESetupUtility.SetupVillagerPrefab()。
+        // 根游戏对象。
 GameObject root = PrefabUtility.LoadPrefabContents(VillagerPrefabPath);
         try
         {
-            // participant（参与者）：保存 GameObject.GetComponent<VillagerQTEParticipant>() 的返回结果，供当前步骤使用。使用位置：LeonExpandedQTESetupUtility.SetupVillagerPrefab()。
+            // 参与者。
 VillagerQTEParticipant participant = root.GetComponent<VillagerQTEParticipant>();
             if (participant == null)
             {
                 participant = root.AddComponent<VillagerQTEParticipant>();
             }
 
-            // relay（转发器）：保存 GameObject.GetComponent<EnemyQTEAnimationEventRelay>() 的返回结果，供当前步骤使用。使用位置：LeonExpandedQTESetupUtility.SetupVillagerPrefab()。
+            // 转发器。
 EnemyQTEAnimationEventRelay relay = root.GetComponent<EnemyQTEAnimationEventRelay>();
             if (relay == null)
             {
@@ -270,22 +270,22 @@ EnemyQTEAnimationEventRelay relay = root.GetComponent<EnemyQTEAnimationEventRela
     /// <remarks>静态调用链：上游 LeonExpandedQTESetupUtility.Build()；下游（含内部回调体） AssetDatabase.LoadAllAssetsAtPath(string)、AssetDatabase.LoadAssetAtPath&lt;Sprite&gt;(string)、Color.Color(float, float, float, float)、Component.GetComponent&lt;Image&gt;()、EditorUtility.SetDirty(Object)、GameObject.GameObject(string, params Type[])、GameObject.GetComponent&lt;Image&gt;() 等共 19 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     private static void SetupPromptPrefab()
     {
-        // root（根游戏对象）：保存 PrefabUtility.LoadPrefabContents(string) 的返回结果，供当前步骤使用。使用位置：作为 EditorUtility.SetDirty(Object) 的参数、作为 PrefabUtility.SaveAsPrefabAsset(GameObject, string) 的参数、作为 PrefabUtility.UnloadPrefabContents(GameObject) 的参数 等共 4 处。
+        // 根游戏对象。
 GameObject root = PrefabUtility.LoadPrefabContents(PromptPrefabPath);
         try
         {
-            // view（视图）：保存 GameObject.GetComponent<QTEPromptView>() 的返回结果，供当前步骤使用。使用位置：LeonExpandedQTESetupUtility.SetupPromptPrefab()。
+            // 视图。
 QTEPromptView view = root.GetComponent<QTEPromptView>();
-            // panel（面板）：保存 Transform.Find(string) 的返回结果，供当前步骤使用。使用位置：作为 Transform.SetParent(Transform, bool) 的参数、LeonExpandedQTESetupUtility.SetupPromptPrefab()。
+            // 面板。
 Transform panel = root.transform.Find("提示面板");
             if (panel == null)
             {
                 panel = root.transform;
             }
 
-            // receiverValue3（判空前缓存的查找的返回结果）：从查找的返回结果读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonExpandedQTESetupUtility.SetupPromptPrefab()。
+            // 判空前缓存的查找的返回结果。
 global::UnityEngine.Transform receiverValue3 = panel.Find("快速反应按键图标");
-            // fIcon（系数图标）：使用位置：LeonExpandedQTESetupUtility.SetupPromptPrefab()。
+            // 系数图标。
 Image fIcon;
             if (!global::System.Object.ReferenceEquals(receiverValue3, null))
             {
@@ -298,10 +298,10 @@ Image fIcon;
 
             if (fIcon == null)
             {
-                // iconObject（图标对象）：使用位置：LeonExpandedQTESetupUtility.SetupPromptPrefab()。
+                // 图标对象。
 GameObject iconObject = new GameObject("快速反应按键图标", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
                 iconObject.transform.SetParent(panel, false);
-                // rect（矩形）：保存 GameObject.GetComponent<RectTransform>() 的返回结果，供当前步骤使用。使用位置：LeonExpandedQTESetupUtility.SetupPromptPrefab()。
+                // 矩形。
 RectTransform rect = iconObject.GetComponent<RectTransform>();
                 rect.anchorMin = rect.anchorMax = new Vector2(0.5f, 0.5f);
                 rect.anchoredPosition = new Vector2(-150f, 25f);
@@ -310,12 +310,12 @@ RectTransform rect = iconObject.GetComponent<RectTransform>();
                 fIcon.preserveAspect = true;
             }
 
-            // fSprite（系数精灵图）：保存 IEnumerable<Sprite>.FirstOrDefault<Sprite>(Func<Sprite, bool>) 的返回结果，供当前步骤使用。使用位置：LeonExpandedQTESetupUtility.SetupPromptPrefab()。
+            // 系数精灵图。
 Sprite fSprite = AssetDatabase.LoadAllAssetsAtPath(PicturePath).OfType<Sprite>().FirstOrDefault( /* 中文含义：精灵图。 */sprite => sprite.name.EndsWith("_63", StringComparison.Ordinal));
             fIcon.sprite = fSprite;
-            // receiverValue5（判空前缓存的查找的返回结果）：从查找的返回结果读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonExpandedQTESetupUtility.SetupPromptPrefab()。
+            // 判空前缓存的查找的返回结果。
 global::UnityEngine.Transform receiverValue5 = panel.Find("挣脱环形进度");
-            // ring（环）：使用位置：LeonExpandedQTESetupUtility.SetupPromptPrefab()。
+            // 环。
 Image ring;
             if (!global::System.Object.ReferenceEquals(receiverValue5, null))
             {
@@ -328,10 +328,10 @@ Image ring;
 
             if (ring == null)
             {
-                // ringObject（环对象）：使用位置：LeonExpandedQTESetupUtility.SetupPromptPrefab()。
+                // 环对象。
 GameObject ringObject = new GameObject("挣脱环形进度", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
                 ringObject.transform.SetParent(panel, false);
-                // rect（矩形）：保存 GameObject.GetComponent<RectTransform>() 的返回结果，供当前步骤使用。使用位置：LeonExpandedQTESetupUtility.SetupPromptPrefab()。
+                // 矩形。
 RectTransform rect = ringObject.GetComponent<RectTransform>();
                 rect.anchorMin = rect.anchorMax = new Vector2(0.5f, 0.5f);
                 rect.anchoredPosition = new Vector2(-150f, 25f);
@@ -359,12 +359,12 @@ RectTransform rect = ringObject.GetComponent<RectTransform>();
 
     /// <summary>SetupTestScene 的业务处理入口；本方法直接依赖 EditorSceneManager.OpenScene(string, OpenSceneMode)、EditorSceneManager.SaveScene(Scene)、EditorUtility.SetDirty(Object)、Object.FindFirstObjectByType&lt;LeonQTECoordinator&gt;()、Object.FindObjectsByType&lt;LeonQTECoordinator&gt;(FindObjectsInactive, FindObjectsSortMode)、Object.FindObjectsByType&lt;QTEPromptView&gt;(FindObjectsInactive, FindObjectsSortMode)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonExpandedQTESetupUtility.Build()；下游（含内部回调体） EditorSceneManager.OpenScene(string, OpenSceneMode)、EditorSceneManager.SaveScene(Scene)、EditorUtility.SetDirty(Object)、Object.FindFirstObjectByType&lt;LeonQTECoordinator&gt;()、Object.FindObjectsByType&lt;LeonQTECoordinator&gt;(FindObjectsInactive, FindObjectsSortMode)、Object.FindObjectsByType&lt;QTEPromptView&gt;(FindObjectsInactive, FindObjectsSortMode)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="config">中文含义：当前里昂配对动作配置。使用位置：LeonExpandedQTESetupUtility.SetupTestScene(LeonQTEConfig)。</param>
+    /// <param name="config">当前里昂配对动作配置。</param>
     private static void SetupTestScene(LeonQTEConfig config)
     {
-        // scenePath（场景路径）：使用位置：作为 EditorSceneManager.OpenScene(string, OpenSceneMode) 的参数。
+        // 场景路径。
 const string scenePath = "Assets/Scenes/QTE/LeonFrontGrabQTE_Test.unity";
-        // scene（场景）：保存 EditorSceneManager.OpenScene(string, OpenSceneMode) 的返回结果，供当前步骤使用。使用位置：作为 EditorSceneManager.SaveScene(Scene) 的参数。
+        // 场景。
 Scene scene = EditorSceneManager.OpenScene(scenePath, OpenSceneMode.Single);
         // coordinator（当前里昂配对动作协调器）：每轮从查找对象集合依据类型的返回结果取得一个元素，仅代表当前这一项。使用位置：作为 EditorUtility.SetDirty(Object) 的参数、LeonExpandedQTESetupUtility.SetupTestScene(LeonQTEConfig)。
 foreach (LeonQTECoordinator coordinator in Object.FindObjectsByType<LeonQTECoordinator>(FindObjectsInactive.Include, FindObjectsSortMode.None))
@@ -385,11 +385,11 @@ foreach (QTEPromptView view in Object.FindObjectsByType<QTEPromptView>(FindObjec
 
     /// <summary>EnsureFolder 的业务处理入口；本方法直接依赖 AssetDatabase.CreateFolder(string, string)、AssetDatabase.IsValidFolder(string)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonExpandedQTESetupUtility.Build()、LeonExpandedQTESetupUtility.BuildKnifeVariant()、LeonExpandedQTESetupUtility.BuildLegBiteVariant()、LeonExpandedQTESetupUtility.BuildRearBiteVariant()；下游（含内部回调体） AssetDatabase.CreateFolder(string, string)、AssetDatabase.IsValidFolder(string)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="parent">中文含义：父级。使用位置：作为 AssetDatabase.CreateFolder(string, string) 的参数、LeonExpandedQTESetupUtility.EnsureFolder(string, string)。</param>
-    /// <param name="child">中文含义：子级。使用位置：作为 AssetDatabase.CreateFolder(string, string) 的参数、LeonExpandedQTESetupUtility.EnsureFolder(string, string)。</param>
+    /// <param name="parent">父级。</param>
+    /// <param name="child">子级。</param>
     private static void EnsureFolder(string parent, string child)
     {
-        // path（路径）：使用位置：作为 AssetDatabase.IsValidFolder(string) 的参数。
+        // 路径。
 string path = parent + "/" + child;
         if (!AssetDatabase.IsValidFolder(path))
         {

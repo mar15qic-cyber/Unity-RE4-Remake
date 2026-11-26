@@ -9,11 +9,11 @@ using UnityEngine;
 [UnityEngine.Scripting.APIUpdating.MovedFrom(true, "", "Assembly-CSharp-Editor", "里昂暂停碰撞体查看器")]
 internal static class LeonPausedColliderInspector
 {
-    /// <summary>中文含义：场景视图原始辅助辅助线状态。只读字段，初始化后不由普通写入口替换。使用位置：LeonPausedColliderInspector.RestoreSceneViewAssistGizmo()、LeonPausedColliderInspector.TakeOverSceneViewAssistGizmo()。</summary>
+    /// <summary>场景视图原始辅助辅助线状态。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly Dictionary<int, bool> sceneViewOriginalAssistGizmoState = new Dictionary<int, bool>();
-    /// <summary>中文含义：当前胶囊。使用位置：作为 LeonPausedColliderInspector.TryCalculateWorldCapsule(CapsuleCollider, out Vector3, out Vector3, out float, out float) 的参数、LeonPausedColliderInspector.DrawSafeCapsuleWireframe(SceneView)、LeonPausedColliderInspector.RefreshTakeOverState()。</summary>
+    /// <summary>当前胶囊。</summary>
     private static CapsuleCollider currentCapsule;
-    /// <summary>中文含义：是否具有接管场景视图。使用位置：LeonPausedColliderInspector.DrawSafeCapsuleWireframe(SceneView)、LeonPausedColliderInspector.RestoreSceneViewAssistGizmo()、LeonPausedColliderInspector.TakeOverSceneViewAssistGizmo()。</summary>
+    /// <summary>是否具有接管场景视图。</summary>
     private static bool hasTakeOverSceneView;
     /// <summary>构造并初始化 LeonPausedColliderInspector 的声明状态；具体外部协作见静态调用链。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） LeonPausedColliderInspector.RefreshTakeOverState()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
@@ -29,7 +29,7 @@ internal static class LeonPausedColliderInspector
 
     /// <summary>HandleRuntimeModeChange 的业务处理入口；本方法直接依赖 LeonPausedColliderInspector.CloseGameWindowAssistGizmo()、LeonPausedColliderInspector.RefreshTakeOverState()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） LeonPausedColliderInspector.CloseGameWindowAssistGizmo()、LeonPausedColliderInspector.RefreshTakeOverState()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="state">中文含义：当前播放模式状态变化。使用位置：LeonPausedColliderInspector.HandleRuntimeModeChange(PlayModeStateChange)。</param>
+    /// <param name="state">当前播放模式状态变化。</param>
     private static void HandleRuntimeModeChange(PlayModeStateChange state)
     {
         RefreshTakeOverState();
@@ -43,21 +43,21 @@ internal static class LeonPausedColliderInspector
     /// <remarks>静态调用链：上游 LeonPausedColliderInspector.HandleRuntimeModeChange(PlayModeStateChange)；下游（含内部回调体） EditorWindow.Repaint()、PropertyInfo.SetValue(object, object)、Resources.FindObjectsOfTypeAll(Type)、Type.GetProperty(string, BindingFlags)、Type.GetType(string)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     private static void CloseGameWindowAssistGizmo()
     {
-        // gameWindowType（游戏窗口类型）：保存 Type.GetType(string) 的返回结果，供当前步骤使用。使用位置：作为 Resources.FindObjectsOfTypeAll(Type) 的参数、LeonPausedColliderInspector.CloseGameWindowAssistGizmo()。
+        // 游戏窗口类型。
 Type gameWindowType = Type.GetType("UnityEditor.GameView,UnityEditor");
         if (gameWindowType == null)
         {
             return;
         }
 
-        // assistGizmoProperty（辅助辅助线属性）：保存 Type.GetProperty(string, BindingFlags) 的返回结果，供当前步骤使用。使用位置：LeonPausedColliderInspector.CloseGameWindowAssistGizmo()。
+        // 辅助辅助线属性。
 PropertyInfo assistGizmoProperty = gameWindowType.GetProperty("drawGizmos", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
         if (assistGizmoProperty == null)
         {
             return;
         }
 
-        // gameWindowList（游戏窗口列表）：保存 Resources.FindObjectsOfTypeAll(Type) 的返回结果，供当前步骤使用。使用位置：LeonPausedColliderInspector.CloseGameWindowAssistGizmo()。
+        // 游戏窗口列表。
 UnityEngine.Object[] gameWindowList = Resources.FindObjectsOfTypeAll(gameWindowType);
         // gameWindowObject（游戏窗口对象）：每轮从游戏窗口列表取得一个元素，仅代表当前这一项。使用位置：LeonPausedColliderInspector.CloseGameWindowAssistGizmo()。
 foreach (UnityEngine.Object gameWindowObject in gameWindowList)
@@ -76,9 +76,9 @@ foreach (UnityEngine.Object gameWindowObject in gameWindowList)
     /// <remarks>静态调用链：上游 LeonPausedColliderInspector.HandleRuntimeModeChange(PlayModeStateChange)、LeonPausedColliderInspector.LeonPausedColliderInspector()；下游（含内部回调体） LeonPausedColliderInspector.RestoreSceneViewAssistGizmo()、LeonPausedColliderInspector.TakeOverSceneViewAssistGizmo()、LeonPausedColliderInspector.TryGetSelectedLeonCapsule(out CapsuleCollider)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     private static void RefreshTakeOverState()
     {
-        // capsule（胶囊）：使用位置：作为 LeonPausedColliderInspector.TryGetSelectedLeonCapsule(out CapsuleCollider) 的参数、LeonPausedColliderInspector.RefreshTakeOverState()。
+        // 胶囊。
 CapsuleCollider capsule = null;
-        // shouldTakeOver（是否应当接管）：使用位置：LeonPausedColliderInspector.RefreshTakeOverState()。
+        // 是否应当接管。
 bool shouldTakeOver = EditorApplication.isPlaying && EditorApplication.isPaused && TryGetSelectedLeonCapsule(out capsule);
         if (shouldTakeOver)
         {
@@ -100,18 +100,18 @@ bool shouldTakeOver = EditorApplication.isPlaying && EditorApplication.isPaused 
 
     /// <summary>TryGetSelectedLeonCapsule 的业务处理入口；本方法直接依赖 Component.GetComponent&lt;CapsuleCollider&gt;()、Component.GetComponentInParent&lt;LeonController&gt;()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonPausedColliderInspector.RefreshTakeOverState()；下游（含内部回调体） Component.GetComponent&lt;CapsuleCollider&gt;()、Component.GetComponentInParent&lt;LeonController&gt;()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="capsule">中文含义：胶囊。输出参数，由本入口写入并交给调用方。使用位置：LeonPausedColliderInspector.TryGetSelectedLeonCapsule(out CapsuleCollider)。</param>
+    /// <param name="capsule">胶囊。输出参数，由本入口写入并交给调用方。</param>
     private static bool TryGetSelectedLeonCapsule(out CapsuleCollider capsule)
     {
         capsule = null;
-        // selectedObject（选定对象）：使用位置：LeonPausedColliderInspector.TryGetSelectedLeonCapsule(out CapsuleCollider)。
+        // 选定对象。
 Transform selectedObject = Selection.activeTransform;
         if (selectedObject == null)
         {
             return false;
         }
 
-        // leon（里昂）：保存 Component.GetComponentInParent<LeonController>() 的返回结果，供当前步骤使用。使用位置：LeonPausedColliderInspector.TryGetSelectedLeonCapsule(out CapsuleCollider)。
+        // 里昂。
 LeonController leon = selectedObject.GetComponentInParent<LeonController>();
         if (leon == null)
         {
@@ -126,7 +126,7 @@ LeonController leon = selectedObject.GetComponentInParent<LeonController>();
     /// <remarks>静态调用链：上游 LeonPausedColliderInspector.RefreshTakeOverState()；下游（含内部回调体） Dictionary&lt;int, bool&gt;.Add(int, bool)、Dictionary&lt;int, bool&gt;.ContainsKey(int)、Object.GetInstanceID()、SceneView.RepaintAll()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     private static void TakeOverSceneViewAssistGizmo()
     {
-        // stateHasChange（状态是否具有变化）：使用位置：LeonPausedColliderInspector.TakeOverSceneViewAssistGizmo()。
+        // 状态是否具有变化。
 bool stateHasChange = false;
         // sceneView（场景视图）：每轮从被遍历的集合取得一个元素，仅代表当前这一项。使用位置：作为 Dictionary<int, bool>.Add(int, bool) 的参数、LeonPausedColliderInspector.TakeOverSceneViewAssistGizmo()。
 foreach (SceneView sceneView in SceneView.sceneViews)
@@ -136,7 +136,7 @@ foreach (SceneView sceneView in SceneView.sceneViews)
                 continue;
             }
 
-            // identifier（标识符）：保存 Object.GetInstanceID() 的返回结果，供当前步骤使用。使用位置：作为 Dictionary<int, bool>.Add(int, bool) 的参数、作为 Dictionary<int, bool>.ContainsKey(int) 的参数。
+            // 标识符。
 int identifier = sceneView.GetInstanceID();
             if (!sceneViewOriginalAssistGizmoState.ContainsKey(identifier))
             {
@@ -177,7 +177,7 @@ foreach (SceneView sceneView in SceneView.sceneViews)
                 continue;
             }
 
-            // identifier（标识符）：保存 Object.GetInstanceID() 的返回结果，供当前步骤使用。使用位置：作为 Dictionary<int, bool>.TryGetValue(int, out bool) 的参数。
+            // 标识符。
 int identifier = sceneView.GetInstanceID();
             if (sceneViewOriginalAssistGizmoState.TryGetValue(identifier, out bool /* 中文含义：是否原始状态。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ originalState))
             {
@@ -205,7 +205,7 @@ int identifier = sceneView.GetInstanceID();
             return;
         }
 
-        // tangentialOne（切向第一）：保存 Vector3.Cross(Vector3, Vector3) 的返回结果，供当前步骤使用。使用位置：作为 Handles.DrawLine(Vector3, Vector3) 的参数、作为 Handles.DrawWireArc(Vector3, Vector3, Vector3, float, float) 的参数、作为 Vector3.Cross(Vector3, Vector3) 的参数 等共 4 处。
+        // 切向第一。
 Vector3 tangentialOne = Vector3.Cross(axial, Vector3.forward);
         if (tangentialOne.sqrMagnitude < 0.0001f)
         {
@@ -213,13 +213,13 @@ Vector3 tangentialOne = Vector3.Cross(axial, Vector3.forward);
         }
 
         tangentialOne.Normalize();
-        // tangentialTwo（切向第二）：使用位置：作为 Handles.DrawLine(Vector3, Vector3) 的参数、作为 Handles.DrawWireArc(Vector3, Vector3, Vector3, float, float) 的参数。
+        // 切向第二。
 Vector3 tangentialTwo = Vector3.Cross(axial, tangentialOne).normalized;
-        // upperCircleCenter（上部圆形中心）：使用位置：作为 Handles.DrawLine(Vector3, Vector3) 的参数、作为 Handles.DrawWireArc(Vector3, Vector3, Vector3, float, float) 的参数、作为 Handles.DrawWireDisc(Vector3, Vector3, float) 的参数。
+        // 上部圆形中心。
 Vector3 upperCircleCenter = center + axial * cylinderHalfLength;
-        // lowerCircleCenter（下部圆形中心）：使用位置：作为 Handles.DrawLine(Vector3, Vector3) 的参数、作为 Handles.DrawWireArc(Vector3, Vector3, Vector3, float, float) 的参数、作为 Handles.DrawWireDisc(Vector3, Vector3, float) 的参数。
+        // 下部圆形中心。
 Vector3 lowerCircleCenter = center - axial * cylinderHalfLength;
-        // originalColor（原始颜色）：使用位置：LeonPausedColliderInspector.DrawSafeCapsuleWireframe(SceneView)。
+        // 原始颜色。
 Color originalColor = Handles.color;
         Handles.color = new Color(0.15f, 1f, 0.35f, 1f);
         Handles.DrawWireDisc(upperCircleCenter, axial, radius);
@@ -237,27 +237,27 @@ Color originalColor = Handles.color;
 
     /// <summary>TryCalculateWorldCapsule 的业务处理入口；本方法直接依赖 LeonPausedColliderInspector.IsFiniteCount(float)、LeonPausedColliderInspector.IsFiniteVector(Vector3)、Mathf.Abs(float)、Mathf.Max(float, float)、Transform.TransformDirection(Vector3)、Transform.TransformPoint(Vector3)、Vector3.Normalize() 等共 8 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonPausedColliderInspector.DrawSafeCapsuleWireframe(SceneView)；下游（含内部回调体） LeonPausedColliderInspector.IsFiniteCount(float)、LeonPausedColliderInspector.IsFiniteVector(Vector3)、Mathf.Abs(float)、Mathf.Max(float, float)、Transform.TransformDirection(Vector3)、Transform.TransformPoint(Vector3)、Vector3.Normalize() 等共 8 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="capsule">中文含义：胶囊。使用位置：作为 Mathf.Max(float, float) 的参数、作为 Transform.TransformPoint(Vector3) 的参数、LeonPausedColliderInspector.TryCalculateWorldCapsule(CapsuleCollider, out Vector3, out Vector3, out float, out float)。</param>
-    /// <param name="centerValue">中文含义：中心值。输出参数，由本入口写入并交给调用方。使用位置：作为 LeonPausedColliderInspector.IsFiniteVector(Vector3) 的参数、LeonPausedColliderInspector.TryCalculateWorldCapsule(CapsuleCollider, out Vector3, out Vector3, out float, out float)。</param>
-    /// <param name="axial">中文含义：轴向。输出参数，由本入口写入并交给调用方。使用位置：作为 LeonPausedColliderInspector.IsFiniteVector(Vector3) 的参数、LeonPausedColliderInspector.TryCalculateWorldCapsule(CapsuleCollider, out Vector3, out Vector3, out float, out float)。</param>
-    /// <param name="radiusValue">中文含义：半径值。输出参数，由本入口写入并交给调用方。使用位置：作为 LeonPausedColliderInspector.IsFiniteCount(float) 的参数、作为 Mathf.Max(float, float) 的参数、LeonPausedColliderInspector.TryCalculateWorldCapsule(CapsuleCollider, out Vector3, out Vector3, out float, out float)。</param>
-    /// <param name="cylinderHalfLength">中文含义：圆柱一半长度。输出参数，由本入口写入并交给调用方。使用位置：作为 LeonPausedColliderInspector.IsFiniteCount(float) 的参数、LeonPausedColliderInspector.TryCalculateWorldCapsule(CapsuleCollider, out Vector3, out Vector3, out float, out float)。</param>
+    /// <param name="capsule">胶囊。</param>
+    /// <param name="centerValue">中心值。输出参数，由本入口写入并交给调用方。</param>
+    /// <param name="axial">轴向。输出参数，由本入口写入并交给调用方。</param>
+    /// <param name="radiusValue">半径值。输出参数，由本入口写入并交给调用方。</param>
+    /// <param name="cylinderHalfLength">圆柱一半长度。输出参数，由本入口写入并交给调用方。</param>
     private static bool TryCalculateWorldCapsule(CapsuleCollider capsule, out Vector3 centerValue, out Vector3 axial, out float radiusValue, out float cylinderHalfLength)
     {
-        // transformValue（变换值）：使用位置：作为 Mathf.Abs(float) 的参数、LeonPausedColliderInspector.TryCalculateWorldCapsule(CapsuleCollider, out Vector3, out Vector3, out float, out float)。
+        // 变换值。
 Transform transformValue = capsule.transform;
-        // localAxial（局部轴向）：使用位置：作为 Transform.TransformDirection(Vector3) 的参数。
+        // 局部轴向。
 Vector3 localAxial = capsule.direction switch
         {
             0 => Vector3.right,
             2 => Vector3.forward,
             _ => Vector3.up
         };
-        // absoluteScale（绝对缩放）：使用位置：作为 Mathf.Max(float, float) 的参数、LeonPausedColliderInspector.TryCalculateWorldCapsule(CapsuleCollider, out Vector3, out Vector3, out float, out float)。
+        // 绝对缩放。
 Vector3 absoluteScale = new Vector3(Mathf.Abs(transformValue.lossyScale.x), Mathf.Abs(transformValue.lossyScale.y), Mathf.Abs(transformValue.lossyScale.z));
-        // axialScale（轴向缩放）：使用位置：作为 Mathf.Max(float, float) 的参数、LeonPausedColliderInspector.TryCalculateWorldCapsule(CapsuleCollider, out Vector3, out Vector3, out float, out float)。
+        // 轴向缩放。
 float axialScale;
-        // radiusScale（半径缩放）：使用位置：LeonPausedColliderInspector.TryCalculateWorldCapsule(CapsuleCollider, out Vector3, out Vector3, out float, out float)。
+        // 半径缩放。
 float radiusScale;
         switch (capsule.direction)
         {
@@ -278,7 +278,7 @@ float radiusScale;
         centerValue = transformValue.TransformPoint(capsule.center);
         axial = transformValue.TransformDirection(localAxial);
         radiusValue = capsule.radius * radiusScale;
-        // worldHalfHeight（世界空间一半高度）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：LeonPausedColliderInspector.TryCalculateWorldCapsule(CapsuleCollider, out Vector3, out Vector3, out float, out float)。
+        // 世界空间一半高度。
 float worldHalfHeight = Mathf.Max(capsule.height * axialScale * 0.5f, radiusValue);
         cylinderHalfLength = worldHalfHeight - radiusValue;
         if (!IsFiniteVector(centerValue) || !IsFiniteVector(axial) || axial.sqrMagnitude < 0.0001f || !IsFiniteCount(radiusValue) || !IsFiniteCount(cylinderHalfLength) || radiusValue <= 0f || cylinderHalfLength < 0f)
@@ -292,7 +292,7 @@ float worldHalfHeight = Mathf.Max(capsule.height * axialScale * 0.5f, radiusValu
 
     /// <summary>IsFiniteVector 的业务处理入口；本方法直接依赖 LeonPausedColliderInspector.IsFiniteCount(float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonPausedColliderInspector.TryCalculateWorldCapsule(CapsuleCollider, out Vector3, out Vector3, out float, out float)；下游（含内部回调体） LeonPausedColliderInspector.IsFiniteCount(float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="value">中文含义：值。使用位置：作为 LeonPausedColliderInspector.IsFiniteCount(float) 的参数。</param>
+    /// <param name="value">值。</param>
     private static bool IsFiniteVector(Vector3 value)
     {
         return IsFiniteCount(value.x) && IsFiniteCount(value.y) && IsFiniteCount(value.z);
@@ -300,7 +300,7 @@ float worldHalfHeight = Mathf.Max(capsule.height * axialScale * 0.5f, radiusValu
 
     /// <summary>IsFiniteCount 的业务处理入口；本方法直接依赖 float.IsInfinity(float)、float.IsNaN(float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonPausedColliderInspector.IsFiniteVector(Vector3)、LeonPausedColliderInspector.TryCalculateWorldCapsule(CapsuleCollider, out Vector3, out Vector3, out float, out float)；下游（含内部回调体） float.IsInfinity(float)、float.IsNaN(float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="value">中文含义：值。使用位置：作为 float.IsInfinity(float) 的参数、作为 float.IsNaN(float) 的参数。</param>
+    /// <param name="value">值。</param>
     private static bool IsFiniteCount(float value)
     {
         return !float.IsNaN(value) && !float.IsInfinity(value);

@@ -7,12 +7,12 @@ using UnityEngine;
 [RequireComponent(typeof(Collider))]
 public class EnemyHitbox : MonoBehaviour
 {
-    /// <summary>中文含义：命中盒类型。使用位置：作为 EnemyHitbox.ApplyResolvedHit(VillagerController, HitboxType, float, Vector3, Vector3) 的参数、作为 EnemyHitbox.GetDamageMultiplier(HitboxType) 的参数、作为 WeaponBase.CommitEnemyDamage(VillagerController, HitboxType, float, Vector3, Vector3) 的参数 等共 9 处。</summary>
+    /// <summary>命中盒类型。</summary>
     [Header("部位设置")]
     public HitboxType hitboxType = HitboxType.Chest;
-    /// <summary>中文含义：拥有者。使用位置：EnemyHitbox.Awake()、EnemyHitbox.Owner.get。</summary>
+    /// <summary>拥有者。</summary>
     private VillagerController owner;
-    /// <summary>中文含义：拥有者。使用位置：作为 EnemyHitbox.ApplyResolvedHit(VillagerController, HitboxType, float, Vector3, Vector3) 的参数、作为 WeaponBase.CommitEnemyDamage(VillagerController, HitboxType, float, Vector3, Vector3) 的参数、KnifeCombatModule.DetectBlade(KnifeTraversedInterval) 等共 4 处。</summary>
+    /// <summary>拥有者。</summary>
     public VillagerController Owner
     {
         get
@@ -32,7 +32,7 @@ public class EnemyHitbox : MonoBehaviour
     {
         owner = GetComponentInParent<VillagerController>();
         // 确保 Collider 是 Trigger
-        // col（列）：保存 Component.GetComponent<Collider>() 的返回结果，供当前步骤使用。使用位置：EnemyHitbox.Awake()。
+        // 列。
 var col = GetComponent<Collider>();
         if (col != null)
         {
@@ -44,9 +44,9 @@ var col = GetComponent<Collider>();
     /// 被子弹命中时调用。
     /// </summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） EnemyHitbox.ApplyResolvedHit(VillagerController, HitboxType, float, Vector3, Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="baseDamage">中文含义：基础伤害。使用位置：作为 EnemyHitbox.ApplyResolvedHit(VillagerController, HitboxType, float, Vector3, Vector3) 的参数。</param>
-    /// <param name="hitPoint">中文含义：命中点位置。使用位置：作为 EnemyHitbox.ApplyResolvedHit(VillagerController, HitboxType, float, Vector3, Vector3) 的参数。</param>
-    /// <param name="hitNormal">中文含义：命中表面法线。使用位置：作为 EnemyHitbox.ApplyResolvedHit(VillagerController, HitboxType, float, Vector3, Vector3) 的参数。</param>
+    /// <param name="baseDamage">基础伤害。</param>
+    /// <param name="hitPoint">命中点位置。</param>
+    /// <param name="hitNormal">命中表面法线。</param>
     public void OnHit(float baseDamage, Vector3 hitPoint, Vector3 hitNormal)
     {
         ApplyResolvedHit(Owner, hitboxType, baseDamage, hitPoint, hitNormal);
@@ -54,11 +54,11 @@ var col = GetComponent<Collider>();
 
     /// <summary>ApplyResolvedHit 的业务处理入口；本方法直接依赖 DamageResolutionModule.CommitEnemyHit(VillagerController, HitboxType, float, Vector3, Vector3)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyHitbox.OnHit(float, Vector3, Vector3)；下游（含内部回调体） DamageResolutionModule.CommitEnemyHit(VillagerController, HitboxType, float, Vector3, Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="target">中文含义：目标村民敌人控制器。使用位置：作为 DamageResolutionModule.CommitEnemyHit(VillagerController, HitboxType, float, Vector3, Vector3) 的参数。</param>
-    /// <param name="resolvedType">中文含义：解算后的类型。使用位置：作为 DamageResolutionModule.CommitEnemyHit(VillagerController, HitboxType, float, Vector3, Vector3) 的参数。</param>
-    /// <param name="baseDamage">中文含义：基础伤害。使用位置：作为 DamageResolutionModule.CommitEnemyHit(VillagerController, HitboxType, float, Vector3, Vector3) 的参数。</param>
-    /// <param name="hitPoint">中文含义：命中点位置。使用位置：作为 DamageResolutionModule.CommitEnemyHit(VillagerController, HitboxType, float, Vector3, Vector3) 的参数。</param>
-    /// <param name="hitNormal">中文含义：命中表面法线。使用位置：作为 DamageResolutionModule.CommitEnemyHit(VillagerController, HitboxType, float, Vector3, Vector3) 的参数。</param>
+    /// <param name="target">目标村民敌人控制器。</param>
+    /// <param name="resolvedType">解算后的类型。</param>
+    /// <param name="baseDamage">基础伤害。</param>
+    /// <param name="hitPoint">命中点位置。</param>
+    /// <param name="hitNormal">命中表面法线。</param>
     public static void ApplyResolvedHit(VillagerController target, HitboxType resolvedType, float baseDamage, Vector3 hitPoint, Vector3 hitNormal)
     {
         DamageResolutionModule.CommitEnemyHit(target, resolvedType, baseDamage, hitPoint, hitNormal);
@@ -75,7 +75,7 @@ var col = GetComponent<Collider>();
 
     /// <summary>GetDamageMultiplier 的业务处理入口；本方法直接依赖 DamageResolutionModule.QueryBodyPartMultiplier(HitboxType)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyHitbox.GetDamageMultiplier()；下游（含内部回调体） DamageResolutionModule.QueryBodyPartMultiplier(HitboxType)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="type">中文含义：当前命中部位类别。使用位置：作为 DamageResolutionModule.QueryBodyPartMultiplier(HitboxType) 的参数。</param>
+    /// <param name="type">当前命中部位类别。</param>
     public static float GetDamageMultiplier(HitboxType type)
     {
         return DamageResolutionModule.QueryBodyPartMultiplier(type);
@@ -85,9 +85,9 @@ var col = GetComponent<Collider>();
     /// 将 HitboxType 转换为 Animator HitDir 参数。
     /// </summary>
     /// <remarks>静态调用链：上游 EnemyCombatModule.TakeDamage(float, Vector3, HitboxType, Vector3)；下游（含内部回调体） EnemyHitbox.ResolveSide(Vector3, Transform, int, int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="type">中文含义：当前命中部位类别。使用位置：EnemyHitbox.ToHitDir(HitboxType, Vector3, Transform)。</param>
-    /// <param name="hitPoint">中文含义：命中点位置。使用位置：作为 EnemyHitbox.ResolveSide(Vector3, Transform, int, int) 的参数。</param>
-    /// <param name="enemyRoot">中文含义：敌人根节点。使用位置：作为 EnemyHitbox.ResolveSide(Vector3, Transform, int, int) 的参数。</param>
+    /// <param name="type">当前命中部位类别。</param>
+    /// <param name="hitPoint">命中点位置。</param>
+    /// <param name="enemyRoot">敌人根节点。</param>
     public static int ToHitDir(HitboxType type, Vector3 hitPoint, Transform enemyRoot)
     {
         switch (type)
@@ -113,10 +113,10 @@ var col = GetComponent<Collider>();
 
     /// <summary>ResolveSide 的业务处理入口；本方法直接依赖 Transform.InverseTransformPoint(Vector3)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyHitbox.ToHitDir(HitboxType, Vector3, Transform)；下游（含内部回调体） Transform.InverseTransformPoint(Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="hitPoint">中文含义：命中点位置。使用位置：作为 Transform.InverseTransformPoint(Vector3) 的参数、EnemyHitbox.ResolveSide(Vector3, Transform, int, int)。</param>
-    /// <param name="enemyRoot">中文含义：敌人根节点。使用位置：EnemyHitbox.ResolveSide(Vector3, Transform, int, int)。</param>
-    /// <param name="leftResult">中文含义：左侧结果。使用位置：EnemyHitbox.ResolveSide(Vector3, Transform, int, int)。</param>
-    /// <param name="rightResult">中文含义：右侧结果。使用位置：EnemyHitbox.ResolveSide(Vector3, Transform, int, int)。</param>
+    /// <param name="hitPoint">命中点位置。</param>
+    /// <param name="enemyRoot">敌人根节点。</param>
+    /// <param name="leftResult">左侧结果。</param>
+    /// <param name="rightResult">右侧结果。</param>
     private static int ResolveSide(Vector3 hitPoint, Transform enemyRoot, int leftResult, int rightResult)
     {
         if (enemyRoot == null || hitPoint == default)
@@ -131,7 +131,7 @@ var col = GetComponent<Collider>();
             }
         }
 
-        // localX（局部横向）：使用位置：EnemyHitbox.ResolveSide(Vector3, Transform, int, int)。
+        // 局部横向。
 float localX = enemyRoot.InverseTransformPoint(hitPoint).x;
         if (localX <= 0f)
         {

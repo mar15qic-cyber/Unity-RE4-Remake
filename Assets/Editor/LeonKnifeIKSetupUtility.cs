@@ -7,7 +7,7 @@ using UnityEngine;
 /// <summary>编辑器配置与校验模块 LeonKnifeIKSetupUtility；通过方法参数、返回值及声明成员与调用方通信，静态调用索引记录可解析的直接依赖。</summary>
 public static class LeonKnifeIKSetupUtility
 {
-    /// <summary>中文含义：小刀待机路径。编译期常量，保持既有值与消费者映射。使用位置：作为 AssetDatabase.LoadAllAssetsAtPath(string) 的参数。</summary>
+    /// <summary>小刀待机路径。编译期常量，保持既有值与消费者映射。</summary>
     private const string KnifeIdlePath = "Assets/素材库/动画/Knife_MocapAnimPack_1.1/AnimationsFBX/Knife_Stand_Style(St)/Knife_St_IdleSet/Knife_St_Idle_00.fbx";
     /// <summary>编辑器菜单调用入口 RebuildKnifeIK；按当前参数和已绑定配置执行资源操作，下游调用见静态索引。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） AnimationMode.BeginSampling()、AnimationMode.EndSampling()、AnimationMode.InAnimationMode()、AnimationMode.SampleAnimationClip(GameObject, AnimationClip, float)、AnimationMode.StartAnimationMode()、AnimationMode.StopAnimationMode()、Animator.GetBoneTransform(HumanBodyBones) 等共 36 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
@@ -20,7 +20,7 @@ public static class LeonKnifeIKSetupUtility
             return;
         }
 
-        // rig（绑定）：保存 LeonKnifeIKSetupUtility.FindSceneRig() 的返回结果，供当前步骤使用。使用位置：作为 Debug.Log(object, Object) 的参数、作为 Debug.LogError(object, Object) 的参数、作为 EditorSceneManager.MarkSceneDirty(Scene) 的参数 等共 9 处。
+        // 绑定。
 LeonAnimRig rig = FindSceneRig();
         if (rig == null)
         {
@@ -28,11 +28,11 @@ LeonAnimRig rig = FindSceneRig();
             return;
         }
 
-        // animator（动画控制器）：保存 Component.GetComponent<Animator>() 的返回结果，供当前步骤使用。使用位置：LeonKnifeIKSetupUtility.RebuildKnifeIK()。
+        // 动画控制器。
 Animator animator = rig.GetComponent<Animator>();
-        // fingerController（手指控制器）：保存 Component.GetComponent<LeonFingerIKController>() 的返回结果，供当前步骤使用。使用位置：作为 EditorUtility.SetDirty(Object) 的参数、作为 PrefabUtility.RecordPrefabInstancePropertyModifications(Object) 的参数、LeonKnifeIKSetupUtility.RebuildKnifeIK()。
+        // 手指控制器。
 LeonFingerIKController fingerController = rig.GetComponent<LeonFingerIKController>();
-        // visualController（视觉表现控制器）：保存 Component.GetComponent<LeonWeaponVisualController>() 的返回结果，供当前步骤使用。使用位置：LeonKnifeIKSetupUtility.RebuildKnifeIK()。
+        // 视觉表现控制器。
 LeonWeaponVisualController visualController = rig.GetComponent<LeonWeaponVisualController>();
         if (animator == null || !animator.isHuman)
         {
@@ -46,7 +46,7 @@ LeonWeaponVisualController visualController = rig.GetComponent<LeonWeaponVisualC
             return;
         }
 
-        // knifeVisualRoot（小刀视觉表现根节点）：使用位置：作为 LeonKnifeIKSetupUtility.FindOrCreateChild(Transform, string) 的参数、LeonKnifeIKSetupUtility.RebuildKnifeIK()。
+        // 小刀视觉表现根节点。
 Transform knifeVisualRoot;
         if (visualController != null)
         {
@@ -63,7 +63,7 @@ Transform knifeVisualRoot;
             return;
         }
 
-        // idleClip（待机动画片段）：保存 IEnumerable<AnimationClip>.FirstOrDefault<AnimationClip>(Func<AnimationClip, bool>) 的返回结果，供当前步骤使用。使用位置：作为 AnimationMode.SampleAnimationClip(GameObject, AnimationClip, float) 的参数、作为 Mathf.Min(float, float) 的参数、LeonKnifeIKSetupUtility.RebuildKnifeIK()。
+        // 待机动画片段。
 AnimationClip idleClip = AssetDatabase.LoadAllAssetsAtPath(KnifeIdlePath).OfType<AnimationClip>().FirstOrDefault( /* 中文含义：动画片段。 */clip => !clip.name.StartsWith("__preview__"));
         if (idleClip == null)
         {
@@ -71,11 +71,11 @@ AnimationClip idleClip = AssetDatabase.LoadAllAssetsAtPath(KnifeIdlePath).OfType
             return;
         }
 
-        // rightHand（右手）：保存 Animator.GetBoneTransform(HumanBodyBones) 的返回结果，供当前步骤使用。使用位置：作为 Transform.InverseTransformPoint(Vector3) 的参数、LeonKnifeIKSetupUtility.RebuildKnifeIK()。
+        // 右手。
 Transform rightHand = animator.GetBoneTransform(HumanBodyBones.RightHand);
-        // leftHand（左手）：保存 Animator.GetBoneTransform(HumanBodyBones) 的返回结果，供当前步骤使用。使用位置：作为 Transform.InverseTransformPoint(Vector3) 的参数、LeonKnifeIKSetupUtility.RebuildKnifeIK()。
+        // 左手。
 Transform leftHand = animator.GetBoneTransform(HumanBodyBones.LeftHand);
-        // leftForearm（左侧前臂）：保存 Animator.GetBoneTransform(HumanBodyBones) 的返回结果，供当前步骤使用。使用位置：LeonKnifeIKSetupUtility.RebuildKnifeIK()。
+        // 左侧前臂。
 Transform leftForearm = animator.GetBoneTransform(HumanBodyBones.LeftLowerArm);
         if (rightHand == null || leftHand == null || leftForearm == null)
         {
@@ -83,17 +83,17 @@ Transform leftForearm = animator.GetBoneTransform(HumanBodyBones.LeftLowerArm);
             return;
         }
 
-        // player（玩家）：使用位置：作为 AnimationMode.SampleAnimationClip(GameObject, AnimationClip, float) 的参数、作为 LeonKnifeIKSetupUtility.FindOrCreateChild(Transform, string) 的参数、作为 LeonKnifeIKSetupUtility.SetPoseFromPlayerSpace(Transform, Transform, Vector3, Quaternion) 的参数 等共 5 处。
+        // 玩家。
 Transform player = rig.transform;
-        // rightLocalPosition（右侧局部位置）：使用位置：作为 LeonKnifeIKSetupUtility.SetPoseFromPlayerSpace(Transform, Transform, Vector3, Quaternion) 的参数、LeonKnifeIKSetupUtility.RebuildKnifeIK()。
+        // 右侧局部位置。
 Vector3 rightLocalPosition;
-        // rightLocalRotation（右侧局部旋转）：使用位置：作为 LeonKnifeIKSetupUtility.SetPoseFromPlayerSpace(Transform, Transform, Vector3, Quaternion) 的参数、LeonKnifeIKSetupUtility.RebuildKnifeIK()。
+        // 右侧局部旋转。
 Quaternion rightLocalRotation;
-        // leftLocalPosition（左侧局部位置）：使用位置：作为 LeonKnifeIKSetupUtility.SetPoseFromPlayerSpace(Transform, Transform, Vector3, Quaternion) 的参数、LeonKnifeIKSetupUtility.RebuildKnifeIK()。
+        // 左侧局部位置。
 Vector3 leftLocalPosition;
-        // leftLocalRotation（左侧局部旋转）：使用位置：作为 LeonKnifeIKSetupUtility.SetPoseFromPlayerSpace(Transform, Transform, Vector3, Quaternion) 的参数、LeonKnifeIKSetupUtility.RebuildKnifeIK()。
+        // 左侧局部旋转。
 Quaternion leftLocalRotation;
-        // hintLocalPosition（提示局部位置）：使用位置：作为 Transform.TransformPoint(Vector3) 的参数、LeonKnifeIKSetupUtility.RebuildKnifeIK()。
+        // 提示局部位置。
 Vector3 hintLocalPosition;
         AnimationMode.StartAnimationMode();
         try
@@ -105,7 +105,7 @@ Vector3 hintLocalPosition;
             rightLocalRotation = Quaternion.Inverse(player.rotation) * rightHand.rotation;
             leftLocalPosition = player.InverseTransformPoint(leftHand.position);
             leftLocalRotation = Quaternion.Inverse(player.rotation) * leftHand.rotation;
-            // hintWorldPosition（提示世界位置）：使用位置：作为 Transform.InverseTransformPoint(Vector3) 的参数。
+            // 提示世界位置。
 Vector3 hintWorldPosition = leftForearm.position - player.right * 0.2f - player.forward * 0.04f;
             hintLocalPosition = player.InverseTransformPoint(hintWorldPosition);
             if (fingerController != null)
@@ -113,9 +113,9 @@ Vector3 hintWorldPosition = leftForearm.position - player.right * 0.2f - player.
                 fingerController.CreatePersistentTargetsForWeapon(WeaponType.Knife);
             }
 
-            // legacyKnifeRoot（旧版小刀根节点）：保存 Transform.Find(string) 的返回结果，供当前步骤使用。使用位置：LeonKnifeIKSetupUtility.RebuildKnifeIK()。
+            // 旧版小刀根节点。
 Transform legacyKnifeRoot = player.Find("小刀");
-            // legacyFingerTargets（旧版手指目标列表）：使用位置：LeonKnifeIKSetupUtility.RebuildKnifeIK()。
+            // 旧版手指目标列表。
 Transform legacyFingerTargets;
             if (legacyKnifeRoot != null)
             {
@@ -139,26 +139,26 @@ Transform legacyFingerTargets;
             }
         }
 
-        // targetsRoot（目标列表根节点）：保存 LeonKnifeIKSetupUtility.FindOrCreateChild(Transform, string) 的返回结果，供当前步骤使用。使用位置：作为 LeonKnifeIKSetupUtility.FindOrCreateChild(Transform, string) 的参数。
+        // 目标列表根节点。
 Transform targetsRoot = FindOrCreateChild(player, "IK_Targets");
-        // knifeRoot（小刀根节点）：保存 LeonKnifeIKSetupUtility.FindOrCreateChild(Transform, string) 的返回结果，供当前步骤使用。使用位置：作为 LeonKnifeIKSetupUtility.FindOrCreateChild(Transform, string) 的参数。
+        // 小刀根节点。
 Transform knifeRoot = FindOrCreateChild(targetsRoot, "KnifeIKTargets");
-        // rightTarget（右侧目标）：保存 LeonKnifeIKSetupUtility.FindOrCreateChild(Transform, string) 的返回结果，供当前步骤使用。使用位置：作为 LeonKnifeIKSetupUtility.GetOrAddLimbIK(GameObject) 的参数、作为 LeonKnifeIKSetupUtility.SetPoseFromPlayerSpace(Transform, Transform, Vector3, Quaternion) 的参数、LeonKnifeIKSetupUtility.RebuildKnifeIK()。
+        // 右侧目标。
 Transform rightTarget = FindOrCreateChild(knifeRoot, "KnifeRightHandTarget");
-        // leftTarget（左侧目标）：保存 LeonKnifeIKSetupUtility.FindOrCreateChild(Transform, string) 的返回结果，供当前步骤使用。使用位置：作为 LeonKnifeIKSetupUtility.GetOrAddLimbIK(GameObject) 的参数、作为 LeonKnifeIKSetupUtility.SetPoseFromPlayerSpace(Transform, Transform, Vector3, Quaternion) 的参数、LeonKnifeIKSetupUtility.RebuildKnifeIK()。
+        // 左侧目标。
 Transform leftTarget = FindOrCreateChild(knifeRoot, "KnifeLeftHandTarget");
-        // leftHint（左侧提示）：保存 LeonKnifeIKSetupUtility.FindOrCreateChild(Transform, string) 的返回结果，供当前步骤使用。使用位置：LeonKnifeIKSetupUtility.RebuildKnifeIK()。
+        // 左侧提示。
 Transform leftHint = FindOrCreateChild(knifeRoot, "KnifeLeftElbowHint");
-        // rightGrip（右侧握持）：保存 LeonKnifeIKSetupUtility.FindOrCreateChild(Transform, string) 的返回结果，供当前步骤使用。使用位置：作为 EditorUtility.SetDirty(Object) 的参数、作为 LeonKnifeIKSetupUtility.SetPoseFromPlayerSpace(Transform, Transform, Vector3, Quaternion) 的参数、LeonKnifeIKSetupUtility.RebuildKnifeIK()。
+        // 右侧握持。
 Transform rightGrip = FindOrCreateChild(knifeVisualRoot, "KnifeGrip_Right");
         SetPoseFromPlayerSpace(player, rightTarget, rightLocalPosition, rightLocalRotation);
         SetPoseFromPlayerSpace(player, rightGrip, rightLocalPosition, rightLocalRotation);
         SetPoseFromPlayerSpace(player, leftTarget, leftLocalPosition, leftLocalRotation);
         leftHint.position = player.TransformPoint(hintLocalPosition);
         leftHint.rotation = player.rotation;
-        // rightIK（右侧反向动力学）：保存 LeonKnifeIKSetupUtility.GetOrAddLimbIK(GameObject) 的返回结果，供当前步骤使用。使用位置：作为 EditorUtility.CopySerialized(Object, Object) 的参数、作为 EditorUtility.SetDirty(Object) 的参数、LeonKnifeIKSetupUtility.RebuildKnifeIK()。
+        // 右侧反向动力学。
 LimbIK rightIK = GetOrAddLimbIK(rightTarget.gameObject);
-        // leftIK（左侧反向动力学）：保存 LeonKnifeIKSetupUtility.GetOrAddLimbIK(GameObject) 的返回结果，供当前步骤使用。使用位置：作为 EditorUtility.CopySerialized(Object, Object) 的参数、作为 EditorUtility.SetDirty(Object) 的参数、LeonKnifeIKSetupUtility.RebuildKnifeIK()。
+        // 左侧反向动力学。
 LimbIK leftIK = GetOrAddLimbIK(leftTarget.gameObject);
         EditorUtility.CopySerialized(rig.rifleRightIK, rightIK);
         EditorUtility.CopySerialized(rig.rifleLeftIK, leftIK);
@@ -250,18 +250,18 @@ foreach (LeonAnimRig rig in Resources.FindObjectsOfTypeAll<LeonAnimRig>())
 
     /// <summary>FindOrCreateChild 的业务处理入口；本方法直接依赖 GameObject.GameObject(string)、Transform.Find(string)、Transform.SetParent(Transform, bool)、Undo.RegisterCreatedObjectUndo(Object, string)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonKnifeIKSetupUtility.RebuildKnifeIK()；下游（含内部回调体） GameObject.GameObject(string)、Transform.Find(string)、Transform.SetParent(Transform, bool)、Undo.RegisterCreatedObjectUndo(Object, string)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="parent">中文含义：父级。使用位置：作为 Transform.SetParent(Transform, bool) 的参数、LeonKnifeIKSetupUtility.FindOrCreateChild(Transform, string)。</param>
-    /// <param name="childName">中文含义：子级名称。使用位置：作为 GameObject.GameObject(string) 的参数、作为 Transform.Find(string) 的参数。</param>
+    /// <param name="parent">父级。</param>
+    /// <param name="childName">子级名称。</param>
     private static Transform FindOrCreateChild(Transform parent, string childName)
     {
-        // child（子级）：保存 Transform.Find(string) 的返回结果，供当前步骤使用。使用位置：LeonKnifeIKSetupUtility.FindOrCreateChild(Transform, string)。
+        // 子级。
 Transform child = parent.Find(childName);
         if (child != null)
         {
             return child;
         }
 
-        // childObject（子级对象）：使用位置：作为 Undo.RegisterCreatedObjectUndo(Object, string) 的参数、LeonKnifeIKSetupUtility.FindOrCreateChild(Transform, string)。
+        // 子级对象。
 GameObject childObject = new GameObject(childName);
         Undo.RegisterCreatedObjectUndo(childObject, "创建小刀反向动力学目标");
         child = childObject.transform;
@@ -271,10 +271,10 @@ GameObject childObject = new GameObject(childName);
 
     /// <summary>GetOrAddLimbIK 的业务处理入口；本方法直接依赖 GameObject.GetComponent&lt;LimbIK&gt;()、Undo.AddComponent&lt;LimbIK&gt;(GameObject)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonKnifeIKSetupUtility.RebuildKnifeIK()；下游（含内部回调体） GameObject.GetComponent&lt;LimbIK&gt;()、Undo.AddComponent&lt;LimbIK&gt;(GameObject)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="targetObject">中文含义：目标对象。使用位置：作为 Undo.AddComponent&lt;LimbIK&gt;(GameObject) 的参数、LeonKnifeIKSetupUtility.GetOrAddLimbIK(GameObject)。</param>
+    /// <param name="targetObject">目标对象。</param>
     private static LimbIK GetOrAddLimbIK(GameObject targetObject)
     {
-        // limbIK（肢体反向动力学）：保存 GameObject.GetComponent<LimbIK>() 的返回结果，供当前步骤使用。使用位置：LeonKnifeIKSetupUtility.GetOrAddLimbIK(GameObject)。
+        // 肢体反向动力学。
 LimbIK limbIK = targetObject.GetComponent<LimbIK>();
         if (limbIK != null)
         {
@@ -288,10 +288,10 @@ LimbIK limbIK = targetObject.GetComponent<LimbIK>();
 
     /// <summary>SetPoseFromPlayerSpace 的业务处理入口；本方法直接依赖 Transform.TransformPoint(Vector3)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonKnifeIKSetupUtility.RebuildKnifeIK()；下游（含内部回调体） Transform.TransformPoint(Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="player">中文含义：玩家。使用位置：LeonKnifeIKSetupUtility.SetPoseFromPlayerSpace(Transform, Transform, Vector3, Quaternion)。</param>
-    /// <param name="target">中文含义：目标变换节点。使用位置：LeonKnifeIKSetupUtility.SetPoseFromPlayerSpace(Transform, Transform, Vector3, Quaternion)。</param>
-    /// <param name="localPosition">中文含义：局部位置。使用位置：作为 Transform.TransformPoint(Vector3) 的参数。</param>
-    /// <param name="localRotation">中文含义：局部旋转。使用位置：LeonKnifeIKSetupUtility.SetPoseFromPlayerSpace(Transform, Transform, Vector3, Quaternion)。</param>
+    /// <param name="player">玩家。</param>
+    /// <param name="target">目标变换节点。</param>
+    /// <param name="localPosition">局部位置。</param>
+    /// <param name="localRotation">局部旋转。</param>
     private static void SetPoseFromPlayerSpace(Transform player, Transform target, Vector3 localPosition, Quaternion localRotation)
     {
         target.position = player.TransformPoint(localPosition);

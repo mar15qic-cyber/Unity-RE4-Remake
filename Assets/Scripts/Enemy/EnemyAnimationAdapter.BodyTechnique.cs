@@ -103,6 +103,80 @@ public sealed partial class EnemyAnimationAdapter
         return true;
     }
 
+    internal int ReadActiveKneelStateFromAnimator()
+    {
+        if (anim == null || !anim.isActiveAndEnabled)
+        {
+            return 0;
+        }
+
+        AnimatorStateInfo currentState = anim.GetCurrentAnimatorStateInfo(0);
+        if (currentState.IsName("Base Layer.HitReact.Hit_NativeKneelLeft"))
+        {
+            return 1;
+        }
+
+        if (currentState.IsName("Base Layer.HitReact.Hit_NativeKneelRight"))
+        {
+            return 2;
+        }
+
+        if (anim.IsInTransition(0))
+        {
+            AnimatorStateInfo nextState = anim.GetNextAnimatorStateInfo(0);
+            if (nextState.IsName("Base Layer.HitReact.Hit_NativeKneelLeft"))
+            {
+                return 1;
+            }
+
+            if (nextState.IsName("Base Layer.HitReact.Hit_NativeKneelRight"))
+            {
+                return 2;
+            }
+        }
+
+        return 0;
+    }
+
+    internal bool IsInStaggerState()
+    {
+        if (anim == null || !anim.isActiveAndEnabled)
+        {
+            return false;
+        }
+
+        AnimatorStateInfo currentState = anim.GetCurrentAnimatorStateInfo(0);
+        if (currentState.IsName("Base Layer.Stagger.Stagger_Body_Front") || currentState.IsTag("Stagger"))
+        {
+            return true;
+        }
+
+        if (anim.IsInTransition(0))
+        {
+            AnimatorStateInfo nextState = anim.GetNextAnimatorStateInfo(0);
+            if (nextState.IsName("Base Layer.Stagger.Stagger_Body_Front") || nextState.IsTag("Stagger"))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    internal void CrossFadeStaggerStateImmediate(string stateName, float blendSeconds, float normalizedOffset, bool updateNow)
+    {
+        if (anim == null || !anim.isActiveAndEnabled || string.IsNullOrEmpty(stateName))
+        {
+            return;
+        }
+
+        anim.CrossFadeInFixedTime(stateName, blendSeconds, 0, normalizedOffset);
+        if (updateNow)
+        {
+            anim.Update(0f);
+        }
+    }
+
 #if UNITY_EDITOR
     internal void ConfigureNativeBodyTechnique(BodyTechniqueMotions unarmed, BodyTechniqueMotions armed)
     {

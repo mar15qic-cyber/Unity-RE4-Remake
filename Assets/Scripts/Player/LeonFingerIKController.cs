@@ -38,113 +38,113 @@ public class LeonFingerIKController : MonoBehaviour
     /// <summary>玩家控制、动作与运动模块 FingerBinding；通过方法参数、返回值及声明成员与调用方通信，静态调用索引记录可解析的直接依赖。</summary>
     private sealed class FingerBinding
     {
-        /// <summary>中文含义：槽位。使用位置：作为 Dictionary&lt;LeonFingerIKController.FingerSlot, Transform&gt;.this[LeonFingerIKController.FingerSlot] 的参数、作为 Dictionary&lt;LeonFingerIKController.FingerSlot, Transform&gt;.TryGetValue(LeonFingerIKController.FingerSlot, out Transform) 的参数、作为 LeonFingerIKController.GetFingerTargetName(LeonFingerIKController.FingerSlot) 的参数 等共 5 处。</summary>
+        /// <summary>槽位。</summary>
         public FingerSlot slot;
-        /// <summary>中文含义：骨骼1。使用位置：作为 List&lt;LeonFingerIKController.FingerBinding&gt;.Add(LeonFingerIKController.FingerBinding) 的参数。</summary>
+        /// <summary>骨骼1。</summary>
         public Transform bone1;
-        /// <summary>中文含义：骨骼2。使用位置：作为 List&lt;LeonFingerIKController.FingerBinding&gt;.Add(LeonFingerIKController.FingerBinding) 的参数。</summary>
+        /// <summary>骨骼2。</summary>
         public Transform bone2;
-        /// <summary>中文含义：骨骼3。使用位置：作为 List&lt;LeonFingerIKController.FingerBinding&gt;.Add(LeonFingerIKController.FingerBinding) 的参数。</summary>
+        /// <summary>骨骼3。</summary>
         public Transform bone3;
-        /// <summary>中文含义：尖端。使用位置：作为 List&lt;LeonFingerIKController.FingerBinding&gt;.Add(LeonFingerIKController.FingerBinding) 的参数、作为 Transform.SetPositionAndRotation(Vector3, Quaternion) 的参数。</summary>
+        /// <summary>尖端。</summary>
         public Transform tip;
-        /// <summary>中文含义：是否左侧。使用位置：作为 LeonFingerIKController.GetFingerWeight(WeaponType, bool, float) 的参数、作为 List&lt;LeonFingerIKController.FingerBinding&gt;.Add(LeonFingerIKController.FingerBinding) 的参数、LeonFingerIKController.ApplyFingerWeights(WeaponType, float)。</summary>
+        /// <summary>是否左侧。</summary>
         public bool isLeft;
-        /// <summary>中文含义：目标变换节点。使用位置：LeonFingerIKController.CreateTargetSetFromRoot(WeaponType, Transform, Transform)、LeonFingerIKController.EnsureWeaponTargetSet(WeaponType, bool)、LeonFingerIKController.WriteWeaponTargetsToFingerRig(WeaponType)。</summary>
+        /// <summary>目标变换节点。</summary>
         public Transform target;
-        /// <summary>中文含义：求解器索引。使用位置：作为 List&lt;LeonFingerIKController.FingerBinding&gt;.Add(LeonFingerIKController.FingerBinding) 的参数、LeonFingerIKController.ApplyFingerWeights(WeaponType, float)、LeonFingerIKController.WriteWeaponTargetsToFingerRig(WeaponType)。</summary>
+        /// <summary>求解器索引。</summary>
         public int solverIndex = -1;
     }
 
     /// <summary>玩家控制、动作与运动模块 FingerTargetSet；通过方法参数、返回值及声明成员与调用方通信，静态调用索引记录可解析的直接依赖。</summary>
     private sealed class FingerTargetSet
     {
-        /// <summary>中文含义：当前武器类别。使用位置：LeonFingerIKController.CreateTargetSetFromRoot(WeaponType, Transform, Transform)、LeonFingerIKController.EnsureWeaponTargetSet(WeaponType, bool)。</summary>
+        /// <summary>当前武器类别。</summary>
         public WeaponType weapon;
-        /// <summary>中文含义：武器根节点。使用位置：LeonFingerIKController.CreateTargetSetFromRoot(WeaponType, Transform, Transform)、LeonFingerIKController.EnsureWeaponTargetSet(WeaponType, bool)。</summary>
+        /// <summary>武器根节点。</summary>
         public Transform weaponRoot;
-        /// <summary>中文含义：目标根节点。使用位置：作为 LeonFingerIKController.DestroySafe(GameObject) 的参数、LeonFingerIKController.CreateTargetSetFromRoot(WeaponType, Transform, Transform)、LeonFingerIKController.EnsureWeaponTargetSet(WeaponType, bool) 等共 4 处。</summary>
+        /// <summary>目标根节点。</summary>
         public Transform targetRoot;
-        /// <summary>中文含义：目标列表。只读字段，初始化后不由普通写入口替换。使用位置：作为 Debug.Log(object, Object) 的参数、LeonFingerIKController.ApplyFingerWeights(WeaponType, float)、LeonFingerIKController.CreateTargetSetFromRoot(WeaponType, Transform, Transform) 等共 5 处。</summary>
+        /// <summary>目标列表。只读字段，初始化后不由普通写入口替换。</summary>
         public readonly Dictionary<FingerSlot, Transform> targets = new();
     }
 
-    /// <summary>中文含义：手指绑定。使用位置：LeonFingerIKController.AddFingerBinding(LeonFingerIKController.FingerSlot, Transform, bool, string, string, string, string, bool)、LeonFingerIKController.ApplyFingerWeights(WeaponType, float)、LeonFingerIKController.ConfigureFingerRig() 等共 7 处。</summary>
+    /// <summary>手指绑定。</summary>
     [Header("最终反向动力学组件")]
     [SerializeField]
     private FingerRig fingerRig;
-    /// <summary>中文含义：权重过渡速度。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>权重过渡速度。</summary>
     [Header("权重过渡")]
     [SerializeField, Range(0f, 30f)]
     private float weightTransitionSpeed = 12f;
-    /// <summary>中文含义：权重过渡时长。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>权重过渡时长。</summary>
     [SerializeField, Range(0.05f, 0.5f)]
     private float weightTransitionDuration = 0.16f;
-    /// <summary>中文含义：稳定权重。使用位置：作为 Mathf.Max(float, float) 的参数、LeonFingerIKController.EvaluateTargetWeight(WeaponType)。</summary>
+    /// <summary>稳定权重。</summary>
     [SerializeField, Range(0f, 1f)]
     private float stableWeight = 0.9f;
-    /// <summary>中文含义：换弹权重。使用位置：LeonFingerIKController.EvaluateTargetWeight(WeaponType)。</summary>
+    /// <summary>换弹权重。</summary>
     [SerializeField, Range(0f, 1f)]
     private float reloadWeight = 0.35f;
-    /// <summary>中文含义：过渡权重。使用位置：LeonFingerIKController.EvaluateTargetWeight(WeaponType)。</summary>
+    /// <summary>过渡权重。</summary>
     [SerializeField, Range(0f, 1f)]
     private float transitionWeight = 0.2f;
-    /// <summary>中文含义：步枪左侧手指权重。使用位置：LeonFingerIKController.GetFingerWeight(WeaponType, bool, float)。</summary>
+    /// <summary>步枪左侧手指权重。</summary>
     [Header("长枪左手")]
     [SerializeField, Range(0f, 1f)]
     private float rifleLeftFingerWeight = 0.98f;
-    /// <summary>中文含义：手枪左手手指权重。使用位置：LeonFingerIKController.GetFingerWeight(WeaponType, bool, float)。</summary>
+    /// <summary>手枪左手手指权重。</summary>
     [Header("手枪左手包握")]
     [Range(0f, 1f)]
     [UnityEngine.Serialization.FormerlySerializedAs("手枪左手手指权重")]
     [UnityEngine.InspectorName("手枪左手手指权重")]
     public float pistolLeftHandFingerWeight = 0.98f;
-    /// <summary>中文含义：手枪左手末节旋转权重。使用位置：LeonFingerIKController.ApplyFingerWeights(WeaponType, float)。</summary>
+    /// <summary>手枪左手末节旋转权重。</summary>
     [Range(0f, 1f)]
     [UnityEngine.Serialization.FormerlySerializedAs("手枪左手末节旋转权重")]
     [UnityEngine.InspectorName("手枪左手末节旋转权重")]
     public float pistolLeftHandEndSectionRotationWeight = 0.15f;
-    /// <summary>中文含义：手枪左手拇指旋转权重。使用位置：LeonFingerIKController.ApplyFingerWeights(WeaponType, float)。</summary>
+    /// <summary>手枪左手拇指旋转权重。</summary>
     [Range(0f, 1f)]
     [UnityEngine.Serialization.FormerlySerializedAs("手枪左手拇指旋转权重")]
     [UnityEngine.InspectorName("手枪左手拇指旋转权重")]
     public float pistolLeftHandThumbRotationWeight = 0.7f;
-    /// <summary>中文含义：是否捕获缺失的武器目标列表。使用位置：LeonFingerIKController.EnsureWeaponTargetSet(WeaponType, bool)。</summary>
+    /// <summary>是否捕获缺失的武器目标列表。</summary>
     [Header("目标点配置")]
     [SerializeField]
     private bool captureMissingWeaponTargets = true;
-    /// <summary>中文含义：是否显示生成的目标列表。使用位置：作为 GameObject.SetActive(bool) 的参数。</summary>
+    /// <summary>是否显示生成的目标列表。</summary>
     [SerializeField]
     private bool showGeneratedTargets = false;
-    /// <summary>中文含义：序列化的目标武器。使用位置：作为 LeonFingerIKController.WriteWeaponTargetsToFingerRig(WeaponType) 的参数、LeonFingerIKController.WriteCurrentWeaponTargetsToFingerRig()。</summary>
+    /// <summary>序列化的目标武器。</summary>
     [Header("序列化目标")]
     [SerializeField]
     private WeaponType serializedTargetWeapon = WeaponType.Pistol;
-    /// <summary>中文含义：绑定集合。只读字段，初始化后不由普通写入口替换。使用位置：作为 Debug.Log(object, Object) 的参数、LeonFingerIKController.AddFingerBinding(LeonFingerIKController.FingerSlot, Transform, bool, string, string, string, string, bool)、LeonFingerIKController.ApplyFingerWeights(WeaponType, float) 等共 12 处。</summary>
+    /// <summary>绑定集合。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly List<FingerBinding> bindings = new();
-    /// <summary>中文含义：目标集合列表。只读字段，初始化后不由普通写入口替换。使用位置：LeonFingerIKController.ApplyFingerWeights(WeaponType, float)、LeonFingerIKController.CreatePersistentTargetsForWeapon(WeaponType)、LeonFingerIKController.CreatePersistentWeaponTargets() 等共 8 处。</summary>
+    /// <summary>目标集合列表。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly Dictionary<WeaponType, FingerTargetSet> targetSets = new();
-    /// <summary>中文含义：缺失的武器根节点集合。只读字段，初始化后不由普通写入口替换。使用位置：LeonFingerIKController.EnsureWeaponTargetSet(WeaponType, bool)。</summary>
+    /// <summary>缺失的武器根节点集合。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly HashSet<WeaponType> missingWeaponRoots = new();
-    /// <summary>中文含义：动画控制器。使用位置：LeonFingerIKController.ConfigureFingerRig()、LeonFingerIKController.CreatePersistentTargetsForWeapon(WeaponType)、LeonFingerIKController.CreatePersistentWeaponTargets() 等共 8 处。</summary>
+    /// <summary>动画控制器。</summary>
     private Animator animator;
-    /// <summary>中文含义：里昂玩家控制器。使用位置：LeonFingerIKController.GetCurrentWeapon()、LeonFingerIKController.Start()。</summary>
+    /// <summary>里昂玩家控制器。</summary>
     private LeonController controller;
-    /// <summary>中文含义：战斗。使用位置：LeonFingerIKController.EvaluateTargetWeight(WeaponType)、LeonFingerIKController.LateUpdate()、LeonFingerIKController.Start()。</summary>
+    /// <summary>战斗。</summary>
     private LeonCombat combat;
-    /// <summary>中文含义：当前里昂动画绑定组件。使用位置：LeonFingerIKController.CanCaptureRuntimeTargets()、LeonFingerIKController.EvaluateTargetWeight(WeaponType)、LeonFingerIKController.GetCurrentWeapon() 等共 5 处。</summary>
+    /// <summary>当前里昂动画绑定组件。</summary>
     private LeonAnimRig animRig;
-    /// <summary>中文含义：当前玩家动画动作协调器。使用位置：LeonFingerIKController.CanCaptureRuntimeTargets()、LeonFingerIKController.EvaluateTargetWeight(WeaponType)、LeonFingerIKController.Start()。</summary>
+    /// <summary>当前玩家动画动作协调器。</summary>
     private LeonAnimationActionCoordinator coordinator;
-    /// <summary>中文含义：武器视觉表现控制器。使用位置：LeonFingerIKController.CreatePersistentTargetsForWeapon(WeaponType)、LeonFingerIKController.FindWeaponRoot(WeaponType)、LeonFingerIKController.Start()。</summary>
+    /// <summary>武器视觉表现控制器。</summary>
     private LeonWeaponVisualController weaponVisualController;
-    /// <summary>中文含义：当前权重。使用位置：作为 LeonFingerIKController.ApplyFingerWeights(WeaponType, float) 的参数、作为 Mathf.Abs(float) 的参数、作为 Mathf.SmoothDamp(float, float, ref float, float, float, float) 的参数 等共 6 处。</summary>
+    /// <summary>当前权重。</summary>
     private float currentWeight;
-    /// <summary>中文含义：权重速度。使用位置：作为 Mathf.SmoothDamp(float, float, ref float, float, float, float) 的参数、LeonFingerIKController.LateUpdate()、LeonFingerIKController.TryInitialize()。</summary>
+    /// <summary>权重速度。</summary>
     private float weightVelocity;
-    /// <summary>中文含义：上一次武器。使用位置：LeonFingerIKController.LateUpdate()。</summary>
+    /// <summary>上一次武器。</summary>
     private WeaponType lastWeapon = (WeaponType)(-1);
-    /// <summary>中文含义：是否已初始化。使用位置：LeonFingerIKController.IsInitialized.get、LeonFingerIKController.LateUpdate()、LeonFingerIKController.TryInitialize()。</summary>
+    /// <summary>是否已初始化。</summary>
     private bool initialized;
     /// <summary>中文含义：当前权重。</summary>
     public float CurrentWeight => currentWeight;
@@ -195,9 +195,9 @@ public class LeonFingerIKController : MonoBehaviour
             return;
         }
 
-        // weapon（当前武器类别）：保存 LeonFingerIKController.GetCurrentWeapon() 的返回结果，供当前步骤使用。使用位置：作为 Dictionary<WeaponType, LeonFingerIKController.FingerTargetSet>.ContainsKey(WeaponType) 的参数、作为 LeonFingerIKController.ApplyFingerWeights(WeaponType, float) 的参数、作为 LeonFingerIKController.EnsureWeaponTargetSet(WeaponType, bool) 的参数 等共 5 处。
+        // 当前武器类别。
 WeaponType weapon = GetCurrentWeapon();
-        // allowRuntimeCapture（是否允许运行时捕获）：保存 LeonFingerIKController.CanCaptureRuntimeTargets() 的返回结果，供当前步骤使用。使用位置：作为 LeonFingerIKController.EnsureWeaponTargetSet(WeaponType, bool) 的参数。
+        // 是否允许运行时捕获。
 bool allowRuntimeCapture = CanCaptureRuntimeTargets();
         if (weapon != lastWeapon)
         {
@@ -211,7 +211,7 @@ bool allowRuntimeCapture = CanCaptureRuntimeTargets();
             EnsureWeaponTargetSet(weapon, allowRuntimeCapture);
         }
 
-        // targetWeight（目标权重）：保存 LeonFingerIKController.EvaluateTargetWeight(WeaponType) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Abs(float) 的参数、作为 Mathf.SmoothDamp(float, float, ref float, float, float, float) 的参数、LeonFingerIKController.LateUpdate()。
+        // 目标权重。
 float targetWeight = EvaluateTargetWeight(weapon);
         currentWeight = Mathf.SmoothDamp(currentWeight, targetWeight, ref weightVelocity, Mathf.Max(0.01f, weightTransitionDuration), Mathf.Max(0.01f, weightTransitionSpeed), Time.deltaTime);
         if (Mathf.Abs(currentWeight - targetWeight) < 0.001f)
@@ -254,7 +254,7 @@ float targetWeight = EvaluateTargetWeight(weapon);
     [ContextMenu("重新捕获当前武器手指目标")]
     public void RebuildCurrentWeaponTargets()
     {
-        // weapon（当前武器类别）：保存 LeonFingerIKController.GetCurrentWeapon() 的返回结果，供当前步骤使用。使用位置：作为 Dictionary<WeaponType, LeonFingerIKController.FingerTargetSet>.Remove(WeaponType) 的参数、作为 Dictionary<WeaponType, LeonFingerIKController.FingerTargetSet>.TryGetValue(WeaponType, out LeonFingerIKController.FingerTargetSet) 的参数、作为 LeonFingerIKController.CapturePersistentWeaponTargets(WeaponType) 的参数 等共 5 处。
+        // 当前武器类别。
 WeaponType weapon = GetCurrentWeapon();
         if (!Application.isPlaying)
         {
@@ -309,7 +309,7 @@ WeaponType weapon = GetCurrentWeapon();
 
     /// <summary>CreatePersistentTargetsForWeapon 的业务处理入口；本方法直接依赖 Component.GetComponent&lt;Animator&gt;()、Component.GetComponent&lt;LeonWeaponVisualController&gt;()、Dictionary&lt;WeaponType, LeonFingerIKController.FingerTargetSet&gt;.Remove(WeaponType)、LeonFingerIKController.CapturePersistentWeaponTargets(WeaponType)、LeonFingerIKController.ConfigureFingerRig()、LeonFingerIKController.EnsureFingerRig()、LeonFingerIKController.EnsureWeaponTargetSet(WeaponType, bool) 等共 8 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonKnifeIKSetupUtility.RebuildKnifeIK()；下游（含内部回调体） Component.GetComponent&lt;Animator&gt;()、Component.GetComponent&lt;LeonWeaponVisualController&gt;()、Dictionary&lt;WeaponType, LeonFingerIKController.FingerTargetSet&gt;.Remove(WeaponType)、LeonFingerIKController.CapturePersistentWeaponTargets(WeaponType)、LeonFingerIKController.ConfigureFingerRig()、LeonFingerIKController.EnsureFingerRig()、LeonFingerIKController.EnsureWeaponTargetSet(WeaponType, bool) 等共 8 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="weapon">中文含义：当前武器类别。使用位置：作为 Dictionary&lt;WeaponType, LeonFingerIKController.FingerTargetSet&gt;.Remove(WeaponType) 的参数、作为 LeonFingerIKController.CapturePersistentWeaponTargets(WeaponType) 的参数、作为 LeonFingerIKController.EnsureWeaponTargetSet(WeaponType, bool) 的参数 等共 4 处。</param>
+    /// <param name="weapon">当前武器类别。</param>
     public bool CreatePersistentTargetsForWeapon(WeaponType weapon)
     {
         if (Application.isPlaying)
@@ -348,7 +348,7 @@ WeaponType weapon = GetCurrentWeapon();
             }
         }
 
-        // weapon（当前武器类别）：使用位置：作为 LeonFingerIKController.WriteWeaponTargetsToFingerRig(WeaponType) 的参数、LeonFingerIKController.WriteCurrentWeaponTargetsToFingerRig()。
+        // 当前武器类别。
 WeaponType weapon;
         if (Application.isPlaying)
         {
@@ -366,7 +366,7 @@ WeaponType weapon;
     /// <remarks>静态调用链：上游 LeonFingerIKController.Start()；下游（含内部回调体） Component.GetComponent&lt;FingerPoseOverride&gt;()、Debug.Log(object, Object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     private void DisableLegacyFingerOverride()
     {
-        // legacy（旧版）：保存 Component.GetComponent<FingerPoseOverride>() 的返回结果，供当前步骤使用。使用位置：LeonFingerIKController.DisableLegacyFingerOverride()。
+        // 旧版。
 FingerPoseOverride legacy = GetComponent<FingerPoseOverride>();
         if (legacy != null)
         {
@@ -396,7 +396,7 @@ FingerPoseOverride legacy = GetComponent<FingerPoseOverride>();
     {
         bindings.Clear();
         fingerRig.fingers = Array.Empty<Finger>();
-        // rightHand（右手）：使用位置：作为 LeonFingerIKController.AddFingerBinding(LeonFingerIKController.FingerSlot, Transform, bool, string, string, string, string, bool) 的参数、LeonFingerIKController.ConfigureFingerRig()。
+        // 右手。
 Transform rightHand;
         if (animator != null)
         {
@@ -407,7 +407,7 @@ Transform rightHand;
             rightHand = null;
         }
 
-        // leftHand（左手）：使用位置：作为 LeonFingerIKController.AddFingerBinding(LeonFingerIKController.FingerSlot, Transform, bool, string, string, string, string, bool) 的参数、LeonFingerIKController.ConfigureFingerRig()。
+        // 左手。
 Transform leftHand;
         if (animator != null)
         {
@@ -432,14 +432,14 @@ Transform leftHand;
 
     /// <summary>AddFingerBinding 的业务处理入口；本方法直接依赖 Debug.LogWarning(object, Object)、FingerRig.AddFinger(Transform, Transform, Transform, Transform, Transform)、LeonFingerIKController.FingerBinding.FingerBinding()、List&lt;LeonFingerIKController.FingerBinding&gt;.Add(LeonFingerIKController.FingerBinding)、Transform.Find(string)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonFingerIKController.ConfigureFingerRig()；下游（含内部回调体） Debug.LogWarning(object, Object)、FingerRig.AddFinger(Transform, Transform, Transform, Transform, Transform)、LeonFingerIKController.FingerBinding.FingerBinding()、List&lt;LeonFingerIKController.FingerBinding&gt;.Add(LeonFingerIKController.FingerBinding)、Transform.Find(string)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="slot">中文含义：槽位。使用位置：作为 Debug.LogWarning(object, Object) 的参数、作为 List&lt;LeonFingerIKController.FingerBinding&gt;.Add(LeonFingerIKController.FingerBinding) 的参数。</param>
-    /// <param name="hand">中文含义：手部。使用位置：LeonFingerIKController.AddFingerBinding(LeonFingerIKController.FingerSlot, Transform, bool, string, string, string, string, bool)。</param>
-    /// <param name="isLeft">中文含义：是否左侧。使用位置：作为 List&lt;LeonFingerIKController.FingerBinding&gt;.Add(LeonFingerIKController.FingerBinding) 的参数。</param>
-    /// <param name="bone1Path">中文含义：骨骼1路径。使用位置：作为 Transform.Find(string) 的参数。</param>
-    /// <param name="bone2Path">中文含义：骨骼2路径。使用位置：作为 Transform.Find(string) 的参数。</param>
-    /// <param name="bone3Path">中文含义：骨骼3路径。使用位置：作为 Transform.Find(string) 的参数。</param>
-    /// <param name="tipPath">中文含义：尖端路径。使用位置：作为 Transform.Find(string) 的参数。</param>
-    /// <param name="useOneRotationDegree">中文含义：是否使用第一旋转角度。使用位置：LeonFingerIKController.AddFingerBinding(LeonFingerIKController.FingerSlot, Transform, bool, string, string, string, string, bool)。</param>
+    /// <param name="slot">槽位。</param>
+    /// <param name="hand">手部。</param>
+    /// <param name="isLeft">是否左侧。</param>
+    /// <param name="bone1Path">骨骼1路径。</param>
+    /// <param name="bone2Path">骨骼2路径。</param>
+    /// <param name="bone3Path">骨骼3路径。</param>
+    /// <param name="tipPath">尖端路径。</param>
+    /// <param name="useOneRotationDegree">是否使用第一旋转角度。</param>
     private void AddFingerBinding(FingerSlot slot, Transform hand, bool isLeft, string bone1Path, string bone2Path, string bone3Path, string tipPath, bool useOneRotationDegree)
     {
         if (hand == null)
@@ -447,13 +447,13 @@ Transform leftHand;
             return;
         }
 
-        // bone1（骨骼1）：保存 Transform.Find(string) 的返回结果，供当前步骤使用。使用位置：作为 FingerRig.AddFinger(Transform, Transform, Transform, Transform, Transform) 的参数、作为 List<LeonFingerIKController.FingerBinding>.Add(LeonFingerIKController.FingerBinding) 的参数、LeonFingerIKController.AddFingerBinding(LeonFingerIKController.FingerSlot, Transform, bool, string, string, string, string, bool)。
+        // 骨骼1。
 Transform bone1 = hand.Find(bone1Path);
-        // bone2（骨骼2）：保存 Transform.Find(string) 的返回结果，供当前步骤使用。使用位置：作为 FingerRig.AddFinger(Transform, Transform, Transform, Transform, Transform) 的参数、作为 List<LeonFingerIKController.FingerBinding>.Add(LeonFingerIKController.FingerBinding) 的参数、LeonFingerIKController.AddFingerBinding(LeonFingerIKController.FingerSlot, Transform, bool, string, string, string, string, bool)。
+        // 骨骼2。
 Transform bone2 = hand.Find(bone2Path);
-        // bone3（骨骼3）：保存 Transform.Find(string) 的返回结果，供当前步骤使用。使用位置：作为 FingerRig.AddFinger(Transform, Transform, Transform, Transform, Transform) 的参数、作为 List<LeonFingerIKController.FingerBinding>.Add(LeonFingerIKController.FingerBinding) 的参数、LeonFingerIKController.AddFingerBinding(LeonFingerIKController.FingerSlot, Transform, bool, string, string, string, string, bool)。
+        // 骨骼3。
 Transform bone3 = hand.Find(bone3Path);
-        // tip（尖端）：保存 Transform.Find(string) 的返回结果，供当前步骤使用。使用位置：作为 FingerRig.AddFinger(Transform, Transform, Transform, Transform, Transform) 的参数、作为 List<LeonFingerIKController.FingerBinding>.Add(LeonFingerIKController.FingerBinding) 的参数、LeonFingerIKController.AddFingerBinding(LeonFingerIKController.FingerSlot, Transform, bool, string, string, string, string, bool)。
+        // 尖端。
 Transform tip = hand.Find(tipPath);
         if (tip == null && bone3 != null)
         {
@@ -467,12 +467,12 @@ Transform tip = hand.Find(tipPath);
         }
 
         fingerRig.AddFinger(bone1, bone2, bone3, tip);
-        // solverIndex（求解器索引）：使用位置：作为 List<LeonFingerIKController.FingerBinding>.Add(LeonFingerIKController.FingerBinding) 的参数、LeonFingerIKController.AddFingerBinding(LeonFingerIKController.FingerSlot, Transform, bool, string, string, string, string, bool)。
+        // 求解器索引。
 int solverIndex = fingerRig.fingers.Length - 1;
-        // finger（手指）：使用位置：LeonFingerIKController.AddFingerBinding(LeonFingerIKController.FingerSlot, Transform, bool, string, string, string, string, bool)。
+        // 手指。
 Finger finger = fingerRig.fingers[solverIndex];
         finger.weight = 0f;
-        // assignmentReceiver4（赋值前保存的目标手指）：从手指读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：LeonFingerIKController.AddFingerBinding(LeonFingerIKController.FingerSlot, Transform, bool, string, string, string, string, bool)。
+        // 赋值前保存的目标手指。
 global::RootMotion.FinalIK.Finger assignmentReceiver4 = finger;
         if (useOneRotationDegree)
         {
@@ -483,7 +483,7 @@ global::RootMotion.FinalIK.Finger assignmentReceiver4 = finger;
             assignmentReceiver4.rotationWeight = 0.7f;
         }
 
-        // assignmentReceiver6（赋值前保存的目标手指）：从手指读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：LeonFingerIKController.AddFingerBinding(LeonFingerIKController.FingerSlot, Transform, bool, string, string, string, string, bool)。
+        // 赋值前保存的目标手指。
 global::RootMotion.FinalIK.Finger assignmentReceiver6 = finger;
         if (useOneRotationDegree)
         {
@@ -500,8 +500,8 @@ global::RootMotion.FinalIK.Finger assignmentReceiver6 = finger;
 
     /// <summary>EnsureWeaponTargetSet 的业务处理入口；本方法直接依赖 Debug.Log(object, Object)、Debug.LogWarning(object, Object)、Dictionary&lt;WeaponType, LeonFingerIKController.FingerTargetSet&gt;.Add(WeaponType, LeonFingerIKController.FingerTargetSet)、Dictionary&lt;WeaponType, LeonFingerIKController.FingerTargetSet&gt;.ContainsKey(WeaponType)、GameObject.GameObject(string)、GameObject.SetActive(bool)、HashSet&lt;WeaponType&gt;.Add(WeaponType) 等共 15 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonFingerIKController.CreatePersistentTargetsForWeapon(WeaponType)、LeonFingerIKController.LateUpdate()、LeonFingerIKController.RebuildCurrentWeaponTargets()、LeonFingerIKController.WriteWeaponTargetsToFingerRig(WeaponType)；下游（含内部回调体） Debug.Log(object, Object)、Debug.LogWarning(object, Object)、Dictionary&lt;WeaponType, LeonFingerIKController.FingerTargetSet&gt;.Add(WeaponType, LeonFingerIKController.FingerTargetSet)、Dictionary&lt;WeaponType, LeonFingerIKController.FingerTargetSet&gt;.ContainsKey(WeaponType)、GameObject.GameObject(string)、GameObject.SetActive(bool)、HashSet&lt;WeaponType&gt;.Add(WeaponType) 等共 15 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="weapon">中文含义：当前武器类别。使用位置：作为 Debug.Log(object, Object) 的参数、作为 Debug.LogWarning(object, Object) 的参数、作为 Dictionary&lt;WeaponType, LeonFingerIKController.FingerTargetSet&gt;.Add(WeaponType, LeonFingerIKController.FingerTargetSet) 的参数 等共 10 处。</param>
-    /// <param name="allowRuntimeCapture">中文含义：是否允许运行时捕获。使用位置：LeonFingerIKController.EnsureWeaponTargetSet(WeaponType, bool)。</param>
+    /// <param name="weapon">当前武器类别。</param>
+    /// <param name="allowRuntimeCapture">是否允许运行时捕获。</param>
     private void EnsureWeaponTargetSet(WeaponType weapon, bool allowRuntimeCapture = true)
     {
         if (targetSets.ContainsKey(weapon))
@@ -509,7 +509,7 @@ global::RootMotion.FinalIK.Finger assignmentReceiver6 = finger;
             return;
         }
 
-        // weaponRoot（武器根节点）：保存 LeonFingerIKController.FindWeaponRoot(WeaponType) 的返回结果，供当前步骤使用。使用位置：作为 LeonFingerIKController.CreateTargetSetFromRoot(WeaponType, Transform, Transform) 的参数、作为 LeonFingerIKController.FindDeepChild(Transform, string) 的参数、作为 Transform.SetParent(Transform, bool) 的参数 等共 4 处。
+        // 武器根节点。
 Transform weaponRoot = FindWeaponRoot(weapon);
         if (weaponRoot == null)
         {
@@ -521,11 +521,11 @@ Transform weaponRoot = FindWeaponRoot(weapon);
             return;
         }
 
-        // persistentTargetRoot（持久目标根节点）：保存 LeonFingerIKController.FindDeepChild(Transform, string) 的返回结果，供当前步骤使用。使用位置：作为 LeonFingerIKController.CreateTargetSetFromRoot(WeaponType, Transform, Transform) 的参数、LeonFingerIKController.EnsureWeaponTargetSet(WeaponType, bool)。
+        // 持久目标根节点。
 Transform persistentTargetRoot = FindDeepChild(weaponRoot, GetTargetRootName(weapon));
         if (persistentTargetRoot != null)
         {
-            // persistentSet（持久集合）：保存 LeonFingerIKController.CreateTargetSetFromRoot(WeaponType, Transform, Transform) 的返回结果，供当前步骤使用。使用位置：作为 Dictionary<WeaponType, LeonFingerIKController.FingerTargetSet>.Add(WeaponType, LeonFingerIKController.FingerTargetSet) 的参数、LeonFingerIKController.EnsureWeaponTargetSet(WeaponType, bool)。
+            // 持久集合。
 FingerTargetSet persistentSet = CreateTargetSetFromRoot(weapon, weaponRoot, persistentTargetRoot);
             if (persistentSet.targets.Count > 0)
             {
@@ -539,16 +539,16 @@ FingerTargetSet persistentSet = CreateTargetSetFromRoot(weapon, weaponRoot, pers
             return;
         }
 
-        // targetRootObject（目标根游戏对象）：使用位置：LeonFingerIKController.EnsureWeaponTargetSet(WeaponType, bool)。
+        // 目标根游戏对象。
 GameObject targetRootObject = new GameObject($"手指目标_{weapon}");
-        // targetRoot（目标根节点）：使用位置：作为 Transform.SetParent(Transform, bool) 的参数、LeonFingerIKController.EnsureWeaponTargetSet(WeaponType, bool)。
+        // 目标根节点。
 Transform targetRoot = targetRootObject.transform;
         targetRoot.SetParent(weaponRoot, false);
         targetRoot.localPosition = Vector3.zero;
         targetRoot.localRotation = Quaternion.identity;
         targetRoot.localScale = Vector3.one;
         targetRoot.gameObject.SetActive(showGeneratedTargets);
-        // set（集合）：使用位置：作为 Debug.Log(object, Object) 的参数、作为 Dictionary<WeaponType, LeonFingerIKController.FingerTargetSet>.Add(WeaponType, LeonFingerIKController.FingerTargetSet) 的参数、LeonFingerIKController.EnsureWeaponTargetSet(WeaponType, bool)。
+        // 集合。
 FingerTargetSet set = new FingerTargetSet
         {
             weapon = weapon,
@@ -558,9 +558,9 @@ FingerTargetSet set = new FingerTargetSet
         // binding（绑定）：每轮从绑定集合取得一个元素，仅代表当前这一项。使用位置：作为 Dictionary<LeonFingerIKController.FingerSlot, Transform>.this[LeonFingerIKController.FingerSlot] 的参数、作为 LeonFingerIKController.GetFingerTargetName(LeonFingerIKController.FingerSlot) 的参数、作为 Transform.SetPositionAndRotation(Vector3, Quaternion) 的参数 等共 4 处。
 foreach (FingerBinding binding in bindings)
         {
-            // targetObject（目标对象）：使用位置：LeonFingerIKController.EnsureWeaponTargetSet(WeaponType, bool)。
+            // 目标对象。
 GameObject targetObject = new GameObject(GetFingerTargetName(binding.slot));
-            // target（目标变换节点）：使用位置：LeonFingerIKController.EnsureWeaponTargetSet(WeaponType, bool)。
+            // 目标变换节点。
 Transform target = targetObject.transform;
             target.SetParent(targetRoot, false);
             target.SetPositionAndRotation(binding.tip.position, binding.tip.rotation);
@@ -574,21 +574,21 @@ Transform target = targetObject.transform;
 
     /// <summary>CapturePersistentWeaponTargets 的业务处理入口；本方法直接依赖 GameObject.GameObject(string)、GameObject.SetActive(bool)、LeonFingerIKController.FindDeepChild(Transform, string)、LeonFingerIKController.FindWeaponRoot(WeaponType)、LeonFingerIKController.GetFingerTargetName(LeonFingerIKController.FingerSlot)、LeonFingerIKController.GetTargetRootName(WeaponType)、Transform.SetParent(Transform, bool) 等共 8 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonFingerIKController.CreatePersistentTargetsForWeapon(WeaponType)、LeonFingerIKController.CreatePersistentWeaponTargets()、LeonFingerIKController.RebuildCurrentWeaponTargets()；下游（含内部回调体） GameObject.GameObject(string)、GameObject.SetActive(bool)、LeonFingerIKController.FindDeepChild(Transform, string)、LeonFingerIKController.FindWeaponRoot(WeaponType)、LeonFingerIKController.GetFingerTargetName(LeonFingerIKController.FingerSlot)、LeonFingerIKController.GetTargetRootName(WeaponType)、Transform.SetParent(Transform, bool) 等共 8 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="weapon">中文含义：当前武器类别。使用位置：作为 LeonFingerIKController.FindWeaponRoot(WeaponType) 的参数、作为 LeonFingerIKController.GetTargetRootName(WeaponType) 的参数。</param>
+    /// <param name="weapon">当前武器类别。</param>
     private void CapturePersistentWeaponTargets(WeaponType weapon)
     {
-        // weaponRoot（武器根节点）：保存 LeonFingerIKController.FindWeaponRoot(WeaponType) 的返回结果，供当前步骤使用。使用位置：作为 LeonFingerIKController.FindDeepChild(Transform, string) 的参数、作为 Transform.SetParent(Transform, bool) 的参数、LeonFingerIKController.CapturePersistentWeaponTargets(WeaponType)。
+        // 武器根节点。
 Transform weaponRoot = FindWeaponRoot(weapon);
         if (weaponRoot == null)
         {
             return;
         }
 
-        // targetRoot（目标根节点）：保存 LeonFingerIKController.FindDeepChild(Transform, string) 的返回结果，供当前步骤使用。使用位置：作为 LeonFingerIKController.FindDeepChild(Transform, string) 的参数、作为 Transform.SetParent(Transform, bool) 的参数、LeonFingerIKController.CapturePersistentWeaponTargets(WeaponType)。
+        // 目标根节点。
 Transform targetRoot = FindDeepChild(weaponRoot, GetTargetRootName(weapon));
         if (targetRoot == null)
         {
-            // targetRootObject（目标根游戏对象）：使用位置：LeonFingerIKController.CapturePersistentWeaponTargets(WeaponType)。
+            // 目标根游戏对象。
 GameObject targetRootObject = new GameObject(GetTargetRootName(weapon));
             targetRoot = targetRootObject.transform;
             targetRoot.SetParent(weaponRoot, false);
@@ -601,11 +601,11 @@ GameObject targetRootObject = new GameObject(GetTargetRootName(weapon));
         // binding（绑定）：每轮从绑定集合取得一个元素，仅代表当前这一项。使用位置：作为 LeonFingerIKController.GetFingerTargetName(LeonFingerIKController.FingerSlot) 的参数、作为 Transform.SetPositionAndRotation(Vector3, Quaternion) 的参数。
 foreach (FingerBinding binding in bindings)
         {
-            // target（目标变换节点）：保存 LeonFingerIKController.FindDeepChild(Transform, string) 的返回结果，供当前步骤使用。使用位置：LeonFingerIKController.CapturePersistentWeaponTargets(WeaponType)。
+            // 目标变换节点。
 Transform target = FindDeepChild(targetRoot, GetFingerTargetName(binding.slot));
             if (target == null)
             {
-                // targetObject（目标对象）：使用位置：LeonFingerIKController.CapturePersistentWeaponTargets(WeaponType)。
+                // 目标对象。
 GameObject targetObject = new GameObject(GetFingerTargetName(binding.slot));
                 target = targetObject.transform;
                 target.SetParent(targetRoot, false);
@@ -617,12 +617,12 @@ GameObject targetObject = new GameObject(GetFingerTargetName(binding.slot));
 
     /// <summary>CreateTargetSetFromRoot 的业务处理入口；本方法直接依赖 LeonFingerIKController.FindDeepChild(Transform, string)、LeonFingerIKController.FingerTargetSet.FingerTargetSet()、LeonFingerIKController.GetFingerTargetName(LeonFingerIKController.FingerSlot)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonFingerIKController.EnsureWeaponTargetSet(WeaponType, bool)；下游（含内部回调体） LeonFingerIKController.FindDeepChild(Transform, string)、LeonFingerIKController.FingerTargetSet.FingerTargetSet()、LeonFingerIKController.GetFingerTargetName(LeonFingerIKController.FingerSlot)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="weapon">中文含义：当前武器类别。使用位置：LeonFingerIKController.CreateTargetSetFromRoot(WeaponType, Transform, Transform)。</param>
-    /// <param name="weaponRoot">中文含义：武器根节点。使用位置：LeonFingerIKController.CreateTargetSetFromRoot(WeaponType, Transform, Transform)。</param>
-    /// <param name="targetRoot">中文含义：目标根节点。使用位置：作为 LeonFingerIKController.FindDeepChild(Transform, string) 的参数、LeonFingerIKController.CreateTargetSetFromRoot(WeaponType, Transform, Transform)。</param>
+    /// <param name="weapon">当前武器类别。</param>
+    /// <param name="weaponRoot">武器根节点。</param>
+    /// <param name="targetRoot">目标根节点。</param>
     private FingerTargetSet CreateTargetSetFromRoot(WeaponType weapon, Transform weaponRoot, Transform targetRoot)
     {
-        // set（集合）：使用位置：LeonFingerIKController.CreateTargetSetFromRoot(WeaponType, Transform, Transform)。
+        // 集合。
 FingerTargetSet set = new FingerTargetSet
         {
             weapon = weapon,
@@ -632,7 +632,7 @@ FingerTargetSet set = new FingerTargetSet
         // binding（绑定）：每轮从绑定集合取得一个元素，仅代表当前这一项。使用位置：作为 Dictionary<LeonFingerIKController.FingerSlot, Transform>.this[LeonFingerIKController.FingerSlot] 的参数、作为 LeonFingerIKController.GetFingerTargetName(LeonFingerIKController.FingerSlot) 的参数、LeonFingerIKController.CreateTargetSetFromRoot(WeaponType, Transform, Transform)。
 foreach (FingerBinding binding in bindings)
         {
-            // target（目标变换节点）：保存 LeonFingerIKController.FindDeepChild(Transform, string) 的返回结果，供当前步骤使用。使用位置：LeonFingerIKController.CreateTargetSetFromRoot(WeaponType, Transform, Transform)。
+            // 目标变换节点。
 Transform target = FindDeepChild(targetRoot, GetFingerTargetName(binding.slot));
             if (target == null)
             {
@@ -648,7 +648,7 @@ Transform target = FindDeepChild(targetRoot, GetFingerTargetName(binding.slot));
 
     /// <summary>WriteWeaponTargetsToFingerRig 的业务处理入口；本方法直接依赖 Dictionary&lt;LeonFingerIKController.FingerSlot, Transform&gt;.TryGetValue(LeonFingerIKController.FingerSlot, out Transform)、Dictionary&lt;WeaponType, LeonFingerIKController.FingerTargetSet&gt;.TryGetValue(WeaponType, out LeonFingerIKController.FingerTargetSet)、LeonFingerIKController.EnsureWeaponTargetSet(WeaponType, bool)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonFingerIKController.CreatePersistentTargetsForWeapon(WeaponType)、LeonFingerIKController.CreatePersistentWeaponTargets()、LeonFingerIKController.RebuildCurrentWeaponTargets()、LeonFingerIKController.WriteCurrentWeaponTargetsToFingerRig()；下游（含内部回调体） Dictionary&lt;LeonFingerIKController.FingerSlot, Transform&gt;.TryGetValue(LeonFingerIKController.FingerSlot, out Transform)、Dictionary&lt;WeaponType, LeonFingerIKController.FingerTargetSet&gt;.TryGetValue(WeaponType, out LeonFingerIKController.FingerTargetSet)、LeonFingerIKController.EnsureWeaponTargetSet(WeaponType, bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="weapon">中文含义：当前武器类别。使用位置：作为 Dictionary&lt;WeaponType, LeonFingerIKController.FingerTargetSet&gt;.TryGetValue(WeaponType, out LeonFingerIKController.FingerTargetSet) 的参数、作为 LeonFingerIKController.EnsureWeaponTargetSet(WeaponType, bool) 的参数。</param>
+    /// <param name="weapon">当前武器类别。</param>
     private bool WriteWeaponTargetsToFingerRig(WeaponType weapon)
     {
         if (fingerRig == null)
@@ -667,7 +667,7 @@ Transform target = FindDeepChild(targetRoot, GetFingerTargetName(binding.slot));
             return false;
         }
 
-        // wroteAnyTarget（是否已写入任意目标）：使用位置：LeonFingerIKController.WriteWeaponTargetsToFingerRig(WeaponType)。
+        // 是否已写入任意目标。
 bool wroteAnyTarget = false;
         // binding（绑定）：每轮从绑定集合取得一个元素，仅代表当前这一项。使用位置：作为 Dictionary<LeonFingerIKController.FingerSlot, Transform>.TryGetValue(LeonFingerIKController.FingerSlot, out Transform) 的参数、LeonFingerIKController.WriteWeaponTargetsToFingerRig(WeaponType)。
 foreach (FingerBinding binding in bindings)
@@ -692,8 +692,8 @@ foreach (FingerBinding binding in bindings)
 
     /// <summary>ApplyFingerWeights 的业务处理入口；本方法直接依赖 Dictionary&lt;LeonFingerIKController.FingerSlot, Transform&gt;.TryGetValue(LeonFingerIKController.FingerSlot, out Transform)、Dictionary&lt;WeaponType, LeonFingerIKController.FingerTargetSet&gt;.TryGetValue(WeaponType, out LeonFingerIKController.FingerTargetSet)、LeonFingerIKController.GetFingerWeight(WeaponType, bool, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonFingerIKController.LateUpdate()；下游（含内部回调体） Dictionary&lt;LeonFingerIKController.FingerSlot, Transform&gt;.TryGetValue(LeonFingerIKController.FingerSlot, out Transform)、Dictionary&lt;WeaponType, LeonFingerIKController.FingerTargetSet&gt;.TryGetValue(WeaponType, out LeonFingerIKController.FingerTargetSet)、LeonFingerIKController.GetFingerWeight(WeaponType, bool, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="weapon">中文含义：当前武器类别。使用位置：作为 Dictionary&lt;WeaponType, LeonFingerIKController.FingerTargetSet&gt;.TryGetValue(WeaponType, out LeonFingerIKController.FingerTargetSet) 的参数、作为 LeonFingerIKController.GetFingerWeight(WeaponType, bool, float) 的参数、LeonFingerIKController.ApplyFingerWeights(WeaponType, float)。</param>
-    /// <param name="masterWeight">中文含义：主控权重。使用位置：作为 LeonFingerIKController.GetFingerWeight(WeaponType, bool, float) 的参数。</param>
+    /// <param name="weapon">当前武器类别。</param>
+    /// <param name="masterWeight">主控权重。</param>
     private void ApplyFingerWeights(WeaponType weapon, float masterWeight)
     {
         if (fingerRig == null)
@@ -710,14 +710,14 @@ foreach (FingerBinding binding in bindings)
                 continue;
             }
 
-            // finger（手指）：使用位置：LeonFingerIKController.ApplyFingerWeights(WeaponType, float)。
+            // 手指。
 Finger finger = fingerRig.fingers[binding.solverIndex];
-            // supportFinger（是否支撑手指）：使用位置：LeonFingerIKController.ApplyFingerWeights(WeaponType, float)。
+            // 是否支撑手指。
 bool supportFinger = binding.isLeft && (weapon == WeaponType.Rifle || weapon == WeaponType.Shotgun);
-            // thumb（是否拇指）：使用位置：LeonFingerIKController.ApplyFingerWeights(WeaponType, float)。
+            // 是否拇指。
 bool thumb = binding.slot == FingerSlot.LeftThumb || binding.slot == FingerSlot.RightThumb;
             // 包握护木时允许指根修正侧偏，降低末节旋转对指链的扭转牵制。
-            // assignmentReceiver8（赋值前保存的目标手指）：从手指读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：LeonFingerIKController.ApplyFingerWeights(WeaponType, float)。
+            // 赋值前保存的目标手指。
 global::RootMotion.FinalIK.Finger assignmentReceiver8 = // 包握护木时允许指根修正侧偏，降低末节旋转对指链的扭转牵制。
  finger;
             if (supportFinger || thumb)
@@ -729,7 +729,7 @@ global::RootMotion.FinalIK.Finger assignmentReceiver8 = // 包握护木时允许
                 assignmentReceiver8.rotationDOF = Finger.DOF.One;
             }
 
-            // assignmentReceiver10（赋值前保存的目标手指）：从手指读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：LeonFingerIKController.ApplyFingerWeights(WeaponType, float)。
+            // 赋值前保存的目标手指。
 global::RootMotion.FinalIK.Finger assignmentReceiver10 = finger;
             if (supportFinger)
             {
@@ -751,7 +751,7 @@ global::RootMotion.FinalIK.Finger assignmentReceiver10 = finger;
             {
                 // 副手包住主手与握把，允许指根侧偏，避免单轴约束把手指扭开。
                 finger.rotationDOF = Finger.DOF.Three;
-                // assignmentReceiver13（赋值前保存的目标手指）：从手指读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：LeonFingerIKController.ApplyFingerWeights(WeaponType, float)。
+                // 赋值前保存的目标手指。
 global::RootMotion.FinalIK.Finger assignmentReceiver13 = finger;
                 if (thumb)
                 {
@@ -785,15 +785,15 @@ global::RootMotion.FinalIK.Finger assignmentReceiver13 = finger;
 
     /// <summary>GetFingerWeight 的业务处理入口；本方法直接依赖 LeonFingerIKController.GetSideWeight(WeaponType, bool)、Mathf.Clamp01(float)、Mathf.Max(float, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonFingerIKController.ApplyFingerWeights(WeaponType, float)；下游（含内部回调体） LeonFingerIKController.GetSideWeight(WeaponType, bool)、Mathf.Clamp01(float)、Mathf.Max(float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="weapon">中文含义：当前武器类别。使用位置：作为 LeonFingerIKController.GetSideWeight(WeaponType, bool) 的参数、LeonFingerIKController.GetFingerWeight(WeaponType, bool, float)。</param>
-    /// <param name="isLeft">中文含义：是否左侧。使用位置：作为 LeonFingerIKController.GetSideWeight(WeaponType, bool) 的参数、LeonFingerIKController.GetFingerWeight(WeaponType, bool, float)。</param>
-    /// <param name="masterWeight">中文含义：主控权重。使用位置：作为 Mathf.Clamp01(float) 的参数、LeonFingerIKController.GetFingerWeight(WeaponType, bool, float)。</param>
+    /// <param name="weapon">当前武器类别。</param>
+    /// <param name="isLeft">是否左侧。</param>
+    /// <param name="masterWeight">主控权重。</param>
     private float GetFingerWeight(WeaponType weapon, bool isLeft, float masterWeight)
     {
         if (weapon == WeaponType.Pistol && isLeft)
         {
             // 左掌离开握把时同步释放指尖，换弹、受伤和全身动作不能拉扯手指。
-            // leftArmWeight（左侧手臂权重）：使用位置：LeonFingerIKController.GetFingerWeight(WeaponType, bool, float)。
+            // 左侧手臂权重。
 float leftArmWeight;
             if (animRig != null)
             {
@@ -804,7 +804,7 @@ float leftArmWeight;
                 leftArmWeight = 0f;
             }
 
-            // phaseWeightValue（阶段权重值）：保存 Mathf.Clamp01(float) 的返回结果，供当前步骤使用。使用位置：LeonFingerIKController.GetFingerWeight(WeaponType, bool, float)。
+            // 阶段权重值。
 float phaseWeightValue = Mathf.Clamp01(masterWeight / Mathf.Max(0.001f, stableWeight));
             return phaseWeightValue * pistolLeftHandFingerWeight * leftArmWeight;
         }
@@ -813,7 +813,7 @@ float phaseWeightValue = Mathf.Clamp01(masterWeight / Mathf.Max(0.001f, stableWe
         // 同时读取手臂权重，换弹或全身动作卸除左掌约束时同步释放手指。
         if ((weapon == WeaponType.Rifle || weapon == WeaponType.Shotgun) && isLeft)
         {
-            // armWeight（手臂权重）：使用位置：LeonFingerIKController.GetFingerWeight(WeaponType, bool, float)。
+            // 手臂权重。
 float armWeight;
             if (animRig == null)
             {
@@ -831,7 +831,7 @@ float armWeight;
                 }
             }
 
-            // phaseWeight（阶段权重）：保存 Mathf.Clamp01(float) 的返回结果，供当前步骤使用。使用位置：LeonFingerIKController.GetFingerWeight(WeaponType, bool, float)。
+            // 阶段权重。
 float phaseWeight = Mathf.Clamp01(masterWeight / Mathf.Max(0.001f, stableWeight));
             return phaseWeight * rifleLeftFingerWeight * armWeight;
         }
@@ -849,14 +849,14 @@ float phaseWeight = Mathf.Clamp01(masterWeight / Mathf.Max(0.001f, stableWeight)
             return masterWeight * GetSideWeight(weapon, isLeft) * animRig.PistolCompatibilityIkWeight;
         }
 
-        // sideWeight（侧边权重）：保存 LeonFingerIKController.GetSideWeight(WeaponType, bool) 的返回结果，供当前步骤使用。使用位置：LeonFingerIKController.GetFingerWeight(WeaponType, bool, float)。
+        // 侧边权重。
 float sideWeight = GetSideWeight(weapon, isLeft);
         return masterWeight * sideWeight;
     }
 
     /// <summary>EvaluateTargetWeight 的业务处理入口；本方法直接依赖 Animator.GetLayerWeight(int)、Dictionary&lt;WeaponType, LeonFingerIKController.FingerTargetSet&gt;.ContainsKey(WeaponType)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonFingerIKController.LateUpdate()；下游（含内部回调体） Animator.GetLayerWeight(int)、Dictionary&lt;WeaponType, LeonFingerIKController.FingerTargetSet&gt;.ContainsKey(WeaponType)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="weapon">中文含义：当前武器类别。使用位置：作为 Dictionary&lt;WeaponType, LeonFingerIKController.FingerTargetSet&gt;.ContainsKey(WeaponType) 的参数。</param>
+    /// <param name="weapon">当前武器类别。</param>
     private float EvaluateTargetWeight(WeaponType weapon)
     {
         if (!targetSets.ContainsKey(weapon))
@@ -934,8 +934,8 @@ float sideWeight = GetSideWeight(weapon, isLeft);
 
     /// <summary>GetSideWeight 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
     /// <remarks>静态调用链：上游 LeonFingerIKController.GetFingerWeight(WeaponType, bool, float)；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="weapon">中文含义：当前武器类别。使用位置：LeonFingerIKController.GetSideWeight(WeaponType, bool)。</param>
-    /// <param name="isLeft">中文含义：是否左侧。使用位置：LeonFingerIKController.GetSideWeight(WeaponType, bool)。</param>
+    /// <param name="weapon">当前武器类别。</param>
+    /// <param name="isLeft">是否左侧。</param>
     private float GetSideWeight(WeaponType weapon, bool isLeft)
     {
         if (weapon == WeaponType.Knife && isLeft)
@@ -965,7 +965,7 @@ float sideWeight = GetSideWeight(weapon, isLeft);
 
     /// <summary>FindWeaponRoot 的业务处理入口；本方法直接依赖 Component.GetComponent&lt;LeonWeaponVisualController&gt;()、LeonFingerIKController.FindDeepChild(Transform, string)、LeonWeaponVisualController.GetWeaponVisualRoot(WeaponType)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonFingerIKController.CapturePersistentWeaponTargets(WeaponType)、LeonFingerIKController.EnsureWeaponTargetSet(WeaponType, bool)；下游（含内部回调体） Component.GetComponent&lt;LeonWeaponVisualController&gt;()、LeonFingerIKController.FindDeepChild(Transform, string)、LeonWeaponVisualController.GetWeaponVisualRoot(WeaponType)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="weapon">中文含义：当前武器类别。使用位置：作为 LeonWeaponVisualController.GetWeaponVisualRoot(WeaponType) 的参数、LeonFingerIKController.FindWeaponRoot(WeaponType)。</param>
+    /// <param name="weapon">当前武器类别。</param>
     private Transform FindWeaponRoot(WeaponType weapon)
     {
         if (weaponVisualController == null)
@@ -973,7 +973,7 @@ float sideWeight = GetSideWeight(weapon, isLeft);
             weaponVisualController = GetComponent<LeonWeaponVisualController>();
         }
 
-        // visualRoot（视觉表现根节点）：使用位置：LeonFingerIKController.FindWeaponRoot(WeaponType)。
+        // 视觉表现根节点。
 Transform visualRoot;
         if (weaponVisualController != null)
         {
@@ -989,7 +989,7 @@ Transform visualRoot;
             return visualRoot;
         }
 
-        // names（名称列表）：使用位置：LeonFingerIKController.FindWeaponRoot(WeaponType)。
+        // 名称列表。
 string[] names;
         switch (weapon)
         {
@@ -1034,7 +1034,7 @@ string[] names;
         // name（名称）：每轮从名称列表取得一个元素，仅代表当前这一项。使用位置：作为 LeonFingerIKController.FindDeepChild(Transform, string) 的参数。
 foreach (string name in names)
         {
-            // found（找到的）：保存 LeonFingerIKController.FindDeepChild(Transform, string) 的返回结果，供当前步骤使用。使用位置：LeonFingerIKController.FindWeaponRoot(WeaponType)。
+            // 找到的。
 Transform found = FindDeepChild(transform, name);
             if (found != null)
             {
@@ -1047,8 +1047,8 @@ Transform found = FindDeepChild(transform, name);
 
     /// <summary>FindDeepChild 的业务处理入口；本方法直接依赖 LeonFingerIKController.FindDeepChild(Transform, string)、Transform.GetChild(int)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonFingerIKController.CapturePersistentWeaponTargets(WeaponType)、LeonFingerIKController.CreateTargetSetFromRoot(WeaponType, Transform, Transform)、LeonFingerIKController.EnsureWeaponTargetSet(WeaponType, bool)、LeonFingerIKController.FindDeepChild(Transform, string)、LeonFingerIKController.FindWeaponRoot(WeaponType)；下游（含内部回调体） LeonFingerIKController.FindDeepChild(Transform, string)、Transform.GetChild(int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="parent">中文含义：父级。使用位置：作为 LeonFingerIKController.FindDeepChild(Transform, string) 的参数、LeonFingerIKController.FindDeepChild(Transform, string)。</param>
-    /// <param name="name">中文含义：名称。使用位置：作为 LeonFingerIKController.FindDeepChild(Transform, string) 的参数、LeonFingerIKController.FindDeepChild(Transform, string)。</param>
+    /// <param name="parent">父级。</param>
+    /// <param name="name">名称。</param>
     private static Transform FindDeepChild(Transform parent, string name)
     {
         if (parent == null)
@@ -1061,10 +1061,10 @@ Transform found = FindDeepChild(transform, name);
             return parent;
         }
 
-        // i（当前遍历索引）：使用位置：作为 Transform.GetChild(int) 的参数、LeonFingerIKController.FindDeepChild(Transform, string)。
+        // 当前遍历索引。
 for (int i = 0; i < parent.childCount; i++)
         {
-            // result（当前变换节点）：保存 LeonFingerIKController.FindDeepChild(Transform, string) 的返回结果，供当前步骤使用。使用位置：LeonFingerIKController.FindDeepChild(Transform, string)。
+            // 当前变换节点。
 Transform result = FindDeepChild(parent.GetChild(i), name);
             if (result != null)
             {
@@ -1077,7 +1077,7 @@ Transform result = FindDeepChild(parent.GetChild(i), name);
 
     /// <summary>GetFingerDisplayName 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
     /// <remarks>静态调用链：上游 LeonFingerIKController.GetFingerTargetName(LeonFingerIKController.FingerSlot)；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="slot">中文含义：槽位。使用位置：LeonFingerIKController.GetFingerDisplayName(LeonFingerIKController.FingerSlot)。</param>
+    /// <param name="slot">槽位。</param>
     private static string GetFingerDisplayName(FingerSlot slot)
     {
         return slot switch
@@ -1098,7 +1098,7 @@ Transform result = FindDeepChild(parent.GetChild(i), name);
 
     /// <summary>GetTargetRootName 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
     /// <remarks>静态调用链：上游 LeonFingerIKController.CapturePersistentWeaponTargets(WeaponType)、LeonFingerIKController.EnsureWeaponTargetSet(WeaponType, bool)；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="weapon">中文含义：当前武器类别。使用位置：LeonFingerIKController.GetTargetRootName(WeaponType)。</param>
+    /// <param name="weapon">当前武器类别。</param>
     private static string GetTargetRootName(WeaponType weapon)
     {
         return $"手指目标_{weapon}";
@@ -1106,7 +1106,7 @@ Transform result = FindDeepChild(parent.GetChild(i), name);
 
     /// <summary>GetFingerTargetName 的业务处理入口；本方法直接依赖 LeonFingerIKController.GetFingerDisplayName(LeonFingerIKController.FingerSlot)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonFingerIKController.CapturePersistentWeaponTargets(WeaponType)、LeonFingerIKController.CreateTargetSetFromRoot(WeaponType, Transform, Transform)、LeonFingerIKController.EnsureWeaponTargetSet(WeaponType, bool)；下游（含内部回调体） LeonFingerIKController.GetFingerDisplayName(LeonFingerIKController.FingerSlot)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="slot">中文含义：槽位。使用位置：作为 LeonFingerIKController.GetFingerDisplayName(LeonFingerIKController.FingerSlot) 的参数。</param>
+    /// <param name="slot">槽位。</param>
     private static string GetFingerTargetName(FingerSlot slot)
     {
         return GetFingerDisplayName(slot) + "目标";
@@ -1114,7 +1114,7 @@ Transform result = FindDeepChild(parent.GetChild(i), name);
 
     /// <summary>DestroySafe 的业务处理入口；本方法直接依赖 Object.Destroy(Object)、Object.DestroyImmediate(Object)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonFingerIKController.RebuildCurrentWeaponTargets()；下游（含内部回调体） Object.Destroy(Object)、Object.DestroyImmediate(Object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="target">中文含义：目标游戏对象。使用位置：作为 Object.Destroy(Object) 的参数、作为 Object.DestroyImmediate(Object) 的参数、LeonFingerIKController.DestroySafe(GameObject)。</param>
+    /// <param name="target">目标游戏对象。</param>
     private static void DestroySafe(GameObject target)
     {
         if (target == null)

@@ -11,7 +11,7 @@ public class FixEnemyFloating : EditorWindow
     [MenuItem("Tools/Enemy/修复脚部悬空")]
     static void Fix()
     {
-        // enemies（敌人集合）：保存 Object.FindObjectsByType<VillagerController>(FindObjectsSortMode) 的返回结果，供当前步骤使用。使用位置：FixEnemyFloating.Fix()。
+        // 敌人集合。
 var enemies = Object.FindObjectsByType<VillagerController>(FindObjectsSortMode.None);
         if (enemies.Length == 0)
         {
@@ -22,22 +22,22 @@ var enemies = Object.FindObjectsByType<VillagerController>(FindObjectsSortMode.N
         // vc（虚拟摄像机）：每轮从敌人集合取得一个元素，仅代表当前这一项。使用位置：FixEnemyFloating.Fix()。
 foreach (var vc in enemies)
         {
-            // t（当前变换节点）：使用位置：作为 Debug.Log(object) 的参数、作为 NavMesh.SamplePosition(Vector3, out NavMeshHit, float, int) 的参数、作为 Physics.Raycast(Vector3, Vector3, out RaycastHit, float, int) 的参数 等共 5 处。
+            // 当前变换节点。
 var t = vc.transform;
-            // agent（寻路代理）：保存 Component.GetComponent<NavMeshAgent>() 的返回结果，供当前步骤使用。使用位置：作为 Debug.Log(object) 的参数、FixEnemyFloating.Fix()。
+            // 寻路代理。
 var agent = vc.GetComponent<NavMeshAgent>();
-            // anim（动画控制器）：保存 Component.GetComponent<Animator>() 的返回结果，供当前步骤使用。使用位置：FixEnemyFloating.Fix()。
+            // 动画控制器。
 var anim = vc.GetComponent<Animator>();
             // 1. 确保 applyRootMotion = false
             anim.applyRootMotion = false;
             // 2. 测量脚部到地面的距离
-            // footY（脚部纵向）：使用位置：作为 Debug.Log(object) 的参数、作为 Mathf.Min(float, float) 的参数、FixEnemyFloating.Fix()。
+            // 脚部纵向。
 float footY = 0f;
             if (anim.isHuman)
             {
-                // lf（左脚）：保存 Animator.GetBoneTransform(HumanBodyBones) 的返回结果，供当前步骤使用。使用位置：FixEnemyFloating.Fix()。
+                // 左脚。
 var lf = anim.GetBoneTransform(HumanBodyBones.LeftFoot);
-                // rf（右脚）：保存 Animator.GetBoneTransform(HumanBodyBones) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Min(float, float) 的参数、FixEnemyFloating.Fix()。
+                // 右脚。
 var rf = anim.GetBoneTransform(HumanBodyBones.RightFoot);
                 if (lf != null)
                 {
@@ -50,16 +50,16 @@ var rf = anim.GetBoneTransform(HumanBodyBones.RightFoot);
                 }
             }
 
-            // mask（遮罩）：使用位置：作为 Physics.Raycast(Vector3, Vector3, out RaycastHit, float, int) 的参数。
+            // 遮罩。
 int mask = ~(1 << t.gameObject.layer);
-            // groundY（地面纵向）：使用位置：作为 Debug.Log(object) 的参数、FixEnemyFloating.Fix()。
+            // 地面纵向。
 float groundY = 0f;
             if (Physics.Raycast(t.position + Vector3.up * 5f, Vector3.down, out RaycastHit /* 中文含义：游戏宿主。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ gh, 10f, mask))
             {
                 groundY = gh.point.y;
             }
 
-            // floatAmount（浮点大小）：使用位置：作为 Debug.Log(object) 的参数、作为 Vector3.Vector3(float, float, float) 的参数、FixEnemyFloating.Fix()。
+            // 浮点大小。
 float floatAmount = footY - groundY;
             Debug.Log($"[FixFloating] {t.name}: footY={footY:F3} groundY={groundY:F3} float={floatAmount:F3}m");
             // 3. 设置 baseOffset 补偿
@@ -86,11 +86,11 @@ float floatAmount = footY - groundY;
             // 4. 再次测量
             if (anim.isHuman)
             {
-                // lf（左脚）：保存 Animator.GetBoneTransform(HumanBodyBones) 的返回结果，供当前步骤使用。使用位置：FixEnemyFloating.Fix()。
+                // 左脚。
 var lf = anim.GetBoneTransform(HumanBodyBones.LeftFoot);
                 if (lf != null)
                 {
-                    // newFloat（新浮点）：使用位置：作为 Debug.Log(object) 的参数。
+                    // 新浮点。
 float newFloat = lf.position.y - groundY;
                     Debug.Log($"[FixFloating] 修复后脚到地面: {newFloat:F3}m");
                 }
@@ -98,7 +98,7 @@ float newFloat = lf.position.y - groundY;
         }
 
         // 保存场景
-        // scene（场景）：保存 SceneManager.GetActiveScene() 的返回结果，供当前步骤使用。使用位置：作为 EditorSceneManager.MarkSceneDirty(Scene) 的参数、作为 EditorSceneManager.SaveScene(Scene) 的参数。
+        // 场景。
 var scene = UnityEditor.SceneManagement.EditorSceneManager.GetActiveScene();
         UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(scene);
         UnityEditor.SceneManagement.EditorSceneManager.SaveScene(scene);

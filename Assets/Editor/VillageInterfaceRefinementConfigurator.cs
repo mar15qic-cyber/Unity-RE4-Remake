@@ -9,17 +9,17 @@ using UnityEngine.UI;
 [UnityEngine.Scripting.APIUpdating.MovedFrom(true, "", "Assembly-CSharp-Editor", "村庄界面精修配置器")]
 public static class VillageInterfaceRefinementConfigurator
 {
-    /// <summary>中文含义：目录。编译期常量，保持既有值与消费者映射。使用位置：作为 AssetDatabase.LoadAssetAtPath&lt;InventoryPresentationConfiguration&gt;(string) 的参数、作为 AssetDatabase.LoadAssetAtPath&lt;UIVisualTheme&gt;(string) 的参数、作为 AssetDatabase.LoadAssetAtPath&lt;VillageDaylightConfiguration&gt;(string) 的参数。</summary>
+    /// <summary>目录。编译期常量，保持既有值与消费者映射。</summary>
     const string directory = "Assets/UI/重制界面/";
-    /// <summary>中文含义：主题。使用位置：作为 MenuThemeApplier.Apply(Transform, UIVisualTheme) 的参数、作为 RefinedMenuStyle.ThinStrip(Transform, string, Vector2, Vector2, Vector2, Color) 的参数、VillageInterfaceRefinementConfigurator.ApplyScene() 等共 5 处。</summary>
+    /// <summary>主题。</summary>
     static UIVisualTheme theme;
     /// <summary>Locate 的业务处理入口；本方法直接依赖 Vector2.Vector2(float, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillageInterfaceRefinementConfigurator.ConfigurationStored(Scene)、VillageInterfaceRefinementConfigurator.TextValue(Transform, string, string, int, float, float, float, float)；下游（含内部回调体） Vector2.Vector2(float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="r">中文含义：当前界面矩形变换。使用位置：VillageInterfaceRefinementConfigurator.Locate(RectTransform, float, float, float, float)。</param>
-    /// <param name="x">中文含义：横向。使用位置：作为 Vector2.Vector2(float, float) 的参数。</param>
-    /// <param name="y">中文含义：纵向。使用位置：作为 Vector2.Vector2(float, float) 的参数。</param>
-    /// <param name="x2">中文含义：横向2。使用位置：作为 Vector2.Vector2(float, float) 的参数。</param>
-    /// <param name="y2">中文含义：纵向2。使用位置：作为 Vector2.Vector2(float, float) 的参数。</param>
+    /// <param name="r">当前界面矩形变换。</param>
+    /// <param name="x">横向。</param>
+    /// <param name="y">纵向。</param>
+    /// <param name="x2">横向2。</param>
+    /// <param name="y2">纵向2。</param>
     static void Locate(RectTransform r, float x, float y, float x2, float y2)
     {
         r.anchorMin = new Vector2(x, y);
@@ -30,19 +30,19 @@ public static class VillageInterfaceRefinementConfigurator
 
     /// <summary>TextValue 的业务处理入口；本方法直接依赖 GameObject.GameObject(string, params Type[])、GameObject.GetComponent&lt;Text&gt;()、Transform.Find(string)、Transform.SetParent(Transform, bool)、VillageInterfaceRefinementConfigurator.Locate(RectTransform, float, float, float, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillageInterfaceRefinementConfigurator.ConfigurationStored(Scene)；下游（含内部回调体） GameObject.GameObject(string, params Type[])、GameObject.GetComponent&lt;Text&gt;()、Transform.Find(string)、Transform.SetParent(Transform, bool)、VillageInterfaceRefinementConfigurator.Locate(RectTransform, float, float, float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="p">中文含义：当前变换节点。使用位置：作为 Transform.SetParent(Transform, bool) 的参数、VillageInterfaceRefinementConfigurator.TextValue(Transform, string, string, int, float, float, float, float)。</param>
-    /// <param name="name">中文含义：名称。使用位置：作为 GameObject.GameObject(string, params Type[]) 的参数、作为 Transform.Find(string) 的参数。</param>
-    /// <param name="value">中文含义：值。使用位置：VillageInterfaceRefinementConfigurator.TextValue(Transform, string, string, int, float, float, float, float)。</param>
-    /// <param name="size">中文含义：尺寸。使用位置：VillageInterfaceRefinementConfigurator.TextValue(Transform, string, string, int, float, float, float, float)。</param>
-    /// <param name="x">中文含义：横向。使用位置：作为 VillageInterfaceRefinementConfigurator.Locate(RectTransform, float, float, float, float) 的参数。</param>
-    /// <param name="y">中文含义：纵向。使用位置：作为 VillageInterfaceRefinementConfigurator.Locate(RectTransform, float, float, float, float) 的参数。</param>
-    /// <param name="x2">中文含义：横向2。使用位置：作为 VillageInterfaceRefinementConfigurator.Locate(RectTransform, float, float, float, float) 的参数。</param>
-    /// <param name="y2">中文含义：纵向2。使用位置：作为 VillageInterfaceRefinementConfigurator.Locate(RectTransform, float, float, float, float) 的参数。</param>
+    /// <param name="p">当前变换节点。</param>
+    /// <param name="name">名称。</param>
+    /// <param name="value">值。</param>
+    /// <param name="size">尺寸。</param>
+    /// <param name="x">横向。</param>
+    /// <param name="y">纵向。</param>
+    /// <param name="x2">横向2。</param>
+    /// <param name="y2">纵向2。</param>
     static Text TextValue(Transform p, string name, string value, int size, float x, float y, float x2, float y2)
     {
-        // t（当前变换节点）：保存 Transform.Find(string) 的返回结果，供当前步骤使用。使用位置：VillageInterfaceRefinementConfigurator.TextValue(Transform, string, string, int, float, float, float, float)。
+        // 当前变换节点。
 var t = p.Find(name);
-        // go（当前游戏对象）：使用位置：VillageInterfaceRefinementConfigurator.TextValue(Transform, string, string, int, float, float, float, float)。
+        // 当前游戏对象。
 global::UnityEngine.GameObject go;
         if (t != null)
         {
@@ -54,7 +54,7 @@ global::UnityEngine.GameObject go;
         }
 
         go.transform.SetParent(p, false);
-        // text（文字）：保存 GameObject.GetComponent<Text>() 的返回结果，供当前步骤使用。使用位置：作为 VillageInterfaceRefinementConfigurator.Locate(RectTransform, float, float, float, float) 的参数、VillageInterfaceRefinementConfigurator.TextValue(Transform, string, string, int, float, float, float, float)。
+        // 文字。
 var text = go.GetComponent<Text>();
         text.text = value;
         text.font = theme.interfaceFont;
@@ -71,11 +71,11 @@ var text = go.GetComponent<Text>();
     public static string ApplyScene()
     {
         theme = AssetDatabase.LoadAssetAtPath<UIVisualTheme>(directory + "统一视觉主题.asset");
-        // config（当前村庄日光配置）：保存 AssetDatabase.LoadAssetAtPath<VillageDaylightConfiguration>(string) 的返回结果，供当前步骤使用。使用位置：作为 EditorUtility.SetDirty(Object) 的参数、VillageInterfaceRefinementConfigurator.ApplyScene()。
+        // 当前村庄日光配置。
 var config = AssetDatabase.LoadAssetAtPath<VillageDaylightConfiguration>(directory + "村庄日间配置.asset");
         config.sunlightColor = new Color(1, .95f, .84f);
         EditorUtility.SetDirty(config);
-        // scene（场景）：保存 SceneManager.GetActiveScene() 的返回结果，供当前步骤使用。使用位置：作为 EditorSceneManager.MarkSceneDirty(Scene) 的参数、作为 EditorSceneManager.SaveScene(Scene) 的参数、作为 VillageInterfaceRefinementConfigurator.ConfigurationStored(Scene) 的参数 等共 4 处。
+        // 场景。
 var scene = SceneManager.GetActiveScene();
         // root（根游戏对象）：每轮从取得根节点游戏对象集合的返回结果取得一个元素，仅代表当前这一项。使用位置：VillageInterfaceRefinementConfigurator.ApplyScene()。
 foreach (var root in scene.GetRootGameObjects())
@@ -101,9 +101,9 @@ foreach (var light in root.GetComponentsInChildren<Light>(true))
                 light.cullingMask &= ~(1 << 29);
                 if (light.type == LightType.Directional)
                 {
-                    // availableValue2（空值判断前缓存的取得组件的返回结果）：从取得组件的返回结果读取一次后保存，供后续分支使用。保存空值判断之前的值，只读取一次，非空时不执行回退分支。使用位置：作为 object.ReferenceEquals(object, object) 的参数、VillageInterfaceRefinementConfigurator.ApplyScene()。
+                    // 空值判断前缓存的取得组件的返回结果。
 global::VillageDaylightApplier availableValue2 = light.GetComponent<VillageDaylightApplier>();
-                    // app（应用）：使用位置：VillageInterfaceRefinementConfigurator.ApplyScene()。
+                    // 应用。
 global::VillageDaylightApplier app;
                     if (!global::System.Object.ReferenceEquals(availableValue2, null))
                     {
@@ -143,7 +143,7 @@ foreach (var p in root.GetComponentsInChildren<ItemPickup>(true))
                 }
 
                 p.modelOverride = null;
-                // old（原有变换节点）：保存 Transform.Find(string) 的返回结果，供当前步骤使用。使用位置：作为 Object.DestroyImmediate(Object) 的参数、VillageInterfaceRefinementConfigurator.ApplyScene()。
+                // 原有变换节点。
 var old = p.transform.Find("Model");
                 if (old != null)
                 {
@@ -159,14 +159,14 @@ foreach (var child in p.transform.Cast<Transform>().ToArray())
                     }
                 }
 
-                // mesh（网格）：保存 Component.GetComponent<MeshRenderer>() 的返回结果，供当前步骤使用。使用位置：VillageInterfaceRefinementConfigurator.ApplyScene()。
+                // 网格。
 var mesh = p.GetComponent<MeshRenderer>();
                 if (mesh != null)
                 {
                     mesh.enabled = false;
                 }
 
-                // model（模型）：使用位置：VillageInterfaceRefinementConfigurator.ApplyScene()。
+                // 模型。
 var model = (GameObject)PrefabUtility.InstantiatePrefab(p.item.worldModelPrefab, p.transform);
                 model.name = "Model";
                 model.transform.localPosition = p.item.modelOffset;
@@ -188,17 +188,17 @@ var model = (GameObject)PrefabUtility.InstantiatePrefab(p.item.worldModelPrefab,
 
     /// <summary>ConfigurationStored 的业务处理入口；本方法直接依赖 AssetDatabase.LoadAssetAtPath&lt;InventoryPresentationConfiguration&gt;(string)、Color.Color(float, float, float, float)、Component.GetComponent&lt;CanvasScaler&gt;()、Component.GetComponent&lt;Image&gt;()、Component.GetComponentInChildren&lt;ScrollRect&gt;()、Component.GetComponentInParent&lt;Canvas&gt;()、Component.GetComponentsInChildren&lt;Image&gt;(bool) 等共 23 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillageInterfaceRefinementConfigurator.ApplyScene()；下游（含内部回调体） AssetDatabase.LoadAssetAtPath&lt;InventoryPresentationConfiguration&gt;(string)、Color.Color(float, float, float, float)、Component.GetComponent&lt;CanvasScaler&gt;()、Component.GetComponent&lt;Image&gt;()、Component.GetComponentInChildren&lt;ScrollRect&gt;()、Component.GetComponentInParent&lt;Canvas&gt;()、Component.GetComponentsInChildren&lt;Image&gt;(bool) 等共 23 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="scene">中文含义：场景。使用位置：VillageInterfaceRefinementConfigurator.ConfigurationStored(Scene)。</param>
+    /// <param name="scene">场景。</param>
     static void ConfigurationStored(Scene scene)
     {
-        // ui（界面）：保存 IEnumerable<StorageBoxUI>.First<StorageBoxUI>() 的返回结果，供当前步骤使用。使用位置：作为 VillageInterfaceRefinementConfigurator.Locate(RectTransform, float, float, float, float) 的参数、VillageInterfaceRefinementConfigurator.ConfigurationStored(Scene)。
+        // 界面。
 var ui = scene.GetRootGameObjects().SelectMany( /* 中文含义：当前游戏对象。 */g => g.GetComponentsInChildren<StorageBoxUI>(true)).First();
         ui.visualTheme = theme;
-        // panel（面板）：使用位置：作为 MenuThemeApplier.Apply(Transform, UIVisualTheme) 的参数、作为 RefinedMenuStyle.ThinStrip(Transform, string, Vector2, Vector2, Vector2, Color) 的参数、作为 Transform.SetParent(Transform, bool) 的参数 等共 5 处。
+        // 面板。
 var panel = ui.panel.transform;
-        // canvas（画布）：保存 Component.GetComponentInParent<Canvas>() 的返回结果，供当前步骤使用。使用位置：VillageInterfaceRefinementConfigurator.ConfigurationStored(Scene)。
+        // 画布。
 var canvas = panel.GetComponentInParent<Canvas>();
-        // scaler（缩放器）：保存 Component.GetComponent<CanvasScaler>() 的返回结果，供当前步骤使用。使用位置：VillageInterfaceRefinementConfigurator.ConfigurationStored(Scene)。
+        // 缩放器。
 var scaler = canvas.GetComponent<CanvasScaler>();
         scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
         scaler.referenceResolution = new Vector2(1920, 1080);
@@ -215,10 +215,10 @@ foreach (var image in panel.GetComponentsInChildren<Image>(true))
         ui.titleText.text = "寄存箱";
         ui.titleText.fontSize = 42;
         ui.titleText.alignment = TextAnchor.MiddleLeft;
-        // left（左侧）：使用位置：作为 Transform.SetParent(Transform, bool) 的参数、作为 VillageInterfaceRefinementConfigurator.Locate(RectTransform, float, float, float, float) 的参数、VillageInterfaceRefinementConfigurator.ConfigurationStored(Scene)。
+        // 左侧。
 var left = panel.Find("StoragePanel") as RectTransform;
         Locate(left, .055f, .15f, .40f, .79f);
-        // right（右侧）：使用位置：作为 Transform.SetParent(Transform, bool) 的参数、作为 VillageInterfaceRefinementConfigurator.Locate(RectTransform, float, float, float, float) 的参数。
+        // 右侧。
 var right = panel.Find("InventoryPanel") as RectTransform;
         Locate(right, .46f, .43f, .945f, .79f);
         Locate(ui.storageTitleText.rectTransform, .055f, .80f, .40f, .85f);
@@ -235,7 +235,7 @@ var right = panel.Find("InventoryPanel") as RectTransform;
         ui.gridView.hoverColor = new Color(.8f, .83f, .75f, .10f);
         ui.dropZoneColor = ui.inventoryDropZoneColor = new Color(.74f, .80f, .71f, .14f);
         ui.storageDropArea = left;
-        // scroll（滚动）：保存 Component.GetComponentInChildren<ScrollRect>() 的返回结果，供当前步骤使用。使用位置：VillageInterfaceRefinementConfigurator.ConfigurationStored(Scene)。
+        // 滚动。
 var scroll = left.GetComponentInChildren<ScrollRect>();
         scroll.movementType = ScrollRect.MovementType.Clamped;
         scroll.scrollSensitivity = 42;
@@ -263,18 +263,18 @@ var scroll = left.GetComponentInChildren<ScrollRect>();
             ui.failHintText.alignment = TextAnchor.MiddleLeft;
         }
 
-        // old（原有变换节点）：保存 Transform.Find(string) 的返回结果，供当前步骤使用。使用位置：作为 Object.DestroyImmediate(Object) 的参数、VillageInterfaceRefinementConfigurator.ConfigurationStored(Scene)。
+        // 原有变换节点。
 var old = panel.Find("物品预览");
         if (old != null)
         {
             Object.DestroyImmediate(old.gameObject);
         }
 
-        // go（当前游戏对象）：使用位置：作为 VillageInterfaceRefinementConfigurator.Locate(RectTransform, float, float, float, float) 的参数、VillageInterfaceRefinementConfigurator.ConfigurationStored(Scene)。
+        // 当前游戏对象。
 var go = new GameObject("物品预览", typeof(RectTransform), typeof(RawImage), typeof(StoredItemPreview));
         go.transform.SetParent(panel, false);
         Locate(go.GetComponent<RectTransform>(), .46f, .12f, .69f, .39f);
-        // preview（预览）：保存 GameObject.GetComponent<StoredItemPreview>() 的返回结果，供当前步骤使用。使用位置：VillageInterfaceRefinementConfigurator.ConfigurationStored(Scene)。
+        // 预览。
 var preview = go.GetComponent<StoredItemPreview>();
         preview.configuration = AssetDatabase.LoadAssetAtPath<InventoryPresentationConfiguration>(directory + "背包展示配置.asset");
         preview.view = go.GetComponent<RawImage>();

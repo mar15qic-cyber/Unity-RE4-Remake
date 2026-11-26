@@ -8,17 +8,17 @@ using UnityEngine.Rendering;
 /// </summary>
 public static class GraphicsSettingsRuntime
 {
-    /// <summary>中文含义：质量预设键。编译期常量，保持既有值与消费者映射。使用位置：作为 GameSettingsData.ReadInteger(string, int) 的参数、作为 GameSettingsData.WriteInteger(string, int) 的参数。</summary>
+    /// <summary>质量预设键。编译期常量，保持既有值与消费者映射。</summary>
     public const string QualityPresetKey = "GraphicsQualityPreset";
-    /// <summary>中文含义：帧速率键。编译期常量，保持既有值与消费者映射。使用位置：作为 GameSettingsData.ReadInteger(string, int) 的参数、作为 GameSettingsData.WriteInteger(string, int) 的参数。</summary>
+    /// <summary>帧速率键。编译期常量，保持既有值与消费者映射。</summary>
     public const string FrameRateKey = "GraphicsFrameRate";
-    /// <summary>中文含义：向量同步键。编译期常量，保持既有值与消费者映射。使用位置：GraphicsSettingsRuntime.ApplySavedSettings()、GraphicsSettingsRuntime.GetVSync()、GraphicsSettingsRuntime.SetQualityPreset(int) 等共 4 处。</summary>
+    /// <summary>向量同步键。编译期常量，保持既有值与消费者映射。</summary>
     public const string VSyncKey = "GraphicsVSync";
-    /// <summary>中文含义：抗锯齿键。编译期常量，保持既有值与消费者映射。使用位置：作为 GameSettingsData.Exists(string) 的参数、作为 GameSettingsData.ReadInteger(string, int) 的参数、作为 GameSettingsData.WriteInteger(string, int) 的参数。</summary>
+    /// <summary>抗锯齿键。编译期常量，保持既有值与消费者映射。</summary>
     public const string AntiAliasingKey = "GraphicsAntiAliasing";
-    /// <summary>中文含义：图形接口键。编译期常量，保持既有值与消费者映射。使用位置：作为 GameSettingsData.ReadInteger(string, int) 的参数、作为 GameSettingsData.WriteInteger(string, int) 的参数。</summary>
+    /// <summary>图形接口键。编译期常量，保持既有值与消费者映射。</summary>
     public const string GraphicsApiKey = "GraphicsApi";
-    /// <summary>中文含义：帧速率集合。只读字段，初始化后不由普通写入口替换。使用位置：作为 Mathf.Clamp(int, int, int) 的参数、GraphicsSettingsRuntime.ApplyVSync(bool)、GraphicsSettingsRuntime.SetFrameRateIndex(int)。</summary>
+    /// <summary>帧速率集合。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly int[] FrameRates =
     {
         -1,
@@ -28,7 +28,7 @@ public static class GraphicsSettingsRuntime
         120,
         144
     };
-    /// <summary>中文含义：抗锯齿级别集合。只读字段，初始化后不由普通写入口替换。使用位置：作为 Mathf.Clamp(int, int, int) 的参数、GraphicsSettingsRuntime.ApplyAntiAliasing(int)、GraphicsSettingsRuntime.GetAntiAliasingIndex()。</summary>
+    /// <summary>抗锯齿级别集合。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly int[] AntiAliasingLevels =
     {
         0,
@@ -55,17 +55,17 @@ public static class GraphicsSettingsRuntime
     /// <remarks>静态调用链：上游 GraphicsSettingsRuntime.ApplyAtStartup()；下游（含内部回调体） GameSettingsData.Exists(string)、GameSettingsData.ReadInteger(string, int)、GraphicsSettingsRuntime.ApplyAntiAliasing(int)、GraphicsSettingsRuntime.ApplyVSync(bool)、GraphicsSettingsRuntime.ResolveQualityLevel(int)、Mathf.Clamp(int, int, int)、QualitySettings.SetQualityLevel(int, bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     public static void ApplySavedSettings()
     {
-        // presetIndex（预设索引）：保存 Mathf.Clamp(int, int, int) 的返回结果，供当前步骤使用。使用位置：作为 GraphicsSettingsRuntime.ResolveQualityLevel(int) 的参数。
-int presetIndex = Mathf.Clamp(GameSettingsData.ReadInteger(QualityPresetKey, 2), 0, 2);
+        // 预设索引。
+int presetIndex = Mathf.Clamp(GameSettingsData.ReadInteger(QualityPresetKey, 1), 0, 2);
         QualitySettings.SetQualityLevel(ResolveQualityLevel(presetIndex), true);
         if (GameSettingsData.Exists(AntiAliasingKey))
         {
             ApplyAntiAliasing(GameSettingsData.ReadInteger(AntiAliasingKey, 1));
         }
 
-        // argumentValue2（按原顺序缓存的实参向量同步键）：从向量同步键读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 GameSettingsData.ReadInteger(string, int) 的参数。
+        // 按原顺序缓存的实参向量同步键。
 string argumentValue2 = VSyncKey;
-        // selectedValue1（分支选出的1）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：作为 GameSettingsData.ReadInteger(string, int) 的参数、GraphicsSettingsRuntime.ApplySavedSettings()。
+        // 分支选出的1。
 int selectedValue1;
         if (QualitySettings.vSyncCount > 0)
         {
@@ -76,7 +76,7 @@ int selectedValue1;
             selectedValue1 = 0;
         }
 
-        // useVSync（是否使用向量同步）：使用位置：作为 GraphicsSettingsRuntime.ApplyVSync(bool) 的参数。
+        // 是否使用向量同步。
 bool useVSync = GameSettingsData.ReadInteger(argumentValue2, selectedValue1) == 1;
         ApplyVSync(useVSync);
 #if !UNITY_EDITOR
@@ -87,9 +87,9 @@ bool useVSync = GameSettingsData.ReadInteger(argumentValue2, selectedValue1) == 
 
         if (GameSettingsData.Exists("ResolutionWidth") && GameSettingsData.Exists("ResolutionHeight"))
         {
-            // width（宽度）：保存 GameSettingsData.ReadInteger(string, int) 的返回结果，供当前步骤使用。使用位置：作为 Screen.SetResolution(int, int, bool) 的参数。
+            // 宽度。
 int width = GameSettingsData.ReadInteger("ResolutionWidth", Screen.currentResolution.width);
-            // height（高度）：保存 GameSettingsData.ReadInteger(string, int) 的返回结果，供当前步骤使用。使用位置：作为 Screen.SetResolution(int, int, bool) 的参数。
+            // 高度。
 int height = GameSettingsData.ReadInteger("ResolutionHeight", Screen.currentResolution.height);
             Screen.SetResolution(width, height, Screen.fullScreen);
         }
@@ -98,7 +98,7 @@ int height = GameSettingsData.ReadInteger("ResolutionHeight", Screen.currentReso
 
     /// <summary>SetQualityPreset 的业务处理入口；本方法直接依赖 GameSettingsData.Exists(string)、GameSettingsData.ReadInteger(string, int)、GameSettingsData.WriteInteger(string, int)、GraphicsSettingsRuntime.ApplyAntiAliasing(int)、GraphicsSettingsRuntime.ApplyVSync(bool)、GraphicsSettingsRuntime.ResolveQualityLevel(int)、Mathf.Clamp(int, int, int) 等共 8 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 OptionsTabManager.OnQualityChanged(int)；下游（含内部回调体） GameSettingsData.Exists(string)、GameSettingsData.ReadInteger(string, int)、GameSettingsData.WriteInteger(string, int)、GraphicsSettingsRuntime.ApplyAntiAliasing(int)、GraphicsSettingsRuntime.ApplyVSync(bool)、GraphicsSettingsRuntime.ResolveQualityLevel(int)、Mathf.Clamp(int, int, int) 等共 8 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="presetIndex">中文含义：预设索引。使用位置：作为 GameSettingsData.WriteInteger(string, int) 的参数、作为 GraphicsSettingsRuntime.ResolveQualityLevel(int) 的参数、作为 Mathf.Clamp(int, int, int) 的参数 等共 4 处。</param>
+    /// <param name="presetIndex">预设索引。</param>
     public static void SetQualityPreset(int presetIndex)
     {
         presetIndex = Mathf.Clamp(presetIndex, 0, 2);
@@ -109,9 +109,9 @@ int height = GameSettingsData.ReadInteger("ResolutionHeight", Screen.currentReso
             ApplyAntiAliasing(GameSettingsData.ReadInteger(AntiAliasingKey, 1));
         }
 
-        // argumentValue4（按原顺序缓存的实参向量同步键）：从向量同步键读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 GameSettingsData.ReadInteger(string, int) 的参数。
+        // 按原顺序缓存的实参向量同步键。
 string argumentValue4 = VSyncKey;
-        // selectedValue3（分支选出的1）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：作为 GameSettingsData.ReadInteger(string, int) 的参数、GraphicsSettingsRuntime.SetQualityPreset(int)。
+        // 分支选出的1。
 int selectedValue3;
         if (QualitySettings.vSyncCount > 0)
         {
@@ -129,12 +129,12 @@ int selectedValue3;
     /// <remarks>静态调用链：上游 OptionsTabManager.BuildGraphicsOptions()；下游（含内部回调体） GameSettingsData.ReadInteger(string, int)、Mathf.Clamp(int, int, int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     public static int GetQualityPreset()
     {
-        return Mathf.Clamp(GameSettingsData.ReadInteger(QualityPresetKey, 2), 0, 2);
+        return Mathf.Clamp(GameSettingsData.ReadInteger(QualityPresetKey, 1), 0, 2);
     }
 
     /// <summary>SetFrameRateIndex 的业务处理入口；本方法直接依赖 GameSettingsData.WriteInteger(string, int)、Mathf.Clamp(int, int, int)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 OptionsTabManager.OnFrameRateChanged(int)；下游（含内部回调体） GameSettingsData.WriteInteger(string, int)、Mathf.Clamp(int, int, int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="index">中文含义：索引。使用位置：作为 GameSettingsData.WriteInteger(string, int) 的参数、作为 Mathf.Clamp(int, int, int) 的参数、GraphicsSettingsRuntime.SetFrameRateIndex(int)。</param>
+    /// <param name="index">索引。</param>
     public static void SetFrameRateIndex(int index)
     {
         index = Mathf.Clamp(index, 0, FrameRates.Length - 1);
@@ -154,12 +154,12 @@ int selectedValue3;
 
     /// <summary>SetVSync 的业务处理入口；本方法直接依赖 GameSettingsData.WriteInteger(string, int)、GraphicsSettingsRuntime.ApplyVSync(bool)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 OptionsTabManager.OnVSyncChanged(bool)；下游（含内部回调体） GameSettingsData.WriteInteger(string, int)、GraphicsSettingsRuntime.ApplyVSync(bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="enabled">中文含义：是否启用。使用位置：作为 GraphicsSettingsRuntime.ApplyVSync(bool) 的参数、GraphicsSettingsRuntime.SetVSync(bool)。</param>
+    /// <param name="enabled">是否启用。</param>
     public static void SetVSync(bool enabled)
     {
-        // argumentValue6（按原顺序缓存的实参向量同步键）：从向量同步键读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 GameSettingsData.WriteInteger(string, int) 的参数。
+        // 按原顺序缓存的实参向量同步键。
 string argumentValue6 = VSyncKey;
-        // selectedValue5（分支选出的1）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：作为 GameSettingsData.WriteInteger(string, int) 的参数、GraphicsSettingsRuntime.SetVSync(bool)。
+        // 分支选出的1。
 int selectedValue5;
         if (enabled)
         {
@@ -178,9 +178,9 @@ int selectedValue5;
     /// <remarks>静态调用链：上游 OptionsTabManager.BuildGraphicsOptions()；下游（含内部回调体） GameSettingsData.ReadInteger(string, int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     public static bool GetVSync()
     {
-        // argumentValue8（按原顺序缓存的实参向量同步键）：从向量同步键读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 GameSettingsData.ReadInteger(string, int) 的参数。
+        // 按原顺序缓存的实参向量同步键。
 string argumentValue8 = VSyncKey;
-        // selectedValue7（分支选出的1）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：作为 GameSettingsData.ReadInteger(string, int) 的参数、GraphicsSettingsRuntime.GetVSync()。
+        // 分支选出的1。
 int selectedValue7;
         if (QualitySettings.vSyncCount > 0)
         {
@@ -196,7 +196,7 @@ int selectedValue7;
 
     /// <summary>SetAntiAliasingIndex 的业务处理入口；本方法直接依赖 GameSettingsData.WriteInteger(string, int)、GraphicsSettingsRuntime.ApplyAntiAliasing(int)、Mathf.Clamp(int, int, int)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 OptionsTabManager.OnAntiAliasingChanged(int)；下游（含内部回调体） GameSettingsData.WriteInteger(string, int)、GraphicsSettingsRuntime.ApplyAntiAliasing(int)、Mathf.Clamp(int, int, int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="index">中文含义：索引。使用位置：作为 GameSettingsData.WriteInteger(string, int) 的参数、作为 GraphicsSettingsRuntime.ApplyAntiAliasing(int) 的参数、作为 Mathf.Clamp(int, int, int) 的参数 等共 4 处。</param>
+    /// <param name="index">索引。</param>
     public static void SetAntiAliasingIndex(int index)
     {
         index = Mathf.Clamp(index, 0, AntiAliasingLevels.Length - 1);
@@ -213,9 +213,9 @@ int selectedValue7;
             return Mathf.Clamp(GameSettingsData.ReadInteger(AntiAliasingKey, 1), 0, AntiAliasingLevels.Length - 1);
         }
 
-        // currentLevel（当前级别）：使用位置：GraphicsSettingsRuntime.GetAntiAliasingIndex()。
+        // 当前级别。
 int currentLevel = QualitySettings.antiAliasing;
-        // i（当前遍历索引）：使用位置：GraphicsSettingsRuntime.GetAntiAliasingIndex()。
+        // 当前遍历索引。
 for (int i = 0; i < AntiAliasingLevels.Length; i++)
         {
             if (AntiAliasingLevels[i] == currentLevel)
@@ -250,7 +250,7 @@ for (int i = 0; i < AntiAliasingLevels.Length; i++)
     /// <remarks>静态调用链：上游 GraphicsSettingsRuntime.IsPreferredGraphicsApiActive()、OptionsTabManager.BuildGraphicsOptions()；下游（含内部回调体） GameSettingsData.ReadInteger(string, int)、Mathf.Clamp(int, int, int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     public static int GetGraphicsApiPreference()
     {
-        // currentIndex（当前索引）：使用位置：作为 GameSettingsData.ReadInteger(string, int) 的参数、GraphicsSettingsRuntime.GetGraphicsApiPreference()。
+        // 当前索引。
 int currentIndex;
         if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.Direct3D12)
         {
@@ -266,7 +266,7 @@ int currentIndex;
 
     /// <summary>SetGraphicsApiPreference 的业务处理入口；本方法直接依赖 GameSettingsData.SaveValue()、GameSettingsData.WriteInteger(string, int)、Mathf.Clamp(int, int, int)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 OptionsTabManager.OnGraphicsApiChanged(int)；下游（含内部回调体） GameSettingsData.SaveValue()、GameSettingsData.WriteInteger(string, int)、Mathf.Clamp(int, int, int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="index">中文含义：索引。使用位置：作为 Mathf.Clamp(int, int, int) 的参数。</param>
+    /// <param name="index">索引。</param>
     public static void SetGraphicsApiPreference(int index)
     {
         GameSettingsData.WriteInteger(GraphicsApiKey, Mathf.Clamp(index, 0, 1));
@@ -277,7 +277,7 @@ int currentIndex;
     /// <remarks>静态调用链：上游 OptionsTabManager.OnGraphicsApiChanged(int)；下游（含内部回调体） GraphicsSettingsRuntime.GetGraphicsApiPreference()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     public static bool IsPreferredGraphicsApiActive()
     {
-        // currentIndex（当前索引）：使用位置：GraphicsSettingsRuntime.IsPreferredGraphicsApiActive()。
+        // 当前索引。
 int currentIndex;
         if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.Direct3D12)
         {
@@ -293,10 +293,10 @@ int currentIndex;
 
     /// <summary>ResolveQualityLevel 的业务处理入口；本方法直接依赖 Mathf.Clamp(int, int, int)、Mathf.Min(int, int)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 GraphicsSettingsRuntime.ApplySavedSettings()、GraphicsSettingsRuntime.SetQualityPreset(int)；下游（含内部回调体） Mathf.Clamp(int, int, int)、Mathf.Min(int, int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="presetIndex">中文含义：预设索引。使用位置：GraphicsSettingsRuntime.ResolveQualityLevel(int)。</param>
+    /// <param name="presetIndex">预设索引。</param>
     private static int ResolveQualityLevel(int presetIndex)
     {
-        // count（数量）：使用位置：作为 Mathf.Clamp(int, int, int) 的参数、作为 Mathf.Min(int, int) 的参数、GraphicsSettingsRuntime.ResolveQualityLevel(int)。
+        // 数量。
 int count = QualitySettings.count;
         if (count <= 1)
         {
@@ -316,7 +316,7 @@ int count = QualitySettings.count;
 
     /// <summary>ApplyVSync 的业务处理入口；本方法直接依赖 GraphicsSettingsRuntime.GetFrameRateIndex()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 GraphicsSettingsRuntime.ApplySavedSettings()、GraphicsSettingsRuntime.SetQualityPreset(int)、GraphicsSettingsRuntime.SetVSync(bool)；下游（含内部回调体） GraphicsSettingsRuntime.GetFrameRateIndex()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="enabled">中文含义：是否启用。使用位置：GraphicsSettingsRuntime.ApplyVSync(bool)。</param>
+    /// <param name="enabled">是否启用。</param>
     private static void ApplyVSync(bool enabled)
     {
         if (enabled)
@@ -340,7 +340,7 @@ int count = QualitySettings.count;
 
     /// <summary>ApplyAntiAliasing 的业务处理入口；本方法直接依赖 Mathf.Clamp(int, int, int)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 GraphicsSettingsRuntime.ApplySavedSettings()、GraphicsSettingsRuntime.SetAntiAliasingIndex(int)、GraphicsSettingsRuntime.SetQualityPreset(int)；下游（含内部回调体） Mathf.Clamp(int, int, int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="index">中文含义：索引。使用位置：作为 Mathf.Clamp(int, int, int) 的参数、GraphicsSettingsRuntime.ApplyAntiAliasing(int)。</param>
+    /// <param name="index">索引。</param>
     private static void ApplyAntiAliasing(int index)
     {
         index = Mathf.Clamp(index, 0, AntiAliasingLevels.Length - 1);
@@ -357,9 +357,9 @@ int count = QualitySettings.count;
             return true;
         }
 
-        // arguments（参数集合）：保存 Environment.GetCommandLineArgs() 的返回结果，供当前步骤使用。使用位置：作为 string.Equals(string, string, StringComparison) 的参数、GraphicsSettingsRuntime.EnsurePreferredGraphicsApi()。
+        // 参数集合。
 string[] arguments = Environment.GetCommandLineArgs();
-        // i（当前遍历索引）：使用位置：GraphicsSettingsRuntime.EnsurePreferredGraphicsApi()。
+        // 当前遍历索引。
 for (int i = 0; i < arguments.Length; i++)
         {
             if (string.Equals(arguments[i], "-graphics-preference-applied", StringComparison.OrdinalIgnoreCase))
@@ -370,19 +370,19 @@ for (int i = 0; i < arguments.Length; i++)
 
         try
         {
-            // executablePath（可执行文件路径）：使用位置：作为 Path.GetDirectoryName(string) 的参数、作为 string.IsNullOrEmpty(string) 的参数、GraphicsSettingsRuntime.EnsurePreferredGraphicsApi()。
+            // 可执行文件路径。
 string executablePath = System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName;
             if (string.IsNullOrEmpty(executablePath))
             {
                 return true;
             }
 
-            // commandLine（命令线）：使用位置：GraphicsSettingsRuntime.EnsurePreferredGraphicsApi()。
+            // 命令线。
 System.Text.StringBuilder commandLine = new System.Text.StringBuilder();
-            // i（当前遍历索引）：使用位置：GraphicsSettingsRuntime.EnsurePreferredGraphicsApi()。
+            // 当前遍历索引。
 for (int i = 1; i < arguments.Length; i++)
             {
-                // argument（参数）：使用位置：作为 GraphicsSettingsRuntime.QuoteArgument(string) 的参数、作为 string.Equals(string, string, StringComparison) 的参数。
+                // 参数。
 string argument = arguments[i];
                 if (string.Equals(argument, "-force-d3d11", StringComparison.OrdinalIgnoreCase) || string.Equals(argument, "-force-d3d12", StringComparison.OrdinalIgnoreCase) || string.Equals(argument, "-graphics-preference-applied", StringComparison.OrdinalIgnoreCase))
                 {
@@ -392,9 +392,9 @@ string argument = arguments[i];
                 commandLine.Append(QuoteArgument(argument)).Append(' ');
             }
 
-            // callReceiver3（调用前缓存的命令线）：从命令线读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：GraphicsSettingsRuntime.EnsurePreferredGraphicsApi()。
+            // 调用前缓存的命令线。
 global::System.Text.StringBuilder callReceiver3 = commandLine;
-            // selectedValue2（分支选出的文字“-force-d3d12 ”）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：作为 StringBuilder.Append(string) 的参数、GraphicsSettingsRuntime.EnsurePreferredGraphicsApi()。
+            // 分支选出的文字“-force-d3d12 ”。
 string selectedValue2;
             if (GetGraphicsApiPreference() == 1)
             {
@@ -407,7 +407,7 @@ string selectedValue2;
 
             callReceiver3.Append(selectedValue2);
             commandLine.Append("-graphics-preference-applied");
-            // startInfo（起始信息）：使用位置：作为 Process.Start(ProcessStartInfo) 的参数。
+            // 起始信息。
 System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo
             {
                 FileName = executablePath,
@@ -430,7 +430,7 @@ System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessSt
 
     /// <summary>QuoteArgument 的业务处理入口；本方法直接依赖 string.Contains(string)、string.IsNullOrEmpty(string)、string.Replace(string, string)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） string.Contains(string)、string.IsNullOrEmpty(string)、string.Replace(string, string)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="argument">中文含义：参数。使用位置：作为 string.IsNullOrEmpty(string) 的参数、GraphicsSettingsRuntime.QuoteArgument(string)。</param>
+    /// <param name="argument">参数。</param>
     private static string QuoteArgument(string argument)
     {
         if (string.IsNullOrEmpty(argument))

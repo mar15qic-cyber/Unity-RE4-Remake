@@ -27,26 +27,28 @@ public enum InjuredPresentationMode
 [DefaultExecutionOrder(10000)]
 public partial class LeonAnimatorDriver : MonoBehaviour
 {
-    /// <summary>中文含义：动画控制器。使用位置：作为 Debug.LogError(object) 的参数、作为 KnifePoseSampler.KnifePoseSampler(KnifeCombatConfiguration, Animator) 的参数、作为 Mathf.Approximately(float, float) 的参数 等共 57 处。</summary>
+    /// <summary>动画控制器。</summary>
     [Header("引用")]
     [SerializeField]
     private Animator animator;
-    /// <summary>中文含义：小刀战斗模块。使用位置：作为 KnifeCombatConfiguration.Find(KnifeAction) 的参数、作为 KnifePoseSampler.KnifePoseSampler(KnifeCombatConfiguration, Animator) 的参数、作为 KnifePoseSampler.Sample(AnimationClip, float, int, float, float, bool) 的参数 等共 6 处。</summary>
+    /// <summary>小刀战斗模块。</summary>
     private KnifeCombatModule knifeModule;
-    /// <summary>中文含义：小刀控制器。使用位置：作为 Transform.InverseTransformDirection(Vector3) 的参数、LeonAnimatorDriver.LateUpdate()、LeonAnimatorDriver.Start()。</summary>
+    /// <summary>小刀控制器。</summary>
     private LeonController ownerController;
-    /// <summary>中文含义：小刀视觉表现集合。使用位置：LeonAnimatorDriver.LateUpdate()、LeonAnimatorDriver.Start()。</summary>
+    /// <summary>小刀视觉表现集合。</summary>
     private LeonWeaponVisualController knifeVisuals;
-    /// <summary>中文含义：小刀姿态采样器。使用位置：LeonAnimatorDriver.BeginKnifePoseExit()、LeonAnimatorDriver.LateUpdate()、LeonAnimatorDriver.OnDisable() 等共 5 处。</summary>
+    /// <summary>小刀姿态采样器。</summary>
     private KnifePoseSampler knifePoseSampler;
     private FootstepController knifeFootsteps;
+    private LeonItemPickup itemPickup;
+    private LeonAnimRig animRig;
     internal bool OwnsKnifeLocomotionFootsteps => knifePoseActive && knifeModule != null && knifeModule.Active;
     private long knifeHitBlendInstance;
-    /// <summary>中文含义：小刀姿态是否生效。使用位置：LeonAnimatorDriver.BeginKnifePoseExit()、LeonAnimatorDriver.LateUpdate()、LeonAnimatorDriver.OnDisable() 等共 4 处。</summary>
+    /// <summary>小刀姿态是否生效。</summary>
     private bool knifePoseActive;
-    /// <summary>中文含义：是否小刀姿态退出中。使用位置：LeonAnimatorDriver.BeginKnifePoseExit()、LeonAnimatorDriver.LateUpdate()、LeonAnimatorDriver.OnDisable() 等共 4 处。</summary>
+    /// <summary>是否小刀姿态退出中。</summary>
     private bool knifePoseExiting;
-    /// <summary>中文含义：小刀移动模式。使用位置：LeonAnimatorDriver.LateUpdate()、LeonAnimatorDriver.PlayIndependentKnifeClip(KnifeActionConfiguration, float, float)。</summary>
+    /// <summary>小刀移动模式。</summary>
     private int knifeMovementMode;
     private const int KnifeGuardTurnLeftMode = 7;
     private const int KnifeGuardTurnRightMode = 8;
@@ -54,70 +56,70 @@ public partial class LeonAnimatorDriver : MonoBehaviour
     private float knifeGuardTurnTime;
     private float knifeGuardTurnWeight;
     private int knifeGuardTurnMode;
-    /// <summary>中文含义：小刀移动行为时间。使用位置：作为 KnifePoseSampler.Sample(AnimationClip, float, int, float, float, bool) 的参数、LeonAnimatorDriver.LateUpdate()、LeonAnimatorDriver.PlayIndependentKnifeClip(KnifeActionConfiguration, float, float)。</summary>
+    /// <summary>小刀移动行为时间。</summary>
     private float knifeLocomotionTime;
-    /// <summary>中文含义：小刀姿态进入混合时长。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>小刀姿态进入混合时长。</summary>
     [Header("小刀与枪械姿态交接")]
     [SerializeField, Range(.08f, .16f)]
     private float knifePoseEnterBlendDuration = .14f;
-    /// <summary>中文含义：小刀姿态退出混合时长。使用位置：作为 KnifePoseSampler.BeginBlend(float, float) 的参数。</summary>
+    /// <summary>小刀姿态退出混合时长。</summary>
     [SerializeField, Range(.12f, .3f)]
     private float knifePoseExitBlendDuration = .18f;
-    /// <summary>中文含义：武器动作空状态（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。使用位置：作为 Animator.Play(int, int, float) 的参数。</summary>
+    /// <summary>武器动作空状态（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly int weaponActionEmptyState = Animator.StringToHash("Weapon Action SM.Empty");
-    /// <summary>中文含义：水平移动动画参数哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。使用位置：作为 Animator.SetFloat(int, float) 的参数。</summary>
+    /// <summary>水平移动动画参数哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly int HashHorizontal = Animator.StringToHash("Horizontal");
-    /// <summary>中文含义：纵向移动动画参数哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。使用位置：作为 Animator.SetFloat(int, float) 的参数。</summary>
+    /// <summary>纵向移动动画参数哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly int HashVertical = Animator.StringToHash("Vertical");
-    /// <summary>中文含义：输入长度的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。使用位置：作为 Animator.SetFloat(int, float) 的参数。</summary>
+    /// <summary>输入长度的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly int HashInputMagnitude = Animator.StringToHash("InputMagnitude");
-    /// <summary>中文含义：冲刺的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。使用位置：作为 Animator.SetBool(int, bool) 的参数。</summary>
+    /// <summary>冲刺的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly int HashSprint = Animator.StringToHash("Sprint");
-    /// <summary>中文含义：瞄准的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。使用位置：作为 Animator.SetFloat(int, float) 的参数、LeonAnimatorDriver.SetAimState(bool)。</summary>
+    /// <summary>瞄准的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly int HashAim = Animator.StringToHash("Aim");
-    /// <summary>中文含义：瞄准姿态哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。使用位置：作为 Animator.HasState(int, int) 的参数、作为 Animator.Play(int, int, float) 的参数。</summary>
+    /// <summary>瞄准姿态哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly int aimPoseHash = Animator.StringToHash("AimPose");
-    /// <summary>中文含义：横向瞄准角度的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。使用位置：作为 Animator.SetFloat(int, float) 的参数。</summary>
+    /// <summary>横向瞄准角度的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly int HashHorAimAngle = Animator.StringToHash("HorAimAngle");
-    /// <summary>中文含义：纵向瞄准角度的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。使用位置：作为 Animator.SetFloat(int, float) 的参数。</summary>
+    /// <summary>纵向瞄准角度的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly int HashVerAimAngle = Animator.StringToHash("VerAimAngle");
-    /// <summary>中文含义：武器类型的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。使用位置：作为 Animator.SetFloat(int, float) 的参数。</summary>
+    /// <summary>武器类型的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly int HashWeaponType = Animator.StringToHash("WeaponType");
-    /// <summary>中文含义：开火的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。使用位置：作为 Animator.ResetTrigger(int) 的参数、作为 Animator.SetTrigger(int) 的参数。</summary>
+    /// <summary>开火的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly int HashFire = Animator.StringToHash("Fire");
-    /// <summary>中文含义：武器动作的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。使用位置：作为 Animator.SetInteger(int, int) 的参数。</summary>
+    /// <summary>武器动作的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly int HashWeaponAction = Animator.StringToHash("WeaponAction");
-    /// <summary>中文含义：全身动作的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。使用位置：作为 Animator.SetInteger(int, int) 的参数。</summary>
+    /// <summary>全身动作的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly int HashFullBodyAction = Animator.StringToHash("FullBodyAction");
-    /// <summary>中文含义：命中方向的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。使用位置：作为 Animator.SetFloat(int, float) 的参数。</summary>
+    /// <summary>命中方向的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly int HashHitDir = Animator.StringToHash("HitDir");
-    /// <summary>中文含义：小刀模式的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。使用位置：作为 Animator.GetFloat(int) 的参数、作为 Animator.SetFloat(int, float) 的参数。</summary>
+    /// <summary>小刀模式的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly int HashKnifeMode = Animator.StringToHash("KnifeMode");
-    /// <summary>中文含义：转向角度的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。使用位置：作为 Animator.SetFloat(int, float) 的参数。</summary>
+    /// <summary>转向角度的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly int HashTurnAngle = Animator.StringToHash("TurnAngle");
-    /// <summary>中文含义：蹲伏的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。使用位置：作为 Animator.SetBool(int, bool) 的参数。</summary>
+    /// <summary>蹲伏的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly int HashCrouch = Animator.StringToHash("Crouch");
-    /// <summary>中文含义：步枪蹲伏空的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。使用位置：LeonAnimatorDriver.UpdateLongGunCrouchLayerExit()。</summary>
+    /// <summary>步枪蹲伏空的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly int HashRifleCrouchEmpty = Animator.StringToHash("Empty");
-    /// <summary>中文含义：基础待机的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。使用位置：作为 Animator.CrossFadeInFixedTime(int, float, int, float) 的参数、LeonAnimatorDriver.ReadStartStepDisplacementRatio()。</summary>
+    /// <summary>基础待机的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly int HashBaseIdle = Animator.StringToHash("Idle");
-    /// <summary>中文含义：起始步进状态（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。使用位置：LeonAnimatorDriver.ReadStartStepDisplacementRatio()。</summary>
+    /// <summary>起始步进状态（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly int startStepState = Animator.StringToHash("WalkStarts");
-    /// <summary>中文含义：恢复步进状态（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。使用位置：LeonAnimatorDriver.ReadStartStepDisplacementRatio()。</summary>
+    /// <summary>恢复步进状态（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly int recoverStepState = Animator.StringToHash("WalkStops");
-    /// <summary>中文含义：原地转向状态（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。使用位置：LeonAnimatorDriver.ReadStartStepDisplacementRatio()。</summary>
+    /// <summary>原地转向状态（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly int inPlaceTurnState = Animator.StringToHash("TurnInPlace");
-    /// <summary>中文含义：全身空的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。使用位置：LeonAnimatorDriver.EnterDeath()。</summary>
+    /// <summary>全身空的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly int HashFullBodyEmpty = Animator.StringToHash("Empty");
-    /// <summary>中文含义：全身命中的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。使用位置：LeonAnimatorDriver.TryGetPreparedFullBodyStateHash(FullBodyActionType, out int)、LeonAnimatorDriver.ValidateAnimatorContract()。</summary>
+    /// <summary>全身命中的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly int HashFullBodyHit = Animator.StringToHash("Hit");
-    /// <summary>中文含义：全身死亡的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。使用位置：作为 LeonAnimatorDriver.PrepareFullBodyLayerEntry(int) 的参数、LeonAnimatorDriver.ValidateAnimatorContract()。</summary>
+    /// <summary>全身死亡的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly int HashFullBodyDeath = Animator.StringToHash("Death");
-    /// <summary>中文含义：全身配对动作进入的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。使用位置：LeonAnimatorDriver.TryGetPreparedFullBodyStateHash(FullBodyActionType, out int)、LeonAnimatorDriver.ValidateAnimatorContract()。</summary>
+    /// <summary>全身配对动作进入的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly int HashFullBodyQTEEnter = Animator.StringToHash("QTEEnter");
-    /// <summary>中文含义：全身右侧切口踢击的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。使用位置：LeonAnimatorDriver.TryGetPreparedFullBodyStateHash(FullBodyActionType, out int)、LeonAnimatorDriver.ValidateAnimatorContract()。</summary>
+    /// <summary>全身右侧切口踢击的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly int HashFullBodyRightCutKick = Animator.StringToHash("QTERightCutKick");
-    /// <summary>中文含义：全身旋转中挂钩踢击的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。使用位置：LeonAnimatorDriver.TryGetPreparedFullBodyStateHash(FullBodyActionType, out int)、LeonAnimatorDriver.ValidateAnimatorContract()。</summary>
+    /// <summary>全身旋转中挂钩踢击的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。</summary>
     internal const string WoodenBoxKickStateName = "NativeWoodenBoxKick";
     private static readonly int HashFullBodyWoodenBoxKick = Animator.StringToHash(WoodenBoxKickStateName);
     internal bool HasPreparedMeleeState(FullBodyActionType action)
@@ -143,11 +145,44 @@ public partial class LeonAnimatorDriver : MonoBehaviour
         return state.shortNameHash == hash;
     }
     private static readonly int HashFullBodySpinningHookKick = Animator.StringToHash("QTESpinningHookKick");
-    /// <summary>中文含义：全身窗口攀爬的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。使用位置：LeonAnimatorDriver.TryGetPreparedFullBodyStateHash(FullBodyActionType, out int)、LeonAnimatorDriver.ValidateAnimatorContract()。</summary>
+    /// <summary>全身窗口攀爬的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly int HashFullBodyWindowClimb = Animator.StringToHash("WindowClimbThrough");
     internal static readonly string[] ItemPickupStateNames = { "NativePickupLow", "NativePickupMiddle", "NativePickupHigh" };
     internal static readonly string[] MovingItemPickupStateNames = { "NativePickupMovingLow", "NativePickupMovingMiddle", "NativePickupMovingHigh" };
     private int pickupStateHash;
+    private bool pickupEarlyCancelExit;
+    private LeonInputBridge inputBridge;
+
+    internal bool IsItemPickupLayerBlending
+    {
+        get
+        {
+            if (animator == null || activeFullBodyAction != FullBodyActionType.ItemPickup)
+            {
+                return false;
+            }
+
+            if (waitingForFullBodyStateEntry || blendFullBodyLayerWeight)
+            {
+                return true;
+            }
+
+            return animator.GetLayerWeight(LayerFullBodyAction) > 0.001f;
+        }
+    }
+
+    internal float ItemPickupLayerWeight
+    {
+        get
+        {
+            if (animator == null || activeFullBodyAction != FullBodyActionType.ItemPickup)
+            {
+                return 0f;
+            }
+
+            return Mathf.Clamp01(animator.GetLayerWeight(LayerFullBodyAction));
+        }
+    }
 
     internal bool PrepareItemPickup(int height, bool moving)
     {
@@ -162,6 +197,7 @@ public partial class LeonAnimatorDriver : MonoBehaviour
             return false;
         }
 
+        pickupEarlyCancelExit = false;
         pickupStateHash = hash;
         return true;
     }
@@ -215,188 +251,188 @@ public partial class LeonAnimatorDriver : MonoBehaviour
         useHighWindowClimb = high && HasNativeWindowVariants;
         useFenceVault = fence && HasFenceVault;
     }
-    /// <summary>中文含义：全身窗口掉落下落的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。使用位置：LeonAnimatorDriver.TryGetPreparedFullBodyStateHash(FullBodyActionType, out int)、LeonAnimatorDriver.ValidateAnimatorContract()。</summary>
+    /// <summary>全身窗口掉落下落的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly int HashFullBodyWindowDropFall = Animator.StringToHash("WindowDropFall");
-    /// <summary>中文含义：全身窗口掉落落地的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。使用位置：LeonAnimatorDriver.TryGetPreparedFullBodyStateHash(FullBodyActionType, out int)、LeonAnimatorDriver.ValidateAnimatorContract()。</summary>
+    /// <summary>全身窗口掉落落地的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly int HashFullBodyWindowDropLand = Animator.StringToHash("WindowDropLand");
-    /// <summary>中文含义：最小配对动作全身图层退出混合时长。编译期常量，保持既有值与消费者映射。使用位置：作为 Mathf.Clamp(float, float, float) 的参数。</summary>
+    /// <summary>最小配对动作全身图层退出混合时长。编译期常量，保持既有值与消费者映射。</summary>
     private const float MinimumQTEFullBodyLayerExitBlendDuration = 0.12f;
-    /// <summary>中文含义：最大配对动作全身图层退出混合时长。编译期常量，保持既有值与消费者映射。使用位置：作为 Mathf.Clamp(float, float, float) 的参数。</summary>
+    /// <summary>最大配对动作全身图层退出混合时长。编译期常量，保持既有值与消费者映射。</summary>
     private const float MaximumQTEFullBodyLayerExitBlendDuration = 0.18f;
-    /// <summary>中文含义：图层基础。使用位置：作为 Animator.CrossFadeInFixedTime(int, float, int, float) 的参数、作为 Animator.GetCurrentAnimatorStateInfo(int) 的参数、作为 Animator.GetNextAnimatorStateInfo(int) 的参数 等共 5 处。</summary>
+    /// <summary>图层基础。</summary>
     public static int LayerBase => AnimatorLayerID.Base;
-    /// <summary>中文含义：图层受伤。使用位置：作为 Animator.GetLayerWeight(int) 的参数、作为 Animator.SetLayerWeight(int, float) 的参数。</summary>
+    /// <summary>图层受伤。</summary>
     public static int LayerInjured => AnimatorLayerID.Injured;
-    /// <summary>中文含义：图层受伤下半身。使用位置：作为 Animator.GetLayerWeight(int) 的参数、作为 Animator.SetLayerWeight(int, float) 的参数。</summary>
+    /// <summary>图层受伤下半身。</summary>
     public static int LayerInjuredLowerBody => AnimatorLayerID.InjuredLowerBody;
-    /// <summary>中文含义：图层步枪蹲伏。使用位置：作为 Animator.GetCurrentAnimatorStateInfo(int) 的参数、作为 Animator.GetLayerWeight(int) 的参数、作为 Animator.IsInTransition(int) 的参数 等共 4 处。</summary>
+    /// <summary>图层步枪蹲伏。</summary>
     public static int LayerRifleCrouch => AnimatorLayerID.RifleCrouch;
-    /// <summary>中文含义：图层瞄准。使用位置：作为 Animator.HasState(int, int) 的参数、作为 Animator.Play(int, int, float) 的参数、作为 Animator.SetLayerWeight(int, float) 的参数。</summary>
+    /// <summary>图层瞄准。</summary>
     public static int LayerAim => AnimatorLayerID.Aim;
-    /// <summary>中文含义：图层开火。使用位置：作为 Animator.SetLayerWeight(int, float) 的参数。</summary>
+    /// <summary>图层开火。</summary>
     public static int LayerFire => AnimatorLayerID.Fire;
-    /// <summary>中文含义：图层武器动作。使用位置：作为 Animator.CrossFadeInFixedTime(int, float, int, float) 的参数、作为 Animator.GetLayerWeight(int) 的参数、作为 Animator.HasState(int, int) 的参数 等共 5 处。</summary>
+    /// <summary>图层武器动作。</summary>
     public static int LayerWeaponAction => AnimatorLayerID.WeaponAction;
-    /// <summary>中文含义：图层全身动作。使用位置：作为 Animator.CrossFadeInFixedTime(int, float, int, float) 的参数、作为 Animator.GetCurrentAnimatorStateInfo(int) 的参数、作为 Animator.GetLayerWeight(int) 的参数 等共 6 处。</summary>
+    /// <summary>图层全身动作。</summary>
     public static int LayerFullBodyAction => AnimatorLayerID.FullBodyAction;
 
-    /// <summary>中文含义：是否校验触发的。使用位置：LeonAnimatorDriver.ContextMenuValidate()、LeonAnimatorDriver.IsValid.get、LeonAnimatorDriver.Start() 等共 4 处。</summary>
+    /// <summary>是否校验触发的。</summary>
     [NonSerialized]
     private bool validationPerformed;
-    /// <summary>中文含义：是否校验结果。使用位置：LeonAnimatorDriver.IsValid.get、LeonAnimatorDriver.ValidateAnimatorContract()。</summary>
+    /// <summary>是否校验结果。</summary>
     [NonSerialized]
     private bool validationResult;
-    /// <summary>中文含义：武器动作图层混合时长。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>武器动作图层混合时长。</summary>
     [SerializeField]
     private float weaponActionLayerBlendDuration = 0.1f;
-    /// <summary>中文含义：小刀全身图层混合时长。使用位置：LeonAnimatorDriver.UpdateFullBodyLayerWeight()。</summary>
+    /// <summary>小刀全身图层混合时长。</summary>
     [SerializeField]
     private float knifeFullBodyLayerBlendDuration = 0.08f;
-    /// <summary>中文含义：全身图层入口混合时长。使用位置：LeonAnimatorDriver.UpdateFullBodyLayerWeight()。</summary>
+    /// <summary>全身图层入口混合时长。</summary>
     [SerializeField]
     private float fullBodyLayerEntryBlendDuration = 0.08f;
-    /// <summary>中文含义：配对动作全身图层退出混合时长。使用位置：作为 Mathf.Clamp(float, float, float) 的参数、LeonAnimatorDriver.Start()、LeonAnimatorDriver.UpdateFullBodyLayerWeight()。</summary>
+    /// <summary>配对动作全身图层退出混合时长。</summary>
     [SerializeField]
     private float qteFullBodyLayerExitBlendDuration = 0.16f;
-    /// <summary>中文含义：小刀模式混合时长。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>小刀模式混合时长。</summary>
     [Header("小刀基础姿态过渡")]
     [SerializeField, Range(0.08f, 0.6f)]
     private float knifeModeBlendDuration = 0.24f;
-    /// <summary>中文含义：长枪蹲伏图层混合时长。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>长枪蹲伏图层混合时长。</summary>
     [Header("长枪蹲姿层过渡")]
     [Range(0.08f, 0.6f)]
     public float longGunCrouchLayerBlendDuration = 0.24f;
-    /// <summary>中文含义：普通进入受伤状态的淡入时长。使用位置：LeonAnimatorDriver.RequestInjuredState(bool, bool)、LeonAnimatorDriver.ResetInjuredPresentation()。</summary>
+    /// <summary>普通进入受伤状态的淡入时长。</summary>
     [Header("受伤层过渡")]
     [Tooltip("普通进入受伤状态的淡入时长")]
     [Range(0.05f, 1f)]
     public float injuredLayerEnterDuration = 0.20f;
-    /// <summary>中文含义：受击恢复阶段交接专用的淡入时长。使用位置：LeonAnimatorDriver.BeginPendingInjuredTransition()。</summary>
+    /// <summary>受击恢复阶段交接专用的淡入时长。</summary>
     [Tooltip("受击恢复阶段交接专用的淡入时长")]
     [Range(0.05f, 1f)]
     public float injuredHitRecoveryEnterDuration = 0.14f;
-    /// <summary>中文含义：恢复正常状态的淡出时长。使用位置：LeonAnimatorDriver.BeginPendingInjuredTransition()、LeonAnimatorDriver.RequestInjuredState(bool, bool)、LeonAnimatorDriver.ResetInjuredPresentation()。</summary>
+    /// <summary>恢复正常状态的淡出时长。</summary>
     [Tooltip("恢复正常状态的淡出时长")]
     [Range(0.05f, 1f)]
     public float injuredLayerExitDuration = 0.25f;
-    /// <summary>中文含义：手枪进入瞄准时全身受伤层与下身受伤层的交换时长。使用位置：LeonAnimatorDriver.RefreshInjuredPresentationForAim(bool)。</summary>
+    /// <summary>手枪进入瞄准时全身受伤层与下身受伤层的交换时长。</summary>
     [Tooltip("手枪进入瞄准时全身受伤层与下身受伤层的交换时长")]
     [Range(0.05f, 1f)]
     public float injuredAimSwapDuration = 0.14f;
-    /// <summary>中文含义：手枪退出瞄准时全身受伤层与下身受伤层的交换时长。使用位置：LeonAnimatorDriver.RefreshInjuredPresentationForAim(bool)。</summary>
+    /// <summary>手枪退出瞄准时全身受伤层与下身受伤层的交换时长。</summary>
     [Tooltip("手枪退出瞄准时全身受伤层与下身受伤层的交换时长")]
     [Range(0.05f, 1f)]
     public float injuredAimReleaseSwapDuration = 0.18f;
-    /// <summary>中文含义：单手与双手武器切换时两个受伤层的交叉淡化时长。使用位置：作为 LeonAnimatorDriver.StartInjuredBlendsForMode(InjuredPresentationMode, float, float) 的参数。</summary>
+    /// <summary>单手与双手武器切换时两个受伤层的交叉淡化时长。</summary>
     [Tooltip("单手与双手武器切换时两个受伤层的交叉淡化时长")]
     [Range(0.05f, 0.4f)]
     public float injuredWeaponSwapDuration = 0.16f;
-    /// <summary>中文含义：受伤方向迟滞。八方向吸附切换的点积滞回，数值越大越不容易在相邻方向间抖动。使用位置：LeonAnimatorDriver.SetMovement(float, float, float, bool)。</summary>
+    /// <summary>受伤方向迟滞。八方向吸附切换的点积滞回，数值越大越不容易在相邻方向间抖动。</summary>
     [Header("受伤方向稳定")]
     [Tooltip("八方向吸附切换的点积滞回，数值越大越不容易在相邻方向间抖动")]
     [Range(0f, 0.3f)]
     public float injuredDirectionHysteresis = 0.12f;
-    /// <summary>中文含义：武器动作层退出Equip后的平滑淡出时长。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>武器动作层退出Equip后的平滑淡出时长。</summary>
     [Tooltip("武器动作层退出Equip后的平滑淡出时长")]
     [Range(0.05f, 1f)]
     public float weaponActionLayerSmoothExitDuration = 0.14f;
-    /// <summary>中文含义：受伤表现。使用位置：作为 LeonAnimatorDriver.StartInjuredBlendsForMode(InjuredPresentationMode, float, float) 的参数、LeonAnimatorDriver.ApplyPresentationMode(float)、LeonAnimatorDriver.CommitInjuredWeaponSwitchPresentation(WeaponType) 等共 6 处。</summary>
+    /// <summary>受伤表现。</summary>
     private InjuredPresentationMode injuredPresentation = InjuredPresentationMode.Normal;
-    /// <summary>中文含义：待处理受伤表现。使用位置：LeonAnimatorDriver.CommitInjuredWeaponSwitchPresentation(WeaponType)、LeonAnimatorDriver.PrepareInjuredWeaponSwitch(WeaponType)。</summary>
+    /// <summary>待处理受伤表现。</summary>
     private InjuredPresentationMode pendingInjuredPresentation = InjuredPresentationMode.Normal;
-    /// <summary>中文含义：是否存在待处理的受伤表现。使用位置：LeonAnimatorDriver.ClearPendingInjuredTransition()、LeonAnimatorDriver.CommitInjuredWeaponSwitchPresentation(WeaponType)、LeonAnimatorDriver.PrepareInjuredWeaponSwitch(WeaponType) 等共 4 处。</summary>
+    /// <summary>是否存在待处理的受伤表现。</summary>
     private bool hasPendingInjuredPresentation;
-    /// <summary>中文含义：受伤图层是否生效。使用位置：LeonAnimatorDriver.BeginPendingInjuredTransition()、LeonAnimatorDriver.CommitInjuredWeaponSwitchPresentation(WeaponType)、LeonAnimatorDriver.InjuredLayerActive.get 等共 10 处。</summary>
+    /// <summary>受伤图层是否生效。</summary>
     private bool injuredLayerActive;
-    /// <summary>中文含义：是否存在待处理的受伤目标。使用位置：LeonAnimatorDriver.BeginPendingInjuredTransition()、LeonAnimatorDriver.ClearPendingInjuredTransition()、LeonAnimatorDriver.HasPendingInjuredTransition.get 等共 5 处。</summary>
+    /// <summary>是否存在待处理的受伤目标。</summary>
     private bool hasPendingInjuredTarget;
-    /// <summary>中文含义：是否存在待处理的受伤目标。使用位置：LeonAnimatorDriver.RequestInjuredState(bool, bool)、LeonAnimatorDriver.ResetInjuredLayerState()。</summary>
+    /// <summary>是否存在待处理的受伤目标。</summary>
     private bool pendingInjuredTarget;
-    /// <summary>中文含义：受伤动画图层权重。使用位置：作为 Animator.SetLayerWeight(int, float) 的参数、作为 Mathf.Approximately(float, float) 的参数、LeonAnimatorDriver.SetInjuredLayersImmediate(float, float) 等共 6 处。</summary>
+    /// <summary>受伤动画图层权重。</summary>
     private float injuredLayerWeight;
-    /// <summary>中文含义：受伤图层混合开始时刻。使用位置：作为 Mathf.Lerp(float, float, float) 的参数、LeonAnimatorDriver.StartInjuredMoveBlend(float, float)。</summary>
+    /// <summary>受伤图层混合开始时刻。</summary>
     private float injuredLayerBlendStart;
-    /// <summary>中文含义：受伤图层目标。使用位置：作为 Mathf.Approximately(float, float) 的参数、作为 Mathf.Lerp(float, float, float) 的参数、LeonAnimatorDriver.SetInjuredLayersImmediate(float, float) 等共 5 处。</summary>
+    /// <summary>受伤图层目标。</summary>
     private float injuredLayerTarget;
-    /// <summary>中文含义：受伤图层混合时长。使用位置：作为 Mathf.Min(float, float) 的参数、LeonAnimatorDriver.StartInjuredMoveBlend(float, float)、LeonAnimatorDriver.UpdateInjuredLayerWeight()。</summary>
+    /// <summary>受伤图层混合时长。</summary>
     private float injuredLayerBlendDuration;
-    /// <summary>中文含义：受伤图层混合已用。使用位置：作为 Mathf.Min(float, float) 的参数、LeonAnimatorDriver.StartInjuredMoveBlend(float, float)、LeonAnimatorDriver.UpdateInjuredLayerWeight()。</summary>
+    /// <summary>受伤图层混合已用。</summary>
     private float injuredLayerBlendElapsed;
-    /// <summary>中文含义：是否混合受伤图层。使用位置：LeonAnimatorDriver.SetInjuredLayersImmediate(float, float)、LeonAnimatorDriver.StartInjuredMoveBlend(float, float)、LeonAnimatorDriver.UpdateInjuredLayerWeight()。</summary>
+    /// <summary>是否混合受伤图层。</summary>
     private bool blendInjuredLayer;
-    /// <summary>中文含义：受伤下部动画图层权重。使用位置：作为 Animator.SetLayerWeight(int, float) 的参数、作为 Mathf.Approximately(float, float) 的参数、LeonAnimatorDriver.SetInjuredLayersImmediate(float, float) 等共 6 处。</summary>
+    /// <summary>受伤下部动画图层权重。</summary>
     private float injuredLowerLayerWeight;
-    /// <summary>中文含义：受伤下部混合开始时刻。使用位置：作为 Mathf.Lerp(float, float, float) 的参数、LeonAnimatorDriver.StartInjuredLowerBlend(float, float)。</summary>
+    /// <summary>受伤下部混合开始时刻。</summary>
     private float injuredLowerBlendStart;
-    /// <summary>中文含义：受伤下部目标。使用位置：作为 Mathf.Approximately(float, float) 的参数、作为 Mathf.Lerp(float, float, float) 的参数、LeonAnimatorDriver.SetInjuredLayersImmediate(float, float) 等共 5 处。</summary>
+    /// <summary>受伤下部目标。</summary>
     private float injuredLowerTarget;
-    /// <summary>中文含义：受伤下部混合时长。使用位置：作为 Mathf.Min(float, float) 的参数、LeonAnimatorDriver.StartInjuredLowerBlend(float, float)、LeonAnimatorDriver.UpdateInjuredLowerLayerWeight()。</summary>
+    /// <summary>受伤下部混合时长。</summary>
     private float injuredLowerBlendDuration;
-    /// <summary>中文含义：受伤下部混合已用。使用位置：作为 Mathf.Min(float, float) 的参数、LeonAnimatorDriver.StartInjuredLowerBlend(float, float)、LeonAnimatorDriver.UpdateInjuredLowerLayerWeight()。</summary>
+    /// <summary>受伤下部混合已用。</summary>
     private float injuredLowerBlendElapsed;
-    /// <summary>中文含义：是否混合受伤下部图层。使用位置：LeonAnimatorDriver.SetInjuredLayersImmediate(float, float)、LeonAnimatorDriver.StartInjuredLowerBlend(float, float)、LeonAnimatorDriver.UpdateInjuredLowerLayerWeight()。</summary>
+    /// <summary>是否混合受伤下部图层。</summary>
     private bool blendInjuredLowerLayer;
-    /// <summary>中文含义：是否当前瞄准中。使用位置：LeonAnimatorDriver.EnterDeath()、LeonAnimatorDriver.InitializeAnimatorContract(WeaponType)、LeonAnimatorDriver.ResolveModeForWeapon(WeaponType) 等共 5 处。</summary>
+    /// <summary>是否当前瞄准中。</summary>
     private bool currentAiming;
-    /// <summary>中文含义：受伤吸附后的方向。使用位置：作为 Vector2.Dot(Vector2, Vector2) 的参数、LeonAnimatorDriver.SetMovement(float, float, float, bool)。</summary>
+    /// <summary>受伤吸附后的方向。</summary>
     private Vector2 injuredSnappedDirection;
-    /// <summary>中文含义：是否具有受伤吸附后的方向。使用位置：LeonAnimatorDriver.PrepareTraversalLandingBasePose()、LeonAnimatorDriver.SetMovement(float, float, float, bool)。</summary>
+    /// <summary>是否具有受伤吸附后的方向。</summary>
     private bool hasInjuredSnappedDirection;
-    /// <summary>中文含义：武器动作动画图层权重。使用位置：作为 Animator.SetLayerWeight(int, float) 的参数、作为 Mathf.Approximately(float, float) 的参数、作为 Mathf.MoveTowards(float, float, float) 的参数 等共 11 处。</summary>
+    /// <summary>武器动作动画图层权重。</summary>
     private float weaponActionLayerWeight;
-    /// <summary>中文含义：目标武器动作动画图层权重。使用位置：作为 Mathf.Approximately(float, float) 的参数、作为 Mathf.Lerp(float, float, float) 的参数、作为 Mathf.MoveTowards(float, float, float) 的参数 等共 10 处。</summary>
+    /// <summary>目标武器动作动画图层权重。</summary>
     private float targetWeaponActionLayerWeight;
-    /// <summary>中文含义：是否混合武器动作动画图层权重。使用位置：LeonAnimatorDriver.BeginKnifePoseExit()、LeonAnimatorDriver.BlendWeaponActionLayerTo(float)、LeonAnimatorDriver.EnsureWeaponActionLayerFullWeight() 等共 7 处。</summary>
+    /// <summary>是否混合武器动作动画图层权重。</summary>
     private bool blendWeaponActionLayerWeight;
-    /// <summary>中文含义：全身动画图层权重。使用位置：作为 Animator.SetLayerWeight(int, float) 的参数、作为 Mathf.Approximately(float, float) 的参数、作为 Mathf.MoveTowards(float, float, float) 的参数 等共 13 处。</summary>
+    /// <summary>全身动画图层权重。</summary>
     private float fullBodyLayerWeight;
-    /// <summary>中文含义：目标全身动画图层权重。使用位置：作为 Mathf.Approximately(float, float) 的参数、作为 Mathf.MoveTowards(float, float, float) 的参数、LeonAnimatorDriver.AdvanceFullBodyAction(FullBodyActionType, float, float) 等共 12 处。</summary>
+    /// <summary>目标全身动画图层权重。</summary>
     private float targetFullBodyLayerWeight;
-    /// <summary>中文含义：是否混合全身动画图层权重。使用位置：LeonAnimatorDriver.AdvanceFullBodyAction(FullBodyActionType, float, float)、LeonAnimatorDriver.BeginFullBodyAction(FullBodyActionType)、LeonAnimatorDriver.BeginQTEFullBodyExitBlend() 等共 10 处。</summary>
+    /// <summary>是否混合全身动画图层权重。</summary>
     private bool blendFullBodyLayerWeight;
-    /// <summary>中文含义：是否混合中全身图层入口。使用位置：LeonAnimatorDriver.AdvanceFullBodyAction(FullBodyActionType, float, float)、LeonAnimatorDriver.BeginFullBodyAction(FullBodyActionType)、LeonAnimatorDriver.BeginQTEFullBodyExitBlend() 等共 10 处。</summary>
+    /// <summary>是否混合中全身图层入口。</summary>
     private bool blendingFullBodyLayerEntry;
-    /// <summary>中文含义：是否混合中配对动作全身退出。使用位置：LeonAnimatorDriver.AdvanceFullBodyAction(FullBodyActionType, float, float)、LeonAnimatorDriver.BeginFullBodyAction(FullBodyActionType)、LeonAnimatorDriver.BeginQTEFullBodyExitBlend() 等共 9 处。</summary>
+    /// <summary>是否混合中配对动作全身退出。</summary>
     private bool blendingQTEFullBodyExit;
-    /// <summary>中文含义：是否清除全身动作之后淡入淡出。使用位置：LeonAnimatorDriver.AdvanceFullBodyAction(FullBodyActionType, float, float)、LeonAnimatorDriver.BeginFullBodyAction(FullBodyActionType)、LeonAnimatorDriver.ClearFullBodyActionAfterFadeIfReady() 等共 6 处。</summary>
+    /// <summary>是否清除全身动作之后淡入淡出。</summary>
     private bool clearFullBodyActionAfterFade;
-    /// <summary>中文含义：是否正在等待进入全身动画状态。使用位置：LeonAnimatorDriver.CancelPendingFullBodyLayerEntry()、LeonAnimatorDriver.InitializeAnimatorContract(WeaponType)、LeonAnimatorDriver.PrepareFullBodyLayerEntry(int) 等共 4 处。</summary>
+    /// <summary>是否正在等待进入全身动画状态。</summary>
     private bool waitingForFullBodyStateEntry;
-    /// <summary>中文含义：待处理全身动画状态哈希编号。使用位置：LeonAnimatorDriver.CancelPendingFullBodyLayerEntry()、LeonAnimatorDriver.InitializeAnimatorContract(WeaponType)、LeonAnimatorDriver.PrepareFullBodyLayerEntry(int) 等共 4 处。</summary>
+    /// <summary>待处理全身动画状态哈希编号。</summary>
     private int pendingFullBodyStateHash;
-    /// <summary>中文含义：全身入口请求帧。使用位置：LeonAnimatorDriver.CancelPendingFullBodyLayerEntry()、LeonAnimatorDriver.InitializeAnimatorContract(WeaponType)、LeonAnimatorDriver.PrepareFullBodyLayerEntry(int) 等共 4 处。</summary>
+    /// <summary>全身入口请求帧。</summary>
     private int fullBodyEntryRequestFrame = -1;
-    /// <summary>中文含义：通行落地基础姿态是否锁定。使用位置：LeonAnimatorDriver.EnterDeath()、LeonAnimatorDriver.PrepareTraversalLandingBasePose()、LeonAnimatorDriver.ReleaseTraversalLandingBasePose() 等共 4 处。</summary>
+    /// <summary>通行落地基础姿态是否锁定。</summary>
     private bool traversalLandingBasePoseLocked;
-    /// <summary>中文含义：生效全身动作。使用位置：作为 LeonAnimatorDriver.IsQTEAction(FullBodyActionType) 的参数、作为 LeonAnimatorDriver.ShouldBlendFullBodyLayer(FullBodyActionType) 的参数、LeonAnimatorDriver.AdvanceFullBodyAction(FullBodyActionType, float, float) 等共 8 处。</summary>
+    /// <summary>生效全身动作。</summary>
     private FullBodyActionType activeFullBodyAction = FullBodyActionType.None;
-    /// <summary>中文含义：生效近战事件武器图层。使用位置：LeonAnimatorDriver.AdvanceFullBodyAction(FullBodyActionType, float, float)、LeonAnimatorDriver.BeginFullBodyAction(FullBodyActionType)、LeonAnimatorDriver.EndFullBodyAction() 等共 7 处。</summary>
+    /// <summary>生效近战事件武器图层。</summary>
     private FullBodyActionType activeMeleeOnWeaponLayer = FullBodyActionType.None;
-    /// <summary>中文含义：当前小刀模式。使用位置：作为 Animator.SetFloat(int, float) 的参数、作为 Mathf.Approximately(float, float) 的参数、作为 Mathf.MoveTowards(float, float, float) 的参数 等共 8 处。</summary>
+    /// <summary>当前小刀模式。</summary>
     private float currentKnifeMode;
-    /// <summary>中文含义：目标小刀模式。使用位置：作为 Animator.SetFloat(int, float) 的参数、作为 Mathf.Approximately(float, float) 的参数、作为 Mathf.MoveTowards(float, float, float) 的参数 等共 5 处。</summary>
+    /// <summary>目标小刀模式。</summary>
     private float targetKnifeMode;
-    /// <summary>中文含义：是否混合小刀模式。使用位置：LeonAnimatorDriver.SetKnifeMode(bool)、LeonAnimatorDriver.SetKnifeModeImmediate(bool)、LeonAnimatorDriver.UpdateKnifeModeBlend()。</summary>
+    /// <summary>是否混合小刀模式。</summary>
     private bool blendKnifeMode;
-    /// <summary>中文含义：当前武器类型。使用位置：作为 LeonAnimatorDriver.IsLongGun(WeaponType) 的参数、LeonAnimatorDriver.InitializeAnimatorContract(WeaponType)、LeonAnimatorDriver.ResolvePresentationMode() 等共 5 处。</summary>
+    /// <summary>当前武器类型。</summary>
     private WeaponType currentWeaponType = WeaponType.Pistol;
-    /// <summary>中文含义：是否正在蹲伏。使用位置：LeonAnimatorDriver.CommitInjuredWeaponSwitchPresentation(WeaponType)、LeonAnimatorDriver.EnterDeath()、LeonAnimatorDriver.InitializeAnimatorContract(WeaponType) 等共 9 处。</summary>
+    /// <summary>是否正在蹲伏。</summary>
     private bool isCrouching;
-    /// <summary>中文含义：长枪蹲伏图层退出是否仍待处理。使用位置：LeonAnimatorDriver.EnterDeath()、LeonAnimatorDriver.InitializeAnimatorContract(WeaponType)、LeonAnimatorDriver.SetCrouching(bool) 等共 6 处。</summary>
+    /// <summary>长枪蹲伏图层退出是否仍待处理。</summary>
     private bool longGunCrouchLayerExitPending;
-    /// <summary>中文含义：长枪蹲伏动画图层权重。使用位置：作为 Animator.SetLayerWeight(int, float) 的参数、作为 Mathf.Approximately(float, float) 的参数、LeonAnimatorDriver.BlendLongGunCrouchLayerTo(float) 等共 5 处。</summary>
+    /// <summary>长枪蹲伏动画图层权重。</summary>
     private float longGunCrouchLayerWeight;
-    /// <summary>中文含义：长枪蹲伏图层混合开始时刻。使用位置：作为 Mathf.Lerp(float, float, float) 的参数、LeonAnimatorDriver.BlendLongGunCrouchLayerTo(float)、LeonAnimatorDriver.InitializeAnimatorContract(WeaponType)。</summary>
+    /// <summary>长枪蹲伏图层混合开始时刻。</summary>
     private float longGunCrouchLayerBlendStart;
-    /// <summary>中文含义：长枪蹲伏图层目标。使用位置：作为 Animator.SetLayerWeight(int, float) 的参数、作为 Mathf.Approximately(float, float) 的参数、作为 Mathf.Lerp(float, float, float) 的参数 等共 5 处。</summary>
+    /// <summary>长枪蹲伏图层目标。</summary>
     private float longGunCrouchLayerTarget;
-    /// <summary>中文含义：长枪蹲伏图层混合已用。使用位置：作为 Mathf.Min(float, float) 的参数、作为 Mathf.SmoothStep(float, float, float) 的参数、LeonAnimatorDriver.BlendLongGunCrouchLayerTo(float) 等共 5 处。</summary>
+    /// <summary>长枪蹲伏图层混合已用。</summary>
     private float longGunCrouchLayerBlendElapsed;
-    /// <summary>中文含义：是否混合长枪蹲伏图层。使用位置：LeonAnimatorDriver.BlendLongGunCrouchLayerTo(float)、LeonAnimatorDriver.InitializeAnimatorContract(WeaponType)、LeonAnimatorDriver.UpdateLongGunCrouchLayerBlend()。</summary>
+    /// <summary>是否混合长枪蹲伏图层。</summary>
     private bool blendLongGunCrouchLayer;
-    /// <summary>中文含义：动画控制器。使用位置：LeonAnimationActionCoordinator.ValidateDriver()、LeonCombat.ParryHitStopRoutine(VillagerController, bool)。</summary>
+    /// <summary>动画控制器。</summary>
     public Animator Animator => animator;
-    /// <summary>中文含义：是否有效。使用位置：LeonAnimatorDriver.AdvanceFullBodyAction(FullBodyActionType, float, float)、LeonAnimatorDriver.BeginFullBodyAction(FullBodyActionType)、LeonAnimatorDriver.BeginHit(LeonHitDirection) 等共 15 处。</summary>
+    /// <summary>是否有效。</summary>
     public bool IsValid => validationPerformed && validationResult;
 
     /// <summary>中文含义：是否全身图层退出完成。</summary>
@@ -420,6 +456,7 @@ public partial class LeonAnimatorDriver : MonoBehaviour
         knifeModule = GetComponent<KnifeCombatModule>();
         ownerController = GetComponent<LeonController>();
         knifeVisuals = GetComponent<LeonWeaponVisualController>();
+        inputBridge = GetComponent<LeonInputBridge>();
         if (animator == null)
         {
             animator = GetComponent<Animator>();
@@ -442,7 +479,7 @@ public partial class LeonAnimatorDriver : MonoBehaviour
     /// 在写任何参数前先验证。
     /// </summary>
     /// <remarks>静态调用链：上游 LeonController.InitPipeline()；下游（含内部回调体） Animator.ResetTrigger(int)、Animator.SetBool(int, bool)、Animator.SetFloat(int, float)、Animator.SetInteger(int, int)、Animator.SetLayerWeight(int, float)、LeonAnimatorDriver.ResetInjuredLayerState()、LeonAnimatorDriver.SetKnifeModeImmediate(bool) 等共 9 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="initialWeaponType">中文含义：初始武器类型。使用位置：作为 LeonAnimatorDriver.SetKnifeModeImmediate(bool) 的参数、作为 LeonAnimatorDriver.SetWeaponType(WeaponType) 的参数、LeonAnimatorDriver.InitializeAnimatorContract(WeaponType)。</param>
+    /// <param name="initialWeaponType">初始武器类型。</param>
     public bool InitializeAnimatorContract(WeaponType initialWeaponType)
     {
         if (animator == null)
@@ -519,6 +556,22 @@ public partial class LeonAnimatorDriver : MonoBehaviour
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） KnifePoseSampler.RestoreUnderlyingPose()、LeonAnimatorDriver.UpdateFullBodyLayerWeight()、LeonAnimatorDriver.UpdateInjuredLayerWeight()、LeonAnimatorDriver.UpdateInjuredLowerLayerWeight()、LeonAnimatorDriver.UpdateKnifeModeBlend()、LeonAnimatorDriver.UpdateLongGunCrouchLayerBlend()、LeonAnimatorDriver.UpdateLongGunCrouchLayerExit() 等共 8 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     void Update()
     {
+        if (itemPickup == null)
+        {
+            TryGetComponent(out itemPickup);
+        }
+        if (itemPickup != null)
+        {
+            itemPickup.RestoreBoneOverridesBeforeDriver();
+        }
+        if (animRig == null)
+        {
+            TryGetComponent(out animRig);
+        }
+        if (animRig != null)
+        {
+            animRig.RestoreNativePresentationOffsets();
+        }
         if (knifePoseSampler != null)
         {
             knifePoseSampler.RestoreUnderlyingPose();
@@ -551,7 +604,7 @@ public partial class LeonAnimatorDriver : MonoBehaviour
             return;
         }
 
-        // duration（持续时间）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.MoveTowards(float, float, float) 的参数。
+        // 持续时间。
 float duration = Mathf.Max(0.01f, knifeModeBlendDuration);
         currentKnifeMode = Mathf.MoveTowards(currentKnifeMode, targetKnifeMode, Time.deltaTime / duration);
         animator.SetFloat(HashKnifeMode, Mathf.SmoothStep(0f, 1f, currentKnifeMode));
@@ -561,11 +614,11 @@ float duration = Mathf.Max(0.01f, knifeModeBlendDuration);
         }
     }
 
-    /// <summary>中文含义：武器动作图层混合开始时刻权重。使用位置：作为 Mathf.Lerp(float, float, float) 的参数、LeonAnimatorDriver.BlendWeaponActionLayerTo(float)。</summary>
+    /// <summary>武器动作图层混合开始时刻权重。</summary>
     private float weaponActionLayerBlendStartWeight;
-    /// <summary>中文含义：武器动作图层混合已用。使用位置：作为 Mathf.Min(float, float) 的参数、作为 Mathf.SmoothStep(float, float, float) 的参数、LeonAnimatorDriver.BlendWeaponActionLayerTo(float) 等共 4 处。</summary>
+    /// <summary>武器动作图层混合已用。</summary>
     private float weaponActionLayerBlendElapsed;
-    /// <summary>中文含义：是否武器动作平滑退出。使用位置：LeonAnimatorDriver.BeginKnifePoseExit()、LeonAnimatorDriver.BlendWeaponActionLayerTo(float)、LeonAnimatorDriver.EnsureWeaponActionLayerFullWeight() 等共 5 处。</summary>
+    /// <summary>是否武器动作平滑退出。</summary>
     private bool weaponActionSmoothExit;
     /// <summary>UpdateWeaponActionLayerWeight 的业务处理入口；本方法直接依赖 Animator.SetLayerWeight(int, float)、Mathf.Approximately(float, float)、Mathf.Lerp(float, float, float)、Mathf.Max(float, float)、Mathf.Min(float, float)、Mathf.MoveTowards(float, float, float)、Mathf.SmoothStep(float, float, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonAnimatorDriver.Update()；下游（含内部回调体） Animator.SetLayerWeight(int, float)、Mathf.Approximately(float, float)、Mathf.Lerp(float, float, float)、Mathf.Max(float, float)、Mathf.Min(float, float)、Mathf.MoveTowards(float, float, float)、Mathf.SmoothStep(float, float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
@@ -581,7 +634,7 @@ float duration = Mathf.Max(0.01f, knifeModeBlendDuration);
         {
             // Equip 退出后的淡出使用保存起点、目标、经过时间的 SmoothStep 平滑曲线，
             // 保证从 Equip 到最终姿态只有一次连续交接。
-            // smoothExitDuration（平滑退出持续时间）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Min(float, float) 的参数、作为 Mathf.SmoothStep(float, float, float) 的参数、LeonAnimatorDriver.UpdateWeaponActionLayerWeight()。
+            // 平滑退出持续时间。
             float smoothExitDuration = Mathf.Max(0.01f, weaponActionLayerSmoothExitDuration);
             if (nativeAction)
             {
@@ -592,7 +645,7 @@ float duration = Mathf.Max(0.01f, knifeModeBlendDuration);
                 }
             }
             weaponActionLayerBlendElapsed = Mathf.Min(weaponActionLayerBlendElapsed + Time.deltaTime, smoothExitDuration);
-            // progress（进度）：保存 Mathf.SmoothStep(float, float, float) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Lerp(float, float, float) 的参数。
+            // 进度。
 float progress = Mathf.SmoothStep(0f, 1f, weaponActionLayerBlendElapsed / smoothExitDuration);
             weaponActionLayerWeight = Mathf.Lerp(weaponActionLayerBlendStartWeight, targetWeaponActionLayerWeight, progress);
             animator.SetLayerWeight(LayerWeaponAction, weaponActionLayerWeight);
@@ -610,7 +663,7 @@ float progress = Mathf.SmoothStep(0f, 1f, weaponActionLayerBlendElapsed / smooth
             return;
         }
 
-        // linearDuration（线性持续时间）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.MoveTowards(float, float, float) 的参数。
+        // 线性持续时间。
 float linearDuration = Mathf.Max(0.01f, weaponActionLayerBlendDuration);
         weaponActionLayerWeight = Mathf.MoveTowards(weaponActionLayerWeight, targetWeaponActionLayerWeight, Time.deltaTime / linearDuration);
         animator.SetLayerWeight(LayerWeaponAction, weaponActionLayerWeight);
@@ -649,8 +702,8 @@ float linearDuration = Mathf.Max(0.01f, weaponActionLayerBlendDuration);
     /// 请求受伤状态切换。延迟请求只记录逻辑目标，等待受击恢复阶段消费。
     /// </summary>
     /// <remarks>静态调用链：上游 LeonController.ApplyDamage(float, Vector3, LeonHitDirection)、LeonController.HandleDeferredTraversalHit(LeonHitDirection)、LeonController.HandleHealthChanged(float, float)；下游（含内部回调体） LeonAnimatorDriver.ApplyPresentationMode(float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="injured">中文含义：是否受伤。使用位置：LeonAnimatorDriver.RequestInjuredState(bool, bool)。</param>
-    /// <param name="deferUntilHitRecovery">中文含义：是否延后直到命中恢复。使用位置：LeonAnimatorDriver.RequestInjuredState(bool, bool)。</param>
+    /// <param name="injured">是否受伤。</param>
+    /// <param name="deferUntilHitRecovery">是否延后直到命中恢复。</param>
     public void RequestInjuredState(bool injured, bool deferUntilHitRecovery)
     {
         injuredLayerActive = injured;
@@ -662,7 +715,7 @@ float linearDuration = Mathf.Max(0.01f, weaponActionLayerBlendDuration);
         }
 
         hasPendingInjuredTarget = false;
-        // selectedValue1（分支选出的受伤图层进入持续时间）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：作为 LeonAnimatorDriver.ApplyPresentationMode(float) 的参数、LeonAnimatorDriver.RequestInjuredState(bool, bool)。
+        // 分支选出的受伤图层进入持续时间。
 float selectedValue1;
         if (injuredLayerActive)
         {
@@ -688,7 +741,7 @@ float selectedValue1;
         }
 
         hasPendingInjuredTarget = false;
-        // selectedValue2（分支选出的受伤命中恢复进入持续时间）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：作为 LeonAnimatorDriver.ApplyPresentationMode(float) 的参数、LeonAnimatorDriver.BeginPendingInjuredTransition()。
+        // 分支选出的受伤命中恢复进入持续时间。
 float selectedValue2;
         if (injuredLayerActive)
         {
@@ -722,7 +775,7 @@ float selectedValue2;
     /// Holster 播放期间保持旧模式。
     /// </summary>
     /// <remarks>静态调用链：上游 LeonAnimationActionCoordinator.RequestWeaponSwitch(WeaponType, WeaponType)；下游（含内部回调体） LeonAnimatorDriver.ResolveModeForWeapon(WeaponType)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="target">中文含义：目标武器类别。使用位置：作为 LeonAnimatorDriver.ResolveModeForWeapon(WeaponType) 的参数。</param>
+    /// <param name="target">目标武器类别。</param>
     public void PrepareInjuredWeaponSwitch(WeaponType target)
     {
         if (!injuredLayerActive || isCrouching)
@@ -737,7 +790,7 @@ float selectedValue2;
 
     /// <summary>ResolveModeForWeapon 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
     /// <remarks>静态调用链：上游 LeonAnimatorDriver.CommitInjuredWeaponSwitchPresentation(WeaponType)、LeonAnimatorDriver.PrepareInjuredWeaponSwitch(WeaponType)；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="weapon">中文含义：当前武器类别。使用位置：LeonAnimatorDriver.ResolveModeForWeapon(WeaponType)。</param>
+    /// <param name="weapon">当前武器类别。</param>
     private InjuredPresentationMode ResolveModeForWeapon(WeaponType weapon)
     {
         if (weapon == WeaponType.Rifle || weapon == WeaponType.Shotgun)
@@ -764,7 +817,7 @@ float selectedValue2;
     /// 避免单手全身姿态和双手下身姿态在同一帧硬切。
     /// </summary>
     /// <remarks>静态调用链：上游 LeonAnimationActionCoordinator.ContinueEquipAfterKnifeHide(int)、LeonAnimationActionCoordinator.ContinueEquipAfterWeaponCommit(int)、LeonAnimationActionCoordinator.ContinueKnifeTakeAfterWeaponCommit(int)；下游（含内部回调体） LeonAnimatorDriver.ResolveModeForWeapon(WeaponType)、LeonAnimatorDriver.SetInjuredLayersImmediate(float, float)、LeonAnimatorDriver.StartInjuredBlendsForMode(InjuredPresentationMode, float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="target">中文含义：目标武器类别。使用位置：作为 LeonAnimatorDriver.ResolveModeForWeapon(WeaponType) 的参数。</param>
+    /// <param name="target">目标武器类别。</param>
     public void CommitInjuredWeaponSwitchPresentation(WeaponType target)
     {
         if (!injuredLayerActive)
@@ -802,7 +855,7 @@ float selectedValue2;
     /// 两个受伤层同步同一状态机与归一化时间，腿部保持同一姿势。
     /// </summary>
     /// <remarks>静态调用链：上游 LeonAnimatorDriver.SetAimState(bool)；下游（含内部回调体） LeonAnimatorDriver.ResolvePresentationMode()、LeonAnimatorDriver.StartInjuredBlendsForMode(InjuredPresentationMode, float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="aiming">中文含义：是否瞄准中。使用位置：LeonAnimatorDriver.RefreshInjuredPresentationForAim(bool)。</param>
+    /// <param name="aiming">是否瞄准中。</param>
     public void RefreshInjuredPresentationForAim(bool aiming)
     {
         if (!injuredLayerActive || isCrouching)
@@ -810,7 +863,7 @@ float selectedValue2;
             return;
         }
 
-        // target（目标受伤表现模式）：保存 LeonAnimatorDriver.ResolvePresentationMode() 的返回结果，供当前步骤使用。使用位置：作为 LeonAnimatorDriver.StartInjuredBlendsForMode(InjuredPresentationMode, float, float) 的参数、LeonAnimatorDriver.RefreshInjuredPresentationForAim(bool)。
+        // 目标受伤表现模式。
 InjuredPresentationMode target = ResolvePresentationMode();
         if (target == injuredPresentation)
         {
@@ -818,7 +871,7 @@ InjuredPresentationMode target = ResolvePresentationMode();
         }
 
         injuredPresentation = target;
-        // swapDuration（交换持续时间）：使用位置：作为 LeonAnimatorDriver.StartInjuredBlendsForMode(InjuredPresentationMode, float, float) 的参数、LeonAnimatorDriver.RefreshInjuredPresentationForAim(bool)。
+        // 交换持续时间。
 float swapDuration;
         if (aiming)
         {
@@ -838,7 +891,7 @@ float swapDuration;
     /// <remarks>静态调用链：上游 LeonAnimatorDriver.SetCrouching(bool)；下游（含内部回调体） LeonAnimatorDriver.ApplyPresentationMode(float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     public void ResetInjuredPresentation()
     {
-        // selectedValue6（分支选出的受伤图层进入持续时间）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：作为 LeonAnimatorDriver.ApplyPresentationMode(float) 的参数、LeonAnimatorDriver.ResetInjuredPresentation()。
+        // 分支选出的受伤图层进入持续时间。
 float selectedValue6;
         if (injuredLayerActive)
         {
@@ -854,7 +907,7 @@ float selectedValue6;
 
     /// <summary>ApplyPresentationMode 的业务处理入口；本方法直接依赖 LeonAnimatorDriver.ResolvePresentationMode()、LeonAnimatorDriver.StartInjuredBlendsForMode(InjuredPresentationMode, float, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonAnimatorDriver.BeginPendingInjuredTransition()、LeonAnimatorDriver.RequestInjuredState(bool, bool)、LeonAnimatorDriver.ResetInjuredPresentation()；下游（含内部回调体） LeonAnimatorDriver.ResolvePresentationMode()、LeonAnimatorDriver.StartInjuredBlendsForMode(InjuredPresentationMode, float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="duration">中文含义：持续时间。使用位置：作为 LeonAnimatorDriver.StartInjuredBlendsForMode(InjuredPresentationMode, float, float) 的参数。</param>
+    /// <param name="duration">持续时间。</param>
     private void ApplyPresentationMode(float duration)
     {
         if (animator == null)
@@ -862,7 +915,7 @@ float selectedValue6;
             return;
         }
 
-        // target（目标受伤表现模式）：保存 LeonAnimatorDriver.ResolvePresentationMode() 的返回结果，供当前步骤使用。使用位置：作为 LeonAnimatorDriver.StartInjuredBlendsForMode(InjuredPresentationMode, float, float) 的参数、LeonAnimatorDriver.ApplyPresentationMode(float)。
+        // 目标受伤表现模式。
 InjuredPresentationMode target = ResolvePresentationMode();
         injuredPresentation = target;
         StartInjuredBlendsForMode(target, duration, duration);
@@ -870,14 +923,14 @@ InjuredPresentationMode target = ResolvePresentationMode();
 
     /// <summary>StartInjuredBlendsForMode 的业务处理入口；本方法直接依赖 LeonAnimatorDriver.ResolveLayerWeightsForMode(InjuredPresentationMode, out float, out float)、LeonAnimatorDriver.StartInjuredLowerBlend(float, float)、LeonAnimatorDriver.StartInjuredMoveBlend(float, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonAnimatorDriver.ApplyPresentationMode(float)、LeonAnimatorDriver.CommitInjuredWeaponSwitchPresentation(WeaponType)、LeonAnimatorDriver.RefreshInjuredPresentationForAim(bool)；下游（含内部回调体） LeonAnimatorDriver.ResolveLayerWeightsForMode(InjuredPresentationMode, out float, out float)、LeonAnimatorDriver.StartInjuredLowerBlend(float, float)、LeonAnimatorDriver.StartInjuredMoveBlend(float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="mode">中文含义：当前受伤表现模式。使用位置：作为 LeonAnimatorDriver.ResolveLayerWeightsForMode(InjuredPresentationMode, out float, out float) 的参数。</param>
-    /// <param name="moveDuration">中文含义：移动持续时间。使用位置：作为 LeonAnimatorDriver.StartInjuredMoveBlend(float, float) 的参数。</param>
-    /// <param name="lowerDuration">中文含义：下部持续时间。使用位置：作为 LeonAnimatorDriver.StartInjuredLowerBlend(float, float) 的参数。</param>
+    /// <param name="mode">当前受伤表现模式。</param>
+    /// <param name="moveDuration">移动持续时间。</param>
+    /// <param name="lowerDuration">下部持续时间。</param>
     private void StartInjuredBlendsForMode(InjuredPresentationMode mode, float moveDuration, float lowerDuration)
     {
-        // moveTarget（移动目标）：使用位置：作为 LeonAnimatorDriver.ResolveLayerWeightsForMode(InjuredPresentationMode, out float, out float) 的参数、作为 LeonAnimatorDriver.StartInjuredMoveBlend(float, float) 的参数。
+        // 移动目标。
 float moveTarget;
-        // lowerTarget（下部目标）：使用位置：作为 LeonAnimatorDriver.ResolveLayerWeightsForMode(InjuredPresentationMode, out float, out float) 的参数、作为 LeonAnimatorDriver.StartInjuredLowerBlend(float, float) 的参数。
+        // 下部目标。
 float lowerTarget;
         ResolveLayerWeightsForMode(mode, out moveTarget, out lowerTarget);
         if (nativeInjuryPoseActive)
@@ -894,9 +947,9 @@ float lowerTarget;
     /// 单手全身层与双手下身层保持互斥。
     /// </summary>
     /// <remarks>静态调用链：上游 LeonAnimatorDriver.StartInjuredBlendsForMode(InjuredPresentationMode, float, float)；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="mode">中文含义：当前受伤表现模式。使用位置：LeonAnimatorDriver.ResolveLayerWeightsForMode(InjuredPresentationMode, out float, out float)。</param>
-    /// <param name="moveTarget">中文含义：移动目标。输出参数，由本入口写入并交给调用方。使用位置：LeonAnimatorDriver.ResolveLayerWeightsForMode(InjuredPresentationMode, out float, out float)。</param>
-    /// <param name="lowerTarget">中文含义：下部目标。输出参数，由本入口写入并交给调用方。使用位置：LeonAnimatorDriver.ResolveLayerWeightsForMode(InjuredPresentationMode, out float, out float)。</param>
+    /// <param name="mode">当前受伤表现模式。</param>
+    /// <param name="moveTarget">移动目标。输出参数，由本入口写入并交给调用方。</param>
+    /// <param name="lowerTarget">下部目标。输出参数，由本入口写入并交给调用方。</param>
     private static void ResolveLayerWeightsForMode(InjuredPresentationMode mode, out float moveTarget, out float lowerTarget)
     {
         switch (mode)
@@ -920,8 +973,8 @@ float lowerTarget;
 
     /// <summary>StartInjuredMoveBlend 的业务处理入口；本方法直接依赖 Animator.GetLayerWeight(int)、Mathf.Approximately(float, float)、Mathf.Max(float, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonAnimatorDriver.StartInjuredBlendsForMode(InjuredPresentationMode, float, float)；下游（含内部回调体） Animator.GetLayerWeight(int)、Mathf.Approximately(float, float)、Mathf.Max(float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="target">中文含义：目标。使用位置：作为 Mathf.Approximately(float, float) 的参数、LeonAnimatorDriver.StartInjuredMoveBlend(float, float)。</param>
-    /// <param name="duration">中文含义：持续时间。使用位置：作为 Mathf.Max(float, float) 的参数。</param>
+    /// <param name="target">目标。</param>
+    /// <param name="duration">持续时间。</param>
     private void StartInjuredMoveBlend(float target, float duration)
     {
         // 正在向同一目标混合时保持现有进度，避免重复受击时重置权重
@@ -945,8 +998,8 @@ float lowerTarget;
 
     /// <summary>StartInjuredLowerBlend 的业务处理入口；本方法直接依赖 Animator.GetLayerWeight(int)、Mathf.Approximately(float, float)、Mathf.Max(float, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonAnimatorDriver.StartInjuredBlendsForMode(InjuredPresentationMode, float, float)；下游（含内部回调体） Animator.GetLayerWeight(int)、Mathf.Approximately(float, float)、Mathf.Max(float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="target">中文含义：目标。使用位置：作为 Mathf.Approximately(float, float) 的参数、LeonAnimatorDriver.StartInjuredLowerBlend(float, float)。</param>
-    /// <param name="duration">中文含义：持续时间。使用位置：作为 Mathf.Max(float, float) 的参数。</param>
+    /// <param name="target">目标。</param>
+    /// <param name="duration">持续时间。</param>
     private void StartInjuredLowerBlend(float target, float duration)
     {
         if (blendInjuredLowerLayer && Mathf.Approximately(injuredLowerTarget, target))
@@ -977,7 +1030,7 @@ float lowerTarget;
         }
 
         injuredLayerBlendElapsed = Mathf.Min(injuredLayerBlendElapsed + Time.deltaTime, injuredLayerBlendDuration);
-        // progress（进度）：使用位置：作为 Mathf.Lerp(float, float, float) 的参数。
+        // 进度。
 float progress = injuredLayerBlendElapsed / injuredLayerBlendDuration;
         injuredLayerWeight = Mathf.Lerp(injuredLayerBlendStart, injuredLayerTarget, progress);
         animator.SetLayerWeight(LayerInjured, injuredLayerWeight);
@@ -998,7 +1051,7 @@ float progress = injuredLayerBlendElapsed / injuredLayerBlendDuration;
         }
 
         injuredLowerBlendElapsed = Mathf.Min(injuredLowerBlendElapsed + Time.deltaTime, injuredLowerBlendDuration);
-        // progress（进度）：使用位置：作为 Mathf.Lerp(float, float, float) 的参数。
+        // 进度。
 float progress = injuredLowerBlendElapsed / injuredLowerBlendDuration;
         injuredLowerLayerWeight = Mathf.Lerp(injuredLowerBlendStart, injuredLowerTarget, progress);
         animator.SetLayerWeight(LayerInjuredLowerBody, injuredLowerLayerWeight);
@@ -1013,8 +1066,8 @@ float progress = injuredLowerBlendElapsed / injuredLowerBlendDuration;
     /// 同帧立即写入两个受伤层权重（仅切枪提交与死亡/初始化使用）。
     /// </summary>
     /// <remarks>静态调用链：上游 LeonAnimatorDriver.CommitInjuredWeaponSwitchPresentation(WeaponType)、LeonAnimatorDriver.ResetInjuredLayerState()；下游（含内部回调体） Animator.SetLayerWeight(int, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="moveWeight">中文含义：移动权重。使用位置：作为 Animator.SetLayerWeight(int, float) 的参数、LeonAnimatorDriver.SetInjuredLayersImmediate(float, float)。</param>
-    /// <param name="lowerWeight">中文含义：下部权重。使用位置：作为 Animator.SetLayerWeight(int, float) 的参数、LeonAnimatorDriver.SetInjuredLayersImmediate(float, float)。</param>
+    /// <param name="moveWeight">移动权重。</param>
+    /// <param name="lowerWeight">下部权重。</param>
     private void SetInjuredLayersImmediate(float moveWeight, float lowerWeight)
     {
         blendInjuredLayer = false;
@@ -1055,7 +1108,7 @@ float progress = injuredLowerBlendElapsed / injuredLowerBlendDuration;
                 return;
             }
 
-            // state（当前动画状态信息）：保存 Animator.GetCurrentAnimatorStateInfo(int) 的返回结果，供当前步骤使用。使用位置：LeonAnimatorDriver.UpdateFullBodyLayerWeight()。
+            // 当前动画状态信息。
 AnimatorStateInfo state = animator.GetCurrentAnimatorStateInfo(LayerFullBodyAction);
             if (state.shortNameHash != pendingFullBodyStateHash)
             {
@@ -1077,9 +1130,9 @@ AnimatorStateInfo state = animator.GetCurrentAnimatorStateInfo(LayerFullBodyActi
             return;
         }
 
-        // argumentValue9（按原顺序缓存的实参0.01f）：从0.01f读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 Mathf.Max(float, float) 的参数。
+        // 按原顺序缓存的实参0.01f。
 float argumentValue9 = 0.01f;
-        // selectedValue8（分支选出的配对动作全身图层退出混合时长）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：作为 Mathf.Max(float, float) 的参数、LeonAnimatorDriver.UpdateFullBodyLayerWeight()。
+        // 分支选出的配对动作全身图层退出混合时长。
 float selectedValue8;
         if (blendingQTEFullBodyExit)
         {
@@ -1090,7 +1143,7 @@ float selectedValue8;
             }
             else if (activeFullBodyAction == FullBodyActionType.ItemPickup)
             {
-                selectedValue8 = .22f;
+                selectedValue8 = 0.20f;
             }
         }
         else if (blendingFullBodyLayerEntry && MeleeActionKinds.IsWoodenBox(activeFullBodyAction))
@@ -1099,7 +1152,11 @@ float selectedValue8;
         }
         else if (blendingFullBodyLayerEntry && activeFullBodyAction == FullBodyActionType.ItemPickup)
         {
-            selectedValue8 = .14f;
+            selectedValue8 = 0.08f;
+        }
+        else if (blendingFullBodyLayerEntry && activeFullBodyAction == FullBodyActionType.WindowDropFall)
+        {
+            selectedValue8 = 0.06f;
         }
         else
         {
@@ -1113,7 +1170,7 @@ float selectedValue8;
             }
         }
 
-        // duration（持续时间）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.MoveTowards(float, float, float) 的参数。
+        // 持续时间。
 float duration = Mathf.Max(argumentValue9, selectedValue8);
         fullBodyLayerWeight = Mathf.MoveTowards(fullBodyLayerWeight, targetFullBodyLayerWeight, Time.deltaTime / duration);
         animator.SetLayerWeight(LayerFullBodyAction, fullBodyLayerWeight);
@@ -1140,12 +1197,13 @@ float duration = Mathf.Max(argumentValue9, selectedValue8);
         if (activeFullBodyAction == FullBodyActionType.ItemPickup)
         {
             activeFullBodyAction = FullBodyActionType.None;
+            pickupEarlyCancelExit = false;
         }
     }
 
     /// <summary>PrepareFullBodyLayerEntry 的业务处理入口；本方法直接依赖 Animator.Play(int, int, float)、Animator.SetLayerWeight(int, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonAnimatorDriver.BeginFullBodyAction(FullBodyActionType)、LeonAnimatorDriver.EnterDeath()；下游（含内部回调体） Animator.Play(int, int, float)、Animator.SetLayerWeight(int, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="stateHash">中文含义：状态哈希编号。使用位置：作为 Animator.Play(int, int, float) 的参数、LeonAnimatorDriver.PrepareFullBodyLayerEntry(int)。</param>
+    /// <param name="stateHash">状态哈希编号。</param>
     private void PrepareFullBodyLayerEntry(int stateHash, float normalizedStart = 0f)
     {
         waitingForFullBodyStateEntry = true;
@@ -1172,7 +1230,7 @@ float duration = Mathf.Max(argumentValue9, selectedValue8);
 
     /// <summary>BlendWeaponActionLayerTo 的业务处理入口；本方法直接依赖 Animator.GetLayerWeight(int)、Animator.SetLayerWeight(int, float)、Mathf.Clamp01(float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonAnimatorDriver.BeginFullBodyAction(FullBodyActionType)、LeonAnimatorDriver.BeginWeaponAction(WeaponActionType)、LeonAnimatorDriver.EndFullBodyAction()、LeonAnimatorDriver.FinalizeFullBodyActionLayer()、LeonAnimatorDriver.FinalizeWeaponActionLayer() 等共 6 处；下游（含内部回调体） Animator.GetLayerWeight(int)、Animator.SetLayerWeight(int, float)、Mathf.Clamp01(float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="targetWeight">中文含义：目标权重。使用位置：作为 Mathf.Clamp01(float) 的参数。</param>
+    /// <param name="targetWeight">目标权重。</param>
     private void BlendWeaponActionLayerTo(float targetWeight)
     {
         if (animator == null)
@@ -1216,7 +1274,7 @@ float duration = Mathf.Max(argumentValue9, selectedValue8);
             return;
         }
 
-        // weight（权重）：保存 Animator.GetLayerWeight(int) 的返回结果，供当前步骤使用。使用位置：LeonAnimatorDriver.EnsureWeaponActionLayerFullWeight()。
+        // 权重。
 float weight = animator.GetLayerWeight(LayerWeaponAction);
         if (weight >= 0.95f)
         {
@@ -1239,11 +1297,11 @@ float weight = animator.GetLayerWeight(LayerWeaponAction);
             return 1f;
         }
 
-        // state（当前动画状态信息）：保存 Animator.GetCurrentAnimatorStateInfo(int) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.InverseLerp(float, float, float) 的参数、LeonAnimatorDriver.ReadStartStepDisplacementRatio()。
+        // 当前动画状态信息。
 var state = animator.GetCurrentAnimatorStateInfo(LayerBase);
         if (animator.IsInTransition(LayerBase))
         {
-            // lowerOneState（下部第一状态）：保存 Animator.GetNextAnimatorStateInfo(int) 的返回结果，供当前步骤使用。使用位置：LeonAnimatorDriver.ReadStartStepDisplacementRatio()。
+            // 下部第一状态。
 var lowerOneState = animator.GetNextAnimatorStateInfo(LayerBase);
             if (lowerOneState.shortNameHash == startStepState)
             {
@@ -1267,10 +1325,10 @@ var lowerOneState = animator.GetNextAnimatorStateInfo(LayerBase);
 
     /// <summary>SetMovement 的业务处理入口；本方法直接依赖 Animator.SetBool(int, bool)、Animator.SetFloat(int, float)、LeonAnimatorDriver.CanWrite()、LeonAnimatorDriver.SnapToEightDirections(Vector2)、Vector2.Dot(Vector2, Vector2)、Vector2.Normalize()、Vector2.Vector2(float, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonLocomotion.DampToZero()、LeonLocomotion.HandleMovement()、LeonLocomotion.ResumeAfterQTESuccess()、LeonQTECoordinator.ReleasePlayer(int)；下游（含内部回调体） Animator.SetBool(int, bool)、Animator.SetFloat(int, float)、LeonAnimatorDriver.CanWrite()、LeonAnimatorDriver.SnapToEightDirections(Vector2)、Vector2.Dot(Vector2, Vector2)、Vector2.Normalize()、Vector2.Vector2(float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="horizontal">中文含义：水平。使用位置：作为 Animator.SetFloat(int, float) 的参数、作为 Vector2.Vector2(float, float) 的参数、LeonAnimatorDriver.SetMovement(float, float, float, bool)。</param>
-    /// <param name="vertical">中文含义：竖直。使用位置：作为 Animator.SetFloat(int, float) 的参数、作为 Vector2.Vector2(float, float) 的参数、LeonAnimatorDriver.SetMovement(float, float, float, bool)。</param>
-    /// <param name="magnitude">中文含义：长度。使用位置：作为 Animator.SetFloat(int, float) 的参数、LeonAnimatorDriver.SetMovement(float, float, float, bool)。</param>
-    /// <param name="sprint">中文含义：是否冲刺。使用位置：作为 Animator.SetBool(int, bool) 的参数。</param>
+    /// <param name="horizontal">水平。</param>
+    /// <param name="vertical">竖直。</param>
+    /// <param name="magnitude">长度。</param>
+    /// <param name="sprint">是否冲刺。</param>
     public void SetMovement(float horizontal, float vertical, float magnitude, bool sprint)
     {
         if (!CanWrite())
@@ -1288,18 +1346,18 @@ var lowerOneState = animator.GetNextAnimatorStateInfo(LayerBase);
             return;
         }
 
-        // animationDirection（动画方向）：使用位置：作为 LeonAnimatorDriver.SnapToEightDirections(Vector2) 的参数、作为 Vector2.Dot(Vector2, Vector2) 的参数、LeonAnimatorDriver.SetMovement(float, float, float, bool)。
+        // 动画方向。
 Vector2 animationDirection = new Vector2(horizontal, vertical);
         if (injuredLayerActive && !isCrouching && magnitude > 0.01f && animationDirection.sqrMagnitude > 0.0001f)
         {
             animationDirection.Normalize();
-            // candidate（候选）：保存 LeonAnimatorDriver.SnapToEightDirections(Vector2) 的返回结果，供当前步骤使用。使用位置：作为 Vector2.Dot(Vector2, Vector2) 的参数、LeonAnimatorDriver.SetMovement(float, float, float, bool)。
+            // 候选。
 Vector2 candidate = SnapToEightDirections(animationDirection);
             if (hasInjuredSnappedDirection)
             {
-                // candidateDot（候选点积）：保存 Vector2.Dot(Vector2, Vector2) 的返回结果，供当前步骤使用。使用位置：LeonAnimatorDriver.SetMovement(float, float, float, bool)。
+                // 候选点积。
 float candidateDot = Vector2.Dot(animationDirection, candidate);
-                // currentDot（当前点积）：保存 Vector2.Dot(Vector2, Vector2) 的返回结果，供当前步骤使用。使用位置：LeonAnimatorDriver.SetMovement(float, float, float, bool)。
+                // 当前点积。
 float currentDot = Vector2.Dot(animationDirection, injuredSnappedDirection);
                 if (candidateDot - currentDot < injuredDirectionHysteresis)
                 {
@@ -1355,21 +1413,21 @@ float currentDot = Vector2.Dot(animationDirection, injuredSnappedDirection);
 
     /// <summary>SnapToEightDirections 的业务处理入口；本方法直接依赖 Mathf.Atan2(float, float)、Mathf.Cos(float)、Mathf.Round(float)、Mathf.Sin(float)、Vector2.Vector2(float, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonAnimatorDriver.SetMovement(float, float, float, bool)；下游（含内部回调体） Mathf.Atan2(float, float)、Mathf.Cos(float)、Mathf.Round(float)、Mathf.Sin(float)、Vector2.Vector2(float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="direction">中文含义：方向。使用位置：作为 Mathf.Atan2(float, float) 的参数。</param>
+    /// <param name="direction">方向。</param>
     private static Vector2 SnapToEightDirections(Vector2 direction)
     {
-        // sectorAngle（扇区角度）：使用位置：作为 Mathf.Round(float) 的参数、LeonAnimatorDriver.SnapToEightDirections(Vector2)。
+        // 扇区角度。
 float sectorAngle = Mathf.PI * 0.25f;
-        // angle（角度）：保存 Mathf.Atan2(float, float) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Round(float) 的参数。
+        // 角度。
 float angle = Mathf.Atan2(direction.x, direction.y);
-        // snappedAngle（吸附后的角度）：使用位置：作为 Mathf.Cos(float) 的参数、作为 Mathf.Sin(float) 的参数。
+        // 吸附后的角度。
 float snappedAngle = Mathf.Round(angle / sectorAngle) * sectorAngle;
         return new Vector2(Mathf.Sin(snappedAngle), Mathf.Cos(snappedAngle));
     }
 
     /// <summary>SetCrouching 的业务处理入口；本方法直接依赖 Animator.GetLayerWeight(int)、Animator.SetBool(int, bool)、LeonAnimatorDriver.BlendLongGunCrouchLayerTo(float)、LeonAnimatorDriver.CanWrite()、LeonAnimatorDriver.IsLongGun(WeaponType)、LeonAnimatorDriver.ResetInjuredPresentation()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonController.ApplyCrouchState(bool)、LeonController.InitPipeline()；下游（含内部回调体） Animator.GetLayerWeight(int)、Animator.SetBool(int, bool)、LeonAnimatorDriver.BlendLongGunCrouchLayerTo(float)、LeonAnimatorDriver.CanWrite()、LeonAnimatorDriver.IsLongGun(WeaponType)、LeonAnimatorDriver.ResetInjuredPresentation()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="crouching">中文含义：是否蹲伏中。使用位置：作为 Animator.SetBool(int, bool) 的参数、LeonAnimatorDriver.SetCrouching(bool)。</param>
+    /// <param name="crouching">是否蹲伏中。</param>
     public void SetCrouching(bool crouching)
     {
         if (!CanWrite())
@@ -1384,7 +1442,7 @@ float snappedAngle = Mathf.Round(angle / sectorAngle) * sectorAngle;
         if (crouching)
         {
             longGunCrouchLayerExitPending = false;
-            // selectedValue11（分支选出的1f）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：作为 LeonAnimatorDriver.BlendLongGunCrouchLayerTo(float) 的参数、LeonAnimatorDriver.SetCrouching(bool)。
+            // 分支选出的1f。
 float selectedValue11;
             if (IsLongGun(currentWeaponType) && !SupportsNativeLongGunCrouch)
             {
@@ -1410,8 +1468,8 @@ float selectedValue11;
 
     /// <summary>SetAimAngles 的业务处理入口；本方法直接依赖 Animator.SetFloat(int, float)、LeonAnimatorDriver.CanWrite()、Mathf.Clamp(float, float, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonController.SynchronizeEnterAimAngle()、LeonController.UpdateAnimatorParameters()；下游（含内部回调体） Animator.SetFloat(int, float)、LeonAnimatorDriver.CanWrite()、Mathf.Clamp(float, float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="horizontalAngle">中文含义：水平角度。使用位置：作为 Mathf.Clamp(float, float, float) 的参数。</param>
-    /// <param name="verticalAngle">中文含义：竖直角度。使用位置：作为 Mathf.Clamp(float, float, float) 的参数。</param>
+    /// <param name="horizontalAngle">水平角度。</param>
+    /// <param name="verticalAngle">竖直角度。</param>
     public void SetAimAngles(float horizontalAngle, float verticalAngle)
     {
         if (!CanWrite())
@@ -1425,7 +1483,7 @@ float selectedValue11;
 
     /// <summary>SetAimState 的业务处理入口；本方法直接依赖 Animator.HasState(int, int)、Animator.Play(int, int, float)、Animator.SetFloat(int, float)、LeonAnimatorDriver.CanWrite()、LeonAnimatorDriver.RefreshInjuredPresentationForAim(bool)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonCombat.ForceAimOff()、LeonCombat.HandleAim(bool)、LeonCombat.OnReloadAnimCompleted(AnimationActionTransaction)、LeonCombat.RestoreStateAfterWeaponAction()；下游（含内部回调体） Animator.HasState(int, int)、Animator.Play(int, int, float)、Animator.SetFloat(int, float)、LeonAnimatorDriver.CanWrite()、LeonAnimatorDriver.RefreshInjuredPresentationForAim(bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="aiming">中文含义：是否瞄准中。使用位置：作为 LeonAnimatorDriver.RefreshInjuredPresentationForAim(bool) 的参数、LeonAnimatorDriver.SetAimState(bool)。</param>
+    /// <param name="aiming">是否瞄准中。</param>
     public void SetAimState(bool aiming)
     {
         if (!CanWrite())
@@ -1433,11 +1491,11 @@ float selectedValue11;
             return;
         }
 
-        // callReceiver14（调用前缓存的动画控制器）：从动画控制器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：LeonAnimatorDriver.SetAimState(bool)。
+        // 调用前缓存的动画控制器。
 global::UnityEngine.Animator callReceiver14 = animator;
         // argumentValue13（按原顺序缓存的实参瞄准的哈希编号（动画参数或状态路径的哈希编号））：从瞄准的哈希编号读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 Animator.SetFloat(int, float) 的参数。
 int argumentValue13 = HashAim;
-        // selectedValue12（分支选出的1f）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：作为 Animator.SetFloat(int, float) 的参数、LeonAnimatorDriver.SetAimState(bool)。
+        // 分支选出的1f。
 float selectedValue12;
         if (aiming)
         {
@@ -1464,7 +1522,7 @@ float selectedValue12;
 
     /// <summary>SetAimLayerWeight 的业务处理入口；本方法直接依赖 Animator.SetLayerWeight(int, float)、LeonAnimatorDriver.CanWrite()、Mathf.Clamp01(float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonCombat.ForceAimOff()、LeonCombat.HandleAim(bool)、LeonCombat.OnReloadAnimCompleted(AnimationActionTransaction)、LeonCombat.Update()；下游（含内部回调体） Animator.SetLayerWeight(int, float)、LeonAnimatorDriver.CanWrite()、Mathf.Clamp01(float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="weight">中文含义：权重。使用位置：作为 Mathf.Clamp01(float) 的参数。</param>
+    /// <param name="weight">权重。</param>
     public void SetAimLayerWeight(float weight)
     {
         if (!CanWrite())
@@ -1487,7 +1545,7 @@ float selectedValue12;
     /// 该参数只在状态内部选择动画，不参与状态转换。
     /// </summary>
     /// <remarks>静态调用链：上游 LeonAnimationActionCoordinator.ContinueKnifeTakeAfterWeaponCommit(int)、LeonAnimationActionCoordinator.RequestWeaponSwitch(WeaponType, WeaponType)、LeonCombat.ApplyGuardPose()、LeonCombat.BeginTemporaryKnife()、LeonCombat.EndTemporaryKnife(bool) 等共 9 处；下游（含内部回调体） Animator.GetFloat(int)、Animator.SetFloat(int, float)、LeonAnimatorDriver.BlendLongGunCrouchLayerTo(float)、LeonAnimatorDriver.CanWrite()、Mathf.Approximately(float, float)、Mathf.Clamp01(float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="active">中文含义：是否生效。使用位置：LeonAnimatorDriver.SetKnifeMode(bool)。</param>
+    /// <param name="active">是否生效。</param>
     public void SetKnifeMode(bool active)
     {
         if (!CanWrite())
@@ -1521,7 +1579,7 @@ float selectedValue12;
 
     /// <summary>SetKnifeModeImmediate 的业务处理入口；本方法直接依赖 Animator.SetFloat(int, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonAnimatorDriver.InitializeAnimatorContract(WeaponType)；下游（含内部回调体） Animator.SetFloat(int, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="active">中文含义：是否生效。使用位置：LeonAnimatorDriver.SetKnifeModeImmediate(bool)。</param>
+    /// <param name="active">是否生效。</param>
     private void SetKnifeModeImmediate(bool active)
     {
         if (active)
@@ -1543,7 +1601,7 @@ float selectedValue12;
 
     /// <summary>SetTurnAngle 的业务处理入口；本方法直接依赖 Animator.SetFloat(int, float)、LeonAnimatorDriver.CanWrite()、Mathf.Clamp(float, float, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonLocomotion.ReleaseTurnAngle()、LeonLocomotion.ResetTurnAngle()、LeonLocomotion.UpdateTurnAngleFromCamera(Camera, bool, bool, bool, bool)；下游（含内部回调体） Animator.SetFloat(int, float)、LeonAnimatorDriver.CanWrite()、Mathf.Clamp(float, float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="angle">中文含义：角度。使用位置：作为 Mathf.Clamp(float, float, float) 的参数。</param>
+    /// <param name="angle">角度。</param>
     public void SetTurnAngle(float angle)
     {
         if (!CanWrite())
@@ -1573,7 +1631,7 @@ float selectedValue12;
 
     /// <summary>SetWeaponType 的业务处理入口；本方法直接依赖 Animator.SetFloat(int, float)、Debug.LogWarning(object)、LeonAnimatorDriver.BlendLongGunCrouchLayerTo(float)、LeonAnimatorDriver.CanWrite()、LeonAnimatorDriver.IsLongGun(WeaponType)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonAnimationActionCoordinator.ContinueEquipAfterKnifeHide(int)、LeonAnimationActionCoordinator.ContinueEquipAfterWeaponCommit(int)、LeonAnimatorDriver.InitializeAnimatorContract(WeaponType)、LeonAnimRig.ExitQTEIK(WeaponType)、LeonAnimRig.RestoreQTEWeaponTypeAfterFullBodyExit() 等共 10 处；下游（含内部回调体） Animator.SetFloat(int, float)、Debug.LogWarning(object)、LeonAnimatorDriver.BlendLongGunCrouchLayerTo(float)、LeonAnimatorDriver.CanWrite()、LeonAnimatorDriver.IsLongGun(WeaponType)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="type">中文含义：当前武器类别。使用位置：作为 Debug.LogWarning(object) 的参数、LeonAnimatorDriver.SetWeaponType(WeaponType)。</param>
+    /// <param name="type">当前武器类别。</param>
     public bool SetWeaponType(WeaponType type)
     {
         if (!CanWrite())
@@ -1581,7 +1639,7 @@ float selectedValue12;
             return false;
         }
 
-        // value（值）：使用位置：作为 Animator.SetFloat(int, float) 的参数、LeonAnimatorDriver.SetWeaponType(WeaponType)。
+        // 值。
 float value;
         switch (type)
         {
@@ -1611,7 +1669,7 @@ float value;
         else if (isCrouching)
         {
             longGunCrouchLayerExitPending = false;
-            // selectedValue17（分支选出的1f）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：作为 LeonAnimatorDriver.BlendLongGunCrouchLayerTo(float) 的参数、LeonAnimatorDriver.SetWeaponType(WeaponType)。
+            // 分支选出的1f。
 float selectedValue17;
             if (IsLongGun(currentWeaponType) && !SupportsNativeLongGunCrouch)
             {
@@ -1633,7 +1691,7 @@ float selectedValue17;
     /// 站立时保持零权重，避免空状态覆盖基础姿势。
     /// </summary>
     /// <remarks>静态调用链：上游 LeonAnimatorDriver.EnterDeath()、LeonAnimatorDriver.SetCrouching(bool)、LeonAnimatorDriver.SetKnifeMode(bool)、LeonAnimatorDriver.SetWeaponType(WeaponType)、LeonAnimatorDriver.UpdateLongGunCrouchLayerExit()；下游（含内部回调体） Animator.GetLayerWeight(int)、Animator.SetLayerWeight(int, float)、Mathf.Approximately(float, float)、Mathf.Clamp01(float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="targetWeight">中文含义：目标权重。使用位置：作为 Mathf.Clamp01(float) 的参数。</param>
+    /// <param name="targetWeight">目标权重。</param>
     private void BlendLongGunCrouchLayerTo(float targetWeight)
     {
         if (animator == null)
@@ -1661,10 +1719,10 @@ float selectedValue17;
             return;
         }
 
-        // duration（持续时间）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Min(float, float) 的参数、作为 Mathf.SmoothStep(float, float, float) 的参数、LeonAnimatorDriver.UpdateLongGunCrouchLayerBlend()。
+        // 持续时间。
         float duration = Mathf.Max(0.01f, longGunCrouchLayerBlendDuration);
         longGunCrouchLayerBlendElapsed = Mathf.Min(longGunCrouchLayerBlendElapsed + Time.deltaTime, duration);
-        // progress（进度）：保存 Mathf.SmoothStep(float, float, float) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Lerp(float, float, float) 的参数。
+        // 进度。
 float progress = Mathf.SmoothStep(0f, 1f, longGunCrouchLayerBlendElapsed / duration);
         longGunCrouchLayerWeight = Mathf.Lerp(longGunCrouchLayerBlendStart, longGunCrouchLayerTarget, progress);
         animator.SetLayerWeight(LayerRifleCrouch, longGunCrouchLayerWeight);
@@ -1683,7 +1741,7 @@ float progress = Mathf.SmoothStep(0f, 1f, longGunCrouchLayerBlendElapsed / durat
             return;
         }
 
-        // state（当前动画状态信息）：保存 Animator.GetCurrentAnimatorStateInfo(int) 的返回结果，供当前步骤使用。使用位置：LeonAnimatorDriver.UpdateLongGunCrouchLayerExit()。
+        // 当前动画状态信息。
 AnimatorStateInfo state = animator.GetCurrentAnimatorStateInfo(LayerRifleCrouch);
         if (animator.IsInTransition(LayerRifleCrouch) || state.shortNameHash != HashRifleCrouchEmpty)
         {
@@ -1696,7 +1754,7 @@ AnimatorStateInfo state = animator.GetCurrentAnimatorStateInfo(LayerRifleCrouch)
 
     /// <summary>IsLongGun 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
     /// <remarks>静态调用链：上游 LeonAnimatorDriver.SetCrouching(bool)、LeonAnimatorDriver.SetWeaponType(WeaponType)；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="type">中文含义：当前武器类别。使用位置：LeonAnimatorDriver.IsLongGun(WeaponType)。</param>
+    /// <param name="type">当前武器类别。</param>
     private static bool IsLongGun(WeaponType type)
     {
         return type == WeaponType.Rifle || type == WeaponType.Shotgun;
@@ -1704,7 +1762,7 @@ AnimatorStateInfo state = animator.GetCurrentAnimatorStateInfo(LayerRifleCrouch)
 
     /// <summary>BeginWeaponAction 的业务处理入口；本方法直接依赖 Animator.SetInteger(int, int)、LeonAnimatorDriver.BlendWeaponActionLayerTo(float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonAnimationActionCoordinator.ContinueKnifeTakeAfterWeaponCommit(int)、LeonAnimationActionCoordinator.RequestReload(WeaponType)、LeonAnimationActionCoordinator.RequestWeaponSwitch(WeaponType, WeaponType)；下游（含内部回调体） Animator.SetInteger(int, int)、LeonAnimatorDriver.BlendWeaponActionLayerTo(float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="actionType">中文含义：动作类型。使用位置：作为 Animator.SetInteger(int, int) 的参数、LeonAnimatorDriver.BeginWeaponAction(WeaponActionType)。</param>
+    /// <param name="actionType">动作类型。</param>
     public void BeginWeaponAction(WeaponActionType actionType)
     {
         if (animator == null || !IsValid)
@@ -1813,6 +1871,14 @@ AnimatorStateInfo state = animator.GetCurrentAnimatorStateInfo(LayerRifleCrouch)
                 motion.EndHitMotion();
                 motion.SynchronizeNormalMotionPermission(LeonState.Walking);
             }
+            if (inputBridge == null)
+            {
+                inputBridge = GetComponent<LeonInputBridge>();
+            }
+            if (inputBridge != null)
+            {
+                inputBridge.NotifyActionWindowOpened();
+            }
         }
 
         float lower = 1f - Mathf.SmoothStep(0f, 1f, (frame - 42f) / 8f);
@@ -1823,7 +1889,7 @@ AnimatorStateInfo state = animator.GetCurrentAnimatorStateInfo(LayerRifleCrouch)
 
     /// <summary>BeginHit 的业务处理入口；本方法直接依赖 Animator.SetFloat(int, float)、LeonAnimatorDriver.BeginFullBodyAction(FullBodyActionType)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonAnimationActionCoordinator.RequestHit(LeonHitDirection)；下游（含内部回调体） Animator.SetFloat(int, float)、LeonAnimatorDriver.BeginFullBodyAction(FullBodyActionType)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="hitDirection">中文含义：命中方向。使用位置：作为 Animator.SetFloat(int, float) 的参数。</param>
+    /// <param name="hitDirection">命中方向。</param>
     public void BeginHit(LeonHitDirection hitDirection)
     {
         if (animator == null || !IsValid)
@@ -1854,6 +1920,13 @@ AnimatorStateInfo state = animator.GetCurrentAnimatorStateInfo(LayerRifleCrouch)
     private bool nativeKnifeCarryActive;
     internal bool SupportsNativeKnifeCarry => IsValid && animator.HasState(LayerRifleCrouch, NativeKnifeCarryState);
     internal bool IsBlendingOutKnifePose => knifePoseExiting && !releasedThrustPose;
+    internal bool IsKnifePoseExiting
+    {
+        get
+        {
+            return knifePoseExiting;
+        }
+    }
 
     private void UpdateNativeKnifeCarry()
     {
@@ -1903,13 +1976,13 @@ AnimatorStateInfo state = animator.GetCurrentAnimatorStateInfo(LayerRifleCrouch)
         }
         legacyParrySpeed = 0f;
     }
-    /// <summary>中文含义：小刀暂停前方速度。使用位置：LeonAnimatorDriver.SetKnifeLocalHitStop(bool)。</summary>
+    /// <summary>小刀暂停前方速度。</summary>
     private float knifePauseFrontSpeed = 1f;
     /// <summary>PlayIndependentKnifeClip 的业务处理入口；本方法直接依赖 Animator.CrossFadeInFixedTime(int, float, int, float)、Animator.HasState(int, int)、Animator.SetInteger(int, int)、Animator.SetLayerWeight(int, float)、Animator.StringToHash(string)、KnifeCombatRules.IsReaction(KnifeAction)、KnifePoseSampler.BeginBlend(float, float) 等共 11 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonAnimationActionCoordinator.AdvanceIndependentKnifeTransaction(int, KnifeActionConfiguration, float, float)；下游（含内部回调体） Animator.CrossFadeInFixedTime(int, float, int, float)、Animator.HasState(int, int)、Animator.SetInteger(int, int)、Animator.SetLayerWeight(int, float)、Animator.StringToHash(string)、KnifeCombatRules.IsReaction(KnifeAction)、KnifePoseSampler.BeginBlend(float, float) 等共 11 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="clip">中文含义：动画片段。使用位置：作为 Animator.StringToHash(string) 的参数、作为 KnifeCombatRules.IsReaction(KnifeAction) 的参数、LeonAnimatorDriver.PlayIndependentKnifeClip(KnifeActionConfiguration, float, float)。</param>
-    /// <param name="blend">中文含义：混合。使用位置：作为 Mathf.Max(float, float) 的参数、LeonAnimatorDriver.PlayIndependentKnifeClip(KnifeActionConfiguration, float, float)。</param>
-    /// <param name="offset">中文含义：偏移量。使用位置：作为 Mathf.Max(float, float) 的参数。</param>
+    /// <param name="clip">动画片段。</param>
+    /// <param name="blend">混合。</param>
+    /// <param name="offset">偏移量。</param>
     public bool PlayIndependentKnifeClip(KnifeActionConfiguration clip, float blend, float offset)
     {
         if (animator == null || !IsValid || clip == null || clip.clip == null)
@@ -1917,7 +1990,7 @@ AnimatorStateInfo state = animator.GetCurrentAnimatorStateInfo(LayerRifleCrouch)
             return false;
         }
 
-        // state（状态）：保存 Animator.StringToHash(string) 的返回结果，供当前步骤使用。使用位置：作为 Animator.CrossFadeInFixedTime(int, float, int, float) 的参数、作为 Animator.HasState(int, int) 的参数。
+        // 状态。
 int state = Animator.StringToHash(clip.StatePath);
         if (!animator.HasState(LayerWeaponAction, state))
         {
@@ -1941,7 +2014,7 @@ int state = Animator.StringToHash(clip.StatePath);
                 knifePoseSampler = new KnifePoseSampler(knifeModule.configuration, animator);
             }
 
-            // poseBlend（姿态混合）：使用位置：作为 KnifePoseSampler.BeginBlend(float, float) 的参数、作为 Mathf.Max(float, float) 的参数、LeonAnimatorDriver.PlayIndependentKnifeClip(KnifeActionConfiguration, float, float)。
+            // 姿态混合。
             float poseBlend = blend;
             float elapsedBlend = 0f;
             if (GameArchitecture.KnifeCombatRules.IsReaction(clip.action))
@@ -1979,7 +2052,7 @@ int state = Animator.StringToHash(clip.StatePath);
 
     /// <summary>SetKnifeLocalHitStop 的业务处理入口；本方法直接依赖 Mathf.Approximately(float, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 KnifeCombatModule.Interrupt(bool)、KnifeCombatModule.ResolveIncomingAttack(KnifeIncomingAttackContext)、KnifeCombatModule.Update()、LeonAnimatorDriver.EndIndependentKnifeClip()、LeonAnimatorDriver.OnDisable()；下游（含内部回调体） Mathf.Approximately(float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="pause">中文含义：是否暂停。使用位置：LeonAnimatorDriver.SetKnifeLocalHitStop(bool)。</param>
+    /// <param name="pause">是否暂停。</param>
     public void SetKnifeLocalHitStop(bool pause)
     {
         if (animator == null || pause == independentKnifePause)
@@ -2056,6 +2129,15 @@ int state = Animator.StringToHash(clip.StatePath);
             knifeModule.ResolveIncomingContacts();
         }
 
+        if (itemPickup == null)
+        {
+            TryGetComponent(out itemPickup);
+        }
+        if (itemPickup != null)
+        {
+            itemPickup.RestoreBoneOverridesBeforeDriver();
+        }
+
         if (knifePoseActive && (knifeModule == null || !knifeModule.Active))
         {
             // 规则结束的同一帧就保住最后显示姿态，不能等接触结算后再启动过渡。
@@ -2064,22 +2146,22 @@ int state = Animator.StringToHash(clip.StatePath);
 
         if (knifePoseActive && knifeModule != null && knifeModule.Active)
         {
-            // action（动作）：保存 KnifeCombatConfiguration.Find(KnifeAction) 的返回结果，供当前步骤使用。使用位置：作为 KnifeCombatRules.IsReaction(KnifeAction) 的参数、作为 KnifePoseSampler.Sample(AnimationClip, float, int, float, float, bool) 的参数、LeonAnimatorDriver.LateUpdate()。
+            // 动作。
 KnifeActionConfiguration action = knifeModule.configuration.Find(knifeModule.CurrentAction);
             if (action != null && action.sourceClip != null && knifePoseSampler != null)
             {
-                // delta（增量）：使用位置：LeonAnimatorDriver.LateUpdate()。
+                // 增量。
 float delta = Time.deltaTime;
                 if (knifeModule.IsHitStop)
                 {
                     delta = 0;
                 }
 
-                // velocity（速度）：保存 Transform.InverseTransformDirection(Vector3) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Abs(float) 的参数、LeonAnimatorDriver.LateUpdate()。
+                // 速度。
 Vector3 velocity = transform.InverseTransformDirection(ownerController.HorizontalSpeed);
-                // mode（模式）：使用位置：作为 KnifePoseSampler.Sample(AnimationClip, float, int, float, float, bool) 的参数、LeonAnimatorDriver.LateUpdate()。
+                // 模式。
 int mode = 0;
-                // nominalSpeed（标称速度）：使用位置：LeonAnimatorDriver.LateUpdate()。
+                // 标称速度。
 float nominalSpeed = 1.83f;
                 if (!action.HasPlanarRoot && velocity.sqrMagnitude > .0025f)
                 {
@@ -2136,7 +2218,7 @@ float nominalSpeed = 1.83f;
                 }
 
                 knifeLocomotionTime += delta * velocity.magnitude / nominalSpeed;
-                // originalGrip（是否原始握持）：使用位置：作为 KnifePoseSampler.Sample(AnimationClip, float, int, float, float, bool) 的参数。
+                // 是否原始握持。
 bool originalGrip = action.action == GameArchitecture.KnifeAction.OutwardDeflectionNormal || action.action == GameArchitecture.KnifeAction.OutwardDeflectionPerfect;
                 AnimationClip source = action.sourceClip;
                 if (knifeModule.HasConfirmedThrustHit && action.confirmedHitClip != null)
@@ -2160,7 +2242,7 @@ bool originalGrip = action.action == GameArchitecture.KnifeAction.OutwardDeflect
                     guardTorsoLead = Mathf.Clamp(knifeModule.GuardEntryHeadingError * .24f, -24f, 24f) * movementWeight;
                 }
                 knifePoseSampler.Sample(source, sampleTime, mode, lowerBodyTime, movementWeight, originalGrip, guardTurn, guardTorsoLead);
-                // poseDelta（姿态增量）：使用位置：作为 KnifePoseSampler.Apply(float) 的参数、LeonAnimatorDriver.LateUpdate()。
+                // 姿态增量。
 float poseDelta = delta;
                 if (GameArchitecture.KnifeCombatRules.IsReaction(action.action))
                 {
@@ -2214,7 +2296,7 @@ float poseDelta = delta;
         {
             bool pickup = ownerController != null && ownerController.AnimCoordinator != null
                 && ownerController.AnimCoordinator.IsItemPickupActive;
-            // interrupted（是否已中断）：使用位置：LeonAnimatorDriver.LateUpdate()。
+            // 是否已中断。
 bool interrupted = ownerController == null || ownerController.currentState == LeonState.Dead || ownerController.currentState == LeonState.Staggered || ownerController.currentState == LeonState.QTE
                 || ownerController.currentState == LeonState.Traversing && !pickup;
             if (interrupted)
@@ -2228,12 +2310,12 @@ bool interrupted = ownerController == null || ownerController.currentState == Le
                 if (pickup || ownerController.AnimCoordinator.HasActiveFullBodyAction
                     || ownerController.AnimCoordinator.HasPendingWeaponSwitch)
                 {
-                    // 拾取伸手时从当前收势连续混合，避免骨盆先弹回步态再弯身。
+                    // 拾取伸手时从当前收势快速交接，避免过长刀姿覆盖吃掉伸手动作前段造成快进感。
                     releasedThrustPose = false;
                     float handoffDuration = .10f;
                     if (pickup)
                     {
-                        handoffDuration = .18f;
+                        handoffDuration = .06f;
                     }
                     knifePoseSampler.BeginBlend(handoffDuration, 0f);
                     knifePoseExiting = knifePoseSampler.ApplyExit(Time.deltaTime);
@@ -2345,7 +2427,7 @@ bool interrupted = ownerController == null || ownerController.currentState == Le
 
     /// <summary>BeginFullBodyAction 的业务处理入口；本方法直接依赖 Animator.GetLayerWeight(int)、Animator.SetInteger(int, int)、Animator.SetLayerWeight(int, float)、LeonAnimatorDriver.BlendWeaponActionLayerTo(float)、LeonAnimatorDriver.CancelPendingFullBodyLayerEntry()、LeonAnimatorDriver.PrepareFullBodyLayerEntry(int)、LeonAnimatorDriver.ShouldBlendFullBodyLayer(FullBodyActionType) 等共 9 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonAnimationActionCoordinator.AdvanceMeleeAction(FullBodyActionType)、LeonAnimationActionCoordinator.AdvanceQTEPhase(int, FullBodyActionType)、LeonAnimationActionCoordinator.RequestAutomaticDrop()、LeonAnimationActionCoordinator.RequestMeleeAction(FullBodyActionType, int)、LeonAnimationActionCoordinator.RequestQTE(int) 等共 7 处；下游（含内部回调体） Animator.GetLayerWeight(int)、Animator.SetInteger(int, int)、Animator.SetLayerWeight(int, float)、LeonAnimatorDriver.BlendWeaponActionLayerTo(float)、LeonAnimatorDriver.CancelPendingFullBodyLayerEntry()、LeonAnimatorDriver.PrepareFullBodyLayerEntry(int)、LeonAnimatorDriver.ShouldBlendFullBodyLayer(FullBodyActionType) 等共 9 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="actionType">中文含义：动作类型。使用位置：作为 Animator.SetInteger(int, int) 的参数、作为 LeonAnimatorDriver.ShouldBlendFullBodyLayer(FullBodyActionType) 的参数、作为 LeonAnimatorDriver.TryGetPreparedFullBodyStateHash(FullBodyActionType, out int) 的参数 等共 4 处。</param>
+    /// <param name="actionType">动作类型。</param>
     public bool BeginFullBodyAction(FullBodyActionType actionType, float normalizedStart = 0f)
     {
         if (animator == null || !IsValid)
@@ -2437,9 +2519,9 @@ bool interrupted = ownerController == null || ownerController.currentState == Le
     /// 保持全身层满权重，并用固定时长交叉淡化避免骨架突变。
     /// </summary>
     /// <remarks>静态调用链：上游 LeonAnimationActionCoordinator.AdvanceTraversalAction(FullBodyActionType, float, float)；下游（含内部回调体） Animator.CrossFadeInFixedTime(int, float, int, float)、Animator.SetInteger(int, int)、Animator.SetLayerWeight(int, float)、LeonAnimatorDriver.CancelPendingFullBodyLayerEntry()、LeonAnimatorDriver.TryGetPreparedFullBodyStateHash(FullBodyActionType, out int)、Mathf.Clamp01(float)、Mathf.Max(float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="actionType">中文含义：动作类型。使用位置：作为 Animator.SetInteger(int, int) 的参数、作为 LeonAnimatorDriver.TryGetPreparedFullBodyStateHash(FullBodyActionType, out int) 的参数、LeonAnimatorDriver.AdvanceFullBodyAction(FullBodyActionType, float, float)。</param>
-    /// <param name="transitionDuration">中文含义：过渡时长。使用位置：作为 Mathf.Max(float, float) 的参数。</param>
-    /// <param name="normalizedTime">中文含义：动画归一化播放时间。使用位置：作为 Mathf.Clamp01(float) 的参数。</param>
+    /// <param name="actionType">动作类型。</param>
+    /// <param name="transitionDuration">过渡时长。</param>
+    /// <param name="normalizedTime">动画归一化播放时间。</param>
     public bool AdvanceFullBodyAction(FullBodyActionType actionType, float transitionDuration, float normalizedTime = 0f)
     {
         if (animator == null || !IsValid)
@@ -2518,11 +2600,20 @@ bool interrupted = ownerController == null || ownerController.currentState == Le
         return false;
     }
 
-    public void EndTraversalLanding()
+    public void EndTraversalLanding(bool fastPickupExit = false)
     {
         if (animator == null || !IsValid)
         {
             return;
+        }
+
+        if (activeFullBodyAction == FullBodyActionType.ItemPickup)
+        {
+            pickupEarlyCancelExit = fastPickupExit;
+        }
+        else
+        {
+            pickupEarlyCancelExit = false;
         }
 
         CancelPendingFullBodyLayerEntry();
@@ -2544,9 +2635,9 @@ bool interrupted = ownerController == null || ownerController.currentState == Le
         }
 
         CancelPendingFullBodyLayerEntry();
-        // qteAction（是否配对动作动作）：保存 LeonAnimatorDriver.IsQTEAction(FullBodyActionType) 的返回结果，供当前步骤使用。使用位置：LeonAnimatorDriver.EndFullBodyAction()。
+        // 是否配对动作动作。
 bool qteAction = IsQTEAction(activeFullBodyAction);
-        // fullBodyLayerVisible（全身图层是否可见）：使用位置：LeonAnimatorDriver.EndFullBodyAction()。
+        // 全身图层是否可见。
 bool fullBodyLayerVisible = VisibleFullBodyWeight > 0.01f;
         if (activeMeleeOnWeaponLayer != FullBodyActionType.None)
         {
@@ -2607,7 +2698,7 @@ bool fullBodyLayerVisible = VisibleFullBodyWeight > 0.01f;
             return;
         }
 
-        // shouldSmoothQTEExit（是否应当平滑配对动作退出）：使用位置：LeonAnimatorDriver.FinalizeFullBodyActionLayer()。
+        // 是否应当平滑配对动作退出。
         bool shouldSmoothQTEExit = IsQTEAction(activeFullBodyAction) || activeFullBodyAction == FullBodyActionType.Hit || activeFullBodyAction == FullBodyActionType.WindowDropLand ||
             activeFullBodyAction == FullBodyActionType.WindowClimbThrough || activeFullBodyAction == FullBodyActionType.VillageGateOpen ||
             activeFullBodyAction == FullBodyActionType.ItemPickup;
@@ -2640,8 +2731,8 @@ bool fullBodyLayerVisible = VisibleFullBodyWeight > 0.01f;
 
     /// <summary>TryGetPreparedFullBodyStateHash 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
     /// <remarks>静态调用链：上游 LeonAnimatorDriver.AdvanceFullBodyAction(FullBodyActionType, float, float)、LeonAnimatorDriver.BeginFullBodyAction(FullBodyActionType)；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="actionType">中文含义：动作类型。使用位置：LeonAnimatorDriver.TryGetPreparedFullBodyStateHash(FullBodyActionType, out int)。</param>
-    /// <param name="stateHash">中文含义：状态哈希编号。输出参数，由本入口写入并交给调用方。使用位置：LeonAnimatorDriver.TryGetPreparedFullBodyStateHash(FullBodyActionType, out int)。</param>
+    /// <param name="actionType">动作类型。</param>
+    /// <param name="stateHash">状态哈希编号。输出参数，由本入口写入并交给调用方。</param>
     private static bool TryGetPreparedFullBodyStateHash(FullBodyActionType actionType, out int stateHash)
     {
         switch (actionType)
@@ -2686,7 +2777,7 @@ bool fullBodyLayerVisible = VisibleFullBodyWeight > 0.01f;
 
     /// <summary>ShouldBlendFullBodyLayer 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
     /// <remarks>静态调用链：上游 LeonAnimatorDriver.BeginFullBodyAction(FullBodyActionType)、LeonAnimatorDriver.EndFullBodyAction()；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="actionType">中文含义：动作类型。使用位置：LeonAnimatorDriver.ShouldBlendFullBodyLayer(FullBodyActionType)。</param>
+    /// <param name="actionType">动作类型。</param>
     private static bool ShouldBlendFullBodyLayer(FullBodyActionType actionType)
     {
         return actionType == FullBodyActionType.KnifeTake || actionType == FullBodyActionType.KnifeHide || actionType == FullBodyActionType.QTERightCutKick || actionType == FullBodyActionType.QTESpinningHookKick
@@ -2695,7 +2786,7 @@ bool fullBodyLayerVisible = VisibleFullBodyWeight > 0.01f;
 
     /// <summary>IsQTEAction 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
     /// <remarks>静态调用链：上游 LeonAnimatorDriver.EndFullBodyAction()、LeonAnimatorDriver.FinalizeFullBodyActionLayer()；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="actionType">中文含义：动作类型。使用位置：LeonAnimatorDriver.IsQTEAction(FullBodyActionType)。</param>
+    /// <param name="actionType">动作类型。</param>
     private static bool IsQTEAction(FullBodyActionType actionType)
     {
         return actionType == FullBodyActionType.QTEEnter || actionType == FullBodyActionType.QTEHold || actionType == FullBodyActionType.QTESuccess || actionType == FullBodyActionType.QTEFail;
@@ -2745,9 +2836,9 @@ bool fullBodyLayerVisible = VisibleFullBodyWeight > 0.01f;
         activeFullBodyAction = FullBodyActionType.Death;
         activeMeleeOnWeaponLayer = FullBodyActionType.None;
         animator.SetInteger(HashFullBodyAction, 2);
-        // currentFullBodyState（当前全身动画状态）：保存 Animator.GetCurrentAnimatorStateInfo(int) 的返回结果，供当前步骤使用。使用位置：LeonAnimatorDriver.EnterDeath()。
+        // 当前全身动画状态。
 AnimatorStateInfo currentFullBodyState = animator.GetCurrentAnimatorStateInfo(LayerFullBodyAction);
-        // currentFullBodyWeight（当前全身权重）：保存 Animator.GetLayerWeight(int) 的返回结果，供当前步骤使用。使用位置：LeonAnimatorDriver.EnterDeath()。
+        // 当前全身权重。
 float currentFullBodyWeight = animator.GetLayerWeight(LayerFullBodyAction);
         if (currentFullBodyWeight > 0.01f && currentFullBodyState.shortNameHash != HashFullBodyEmpty)
         {
@@ -2798,7 +2889,7 @@ float currentFullBodyWeight = animator.GetLayerWeight(LayerFullBodyAction);
             return validationResult = false;
         }
 
-        // expectedLayers（预期图层集合）：使用位置：LeonAnimatorDriver.ValidateAnimatorContract()。
+        // 预期图层集合。
 string[] expectedLayers =
         {
             "Base Movement",
@@ -2810,7 +2901,7 @@ string[] expectedLayers =
             "Weapon Action",
             "Full Body Action"
         };
-        // i（当前遍历索引）：使用位置：作为 Animator.GetLayerName(int) 的参数、作为 Debug.LogError(object) 的参数、LeonAnimatorDriver.ValidateAnimatorContract()。
+        // 当前遍历索引。
 for (int i = 0; i < expectedLayers.Length; i++)
         {
             if (animator.GetLayerName(i) != expectedLayers[i])
@@ -2820,7 +2911,7 @@ for (int i = 0; i < expectedLayers.Length; i++)
             }
         }
 
-        // required（所需）：使用位置：LeonAnimatorDriver.ValidateAnimatorContract()。
+        // 所需。
 var required = new (string /* 中文含义：动画参数名称。 */ name, AnimatorControllerParameterType /* 中文含义：动画参数值的类型。 */ type)[]
         {
             ("Horizontal", AnimatorControllerParameterType.Float),
@@ -2843,7 +2934,7 @@ var required = new (string /* 中文含义：动画参数名称。 */ name, Anim
             ("IKTargetRight", AnimatorControllerParameterType.Float),
             ("IKTargetLeft", AnimatorControllerParameterType.Float),
         };
-        // ps（粒子系统）：使用位置：作为 Debug.LogError(object) 的参数、LeonAnimatorDriver.ValidateAnimatorContract()。
+        // 粒子系统。
 var ps = animator.parameters;
         int expectedParameterCount = required.Length;
         if (HasNativeW870SwitchStates)
@@ -2872,11 +2963,11 @@ var ps = animator.parameters;
             return validationResult = false;
         }
 
-        // ok（是否成功）：使用位置：LeonAnimatorDriver.ValidateAnimatorContract()。
+        // 是否成功。
 bool ok = true;
         foreach (var(/* 中文含义：名称。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ name, /* 中文含义：当前动画控制器控制器参数类型。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ type)in required)
         {
-            // found（是否已找到）：使用位置：LeonAnimatorDriver.ValidateAnimatorContract()。
+            // 是否已找到。
 bool found = false;
             // p（当前动画控制器控制器参数）：每轮从粒子系统取得一个元素，仅代表当前这一项。使用位置：LeonAnimatorDriver.ValidateAnimatorContract()。
 foreach (var p in ps)
@@ -2895,7 +2986,7 @@ foreach (var p in ps)
             }
         }
 
-        // forbidden（禁止）：使用位置：LeonAnimatorDriver.ValidateAnimatorContract()。
+        // 禁止。
 string[] forbidden =
         {
             "RotateAngle",
@@ -2921,7 +3012,7 @@ foreach (var p in ps)
             }
         }
 
-        // requiredFullBodyStates（所需全身状态集合）：使用位置：LeonAnimatorDriver.ValidateAnimatorContract()。
+        // 所需全身状态集合。
 var requiredFullBodyStates = new (string /* 中文含义：动画参数名称。 */ name, int /* 中文含义：动画参数名称对应的哈希编号。 */ hash)[]
         {
             ("Hit", HashFullBodyHit),

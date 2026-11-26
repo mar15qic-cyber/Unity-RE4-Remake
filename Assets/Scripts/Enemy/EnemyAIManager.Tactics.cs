@@ -150,6 +150,34 @@ public partial class EnemyAIManager
         SelectAttackCandidate();
     }
 
+    private readonly List<VillagerController> pressureSelectionPool = new();
+
+    private bool HasReserveDirectPressureCandidate(VillagerController excludedEnemy)
+    {
+        foreach (var candidate in enemies)
+        {
+            if (candidate == null || candidate == excludedEnemy || directPressureEnemies.Contains(candidate))
+            {
+                continue;
+            }
+
+            if (!IsReservationCandidateValid(candidate) || !candidate.IsRuntimeInitialized ||
+                candidate.IsQTEControlled || candidate.IsNavigationTraversalProtected || candidate.HasPendingHit)
+            {
+                continue;
+            }
+
+            if (tactics.TryGetValue(candidate, out EnemyTactics candidateState) && Time.time < candidateState.yieldUntil)
+            {
+                continue;
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+
     private void SelectRearPursuer()
     {
         if (!IsCombatUnlocked || PlayerTarget == null)
@@ -157,24 +185,29 @@ public partial class EnemyAIManager
             return;
         }
 
+        int desiredCount = Mathf.Clamp(directPressureEnemyCount, 1, 3);
         Vector3 position = PlayerTarget.transform.position;
         Vector3 heading = escapeVelocity;
         bool moving = heading.sqrMagnitude > 0.64f;
         heading.Normalize();
-        VillagerController selected = null;
-        float bestScore = float.PositiveInfinity;
+
+        pressureSelectionPool.Clear();
         foreach (var enemy in enemies)
         {
             if (!IsReservationCandidateValid(enemy) || !enemy.IsRuntimeInitialized || enemy.IsQTEControlled ||
                 enemy.IsNavigationTraversalProtected || enemy.HasPendingHit)
             {
+                if (enemy != null)
+                {
+                    directPressureEnemies.Remove(enemy);
+                }
                 continue;
             }
 
             EnemyTactics state = tactics[enemy];
             bool pursuing = directPressureEnemies.Contains(enemy);
             if (pursuing && enemy.ShouldChasePlayer && !ShouldPressAtCloseRange(enemy) &&
-                !ObserveApproachProgress(enemy, state))
+                !ObserveApproachProgress(enemy, state) && HasReserveDirectPressureCandidate(enemy))
             {
                 YieldAttackApproach(enemy);
                 continue;
@@ -182,58 +215,111 @@ public partial class EnemyAIManager
 
             if (Time.time < state.yieldUntil)
             {
+                directPressureEnemies.Remove(enemy);
                 continue;
             }
 
-            Vector3 offset = enemy.transform.position - position;
-            offset.y = 0f;
-            float score = offset.magnitude;
-            if (moving && Vector3.Dot(offset, heading) > 0.4f)
-            {
-                score += 12f;
-            }
-
-            if (moving && (interceptionEnemies[0] == enemy || interceptionEnemies[1] == enemy))
-            {
-                score += 4f;
-            }
-
-            if (enemy.NeedsCombatTraversal())
-            {
-                score += 8f;
-            }
-
-            if (pursuing)
-            {
-                score -= 2.5f;
-            }
-
-            if (score < bestScore)
-            {
-                selected = enemy;
-                bestScore = score;
-            }
+            pressureSelectionPool.Add(enemy);
         }
 
-        if (selected == null)
+        if (pressureSelectionPool.Count == 0)
         {
             directPressureEnemies.Clear();
             return;
         }
 
-        if (directPressureEnemies.Contains(selected))
+        // 按距离、追逃方向、通行代价和原压迫黏性评分，选出最多 desiredCount 名直接压迫者。
+        for (int pickIndex = 0; pickIndex < desiredCount && pickIndex < pressureSelectionPool.Count; pickIndex++)
         {
-            return;
+            int bestIndex = pickIndex;
+            float bestScore = float.PositiveInfinity;
+            for (int candidateIndex = pickIndex; candidateIndex < pressureSelectionPool.Count; candidateIndex++)
+            {
+                VillagerController candidate = pressureSelectionPool[candidateIndex];
+                Vector3 offset = candidate.transform.position - position;
+                offset.y = 0f;
+                float score = offset.magnitude;
+                if (moving && Vector3.Dot(offset, heading) > 0.4f)
+                {
+                    score += 12f;
+                }
+
+                if (moving && (interceptionEnemies[0] == candidate || interceptionEnemies[1] == candidate))
+                {
+                    score += 4f;
+                }
+
+                if (candidate.NeedsCombatTraversal())
+                {
+                    score += 8f;
+                }
+
+                if (directPressureEnemies.Contains(candidate))
+                {
+                    score -= 2.5f;
+                }
+
+                if (candidate.ArchitectureReadChainsawBridge != null && !candidate.NeedsCombatTraversal())
+                {
+                    score -= 1.5f;
+                }
+
+                if (score < bestScore)
+                {
+                    bestScore = score;
+                    bestIndex = candidateIndex;
+                }
+            }
+
+            if (bestIndex != pickIndex)
+            {
+                VillagerController swap = pressureSelectionPool[pickIndex];
+                pressureSelectionPool[pickIndex] = pressureSelectionPool[bestIndex];
+                pressureSelectionPool[bestIndex] = swap;
+            }
         }
 
-        directPressureEnemies.Clear();
-        directPressureEnemies.Add(selected);
-        EnemyTactics selectedState = tactics[selected];
-        selectedState.progressPosition = selected.transform.position;
-        selectedState.progressAt = Time.time;
-        combatSlots.Remove(selected);
-        pursuitTargets.Remove(selected);
-        RecordMovement(selected, selectedState, TacticalMovement.Approach);
+        int keepCount = Mathf.Min(desiredCount, pressureSelectionPool.Count);
+        invalidAttackOwners.Clear();
+        foreach (var existing in directPressureEnemies)
+        {
+            bool stillSelected = false;
+            for (int index = 0; index < keepCount; index++)
+            {
+                if (pressureSelectionPool[index] == existing)
+                {
+                    stillSelected = true;
+                    break;
+                }
+            }
+
+            if (!stillSelected)
+            {
+                invalidAttackOwners.Add(existing);
+            }
+        }
+
+        for (int index = 0; index < invalidAttackOwners.Count; index++)
+        {
+            directPressureEnemies.Remove(invalidAttackOwners[index]);
+        }
+
+        for (int index = 0; index < keepCount; index++)
+        {
+            VillagerController chosen = pressureSelectionPool[index];
+            if (directPressureEnemies.Contains(chosen))
+            {
+                continue;
+            }
+
+            directPressureEnemies.Add(chosen);
+            EnemyTactics chosenState = tactics[chosen];
+            chosenState.progressPosition = chosen.transform.position;
+            chosenState.progressAt = Time.time;
+            combatSlots.Remove(chosen);
+            pursuitTargets.Remove(chosen);
+            RecordMovement(chosen, chosenState, TacticalMovement.Approach);
+        }
     }
 
     private void SelectAttackCandidate()
@@ -293,14 +379,38 @@ public partial class EnemyAIManager
             return false;
         }
 
-        float pressRange = GetMovementExclusionRadius(enemy) + 1.05f;
-        if (HorizontalDistance(enemy.transform.position, player.transform.position) > pressRange)
+        if (attackingEnemies.Contains(enemy) || qteReservedEnemy == enemy || directPressureEnemies.Contains(enemy))
+        {
+            float baseRange = enemy.attackStartRange;
+            if (enemy.combatModule != null)
+            {
+                baseRange = Mathf.Max(baseRange, enemy.combatModule.StandingAttackStartRange);
+            }
+
+            float pressLimit = baseRange + 1.05f;
+            if (HorizontalDistance(enemy.transform.position, player.transform.position) <= pressLimit)
+            {
+                return enemy.combatModule.CanEngagePlayerAtCloseRange() ||
+                    (enemy.perceptionModule != null && enemy.perceptionModule.HasClearLineToPlayer(false, pressLimit + 0.5f));
+            }
+
+            return false;
+        }
+
+        // 未持有直接压迫或攻击名额的敌人，仅在极近距离且有攻击方向空位时补位紧逼，避免二楼候场全体直扑堵死通道。
+        float tightCloseRange = Mathf.Min(enemy.attackStartRange + 0.35f, 2.0f);
+        if (HorizontalDistance(enemy.transform.position, player.transform.position) > tightCloseRange)
+        {
+            return false;
+        }
+
+        if (!HasConcurrentAttackDirectionSpace(enemy))
         {
             return false;
         }
 
         return enemy.combatModule.CanEngagePlayerAtCloseRange() ||
-            (enemy.perceptionModule != null && enemy.perceptionModule.HasClearLineToPlayer(false, pressRange + 0.5f));
+            (enemy.perceptionModule != null && enemy.perceptionModule.HasClearLineToPlayer(false, tightCloseRange + 0.4f));
     }
 
     private static bool ObserveApproachProgress(VillagerController enemy, EnemyTactics state)
@@ -337,10 +447,9 @@ public partial class EnemyAIManager
 
     private string GetAttackRestriction(VillagerController enemy, bool validateQTE)
     {
-        bool assisting = PlayerTarget != null && PlayerTarget.TryGetComponent<LeonQTECoordinator>(out var activePair) &&
-            activePair.IsRearHelper(enemy);
-        if (!assisting && (qteReservedEnemy != null ||
-            (PlayerTarget != null && PlayerTarget.TryGetComponent<LeonQTECoordinator>(out var qte) && qte.IsActive)))
+        LeonQTECoordinator activePair = PlayerQteCoordinator;
+        bool assisting = activePair != null && activePair.IsRearHelper(enemy);
+        if (!assisting && (qteReservedEnemy != null || (activePair != null && activePair.IsActive)))
         {
             return "配对动作独占许可";
         }
@@ -362,7 +471,7 @@ public partial class EnemyAIManager
         }
 
         if (PlayerTarget != null && PlayerTarget.currentState == LeonState.Staggered &&
-            enemy.GetComponent<ChainsawManAnimationBridge>() == null)
+            enemy.ArchitectureReadChainsawBridge == null)
         {
             return "等待玩家受击恢复";
         }
@@ -433,7 +542,7 @@ public partial class EnemyAIManager
 
         committedAttacks[enemy] = handle;
         float startInterval = MinimumAttackStartInterval;
-        if (enemy.GetComponent<ChainsawManAnimationBridge>() == null)
+        if (enemy.ArchitectureReadChainsawBridge == null)
         {
             startInterval = 1.25f;
         }
@@ -527,7 +636,18 @@ public partial class EnemyAIManager
 
     internal static float GetMovementExclusionRadius(VillagerController enemy)
     {
-        return Mathf.Max(enemy.attackStartRange, enemy.combatModule.StandingAttackStartRange);
+        float baseRange = 1.2f;
+        if (enemy != null)
+        {
+            baseRange = enemy.attackStartRange;
+            if (enemy.combatModule != null)
+            {
+                // 长柄武器起手距离不应直接作为内圈禁区半径，否则持斧敌人结束攻击后会被迫笔直倒退撞堵后方人群。
+                baseRange = Mathf.Max(baseRange, Mathf.Min(enemy.combatModule.StandingAttackStartRange, 1.65f));
+            }
+        }
+
+        return Mathf.Clamp(baseRange, 1.1f, 1.65f);
     }
 
     private static void RejectTacticalPoint(EnemyTactics state, Vector3 point)
@@ -592,6 +712,27 @@ public partial class EnemyAIManager
         }
 
         int currentSlot = GetAngleSlot(origin - playerPosition);
+        HouseThreeRegionNavigation region = HouseThreeRegionNavigation.Current;
+        if (region != null && (region.IsOnSecondFloorOuterPlatform(origin) || region.IsOnSecondFloorOuterPlatform(playerPosition)))
+        {
+            CombatSlotAssignment validAssignment = default;
+            if (hasAssignment && anchorValid)
+            {
+                validAssignment = assignment;
+            }
+
+            return SelectSecondFloorOuterPlatformTacticalSlot(
+                enemy,
+                state,
+                origin,
+                playerPosition,
+                region,
+                exclusionRadius,
+                currentSlot,
+                validAssignment,
+                anchorValid);
+        }
+
         TacticalMovement movement = TacticalMovement.Circle;
         if (Time.time < state.yieldUntil || distance < exclusionRadius + arrival)
         {
@@ -713,7 +854,212 @@ public partial class EnemyAIManager
             return true;
         }
 
-        return state.hasRetreatPoint && TryResolveTacticalPoint(enemy, state, playerPosition, state.retreatPoint, out point);
+        return false;
+    }
+
+    private Vector3 SelectSecondFloorOuterPlatformTacticalSlot(
+        VillagerController enemy,
+        EnemyTactics state,
+        Vector3 origin,
+        Vector3 playerPosition,
+        HouseThreeRegionNavigation region,
+        float exclusionRadius,
+        int currentSlot,
+        CombatSlotAssignment existingAssignment,
+        bool hasValidAssignment)
+    {
+        const float WindowLandingExclusionRadius = 1.35f;
+        const float WaiterSeparation = 0.95f;
+
+        if (hasValidAssignment &&
+            region.IsOnSecondFloorOuterPlatform(existingAssignment.destination) &&
+            !region.IsInsideOuterPlatformWindowExclusionZone(existingAssignment.destination, WindowLandingExclusionRadius) &&
+            !IsSecondFloorWaitSlotOccupied(enemy, existingAssignment.destination, WaiterSeparation) &&
+            IsSafeTacticalSegment(origin, existingAssignment.destination, playerPosition, exclusionRadius))
+        {
+            RecordMovement(enemy, state, TacticalMovement.Circle);
+            return existingAssignment.destination;
+        }
+
+        Vector3 radialOut = origin - playerPosition;
+        radialOut.y = 0f;
+        if (radialOut.sqrMagnitude <= 0.0001f)
+        {
+            radialOut = -enemy.transform.forward;
+            radialOut.y = 0f;
+        }
+
+        if (radialOut.sqrMagnitude <= 0.0001f)
+        {
+            radialOut = Vector3.back;
+        }
+
+        radialOut.Normalize();
+        Vector3 lateral = Vector3.Cross(Vector3.up, radialOut);
+
+        float baseStandbyRadius = Mathf.Max(2.15f, exclusionRadius + 0.55f);
+        float[] ringOffsets = { 0f, 0.95f, 1.90f, 2.85f };
+        float[] lateralOffsets = { 0f, 0.95f, -0.95f, 1.85f, -1.85f };
+
+        int sideBias;
+        if ((enemy.GetInstanceID() & 1) == 0)
+        {
+            sideBias = 1;
+        }
+        else
+        {
+            sideBias = -1;
+        }
+
+        var originSurface = region.ReadSameSideNavigationPoint(origin, true, 1.5f, 1.2f);
+        bool hasOriginArea = originSurface.node != null;
+        uint originArea = 0u;
+        if (hasOriginArea)
+        {
+            originArea = originSurface.node.Area;
+        }
+
+        Vector3 bestSlot = Vector3.zero;
+        float bestSlotScore = float.PositiveInfinity;
+
+        for (int ringIndex = 0; ringIndex < ringOffsets.Length; ringIndex++)
+        {
+            float candidateRadius = baseStandbyRadius + ringOffsets[ringIndex];
+            for (int lateralIndex = 0; lateralIndex < lateralOffsets.Length; lateralIndex++)
+            {
+                float signedLateral = lateralOffsets[lateralIndex] * sideBias;
+                Vector3 rawCandidate = playerPosition + radialOut * candidateRadius + lateral * signedLateral;
+                var surface = region.ReadSameSideNavigationPoint(rawCandidate, true, 1.25f, 1.2f);
+                if (surface.node == null)
+                {
+                    continue;
+                }
+
+                Vector3 resolved = surface.position;
+                if (hasOriginArea && surface.node.Area != originArea)
+                {
+                    continue;
+                }
+
+                if (Mathf.Abs(resolved.y - origin.y) > pursuitTargetPlayerHeightThreshold)
+                {
+                    continue;
+                }
+
+                if (!region.IsOnSecondFloorOuterPlatform(resolved) ||
+                    region.IsInsideOuterPlatformWindowExclusionZone(resolved, WindowLandingExclusionRadius))
+                {
+                    continue;
+                }
+
+                if (!IsSafeTacticalSegment(origin, resolved, playerPosition, exclusionRadius))
+                {
+                    continue;
+                }
+
+                if (IsSecondFloorWaitSlotOccupied(enemy, resolved, WaiterSeparation))
+                {
+                    continue;
+                }
+
+                // 尽量保持在窗外与玩家连线的前侧分布，避免向后缩回窗口；同时兼顾与当前位置的平顺衔接。
+                float score = HorizontalDistance(playerPosition, resolved) * 0.65f + HorizontalDistance(origin, resolved) * 0.35f;
+                if (score < bestSlotScore)
+                {
+                    bestSlotScore = score;
+                    bestSlot = resolved;
+                }
+            }
+
+            if (!float.IsPositiveInfinity(bestSlotScore))
+            {
+                break;
+            }
+        }
+
+        if (!float.IsPositiveInfinity(bestSlotScore))
+        {
+            combatSlots[enemy] = new CombatSlotAssignment
+            {
+                playerAnchor = playerPosition,
+                destination = bestSlot,
+                slotIndex = currentSlot,
+                isFlankStaging = false
+            };
+            state.retreatPoint = bestSlot;
+            state.hasRetreatPoint = true;
+            RecordMovement(enemy, state, TacticalMovement.Circle);
+            return bestSlot;
+        }
+
+        // 兜底绝不返回裸玩家坐标，也绝不返回 Blocked；若自身在窗外禁区内，优先沿平台朝玩家侧脱离禁区。
+        Vector3 safeStandby = origin;
+        if (region.IsInsideOuterPlatformWindowExclusionZone(origin, WindowLandingExclusionRadius))
+        {
+            Vector3 forwardStep = -radialOut;
+            for (int step = 1; step <= 3; step++)
+            {
+                Vector3 probe = origin + forwardStep * (1.25f * step);
+                var probeSurface = region.ReadSameSideNavigationPoint(probe, true, 1.25f, 1.2f);
+                if (probeSurface.node != null &&
+                    (!hasOriginArea || probeSurface.node.Area == originArea) &&
+                    region.IsOnSecondFloorOuterPlatform(probeSurface.position) &&
+                    !region.IsInsideOuterPlatformWindowExclusionZone(probeSurface.position, WindowLandingExclusionRadius))
+                {
+                    safeStandby = probeSurface.position;
+                    break;
+                }
+            }
+        }
+
+        combatSlots[enemy] = new CombatSlotAssignment
+        {
+            playerAnchor = playerPosition,
+            destination = safeStandby,
+            slotIndex = currentSlot,
+            isFlankStaging = false
+        };
+        RecordMovement(enemy, state, TacticalMovement.Circle);
+        return safeStandby;
+    }
+
+    private bool IsSecondFloorWaitSlotOccupied(VillagerController self, Vector3 candidate, float minSeparation)
+    {
+        foreach (var entry in combatSlots)
+        {
+            if (entry.Key == self || !IsEnemyUsable(entry.Key))
+            {
+                continue;
+            }
+
+            if (Mathf.Abs(entry.Value.destination.y - candidate.y) < pursuitTargetPlayerHeightThreshold &&
+                HorizontalDistance(entry.Value.destination, candidate) < minSeparation)
+            {
+                return true;
+            }
+        }
+
+        foreach (var attacker in attackingEnemies)
+        {
+            if (attacker != null && attacker != self && IsEnemyUsable(attacker) &&
+                Mathf.Abs(attacker.transform.position.y - candidate.y) < pursuitTargetPlayerHeightThreshold &&
+                HorizontalDistance(attacker.transform.position, candidate) < minSeparation)
+            {
+                return true;
+            }
+        }
+
+        foreach (var pursuer in directPressureEnemies)
+        {
+            if (pursuer != null && pursuer != self && IsEnemyUsable(pursuer) &&
+                Mathf.Abs(pursuer.transform.position.y - candidate.y) < pursuitTargetPlayerHeightThreshold &&
+                HorizontalDistance(pursuer.transform.position, candidate) < minSeparation)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private bool TryResolveSlot(VillagerController enemy, EnemyTactics state, Vector3 playerPosition,
@@ -769,8 +1115,14 @@ public partial class EnemyAIManager
         float startRadius = startOffset.magnitude;
         if (startRadius < attackRange)
         {
-            return Vector3.Dot(startOffset, segment) >= 0f &&
-                (startOffset + segment).magnitude > startRadius + 0.1f;
+            float endRadius = (startOffset + segment).magnitude;
+            if (endRadius > startRadius + 0.1f && Vector3.Dot(startOffset, segment) >= 0f)
+            {
+                return true;
+            }
+
+            // 处于人群前方时允许侧向错步绕行，避免被严格限制为必须朝玩家反方向直退。
+            return endRadius >= startRadius - 0.05f && Vector3.Dot(startOffset, segment) >= -0.2f * segment.magnitude;
         }
 
         float along = Mathf.Clamp01(-Vector3.Dot(startOffset, segment) / Mathf.Max(0.0001f, segment.sqrMagnitude));

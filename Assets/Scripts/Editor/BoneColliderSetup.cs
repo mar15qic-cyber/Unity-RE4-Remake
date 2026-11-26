@@ -12,7 +12,7 @@ public class BoneColliderSetup : EditorWindow
     [MenuItem("Tools/Enemy/添加骨骼碰撞体")]
     static void Setup()
     {
-        // prefab（预制件）：保存 AssetDatabase.LoadAssetAtPath<GameObject>(string) 的返回结果，供当前步骤使用。使用位置：作为 PrefabUtility.InstantiatePrefab(Object) 的参数、BoneColliderSetup.Setup()。
+        // 预制件。
 var prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefab/Villager.prefab");
         if (prefab == null)
         {
@@ -20,9 +20,9 @@ var prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefab/Villager.p
             return;
         }
 
-        // instance（实例）：使用位置：作为 Object.DestroyImmediate(Object) 的参数、作为 PrefabUtility.SaveAsPrefabAsset(GameObject, string) 的参数、BoneColliderSetup.Setup()。
+        // 实例。
 var instance = (GameObject)PrefabUtility.InstantiatePrefab(prefab);
-        // anim（动画控制器）：保存 GameObject.GetComponent<Animator>() 的返回结果，供当前步骤使用。使用位置：作为 BoneColliderSetup.AddBoneCollider(Animator, HumanBodyBones, string, float, float, int) 的参数、BoneColliderSetup.Setup()。
+        // 动画控制器。
 var anim = instance.GetComponent<Animator>();
         if (anim == null || !anim.isHuman)
         {
@@ -32,7 +32,7 @@ var anim = instance.GetComponent<Animator>();
         }
 
         // 1. 移除根 CapsuleCollider（改用骨骼碰撞体）
-        // rootCol（根节点列）：保存 GameObject.GetComponent<CapsuleCollider>() 的返回结果，供当前步骤使用。使用位置：作为 Object.DestroyImmediate(Object) 的参数、BoneColliderSetup.Setup()。
+        // 根节点列。
 var rootCol = instance.GetComponent<CapsuleCollider>();
         if (rootCol != null)
         {
@@ -53,7 +53,7 @@ var rootCol = instance.GetComponent<CapsuleCollider>();
         AddBoneCollider(anim, HumanBodyBones.LeftUpperArm, "L_UpperArm", 0.06f, 0.25f, 1);
         AddBoneCollider(anim, HumanBodyBones.RightUpperArm, "R_UpperArm", 0.06f, 0.25f, 1);
         // 4. 验证
-        // colliders（碰撞体集合）：保存 GameObject.GetComponentsInChildren<Collider>() 的返回结果，供当前步骤使用。使用位置：作为 Debug.Log(object) 的参数、BoneColliderSetup.Setup()。
+        // 碰撞体集合。
 var colliders = instance.GetComponentsInChildren<Collider>();
         Debug.Log($"[BoneCollider] 已添加 {colliders.Length} 个骨骼碰撞体");
         // c（当前碰撞体）：每轮从碰撞体集合取得一个元素，仅代表当前这一项。使用位置：作为 Debug.Log(object) 的参数。
@@ -70,7 +70,7 @@ foreach (var c in colliders)
         // vc（虚拟摄像机）：每轮从查找对象集合依据类型的返回结果取得一个元素，仅代表当前这一项。使用位置：作为 Debug.Log(object) 的参数、BoneColliderSetup.Setup()。
 foreach (var vc in Object.FindObjectsByType<VillagerController>(FindObjectsSortMode.None))
         {
-            // sceneRootCol（场景根节点列）：保存 Component.GetComponent<CapsuleCollider>() 的返回结果，供当前步骤使用。使用位置：作为 Object.DestroyImmediate(Object) 的参数、BoneColliderSetup.Setup()。
+            // 场景根节点列。
 var sceneRootCol = vc.GetComponent<CapsuleCollider>();
             if (sceneRootCol != null)
             {
@@ -80,7 +80,7 @@ var sceneRootCol = vc.GetComponent<CapsuleCollider>();
             Debug.Log($"[BoneCollider] 场景 {vc.name}: 已移除根 CapsuleCollider");
         }
 
-        // scene（场景）：保存 SceneManager.GetActiveScene() 的返回结果，供当前步骤使用。使用位置：作为 EditorSceneManager.MarkSceneDirty(Scene) 的参数、作为 EditorSceneManager.SaveScene(Scene) 的参数。
+        // 场景。
 var scene = UnityEditor.SceneManagement.EditorSceneManager.GetActiveScene();
         UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(scene);
         UnityEditor.SceneManagement.EditorSceneManager.SaveScene(scene);
@@ -88,15 +88,15 @@ var scene = UnityEditor.SceneManagement.EditorSceneManager.GetActiveScene();
 
     /// <summary>AddBoneCollider 的业务处理入口；本方法直接依赖 Animator.GetBoneTransform(HumanBodyBones)、Component.GetComponent&lt;Collider&gt;()、Debug.LogWarning(object)、GameObject.AddComponent&lt;CapsuleCollider&gt;()、Object.DestroyImmediate(Object)、Vector3.Vector3(float, float, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 BoneColliderSetup.Setup()；下游（含内部回调体） Animator.GetBoneTransform(HumanBodyBones)、Component.GetComponent&lt;Collider&gt;()、Debug.LogWarning(object)、GameObject.AddComponent&lt;CapsuleCollider&gt;()、Object.DestroyImmediate(Object)、Vector3.Vector3(float, float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="anim">中文含义：动画控制器。使用位置：BoneColliderSetup.AddBoneCollider(Animator, HumanBodyBones, string, float, float, int)。</param>
-    /// <param name="bone">中文含义：骨骼。使用位置：作为 Animator.GetBoneTransform(HumanBodyBones) 的参数、作为 Debug.LogWarning(object) 的参数。</param>
+    /// <param name="anim">动画控制器。</param>
+    /// <param name="bone">骨骼。</param>
     /// <param name="name">中文含义：名称。</param>
-    /// <param name="radius">中文含义：半径。使用位置：BoneColliderSetup.AddBoneCollider(Animator, HumanBodyBones, string, float, float, int)。</param>
-    /// <param name="height">中文含义：高度。使用位置：作为 Vector3.Vector3(float, float, float) 的参数、BoneColliderSetup.AddBoneCollider(Animator, HumanBodyBones, string, float, float, int)。</param>
-    /// <param name="direction">中文含义：方向。使用位置：BoneColliderSetup.AddBoneCollider(Animator, HumanBodyBones, string, float, float, int)。</param>
+    /// <param name="radius">半径。</param>
+    /// <param name="height">高度。</param>
+    /// <param name="direction">方向。</param>
     static void AddBoneCollider(Animator anim, HumanBodyBones bone, string name, float radius, float height, int direction)
     {
-        // t（当前变换节点）：保存 Animator.GetBoneTransform(HumanBodyBones) 的返回结果，供当前步骤使用。使用位置：BoneColliderSetup.AddBoneCollider(Animator, HumanBodyBones, string, float, float, int)。
+        // 当前变换节点。
 var t = anim.GetBoneTransform(bone);
         if (t == null)
         {
@@ -105,14 +105,14 @@ var t = anim.GetBoneTransform(bone);
         }
 
         // 移除旧 Collider
-        // existing（已有）：保存 Component.GetComponent<Collider>() 的返回结果，供当前步骤使用。使用位置：作为 Object.DestroyImmediate(Object) 的参数、BoneColliderSetup.AddBoneCollider(Animator, HumanBodyBones, string, float, float, int)。
+        // 已有。
 var existing = t.GetComponent<Collider>();
         if (existing != null)
         {
             DestroyImmediate(existing);
         }
 
-        // col（列）：保存 GameObject.AddComponent<CapsuleCollider>() 的返回结果，供当前步骤使用。使用位置：BoneColliderSetup.AddBoneCollider(Animator, HumanBodyBones, string, float, float, int)。
+        // 列。
 var col = t.gameObject.AddComponent<CapsuleCollider>();
         col.radius = radius;
         col.height = height;

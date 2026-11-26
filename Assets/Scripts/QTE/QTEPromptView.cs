@@ -7,50 +7,50 @@ using UnityEngine.UI;
 [DefaultExecutionOrder(10200)]
 public class QTEPromptView : MonoBehaviour
 {
-    /// <summary>中文含义：当前里昂配对动作协调器。使用位置：作为 QTEPromptView.HandlePromptAvailabilityChanged(bool) 的参数、LeonExpandedQTESetupUtility.SetupTestScene(LeonQTEConfig)、LeonQTESetupUtility.BuildTestScene(LeonQTEConfig, GameObject) 等共 8 处。</summary>
+    /// <summary>当前里昂配对动作协调器。</summary>
     [Header("会话来源")]
     public LeonQTECoordinator coordinator;
-    /// <summary>中文含义：根节点分组。使用位置：LeonQTESetupUtility.BuildPromptPrefab()、QTEPromptView.LateUpdate()、QTEPromptView.SetVisible(bool) 等共 4 处。</summary>
+    /// <summary>根节点分组。</summary>
     [Header("界面引用")]
     public CanvasGroup rootGroup;
-    /// <summary>中文含义：键标签。使用位置：LeonQTESetupUtility.BuildPromptPrefab()、QTEPromptView.ApplyReferenceStyle()、QTEPromptView.HandlePhaseChanged(int, QTEPhase) 等共 5 处。</summary>
+    /// <summary>键标签。</summary>
     public Text keyLabel;
-    /// <summary>中文含义：键图标。使用位置：LeonExpandedQTESetupUtility.SetupPromptPrefab()、QTEPromptView.ApplyReferenceStyle()、QTEPromptView.HandlePhaseChanged(int, QTEPhase) 等共 5 处。</summary>
+    /// <summary>键图标。</summary>
     public Image keyIcon;
-    /// <summary>中文含义：时间标签。使用位置：LeonQTESetupUtility.BuildPromptPrefab()、QTEPromptView.ApplyReferenceStyle()、QTEPromptView.HandleProgressChanged(QTEProgressInfo) 等共 4 处。</summary>
+    /// <summary>时间标签。</summary>
     public Text timeLabel;
-    /// <summary>中文含义：时间填充。使用位置：LeonQTESetupUtility.BuildPromptPrefab()、QTEPromptView.ApplyReferenceStyle()、QTEPromptView.HandleProgressChanged(QTEProgressInfo) 等共 4 处。</summary>
+    /// <summary>时间填充。</summary>
     public Image timeFill;
-    /// <summary>中文含义：进度环。使用位置：LeonExpandedQTESetupUtility.SetupPromptPrefab()、QTEPromptView.ApplyReferenceStyle()、QTEPromptView.HandleProgressChanged(QTEProgressInfo) 等共 5 处。</summary>
+    /// <summary>进度环。</summary>
     public Image progressRing;
-    /// <summary>中文含义：进度线段集合。使用位置：LeonQTESetupUtility.BuildPromptPrefab()、QTEPromptView.ApplyReferenceStyle()、QTEPromptView.SetProgress(int)。</summary>
+    /// <summary>进度线段集合。</summary>
     public Image[] progressSegments;
-    /// <summary>中文含义：提示根节点。使用位置：作为 Vector2.Lerp(Vector2, Vector2, float) 的参数、QTEPromptView.ApplyReferenceStyle()、QTEPromptView.FollowTarget() 等共 4 处。</summary>
+    /// <summary>提示根节点。</summary>
     [Header("世界跟随")]
     public RectTransform promptRoot;
-    /// <summary>中文含义：屏幕偏移量。使用位置：QTEPromptView.FollowTarget()。</summary>
+    /// <summary>屏幕偏移量。</summary>
     public Vector2 screenOffset = new Vector2(0f, 105f);
-    /// <summary>中文含义：跟随平滑速度。使用位置：作为 Mathf.Exp(float) 的参数。</summary>
+    /// <summary>跟随平滑速度。</summary>
     [Min(1f)]
     public float followSmoothSpeed = 18f;
-    /// <summary>中文含义：非活动颜色。使用位置：QTEPromptView.HandlePhaseChanged(int, QTEPhase)、QTEPromptView.SetProgress(int)、QTEPromptView.UpdateKeyLabel(bool)。</summary>
+    /// <summary>非活动颜色。</summary>
     [Header("颜色")]
     public Color inactiveColor = new Color(1f, 1f, 1f, 0.2f);
-    /// <summary>中文含义：生效颜色。使用位置：QTEPromptView.HandlePhaseChanged(int, QTEPhase)、QTEPromptView.SetProgress(int)、QTEPromptView.UpdateKeyLabel(bool)。</summary>
+    /// <summary>生效颜色。</summary>
     public Color activeColor = new Color(0.95f, 0.75f, 0.12f, 1f);
-    /// <summary>中文含义：可见会话编号。使用位置：QTEPromptView.HandlePhaseChanged(int, QTEPhase)、QTEPromptView.HandleProgressChanged(QTEProgressInfo)、QTEPromptView.HandlePromptAvailabilityChanged(bool) 等共 5 处。</summary>
+    /// <summary>可见会话编号。</summary>
     private int visibleSessionId;
-    /// <summary>中文含义：是否已开始。使用位置：QTEPromptView.OnEnable()、QTEPromptView.Start()。</summary>
+    /// <summary>是否已开始。</summary>
     private bool started;
-    /// <summary>中文含义：是否已绑定事件。使用位置：QTEPromptView.BindEvents()、QTEPromptView.UnbindEvents()。</summary>
+    /// <summary>是否已绑定事件。</summary>
     private bool eventsBound;
-    /// <summary>中文含义：父级画布。使用位置：QTEPromptView.DisableDisplayRaycasterIfUnused()、QTEPromptView.FollowTarget()、QTEPromptView.Start()。</summary>
+    /// <summary>父级画布。</summary>
     private Canvas parentCanvas;
-    /// <summary>中文含义：世界空间摄像机。使用位置：QTEPromptView.FollowTarget()、QTEPromptView.Start()。</summary>
+    /// <summary>世界空间摄像机。</summary>
     private Camera worldCamera;
-    /// <summary>中文含义：当前目标。使用位置：作为 LeonQTECoordinator.TryGetPromptPresentation(out Transform, out string) 的参数、QTEPromptView.FollowTarget()、QTEPromptView.HandlePromptAvailabilityChanged(bool) 等共 6 处。</summary>
+    /// <summary>当前目标。</summary>
     private Transform currentTarget;
-    /// <summary>中文含义：当前动作文字。使用位置：作为 LeonQTECoordinator.TryGetPromptPresentation(out Transform, out string) 的参数、作为 string.IsNullOrEmpty(string) 的参数、QTEPromptView.HandlePhaseChanged(int, QTEPhase) 等共 8 处。</summary>
+    /// <summary>当前动作文字。</summary>
     private string currentActionText = string.Empty;
     /// <summary>Unity 首次启用后的启动回调；状态处理与资源交接按函数内顺序执行，下游协作见调用链。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） Component.GetComponentInParent&lt;Canvas&gt;()、QTEPromptView.ApplyReferenceStyle()、QTEPromptView.BindEvents()、QTEPromptView.DisableDisplayRaycasterIfUnused()、QTEPromptView.HandlePromptAvailabilityChanged(bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
@@ -88,7 +88,7 @@ public class QTEPromptView : MonoBehaviour
             return;
         }
 
-        // raycaster（射线检测器）：保存 Component.GetComponent<GraphicRaycaster>() 的返回结果，供当前步骤使用。使用位置：QTEPromptView.DisableDisplayRaycasterIfUnused()。
+        // 射线检测器。
 GraphicRaycaster raycaster = parentCanvas.GetComponent<GraphicRaycaster>();
         if (raycaster == null)
         {
@@ -185,7 +185,7 @@ GraphicRaycaster raycaster = parentCanvas.GetComponent<GraphicRaycaster>();
 
     /// <summary>HandlePromptAvailabilityChanged 的业务处理入口；本方法直接依赖 LeonQTECoordinator.TryGetPromptPresentation(out Transform, out string)、object.ReferenceEquals(object, object)、QTEPromptView.SetProgress(int)、QTEPromptView.SetVisible(bool)、QTEPromptView.UpdateKeyLabel(bool)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 QTEPromptView.Start()；下游（含内部回调体） LeonQTECoordinator.TryGetPromptPresentation(out Transform, out string)、object.ReferenceEquals(object, object)、QTEPromptView.SetProgress(int)、QTEPromptView.SetVisible(bool)、QTEPromptView.UpdateKeyLabel(bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="available">中文含义：是否可用。使用位置：QTEPromptView.HandlePromptAvailabilityChanged(bool)。</param>
+    /// <param name="available">是否可用。</param>
     private void HandlePromptAvailabilityChanged(bool available)
     {
         if (visibleSessionId != 0)
@@ -201,9 +201,9 @@ GraphicRaycaster raycaster = parentCanvas.GetComponent<GraphicRaycaster>();
             return;
         }
 
-        // receiverValue1（判空前缓存的当前里昂配对动作协调器）：从动作协调组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、QTEPromptView.HandlePromptAvailabilityChanged(bool)。
+        // 判空前缓存的当前里昂配对动作协调器。
 global::LeonQTECoordinator receiverValue1 = coordinator;
-        // optionalValue2（条件访问得到的尝试取得提示表现的返回结果）：保存条件访问的结果，接收者为空时保持默认空值，非空时才执行原成员访问。使用位置：QTEPromptView.HandlePromptAvailabilityChanged(bool)。
+        // 条件访问得到的尝试取得提示表现的返回结果。
 bool? optionalValue2;
         if (!global::System.Object.ReferenceEquals(receiverValue1, null))
         {
@@ -231,8 +231,8 @@ bool? optionalValue2;
 
     /// <summary>HandleSessionStarted 的业务处理入口；本方法直接依赖 LeonQTECoordinator.TryGetPromptPresentation(out Transform, out string)、QTEPromptView.SetProgress(int)、QTEPromptView.SetVisible(bool)、QTEPromptView.UpdateKeyLabel(bool)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） LeonQTECoordinator.TryGetPromptPresentation(out Transform, out string)、QTEPromptView.SetProgress(int)、QTEPromptView.SetVisible(bool)、QTEPromptView.UpdateKeyLabel(bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="sessionId">中文含义：会话编号。使用位置：QTEPromptView.HandleSessionStarted(int, QTEKind)。</param>
-    /// <param name="kind">中文含义：种类。使用位置：QTEPromptView.HandleSessionStarted(int, QTEKind)。</param>
+    /// <param name="sessionId">会话编号。</param>
+    /// <param name="kind">种类。</param>
     private void HandleSessionStarted(int sessionId, QTEKind kind)
     {
         visibleSessionId = sessionId;
@@ -281,8 +281,8 @@ bool? optionalValue2;
 
     /// <summary>HandlePhaseChanged 的业务处理入口；本方法直接依赖 QTEPromptView.SetVisible(bool)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） QTEPromptView.SetVisible(bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="sessionId">中文含义：会话编号。使用位置：QTEPromptView.HandlePhaseChanged(int, QTEPhase)。</param>
-    /// <param name="phase">中文含义：阶段。使用位置：QTEPromptView.HandlePhaseChanged(int, QTEPhase)。</param>
+    /// <param name="sessionId">会话编号。</param>
+    /// <param name="phase">阶段。</param>
     private void HandlePhaseChanged(int sessionId, QTEPhase phase)
     {
         if (sessionId != visibleSessionId)
@@ -296,11 +296,11 @@ bool? optionalValue2;
             return;
         }
 
-        // inputOpen（输入是否打开）：使用位置：QTEPromptView.HandlePhaseChanged(int, QTEPhase)。
+        // 输入是否打开。
 bool inputOpen = phase == QTEPhase.WaitingForInput;
         if (keyLabel != null)
         {
-            // assignmentReceiver4（赋值前保存的目标键标签）：从键标签读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：QTEPromptView.HandlePhaseChanged(int, QTEPhase)。
+            // 赋值前保存的目标键标签。
 global::UnityEngine.UI.Text assignmentReceiver4 = keyLabel;
             if (inputOpen)
             {
@@ -311,7 +311,7 @@ global::UnityEngine.UI.Text assignmentReceiver4 = keyLabel;
                 assignmentReceiver4.color = inactiveColor;
             }
 
-            // assignmentReceiver6（赋值前保存的目标键标签）：从键标签读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：QTEPromptView.HandlePhaseChanged(int, QTEPhase)。
+            // 赋值前保存的目标键标签。
 global::UnityEngine.UI.Text assignmentReceiver6 = keyLabel;
             if (inputOpen)
             {
@@ -331,7 +331,7 @@ global::UnityEngine.UI.Text assignmentReceiver6 = keyLabel;
 
     /// <summary>HandleProgressChanged 的业务处理入口；本方法直接依赖 float.ToString(string)、QTEPromptView.SetProgress(int)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） float.ToString(string)、QTEPromptView.SetProgress(int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="progress">中文含义：进度。使用位置：作为 QTEPromptView.SetProgress(int) 的参数、QTEPromptView.HandleProgressChanged(QTEProgressInfo)。</param>
+    /// <param name="progress">进度。</param>
     private void HandleProgressChanged(QTEProgressInfo progress)
     {
         if (progress.sessionId != visibleSessionId)
@@ -358,7 +358,7 @@ global::UnityEngine.UI.Text assignmentReceiver6 = keyLabel;
 
     /// <summary>HandleSessionEnded 的业务处理入口；本方法直接依赖 QTEPromptView.SetVisible(bool)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） QTEPromptView.SetVisible(bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="endInfo">中文含义：结束信息。使用位置：QTEPromptView.HandleSessionEnded(QTESessionEndInfo)。</param>
+    /// <param name="endInfo">结束信息。</param>
     private void HandleSessionEnded(QTESessionEndInfo endInfo)
     {
         if (endInfo.sessionId != visibleSessionId)
@@ -374,7 +374,7 @@ global::UnityEngine.UI.Text assignmentReceiver6 = keyLabel;
 
     /// <summary>SetProgress 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
     /// <remarks>静态调用链：上游 QTEPromptView.HandleProgressChanged(QTEProgressInfo)、QTEPromptView.HandlePromptAvailabilityChanged(bool)、QTEPromptView.HandleSessionStarted(int, QTEKind)；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="presses">中文含义：按下次数。使用位置：QTEPromptView.SetProgress(int)。</param>
+    /// <param name="presses">按下次数。</param>
     private void SetProgress(int presses)
     {
         if (progressSegments == null)
@@ -382,12 +382,12 @@ global::UnityEngine.UI.Text assignmentReceiver6 = keyLabel;
             return;
         }
 
-        // i（当前遍历索引）：使用位置：QTEPromptView.SetProgress(int)。
+        // 当前遍历索引。
 for (int i = 0; i < progressSegments.Length; i++)
         {
             if (progressSegments[i] != null)
             {
-                // assignmentReceiver8（赋值前保存的目标进度线段集合）：从进度线段集合读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：QTEPromptView.SetProgress(int)。
+                // 赋值前保存的目标进度线段集合。
 global::UnityEngine.UI.Image assignmentReceiver8 = progressSegments[i];
                 if (i < presses)
                 {
@@ -403,7 +403,7 @@ global::UnityEngine.UI.Image assignmentReceiver8 = progressSegments[i];
 
     /// <summary>SetVisible 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
     /// <remarks>静态调用链：上游 QTEPromptView.HandlePhaseChanged(int, QTEPhase)、QTEPromptView.HandlePromptAvailabilityChanged(bool)、QTEPromptView.HandleSessionEnded(QTESessionEndInfo)、QTEPromptView.HandleSessionStarted(int, QTEKind)；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="visible">中文含义：是否可见。使用位置：QTEPromptView.SetVisible(bool)。</param>
+    /// <param name="visible">是否可见。</param>
     private void SetVisible(bool visible)
     {
         if (rootGroup == null)
@@ -411,7 +411,7 @@ global::UnityEngine.UI.Image assignmentReceiver8 = progressSegments[i];
             return;
         }
 
-        // assignmentReceiver10（赋值前保存的目标根节点分组）：从根节点分组读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：QTEPromptView.SetVisible(bool)。
+        // 赋值前保存的目标根节点分组。
 global::UnityEngine.CanvasGroup assignmentReceiver10 = rootGroup;
         if (visible)
         {
@@ -428,7 +428,7 @@ global::UnityEngine.CanvasGroup assignmentReceiver10 = rootGroup;
 
     /// <summary>UpdateKeyLabel 的业务处理入口；本方法直接依赖 string.IsNullOrEmpty(string)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 QTEPromptView.HandlePromptAvailabilityChanged(bool)、QTEPromptView.HandleSessionStarted(int, QTEKind)、QTEPromptView.LateUpdate()；下游（含内部回调体） string.IsNullOrEmpty(string)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="active">中文含义：是否生效。使用位置：QTEPromptView.UpdateKeyLabel(bool)。</param>
+    /// <param name="active">是否生效。</param>
     private void UpdateKeyLabel(bool active)
     {
         if (keyLabel == null)
@@ -436,7 +436,7 @@ global::UnityEngine.CanvasGroup assignmentReceiver10 = rootGroup;
             return;
         }
 
-        // actionText（动作文字）：使用位置：QTEPromptView.UpdateKeyLabel(bool)。
+        // 动作文字。
 string actionText;
         if (string.IsNullOrEmpty(currentActionText))
         {
@@ -448,7 +448,7 @@ string actionText;
         }
 
         keyLabel.text = "F  " + actionText;
-        // assignmentReceiver13（赋值前保存的目标键标签）：从键标签读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：QTEPromptView.UpdateKeyLabel(bool)。
+        // 赋值前保存的目标键标签。
 global::UnityEngine.UI.Text assignmentReceiver13 = keyLabel;
         if (active)
         {
@@ -479,9 +479,9 @@ global::UnityEngine.UI.Text assignmentReceiver13 = keyLabel;
             return;
         }
 
-        // targetCollider（目标碰撞体）：保存 Component.GetComponentInChildren<Collider>() 的返回结果，供当前步骤使用。使用位置：QTEPromptView.FollowTarget()。
+        // 目标碰撞体。
 Collider targetCollider = currentTarget.GetComponentInChildren<Collider>();
-        // worldPosition（世界位置）：使用位置：作为 Camera.WorldToScreenPoint(Vector3) 的参数、QTEPromptView.FollowTarget()。
+        // 世界位置。
 Vector3 worldPosition;
         if (targetCollider != null)
         {
@@ -492,7 +492,7 @@ Vector3 worldPosition;
             worldPosition = currentTarget.position + Vector3.up * 1.25f;
         }
 
-        // screenPoint（屏幕坐标点）：保存 Camera.WorldToScreenPoint(Vector3) 的返回结果，供当前步骤使用。使用位置：QTEPromptView.FollowTarget()。
+        // 屏幕坐标点。
 Vector3 screenPoint = worldCamera.WorldToScreenPoint(worldPosition);
         if (screenPoint.z <= 0f)
         {
@@ -500,7 +500,7 @@ Vector3 screenPoint = worldCamera.WorldToScreenPoint(worldPosition);
         }
 
         screenPoint += (Vector3)screenOffset;
-        // canvasRect（画布矩形）：使用位置：QTEPromptView.FollowTarget()。
+        // 画布矩形。
 RectTransform canvasRect;
         if (parentCanvas != null)
         {
@@ -511,17 +511,17 @@ RectTransform canvasRect;
             canvasRect = null;
         }
 
-        // localPoint（局部坐标点）：使用位置：作为 RectTransformUtility.ScreenPointToLocalPointInRectangle(RectTransform, Vector2, Camera, out Vector2) 的参数、作为 Vector2.Lerp(Vector2, Vector2, float) 的参数。
+        // 局部坐标点。
 global::UnityEngine.Vector2 localPoint = default;
-        // conditionResult20（短路判断得到的分支判断）：保存短路分支结果，未选中的分支不执行。使用位置：QTEPromptView.FollowTarget()。
+        // 短路判断得到的分支判断。
 bool conditionResult20;
         if (parentCanvas != null && parentCanvas.renderMode != RenderMode.WorldSpace && canvasRect != null)
         {
-            // argumentValue18（按原顺序缓存的实参画布矩形）：从画布矩形读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 RectTransformUtility.ScreenPointToLocalPointInRectangle(RectTransform, Vector2, Camera, out Vector2) 的参数。
+            // 按原顺序缓存的实参画布矩形。
 global::UnityEngine.RectTransform argumentValue18 = canvasRect;
-            // argumentValue19（按原顺序缓存的实参屏幕坐标点）：从屏幕坐标点读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 RectTransformUtility.ScreenPointToLocalPointInRectangle(RectTransform, Vector2, Camera, out Vector2) 的参数。
+            // 按原顺序缓存的实参屏幕坐标点。
 global::UnityEngine.Vector2 argumentValue19 = screenPoint;
-            // selectedValue17（分支选出的父级画布的世界空间摄像机）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：作为 RectTransformUtility.ScreenPointToLocalPointInRectangle(RectTransform, Vector2, Camera, out Vector2) 的参数、QTEPromptView.FollowTarget()。
+            // 分支选出的父级画布的世界空间摄像机。
 global::UnityEngine.Camera selectedValue17;
             if (parentCanvas.renderMode == RenderMode.ScreenSpaceOverlay)
             {
@@ -556,7 +556,7 @@ global::UnityEngine.Camera selectedValue17;
         if (promptRoot != null)
         {
             promptRoot.sizeDelta = new Vector2(190f, 64f);
-            // panel（面板）：保存 Component.GetComponent<Image>() 的返回结果，供当前步骤使用。使用位置：QTEPromptView.ApplyReferenceStyle()。
+            // 面板。
 Image panel = promptRoot.GetComponent<Image>();
             if (panel != null)
             {
@@ -584,7 +584,7 @@ Image panel = promptRoot.GetComponent<Image>();
 
         if (timeFill != null)
         {
-            // timeRect（时间矩形）：使用位置：QTEPromptView.ApplyReferenceStyle()。
+            // 时间矩形。
 RectTransform timeRect = timeFill.rectTransform;
             timeRect.anchorMin = timeRect.anchorMax = new Vector2(0.5f, 0.5f);
             timeRect.anchoredPosition = new Vector2(0f, -25f);
@@ -610,7 +610,7 @@ RectTransform timeRect = timeFill.rectTransform;
 
         if (progressSegments != null)
         {
-            // i（当前遍历索引）：使用位置：QTEPromptView.ApplyReferenceStyle()。
+            // 当前遍历索引。
 for (int i = 0; i < progressSegments.Length; i++)
             {
                 if (progressSegments[i] != null)

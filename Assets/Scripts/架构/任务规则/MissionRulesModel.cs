@@ -5,7 +5,7 @@ using System.Collections.Generic;
 /// 任务波次、生成、击杀和计时的唯一状态拥有者。ChapterOneMissionManager 同步提交生成与死亡事实并推进时间，
 /// 再读取条件与 Snapshot 决定波次和结算；模型不广播事件，不访问场景或引擎时间。
 /// </summary>
-public sealed class MissionRulesModel
+public sealed partial class MissionRulesModel
 {
     /// <summary>中文含义：存活登记。按敌人身份保存仍存活的登记，用于拒绝重复生成和重复死亡事实。</summary>
     private readonly Dictionary<int, MissionEnemyType> aliveRegister = new Dictionary<int, MissionEnemyType>();
@@ -89,6 +89,7 @@ public sealed class MissionRulesModel
     /// <param name="advanceRatio">中文含义：推进比例。配置中的下一波剩余敌人比例。</param>
     public void Initialize(int normalTarget, int chainsawTarget, float survivalDuration, float advanceRatio)
     {
+        ResetVillageEntrance();
         this.normalTarget = normalTarget;
         this.chainsawTarget = chainsawTarget;
         this.survivalDuration = survivalDuration;
@@ -226,13 +227,15 @@ public sealed class MissionRulesModel
     public void Stop()
     {
         RuntimeMiddle = false;
+        pendingFarmEntrance = false;
+        pendingHouseEntrance = false;
     }
 
     /// <summary>宿主确认终局提交成功后调用，写入完成事实并停止计时与后续击杀累计。</summary>
     public void ConfirmComplete()
     {
         Completed = true;
-        RuntimeMiddle = false;
+        Stop();
     }
 
     /// <summary>宿主构造进度通知或结算数据时读取；通过值快照向显示链传递，不暴露可写模型。</summary>

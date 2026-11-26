@@ -99,20 +99,20 @@ internal static class MeleeActionKinds
 /// </summary>
 public class FullBodyActionSMB : StateMachineBehaviour
 {
-    /// <summary>中文含义：当前状态对应的全身动作类型，不通过状态名判断。使用位置：作为 Action&lt;Animator, FullBodyActionType, int, bool&gt;.Invoke(Animator, FullBodyActionType, int, bool) 的参数、作为 Action&lt;Animator, FullBodyActionType, int&gt;.Invoke(Animator, FullBodyActionType, int) 的参数、LeonKnifeAnimatorSetupUtility.ConfigureKnifeAttackState(AnimatorState) 等共 6 处。</summary>
+    /// <summary>当前状态对应的全身动作类型，不通过状态名判断。</summary>
     [Header("动作类型")]
     [Tooltip("当前状态对应的全身动作类型，不通过状态名判断")]
     public FullBodyActionType actionType = FullBodyActionType.Hit;
-    /// <summary>中文含义：标准化时间达到此值时发送正常完成通知。使用位置：FullBodyActionSMB.OnStateUpdate(Animator, AnimatorStateInfo, int)、LeonKnifeAnimatorSetupUtility.ConfigureKnifeAttackState(AnimatorState)、LeonKnifeAnimatorSetupUtility.ConfigureKnifeParryState(AnimatorState) 等共 5 处。</summary>
+    /// <summary>标准化时间达到此值时发送正常完成通知。</summary>
     [Header("通知时刻")]
     [Tooltip("标准化时间达到此值时发送正常完成通知")]
     [Range(0.1f, 1f)]
     public float completeNormalizedTime = 0.9f;
-    /// <summary>中文含义：是否关闭时由业务代码主动推进（下落/落地等循环或预测状态）。开启后达到完成阈值时自动发送完成通知；关闭时由业务代码主动推进（下落/落地等循环或预测状态）。使用位置：FullBodyActionSMB.OnStateUpdate(Animator, AnimatorStateInfo, int)。</summary>
+    /// <summary>是否关闭时由业务代码主动推进（下落/落地等循环或预测状态）。开启后达到完成阈值时自动发送完成通知；关闭时由业务代码主动推进（下落/落地等循环或预测状态）。</summary>
     [Header("自动完成")]
     [Tooltip("开启后达到完成阈值时自动发送完成通知；关闭时由业务代码主动推进（下落/落地等循环或预测状态）")]
     public bool autoComplete = true;
-    /// <summary>中文含义：是否具有已完成。使用位置：作为 Action&lt;Animator, FullBodyActionType, int, bool&gt;.Invoke(Animator, FullBodyActionType, int, bool) 的参数、FullBodyActionSMB.OnStateEnter(Animator, AnimatorStateInfo, int)、FullBodyActionSMB.OnStateExit(Animator, AnimatorStateInfo, int) 等共 4 处。</summary>
+    /// <summary>是否具有已完成。</summary>
     [SerializeField]
     private bool hasCompleted;
     /// <summary>中文含义：全局进入序号。全局递增的状态进入序号</summary>
@@ -144,7 +144,7 @@ public class FullBodyActionSMB : StateMachineBehaviour
 
     /// <summary>实现基类的 OnStateEnter 重写入口；框架调用后按本方法分支执行，并通过下游成员完成协作。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） Action&lt;Animator, FullBodyActionType, int&gt;.Invoke(Animator, FullBodyActionType, int)、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="animator">中文含义：动画控制器。使用位置：作为 Action&lt;Animator, FullBodyActionType, int&gt;.Invoke(Animator, FullBodyActionType, int) 的参数。</param>
+    /// <param name="animator">动画控制器。</param>
     /// <param name="stateInfo">中文含义：当前动画状态信息。</param>
     /// <param name="layerIndex">中文含义：动画图层索引。</param>
     private float nativeHitExitSeconds;
@@ -171,7 +171,7 @@ public class FullBodyActionSMB : StateMachineBehaviour
         }
         hasCompleted = false;
         entrySequence = ++globalEntrySequence;
-        // receiverValue1（判空前缓存的动作进入时的通知回调）：从动作进入时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、FullBodyActionSMB.OnStateEnter(Animator, AnimatorStateInfo, int)。
+        // 判空前缓存的动作进入时的通知回调。
 global::System.Action<global::UnityEngine.Animator, global::FullBodyActionType, int> receiverValue1 = OnActionEntered;
         if (!global::System.Object.ReferenceEquals(receiverValue1, null))
         {
@@ -181,8 +181,8 @@ global::System.Action<global::UnityEngine.Animator, global::FullBodyActionType, 
 
     /// <summary>实现基类的 OnStateUpdate 重写入口；框架调用后按本方法分支执行，并通过下游成员完成协作。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） Action&lt;Animator, FullBodyActionType, int&gt;.Invoke(Animator, FullBodyActionType, int)、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="animator">中文含义：动画控制器。使用位置：作为 Action&lt;Animator, FullBodyActionType, int&gt;.Invoke(Animator, FullBodyActionType, int) 的参数。</param>
-    /// <param name="stateInfo">中文含义：当前动画状态信息。使用位置：FullBodyActionSMB.OnStateUpdate(Animator, AnimatorStateInfo, int)。</param>
+    /// <param name="animator">动画控制器。</param>
+    /// <param name="stateInfo">当前动画状态信息。</param>
     /// <param name="layerIndex">中文含义：动画图层索引。</param>
     public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
@@ -204,7 +204,7 @@ global::System.Action<global::UnityEngine.Animator, global::FullBodyActionType, 
         if (stateInfo.normalizedTime >= completionTime)
         {
             hasCompleted = true;
-            // receiverValue2（判空前缓存的动作完成时的通知回调）：从动作完成时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、FullBodyActionSMB.OnStateUpdate(Animator, AnimatorStateInfo, int)。
+            // 判空前缓存的动作完成时的通知回调。
 global::System.Action<global::UnityEngine.Animator, global::FullBodyActionType, int> receiverValue2 = OnActionCompleted;
             if (!global::System.Object.ReferenceEquals(receiverValue2, null))
             {
@@ -215,14 +215,14 @@ global::System.Action<global::UnityEngine.Animator, global::FullBodyActionType, 
 
     /// <summary>实现基类的 OnStateExit 重写入口；框架调用后按本方法分支执行，并通过下游成员完成协作。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） Action&lt;Animator, FullBodyActionType, int, bool&gt;.Invoke(Animator, FullBodyActionType, int, bool)、Action&lt;Animator, FullBodyActionType, int&gt;.Invoke(Animator, FullBodyActionType, int)、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="animator">中文含义：动画控制器。使用位置：作为 Action&lt;Animator, FullBodyActionType, int, bool&gt;.Invoke(Animator, FullBodyActionType, int, bool) 的参数、作为 Action&lt;Animator, FullBodyActionType, int&gt;.Invoke(Animator, FullBodyActionType, int) 的参数。</param>
+    /// <param name="animator">动画控制器。</param>
     /// <param name="stateInfo">中文含义：当前动画状态信息。</param>
     /// <param name="layerIndex">中文含义：动画图层索引。</param>
     public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         if (!hasCompleted)
         {
-            // receiverValue3（判空前缓存的动作中断时的通知回调）：从动作中断时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、FullBodyActionSMB.OnStateExit(Animator, AnimatorStateInfo, int)。
+            // 判空前缓存的动作中断时的通知回调。
 global::System.Action<global::UnityEngine.Animator, global::FullBodyActionType, int> receiverValue3 = OnActionInterrupted;
             if (!global::System.Object.ReferenceEquals(receiverValue3, null))
             {
@@ -230,7 +230,7 @@ global::System.Action<global::UnityEngine.Animator, global::FullBodyActionType, 
             }
         }
 
-        // receiverValue4（判空前缓存的动作退出时的通知回调）：从动作退出时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、FullBodyActionSMB.OnStateExit(Animator, AnimatorStateInfo, int)。
+        // 判空前缓存的动作退出时的通知回调。
 global::System.Action<global::UnityEngine.Animator, global::FullBodyActionType, int, bool> receiverValue4 = OnActionExited;
         if (!global::System.Object.ReferenceEquals(receiverValue4, null))
         {

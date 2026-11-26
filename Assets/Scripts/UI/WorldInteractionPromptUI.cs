@@ -10,35 +10,35 @@ using System.Collections;
 /// </summary>
 public class WorldInteractionPromptUI : MonoBehaviour
 {
-    /// <summary>中文含义：提示根对象（CanvasGroup）。使用位置：作为 Mathf.Approximately(float, float) 的参数、作为 Mathf.MoveTowards(float, float, float) 的参数、WorldInteractionPromptUI.FadeOutAndDeactivate() 等共 6 处。</summary>
+    /// <summary>提示根对象（CanvasGroup）。</summary>
     [Header("引用")]
     [Tooltip("提示根对象（CanvasGroup）")]
     public CanvasGroup promptGroup;
-    /// <summary>中文含义：F 键图片。使用位置：WorldInteractionPromptUI.ApplyReferenceStyle()、WorldInteractionPromptUI.Start()。</summary>
+    /// <summary>F 键图片。</summary>
     [Tooltip("F 键图片")]
     public Image keyIcon;
-    /// <summary>中文含义：行为描述文本。使用位置：WorldInteractionPromptUI.ApplyReferenceStyle()、WorldInteractionPromptUI.Show(string, IInteractable)、WorldInteractionPromptUI.Start()。</summary>
+    /// <summary>行为描述文本。</summary>
     [Tooltip("行为描述文本")]
     public Text promptText;
-    /// <summary>中文含义：提示相对物品世界位置的屏幕偏移。使用位置：WorldInteractionPromptUI.FollowInteractable(IInteractable)。</summary>
+    /// <summary>提示相对物品世界位置的屏幕偏移。</summary>
     [Header("物品跟随")]
     [Tooltip("提示相对物品世界位置的屏幕偏移。")]
     public Vector2 itemScreenOffset = new Vector2(0f, 56f);
-    /// <summary>中文含义：跟随平滑速度。使用位置：作为 Mathf.Exp(float) 的参数。</summary>
+    /// <summary>跟随平滑速度。</summary>
     [Min(1f)]
     public float followSmoothSpeed = 18f;
-    /// <summary>中文含义：淡入淡出速度。使用位置：作为 Mathf.MoveTowards(float, float, float) 的参数。</summary>
+    /// <summary>淡入淡出速度。</summary>
     [Header("淡入淡出")]
     public float fadeSpeed = 8f;
-    /// <summary>中文含义：淡入淡出协程。使用位置：作为 MonoBehaviour.StopCoroutine(Coroutine) 的参数、WorldInteractionPromptUI.Hide()、WorldInteractionPromptUI.Show(string, IInteractable)。</summary>
+    /// <summary>淡入淡出协程。</summary>
     private Coroutine fadeRoutine;
-    /// <summary>中文含义：是否已显示。使用位置：WorldInteractionPromptUI.Hide()、WorldInteractionPromptUI.Show(string, IInteractable)、WorldInteractionPromptUI.Update()。</summary>
+    /// <summary>是否已显示。</summary>
     private bool isShown;
-    /// <summary>中文含义：提示矩形。使用位置：作为 Vector2.Lerp(Vector2, Vector2, float) 的参数、WorldInteractionPromptUI.ApplyReferenceStyle()、WorldInteractionPromptUI.FollowInteractable(IInteractable) 等共 4 处。</summary>
+    /// <summary>提示矩形。</summary>
     private RectTransform promptRect;
-    /// <summary>中文含义：父级画布。使用位置：WorldInteractionPromptUI.FollowInteractable(IInteractable)、WorldInteractionPromptUI.Start()。</summary>
+    /// <summary>父级画布。</summary>
     private Canvas parentCanvas;
-    /// <summary>中文含义：世界空间摄像机。使用位置：WorldInteractionPromptUI.FollowInteractable(IInteractable)、WorldInteractionPromptUI.Start()。</summary>
+    /// <summary>世界空间摄像机。</summary>
     private Camera worldCamera;
     /// <summary>Unity 首次启用后的启动回调；状态处理与资源交接按函数内顺序执行，下游协作见调用链。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） Component.GetComponent&lt;RectTransform&gt;()、Component.GetComponentInParent&lt;Canvas&gt;()、WorldInteractionPromptUI.ApplyReferenceStyle()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
@@ -78,7 +78,7 @@ public class WorldInteractionPromptUI : MonoBehaviour
         if (promptRect != null)
         {
             promptRect.sizeDelta = new Vector2(240f, 56f);
-            // panel（面板）：保存 Component.GetComponent<Image>() 的返回结果，供当前步骤使用。使用位置：WorldInteractionPromptUI.ApplyReferenceStyle()。
+            // 面板。
 Image panel = promptRect.GetComponent<Image>();
             if (panel != null)
             {
@@ -116,7 +116,7 @@ Image panel = promptRect.GetComponent<Image>();
             return;
         }
 
-        // player（玩家）：使用位置：作为 InteractionSystem.FindNearby(Transform) 的参数、WorldInteractionPromptUI.Update()。
+        // 玩家。
 var player = LeonController.Instance;
         if (player == null)
         {
@@ -128,11 +128,11 @@ var player = LeonController.Instance;
             return;
         }
 
-        // nearby（附近）：保存 InteractionSystem.FindNearby(Transform) 的返回结果，供当前步骤使用。使用位置：作为 WorldInteractionPromptUI.Show(string, IInteractable) 的参数、WorldInteractionPromptUI.Update()。
+        // 附近。
 var nearby = InteractionSystem.FindNearby(player.transform);
         if (nearby != null)
         {
-            // text（文字）：保存 IInteractable.GetPromptText() 的返回结果，供当前步骤使用。使用位置：作为 string.IsNullOrEmpty(string) 的参数、作为 WorldInteractionPromptUI.Show(string, IInteractable) 的参数。
+            // 文字。
 string text = nearby.GetPromptText();
             if (string.IsNullOrEmpty(text))
             {
@@ -184,8 +184,8 @@ string text = nearby.GetPromptText();
 
     /// <summary>Show 的业务处理入口；本方法直接依赖 GameObject.SetActive(bool)、MonoBehaviour.StartCoroutine(IEnumerator)、MonoBehaviour.StopCoroutine(Coroutine)、WorldInteractionPromptUI.FadeTo(float)、WorldInteractionPromptUI.FollowInteractable(IInteractable)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 WorldInteractionPromptUI.Update()；下游（含内部回调体） GameObject.SetActive(bool)、MonoBehaviour.StartCoroutine(IEnumerator)、MonoBehaviour.StopCoroutine(Coroutine)、WorldInteractionPromptUI.FadeTo(float)、WorldInteractionPromptUI.FollowInteractable(IInteractable)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="text">中文含义：文字。使用位置：WorldInteractionPromptUI.Show(string, IInteractable)。</param>
-    /// <param name="interactable">中文含义：可交互。使用位置：作为 WorldInteractionPromptUI.FollowInteractable(IInteractable) 的参数。</param>
+    /// <param name="text">文字。</param>
+    /// <param name="interactable">可交互。</param>
     void Show(string text, IInteractable interactable, LeonController player)
     {
         bool showKeyIcon = true;
@@ -230,7 +230,7 @@ string text = nearby.GetPromptText();
 
     /// <summary>FollowInteractable 的业务处理入口；本方法直接依赖 Camera.WorldToScreenPoint(Vector3)、Component.GetComponent&lt;Collider&gt;()、Mathf.Exp(float)、RectTransformUtility.ScreenPointToLocalPointInRectangle(RectTransform, Vector2, Camera, out Vector2)、Vector2.Lerp(Vector2, Vector2, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 WorldInteractionPromptUI.Show(string, IInteractable)；下游（含内部回调体） Camera.WorldToScreenPoint(Vector3)、Component.GetComponent&lt;Collider&gt;()、Mathf.Exp(float)、RectTransformUtility.ScreenPointToLocalPointInRectangle(RectTransform, Vector2, Camera, out Vector2)、Vector2.Lerp(Vector2, Vector2, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="interactable">中文含义：可交互。使用位置：WorldInteractionPromptUI.FollowInteractable(IInteractable)。</param>
+    /// <param name="interactable">可交互。</param>
     void FollowInteractable(IInteractable interactable)
     {
         if (promptRect == null || interactable is not Component /* 中文含义：组件。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ component)
@@ -248,9 +248,9 @@ string text = nearby.GetPromptText();
             return;
         }
 
-        // targetCollider（目标碰撞体）：保存 Component.GetComponent<Collider>() 的返回结果，供当前步骤使用。使用位置：WorldInteractionPromptUI.FollowInteractable(IInteractable)。
+        // 目标碰撞体。
 Collider targetCollider = component.GetComponent<Collider>();
-        // worldPosition（世界位置）：使用位置：作为 Camera.WorldToScreenPoint(Vector3) 的参数、WorldInteractionPromptUI.FollowInteractable(IInteractable)。
+        // 世界位置。
 Vector3 worldPosition;
         if (interactable is VillageLadderSite ladder)
         {
@@ -265,7 +265,7 @@ Vector3 worldPosition;
             worldPosition = component.transform.position;
         }
 
-        // screenPoint（屏幕坐标点）：保存 Camera.WorldToScreenPoint(Vector3) 的返回结果，供当前步骤使用。使用位置：WorldInteractionPromptUI.FollowInteractable(IInteractable)。
+        // 屏幕坐标点。
 Vector3 screenPoint = worldCamera.WorldToScreenPoint(worldPosition);
         if (interactable is VillageLadderSite && (screenPoint.z <= 0f ||
             screenPoint.x < 125f || screenPoint.x > Screen.width - 125f ||
@@ -279,7 +279,7 @@ Vector3 screenPoint = worldCamera.WorldToScreenPoint(worldPosition);
         }
 
         screenPoint += (Vector3)itemScreenOffset;
-        // canvasRect（画布矩形）：使用位置：WorldInteractionPromptUI.FollowInteractable(IInteractable)。
+        // 画布矩形。
 RectTransform canvasRect;
         if (parentCanvas != null)
         {
@@ -290,17 +290,17 @@ RectTransform canvasRect;
             canvasRect = null;
         }
 
-        // localPoint（局部坐标点）：使用位置：作为 RectTransformUtility.ScreenPointToLocalPointInRectangle(RectTransform, Vector2, Camera, out Vector2) 的参数、作为 Vector2.Lerp(Vector2, Vector2, float) 的参数。
+        // 局部坐标点。
 global::UnityEngine.Vector2 localPoint = default;
-        // conditionResult6（短路判断得到的分支判断）：保存短路分支结果，未选中的分支不执行。使用位置：WorldInteractionPromptUI.FollowInteractable(IInteractable)。
+        // 短路判断得到的分支判断。
 bool conditionResult6;
         if (parentCanvas != null && parentCanvas.renderMode != RenderMode.WorldSpace && canvasRect != null)
         {
-            // argumentValue4（按原顺序缓存的实参画布矩形）：从画布矩形读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 RectTransformUtility.ScreenPointToLocalPointInRectangle(RectTransform, Vector2, Camera, out Vector2) 的参数。
+            // 按原顺序缓存的实参画布矩形。
 global::UnityEngine.RectTransform argumentValue4 = canvasRect;
-            // argumentValue5（按原顺序缓存的实参屏幕坐标点）：从屏幕坐标点读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 RectTransformUtility.ScreenPointToLocalPointInRectangle(RectTransform, Vector2, Camera, out Vector2) 的参数。
+            // 按原顺序缓存的实参屏幕坐标点。
 global::UnityEngine.Vector2 argumentValue5 = screenPoint;
-            // selectedValue3（分支选出的父级画布的世界空间摄像机）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：作为 RectTransformUtility.ScreenPointToLocalPointInRectangle(RectTransform, Vector2, Camera, out Vector2) 的参数、WorldInteractionPromptUI.FollowInteractable(IInteractable)。
+            // 分支选出的父级画布的世界空间摄像机。
 global::UnityEngine.Camera selectedValue3;
             if (parentCanvas.renderMode == RenderMode.ScreenSpaceOverlay)
             {
@@ -349,7 +349,7 @@ global::UnityEngine.Camera selectedValue3;
 
     /// <summary>FadeTo 的业务处理入口；本方法直接依赖 Mathf.Approximately(float, float)、Mathf.MoveTowards(float, float, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 WorldInteractionPromptUI.Show(string, IInteractable)；下游（含内部回调体） Mathf.Approximately(float, float)、Mathf.MoveTowards(float, float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="target">中文含义：目标。使用位置：作为 Mathf.Approximately(float, float) 的参数、作为 Mathf.MoveTowards(float, float, float) 的参数、WorldInteractionPromptUI.FadeTo(float)。</param>
+    /// <param name="target">目标。</param>
     IEnumerator FadeTo(float target)
     {
         if (promptGroup == null)

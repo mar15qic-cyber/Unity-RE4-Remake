@@ -29,28 +29,28 @@ public partial class VillagerController : MonoBehaviour, IDamageable
         ClearingEntrance
     }
 
-    /// <summary>中文含义：攻击范围极小容差。编译期常量，保持既有值与消费者映射。使用位置：VillagerController.ArchitectureReadAttackRangeEpsilon.get。</summary>
+    /// <summary>攻击范围极小容差。编译期常量，保持既有值与消费者映射。</summary>
     private const float attackRangeEpsilon = 0.02f;
-    /// <summary>中文含义：楼梯物理表面上方路线容差。编译期常量，保持既有值与消费者映射。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>楼梯物理表面上方路线容差。编译期常量，保持既有值与消费者映射。</summary>
     private const float stairPhysicalSurfaceAboveRouteTolerance = 0.14f;
-    /// <summary>中文含义：楼梯物理表面下方路线容差。编译期常量，保持既有值与消费者映射。使用位置：VillagerController.TryReadStairSupportHeight(Vector3, out float)。</summary>
+    /// <summary>楼梯物理表面下方路线容差。编译期常量，保持既有值与消费者映射。</summary>
     private const float stairPhysicalSurfaceBelowRouteTolerance = 0.22f;
-    /// <summary>中文含义：是否具有登记门洞。使用位置：VillagerController.RegisterPursuitIngressWaiter(DoorController)、VillagerController.UnregisterPursuitIngressWaiter()。</summary>
+    /// <summary>是否具有登记门洞。</summary>
     private DoorController hasRegisterDoorway;
-    /// <summary>中文含义：门洞通行凭证。使用位置：作为 DoorController.ReleaseTraversal(TraversalToken, ReleaseReason) 的参数、VillagerController.TryGetPursuitIngressDestination(Vector3, out Vector3)、VillagerController.UnregisterPursuitIngressWaiter()。</summary>
+    /// <summary>门洞通行凭证。</summary>
     private GameArchitecture.TraversalToken doorwayTraversalToken;
-    /// <summary>中文含义：当前门洞。使用位置：DoorwayTraversalOccupancy.TryPromoteForwardBlocker(VillagerController, VillagerController, int)、DoorwayTraversalOccupancy.Valid(VillagerController, int)。</summary>
+    /// <summary>当前门洞。</summary>
     internal DoorController CurrentDoorway => pursuitIngressDoor;
-    /// <summary>中文含义：门洞来源侧边。使用位置：DoorwayTraversalOccupancy.TryPromoteForwardBlocker(VillagerController, VillagerController, int)、DoorwayTraversalOccupancy.Valid(VillagerController, int)。</summary>
+    /// <summary>门洞来源侧边。</summary>
     internal int DoorwaySourceSide => pursuitIngressSourceSide;
-    /// <summary>中文含义：是否门洞通行中间。使用位置：CharacterMotionExecutor.Authorize(EnemyMovementMode, ActionHandle)、DoorwayTraversalOccupancy.CleanupDirection()、DoorwayTraversalOccupancy.TryPromoteForwardBlocker(VillagerController, VillagerController, int) 等共 4 处。</summary>
+    /// <summary>是否门洞通行中间。</summary>
     internal bool DoorwayTraverseMiddle => pursuitIngressCrossing;
-    /// <summary>中文含义：当前楼梯通行。使用位置：DoorwayTraversalOccupancy.Valid(VillagerController, int)。</summary>
+    /// <summary>当前楼梯通行。</summary>
     internal HouseThreeTraversalGeometry CurrentStairTraversal => door03TraversalRoute;
 
-    /// <summary>中文含义：移动速度的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。使用位置：作为 Animator.GetFloat(int) 的参数、作为 EnemyAnimationAdapter.SetFloatValue(int, float) 的参数、VillagerController.ArchitectureReadHashMoveSpeed.get。</summary>
+    /// <summary>移动速度的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly int HashMoveSpeed = Animator.StringToHash("MoveSpeed");
-    /// <summary>中文含义：移动行为播放速率的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。使用位置：VillagerController.ArchitectureReadHashLocomotionPlaybackRate.get。</summary>
+    /// <summary>移动行为播放速率的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly int HashLocomotionPlaybackRate = Animator.StringToHash("LocomotionPlaybackRate");
     /// <summary>中文含义：是否具有移动行为播放速率。</summary>
     private bool hasLocomotionPlaybackRate
@@ -84,58 +84,59 @@ public partial class VillagerController : MonoBehaviour, IDamageable
         }
     }
 
-    /// <summary>中文含义：移动横向的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。使用位置：作为 EnemyAnimationAdapter.SetFloatValue(int, float) 的参数、VillagerController.ArchitectureReadHashMoveX.get。</summary>
+    /// <summary>移动横向的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly int HashMoveX = Animator.StringToHash("MoveX");
-    /// <summary>中文含义：移动纵向的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。使用位置：作为 EnemyAnimationAdapter.SetFloatValue(int, float) 的参数、VillagerController.ArchitectureReadHashMoveY.get。</summary>
+    /// <summary>移动纵向的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly int HashMoveY = Animator.StringToHash("MoveY");
-    /// <summary>中文含义：行走的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。使用位置：作为 EnemyAnimationAdapter.SetBoolean(int, bool) 的参数、VillagerController.ArchitectureReadHashWALK.get。</summary>
+    /// <summary>行走的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly int HashWALK = Animator.StringToHash("WALK");
-    /// <summary>中文含义：生命比例的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。使用位置：VillagerController.ArchitectureReadHashHealthRatio.get。</summary>
+    /// <summary>生命比例的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly int HashHealthRatio = Animator.StringToHash("HealthRatio");
-    /// <summary>中文含义：搜索模式的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。使用位置：作为 EnemyAnimationAdapter.SetBoolean(int, bool) 的参数、VillagerController.ArchitectureReadHashSearchMode.get。</summary>
+    /// <summary>搜索模式的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly int HashSearchMode = Animator.StringToHash("SearchMode");
-    /// <summary>中文含义：待机混合的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。使用位置：VillagerController.ArchitectureReadHashIdleBlend.get。</summary>
+    /// <summary>待机混合的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly int HashIdleBlend = Animator.StringToHash("IdleBlend");
-    /// <summary>中文含义：转向方向的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。使用位置：作为 EnemyAnimationAdapter.SetIntegerValue(int, int) 的参数、VillagerController.ArchitectureReadHashTurnDir.get。</summary>
+    /// <summary>转向方向的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly int HashTurnDir = Animator.StringToHash("TurnDir");
-    /// <summary>中文含义：攻击索引的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。使用位置：VillagerController.ArchitectureReadHashAttackIndex.get。</summary>
+    /// <summary>攻击索引的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly int HashAttackIndex = Animator.StringToHash("AttackIndex");
-    /// <summary>中文含义：爬行待机状态的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。使用位置：VillagerController.ArchitectureReadHashCrawlIdleState.get。</summary>
+    /// <summary>爬行待机状态的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly int HashCrawlIdleState = Animator.StringToHash("CrawlIdle");
-    /// <summary>中文含义：爬行待机路径的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。使用位置：VillagerController.ArchitectureReadHashCrawlIdlePath.get。</summary>
+    /// <summary>爬行待机路径的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly int HashCrawlIdlePath = Animator.StringToHash("Base Layer.Crawl.CrawlIdle");
-    /// <summary>中文含义：爬行子级状态路径的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。使用位置：VillagerController.ArchitectureReadHashCrawlSubStatePath.get。</summary>
+    /// <summary>爬行子级状态路径的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly int HashCrawlSubStatePath = Animator.StringToHash("Crawl.CrawlIdle");
-    /// <summary>中文含义：命中方向的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。使用位置：VillagerController.ArchitectureReadHashHitDir.get。</summary>
+    /// <summary>命中方向的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly int HashHitDir = Animator.StringToHash("HitDir");
-    /// <summary>中文含义：硬直方向的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。使用位置：VillagerController.ArchitectureReadHashStaggerDirection.get。</summary>
+    /// <summary>硬直方向的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly int HashStaggerDirection = Animator.StringToHash("StaggerDirection");
-    /// <summary>中文含义：硬直级别的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。使用位置：VillagerController.ArchitectureReadHashStaggerLevel.get。</summary>
+    /// <summary>硬直级别的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly int HashStaggerLevel = Animator.StringToHash("StaggerLevel");
-    /// <summary>中文含义：是否爬行的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。使用位置：VillagerController.ArchitectureReadHashIsCrawl.get。</summary>
+    /// <summary>是否爬行的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly int HashIsCrawl = Animator.StringToHash("IsCrawl");
-    /// <summary>中文含义：是否可以绊倒的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。使用位置：VillagerController.ArchitectureReadHashCanTripOver.get。</summary>
+    /// <summary>是否可以绊倒的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly int HashCanTripOver = Animator.StringToHash("CanTripOver");
-    /// <summary>中文含义：攻击的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。使用位置：VillagerController.ArchitectureReadHashATK.get。</summary>
+    /// <summary>攻击的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly int HashATK = Animator.StringToHash("ATK");
-    /// <summary>中文含义：命中的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。使用位置：VillagerController.ArchitectureReadHashHIT.get。</summary>
+    /// <summary>命中的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly int HashHIT = Animator.StringToHash("HIT");
-    /// <summary>中文含义：死亡的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。使用位置：VillagerController.ArchitectureReadHashDIE.get。</summary>
+    /// <summary>死亡的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly int HashDIE = Animator.StringToHash("DIE");
-    /// <summary>中文含义：命中触发器的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。使用位置：VillagerController.ArchitectureReadHashHitTrigger.get。</summary>
+    /// <summary>命中触发器的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly int HashHitTrigger = Animator.StringToHash("HitTrigger");
-    /// <summary>中文含义：硬直触发器的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。使用位置：VillagerController.ArchitectureReadHashStaggerTrigger.get。</summary>
+    private static readonly int HashHitDiagnostic = Animator.StringToHash("HIT");
+    /// <summary>硬直触发器的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly int HashStaggerTrigger = Animator.StringToHash("StaggerTrigger");
-    /// <summary>中文含义：攻击01状态的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。使用位置：VillagerController.ArchitectureReadHashAttack01State.get。</summary>
+    /// <summary>攻击01状态的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly int HashAttack01State = Animator.StringToHash("Attack01");
-    /// <summary>中文含义：攻击02状态的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。使用位置：VillagerController.ArchitectureReadHashAttack02State.get。</summary>
+    /// <summary>攻击02状态的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly int HashAttack02State = Animator.StringToHash("Attack02");
-    /// <summary>中文含义：攻击03状态的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。使用位置：VillagerController.ArchitectureReadHashAttack03State.get。</summary>
+    /// <summary>攻击03状态的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly int HashAttack03State = Animator.StringToHash("Attack03");
-    /// <summary>中文含义：最大生命值。使用位置：作为 CharacterHealthModule.Initialize(float) 的参数、作为 Mathf.Clamp01(float) 的参数、EnemyAnimationAdapter.maxHealth.get 等共 6 处。</summary>
+    /// <summary>最大生命值。</summary>
     [Header("属性")]
     public float maxHealth = 50f;
-    /// <summary>中文含义：当前生命值。使用位置：作为 DamageResult.DamageResult(DamageRequest, bool, RejectionReason, float, bool) 的参数、作为 HitResult.HitResult(GameObject, Vector3, Vector3, HitboxType, float, bool, bool) 的参数、作为 Mathf.Clamp01(float) 的参数 等共 9 处。</summary>
+    /// <summary>当前生命值。</summary>
     public float currentHealth
     {
         get
@@ -151,389 +152,389 @@ public partial class VillagerController : MonoBehaviour, IDamageable
         }
     }
 
-    /// <summary>中文含义：攻击伤害。使用位置：EnemyCombatModule.attackDamage.get。</summary>
+    /// <summary>攻击伤害。</summary>
     public float attackDamage = 10f;
-    /// <summary>中文含义：攻击冷却时间。使用位置：作为 Mathf.Max(float, float) 的参数、VillagerController.IsAttackReady.get。</summary>
+    /// <summary>攻击冷却时间。</summary>
     public float attackCooldown = 2f;
-    /// <summary>中文含义：追逐速度。使用位置：作为 EnemyContext.ClampStandingMoveParameter(float) 的参数。</summary>
+    /// <summary>追逐速度。</summary>
     public float chaseSpeed = EnemyContext.StandingChaseMoveParameter;
-    /// <summary>中文含义：巡逻速度。使用位置：EnemyActionCoordinator.patrolSpeed.get。</summary>
+    /// <summary>巡逻速度。</summary>
     public float patrolSpeed = 0.35f;
-    /// <summary>中文含义：生命模块。使用位置：作为 EnemyContext.EnemyContext(CharacterHealthModule, EnemyCombatModule) 的参数、EnemyActionCoordinator.HealthModule.get、EnemyAIIntegrationContractValidator.ValidateLifeOwnership(List&lt;string&gt;) 等共 9 处。</summary>
+    /// <summary>生命模块。</summary>
     [Header("架构模块引用")]
     [UnityEngine.Serialization.FormerlySerializedAs("生命模块")]
     [UnityEngine.InspectorName("生命模块")]
     public CharacterHealthModule healthModule;
-    /// <summary>中文含义：战斗模块。使用位置：作为 EditorUtility.SetDirty(Object) 的参数、作为 EnemyContext.EnemyContext(CharacterHealthModule, EnemyCombatModule) 的参数、作为 PrefabUtility.RecordPrefabInstancePropertyModifications(Object) 的参数 等共 103 处。</summary>
+    /// <summary>战斗模块。</summary>
     [UnityEngine.Serialization.FormerlySerializedAs("战斗模块")]
     [UnityEngine.InspectorName("战斗模块")]
     public EnemyCombatModule combatModule;
-    /// <summary>中文含义：感知模块。使用位置：EnemyActionCoordinator.PerceptionModule.get、EnemyAnimationAdapter.PerceptionModule.get、EnemyCombatModule.combatEngaged.get 等共 37 处。</summary>
+    /// <summary>感知模块。</summary>
     [UnityEngine.Serialization.FormerlySerializedAs("感知模块")]
     [UnityEngine.InspectorName("感知模块")]
     public EnemyPerceptionModule perceptionModule;
-    /// <summary>中文含义：动作协调。使用位置：作为 RequestContext.RequestContext(string, ObjectIdentity, ObjectIdentity, long) 的参数、作为 TraversalTokenRegistry.Register(ActionHandle) 的参数、作为 TraversalTokenRegistry.ValidateRequest(RequestContext, ActionHandle) 的参数 等共 90 处。</summary>
+    /// <summary>动作协调。</summary>
     [UnityEngine.Serialization.FormerlySerializedAs("动作协调")]
     [UnityEngine.InspectorName("动作协调")]
     public EnemyActionCoordinator actionCoordinator;
-    /// <summary>中文含义：动画表现。使用位置：EnemyActionCoordinator.AnimationPresenter.get、EnemyAnimationAdapter.AnimationPresenter.get、EnemyCombatModule.AnimationPresenter.get 等共 46 处。</summary>
+    /// <summary>动画表现。</summary>
     [UnityEngine.Serialization.FormerlySerializedAs("动画表现")]
     [UnityEngine.InspectorName("动画表现")]
     public EnemyAnimationAdapter animationPresenter;
-    /// <summary>中文含义：角色运动执行器。使用位置：作为 CharacterMotionExecutor.CommitPose(MotionControlToken, Vector3, Quaternion, bool) 的参数、EnemyActionCoordinator.ApproveMotionMode(EnemyMovementMode)、EnemyActionCoordinator.CloseAction() 等共 27 处。</summary>
+    /// <summary>角色运动执行器。</summary>
     [UnityEngine.Serialization.FormerlySerializedAs("运动执行")]
     [UnityEngine.InspectorName("运动执行")]
     public CharacterMotionExecutor motionExecutor;
-    /// <summary>中文含义：任务敌人类型。使用位置：作为 HashSet&lt;VillagerController&gt;.RemoveWhere(Predicate&lt;VillagerController&gt;) 的参数、ChapterOneMissionManager.TrySpawnEnemy(GameObject, MissionEnemyType)、EnemyActionCoordinator.missionEnemyType.get 等共 11 处。</summary>
+    /// <summary>任务敌人类型。</summary>
     [Header("任务分类")]
     public MissionEnemyType missionEnemyType = MissionEnemyType.Ganado;
-    /// <summary>中文含义：是否暗杀展示待机。仅用于入村刺杀镜头展示。启用后保持待机，不参与行为树、追击和任务敌人统计。使用位置：ChapterOneMissionManager.RemoveUnmanagedRuntimeEnemies()、EnemyAIManager.RegisterEnemy(VillagerController)、VillagerController.EnsureBehaviorTreeRunning() 等共 6 处。</summary>
+    /// <summary>是否暗杀展示待机。仅用于入村刺杀镜头展示。启用后保持待机，不参与行为树、追击和任务敌人统计。</summary>
     [Header("展示模式")]
     [Tooltip("仅用于入村刺杀镜头展示。启用后保持待机，不参与行为树、追击和任务敌人统计。")]
     public bool assassinationShowcaseIdle;
-    /// <summary>中文含义：攻击接触留白。使用位置：作为 Gizmos.DrawWireSphere(Vector3, float) 的参数、EnemyCombatModule.attackContactPadding.get。</summary>
+    /// <summary>攻击接触留白。</summary>
     [Header("攻击判定")]
     [Min(0f)]
     public float attackContactPadding = 0.05f;
-    /// <summary>中文含义：攻击起始范围。使用位置：作为 Gizmos.DrawWireSphere(Vector3, float) 的参数、作为 Mathf.Max(float, float) 的参数、EnemyCombatModule.attackStartRange.get。</summary>
+    /// <summary>攻击起始范围。</summary>
     [Min(0.1f)]
     public float attackStartRange = 1.2f;
-    /// <summary>中文含义：攻击命中范围。使用位置：作为 IEnumerable&lt;int&gt;.Select&lt;int, KnifeEnemyAttackProfile&gt;(Func&lt;int, KnifeEnemyAttackProfile&gt;) 的参数、EnemyCombatModule.attackHitRange.get。</summary>
+    /// <summary>攻击命中范围。</summary>
     [Min(0.1f)]
     public float attackHitRange = 1.25f;
-    /// <summary>中文含义：战斗保持退出范围。使用位置：EnemyCombatModule.combatHoldExitRange.get。</summary>
+    /// <summary>战斗保持退出范围。</summary>
     [Min(0.1f)]
     public float combatHoldExitRange = 1.6f;
-    /// <summary>中文含义：攻击命中角度。使用位置：作为 IEnumerable&lt;int&gt;.Select&lt;int, KnifeEnemyAttackProfile&gt;(Func&lt;int, KnifeEnemyAttackProfile&gt;) 的参数、EnemyCombatModule.attackHitAngle.get。</summary>
+    /// <summary>攻击命中角度。</summary>
     [Range(10f, 180f)]
     public float attackHitAngle = 100f;
-    /// <summary>中文含义：爬行攻击起始角度。使用位置：EnemyCombatModule.crawlAttackStartAngle.get。</summary>
+    /// <summary>爬行攻击起始角度。</summary>
     [Range(10f, 180f)]
     public float crawlAttackStartAngle = 145f;
-    /// <summary>中文含义：站立攻击后备命中归一化时间。使用位置：作为 IEnumerable&lt;int&gt;.Select&lt;int, KnifeEnemyAttackProfile&gt;(Func&lt;int, KnifeEnemyAttackProfile&gt;) 的参数、EnemyCombatModule.standingAttackFallbackHitNormalizedTime.get。</summary>
+    /// <summary>站立攻击后备命中归一化时间。</summary>
     [Range(0.05f, 0.95f)]
     public float standingAttackFallbackHitNormalizedTime = 0.55f;
-    /// <summary>中文含义：是否启用小刀招架。使用位置：作为 IEnumerable&lt;int&gt;.Select&lt;int, KnifeEnemyAttackProfile&gt;(Func&lt;int, KnifeEnemyAttackProfile&gt;) 的参数、EnemyCombatModule.enableKnifeParry.get。</summary>
+    /// <summary>是否启用小刀招架。</summary>
     [Header("小刀弹反")]
     public bool enableKnifeParry = true;
-    /// <summary>中文含义：小刀局部停顿。使用位置：CharacterMotionExecutor.CommitPose(MotionControlToken, Vector3, Quaternion, bool)、KnifeCombatBuilder.BindingEnemy(VillagerController)、KnifeCombatModule.ResolveIncomingAttack(KnifeIncomingAttackContext) 等共 5 处。</summary>
+    /// <summary>小刀局部停顿。</summary>
     [Header("小刀接触停顿")]
     [UnityEngine.Serialization.FormerlySerializedAs("小刀局部停顿")]
     [UnityEngine.InspectorName("小刀局部停顿")]
     public KnifeHitStop knifeLocalHitStop;
-    /// <summary>中文含义：站立战斗竖直容差。使用位置：EnemyAIManager.GetDirectPressureScore(VillagerController, Vector3)、EnemyCombatModule.standingCombatVerticalTolerance.get。</summary>
+    /// <summary>站立战斗竖直容差。</summary>
     [Header("近战路径约束")]
     [Min(0.1f)]
     public float standingCombatVerticalTolerance = 0.75f;
-    /// <summary>中文含义：爬行战斗竖直容差。使用位置：EnemyCombatModule.crawlCombatVerticalTolerance.get。</summary>
+    /// <summary>爬行战斗竖直容差。</summary>
     [Min(0.1f)]
     public float crawlCombatVerticalTolerance = 0.55f;
-    /// <summary>中文含义：直接接近停止中距离。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>直接接近停止中距离。</summary>
     [Min(0.1f)]
     public float directApproachStoppingDistance = 0.9f;
-    /// <summary>中文含义：稳定攻击表面坡度。使用位置：作为 Mathf.Max(float, float) 的参数、VillagerController.IsStandingAttackSurfaceStable()。</summary>
+    /// <summary>稳定攻击表面坡度。</summary>
     [Range(1f, 89f)]
     public float stableAttackSurfaceSlope = 28f;
-    /// <summary>中文含义：是否启用电锯友方伤害。使用位置：EnemyCombatModule.enableChainsawFriendlyFire.get。</summary>
+    /// <summary>是否启用电锯友方伤害。</summary>
     [Header("电锯误伤")]
     public bool enableChainsawFriendlyFire = true;
-    /// <summary>中文含义：电锯友方伤害范围。使用位置：EnemyCombatModule.chainsawFriendlyFireRange.get。</summary>
+    /// <summary>电锯友方伤害范围。</summary>
     [Min(0.1f)]
     public float chainsawFriendlyFireRange = 1.85f;
-    /// <summary>中文含义：电锯友方伤害角度。使用位置：EnemyCombatModule.chainsawFriendlyFireAngle.get。</summary>
+    /// <summary>电锯友方伤害角度。</summary>
     [Range(10f, 180f)]
     public float chainsawFriendlyFireAngle = 125f;
-    /// <summary>中文含义：电锯友方伤害伤害倍率。使用位置：EnemyCombatModule.chainsawFriendlyFireDamageMultiplier.get。</summary>
+    /// <summary>电锯友方伤害伤害倍率。</summary>
     [Min(0f)]
     public float chainsawFriendlyFireDamageMultiplier = 0.8f;
-    /// <summary>中文含义：电锯友伤最多命中目标数。使用位置：EnemyCombatModule.chainsawFriendlyFireMaxTargets.get。</summary>
+    /// <summary>电锯友伤最多命中目标数。</summary>
     [Min(0)]
     public int chainsawFriendlyFireMaxTargets = 3;
-    /// <summary>中文含义：电锯友方伤害高度容差。使用位置：EnemyCombatModule.chainsawFriendlyFireHeightTolerance.get。</summary>
+    /// <summary>电锯友方伤害高度容差。</summary>
     [Min(0f)]
     public float chainsawFriendlyFireHeightTolerance = 1.45f;
-    /// <summary>中文含义：死亡电锯危险持续时间。使用位置：EnemyActionCoordinator.deadChainsawDangerDuration.get、EnemyCombatModule.deadChainsawDangerDuration.get。</summary>
+    /// <summary>死亡电锯危险持续时间。</summary>
     [Min(0f)]
     public float deadChainsawDangerDuration = 2f;
-    /// <summary>中文含义：死亡电锯危险半径。使用位置：EnemyCombatModule.deadChainsawDangerRadius.get。</summary>
+    /// <summary>死亡电锯危险半径。</summary>
     [Min(0.1f)]
     public float deadChainsawDangerRadius = 1.25f;
-    /// <summary>中文含义：死亡电锯伤害间隔。使用位置：EnemyCombatModule.deadChainsawDamageInterval.get。</summary>
+    /// <summary>死亡电锯伤害间隔。</summary>
     [Min(0.05f)]
     public float deadChainsawDamageInterval = 0.35f;
-    /// <summary>中文含义：死亡电锯伤害倍率。使用位置：EnemyCombatModule.deadChainsawDamageMultiplier.get。</summary>
+    /// <summary>死亡电锯伤害倍率。</summary>
     [Min(0f)]
     public float deadChainsawDamageMultiplier = 0.45f;
-    /// <summary>中文含义：是否启用敌人友方伤害。使用位置：EnemyCombatModule.enableEnemyFriendlyFire.get。</summary>
+    /// <summary>是否启用敌人友方伤害。</summary>
     [Header("敌人误伤")]
     public bool enableEnemyFriendlyFire = true;
-    /// <summary>中文含义：敌人友方伤害范围。使用位置：EnemyCombatModule.enemyFriendlyFireRange.get。</summary>
+    /// <summary>敌人友方伤害范围。</summary>
     [Min(0.1f)]
     public float enemyFriendlyFireRange = 1.25f;
-    /// <summary>中文含义：敌人友方伤害角度。使用位置：EnemyCombatModule.enemyFriendlyFireAngle.get。</summary>
+    /// <summary>敌人友方伤害角度。</summary>
     [Range(10f, 180f)]
     public float enemyFriendlyFireAngle = 85f;
-    /// <summary>中文含义：敌人友方伤害伤害倍率。使用位置：EnemyCombatModule.enemyFriendlyFireDamageMultiplier.get。</summary>
+    /// <summary>敌人友方伤害伤害倍率。</summary>
     [Min(0f)]
     public float enemyFriendlyFireDamageMultiplier = 0.35f;
-    /// <summary>中文含义：单次敌人友伤最多命中的目标数。使用位置：EnemyCombatModule.enemyFriendlyFireMaxTargets.get。</summary>
+    /// <summary>单次敌人友伤最多命中的目标数。</summary>
     [Min(0)]
     public int enemyFriendlyFireMaxTargets = 1;
-    /// <summary>中文含义：敌人友方伤害高度容差。使用位置：EnemyCombatModule.enemyFriendlyFireHeightTolerance.get。</summary>
+    /// <summary>敌人友方伤害高度容差。</summary>
     [Min(0f)]
     public float enemyFriendlyFireHeightTolerance = 1.1f;
-    /// <summary>中文含义：站立攻击动画数量。使用位置：作为 Mathf.Min(int, int) 的参数、EnemyCombatModule.standingAttackAnimationCount.get。</summary>
+    /// <summary>站立攻击动画数量。</summary>
     [Header("动画配置")]
     [Min(1)]
     public int standingAttackAnimationCount = 3;
-    /// <summary>中文含义：是否支持爬行。使用位置：EnemyCombatModule.supportsCrawl.get、VillagerController.CanEvaluateCrawlCombatAction.get。</summary>
+    /// <summary>是否支持爬行。</summary>
     public bool supportsCrawl = true;
-    /// <summary>中文含义：是否支持绊倒。使用位置：EnemyCombatModule.supportsTripOver.get。</summary>
+    /// <summary>是否支持绊倒。</summary>
     public bool supportsTripOver = true;
-    /// <summary>中文含义：巡逻半径。使用位置：作为 Gizmos.DrawWireSphere(Vector3, float) 的参数、SelectPatrolPoint.OnUpdate()。</summary>
+    /// <summary>巡逻半径。</summary>
     [Header("巡逻")]
     public float patrolRadius = 10f;
-    /// <summary>中文含义：静止巡逻最小持续时间。使用位置：作为 Mathf.Max(float, float) 的参数、作为 Mathf.Min(float, float) 的参数。</summary>
+    /// <summary>静止巡逻最小持续时间。</summary>
     [Min(0.1f)]
     public float stationaryPatrolMinDuration = 1.5f;
-    /// <summary>中文含义：静止巡逻最大持续时间。使用位置：作为 Mathf.Max(float, float) 的参数、作为 Mathf.Min(float, float) 的参数。</summary>
+    /// <summary>静止巡逻最大持续时间。</summary>
     [Min(0.1f)]
     public float stationaryPatrolMaxDuration = 3f;
-    /// <summary>中文含义：静止巡逻最大转向角度。使用位置：作为 Mathf.Clamp(float, float, float) 的参数。</summary>
+    /// <summary>静止巡逻最大转向角度。</summary>
     [Range(0f, 180f)]
     public float stationaryPatrolMaxTurnAngle = 75f;
-    /// <summary>中文含义：静止巡逻转向速度。使用位置：EnemyActionCoordinator.stationaryPatrolTurnSpeed.get。</summary>
+    /// <summary>静止巡逻转向速度。</summary>
     [Min(1f)]
     public float stationaryPatrolTurnSpeed = 55f;
-    /// <summary>中文含义：敌人语音配置资产。使用位置：EnemyAnimationAdapter.voiceProfile.get。</summary>
+    /// <summary>敌人语音配置资产。</summary>
     [Header("语音")]
     [Tooltip("敌人语音配置资产")]
     public ZombieAudioProfile voiceProfile;
-    /// <summary>中文含义：语音播放最小间隔（秒），防止多个敌人同时持续播放。使用位置：EnemyAnimationAdapter.voiceMinInterval.get。</summary>
+    /// <summary>语音播放最小间隔（秒），防止多个敌人同时持续播放。</summary>
     [Tooltip("语音播放最小间隔（秒），防止多个敌人同时持续播放")]
     public float voiceMinInterval = 1.5f;
-    /// <summary>中文含义：是否使用根运动。使用位置：作为 EnemyAnimationAdapter.SetRootMotion(bool) 的参数、EnemyAnimationAdapter.InitializeAnimationParameter()、VillagerQTEParticipant.ForceExitQTEForDeath(int)。</summary>
+    /// <summary>是否使用根运动。</summary>
     [Header("根运动")]
     public bool useRootMotion = true;
-    /// <summary>中文含义：地面探测高度。使用位置：作为 Mathf.Max(float, float) 的参数、作为 Physics.RaycastNonAlloc(Vector3, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 的参数、作为 Physics.SphereCastNonAlloc(Vector3, float, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 的参数 等共 7 处。</summary>
+    /// <summary>地面探测高度。</summary>
     [Header("地面贴合")]
     [Min(0.1f)]
     public float groundProbeHeight = 0.6f;
-    /// <summary>中文含义：地面探测距离。使用位置：作为 Mathf.Max(float, float) 的参数、作为 VillagerController.SnapToGround(float, float, bool) 的参数。</summary>
+    /// <summary>地面探测距离。</summary>
     [Min(0.1f)]
     public float groundProbeDistance = 2f;
-    /// <summary>中文含义：地面偏移量。使用位置：作为 Mathf.Abs(float) 的参数、作为 Vector3.Vector3(float, float, float) 的参数、VillagerController.CanTraverseCurrentPathGround(Collider, Vector3, float) 等共 8 处。</summary>
+    /// <summary>地面偏移量。</summary>
     public float groundOffset;
-    /// <summary>中文含义：最大地面步进向上。使用位置：作为 Mathf.Max(float, float) 的参数、VillagerController.CanTraverseCurrentPathGround(Collider, Vector3, float)、VillagerController.CanTraverseSupportedNavigationSegment(Vector3, bool) 等共 6 处。</summary>
+    /// <summary>最大地面步进向上。</summary>
     [Min(0.05f)]
     public float maximumGroundStepUp = 0.45f;
-    /// <summary>中文含义：最大地面掉落。使用位置：作为 Mathf.Max(float, float) 的参数、作为 Physics.RaycastNonAlloc(Vector3, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 的参数、VillagerController.CanTraverseCurrentPathGround(Collider, Vector3, float)。</summary>
+    /// <summary>最大地面掉落。</summary>
     [Min(0.05f)]
     public float maximumGroundDrop = 0.8f;
-    /// <summary>中文含义：最大地面坡度。使用位置：作为 Mathf.Clamp(float, float, float) 的参数、作为 Mathf.Max(float, float) 的参数、作为 Mathf.Min(float, float) 的参数 等共 5 处。</summary>
+    /// <summary>最大地面坡度。</summary>
     [Range(1f, 89f)]
     public float maximumGroundSlope = 50f;
-    /// <summary>中文含义：移动碰撞皮肤。使用位置：作为 Mathf.Max(float, float) 的参数、作为 Mathf.Min(float, float) 的参数、作为 VillagerController.TryFindMovementBlocker(Vector3, Vector3, float, Vector3, float, out RaycastHit, bool, bool, bool) 的参数 等共 6 处。</summary>
+    /// <summary>移动碰撞皮肤。</summary>
     [Min(0.001f)]
     public float movementCollisionSkin = 0.03f;
-    /// <summary>中文含义：楼梯视觉表现步进高度。导航斜桥没有命中真实踏面时，按此高度离散贴合台阶，避免沿斜面滑行。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>楼梯视觉表现步进高度。导航斜桥没有命中真实踏面时，按此高度离散贴合台阶，避免沿斜面滑行。</summary>
     [Tooltip("导航斜桥没有命中真实踏面时，按此高度离散贴合台阶，避免沿斜面滑行")]
     [Min(0.05f)]
     public float stairVisualStepHeight = 0.18f;
-    /// <summary>中文含义：是否启用局部避障。使用位置：VillagerController.ResolveLocalAvoidanceDisplacement(Vector3)。</summary>
+    /// <summary>是否启用局部避障。</summary>
     [Header("局部避障")]
     public bool enableLocalAvoidance = true;
-    /// <summary>中文含义：敌人避障半径。使用位置：作为 Physics.OverlapSphereNonAlloc(Vector3, float, Collider[], int, QueryTriggerInteraction) 的参数、VillagerController.ResolveLocalAvoidanceDisplacement(Vector3)。</summary>
+    /// <summary>敌人避障半径。</summary>
     [Min(0.1f)]
     public float enemyAvoidanceRadius = 1.1f;
-    /// <summary>中文含义：敌人避障强度。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>敌人避障强度。</summary>
     [Min(0f)]
     public float enemyAvoidanceStrength = 1.25f;
-    /// <summary>中文含义：敌人避障侧边偏置。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>敌人避障侧边偏置。</summary>
     [Min(0f)]
     public float enemyAvoidanceSideBias = 0.35f;
-    /// <summary>中文含义：敌人避障侧边保持持续时间。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>敌人避障侧边保持持续时间。</summary>
     [Min(0.1f)]
     public float enemyAvoidanceSideHoldDuration = 0.8f;
-    /// <summary>中文含义：敌人避障最大权重。使用位置：作为 Mathf.Clamp(float, float, float) 的参数。</summary>
+    /// <summary>敌人避障最大权重。</summary>
     [Range(0f, 0.45f)]
     public float enemyAvoidanceMaximumWeight = 0.32f;
-    /// <summary>中文含义：敌人避障最大角度。使用位置：作为 Mathf.Clamp(float, float, float) 的参数。</summary>
+    /// <summary>敌人避障最大角度。</summary>
     [Range(5f, 60f)]
     public float enemyAvoidanceMaximumAngle = 32f;
-    /// <summary>中文含义：阻挡重新寻路延迟。使用位置：VillagerController.UpdateBlockedMovement(float, Vector3, RaycastHit, VillagerController, float)。</summary>
+    /// <summary>阻挡重新寻路延迟。</summary>
     [Min(0.1f)]
     public float blockedRepathDelay = 0.65f;
-    /// <summary>中文含义：阻挡重新寻路间隔。使用位置：VillagerController.UpdateBlockedMovement(float, Vector3, RaycastHit, VillagerController, float)。</summary>
+    /// <summary>阻挡重新寻路间隔。</summary>
     [Min(0.1f)]
     public float blockedRepathInterval = 0.8f;
-    /// <summary>中文含义：重叠恢复距离。使用位置：作为 Mathf.Min(float, float) 的参数、作为 Vector3.ClampMagnitude(Vector3, float) 的参数。</summary>
+    /// <summary>重叠恢复距离。</summary>
     [Min(0.01f)]
     public float overlapRecoveryDistance = 0.08f;
-    /// <summary>中文含义：追逐进度超时。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>追逐进度超时。</summary>
     [Header("追击停滞恢复")]
     [Min(0.2f)]
     public float chaseProgressTimeout = 1f;
-    /// <summary>中文含义：追逐进度距离。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>追逐进度距离。</summary>
     [Min(0.01f)]
     public float chaseProgressDistance = 0.06f;
-    /// <summary>中文含义：追逐恢复间隔。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>追逐恢复间隔。</summary>
     [Min(0.1f)]
     public float chaseRecoveryInterval = 0.65f;
-    /// <summary>中文含义：行为树在路径失败状态下重新解析可达追击点的间隔。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>行为树在路径失败状态下重新解析可达追击点的间隔。</summary>
     [Tooltip("行为树在路径失败状态下重新解析可达追击点的间隔。")]
     [Min(0.2f)]
     public float chasePathRecoveryInterval = 0.75f;
-    /// <summary>中文含义：路径抵达点距里昂超过此值时，不能视为已完成追击。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>路径抵达点距里昂超过此值时，不能视为已完成追击。</summary>
     [Header("追击终点校验")]
     [Tooltip("路径抵达点距里昂超过此值时，不能视为已完成追击。")]
     [Min(0.1f)]
     public float incompletePursuitArrivalDistance = 1.7f;
-    /// <summary>中文含义：未完成追击时的重算间隔，避免每帧提交相同路径。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>未完成追击时的重算间隔，避免每帧提交相同路径。</summary>
     [Tooltip("未完成追击时的重算间隔，避免每帧提交相同路径。")]
     [Min(0.2f)]
     public float incompletePursuitRepathInterval = 0.75f;
-    /// <summary>中文含义：视野范围。使用位置：作为 Mathf.Max(float, float) 的参数、EnemyCombatModule.sightRange.get、EnemyPerceptionModule.sightRange.get。</summary>
+    /// <summary>视野范围。</summary>
     [Header("行为设置")]
     public float sightRange = 30f;
-    /// <summary>中文含义：爬行持续时间。使用位置：ExecuteCrawl.OnStart()。</summary>
+    /// <summary>爬行持续时间。</summary>
     public float crawlDuration = 8f;
-    /// <summary>中文含义：爬行转向速度。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>爬行转向速度。</summary>
     [Min(0.1f)]
     public float crawlTurnSpeed = 7f;
-    /// <summary>中文含义：爬行方向转向速率。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>爬行方向转向速率。</summary>
     [Min(1f)]
     public float crawlDirectionTurnRate = 140f;
-    /// <summary>中文含义：动作安全性超时。使用位置：ExecuteAttack.OnStart()、ExecuteChainsawIntroTaunt.OnStart()、ExecuteChainsawStart.OnStart() 等共 7 处。</summary>
+    /// <summary>动作安全性超时。</summary>
     public float actionSafetyTimeout = 4.5f;
-    /// <summary>中文含义：起身稳定化持续时间。使用位置：EnemyCombatModule.standUpStabilizationDuration.get。</summary>
+    /// <summary>起身稳定化持续时间。</summary>
     [Min(0f)]
     public float standUpStabilizationDuration = 0.18f;
-    /// <summary>中文含义：是否启用智能门开口。使用位置：VillagerController.TryOpenDoorOnPath(Vector3)。</summary>
+    /// <summary>是否启用智能门开口。</summary>
     [Header("敌人开门")]
     public bool enableAIDoorOpening = true;
-    /// <summary>中文含义：门打开探测距离。使用位置：作为 Mathf.Max(float, float) 的参数、VillagerController.TryOpenDoorOnPath(Vector3)。</summary>
+    /// <summary>门打开探测距离。</summary>
     [Min(0.1f)]
     public float doorOpenProbeDistance = 1.15f;
-    /// <summary>中文含义：门打开探测半径。使用位置：作为 DoorController.TryOpenNearestForAI(Vector3, Vector3, float, float, Transform) 的参数、作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>门打开探测半径。</summary>
     [Min(0.1f)]
     public float doorOpenProbeRadius = 1.35f;
-    /// <summary>中文含义：门打开探测角度。使用位置：作为 DoorController.TryOpenNearestForAI(Vector3, Vector3, float, float, Transform) 的参数。</summary>
+    /// <summary>门打开探测角度。</summary>
     [Range(1f, 180f)]
     public float doorOpenProbeAngle = 115f;
-    /// <summary>中文含义：门打开探测间隔。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>门打开探测间隔。</summary>
     [Min(0.05f)]
     public float doorOpenProbeInterval = 0.35f;
-    /// <summary>中文含义：队首越过门洞平面后，至少离开此深度才释放下一名敌人。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>队首越过门洞平面后，至少离开此深度才释放下一名敌人。</summary>
     [Header("门洞通行")]
     [Tooltip("队首越过门洞平面后，至少离开此深度才释放下一名敌人。")]
     [Min(0.2f)]
     public float pursuitIngressReleaseDepth = 0.42f;
-    /// <summary>中文含义：视野角度。使用位置：EnemyPerceptionModule.sightAngle.get。</summary>
+    /// <summary>视野角度。</summary>
     [Header("感知与警觉")]
     [Range(30f, 180f)]
     public float sightAngle = 110f;
-    /// <summary>中文含义：关闭警觉范围。使用位置：EnemyPerceptionModule.closeAwarenessRange.get。</summary>
+    /// <summary>关闭警觉范围。</summary>
     [Min(0.1f)]
     public float closeAwarenessRange = 1.25f;
     /// <summary>中文含义：警觉构建持续时间。</summary>
     [Min(0.1f)]
     public float awarenessBuildDuration = 0.8f;
-    /// <summary>中文含义：警觉衰减持续时间。使用位置：EnemyPerceptionModule.awarenessDecayDuration.get。</summary>
+    /// <summary>警觉衰减持续时间。</summary>
     [Min(0.1f)]
     public float awarenessDecayDuration = 1.5f;
-    /// <summary>中文含义：警觉记忆持续时间。使用位置：EnemyCombatModule.awarenessMemoryDuration.get。</summary>
+    /// <summary>警觉记忆持续时间。</summary>
     [Min(0f)]
     public float awarenessMemoryDuration = 5f;
-    /// <summary>中文含义：枪声警觉。使用位置：EnemyPerceptionModule.gunshotAwareness.get。</summary>
+    /// <summary>枪声警觉。</summary>
     [Range(0f, 1f)]
     public float gunshotAwareness = 0.45f;
-    /// <summary>中文含义：调查搜索持续时间。使用位置：EnemyPerceptionModule.investigationSearchDuration.get。</summary>
+    /// <summary>调查搜索持续时间。</summary>
     [Min(0.1f)]
     public float investigationSearchDuration = 3f;
-    /// <summary>中文含义：调查抵达距离。使用位置：EnemyPerceptionModule.investigationArrivalDistance.get。</summary>
+    /// <summary>调查抵达距离。</summary>
     [Min(0.1f)]
     public float investigationArrivalDistance = 0.8f;
-    /// <summary>中文含义：警戒转向速度。使用位置：EnemyActionCoordinator.alertTurnSpeed.get、EnemyPerceptionModule.alertTurnSpeed.get。</summary>
+    /// <summary>警戒转向速度。</summary>
     [Min(0.1f)]
     public float alertTurnSpeed = 4f;
-    /// <summary>中文含义：追逐解除接触范围。使用位置：VillagerController.IsPlayerWithinChaseDisengageRange(LeonController)。</summary>
+    /// <summary>追逐解除接触范围。</summary>
     [Header("战斗锁定")]
     [Min(1f)]
     public float chaseDisengageRange = 35f;
     /// <summary>中文含义：解除接触确认持续时间。</summary>
     [Min(0f)]
     public float disengageConfirmationDuration = 0.6f;
-    /// <summary>中文含义：追逐起始移动速度。使用位置：作为 EnemyContext.ClampStandingMoveParameter(float) 的参数、EnemyActionCoordinator.chaseStartMoveSpeed.get。</summary>
+    /// <summary>追逐起始移动速度。</summary>
     [Header("追击过渡")]
     [Range(0f, 1f)]
     public float chaseStartMoveSpeed = 0.3f;
-    /// <summary>中文含义：追逐加速度持续时间。使用位置：作为 Mathf.Clamp01(float) 的参数。</summary>
+    /// <summary>追逐加速度持续时间。</summary>
     [Min(0.1f)]
     public float chaseAccelerationDuration = 1.4f;
-    /// <summary>中文含义：移动混合速度。使用位置：EnemyAnimationAdapter.movementBlendSpeed.get。</summary>
+    /// <summary>移动混合速度。</summary>
     [Min(0.1f)]
     public float movementBlendSpeed = 4f;
-    /// <summary>中文含义：硬直恢复移动延迟。使用位置：作为 Mathf.Clamp01(float) 的参数。</summary>
+    /// <summary>硬直恢复移动延迟。</summary>
     [Min(0f)]
     public float staggerRecoveryMovementDelay = 0.1f;
-    /// <summary>中文含义：硬直恢复加速度持续时间。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>硬直恢复加速度持续时间。</summary>
     [Min(0.1f)]
     public float staggerRecoveryAccelerationDuration = 0.35f;
-    /// <summary>中文含义：移动方向混合时间。使用位置：EnemyAnimationAdapter.movementDirectionBlendTime.get、SceneStartupEntry.ValidateEnemyTemplate(GameObject, bool)。</summary>
+    /// <summary>移动方向混合时间。</summary>
     [Min(0f)]
     public float movementDirectionBlendTime = .1f;
-    /// <summary>中文含义：站立朝向写入帧。使用位置：VillagerController.RotateTowardsDirection(Vector3, float)。</summary>
+    /// <summary>站立朝向写入帧。</summary>
     private int standingFacingWriteFrame = -1;
-    /// <summary>中文含义：是否站立直接追击用于帧。使用位置：VillagerController.MoveWithCollision(Vector3, bool, bool)、VillagerController.ReconcileStandingPursuitFacingAfterAnimation()、VillagerController.ResolveStandingPathDirectionForCurrentFrame() 等共 4 处。</summary>
+    /// <summary>是否站立直接追击用于帧。</summary>
     private bool standingDirectPursuitForFrame;
-    /// <summary>中文含义：站立方向转向速率。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>站立方向转向速率。</summary>
     [Min(1f)]
     public float standingDirectionTurnRate = 300f;
     /// <summary>中文含义：站立方向死亡区。</summary>
     [Range(0f, 20f)]
     public float standingDirectionDeadZone = 4f;
-    /// <summary>中文含义：局部避障转向速率。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>局部避障转向速率。</summary>
     [Min(1f)]
     public float localAvoidanceTurnRate = 480f;
-    /// <summary>中文含义：移动朝向停止角度。最终移动方向与身体前方超过该角度时降低平移速度，优先完成转身。使用位置：作为 Mathf.Max(float, float) 的参数、作为 Mathf.Min(float, float) 的参数、VillagerController.CollectCombatTimelineSnapshot()。</summary>
+    /// <summary>移动朝向停止角度。最终移动方向与身体前方超过该角度时降低平移速度，优先完成转身。</summary>
     [Tooltip("最终移动方向与身体前方超过该角度时降低平移速度，优先完成转身。")]
     [Range(5f, 89f)]
     public float movementFacingStopAngle = 35f;
-    /// <summary>中文含义：最终移动方向与身体前方进入该角度内后恢复完整追击速度。使用位置：作为 Mathf.Min(float, float) 的参数。</summary>
+    /// <summary>最终移动方向与身体前方进入该角度内后恢复完整追击速度。</summary>
     [Tooltip("最终移动方向与身体前方进入该角度内后恢复完整追击速度。")]
     [Range(0f, 89f)]
     public float movementFacingFullSpeedAngle = 20f;
-    /// <summary>中文含义：进入该距离后优先直接追击玩家，不再停在战术环绕点等待。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>进入该距离后优先直接追击玩家，不再停在战术环绕点等待。</summary>
     [Tooltip("进入该距离后优先直接追击玩家，不再停在战术环绕点等待")]
     [Min(1f)]
     public float closeDirectPursuitRange = 8f;
-    /// <summary>中文含义：实际移动速度响应。真实水平速度的平滑响应速度，避免单帧碰撞变化直接传入脚步动画。使用位置：作为 Mathf.Max(float, float) 的参数、EnemyAnimationAdapter.actualMovementSpeedResponse.get。</summary>
+    /// <summary>实际移动速度响应。真实水平速度的平滑响应速度，避免单帧碰撞变化直接传入脚步动画。</summary>
     [Header("移动动画同步")]
     [Tooltip("真实水平速度的平滑响应速度，避免单帧碰撞变化直接传入脚步动画。")]
     [Min(1f)]
     public float actualMovementSpeedResponse = 12f;
-    /// <summary>中文含义：移动动画起始宽限持续时间。开始移动后的短暂预启动时间，避免首帧已有位移但脚步仍停在待机。使用位置：EnemyAnimationAdapter.movementAnimationStartGraceDuration.get。</summary>
+    /// <summary>移动动画起始宽限持续时间。开始移动后的短暂预启动时间，避免首帧已有位移但脚步仍停在待机。</summary>
     [Tooltip("开始移动后的短暂预启动时间，避免首帧已有位移但脚步仍停在待机。")]
     [Min(0f)]
     public float movementAnimationStartGraceDuration = 0.12f;
-    /// <summary>中文含义：低于该真实速度时视为没有产生有效位移，脚步会平滑停止。使用位置：EnemyAnimationAdapter.locomotionStopSpeed.get。</summary>
+    /// <summary>低于该真实速度时视为没有产生有效位移，脚步会平滑停止。</summary>
     [Tooltip("低于该真实速度时视为没有产生有效位移，脚步会平滑停止。")]
     [Min(0f)]
     public float locomotionStopSpeed = 0.03f;
-    /// <summary>中文含义：移动行为停止确认持续时间。真实位移持续不足达到该时间后才停止脚步，避免碰撞隔帧造成动画反复启停。使用位置：EnemyAnimationAdapter.locomotionStopConfirmationDuration.get。</summary>
+    /// <summary>移动行为停止确认持续时间。真实位移持续不足达到该时间后才停止脚步，避免碰撞隔帧造成动画反复启停。</summary>
     [Tooltip("真实位移持续不足达到该时间后才停止脚步，避免碰撞隔帧造成动画反复启停。")]
     [Min(0.05f)]
     public float locomotionStopConfirmationDuration = 0.22f;
-    /// <summary>中文含义：停止后必须持续产生有效位移达到该时间，才重新进入走路动画。使用位置：EnemyAnimationAdapter.locomotionStartConfirmationDuration.get。</summary>
+    /// <summary>停止后必须持续产生有效位移达到该时间，才重新进入走路动画。</summary>
     [Tooltip("停止后必须持续产生有效位移达到该时间，才重新进入走路动画。")]
     [Min(0.05f)]
     public float locomotionStartConfirmationDuration = 0.12f;
-    /// <summary>中文含义：移动行为重新开始速度。已停止的脚步重新启动所需的真实水平速度，必须高于停止阈值形成迟滞。使用位置：EnemyAnimationAdapter.locomotionRestartSpeed.get。</summary>
+    /// <summary>移动行为重新开始速度。已停止的脚步重新启动所需的真实水平速度，必须高于停止阈值形成迟滞。</summary>
     [Tooltip("已停止的脚步重新启动所需的真实水平速度，必须高于停止阈值形成迟滞。")]
     [Min(0f)]
     public float locomotionRestartSpeed = 0.08f;
-    /// <summary>中文含义：是否使用站立动画速度用于路径。站立追击是否使用动画根位移采样决定代码推进速度。关闭后始终使用寻路速度，避免动画、碰撞与位移互相等待。使用位置：EnemyAnimationAdapter.useStandingAnimationSpeedForPath.get、SceneStartupEntry.ValidateEnemyTemplate(GameObject, bool)、VillagerController.ResolveStandingRootMotionSpeed(float)。</summary>
+    /// <summary>是否使用站立动画速度用于路径。站立追击是否使用动画根位移采样决定代码推进速度。关闭后始终使用寻路速度，避免动画、碰撞与位移互相等待。</summary>
     [Tooltip("站立追击是否使用动画根位移采样决定代码推进速度。关闭后始终使用寻路速度，避免动画、碰撞与位移互相等待。")]
     public bool useStandingAnimationSpeedForPath;
     internal bool UsesNativeStandingStride => useStandingAnimationSpeedForPath && anim != null && !anim.isHuman;
@@ -541,6 +542,11 @@ public partial class VillagerController : MonoBehaviour, IDamageable
     {
         get
         {
+            if (IsCrowdBypassing)
+            {
+                return HorizontalDistance(transform.position, crowdBypassDestination);
+            }
+
             float remaining = float.PositiveInfinity;
             if (agent != null && agent.hasPath)
             {
@@ -553,10 +559,10 @@ public partial class VillagerController : MonoBehaviour, IDamageable
             return remaining;
         }
     }
-    /// <summary>中文含义：保持站立移动行为期间是否受阻。存在明确追击位移意图时保持行走动画，避免碰撞的短暂阻塞反复切换走路与待机。使用位置：EnemyAnimationAdapter.keepStandingLocomotionWhileBlocked.get。</summary>
+    /// <summary>保持站立移动行为期间是否受阻。存在明确追击位移意图时保持行走动画，避免碰撞的短暂阻塞反复切换走路与待机。</summary>
     [Tooltip("存在明确追击位移意图时保持行走动画，避免碰撞的短暂阻塞反复切换走路与待机。")]
     public bool keepStandingLocomotionWhileBlocked = true;
-    /// <summary>中文含义：腿部倒地伤害。使用位置：EnemyCombatModule.legCollapseDamage.get。</summary>
+    /// <summary>腿部倒地伤害。</summary>
     [Header("腿部破坏")]
     [Min(0f)]
     public float legCollapseDamage = 36f;
@@ -566,94 +572,104 @@ public partial class VillagerController : MonoBehaviour, IDamageable
     /// <summary>中文含义：永久爬行生命比例。</summary>
     [Range(0.1f, 1f)]
     public float permanentCrawlHealthRatio = 0.55f;
-    /// <summary>中文含义：硬直阈值。使用位置：EnemyCombatModule.staggerThreshold.get。</summary>
+    /// <summary>硬直阈值。</summary>
     [Header("受击韧性")]
     [Min(0.1f)]
     public float staggerThreshold = 20f;
-    /// <summary>中文含义：受击反应免疫。使用位置：EnemyCombatModule.hitReactionImmunity.get。</summary>
+    /// <summary>受击反应免疫。</summary>
     [Min(0f)]
     public float hitReactionImmunity = 0.4f;
-    /// <summary>中文含义：韧性衰减延迟。使用位置：EnemyCombatModule.AdvanceStaggerRestore()。</summary>
+    /// <summary>韧性衰减延迟。</summary>
     [Min(0f)]
     public float poiseDecayDelay = 1.5f;
-    /// <summary>中文含义：韧性衰减每次第二。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>韧性衰减每次第二。</summary>
     [Min(0f)]
     public float poiseDecayPerSecond = 8f;
-    /// <summary>中文含义：是否启用暴击硬直。使用位置：EnemyCombatModule.enableCriticalStagger.get。</summary>
+    /// <summary>是否启用暴击硬直。</summary>
     [Header("枪械暴击硬直")]
     public bool enableCriticalStagger = true;
-    /// <summary>中文含义：头部暴击硬直概率。使用位置：EnemyCombatModule.headCriticalStaggerChance.get。</summary>
+    /// <summary>头部暴击硬直概率。</summary>
     [Range(0f, 1f)]
     public float headCriticalStaggerChance = 0.2f;
-    /// <summary>中文含义：身体暴击硬直概率。使用位置：EnemyCombatModule.bodyCriticalStaggerChance.get。</summary>
+    /// <summary>身体暴击硬直概率。</summary>
     [Range(0f, 1f)]
     public float bodyCriticalStaggerChance = 0.06f;
-    /// <summary>中文含义：暴击硬直伤害楼层。使用位置：EnemyCombatModule.criticalStaggerDamageFloor.get。</summary>
+    /// <summary>暴击硬直伤害楼层。</summary>
     [Min(0f)]
     public float criticalStaggerDamageFloor = 12f;
-    /// <summary>中文含义：暴击硬直冷却。使用位置：EnemyCombatModule.criticalStaggerCooldown.get。</summary>
+    /// <summary>暴击硬直冷却。</summary>
     [Min(0f)]
     public float criticalStaggerCooldown = 0.35f;
-    /// <summary>中文含义：是否暴击硬直开放体术。使用位置：EnemyCombatModule.criticalStaggerOpensBodyTechnique.get。</summary>
+    /// <summary>是否暴击硬直开放体术。</summary>
     public bool criticalStaggerOpensBodyTechnique = true;
-    /// <summary>中文含义：常规体术窗口。使用位置：EnemyCombatModule.normalBodyTechniqueWindow.get。</summary>
+    /// <summary>常规体术窗口。</summary>
     [Header("体术硬直窗口")]
     [Min(0.2f)]
     public float normalBodyTechniqueWindow = 1.35f;
-    /// <summary>中文含义：精英体术窗口。使用位置：EnemyCombatModule.eliteBodyTechniqueWindow.get。</summary>
+    /// <summary>精英体术窗口。</summary>
     [Min(0.2f)]
     public float eliteBodyTechniqueWindow = 1.05f;
-    /// <summary>中文含义：是否使用电锯敌人命中韧性。使用位置：EnemyCombatModule.useSawmanHitToughness.get。</summary>
+    /// <summary>是否使用电锯敌人命中韧性。</summary>
     [Header("电锯人受击抗性")]
     public bool useSawmanHitToughness = true;
-    /// <summary>中文含义：电锯敌人受击反应阈值倍率。使用位置：EnemyCombatModule.sawmanHitReactionThresholdMultiplier.get。</summary>
+    /// <summary>电锯敌人受击反应阈值倍率。</summary>
     [Min(1f)]
     public float sawmanHitReactionThresholdMultiplier = 1.5f;
-    /// <summary>中文含义：电锯敌人韧性伤害倍率。使用位置：EnemyCombatModule.sawmanPoiseDamageMultiplier.get。</summary>
+    /// <summary>电锯敌人韧性伤害倍率。</summary>
     [Range(0f, 1f)]
     public float sawmanPoiseDamageMultiplier = 0.75f;
-    /// <summary>中文含义：电锯敌人头部暴击硬直概率倍率。使用位置：EnemyCombatModule.sawmanHeadCriticalStaggerChanceMultiplier.get。</summary>
+    /// <summary>电锯敌人头部暴击硬直概率倍率。</summary>
     [Range(0f, 1f)]
     public float sawmanHeadCriticalStaggerChanceMultiplier = 0.75f;
-    /// <summary>中文含义：电锯敌人身体暴击硬直概率倍率。使用位置：EnemyCombatModule.sawmanBodyCriticalStaggerChanceMultiplier.get。</summary>
+    /// <summary>电锯敌人身体暴击硬直概率倍率。</summary>
     [Range(0f, 1f)]
     public float sawmanBodyCriticalStaggerChanceMultiplier = 0.4f;
-    /// <summary>中文含义：电锯敌人暴击伤害楼层额外加成。使用位置：EnemyCombatModule.sawmanCriticalDamageFloorBonus.get。</summary>
+    /// <summary>电锯敌人暴击伤害楼层额外加成。</summary>
     [Min(0f)]
     public float sawmanCriticalDamageFloorBonus = 8f;
-    /// <summary>中文含义：是否生效。使用位置：DoorwayTraversalOccupancy.Valid(VillagerController, int)、EnemyAIManager.IsEnemyUsable(VillagerController)、EnemyAIManager.SelectSurroundSlot(VillagerController, Vector3, float, int, bool, out int) 等共 12 处。</summary>
+    /// <summary>是否生效。</summary>
     [HideInInspector]
     public bool IsActive = true;
-    /// <summary>中文含义：是否启用移动诊断。开启后仅记录状态变化、关键函数进入退出及每0.2秒采样，关闭时无任何日志。使用位置：EnemyActionCoordinator.Commit(ActionRequest, bool)、EnemyActionCoordinator.ReceiveAnimationNotification(ActionHandle, string)、EnemyTaskBase.DiagTaskEnd() 等共 9 处。</summary>
+    /// <summary>是否启用移动诊断。开启后仅记录状态变化、关键函数进入退出及每0.2秒采样，关闭时无任何日志。</summary>
     [Header("移动诊断")]
     [Tooltip("开启后仅记录状态变化、关键函数进入退出及每0.2秒采样，关闭时无任何日志")]
     public bool enableMovementDiagnostic;
-    /// <summary>中文含义：诊断敌人数量。使用位置：EnemyAIManager.FillCombatTimelineSnapshot(VillagerController, ref CombatTimelineSnapshot)、EnemyCombatTimeline.CreateRecord(VillagerController, string)、EnemyCombatTimeline.Number(VillagerController) 等共 7 处。</summary>
+    /// <summary>诊断敌人数量。</summary>
     [Header("时间轴测试身份")]
     [HideInInspector]
     public int diagnosticEnemyNumber;
-    /// <summary>中文含义：诊断波次。使用位置：作为 EnemyCombatTimeline.Register(VillagerController, int) 的参数、EnemyCombatTimeline.CreateRecord(VillagerController, string)、EnemyCombatTimeline.IsRecord(VillagerController) 等共 4 处。</summary>
+    /// <summary>诊断波次。</summary>
     [HideInInspector]
     public int diagnosticWave;
-    /// <summary>中文含义：时间轴动画是否已初始化。使用位置：VillagerController.RecordTimelineAnimationChanges()。</summary>
+    /// <summary>时间轴动画是否已初始化。</summary>
     private bool timelineAnimationInitialized;
-    /// <summary>中文含义：时间轴基础动画。使用位置：VillagerController.RecordTimelineAnimationChanges()。</summary>
+    /// <summary>时间轴基础动画。</summary>
     private int timelineBaseAnimation;
-    /// <summary>中文含义：时间轴下一次动画。使用位置：VillagerController.RecordTimelineAnimationChanges()。</summary>
+    /// <summary>时间轴下一次动画。</summary>
     private int timelineNextAnimation;
-    /// <summary>中文含义：是否时间轴动画过渡。使用位置：VillagerController.RecordTimelineAnimationChanges()。</summary>
+    /// <summary>是否时间轴动画过渡。</summary>
     private bool timelineAnimationTransition;
-    /// <summary>中文含义：人群绕过是否生效。使用位置：VillagerController.BeginTemporaryAvoidance(Vector3)、VillagerController.IsCrowdBypassing.get、VillagerController.UpdateCrowdBypass()。</summary>
+    /// <summary>人群绕过是否生效。</summary>
     private bool crowdBypassActive;
-    /// <summary>中文含义：人群绕过目的地。使用位置：作为 VillagerController.HorizontalDistance(Vector3, Vector3) 的参数、VillagerController.BeginTemporaryAvoidance(Vector3)、VillagerController.GetCurrentCombatTarget() 等共 4 处。</summary>
+    /// <summary>人群绕过目的地。</summary>
     private Vector3 crowdBypassDestination;
-    /// <summary>中文含义：人群绕过玩家锚点。使用位置：作为 Mathf.Abs(float) 的参数、作为 VillagerController.HorizontalDistance(Vector3, Vector3) 的参数、VillagerController.BeginTemporaryAvoidance(Vector3)。</summary>
+    /// <summary>人群绕过玩家锚点。</summary>
     private Vector3 crowdBypassPlayerAnchor;
-    /// <summary>中文含义：人群绕过到期时间。使用位置：VillagerController.BeginTemporaryAvoidance(Vector3)、VillagerController.IsCrowdBypassing.get、VillagerController.UpdateCrowdBypass()。</summary>
+    /// <summary>人群绕过到期时间。</summary>
     private float crowdBypassExpiresAt;
-    /// <summary>中文含义：下一次人群绕过时间。使用位置：VillagerController.TryStartCrowdBypass(VillagerController)。</summary>
+    /// <summary>同帧刷新追击目标的幂等缓存帧号，避免多处调用重复重算并覆盖目标。</summary>
+    private int lastRefreshChaseFrame = -1;
+    /// <summary>同帧刷新追击目标的缓存返回值。</summary>
+    private bool lastRefreshChaseResult;
+    /// <summary>外部状态切换后标记需要强制重算本帧追击目标。</summary>
+    private bool chaseRefreshDirty;
+    /// <summary>候场战术待命低频恐吓语音的个体冷却时刻。</summary>
+    private float nextTacticalStandbyVoiceTime = -1f;
+    /// <summary>全体候场低频恐吓语音的错峰门限，防止同秒多人齐吼。</summary>
+    private static float nextGlobalTacticalStandbyVoiceTime;
+    /// <summary>下一次人群绕过时间。</summary>
     private float nextCrowdBypassTime;
-    /// <summary>中文含义：上一次移动阻挡者敌人。使用位置：作为 VillagerController.TryStartCrowdBypass(VillagerController) 的参数、VillagerController.CollectCombatTimelineSnapshot()、VillagerController.ResetBlockedMovement() 等共 6 处。</summary>
+    /// <summary>上一次移动阻挡者敌人。</summary>
     private VillagerController lastMovementBlockerEnemy;
     /// <summary>中文含义：是否具有已掉落战利品。</summary>
     private bool hasDroppedLoot
@@ -688,7 +704,7 @@ public partial class VillagerController : MonoBehaviour, IDamageable
         }
     }
 
-    /// <summary>中文含义：是否存在待处理的命中。使用位置：作为 StringBuilder.Append(string) 的参数、VillagerController.CanBeAssassinatedBy(LeonController)、VillagerController.CanEvaluateCrawlCombatAction.get 等共 9 处。</summary>
+    /// <summary>是否存在待处理的命中。</summary>
     private bool pendingHit
     {
         get
@@ -704,7 +720,7 @@ public partial class VillagerController : MonoBehaviour, IDamageable
         }
     }
 
-    /// <summary>中文含义：是否存在待处理的爬行。使用位置：作为 StringBuilder.Append(string) 的参数、VillagerController.CanBeAssassinatedBy(LeonController)、VillagerController.CanEvaluateCrawlCombatAction.get 等共 9 处。</summary>
+    /// <summary>是否存在待处理的爬行。</summary>
     private bool pendingCrawl
     {
         get
@@ -720,7 +736,7 @@ public partial class VillagerController : MonoBehaviour, IDamageable
         }
     }
 
-    /// <summary>中文含义：是否存在待处理的起身。使用位置：作为 StringBuilder.Append(string) 的参数、VillagerController.CanBeAssassinatedBy(LeonController)、VillagerController.CanEvaluateCrawlCombatAction.get 等共 9 处。</summary>
+    /// <summary>是否存在待处理的起身。</summary>
     private bool pendingStandUp
     {
         get
@@ -736,7 +752,7 @@ public partial class VillagerController : MonoBehaviour, IDamageable
         }
     }
 
-    /// <summary>中文含义：是否存在待处理的绊倒。使用位置：作为 StringBuilder.Append(string) 的参数、VillagerController.CanBeAssassinatedBy(LeonController)。</summary>
+    /// <summary>是否存在待处理的绊倒。</summary>
     private bool pendingTripOver
     {
         get
@@ -752,7 +768,7 @@ public partial class VillagerController : MonoBehaviour, IDamageable
         }
     }
 
-    /// <summary>中文含义：是否攻击结束。使用位置：VillagerController.AttackFinished.get、VillagerController.CollectCombatTimelineSnapshot()。</summary>
+    /// <summary>是否攻击结束。</summary>
     private bool attackFinished
     {
         get
@@ -768,7 +784,7 @@ public partial class VillagerController : MonoBehaviour, IDamageable
         }
     }
 
-    /// <summary>中文含义：是否命中结束。使用位置：VillagerController.HitFinished.get。</summary>
+    /// <summary>是否命中结束。</summary>
     private bool hitFinished
     {
         get
@@ -784,7 +800,7 @@ public partial class VillagerController : MonoBehaviour, IDamageable
         }
     }
 
-    /// <summary>中文含义：是否起身结束。使用位置：VillagerController.StandUpFinished.get。</summary>
+    /// <summary>是否起身结束。</summary>
     private bool standUpFinished
     {
         get
@@ -880,7 +896,7 @@ public partial class VillagerController : MonoBehaviour, IDamageable
         }
     }
 
-    /// <summary>中文含义：是否当前站立身体硬直体术。使用位置：VillagerController.CanOpenBodyTechniqueFromCurrentStagger.get。</summary>
+    /// <summary>是否当前站立身体硬直体术。</summary>
     private bool currentStandingStaggerBodyTechnique
     {
         get
@@ -896,7 +912,7 @@ public partial class VillagerController : MonoBehaviour, IDamageable
         }
     }
 
-    /// <summary>中文含义：体术窗口结束时间。使用位置：VillagerController.CanOpenBodyTechniqueFromCurrentStagger.get。</summary>
+    /// <summary>体术窗口结束时间。</summary>
     private float bodyTechniqueWindowEndTime
     {
         get
@@ -928,7 +944,7 @@ public partial class VillagerController : MonoBehaviour, IDamageable
         }
     }
 
-    /// <summary>中文含义：上一次攻击时间。使用位置：作为 Mathf.Max(float, float) 的参数、VillagerController.IsAttackReady.get。</summary>
+    /// <summary>上一次攻击时间。</summary>
     private float lastAttackTime
     {
         get
@@ -1072,7 +1088,7 @@ public partial class VillagerController : MonoBehaviour, IDamageable
         }
     }
 
-    /// <summary>中文含义：是否永久爬行。使用位置：作为 StringBuilder.Append(string) 的参数、VillagerController.IsPermanentlyCrawling.get。</summary>
+    /// <summary>是否永久爬行。</summary>
     private bool permanentCrawl
     {
         get
@@ -1088,7 +1104,7 @@ public partial class VillagerController : MonoBehaviour, IDamageable
         }
     }
 
-    /// <summary>中文含义：警觉。使用位置：VillagerController.Awareness.get、VillagerController.HasAnyPlayerAwareness.get。</summary>
+    /// <summary>警觉。</summary>
     private float awareness
     {
         get
@@ -1104,7 +1120,7 @@ public partial class VillagerController : MonoBehaviour, IDamageable
         }
     }
 
-    /// <summary>中文含义：是否完全察觉所属玩家。使用位置：作为 StringBuilder.Append(string) 的参数、VillagerController.CanBeAssassinatedBy(LeonController)、VillagerController.CanEvaluateCrawlCombatAction.get 等共 8 处。</summary>
+    /// <summary>是否完全察觉所属玩家。</summary>
     private bool fullyAwareOfPlayer
     {
         get
@@ -1120,7 +1136,7 @@ public partial class VillagerController : MonoBehaviour, IDamageable
         }
     }
 
-    /// <summary>中文含义：是否战斗已接战。使用位置：作为 StringBuilder.Append(string) 的参数、VillagerController.ApplyPendingPursuitRegionChange()、VillagerController.CanBeAssassinatedBy(LeonController) 等共 9 处。</summary>
+    /// <summary>是否战斗已接战。</summary>
     private bool combatEngaged
     {
         get
@@ -1132,6 +1148,22 @@ public partial class VillagerController : MonoBehaviour, IDamageable
             else
             {
                 return default;
+            }
+        }
+    }
+
+    /// <summary>当前敌人本人是否已经真正发现过玩家。</summary>
+    internal bool HasPersonallyDetectedPlayer
+    {
+        get
+        {
+            if (perceptionModule != null)
+            {
+                return perceptionModule.ReadHasPersonallyDetectedPlayer;
+            }
+            else
+            {
+                return false;
             }
         }
     }
@@ -1184,7 +1216,7 @@ public partial class VillagerController : MonoBehaviour, IDamageable
         }
     }
 
-    /// <summary>中文含义：上一次已知玩家位置。使用位置：VillagerController.GetCurrentCombatTarget()。</summary>
+    /// <summary>上一次已知玩家位置。</summary>
     private Vector3 lastKnownPlayerPosition
     {
         get
@@ -1296,7 +1328,7 @@ public partial class VillagerController : MonoBehaviour, IDamageable
         }
     }
 
-    /// <summary>中文含义：追逐开始时间。使用位置：作为 Mathf.Clamp01(float) 的参数。</summary>
+    /// <summary>追逐开始时间。</summary>
     private float chaseStartedTime
     {
         get
@@ -1328,7 +1360,7 @@ public partial class VillagerController : MonoBehaviour, IDamageable
         }
     }
 
-    /// <summary>中文含义：可感知状态。使用位置：作为 StringBuilder.Append(string) 的参数、作为 VillagerController.DiagLog(string, string) 的参数、VillagerController.CurrentState.get。</summary>
+    /// <summary>可感知状态。</summary>
     private VillagerState observableState
     {
         get
@@ -1344,7 +1376,7 @@ public partial class VillagerController : MonoBehaviour, IDamageable
         }
     }
 
-    /// <summary>中文含义：巡逻中心。使用位置：VillagerController.PatrolCenter.get。</summary>
+    /// <summary>巡逻中心。</summary>
     private Vector3 patrolCenter
     {
         get
@@ -1360,7 +1392,7 @@ public partial class VillagerController : MonoBehaviour, IDamageable
         }
     }
 
-    /// <summary>中文含义：巡逻目标。使用位置：VillagerController.PatrolTarget.get。</summary>
+    /// <summary>巡逻目标。</summary>
     private Vector3 patrolTarget
     {
         get
@@ -1376,7 +1408,7 @@ public partial class VillagerController : MonoBehaviour, IDamageable
         }
     }
 
-    /// <summary>中文含义：是否具有巡逻目标。使用位置：VillagerController.HasPatrolTarget.get。</summary>
+    /// <summary>是否具有巡逻目标。</summary>
     private bool hasPatrolTarget
     {
         get
@@ -1424,7 +1456,7 @@ public partial class VillagerController : MonoBehaviour, IDamageable
         }
     }
 
-    /// <summary>中文含义：战斗保持是否生效。使用位置：VillagerController.ApplyPendingPursuitRegionChange()、VillagerController.CollectCombatTimelineSnapshot()、VillagerController.ShouldHoldCombatPosition.get。</summary>
+    /// <summary>战斗保持是否生效。</summary>
     private bool combatHoldActive
     {
         get
@@ -1472,9 +1504,9 @@ public partial class VillagerController : MonoBehaviour, IDamageable
         }
     }
 
-    /// <summary>中文含义：配对动作地面是否锁定。使用位置：VillagerController.BeginQTEGroundLock()、VillagerController.EndQTEGroundLock()、VillagerController.OnAnimatorMove()。</summary>
+    /// <summary>配对动作地面是否锁定。</summary>
     private bool qteGroundLocked;
-    /// <summary>中文含义：配对动作地面纵向。使用位置：VillagerController.BeginQTEGroundLock()。</summary>
+    /// <summary>配对动作地面纵向。</summary>
     private float qteGroundY;
     /// <summary>中文含义：强制下一次命中方向。</summary>
     private int forcedNextHitDirection
@@ -1492,57 +1524,57 @@ public partial class VillagerController : MonoBehaviour, IDamageable
         }
     }
 
-    /// <summary>中文含义：缓存玩家。使用位置：VillagerController.ArchitectureReadCachedPlayer.get、VillagerController.ResolvePlayer()。</summary>
+    /// <summary>缓存玩家。</summary>
     private LeonController cachedPlayer;
-    /// <summary>中文含义：下一次玩家恢复时间。使用位置：VillagerController.ResolvePlayer()。</summary>
+    /// <summary>下一次玩家恢复时间。</summary>
     private float nextPlayerRecoveryTime;
-    /// <summary>中文含义：下一次管理器登记时间。使用位置：VillagerController.RecoverManagerRegistration()。</summary>
+    /// <summary>下一次管理器登记时间。</summary>
     private float nextManagerRegistrationTime;
-    /// <summary>中文含义：下一次门打开探测时间。使用位置：VillagerController.TryOpenDoorOnPath(Vector3)。</summary>
+    /// <summary>下一次门打开探测时间。</summary>
     private float nextDoorOpenProbeTime;
-    /// <summary>中文含义：外部击退协程。使用位置：作为 MonoBehaviour.StopCoroutine(Coroutine) 的参数、VillagerController.BeginExternalKnockback(Vector3, float, float)、VillagerController.DriveExternalKnockback(Vector3, float, float)。</summary>
+    /// <summary>外部击退协程。</summary>
     private Coroutine externalKnockbackRoutine;
-    /// <summary>中文含义：上一次稳定站立移动方向。使用位置：作为 Vector3.Angle(Vector3, Vector3) 的参数、VillagerController.ArchitectureReadLastStableStandingMoveDirection.get、VillagerController.CollectCombatTimelineSnapshot() 等共 8 处。</summary>
+    /// <summary>上一次稳定站立移动方向。</summary>
     private Vector3 lastStableStandingMoveDirection;
-    /// <summary>中文含义：上一次稳定避障方向。使用位置：作为 Vector3.Dot(Vector3, Vector3) 的参数、作为 Vector3.RotateTowards(Vector3, Vector3, float, float) 的参数、VillagerController.BeginTemporaryAvoidance(Vector3) 等共 7 处。</summary>
+    /// <summary>上一次稳定避障方向。</summary>
     private Vector3 lastStableAvoidanceDirection;
-    /// <summary>中文含义：站立路径方向帧。使用位置：VillagerController.BeginTemporaryAvoidance(Vector3)、VillagerController.ReconcileStandingPursuitFacingAfterAnimation()、VillagerController.ResolveStandingPathDirectionForCurrentFrame() 等共 4 处。</summary>
+    /// <summary>站立路径方向帧。</summary>
     private int standingPathDirectionFrame = -1;
-    /// <summary>中文含义：站立路径方向用于帧。使用位置：VillagerController.ReconcileStandingPursuitFacingAfterAnimation()、VillagerController.ResolveStandingPathDirectionForCurrentFrame()、VillagerController.SetMovementMode(EnemyMovementMode, string, int)。</summary>
+    /// <summary>站立路径方向用于帧。</summary>
     private Vector3 standingPathDirectionForFrame;
-    /// <summary>中文含义：局部避障侧边符号。使用位置：VillagerController.ResolveLocalAvoidanceDisplacement(Vector3)、VillagerController.StopAndClearMovement()。</summary>
+    /// <summary>局部避障侧边符号。</summary>
     private int localAvoidanceSideSign;
-    /// <summary>中文含义：局部避障配对方编号。使用位置：VillagerController.ResolveLocalAvoidanceDisplacement(Vector3)、VillagerController.StopAndClearMovement()。</summary>
+    /// <summary>局部避障配对方编号。</summary>
     private int localAvoidancePartnerId;
-    /// <summary>中文含义：局部避障侧边保持直到。使用位置：VillagerController.ResolveLocalAvoidanceDisplacement(Vector3)、VillagerController.StopAndClearMovement()。</summary>
+    /// <summary>局部避障侧边保持直到。</summary>
     private float localAvoidanceSideHoldUntil;
-    /// <summary>中文含义：追击入口门。使用位置：作为 DoorController.TryFindNearestPassageToDestination(Vector3, out DoorController) 的参数、作为 PursuitNavigationTopology.TryGetDoorRegions(DoorController, out int, out int) 的参数、作为 RequestContext.RequestContext(string, ObjectIdentity, ObjectIdentity, long) 的参数 等共 26 处。</summary>
+    /// <summary>追击入口门。</summary>
     private DoorController pursuitIngressDoor;
-    /// <summary>中文含义：已完成追击入口门。使用位置：VillagerController.ApplyPendingPursuitRegionChange()、VillagerController.ClearPursuitIngress()、VillagerController.TryGetPursuitIngressDestination(Vector3, out Vector3) 等共 4 处。</summary>
+    /// <summary>已完成追击入口门。</summary>
     private DoorController completedPursuitIngressDoor;
-    /// <summary>中文含义：追击入口来源侧边。使用位置：作为 DoorwayTraversalOccupancy.QueueFirstYieldRow(VillagerController, int) 的参数、作为 DoorwayTraversalOccupancy.ReadQueue(int) 的参数、作为 DoorwayTraversalOccupancy.Register(VillagerController, int) 的参数 等共 11 处。</summary>
+    /// <summary>追击入口来源侧边。</summary>
     private int pursuitIngressSourceSide;
-    /// <summary>中文含义：是否追击入口跨越。使用位置：作为 StringBuilder.Append(string) 的参数、VillagerController.ApplyPendingPursuitRegionChange()、VillagerController.ClearPursuitIngress() 等共 9 处。</summary>
+    /// <summary>是否追击入口跨越。</summary>
     private bool pursuitIngressCrossing;
-    /// <summary>中文含义：追击入口阶段。使用位置：作为 EnemyCombatTimeline.Describe&lt;VillagerController.PursuitIngressPhase&gt;(VillagerController.PursuitIngressPhase) 的参数、作为 StringBuilder.Append(string) 的参数、VillagerController.ClearPursuitIngress() 等共 6 处。</summary>
+    /// <summary>追击入口阶段。</summary>
     private PursuitIngressPhase pursuitIngressPhase;
-    /// <summary>中文含义：追击入口进度门。使用位置：VillagerController.ResetPursuitIngressHeadProgress()、VillagerController.UpdatePursuitIngressHeadProgress(DoorController, bool)。</summary>
+    /// <summary>追击入口进度门。</summary>
     private DoorController pursuitIngressProgressDoor;
-    /// <summary>中文含义：追击入口进度位置。使用位置：作为 VillagerController.HorizontalDistance(Vector3, Vector3) 的参数、VillagerController.ResetPursuitIngressHeadProgress()、VillagerController.UpdatePursuitIngressHeadProgress(DoorController, bool)。</summary>
+    /// <summary>追击入口进度位置。</summary>
     private Vector3 pursuitIngressProgressPosition;
-    /// <summary>中文含义：追击入口上一次进度时间。使用位置：作为 float.IsNegativeInfinity(float) 的参数、VillagerController.ResetPursuitIngressHeadProgress()、VillagerController.UpdatePursuitIngressHeadProgress(DoorController, bool)。</summary>
+    /// <summary>追击入口上一次进度时间。</summary>
     private float pursuitIngressLastProgressTime = float.NegativeInfinity;
-    /// <summary>中文含义：是否门03室内转向通过的。使用位置：作为 StringBuilder.Append(string) 的参数、VillagerController.ClearPursuitIngress()、VillagerController.TryGetPursuitIngressDestination(Vector3, out Vector3) 等共 4 处。</summary>
+    /// <summary>是否门03室内转向通过的。</summary>
     private bool door03InteriorTurnPassed;
-    /// <summary>中文含义：待处理追击区域版本。使用位置：VillagerController.ApplyPendingPursuitRegionChange()、VillagerController.ReceivePursuitRegionChange(int, Vector3)。</summary>
+    /// <summary>待处理追击区域版本。</summary>
     private int pendingPursuitRegionVersion = -1;
-    /// <summary>中文含义：已应用追击区域版本。使用位置：VillagerController.ApplyPendingPursuitRegionChange()。</summary>
+    /// <summary>已应用追击区域版本。</summary>
     private int appliedPursuitRegionVersion = -1;
-    /// <summary>中文含义：待处理追击区域玩家位置。使用位置：作为 EnemyPerceptionModule.UpdateRegionMemory(Vector3) 的参数、VillagerController.ReceivePursuitRegionChange(int, Vector3)。</summary>
+    /// <summary>待处理追击区域玩家位置。</summary>
     private Vector3 pendingPursuitRegionPlayerPosition;
-    /// <summary>中文含义：上一次稳定爬行移动方向。使用位置：作为 Vector3.RotateTowards(Vector3, Vector3, float, float) 的参数、VillagerController.ArchitectureReadLastStableCrawlMoveDirection.get、VillagerController.ResetCrawlOrientationCache() 等共 6 处。</summary>
+    /// <summary>上一次稳定爬行移动方向。</summary>
     private Vector3 lastStableCrawlMoveDirection;
-    /// <summary>中文含义：爬行朝向是否已初始化。使用位置：VillagerController.ResetCrawlOrientationCache()、VillagerController.ResolveStableCrawlMoveDirection()、VillagerController.StopAndClearMovement() 等共 4 处。</summary>
+    /// <summary>爬行朝向是否已初始化。</summary>
     private bool crawlFacingInitialized;
     /// <summary>中文含义：攻击恢复位置。</summary>
     private Vector3 attackRecoveryPosition
@@ -1592,9 +1624,9 @@ public partial class VillagerController : MonoBehaviour, IDamageable
         }
     }
 
-    /// <summary>中文含义：实际移动采样位置。使用位置：VillagerController.Start()、VillagerController.UpdateActualMovementSample()。</summary>
+    /// <summary>实际移动采样位置。</summary>
     private Vector3 actualMovementSamplePosition;
-    /// <summary>中文含义：实际水平移动速度。使用位置：作为 Mathf.Lerp(float, float, float) 的参数、VillagerController.ArchitectureReadActualHorizontalMovementSpeed.get、VillagerController.IsCrowdMovementStalled() 等共 4 处。</summary>
+    /// <summary>实际水平移动速度。</summary>
     private float actualHorizontalMovementSpeed;
     /// <summary>中文含义：请求的站立移动参数。</summary>
     private float requestedStandingMoveParameter
@@ -1612,7 +1644,7 @@ public partial class VillagerController : MonoBehaviour, IDamageable
         }
     }
 
-    /// <summary>中文含义：上一次站立指令指定的速度。使用位置：VillagerController.CollectCombatTimelineSnapshot()。</summary>
+    /// <summary>上一次站立指令指定的速度。</summary>
     private float lastStandingCommandedSpeed
     {
         get
@@ -1630,9 +1662,9 @@ public partial class VillagerController : MonoBehaviour, IDamageable
 
     // 可选地记录站立动画根位移速度，用于兼容旧配置与移动诊断。
     // 默认由寻路速度驱动代码位移，避免动画、碰撞与位移形成反馈闭环。
-    /// <summary>中文含义：站立根运动速度。使用位置：作为 float.IsInfinity(float) 的参数、作为 float.IsNaN(float) 的参数、作为 Mathf.Clamp(float, float, float) 的参数 等共 9 处。</summary>
+    /// <summary>站立根运动速度。</summary>
     private float standingRootMotionSpeed;
-    /// <summary>中文含义：是否具有站立根运动速度。使用位置：VillagerController.CollectCombatTimelineSnapshot()、VillagerController.OnAnimatorMove()、VillagerController.ResolveStandingRootMotionSpeed(float) 等共 4 处。</summary>
+    /// <summary>是否具有站立根运动速度。</summary>
     private bool hasStandingRootMotionSpeed;
     /// <summary>中文含义：站立移动意图开始时间。</summary>
     private float standingMoveIntentStartedTime
@@ -1650,7 +1682,7 @@ public partial class VillagerController : MonoBehaviour, IDamageable
         }
     }
 
-    /// <summary>中文含义：实际移动采样是否已初始化。使用位置：VillagerController.Start()、VillagerController.UpdateActualMovementSample()。</summary>
+    /// <summary>实际移动采样是否已初始化。</summary>
     private bool actualMovementSampleInitialized;
     /// <summary>中文含义：是否此前具有站立移动意图。</summary>
     private bool hadStandingMoveIntent
@@ -1717,64 +1749,64 @@ public partial class VillagerController : MonoBehaviour, IDamageable
     }
 
     // --- 移动诊断私有状态 ---
-    /// <summary>中文含义：诊断采样计时器。使用位置：VillagerController.DiagUpdate()。</summary>
+    /// <summary>诊断采样计时器。</summary>
     private float diagSampleTimer;
-    /// <summary>中文含义：诊断上一次采样位置。使用位置：VillagerController.DiagBuildSnapshot()、VillagerController.DiagSample()。</summary>
+    /// <summary>诊断上一次采样位置。</summary>
     private Vector3 diagLastSamplePos;
-    /// <summary>中文含义：是否诊断首个采样。使用位置：VillagerController.DiagBuildSnapshot()、VillagerController.DiagSample()。</summary>
+    /// <summary>是否诊断首个采样。</summary>
     private bool diagFirstSample = true;
-    /// <summary>中文含义：诊断前一次动画哈希编号集合。使用位置：VillagerController.DiagTrackAnimationState()。</summary>
+    /// <summary>诊断前一次动画哈希编号集合。</summary>
     private int[] diagPrevAnimHashes = new int[4];
-    /// <summary>中文含义：是否诊断前一次动画初始化。使用位置：VillagerController.DiagTrackAnimationState()。</summary>
+    /// <summary>是否诊断前一次动画初始化。</summary>
     private bool diagPrevAnimInit;
     // 每帧缓冲，仅在0.2s采样时输出
-    /// <summary>中文含义：诊断事件动画移动增量位置。使用位置：作为 VillagerController.DiagLog(string, string) 的参数、VillagerController.OnAnimatorMove()。</summary>
+    /// <summary>诊断事件动画移动增量位置。</summary>
     private Vector3 diagOnAnimMoveDeltaPos;
-    /// <summary>中文含义：诊断事件动画移动前置位置。使用位置：作为 VillagerController.DiagLog(string, string) 的参数、VillagerController.OnAnimatorMove()。</summary>
+    /// <summary>诊断事件动画移动前置位置。</summary>
     private Vector3 diagOnAnimMovePrePos;
-    /// <summary>中文含义：诊断事件动画移动柱位置。使用位置：作为 VillagerController.DiagLog(string, string) 的参数、VillagerController.OnAnimatorMove()。</summary>
+    /// <summary>诊断事件动画移动柱位置。</summary>
     private Vector3 diagOnAnimMovePostPos;
-    /// <summary>中文含义：诊断事件动画移动模式。使用位置：作为 VillagerController.DiagLog(string, string) 的参数、VillagerController.OnAnimatorMove()。</summary>
+    /// <summary>诊断事件动画移动模式。</summary>
     private EnemyMovementMode diagOnAnimMoveMode;
-    /// <summary>中文含义：是否诊断事件动画移动已调用。使用位置：VillagerController.DiagSample()、VillagerController.OnAnimatorMove()。</summary>
+    /// <summary>是否诊断事件动画移动已调用。</summary>
     private bool diagOnAnimMoveCalled;
-    /// <summary>中文含义：诊断更新冷却前置位置。使用位置：作为 VillagerController.DiagLog(string, string) 的参数、VillagerController.UpdateCodeDrivenMovement()。</summary>
+    /// <summary>诊断更新冷却前置位置。</summary>
     private Vector3 diagUpdateCDPrePos;
-    /// <summary>中文含义：诊断更新冷却柱位置。使用位置：作为 VillagerController.DiagLog(string, string) 的参数、VillagerController.UpdateCodeDrivenMovement()。</summary>
+    /// <summary>诊断更新冷却柱位置。</summary>
     private Vector3 diagUpdateCDPostPos;
-    /// <summary>中文含义：诊断更新冷却期望方向。使用位置：作为 VillagerController.DiagLog(string, string) 的参数、VillagerController.UpdateCodeDrivenMovement()。</summary>
+    /// <summary>诊断更新冷却期望方向。</summary>
     private Vector3 diagUpdateCDDesiredDir;
-    /// <summary>中文含义：诊断更新冷却速度。使用位置：作为 VillagerController.DiagLog(string, string) 的参数、VillagerController.UpdateCodeDrivenMovement()。</summary>
+    /// <summary>诊断更新冷却速度。</summary>
     private float diagUpdateCDSpeed;
-    /// <summary>中文含义：诊断更新冷却标签。使用位置：作为 VillagerController.DiagLog(string, string) 的参数、VillagerController.DiagSample()、VillagerController.UpdateCodeDrivenMovement()。</summary>
+    /// <summary>诊断更新冷却标签。</summary>
     private string diagUpdateCDTag;
-    /// <summary>中文含义：是否诊断站立路径意图。使用位置：VillagerController.UpdateCodeDrivenMovement()。</summary>
+    /// <summary>是否诊断站立路径意图。</summary>
     private bool diagStandingPathIntent;
-    /// <summary>中文含义：诊断站立请求的位移。使用位置：VillagerController.CollectCombatTimelineSnapshot()、VillagerController.UpdateCodeDrivenMovement()。</summary>
+    /// <summary>诊断站立请求的位移。</summary>
     private Vector3 diagStandingRequestedDisplacement;
-    /// <summary>中文含义：诊断站立避障位移。使用位置：VillagerController.CollectCombatTimelineSnapshot()、VillagerController.UpdateCodeDrivenMovement()。</summary>
+    /// <summary>诊断站立避障位移。</summary>
     private Vector3 diagStandingAvoidanceDisplacement;
-    /// <summary>中文含义：诊断站立朝向受限位移。使用位置：VillagerController.CollectCombatTimelineSnapshot()、VillagerController.UpdateCodeDrivenMovement()。</summary>
+    /// <summary>诊断站立朝向受限位移。</summary>
     private Vector3 diagStandingFacingLimitedDisplacement;
-    /// <summary>中文含义：寻路代理。使用位置：作为 DoorController.TryResolveOpenPassageDirection(Vector3, Vector3, float, out Vector3) 的参数、作为 EnemyAIManager.IsStableSurroundArrival(VillagerController, Vector3, Vector3, float) 的参数、作为 Mathf.Clamp(float, float, float) 的参数 等共 61 处。</summary>
+    /// <summary>寻路代理。</summary>
     private PathAgent agent;
-    /// <summary>中文含义：特殊通行。使用位置：VillagerController.ArchitectureReadSpecialTraversal.get、VillagerController.CanEvaluateStandingCombatAction.get、VillagerController.IsNavigationTraversalProtected.get 等共 7 处。</summary>
+    /// <summary>特殊通行。</summary>
     private EnemyWindowTraversal specialTraversal;
-    /// <summary>中文含义：动画控制器。使用位置：作为 CombatDiagnosticFields.Count(string, double) 的参数、作为 StringBuilder.Append(string) 的参数、作为 VillagerController.DiagLog(string, string) 的参数 等共 21 处。</summary>
+    /// <summary>动画控制器。</summary>
     private Animator anim;
-    /// <summary>中文含义：行为树。使用位置：VillagerController.ArchitectureReadBehaviorTree.get、VillagerController.EnsureBehaviorTreeRunning()、VillagerController.MaintainAssassinationShowcaseIdle() 等共 5 处。</summary>
+    /// <summary>行为树。</summary>
     private BehaviorTree behaviorTree;
-    /// <summary>中文含义：当前敌人上下文。使用位置：作为 EnemyContext.MoveSpeedToAgentSpeed(float) 的参数、作为 Mathf.Clamp(float, float, float) 的参数、作为 VillagerController.ResolveLocalAvoidanceDisplacement(Vector3) 的参数 等共 17 处。</summary>
+    /// <summary>当前敌人上下文。</summary>
     private EnemyContext ctx;
-    /// <summary>中文含义：碰撞体控制器。使用位置：VillagerController.ArchitectureReadColliderCtrl.get、VillagerController.OnDrawGizmosSelected()、VillagerController.Start()。</summary>
+    /// <summary>碰撞体控制器。</summary>
     private EnemyColliderController colliderCtrl;
-    /// <summary>中文含义：电锯桥接。使用位置：作为 EnemyContext.ClampStandingMoveParameter(float) 的参数、VillagerController.ArchitectureReadChainsawBridge.get、VillagerController.GetTargetMoveSpeed() 等共 6 处。</summary>
+    /// <summary>电锯桥接。</summary>
     private ChainsawManAnimationBridge chainsawBridge;
-    /// <summary>中文含义：配对动作参与者。使用位置：VillagerController.ArchitectureReadQteParticipant.get、VillagerController.EnsureBehaviorTreeRunning()、VillagerController.IsQTEControlled.get 等共 5 处。</summary>
+    /// <summary>配对动作参与者。</summary>
     private VillagerQTEParticipant qteParticipant;
-    /// <summary>中文含义：移动碰撞体。使用位置：作为 Mathf.Clamp(float, float, float) 的参数、作为 Mathf.Max(float, float) 的参数、作为 Physics.ComputePenetration(Collider, Vector3, Quaternion, Collider, Vector3, Quaternion, out Vector3, out float) 的参数 等共 11 处。</summary>
+    /// <summary>移动碰撞体。</summary>
     private CapsuleCollider movementCollider;
-    /// <summary>中文含义：门03通行路线。使用位置：作为 Mathf.Max(float, float) 的参数、作为 VillagerController.HorizontalDistance(Vector3, Vector3) 的参数、作为 VillagerController.ResolveDoor03ExteriorSourceSide(HouseThreeTraversalGeometry) 的参数 等共 11 处。</summary>
+    /// <summary>门03通行路线。</summary>
     [Header("场景通路引用")]
     public HouseThreeTraversalGeometry door03TraversalRoute;
     /// <summary>中文含义：起身稳定化结束点所在。</summary>
@@ -1793,35 +1825,35 @@ public partial class VillagerController : MonoBehaviour, IDamageable
         }
     }
 
-    /// <summary>中文含义：地面命中结果。只读字段，初始化后不由普通写入口替换。使用位置：作为 Physics.RaycastNonAlloc(Vector3, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 的参数、作为 Physics.SphereCastNonAlloc(Vector3, float, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 的参数、作为 Vector3.Angle(Vector3, Vector3) 的参数 等共 12 处。</summary>
+    /// <summary>地面命中结果。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly RaycastHit[] groundHits = new RaycastHit[16];
-    /// <summary>中文含义：移动命中结果。只读字段，初始化后不由普通写入口替换。使用位置：作为 DoorController.IsInsideOpenPassage(Vector3, float) 的参数、作为 Physics.CapsuleCastNonAlloc(Vector3, Vector3, float, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 的参数、作为 Physics.RaycastNonAlloc(Vector3, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 的参数 等共 9 处。</summary>
+    /// <summary>移动命中结果。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly RaycastHit[] movementHits = new RaycastHit[16];
-    /// <summary>中文含义：已抬高移动命中结果。只读字段，初始化后不由普通写入口替换。使用位置：作为 Physics.CapsuleCastNonAlloc(Vector3, Vector3, float, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 的参数、VillagerController.HasRaisedMovementBlocker(Collider, Vector3, Vector3, float, Vector3, float)。</summary>
+    /// <summary>已抬高移动命中结果。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly RaycastHit[] raisedMovementHits = new RaycastHit[8];
-    /// <summary>中文含义：移动重叠结果。只读字段，初始化后不由普通写入口替换。使用位置：作为 Physics.OverlapCapsuleNonAlloc(Vector3, Vector3, float, Collider[], int, QueryTriggerInteraction) 的参数、作为 Physics.OverlapSphereNonAlloc(Vector3, float, Collider[], int, QueryTriggerInteraction) 的参数、作为 VillagerController.IsRelevantCrowdNeighbor(Collider, out VillagerController) 的参数 等共 6 处。</summary>
+    /// <summary>移动重叠结果。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly Collider[] movementOverlaps = new Collider[16];
-    /// <summary>中文含义：移动阻挡持续时间。使用位置：VillagerController.CollectCombatTimelineSnapshot()、VillagerController.IsCrowdMovementStalled()、VillagerController.ResetBlockedMovement() 等共 5 处。</summary>
+    /// <summary>移动阻挡持续时间。</summary>
     private float movementBlockedDuration;
-    /// <summary>中文含义：下一次阻挡重新寻路时间。使用位置：VillagerController.UpdateBlockedMovement(float, Vector3, RaycastHit, VillagerController, float)。</summary>
+    /// <summary>下一次阻挡重新寻路时间。</summary>
     private float nextBlockedRepathTime;
-    /// <summary>中文含义：追逐进度位置。使用位置：作为 Vector3.Distance(Vector3, Vector3) 的参数、VillagerController.UpdateChaseProgressRecovery()。</summary>
+    /// <summary>追逐进度位置。</summary>
     private Vector3 chaseProgressPosition;
-    /// <summary>中文含义：追逐无进度持续时间。使用位置：VillagerController.IsCrowdMovementStalled()、VillagerController.UpdateChaseProgressRecovery()。</summary>
+    /// <summary>追逐无进度持续时间。</summary>
     private float chaseNoProgressDuration;
-    /// <summary>中文含义：下一次追逐恢复时间。使用位置：VillagerController.UpdateChaseProgressRecovery()。</summary>
+    /// <summary>下一次追逐恢复时间。</summary>
     private float nextChaseRecoveryTime;
-    /// <summary>中文含义：追逐进度是否已初始化。使用位置：VillagerController.UpdateChaseProgressRecovery()。</summary>
+    /// <summary>追逐进度是否已初始化。</summary>
     private bool chaseProgressInitialized;
-    /// <summary>中文含义：追逐恢复尝试次数。使用位置：作为 Mathf.Min(int, int) 的参数、VillagerController.UpdateChaseProgressRecovery()。</summary>
+    /// <summary>追逐恢复尝试次数。</summary>
     private int chaseRecoveryAttempts;
-    /// <summary>中文含义：追逐最佳剩余距离。使用位置：VillagerController.UpdateChaseProgressRecovery()。</summary>
+    /// <summary>追逐最佳剩余距离。</summary>
     private float chaseBestRemainingDistance;
-    /// <summary>中文含义：追逐进度目的地。使用位置：VillagerController.UpdateChaseProgressRecovery()。</summary>
+    /// <summary>追逐进度目的地。</summary>
     private Vector3 chaseProgressDestination;
-    /// <summary>中文含义：下一次未完成追击重新寻路时间。使用位置：VillagerController.TryRecoverIncompletePursuitArrival()。</summary>
+    /// <summary>下一次未完成追击重新寻路时间。</summary>
     private float nextIncompletePursuitRepathTime;
-    /// <summary>中文含义：当前移动模式。使用位置：作为 CharacterMotionExecutor.Authorize(EnemyMovementMode, ActionHandle) 的参数、作为 EnemyActionCoordinator.ApproveMotionMode(EnemyMovementMode) 的参数、作为 EnemyCombatTimeline.Describe&lt;EnemyMovementMode&gt;(EnemyMovementMode) 的参数 等共 26 处。</summary>
+    /// <summary>当前移动模式。</summary>
     public EnemyMovementMode CurrentMovementMode
     {
         get
@@ -1837,42 +1869,42 @@ public partial class VillagerController : MonoBehaviour, IDamageable
         }
     }
 
-    /// <summary>中文含义：当前状态。使用位置：作为 EnemyCombatTimeline.Describe&lt;VillagerState&gt;(VillagerState) 的参数、作为 HashSet&lt;VillagerController&gt;.RemoveWhere(Predicate&lt;VillagerController&gt;) 的参数、作为 VillagerController.MoveWithCollision(Vector3, bool, bool) 的参数 等共 40 处。</summary>
+    /// <summary>当前状态。</summary>
     public VillagerState CurrentState { get => observableState; }
-    /// <summary>中文含义：是否死亡。使用位置：CharacterMotionExecutor.Authorize(EnemyMovementMode, ActionHandle)、CharacterMotionExecutor.Valid(MotionControlToken)、ChasePlayer.OnUpdate() 等共 77 处。</summary>
+    /// <summary>是否死亡。</summary>
     public bool IsDead => healthModule == null || healthModule.HasDeath;
-    /// <summary>中文含义：是否运行时已初始化。使用位置：EnemyActionCoordinator.ApprovalAndExecute(ActionRequest, bool)、EnemyActionCoordinator.CloseAction()、EnemyActionCoordinator.RestoreRequest() 等共 11 处。</summary>
+    /// <summary>是否运行时已初始化。</summary>
     public bool IsRuntimeInitialized => ctx != null && agent != null && anim != null;
-    /// <summary>中文含义：是否存在待处理的命中。使用位置：ChasePlayer.OnUpdate()、EnemyAIManager.IsDirectPressureEnemy(VillagerController, Vector3)、EnemyFootAction.AllowGroundContact.get 等共 21 处。</summary>
+    /// <summary>是否存在待处理的命中。</summary>
     public bool HasPendingHit => pendingHit;
-    /// <summary>中文含义：是否存在待处理的爬行。使用位置：ChasePlayer.OnUpdate()、EnemyAIManager.IsDirectPressureEnemy(VillagerController, Vector3)、EnemyStateSnapshot.EnemyStateSnapshot(VillagerController) 等共 16 处。</summary>
+    /// <summary>是否存在待处理的爬行。</summary>
     public bool HasPendingCrawl => pendingCrawl;
-    /// <summary>中文含义：是否存在待处理的起身。使用位置：ChasePlayer.OnUpdate()、EnemyAIManager.IsDirectPressureEnemy(VillagerController, Vector3)、EnemyStateSnapshot.EnemyStateSnapshot(VillagerController) 等共 16 处。</summary>
+    /// <summary>是否存在待处理的起身。</summary>
     public bool HasPendingStandUp => pendingStandUp;
-    /// <summary>中文含义：是否永久爬行中。使用位置：EnemyFootAction.AllowGroundContact.get、EnemyFootAction.AttackStartupMiddle.get、ExecuteCrawl.OnUpdate() 等共 4 处。</summary>
+    /// <summary>是否永久爬行中。</summary>
     public bool IsPermanentlyCrawling => permanentCrawl;
-    /// <summary>中文含义：是否攻击结束。使用位置：作为 HashSet&lt;VillagerController&gt;.RemoveWhere(Predicate&lt;VillagerController&gt;) 的参数、EnemyStateSnapshot.EnemyStateSnapshot(VillagerController)、ExecuteAttack.OnUpdate() 等共 5 处。</summary>
+    /// <summary>是否攻击结束。</summary>
     public bool AttackFinished => attackFinished;
-    /// <summary>中文含义：是否命中结束。使用位置：EnemyStateSnapshot.EnemyStateSnapshot(VillagerController)、ExecuteHit.OnUpdate()。</summary>
+    /// <summary>是否命中结束。</summary>
     public bool HitFinished => hitFinished;
-    /// <summary>中文含义：是否起身结束。使用位置：EnemyStateSnapshot.EnemyStateSnapshot(VillagerController)、ExecuteStandUp.OnUpdate()。</summary>
+    /// <summary>是否起身结束。</summary>
     public bool StandUpFinished => standUpFinished;
-    /// <summary>中文含义：是否可以打开体术来源当前硬直。使用位置：VillagerQTEParticipant.UpdateBodyTechniqueAnimationWindow()。</summary>
+    /// <summary>是否可以打开体术来源当前硬直。</summary>
     public bool CanOpenBodyTechniqueFromCurrentStagger => currentStandingStaggerBodyTechnique && Time.time < bodyTechniqueWindowEndTime;
-    /// <summary>中文含义：是否可以评估站立战斗动作。使用位置：EnemyCombatModule.CanEvaluateStandingCombatAction.get、VillagerController.CanEvaluateStandingQTEAction.get、VillagerController.ShouldHoldCombatPosition.get。</summary>
+    /// <summary>是否可以评估站立战斗动作。</summary>
     public bool CanEvaluateStandingCombatAction => !IsDead && (specialTraversal == null || !specialTraversal.IsMovementProtected) && !pendingHit && !pendingCrawl && !pendingStandUp && fullyAwareOfPlayer && Player != null && IsCombatEngaged;
-    /// <summary>中文含义：是否可以评估站立配对动作动作。使用位置：CanAttemptEnemyQTEBase.OnUpdate()、CanAttemptFrontGrabQTE.OnUpdate()、EnemyAIManager.IsQTERequestEligible(VillagerController, QTEKind) 等共 5 处。</summary>
+    /// <summary>是否可以评估站立配对动作动作。</summary>
     public bool CanEvaluateStandingQTEAction => CanEvaluateStandingCombatAction && !IsNavigationTraversalProtected && CanSeePlayer();
-    /// <summary>中文含义：是否可以评估爬行战斗动作。使用位置：CanAttemptEnemyQTEBase.OnUpdate()、CanCrawlAttackNow.OnUpdate()、EnemyAIManager.IsQTERequestEligible(VillagerController, QTEKind) 等共 7 处。</summary>
+    /// <summary>是否可以评估爬行战斗动作。</summary>
     public bool CanEvaluateCrawlCombatAction => supportsCrawl && !IsDead && pendingCrawl && !pendingHit && !pendingStandUp && fullyAwareOfPlayer && Player != null && IsCombatEngaged;
-    /// <summary>中文含义：巡逻中心。使用位置：SelectPatrolPoint.OnUpdate()。</summary>
+    /// <summary>巡逻中心。</summary>
     public Vector3 PatrolCenter => patrolCenter;
-    /// <summary>中文含义：是否具有巡逻目标。使用位置：MoveToPatrolPoint.OnStart()、MoveToPatrolPoint.OnUpdate()。</summary>
+    /// <summary>是否具有巡逻目标。</summary>
     public bool HasPatrolTarget => hasPatrolTarget;
-    /// <summary>中文含义：巡逻目标。使用位置：作为 EnemyActionCoordinator.RequestPathTarget(Vector3) 的参数。</summary>
+    /// <summary>巡逻目标。</summary>
     public Vector3 PatrolTarget => patrolTarget;
 
-    /// <summary>中文含义：寻路代理。使用位置：作为 HouseThreeRegionNavigation.ReadSameSideNavigationPoint(Vector3, bool, float, float) 的参数、作为 IEnumerable&lt;VillagerController&gt;.Where&lt;VillagerController&gt;(Func&lt;VillagerController, bool&gt;) 的参数、作为 Mathf.Max(float, float) 的参数 等共 5 处。</summary>
+    /// <summary>寻路代理。</summary>
     public PathAgent Agent
     {
         get
@@ -1888,8 +1920,8 @@ public partial class VillagerController : MonoBehaviour, IDamageable
 
     /// <summary>TryResolveReachableNavigationPoint 的业务处理入口；本方法直接依赖 Component.GetComponent&lt;PathAgent&gt;()、PathAgent.TryResolveReachableDestination(Vector3, out Vector3)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyAIManager.AssignSurroundSlot(VillagerController, Vector3, float, bool, int)、EnemyAIManager.GetStableSurroundSlot(VillagerController, Vector3, float, bool)、EnemyAIManager.SelectSurroundSlot(VillagerController, Vector3, float, int, bool, out int)、EnemyWindowTraversal.RegisterWindowEntryPoint(EnemyWindowTraversalPlan, out Vector3)、EnemyWindowTraversal.TryResolveDropPursuitDestination(Vector3, out Vector3) 等共 6 处；下游（含内部回调体） Component.GetComponent&lt;PathAgent&gt;()、PathAgent.TryResolveReachableDestination(Vector3, out Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="rawTarget">中文含义：原始目标。使用位置：作为 PathAgent.TryResolveReachableDestination(Vector3, out Vector3) 的参数、VillagerController.TryResolveReachableNavigationPoint(Vector3, out Vector3)。</param>
-    /// <param name="resolvedTarget">中文含义：解算后的目标。输出参数，由本入口写入并交给调用方。使用位置：作为 PathAgent.TryResolveReachableDestination(Vector3, out Vector3) 的参数、VillagerController.TryResolveReachableNavigationPoint(Vector3, out Vector3)。</param>
+    /// <param name="rawTarget">原始目标。</param>
+    /// <param name="resolvedTarget">解算后的目标。输出参数，由本入口写入并交给调用方。</param>
     public bool TryResolveReachableNavigationPoint(Vector3 rawTarget, out Vector3 resolvedTarget)
     {
         resolvedTarget = rawTarget;
@@ -1903,8 +1935,8 @@ public partial class VillagerController : MonoBehaviour, IDamageable
 
     /// <summary>TryResolvePursuitNavigationPoint 的业务处理入口；本方法直接依赖 Component.GetComponent&lt;PathAgent&gt;()、PathAgent.TryResolvePursuitDestination(Vector3, out Vector3)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） Component.GetComponent&lt;PathAgent&gt;()、PathAgent.TryResolvePursuitDestination(Vector3, out Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="rawTarget">中文含义：原始目标。使用位置：作为 PathAgent.TryResolvePursuitDestination(Vector3, out Vector3) 的参数、VillagerController.TryResolvePursuitNavigationPoint(Vector3, out Vector3)。</param>
-    /// <param name="resolvedTarget">中文含义：解算后的目标。输出参数，由本入口写入并交给调用方。使用位置：作为 PathAgent.TryResolvePursuitDestination(Vector3, out Vector3) 的参数、VillagerController.TryResolvePursuitNavigationPoint(Vector3, out Vector3)。</param>
+    /// <param name="rawTarget">原始目标。</param>
+    /// <param name="resolvedTarget">解算后的目标。输出参数，由本入口写入并交给调用方。</param>
     public bool TryResolvePursuitNavigationPoint(Vector3 rawTarget, out Vector3 resolvedTarget)
     {
         resolvedTarget = rawTarget;
@@ -1916,10 +1948,10 @@ public partial class VillagerController : MonoBehaviour, IDamageable
         return agent != null && agent.TryResolvePursuitDestination(rawTarget, out resolvedTarget);
     }
 
-    /// <summary>中文含义：玩家。使用位置：作为 EnemyAIManager.IsAtStableSurroundPosition(VillagerController, Vector3) 的参数、作为 Mathf.Abs(float) 的参数、作为 Vector3.Distance(Vector3, Vector3) 的参数 等共 43 处。</summary>
+    /// <summary>玩家。</summary>
     public LeonController Player => ResolvePlayer();
 
-    /// <summary>中文含义：玩家距离。使用位置：作为 ChainsawManAnimationBridge.BeginIntroTaunt(float) 的参数、作为 ChainsawManAnimationBridge.ResolveChaseMoveSpeed(float, float, float) 的参数、EnemyCombatModule.PlayerDistance.get 等共 5 处。</summary>
+    /// <summary>玩家距离。</summary>
     public float PlayerDistance
     {
         get
@@ -1935,18 +1967,18 @@ public partial class VillagerController : MonoBehaviour, IDamageable
         }
     }
 
-    /// <summary>中文含义：是否玩家内部攻击范围。使用位置：IsInAttackRange.OnUpdate()。</summary>
+    /// <summary>是否玩家内部攻击范围。</summary>
     public bool IsPlayerInAttackRange => IsPlayerWithinBodyContactRange();
-    /// <summary>中文含义：是否攻击就绪。使用位置：EnemyActionCoordinator.ApprovalAndExecute(ActionRequest, bool)、EnemyCombatModule.IsAttackReady.get、EnemyStateSnapshot.EnemyStateSnapshot(VillagerController) 等共 4 处。</summary>
+    /// <summary>是否攻击就绪。</summary>
     public bool IsAttackReady => Time.time - lastAttackTime >= attackCooldown;
     /// <summary>中文含义：警觉。</summary>
     public float Awareness => awareness;
-    /// <summary>中文含义：是否完全察觉所属玩家。使用位置：InvestigatePlayer.OnUpdate()、NeedsChainsawStart.OnUpdate()。</summary>
+    /// <summary>是否完全察觉所属玩家。</summary>
     public bool IsFullyAwareOfPlayer => fullyAwareOfPlayer;
-    /// <summary>中文含义：是否战斗已接战。使用位置：作为 HashSet&lt;VillagerController&gt;.RemoveWhere(Predicate&lt;VillagerController&gt;) 的参数、ChasePlayer.OnUpdate()、EnemyAIManager.IsDirectPressureEnemy(VillagerController, Vector3) 等共 15 处。</summary>
+    /// <summary>是否战斗已接战。</summary>
     public bool IsCombatEngaged => combatEngaged;
 
-    /// <summary>中文含义：是否具有追逐路径失败。使用位置：EnemyAIManager.GetDirectPressureScore(VillagerController, Vector3)、ExecuteChaseRecovery.OnUpdate()、ExecuteCombat.OnUpdate() 等共 4 处。</summary>
+    /// <summary>是否具有追逐路径失败。</summary>
     public bool HasChasePathFailure
     {
         get
@@ -1960,7 +1992,7 @@ public partial class VillagerController : MonoBehaviour, IDamageable
         }
     }
 
-    /// <summary>中文含义：是否具有未完成追击抵达。使用位置：ExecuteCombat.OnUpdate()、VillagerController.TryRecoverIncompletePursuitArrival()、VillagerController.UpdateChaseExecution() 等共 4 处。</summary>
+    /// <summary>是否具有未完成追击抵达。</summary>
     public bool HasIncompletePursuitArrival
     {
         get
@@ -1970,7 +2002,7 @@ public partial class VillagerController : MonoBehaviour, IDamageable
                 agent = GetComponent<PathAgent>();
             }
 
-            // player（玩家）：使用位置：作为 EnemyAIManager.IsStableSurroundArrival(VillagerController, Vector3, Vector3, float) 的参数、作为 VillagerController.HorizontalDistance(Vector3, Vector3) 的参数、VillagerController.HasIncompletePursuitArrival.get。
+            // 玩家。
 LeonController player = Player;
             if (agent == null || player == null || !ShouldChasePlayer || agent.CurrentPathState != PathAgentState.Arrived)
             {
@@ -1984,20 +2016,27 @@ LeonController player = Player;
                 return false;
             }
 
-            // acceptedDistance（已接受距离）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：VillagerController.HasIncompletePursuitArrival.get。
+            if (specialTraversal != null &&
+                (specialTraversal.HasPendingRoute || specialTraversal.HasPendingDropRoute || specialTraversal.HasActivePlatformExitClearance))
+            {
+                // 正在特殊通路排队或清场离窗时，推进和超时由通路协调器统一管理，避免中途作废排队位置。
+                return false;
+            }
+
+            // 已接受距离。
 float acceptedDistance = Mathf.Max(incompletePursuitArrivalDistance, attackStartRange + agent.waypointReachedRadius + 0.15f);
-            // manager（当前敌人智能管理器）：使用位置：VillagerController.HasIncompletePursuitArrival.get。
+            // 当前敌人智能管理器。
 EnemyAIManager manager = EnemyAIManager.Instance;
-            // arrivedAtAssignedSurroundSlot（是否已抵达所在已分配包围槽位）：使用位置：VillagerController.HasIncompletePursuitArrival.get。
+            // 是否已抵达所在已分配包围槽位。
 bool arrivedAtAssignedSurroundSlot = manager != null && manager.IsStableSurroundArrival(this, player.transform.position, agent.Destination, Mathf.Max(agent.waypointReachedRadius, agent.arrivedDestinationChangeThreshold));
-            // destinationStillFar（是否目的地仍然远端）：使用位置：VillagerController.HasIncompletePursuitArrival.get。
+            // 是否目的地仍然远端。
 bool destinationStillFar = HorizontalDistance(agent.Destination, player.transform.position) > acceptedDistance;
-            // enemyStillFar（是否敌人仍然远端）：使用位置：VillagerController.HasIncompletePursuitArrival.get。
+            // 是否敌人仍然远端。
 bool enemyStillFar = HorizontalDistance(transform.position, player.transform.position) > acceptedDistance;
             // 玩家可能位于二楼平台正下方或外墙另一侧。此时水平距离很小，
             // 但“已到达”只代表抵达了投影节点，并不代表已经能够接近玩家。
             // 继续使用近身可达性校验，避免已到达状态绕过所有恢复分支。
-            // requiresTraversal（是否需要通行）：保存 VillagerController.RequiresNavigationTraversalToPlayer() 的返回结果，供当前步骤使用。使用位置：VillagerController.HasIncompletePursuitArrival.get。
+            // 是否需要通行。
 bool requiresTraversal = RequiresNavigationTraversalToPlayer();
             if (arrivedAtAssignedSurroundSlot && !requiresTraversal)
             {
@@ -2008,20 +2047,20 @@ bool requiresTraversal = RequiresNavigationTraversalToPlayer();
         }
     }
 
-    /// <summary>中文含义：是否村庄入口战斗锁定。使用位置：VillagerController.ArchitectureReadIsVillageEntranceCombatLocked.get、VillagerController.CollectCombatTimelineSnapshot()。</summary>
+    /// <summary>是否村庄入口战斗锁定。</summary>
     private bool IsVillageEntranceCombatLocked
     {
         get
         {
-            // manager（当前敌人智能管理器）：使用位置：VillagerController.IsVillageEntranceCombatLocked.get。
+            // 当前敌人智能管理器。
 EnemyAIManager manager = EnemyAIManager.Instance;
             return manager != null && !manager.IsCombatUnlocked;
         }
     }
 
-    /// <summary>中文含义：是否配对动作受控。使用位置：作为 HashSet&lt;VillagerController&gt;.RemoveWhere(Predicate&lt;VillagerController&gt;) 的参数、CharacterMotionExecutor.Authorize(EnemyMovementMode, ActionHandle)、EnemyActionCoordinator.CallbackValid(ActionHandle) 等共 28 处。</summary>
+    /// <summary>是否配对动作受控。</summary>
     public bool IsQTEControlled => qteParticipant != null && qteParticipant.IsControllingEnemyAI;
-    /// <summary>中文含义：是否导航通行受保护的。使用位置：ExecuteChainsawIntroTaunt.OnStart()、ExecuteChainsawStart.OnStart()、NeedsChainsawIntroTaunt.OnUpdate() 等共 12 处。</summary>
+    /// <summary>是否导航通行受保护的。</summary>
     public bool IsNavigationTraversalProtected => (specialTraversal != null && specialTraversal.IsMovementProtected) || pursuitIngressCrossing;
     /// <summary>中文含义：是否内部攻击起始范围。</summary>
     internal bool NeedsCombatTraversal()
@@ -2044,26 +2083,108 @@ EnemyAIManager manager = EnemyAIManager.Instance;
     }
 
     public bool IsInAttackStartRange => IsPlayerWithinAttackStartRange();
-    /// <summary>中文含义：是否具有任意玩家警觉。使用位置：EnemyStateSnapshot.EnemyStateSnapshot(VillagerController)、IdleWait.OnUpdate()、InvestigatePlayer.OnUpdate() 等共 5 处。</summary>
+    /// <summary>是否具有任意玩家警觉。</summary>
     public bool HasAnyPlayerAwareness => combatEngaged || fullyAwareOfPlayer || awareness > 0.01f;
 
-    /// <summary>CanBeAssassinatedBy 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
-    /// <remarks>静态调用链：上游 VillagerQTEParticipant.CanStart(LeonController, QTEKind, out QTECancelReason)；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="leon">中文含义：里昂。使用位置：VillagerController.CanBeAssassinatedBy(LeonController)。</param>
+    /// <summary>CanBeAssassinatedBy 的状态或数值处理入口；同时涵盖单兵未发现玩家的潜行暗杀与战斗站立大硬直背后背刺。</summary>
+    /// <remarks>静态调用链：上游 VillagerQTEParticipant.CanStart(LeonController, QTEKind, out QTECancelReason)；动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
+    /// <param name="leon">里昂。</param>
     public bool CanBeAssassinatedBy(LeonController leon)
     {
-        if (leon == null || IsDead || !IsActive || pendingHit || pendingCrawl || pendingStandUp || pendingTripOver || CurrentState == VillagerState.Crawl || CurrentState == VillagerState.CrawlAttack || CurrentState == VillagerState.Staggered || CurrentState == VillagerState.Dead || CurrentState == VillagerState.Attack || CurrentState == VillagerState.Chase)
+        if (CanBeStealthAssassinatedBy(leon))
+        {
+            return true;
+        }
+
+        return CanBeStaggerBackstabbedBy(leon);
+    }
+
+    /// <summary>判断当前敌人是否满足 RE4R 潜行暗杀条件：仅要求该个体完全未发现玩家，不被全局交战状态一刀切拦截。</summary>
+    internal bool CanBeStealthAssassinatedBy(LeonController leon)
+    {
+        if (leon == null || IsDead || !IsActive || IsQTEControlled || pendingHit || pendingCrawl || pendingStandUp || pendingTripOver)
         {
             return false;
         }
 
-        return !fullyAwareOfPlayer && !combatEngaged;
+        if (CurrentState == VillagerState.Crawl || CurrentState == VillagerState.CrawlAttack
+            || CurrentState == VillagerState.Staggered || CurrentState == VillagerState.Dead
+            || CurrentState == VillagerState.Attack || CurrentState == VillagerState.StandUp)
+        {
+            return false;
+        }
+
+        return !HasPersonallyDetectedPlayer && !playerVisible;
     }
 
-    /// <summary>中文含义：是否应当调查玩家。使用位置：ShouldInvestigatePlayer.OnUpdate()。</summary>
+    /// <summary>判断当前敌人是否处于可触发背后站姿背刺（1101）的战斗站立大硬直窗口，并严格与跪地补刀通道互斥。</summary>
+    internal bool CanBeStaggerBackstabbedBy(LeonController leon)
+    {
+        if (leon == null || IsDead || !IsActive || IsQTEControlled || CurrentState != VillagerState.Staggered
+            || pendingCrawl || pendingStandUp || pendingTripOver)
+        {
+            return false;
+        }
+
+        if (qteParticipant == null || qteParticipant.TryReadGroundFinisher(out _))
+        {
+            return false;
+        }
+
+        if (missionEnemyType == MissionEnemyType.Ganado)
+        {
+            if (combatModule == null)
+            {
+                return false;
+            }
+
+            if (combatModule.UsesNativeBodyTechnique)
+            {
+                if (!combatModule.TryReadNativeBodyReaction(out NativeBodyReaction reaction, out _))
+                {
+                    return false;
+                }
+
+                bool standingReaction = reaction == NativeBodyReaction.HeadStagger || reaction == NativeBodyReaction.PerfectParry;
+                if (!standingReaction)
+                {
+                    return false;
+                }
+
+                if (animationPresenter == null || !animationPresenter.IsNativeBodyTechniquePoseReady(reaction))
+                {
+                    return false;
+                }
+
+                return true;
+            }
+
+            return qteParticipant.TryReadBodyTechniqueOpportunity(out _);
+        }
+
+        if (missionEnemyType == MissionEnemyType.Sawman)
+        {
+            if (qteParticipant.TryReadBodyTechniqueOpportunity(out _))
+            {
+                return true;
+            }
+
+            if (combatModule != null && combatModule.ReadCurrentStandingStaggerBodyTechnique
+                && Time.time < combatModule.ReadBodyTechniqueWindowEndTime)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        return false;
+    }
+
+    /// <summary>是否应当调查玩家。</summary>
     public bool ShouldInvestigatePlayer => false;
 
-    /// <summary>中文含义：是否应当保持战斗位置。使用位置：ExecuteChaseRecovery.OnUpdate()、ExecuteCombat.OnUpdate()、HoldCombatPosition.OnUpdate() 等共 4 处。</summary>
+    /// <summary>是否应当保持战斗位置。</summary>
     public bool ShouldHoldCombatPosition
     {
         get
@@ -2073,11 +2194,11 @@ EnemyAIManager manager = EnemyAIManager.Instance;
                 return false;
             }
 
-            // manager（当前敌人智能管理器）：使用位置：VillagerController.ShouldHoldCombatPosition.get。
+            // 当前敌人智能管理器。
 EnemyAIManager manager = EnemyAIManager.Instance;
-            // atAssignedSurroundPosition（是否所在已分配包围位置）：使用位置：VillagerController.ShouldHoldCombatPosition.get。
+            // 是否所在已分配包围位置。
 bool atAssignedSurroundPosition = manager != null && manager.IsAtStableSurroundPosition(this, Player.transform.position);
-            // insideHoldRange（是否内部保持范围）：使用位置：VillagerController.ShouldHoldCombatPosition.get。
+            // 是否内部保持范围。
 bool insideHoldRange;
             if (combatHoldActive)
             {
@@ -2094,7 +2215,7 @@ bool insideHoldRange;
                 return false;
             }
 
-            // insideAttackStartRange（是否内部攻击起始范围）：保存 VillagerController.IsPlayerWithinAttackStartRange() 的返回结果，供当前步骤使用。使用位置：VillagerController.ShouldHoldCombatPosition.get。
+            // 是否内部攻击起始范围。
 bool insideAttackStartRange = IsPlayerWithinAttackStartRange();
             if (insideAttackStartRange && (!CanEngagePlayerAtCloseRange()
                 || (!atAssignedSurroundPosition && !combatModule.CanReachWithStandingPose())))
@@ -2116,18 +2237,18 @@ bool insideAttackStartRange = IsPlayerWithinAttackStartRange();
         }
     }
 
-    /// <summary>中文含义：是否应当追逐玩家。使用位置：ChasePlayer.OnUpdate()、ShouldChasePlayer.OnUpdate()、VillagerController.HasIncompletePursuitArrival.get 等共 10 处。</summary>
+    /// <summary>是否应当追逐玩家。</summary>
     public bool ShouldChasePlayer => combatEngaged && Player != null && !IsDead && !pendingHit && !pendingCrawl && !pendingStandUp && !IsQTEControlled && CurrentState != VillagerState.Attack && CurrentState != VillagerState.CrawlAttack && CurrentState != VillagerState.Staggered && CurrentState != VillagerState.StandUp && CurrentState != VillagerState.Dead;
     /// <summary>中文含义：是否需要导航目标玩家。</summary>
     public bool RequiresNavigationToPlayer => RequiresNavigationTraversalToPlayer();
     /// <summary>中文含义：是否需要直接通行目标玩家。</summary>
     public bool RequiresDirectTraversalToPlayer => RequiresDirectNavigationTraversalToPlayer();
-    /// <summary>中文含义：当前追逐目标。使用位置：作为 EnemyActionCoordinator.RequestPathTarget(Vector3) 的参数、VillagerController.RefreshChaseDestination()、VillagerController.TryGetSameLevelPursuitIngressDestination(Vector3, out Vector3) 等共 4 处。</summary>
+    /// <summary>当前追逐目标。</summary>
     public Vector3 CurrentChaseTarget => GetCurrentCombatTarget();
-    /// <summary>中文含义：状态快照。使用位置：CannotSeePlayer.OnUpdate()、CanSeePlayer.OnUpdate()、HasCrawlRequest.OnUpdate() 等共 8 处。</summary>
+    /// <summary>状态快照。</summary>
     public EnemyStateSnapshot StateSnapshot => new EnemyStateSnapshot(this);
 
-    /// <summary>中文含义：已死亡。事件通信成员 Died，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。使用位置：ChapterOneMissionManager.OnMissionEnemyDied(VillagerController)、ChapterOneMissionManager.TrySpawnEnemy(GameObject, MissionEnemyType)、ChapterOneMissionManager.UnsubscribeAllEnemies() 等共 9 处。</summary>
+    /// <summary>已死亡。事件通信成员 Died，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。</summary>
     public event Action<VillagerController> Died;
     /// <summary>Unity 首次启用后的启动回调；状态处理与资源交接按函数内顺序执行，下游协作见调用链。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） CharacterHealthModule.Initialize(float)、CharacterMotionExecutor.BindingRigidbody(Rigidbody)、Component.GetComponent&lt;Animator&gt;()、Component.GetComponent&lt;BehaviorTree&gt;()、Component.GetComponent&lt;CapsuleCollider&gt;()、Component.GetComponent&lt;ChainsawManAnimationBridge&gt;()、Component.GetComponent&lt;EnemyColliderController&gt;() 等共 33 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
@@ -2169,7 +2290,7 @@ bool insideAttackStartRange = IsPlayerWithinAttackStartRange();
             gameObject.AddComponent<EnemyFootAction>();
         }
 
-        // rb（运动刚体）：保存 Component.GetComponent<Rigidbody>() 的返回结果，供当前步骤使用。使用位置：作为 CharacterMotionExecutor.BindingRigidbody(Rigidbody) 的参数、VillagerController.Start()。
+        // 运动刚体。
 var rb = GetComponent<Rigidbody>();
         motionExecutor.BindingRigidbody(rb);
         if (rb != null)
@@ -2186,9 +2307,9 @@ var rb = GetComponent<Rigidbody>();
         actionCoordinator.InitializeAction();
         actualMovementSamplePosition = transform.position;
         actualMovementSampleInitialized = true;
-        // createdValue70（本次新建的敌人上下文）：保存本次创建实例，按原先顺序完成逐项初始化后交给后续使用方。使用位置：VillagerController.Start()。
+        // 本次新建的敌人上下文。
 global::EnemyContext createdValue70 = new EnemyContext(healthModule, combatModule);
-        // receiverValue71（判空前缓存的敌人智能管理器的实例）：从敌人智能管理器的实例读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、VillagerController.Start()。
+        // 判空前缓存的敌人智能管理器的实例。
 global::EnemyAIManager receiverValue71 = EnemyAIManager.Instance;
         if (!global::System.Object.ReferenceEquals(receiverValue71, null))
         {
@@ -2235,7 +2356,7 @@ global::EnemyAIManager receiverValue71 = EnemyAIManager.Instance;
         }
         else
         {
-            // receiverValue74（判空前缓存的敌人智能管理器的实例）：从敌人智能管理器的实例读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、VillagerController.Start()。
+            // 判空前缓存的敌人智能管理器的实例。
 global::EnemyAIManager receiverValue74 = EnemyAIManager.Instance;
             if (!global::System.Object.ReferenceEquals(receiverValue74, null))
             {
@@ -2250,7 +2371,7 @@ global::EnemyAIManager receiverValue74 = EnemyAIManager.Instance;
     {
         if (IsRuntimeInitialized && !IsDead)
         {
-            // receiverValue75（判空前缓存的动作协调）：从动作协调器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、VillagerController.OnEnable()。
+            // 判空前缓存的动作协调。
 global::EnemyActionCoordinator receiverValue75 = actionCoordinator;
             if (!global::System.Object.ReferenceEquals(receiverValue75, null))
             {
@@ -2267,7 +2388,7 @@ global::EnemyActionCoordinator receiverValue75 = actionCoordinator;
     {
         LeonPlayerStairRampRuntime.RemoveCharacter(this);
         UnregisterPursuitIngressWaiter();
-        // receiverValue76（判空前缓存的房屋第三区域导航的当前）：从房屋第三区域导航的当前读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、VillagerController.OnDestroy()。
+        // 判空前缓存的房屋第三区域导航的当前。
 global::HouseThreeRegionNavigation receiverValue76 = HouseThreeRegionNavigation.Current;
         if (!global::System.Object.ReferenceEquals(receiverValue76, null))
         {
@@ -2314,14 +2435,14 @@ global::HouseThreeRegionNavigation receiverValue76 = HouseThreeRegionNavigation.
             manager.InvalidatePursuitDestination(this);
         }
 
-        // receiverValue77（判空前缓存的动作协调）：从动作协调器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、VillagerController.OnDisable()。
+        // 判空前缓存的动作协调。
 global::EnemyActionCoordinator receiverValue77 = actionCoordinator;
         if (!global::System.Object.ReferenceEquals(receiverValue77, null))
         {
             receiverValue77.CloseAction();
         }
 
-        // receiverValue78（判空前缓存的角色运动执行器）：从角色运动执行器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、VillagerController.OnDisable()。
+        // 判空前缓存的角色运动执行器。
 global::CharacterMotionExecutor receiverValue78 = motionExecutor;
         if (!global::System.Object.ReferenceEquals(receiverValue78, null))
         {
@@ -2334,7 +2455,7 @@ global::CharacterMotionExecutor receiverValue78 = motionExecutor;
         }
 
         UnregisterPursuitIngressWaiter();
-        // receiverValue79（判空前缓存的房屋第三区域导航的当前）：从房屋第三区域导航的当前读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、VillagerController.OnDisable()。
+        // 判空前缓存的房屋第三区域导航的当前。
 global::HouseThreeRegionNavigation receiverValue79 = HouseThreeRegionNavigation.Current;
         if (!global::System.Object.ReferenceEquals(receiverValue79, null))
         {
@@ -2431,7 +2552,7 @@ global::HouseThreeRegionNavigation receiverValue79 = HouseThreeRegionNavigation.
         UpdateAnimator();
         animationPresenter.UpdateNativeStandingGait();
         UpdateStandingAttackHitFallback();
-        // movementStartPosition（移动起始位置）：使用位置：作为 VillagerController.UpdateLocomotionPlaybackRate(Vector3) 的参数。
+        // 移动起始位置。
 Vector3 movementStartPosition = transform.position;
         if (!UsesNativeStandingStride || CurrentMovementMode != EnemyMovementMode.StandingPathRootMotion)
         {
@@ -2493,6 +2614,11 @@ Vector3 movementStartPosition = transform.position;
             bool looking = bellLooking && !IsDead && !IsQTEControlled && !IsNavigationTraversalProtected
                 && !HasPendingHit && !combatModule.NativeCombatActive;
             animationPresenter.ApplyBellHeadPose(looking, bellDestination);
+        }
+
+        if (combatModule != null)
+        {
+            combatModule.ApplyLegTrapFootPin();
         }
     }
 
@@ -2557,7 +2683,7 @@ Vector3 movementStartPosition = transform.position;
 
         // 普通更新已经为本帧冻结了追击方向。动画结束后不能再直接读取
         // 原始寻路拐点，否则一个刚完成的重算会在同一帧重新覆盖平滑方向。
-        // pathDirection（路径方向）：使用位置：作为 Vector3.Dot(Vector3, Vector3) 的参数、作为 VillagerController.RotateTowardsDirection(Vector3, float) 的参数、VillagerController.ReconcileStandingPursuitFacingAfterAnimation()。
+        // 路径方向。
 Vector3 pathDirection;
         if (standingPathDirectionFrame == Time.frameCount)
         {
@@ -2584,7 +2710,7 @@ Vector3 pathDirection;
             return;
         }
 
-        // facingDirection（朝向方向）：使用位置：作为 Vector3.Dot(Vector3, Vector3) 的参数、作为 VillagerController.RotateTowardsDirection(Vector3, float) 的参数、VillagerController.ReconcileStandingPursuitFacingAfterAnimation()。
+        // 朝向方向。
 Vector3 facingDirection = lastStableAvoidanceDirection;
         facingDirection.y = 0f;
         if (facingDirection.sqrMagnitude <= 0.0001f || Vector3.Dot(facingDirection.normalized, pathDirection) < ResolveLocalAvoidanceMinimumForwardAlignment())
@@ -2619,17 +2745,81 @@ Vector3 facingDirection = lastStableAvoidanceDirection;
         if (agent.CurrentPathState == PathAgentState.Arrived)
         {
             UpdateCombatFacing();
+            UpdateTacticalStandbyVoiceFeedback();
         }
+    }
+
+    private void UpdateTacticalStandbyVoiceFeedback()
+    {
+        if (IsDead || HasPendingHit || CurrentState != VillagerState.Chase || (specialTraversal != null && specialTraversal.IsMovementProtected))
+        {
+            return;
+        }
+
+        EnemyAIManager manager = EnemyAIManager.Instance;
+        if (manager == null || manager.HasAttackReservation(this) || !manager.TryReadTacticalMovement(this, out _))
+        {
+            return;
+        }
+
+        if (nextTacticalStandbyVoiceTime < 0f)
+        {
+            nextTacticalStandbyVoiceTime = Time.time + 1.4f + ((GetInstanceID() & 7) * 0.45f);
+            return;
+        }
+
+        if (Time.time < nextTacticalStandbyVoiceTime || Time.time < nextGlobalTacticalStandbyVoiceTime)
+        {
+            return;
+        }
+
+        nextTacticalStandbyVoiceTime = Time.time + 3.4f + ((GetInstanceID() & 3) * 0.45f);
+        nextGlobalTacticalStandbyVoiceTime = Time.time + 1.8f;
+        int variant = Mathf.Abs(GetInstanceID() + Time.frameCount) % 3;
+        ZombieVoiceType voiceType;
+        if (variant == 0)
+        {
+            voiceType = ZombieVoiceType.Grunt;
+        }
+        else if (variant == 1)
+        {
+            voiceType = ZombieVoiceType.Throat;
+        }
+        else
+        {
+            voiceType = ZombieVoiceType.Detection;
+        }
+
+        PlayVoice(voiceType);
     }
 
     /// <summary>RefreshChaseDestination 的业务处理入口；本方法直接依赖 EnemyAIManager.ReleaseCombatReservation(VillagerController)、EnemyWindowTraversal.TryResolveSamePlatformPursuitDestination(Vector3, out Vector3)、EnemyWindowTraversal.TryResolveSpecialPursuitDestination(Vector3, out Vector3)、HouseThreeRegionNavigation.CrossLayerOrIndoorsChase(Vector3, Vector3)、object.ReferenceEquals(object, object)、PathAgent.SetDestination(Vector3)、PathAgent.SetPursuitDestination(Vector3) 等共 9 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillagerController.ArchitectureInvokeRefreshChaseDestination()、VillagerController.BeginTemporaryAvoidance(Vector3)、VillagerController.CompleteTraversalAndResumeChase()、VillagerController.ResolveStandingPathDirectionForCurrentFrame()、VillagerController.TryRecoverChasePath() 等共 9 处；下游（含内部回调体） EnemyAIManager.ReleaseCombatReservation(VillagerController)、EnemyWindowTraversal.TryResolveSamePlatformPursuitDestination(Vector3, out Vector3)、EnemyWindowTraversal.TryResolveSpecialPursuitDestination(Vector3, out Vector3)、HouseThreeRegionNavigation.CrossLayerOrIndoorsChase(Vector3, Vector3)、object.ReferenceEquals(object, object)、PathAgent.SetDestination(Vector3)、PathAgent.SetPursuitDestination(Vector3) 等共 9 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
+    internal void InvalidateChaseRefreshFrame()
+    {
+        chaseRefreshDirty = true;
+    }
+
     public bool RefreshChaseDestination()
     {
         if (!isActiveAndEnabled || IsDead || actionCoordinator == null || !actionCoordinator.CanReceiveRequest || agent == null || !agent.enabled)
         {
             return false;
         }
+
+        if (lastRefreshChaseFrame == Time.frameCount && !chaseRefreshDirty && agent.HasDestination)
+        {
+            return lastRefreshChaseResult;
+        }
+
+        lastRefreshChaseFrame = Time.frameCount;
+        chaseRefreshDirty = false;
+        lastRefreshChaseResult = RefreshChaseDestinationCore();
+        return lastRefreshChaseResult;
+    }
+
+    private bool RefreshChaseDestinationCore()
+    {
 
         // 翻窗曲线及落地交接期间，普通追击不能重新写入路径或抢回移动。
         if (specialTraversal != null && specialTraversal.IsMovementProtected)
@@ -2654,7 +2844,7 @@ Vector3 facingDirection = lastStableAvoidanceDirection;
             return agent.SetDestination(ladderApproach);
         }
 
-        // player（玩家）：使用位置：作为 HouseThreeRegionNavigation.CrossLayerOrIndoorsChase(Vector3, Vector3) 的参数、作为 PathAgent.SetDestination(Vector3) 的参数、VillagerController.RefreshChaseDestination()。
+        // 玩家。
         LeonController player = Player;
         EnemyAIManager tacticalManager = EnemyAIManager.Instance;
         if (chainsawBridge != null && player != null && door03TraversalRoute != null &&
@@ -2673,21 +2863,18 @@ Vector3 facingDirection = lastStableAvoidanceDirection;
 
         if (specialTraversal != null && player != null)
         {
-            // playerPosition（玩家位置）：使用位置：作为 EnemyWindowTraversal.TryResolveSamePlatformPursuitDestination(Vector3, out Vector3) 的参数、作为 EnemyWindowTraversal.TryResolveSpecialPursuitDestination(Vector3, out Vector3) 的参数。
+            // 玩家位置。
 Vector3 playerPosition = player.transform.position;
             if (specialTraversal.TryResolveSamePlatformPursuitDestination(playerPosition, out Vector3 platformDestination))
             {
-                // 翻越后先追踪同一平台上的玩家，避免屋内拦截点抢占目的地。
-                if (tacticalManager != null)
+                // 仅允许未接战或持有直接压迫权的角色直追平台玩家，其余角色交由战术槽位分散候场并保持禁止每帧清空攻击/QTE占用。
+                if (tacticalManager == null || !tacticalManager.CanEngage(this) || tacticalManager.ShouldFollowPlayerDirectly(this))
                 {
-                    tacticalManager.ReleaseCombatReservation(this);
+                    agent.isStopped = false;
+                    return agent.SetDestination(platformDestination);
                 }
-
-                agent.isStopped = false;
-                return agent.SetDestination(platformDestination);
             }
-
-            if (specialTraversal.TryResolveSpecialPursuitDestination(playerPosition, out Vector3 /* 中文含义：通行目的地。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ traversalDestination))
+            else if (specialTraversal.TryResolveSpecialPursuitDestination(playerPosition, out Vector3 /* 中文含义：通行目的地。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ traversalDestination))
             {
                 // 特殊通行入口已按可达表面精确投影，不能再次投影到导航节点中心。
                 // 二次投影叠加抵达半径，会让敌人停在翻窗捕获范围以外。
@@ -2718,7 +2905,7 @@ Vector3 playerPosition = player.transform.position;
             }
         }
 
-        // region（区域）：使用位置：VillagerController.RefreshChaseDestination()。
+        // 区域。
 var region = HouseThreeRegionNavigation.Current;
         if (region != null && player != null && NeedsCombatTraversal() &&
             region.CrossLayerOrIndoorsChase(transform.position, player.transform.position))
@@ -2737,9 +2924,9 @@ var region = HouseThreeRegionNavigation.Current;
             return false;
         }
 
-        // chaseTarget（追逐目标）：使用位置：作为 PathAgent.SetPursuitDestination(Vector3) 的参数、VillagerController.RefreshChaseDestination()。
+        // 追逐目标。
 Vector3 chaseTarget = CurrentChaseTarget;
-        // passageReference（通道引用）：使用位置：作为 VillagerController.TryGetSameLevelPursuitIngressDestination(Vector3, out Vector3) 的参数、VillagerController.RefreshChaseDestination()。
+        // 通道引用。
 Vector3 passageReference;
         if (player != null)
         {
@@ -2784,10 +2971,39 @@ Vector3 passageReference;
 
             if (movement == EnemyAIManager.TacticalMovement.Blocked)
             {
-                agent.isStopped = true;
-                UpdateCombatFacing();
-                return false;
+                bool farFromAttackRange = player == null
+                    || (!IsInAttackStartRange && HorizontalDistance(transform.position, player.transform.position) > 2.6f);
+                if (farFromAttackRange)
+                {
+                    if (tacticalBlockedSince <= 0f)
+                    {
+                        tacticalBlockedSince = Time.time;
+                    }
+                }
+                else
+                {
+                    tacticalBlockedSince = 0f;
+                }
+
+                if (!farFromAttackRange || Time.time - tacticalBlockedSince < 0.65f)
+                {
+                    agent.isStopped = true;
+                    UpdateCombatFacing();
+                    return false;
+                }
+
+                tacticalBlockedSince = 0f;
+                tacticalManager.RejectCurrentTacticalRoute(this);
+                agent.isStopped = false;
+                if (player != null)
+                {
+                    return agent.SetPursuitDestination(player.transform.position);
+                }
+
+                return agent.SetPursuitDestination(chaseTarget);
             }
+
+            tacticalBlockedSince = 0f;
 
             agent.isStopped = false;
             float tolerance = agent.arrivedDestinationChangeThreshold;
@@ -2813,15 +3029,15 @@ Vector3 passageReference;
     /// 包围槽位只负责进屋后的站位，不能让敌人隔着墙直接朝槽位移动。
     /// </summary>
     /// <remarks>静态调用链：上游 VillagerController.RefreshChaseDestination()；下游（含内部回调体） DoorController.TryFindPassageTowardDestination(Vector3, Vector3, out DoorController, out int)、DoorController.TryFindPassageTowardDestination(Vector3, Vector3, out DoorController)、EnemyAIManager.InvalidatePursuitDestination(VillagerController)、Mathf.Abs(float)、Mathf.Sign(float)、object.ReferenceEquals(object, object)、PursuitNavigationTopology.TryFindFirstPortal(int, int, out DoorController, out int) 等共 13 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="targetPosition">中文含义：目标位置。使用位置：作为 DoorController.TryFindPassageTowardDestination(Vector3, Vector3, out DoorController, out int) 的参数、作为 DoorController.TryFindPassageTowardDestination(Vector3, Vector3, out DoorController) 的参数、作为 Vector3.Dot(Vector3, Vector3) 的参数 等共 6 处。</param>
-    /// <param name="ingressDestination">中文含义：入口目的地。输出参数，由本入口写入并交给调用方。使用位置：作为 VillagerController.TryGetPursuitIngressDestination(Vector3, out Vector3) 的参数、VillagerController.TryGetSameLevelPursuitIngressDestination(Vector3, out Vector3)。</param>
+    /// <param name="targetPosition">目标位置。</param>
+    /// <param name="ingressDestination">入口目的地。输出参数，由本入口写入并交给调用方。</param>
     private bool TryGetSameLevelPursuitIngressDestination(Vector3 targetPosition, out Vector3 ingressDestination)
     {
         ingressDestination = targetPosition;
         // 只要真实区域已经不同，旧的“完成过某扇门”记录就不再具有
         // 路由权威性。由区域拓扑重新选择第一道通道，避免多门建筑中
         // 反向复用旧门或继续追逐另一房间的包围点。
-        // hasPursuitRegions（是否具有追击区域集合）：保存 VillagerController.TryResolveCurrentPursuitRegions(Vector3, out int, out int) 的返回结果，供当前步骤使用。使用位置：VillagerController.TryGetSameLevelPursuitIngressDestination(Vector3, out Vector3)。
+        // 是否具有追击区域集合。
 bool hasPursuitRegions = TryResolveCurrentPursuitRegions(targetPosition, out int /* 中文含义：敌人区域。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ enemyRegion, out int /* 中文含义：目标区域。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ targetRegion);
         if (completedPursuitIngressDoor != null && hasPursuitRegions && enemyRegion != targetRegion)
         {
@@ -2836,15 +3052,15 @@ bool hasPursuitRegions = TryResolveCurrentPursuitRegions(targetPosition, out int
             }
             else
             {
-                // completedCenter（已完成中心）：使用位置：作为 Vector3.Dot(Vector3, Vector3) 的参数。
+                // 已完成中心。
 Vector3 completedCenter = completedPursuitIngressDoor.PassageCenter;
-                // completedNormal（已完成常规）：使用位置：作为 Vector3.Dot(Vector3, Vector3) 的参数。
+                // 已完成常规。
 Vector3 completedNormal = completedPursuitIngressDoor.PassageNormal;
-                // enemySide（敌人侧边）：保存 Vector3.Dot(Vector3, Vector3) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Abs(float) 的参数、作为 Mathf.Sign(float) 的参数、VillagerController.TryGetSameLevelPursuitIngressDestination(Vector3, out Vector3)。
+                // 敌人侧边。
 float enemySide = Vector3.Dot(transform.position - completedCenter, completedNormal);
-                // targetSide（目标侧边）：保存 Vector3.Dot(Vector3, Vector3) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Abs(float) 的参数、作为 Mathf.Sign(float) 的参数。
+                // 目标侧边。
 float targetSide = Vector3.Dot(targetPosition - completedCenter, completedNormal);
-                // remainsInTargetRegion（是否保留内部目标区域）：使用位置：VillagerController.TryGetSameLevelPursuitIngressDestination(Vector3, out Vector3)。
+                // 是否保留内部目标区域。
 bool remainsInTargetRegion;
                 if (hasPursuitRegions)
                 {
@@ -2857,7 +3073,7 @@ bool remainsInTargetRegion;
 
                 if (remainsInTargetRegion)
                 {
-                    // combatTarget（战斗目标）：使用位置：作为 DoorController.TryFindPassageTowardDestination(Vector3, Vector3, out DoorController) 的参数。
+                    // 战斗目标。
 Vector3 combatTarget = CurrentChaseTarget;
                     if (DoorController.TryFindPassageTowardDestination(targetPosition, combatTarget, out _))
                     {
@@ -2865,7 +3081,7 @@ Vector3 combatTarget = CurrentChaseTarget;
                         // 点仍落在另一房间。该点绝不能覆盖当前追击：
                         // 先直追里昂并使管理器下帧重建同侧包围点，避免
                         // 敌人刚出门又被旧室内站位拉回去。
-                        // receiverValue84（判空前缓存的敌人智能管理器的实例）：从敌人智能管理器的实例读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、VillagerController.TryGetSameLevelPursuitIngressDestination(Vector3, out Vector3)。
+                        // 判空前缓存的敌人智能管理器的实例。
 global::EnemyAIManager receiverValue84 = // 敌人与里昂已经处于门的同一侧，但缓存的包围
  // 点仍落在另一房间。该点绝不能覆盖当前追击：
                         // 先直追里昂并使管理器下帧重建同侧包围点，避免
@@ -2899,9 +3115,9 @@ global::EnemyAIManager receiverValue84 = // 敌人与里昂已经处于门的同
                     door03TraversalRoute = HouseThreeTraversalGeometry.Active;
                 }
 
-                // leftOperand86（计算前缓存的左侧已完成追击入口门）：从已完成追击入口门读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：VillagerController.TryGetSameLevelPursuitIngressDestination(Vector3, out Vector3)。
+                // 计算前缓存的左侧已完成追击入口门。
 global::UnityEngine.Object leftOperand86 = completedPursuitIngressDoor;
-                // selectedValue85（分支选出的门03通行路线的入口门）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：VillagerController.TryGetSameLevelPursuitIngressDestination(Vector3, out Vector3)。
+                // 分支选出的门03通行路线的入口门。
 global::DoorController selectedValue85;
                 if (door03TraversalRoute != null)
                 {
@@ -2948,18 +3164,18 @@ global::DoorController selectedValue85;
             // 失效。不能因为敌人上一帧刚切为穿门就继续把目标锁在门内；
             // 那会造成里昂在屋外而敌人仍被门洞吸附。
             {
-                // targetOffset（目标偏移量）：使用位置：作为 Vector3.Dot(Vector3, Vector3) 的参数、VillagerController.TryGetSameLevelPursuitIngressDestination(Vector3, out Vector3)。
+                // 目标偏移量。
 Vector3 targetOffset = targetPosition - pursuitIngressDoor.PassageCenter;
                 targetOffset.y = 0f;
-                // targetSide（目标侧边）：保存 Vector3.Dot(Vector3, Vector3) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Abs(float) 的参数、作为 Mathf.Sign(float) 的参数。
+                // 目标侧边。
 float targetSide = Vector3.Dot(targetOffset, pursuitIngressDoor.PassageNormal);
-                // targetReturnedToSource（是否目标返回的目标来源）：使用位置：VillagerController.TryGetSameLevelPursuitIngressDestination(Vector3, out Vector3)。
+                // 是否目标返回的目标来源。
 bool targetReturnedToSource = (!hasPursuitRegions || enemyRegion == targetRegion) && Mathf.Abs(targetSide) > 0.12f && Mathf.Sign(targetSide) == pursuitIngressSourceSide;
                 if (hasPursuitRegions && PursuitNavigationTopology.TryGetDoorRegions(pursuitIngressDoor, out int /* 中文含义：正向区域。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ positiveRegion, out int /* 中文含义：负值区域。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ negativeRegion))
                 {
                     // 屋后地面与室内可能处于门平面的同侧，必须比较门的真实来源区域。
                     // 敌人刚跨过门平面也不能取消出门，否则会丢掉出口清场阶段并倒退。
-                    // sourceRegion（来源区域）：使用位置：VillagerController.TryGetSameLevelPursuitIngressDestination(Vector3, out Vector3)。
+                    // 来源区域。
 int sourceRegion;
                     if (pursuitIngressSourceSide > 0)
                     {
@@ -2983,9 +3199,9 @@ int sourceRegion;
             return TryGetPursuitIngressDestination(targetPosition, out ingressDestination);
         }
 
-        // passageDoor（通道门）：使用位置：作为 DoorController.TryFindPassageTowardDestination(Vector3, Vector3, out DoorController, out int) 的参数、作为 PursuitNavigationTopology.TryFindFirstPortal(int, int, out DoorController, out int) 的参数、VillagerController.TryGetSameLevelPursuitIngressDestination(Vector3, out Vector3)。
+        // 通道门。
 DoorController passageDoor;
-        // topologySourceSide（拓扑来源侧边）：使用位置：作为 DoorController.TryFindPassageTowardDestination(Vector3, Vector3, out DoorController, out int) 的参数、作为 PursuitNavigationTopology.TryFindFirstPortal(int, int, out DoorController, out int) 的参数、VillagerController.TryGetSameLevelPursuitIngressDestination(Vector3, out Vector3)。
+        // 拓扑来源侧边。
 int topologySourceSide;
         if (hasPursuitRegions)
         {
@@ -3004,10 +3220,10 @@ int topologySourceSide;
         pursuitIngressCrossing = false;
         pursuitIngressPhase = PursuitIngressPhase.Approach;
         door03InteriorTurnPassed = false;
-        // targetFromDoor（目标来源门）：使用位置：作为 Vector3.Dot(Vector3, Vector3) 的参数、VillagerController.TryGetSameLevelPursuitIngressDestination(Vector3, out Vector3)。
+        // 目标来源门。
 Vector3 targetFromDoor = targetPosition - pursuitIngressDoor.PassageCenter;
         targetFromDoor.y = 0f;
-        // destinationSide（目的地侧边）：保存 Vector3.Dot(Vector3, Vector3) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Abs(float) 的参数、VillagerController.TryGetSameLevelPursuitIngressDestination(Vector3, out Vector3)。
+        // 目的地侧边。
 float destinationSide = Vector3.Dot(targetFromDoor, pursuitIngressDoor.PassageNormal);
         if (Mathf.Abs(destinationSide) <= 0.12f)
         {
@@ -3036,9 +3252,9 @@ float destinationSide = Vector3.Dot(targetFromDoor, pursuitIngressDoor.PassageNo
 
     /// <summary>TryResolveCurrentPursuitRegions 的业务处理入口；本方法直接依赖 EnemyAIManager.TryGetCurrentPlayerPursuitRegion(out int)、Mathf.Abs(float)、PursuitNavigationTopology.TryGetRegion(Vector3, out int)、VillagerController.HorizontalDistance(Vector3, Vector3)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillagerController.RequiresNavigationTraversalToPlayer()、VillagerController.TryGetSameLevelPursuitIngressDestination(Vector3, out Vector3)；下游（含内部回调体） EnemyAIManager.TryGetCurrentPlayerPursuitRegion(out int)、Mathf.Abs(float)、PursuitNavigationTopology.TryGetRegion(Vector3, out int)、VillagerController.HorizontalDistance(Vector3, Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="targetPosition">中文含义：目标位置。使用位置：作为 Mathf.Abs(float) 的参数、作为 PursuitNavigationTopology.TryGetRegion(Vector3, out int) 的参数、作为 VillagerController.HorizontalDistance(Vector3, Vector3) 的参数。</param>
-    /// <param name="enemyRegion">中文含义：敌人区域。输出参数，由本入口写入并交给调用方。使用位置：作为 PursuitNavigationTopology.TryGetRegion(Vector3, out int) 的参数、VillagerController.TryResolveCurrentPursuitRegions(Vector3, out int, out int)。</param>
-    /// <param name="targetRegion">中文含义：目标区域。输出参数，由本入口写入并交给调用方。使用位置：作为 EnemyAIManager.TryGetCurrentPlayerPursuitRegion(out int) 的参数、作为 PursuitNavigationTopology.TryGetRegion(Vector3, out int) 的参数、VillagerController.TryResolveCurrentPursuitRegions(Vector3, out int, out int)。</param>
+    /// <param name="targetPosition">目标位置。</param>
+    /// <param name="enemyRegion">敌人区域。输出参数，由本入口写入并交给调用方。</param>
+    /// <param name="targetRegion">目标区域。输出参数，由本入口写入并交给调用方。</param>
     private bool TryResolveCurrentPursuitRegions(Vector3 targetPosition, out int enemyRegion, out int targetRegion)
     {
         enemyRegion = -1;
@@ -3048,11 +3264,11 @@ float destinationSide = Vector3.Dot(targetFromDoor, pursuitIngressDoor.PassageNo
             return false;
         }
 
-        // player（玩家）：使用位置：作为 Mathf.Abs(float) 的参数、作为 VillagerController.HorizontalDistance(Vector3, Vector3) 的参数、VillagerController.TryResolveCurrentPursuitRegions(Vector3, out int, out int)。
+        // 玩家。
 LeonController player = Player;
-        // manager（当前敌人智能管理器）：使用位置：VillagerController.TryResolveCurrentPursuitRegions(Vector3, out int, out int)。
+        // 当前敌人智能管理器。
 EnemyAIManager manager = EnemyAIManager.Instance;
-        // targetsPlayer（是否目标列表玩家）：使用位置：VillagerController.TryResolveCurrentPursuitRegions(Vector3, out int, out int)。
+        // 是否目标列表玩家。
 bool targetsPlayer = player != null && HorizontalDistance(targetPosition, player.transform.position) <= 0.1f && Mathf.Abs(targetPosition.y - player.transform.position.y) <= 0.1f;
         if (targetsPlayer && manager != null && manager.TryGetCurrentPlayerPursuitRegion(out targetRegion))
         {
@@ -3064,8 +3280,8 @@ bool targetsPlayer = player != null && HorizontalDistance(targetPosition, player
 
     /// <summary>TryGetPursuitIngressDestination 的业务处理入口；本方法直接依赖 DoorController.TryFindNearestPassageToDestination(Vector3, out DoorController)、DoorController.TryOpenForAI(Transform)、DoorwayTraversalOccupancy.RequestTraversal(VillagerController, int, RequestContext)、HouseThreeTraversalGeometry.IsOnInteriorSide(Vector3, float)、Mathf.Abs(float)、Mathf.Max(float, float)、Mathf.Max(int, int) 等共 23 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillagerController.TryGetSameLevelPursuitIngressDestination(Vector3, out Vector3)、VillagerController.TryResolvePursuitIngressFinalSteering(out Vector3)；下游（含内部回调体） DoorController.TryFindNearestPassageToDestination(Vector3, out DoorController)、DoorController.TryOpenForAI(Transform)、DoorwayTraversalOccupancy.RequestTraversal(VillagerController, int, RequestContext)、HouseThreeTraversalGeometry.IsOnInteriorSide(Vector3, float)、Mathf.Abs(float)、Mathf.Max(float, float)、Mathf.Max(int, int) 等共 23 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="stairApproachDestination">中文含义：楼梯接近目的地。使用位置：作为 DoorController.TryFindNearestPassageToDestination(Vector3, out DoorController) 的参数、作为 VillagerController.HorizontalDistance(Vector3, Vector3) 的参数、VillagerController.TryGetPursuitIngressDestination(Vector3, out Vector3)。</param>
-    /// <param name="ingressDestination">中文含义：入口目的地。输出参数，由本入口写入并交给调用方。使用位置：VillagerController.TryGetPursuitIngressDestination(Vector3, out Vector3)。</param>
+    /// <param name="stairApproachDestination">楼梯接近目的地。</param>
+    /// <param name="ingressDestination">入口目的地。输出参数，由本入口写入并交给调用方。</param>
     private bool TryGetPursuitIngressDestination(Vector3 stairApproachDestination, out Vector3 ingressDestination)
     {
         ingressDestination = stairApproachDestination;
@@ -3074,18 +3290,18 @@ bool targetsPlayer = player != null && HorizontalDistance(targetPosition, player
             door03TraversalRoute = HouseThreeTraversalGeometry.Active;
         }
 
-        // targetsDoor03StairRoute（是否目标列表门03楼梯路线）：使用位置：VillagerController.TryGetPursuitIngressDestination(Vector3, out Vector3)。
+        // 是否目标列表门03楼梯路线。
 bool targetsDoor03StairRoute = door03TraversalRoute != null && door03TraversalRoute.IsReady && HorizontalDistance(stairApproachDestination, door03TraversalRoute.LowerEntry) <= 1.25f;
-        // holdsDoor03Entrance（是否持有门03入口）：使用位置：VillagerController.TryGetPursuitIngressDestination(Vector3, out Vector3)。
+        // 是否持有门03入口。
 bool holdsDoor03Entrance = door03TraversalRoute != null && door03TraversalRoute.IsReady && pursuitIngressDoor == door03TraversalRoute.entranceDoor;
-        // usesDoor03Route（是否使用次数门03路线）：使用位置：VillagerController.TryGetPursuitIngressDestination(Vector3, out Vector3)。
+        // 是否使用次数门03路线。
 bool usesDoor03Route = targetsDoor03StairRoute || holdsDoor03Entrance && pursuitIngressSourceSide == ResolveDoor03ExteriorSourceSide(door03TraversalRoute);
         if (usesDoor03Route && door03TraversalRoute.IsOnInteriorSide(transform.position, 0.16f))
         {
             // 仅“已进入门洞穿越阶段后到达门内侧”才算真实进屋。不能只以
             // 当前位于门内侧判定，否则初始就在室内或被路径投影到门内的
             // 敌人会抢占首个进屋者诊断。
-            // completedDoorCrossing（是否已完成门跨越）：使用位置：VillagerController.TryGetPursuitIngressDestination(Vector3, out Vector3)。
+            // 是否已完成门跨越。
 bool completedDoorCrossing = pursuitIngressDoor == door03TraversalRoute.entranceDoor && pursuitIngressCrossing;
             if (completedDoorCrossing)
             {
@@ -3131,7 +3347,7 @@ bool completedDoorCrossing = pursuitIngressDoor == door03TraversalRoute.entrance
             }
 
             completedPursuitIngressDoor = null;
-            // passageNormal（通道常规）：使用位置：作为 Vector3.Dot(Vector3, Vector3) 的参数、VillagerController.TryGetPursuitIngressDestination(Vector3, out Vector3)。
+            // 通道常规。
 Vector3 passageNormal;
             if (usesDoor03Route)
             {
@@ -3152,10 +3368,10 @@ Vector3 passageNormal;
             passageNormal.Normalize();
             if (!usesDoor03Route)
             {
-                // destinationOffset（目的地偏移量）：使用位置：作为 Vector3.Dot(Vector3, Vector3) 的参数、VillagerController.TryGetPursuitIngressDestination(Vector3, out Vector3)。
+                // 目的地偏移量。
 Vector3 destinationOffset = stairApproachDestination - pursuitIngressDoor.PassageCenter;
                 destinationOffset.y = 0f;
-                // destinationSide（目的地侧边）：保存 Vector3.Dot(Vector3, Vector3) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Abs(float) 的参数、VillagerController.TryGetPursuitIngressDestination(Vector3, out Vector3)。
+                // 目的地侧边。
 float destinationSide = Vector3.Dot(destinationOffset, passageNormal);
                 if (Mathf.Abs(destinationSide) <= 0.12f)
                 {
@@ -3177,7 +3393,7 @@ float destinationSide = Vector3.Dot(destinationOffset, passageNormal);
             pursuitIngressPhase = PursuitIngressPhase.Approach;
         }
 
-        // center（中心）：使用位置：作为 VillagerController.HorizontalDistance(Vector3, Vector3) 的参数、VillagerController.TryGetPursuitIngressDestination(Vector3, out Vector3)。
+        // 中心。
 Vector3 center;
         if (usesDoor03Route)
         {
@@ -3188,7 +3404,7 @@ Vector3 center;
             center = pursuitIngressDoor.PassageCenter;
         }
 
-        // normal（表面法线）：使用位置：作为 Vector3.Dot(Vector3, Vector3) 的参数、作为 Vector3.Vector3(float, float, float) 的参数、VillagerController.TryGetPursuitIngressDestination(Vector3, out Vector3)。
+        // 表面法线。
 Vector3 normal;
         if (usesDoor03Route)
         {
@@ -3207,14 +3423,14 @@ Vector3 normal;
         }
 
         normal.Normalize();
-        // currentOffset（当前偏移量）：使用位置：作为 Vector3.Dot(Vector3, Vector3) 的参数、VillagerController.TryGetPursuitIngressDestination(Vector3, out Vector3)。
+        // 当前偏移量。
 Vector3 currentOffset = transform.position - center;
         currentOffset.y = 0f;
-        // currentSide（当前侧边）：保存 Vector3.Dot(Vector3, Vector3) 的返回结果，供当前步骤使用。使用位置：VillagerController.TryGetPursuitIngressDestination(Vector3, out Vector3)。
+        // 当前侧边。
 float currentSide = Vector3.Dot(currentOffset, normal);
-        // distanceToDoor（距离目标门）：使用位置：VillagerController.TryGetPursuitIngressDestination(Vector3, out Vector3)。
+        // 距离目标门。
 float distanceToDoor = currentOffset.magnitude;
-        // passageTangent（通道切线）：使用位置：作为 Vector3.Dot(Vector3, Vector3) 的参数、VillagerController.TryGetPursuitIngressDestination(Vector3, out Vector3)。
+        // 通道切线。
 Vector3 passageTangent;
         if (usesDoor03Route)
         {
@@ -3225,9 +3441,9 @@ Vector3 passageTangent;
             passageTangent = pursuitIngressDoor.PassageTangent;
         }
 
-        // lateralDistance（侧向距离）：保存 Mathf.Abs(float) 的返回结果，供当前步骤使用。使用位置：VillagerController.TryGetPursuitIngressDestination(Vector3, out Vector3)。
+        // 侧向距离。
 float lateralDistance = Mathf.Abs(Vector3.Dot(currentOffset, passageTangent));
-        // approachDistance（接近距离）：使用位置：作为 Mathf.Max(float, float) 的参数、VillagerController.TryGetPursuitIngressDestination(Vector3, out Vector3)。
+        // 接近距离。
 float approachDistance;
         if (usesDoor03Route)
         {
@@ -3238,11 +3454,11 @@ float approachDistance;
             approachDistance = Mathf.Max(0.35f, doorOpenProbeDistance * 0.65f);
         }
 
-        // crossingDistance（跨越距离）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：VillagerController.TryGetPursuitIngressDestination(Vector3, out Vector3)。
+        // 跨越距离。
 float crossingDistance = Mathf.Max(approachDistance + 0.2f, doorOpenProbeRadius);
-        // bodyRadius（身体半径）：保存 VillagerController.ResolveMovementHazardRadius() 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Max(float, float) 的参数、VillagerController.TryGetPursuitIngressDestination(Vector3, out Vector3)。
+        // 身体半径。
 float bodyRadius = ResolveMovementHazardRadius();
-        // passageHalfWidth（通道一半宽度）：使用位置：作为 Mathf.Max(float, float) 的参数、VillagerController.TryGetPursuitIngressDestination(Vector3, out Vector3)。
+        // 通道一半宽度。
 float passageHalfWidth;
         if (usesDoor03Route)
         {
@@ -3253,15 +3469,15 @@ float passageHalfWidth;
             passageHalfWidth = pursuitIngressDoor.PassageHalfWidth;
         }
 
-        // safePassageHalfWidth（安全通道一半宽度）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Max(float, float) 的参数、VillagerController.TryGetPursuitIngressDestination(Vector3, out Vector3)。
+        // 安全通道一半宽度。
 float safePassageHalfWidth = Mathf.Max(0.08f, passageHalfWidth - bodyRadius - Mathf.Max(0.01f, movementCollisionSkin));
-        // ingressQueue（入口队列）：保存 VillagerController.RegisterPursuitIngressWaiter(DoorController) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Max(int, int) 的参数、作为 VillagerController.TryPromoteBlockingPursuitIngressWaiter(ReadOnlyCollection<VillagerController>) 的参数。
+        // 入口队列。
 System.Collections.ObjectModel.ReadOnlyCollection<VillagerController> ingressQueue = RegisterPursuitIngressWaiter(pursuitIngressDoor);
-        // queueIndex（队列索引）：保存 Mathf.Max(int, int) 的返回结果，供当前步骤使用。使用位置：VillagerController.TryGetPursuitIngressDestination(Vector3, out Vector3)。
+        // 队列索引。
 int queueIndex = Mathf.Max(0, ingressQueue.IndexOf(this));
-        // isQueueHead（是否队列头部）：使用位置：作为 VillagerController.UpdatePursuitIngressHeadProgress(DoorController, bool) 的参数、VillagerController.TryGetPursuitIngressDestination(Vector3, out Vector3)。
+        // 是否队列头部。
 bool isQueueHead = queueIndex == 0;
-        // queueSeparation（队列分离量）：使用位置：VillagerController.TryGetPursuitIngressDestination(Vector3, out Vector3)。
+        // 队列分离量。
 float queueSeparation;
         if (usesDoor03Route)
         {
@@ -3304,11 +3520,11 @@ float queueSeparation;
                 }
             }
 
-            // sourceDepth（来源深度）：使用位置：VillagerController.TryGetPursuitIngressDestination(Vector3, out Vector3)。
+            // 来源深度。
 float sourceDepth = currentSide * pursuitIngressSourceSide;
-            // isAlignedWithPassage（是否已对齐配合通道）：使用位置：VillagerController.TryGetPursuitIngressDestination(Vector3, out Vector3)。
+            // 是否已对齐配合通道。
 bool isAlignedWithPassage = lateralDistance <= safePassageHalfWidth && sourceDepth >= -0.08f && sourceDepth <= approachDistance + 0.12f;
-            // headProgressTimedOut（是否头部进度定时的输出）：保存 VillagerController.UpdatePursuitIngressHeadProgress(DoorController, bool) 的返回结果，供当前步骤使用。使用位置：VillagerController.TryGetPursuitIngressDestination(Vector3, out Vector3)。
+            // 是否头部进度定时的输出。
 bool headProgressTimedOut = UpdatePursuitIngressHeadProgress(pursuitIngressDoor, isQueueHead);
             if (!usesDoor03Route && headProgressTimedOut && TryPromoteBlockingPursuitIngressWaiter(ingressQueue))
             {
@@ -3327,11 +3543,11 @@ bool headProgressTimedOut = UpdatePursuitIngressHeadProgress(pursuitIngressDoor,
                 headProgressTimedOut = false;
             }
 
-            // isInsideRecoveryCapture（是否内部恢复捕获）：使用位置：VillagerController.TryGetPursuitIngressDestination(Vector3, out Vector3)。
+            // 是否内部恢复捕获。
 bool isInsideRecoveryCapture = lateralDistance <= Mathf.Max(passageHalfWidth, safePassageHalfWidth + 0.2f) && sourceDepth >= -0.16f && sourceDepth <= approachDistance + bodyRadius + 0.2f;
             if (isQueueHead && (isAlignedWithPassage || headProgressTimedOut && isInsideRecoveryCapture) && IsPursuitIngressDirectionAvailable(pursuitIngressDoor, pursuitIngressSourceSide) && pursuitIngressDoor.IsPassageReady)
             {
-                // doorwayRequest（门洞请求）：保存 DoorwayTraversalOccupancy.RequestTraversal(VillagerController, int, RequestContext) 的返回结果，供当前步骤使用。使用位置：VillagerController.TryGetPursuitIngressDestination(Vector3, out Vector3)。
+                // 门洞请求。
 var doorwayRequest = pursuitIngressDoor.TraversalOccupancy.RequestTraversal(this, pursuitIngressSourceSide, new GameArchitecture.RequestContext("追击门洞通行", actionCoordinator.Identity, pursuitIngressDoor.TraversalOccupancy.TraversalIdentity, actionCoordinator.CurrentHandle.Id));
                 if (!doorwayRequest.HasAccept)
                 {
@@ -3363,18 +3579,30 @@ var doorwayRequest = pursuitIngressDoor.TraversalOccupancy.RequestTraversal(this
                 Vector3 offsetPoint = ingressDestination + laneSide * Mathf.Min(0.5f, bodyRadius + 0.1f);
                 if (TryResolveReachableNavigationPoint(offsetPoint, out var staggeredPoint) &&
                     HorizontalDistance(offsetPoint, staggeredPoint) < 0.25f &&
-                    Mathf.Abs(staggeredPoint.y - ingressDestination.y) < 0.35f &&
+                    Mathf.Abs(staggeredPoint.y - ingressDestination.y) < 0.18f &&
                     Vector3.Dot(staggeredPoint - center, normal) * pursuitIngressSourceSide > approachDistance &&
                     CanMoveDirectlyToNavigationPoint(staggeredPoint))
                 {
-                    ingressDestination = staggeredPoint;
+                    // 窄台阶门前需核实偏移点物理支撑高度，避免队列把敌人推下台阶侧缘。
+                    Vector3 supportProbeOrigin = staggeredPoint + Vector3.up * 0.45f;
+                    bool hasPhysicalSupport = Physics.Raycast(
+                        supportProbeOrigin,
+                        Vector3.down,
+                        out RaycastHit supportHit,
+                        0.75f,
+                        Physics.DefaultRaycastLayers,
+                        QueryTriggerInteraction.Ignore);
+                    if (hasPhysicalSupport && Mathf.Abs(supportHit.point.y - ingressDestination.y) <= 0.18f)
+                    {
+                        ingressDestination = staggeredPoint;
+                    }
                 }
             }
 
             return true;
         }
 
-        // exitDistance（退出距离）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：VillagerController.TryGetPursuitIngressDestination(Vector3, out Vector3)。
+        // 退出距离。
 float exitDistance = Mathf.Max(0.45f, approachDistance + 0.2f);
         if (usesDoor03Route)
         {
@@ -3385,7 +3613,7 @@ float exitDistance = Mathf.Max(0.45f, approachDistance + 0.2f);
             ingressDestination = center - normal * pursuitIngressSourceSide * exitDistance;
         }
 
-        // passedEntrance（是否通过的入口）：使用位置：VillagerController.TryGetPursuitIngressDestination(Vector3, out Vector3)。
+        // 是否通过的入口。
 bool passedEntrance;
         if (usesDoor03Route)
         {
@@ -3406,7 +3634,7 @@ bool passedEntrance;
         // 应退回外侧重新接近；有后续敌人时同时把自己让到队尾，避免整队
         // 被一个卡住的敌人锁死。三号屋入口仍沿用既有专用流程，确保
         // 已验证的进屋上楼与下楼分支不改变。
-        // crossingTimedOut（是否跨越定时的输出）：使用位置：VillagerController.TryGetPursuitIngressDestination(Vector3, out Vector3)。
+        // 是否跨越定时的输出。
 bool crossingTimedOut = !usesDoor03Route && !passedEntrance && UpdatePursuitIngressHeadProgress(pursuitIngressDoor, isQueueHead);
         if (crossingTimedOut)
         {
@@ -3419,9 +3647,9 @@ bool crossingTimedOut = !usesDoor03Route && !passedEntrance && UpdatePursuitIngr
             return true;
         }
 
-        // interiorDepth（室内深度）：使用位置：VillagerController.TryGetPursuitIngressDestination(Vector3, out Vector3)。
+        // 室内深度。
 float interiorDepth = -currentSide * pursuitIngressSourceSide;
-        // releaseDepth（释放深度）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：VillagerController.TryGetPursuitIngressDestination(Vector3, out Vector3)。
+        // 释放深度。
 float releaseDepth = Mathf.Max(Mathf.Max(0.2f, pursuitIngressReleaseDepth), bodyRadius + movementCollisionSkin);
         if (passedEntrance && interiorDepth >= releaseDepth && lateralDistance <= passageHalfWidth + bodyRadius)
         {
@@ -3453,7 +3681,7 @@ float releaseDepth = Mathf.Max(Mathf.Max(0.2f, pursuitIngressReleaseDepth), body
 
     /// <summary>ResolveDoor03ExteriorSourceSide 的业务处理入口；本方法直接依赖 Vector3.Dot(Vector3, Vector3)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 DoorwayTraversalOccupancy.Valid(VillagerController, int)、VillagerController.TryGetPursuitIngressDestination(Vector3, out Vector3)、VillagerController.TryResolveDoor03IngressFinalSteering(out Vector3)；下游（含内部回调体） Vector3.Dot(Vector3, Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="route">中文含义：路线。使用位置：作为 Vector3.Dot(Vector3, Vector3) 的参数、VillagerController.ResolveDoor03ExteriorSourceSide(HouseThreeTraversalGeometry)。</param>
+    /// <param name="route">路线。</param>
     internal static int ResolveDoor03ExteriorSourceSide(HouseThreeTraversalGeometry route)
     {
         if (route == null || !route.IsReady || route.entranceDoor == null)
@@ -3461,7 +3689,7 @@ float releaseDepth = Mathf.Max(Mathf.Max(0.2f, pursuitIngressReleaseDepth), body
             return -1;
         }
 
-        // inward（向内）：使用位置：作为 Vector3.Dot(Vector3, Vector3) 的参数、VillagerController.ResolveDoor03ExteriorSourceSide(HouseThreeTraversalGeometry)。
+        // 向内。
 Vector3 inward = route.InteriorGate - route.DoorGate;
         inward.y = 0f;
         if (inward.sqrMagnitude <= 0.0001f)
@@ -3469,7 +3697,7 @@ Vector3 inward = route.InteriorGate - route.DoorGate;
             return -1;
         }
 
-        // interiorSide（室内侧边）：保存 Vector3.Dot(Vector3, Vector3) 的返回结果，供当前步骤使用。使用位置：VillagerController.ResolveDoor03ExteriorSourceSide(HouseThreeTraversalGeometry)。
+        // 室内侧边。
 float interiorSide = Vector3.Dot(inward.normalized, route.entranceDoor.PassageNormal);
         if (interiorSide >= 0f)
         {
@@ -3483,7 +3711,7 @@ float interiorSide = Vector3.Dot(inward.normalized, route.entranceDoor.PassageNo
 
     /// <summary>RegisterPursuitIngressWaiter 的业务处理入口；本方法直接依赖 DoorwayTraversalOccupancy.Register(VillagerController, int)、VillagerController.UnregisterPursuitIngressWaiter()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillagerController.TryGetPursuitIngressDestination(Vector3, out Vector3)；下游（含内部回调体） DoorwayTraversalOccupancy.Register(VillagerController, int)、VillagerController.UnregisterPursuitIngressWaiter()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="door">中文含义：门。使用位置：VillagerController.RegisterPursuitIngressWaiter(DoorController)。</param>
+    /// <param name="door">门。</param>
     private System.Collections.ObjectModel.ReadOnlyCollection<VillagerController> RegisterPursuitIngressWaiter(DoorController door)
     {
         if (hasRegisterDoorway != door)
@@ -3500,7 +3728,7 @@ float interiorSide = Vector3.Dot(inward.normalized, route.entranceDoor.PassageNo
     /// <param name="waiters">中文含义：等待者集合。</param>
     private bool TryPromoteBlockingPursuitIngressWaiter(System.Collections.ObjectModel.ReadOnlyCollection<VillagerController> waiters)
     {
-        // blocker（阻挡者）：使用位置：作为 DoorwayTraversalOccupancy.TryPromoteForwardBlocker(VillagerController, VillagerController, int) 的参数、VillagerController.TryPromoteBlockingPursuitIngressWaiter(ReadOnlyCollection<VillagerController>)。
+        // 阻挡者。
 VillagerController blocker = lastMovementBlockerEnemy;
         if (pursuitIngressDoor == null || !pursuitIngressDoor.TraversalOccupancy.TryPromoteForwardBlocker(this, blocker, pursuitIngressSourceSide))
         {
@@ -3511,13 +3739,13 @@ VillagerController blocker = lastMovementBlockerEnemy;
         blocker.ResetPursuitIngressHeadProgress();
         if (EnemyCombatTimeline.IsRecord(this))
         {
-            // argumentValue108（按原顺序缓存的实参当前）：从当前读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 EnemyCombatTimeline.Record(VillagerController, string, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields) 的参数。
+            // 按原顺序缓存的实参当前。
 global::VillagerController argumentValue108 = this;
-            // argumentValue109（按原顺序缓存的实参文字“门洞队首恢复”）：从文字“门洞队首恢复”读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 EnemyCombatTimeline.Record(VillagerController, string, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields) 的参数。
+            // 按原顺序缓存的实参文字“门洞队首恢复”。
 string argumentValue109 = "门洞队首恢复";
-            // argumentValue107（按原顺序缓存的实参文字“前方队员”）：从文字“前方队员”读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 CombatDiagnosticFields.Count(string, double) 的参数。
+            // 按原顺序缓存的实参文字“前方队员”。
 string argumentValue107 = "前方队员";
-            // selectedValue106（分支选出的阻挡者的诊断敌人数量）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：作为 CombatDiagnosticFields.Count(string, double) 的参数、VillagerController.TryPromoteBlockingPursuitIngressWaiter(ReadOnlyCollection<VillagerController>)。
+            // 分支选出的阻挡者的诊断敌人数量。
 int selectedValue106;
             if (blocker != null)
             {
@@ -3536,7 +3764,7 @@ int selectedValue106;
 
     /// <summary>YieldPursuitIngressQueueHead 的业务处理入口；本方法直接依赖 DoorwayTraversalOccupancy.QueueFirstYieldRow(VillagerController, int)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillagerController.TryGetPursuitIngressDestination(Vector3, out Vector3)；下游（含内部回调体） DoorwayTraversalOccupancy.QueueFirstYieldRow(VillagerController, int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="door">中文含义：门。使用位置：VillagerController.YieldPursuitIngressQueueHead(DoorController)。</param>
+    /// <param name="door">门。</param>
     private void YieldPursuitIngressQueueHead(DoorController door)
     {
         if (door != null)
@@ -3551,7 +3779,7 @@ int selectedValue106;
     {
         if (hasRegisterDoorway != null)
         {
-            // hasRelease（是否具有释放）：保存 DoorController.ReleaseTraversal(TraversalToken, ReleaseReason) 的返回结果，供当前步骤使用。使用位置：VillagerController.UnregisterPursuitIngressWaiter()。
+            // 是否具有释放。
 bool hasRelease = hasRegisterDoorway.ReleaseTraversal(doorwayTraversalToken, GameArchitecture.ReleaseReason.Cancel);
             // 旧占用可能已由通路清理，但角色后来又进入了等候队列。
             // 仅撤销没有新占用的等候登记，旧凭证不能误删新占用。
@@ -3577,8 +3805,8 @@ bool hasRelease = hasRegisterDoorway.ReleaseTraversal(doorwayTraversalToken, Gam
 
     /// <summary>IsPursuitIngressDirectionAvailable 的业务处理入口；本方法直接依赖 DoorwayTraversalOccupancy.DirectionAvailable(int)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillagerController.TryGetPursuitIngressDestination(Vector3, out Vector3)；下游（含内部回调体） DoorwayTraversalOccupancy.DirectionAvailable(int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="door">中文含义：门。使用位置：VillagerController.IsPursuitIngressDirectionAvailable(DoorController, int)。</param>
-    /// <param name="sourceSide">中文含义：来源侧边。使用位置：作为 DoorwayTraversalOccupancy.DirectionAvailable(int) 的参数。</param>
+    /// <param name="door">门。</param>
+    /// <param name="sourceSide">来源侧边。</param>
     private static bool IsPursuitIngressDirectionAvailable(DoorController door, int sourceSide)
     {
         return door != null && door.TraversalOccupancy.DirectionAvailable(sourceSide);
@@ -3590,8 +3818,8 @@ bool hasRelease = hasRegisterDoorway.ReleaseTraversal(doorwayTraversalToken, Gam
     /// 若继续用“队列非空”维持方向锁，门内的新队首会永久停在门口。
     /// </summary>
     /// <remarks>静态调用链：上游 VillagerController.TryGetPursuitIngressDestination(Vector3, out Vector3)；下游（含内部回调体） float.IsNegativeInfinity(float)、Mathf.Max(float, float)、VillagerController.HorizontalDistance(Vector3, Vector3)、VillagerController.ResetPursuitIngressHeadProgress()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="door">中文含义：门。使用位置：VillagerController.UpdatePursuitIngressHeadProgress(DoorController, bool)。</param>
-    /// <param name="isQueueHead">中文含义：是否队列头部。使用位置：VillagerController.UpdatePursuitIngressHeadProgress(DoorController, bool)。</param>
+    /// <param name="door">门。</param>
+    /// <param name="isQueueHead">是否队列头部。</param>
     private bool UpdatePursuitIngressHeadProgress(DoorController door, bool isQueueHead)
     {
         if (!isQueueHead || door == null)
@@ -3608,7 +3836,7 @@ bool hasRelease = hasRegisterDoorway.ReleaseTraversal(doorwayTraversalToken, Gam
             return false;
         }
 
-        // requiredProgress（所需进度）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：VillagerController.UpdatePursuitIngressHeadProgress(DoorController, bool)。
+        // 所需进度。
 float requiredProgress = Mathf.Max(0.02f, chaseProgressDistance);
         if (HorizontalDistance(transform.position, pursuitIngressProgressPosition) >= requiredProgress)
         {
@@ -3639,7 +3867,7 @@ float requiredProgress = Mathf.Max(0.02f, chaseProgressDistance);
         }
 
         CleanupPursuitIngressWaiters();
-        // waiters（等待者集合）：保存 DoorwayTraversalOccupancy.ReadQueue(int) 的返回结果，供当前步骤使用。使用位置：VillagerController.IsPursuitIngressQueueHead()。
+        // 等待者集合。
 var waiters = pursuitIngressDoor.TraversalOccupancy.ReadQueue(pursuitIngressSourceSide);
         return waiters.Count > 0 && waiters[0] == this;
     }
@@ -3694,25 +3922,66 @@ var waiters = pursuitIngressDoor.TraversalOccupancy.ReadQueue(pursuitIngressSour
 
     /// <summary>TryRecoverIncompletePursuitArrival 的业务处理入口；本方法直接依赖 EnemyAIManager.InvalidatePursuitDestination(VillagerController)、Mathf.Max(float, float)、object.ReferenceEquals(object, object)、PathAgent.ForceRepath()、PathAgent.InvalidatePursuitResolutionCache()、VillagerController.RefreshChaseDestination()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillagerController.UpdateChaseProgressRecovery()；下游（含内部回调体） EnemyAIManager.InvalidatePursuitDestination(VillagerController)、Mathf.Max(float, float)、object.ReferenceEquals(object, object)、PathAgent.ForceRepath()、PathAgent.InvalidatePursuitResolutionCache()、VillagerController.RefreshChaseDestination()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
+    private float tacticalBlockedSince;
+    private float incompletePursuitStallSince;
+
     private bool TryRecoverIncompletePursuitArrival()
     {
-        if (!HasIncompletePursuitArrival || agent == null || Time.time < nextIncompletePursuitRepathTime)
+        if (!HasIncompletePursuitArrival || agent == null)
+        {
+            incompletePursuitStallSince = 0f;
+            return false;
+        }
+
+        if (incompletePursuitStallSince <= 0f)
+        {
+            incompletePursuitStallSince = Time.time;
+        }
+
+        if (Time.time < nextIncompletePursuitRepathTime)
         {
             return false;
         }
 
         nextIncompletePursuitRepathTime = Time.time + Mathf.Max(0.2f, incompletePursuitRepathInterval);
         agent.InvalidatePursuitResolutionCache();
-        // receiverValue110（判空前缓存的敌人智能管理器的实例）：从敌人智能管理器的实例读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、VillagerController.TryRecoverIncompletePursuitArrival()。
+        // 判空前缓存的敌人智能管理器的实例。
 global::EnemyAIManager receiverValue110 = EnemyAIManager.Instance;
         if (!global::System.Object.ReferenceEquals(receiverValue110, null))
         {
             receiverValue110.InvalidatePursuitDestination(this);
         }
 
-        // requested（是否已经申请）：保存 VillagerController.RefreshChaseDestination() 的返回结果，供当前步骤使用。使用位置：VillagerController.TryRecoverIncompletePursuitArrival()。
+        bool stalledTooLong = Time.time - incompletePursuitStallSince >= 0.75f;
+        if (stalledTooLong)
+        {
+            // 长时间停在追踪中待机时，清理卡死的入口缓存；正在主动排队的特殊通路由其队列超时逻辑接管。
+            incompletePursuitStallSince = Time.time;
+            ClearPursuitIngress();
+            if (specialTraversal != null && !specialTraversal.HasPendingRoute && !specialTraversal.HasPendingDropRoute)
+            {
+                specialTraversal.ResetStalledPursuitPlans();
+            }
+
+            agent.CancelPath();
+        }
+
+        InvalidateChaseRefreshFrame();
+        // 是否已经申请。
 bool requested = RefreshChaseDestination();
-        return requested || agent.ForceRepath();
+        if (requested)
+        {
+            return true;
+        }
+
+        LeonController currentPlayer = Player;
+        if (stalledTooLong && currentPlayer != null && agent.TryResolveReachableDestination(currentPlayer.transform.position, out Vector3 fallbackReachable))
+        {
+            agent.isStopped = false;
+            return agent.SetDestination(fallbackReachable);
+        }
+
+        return agent.ForceRepath();
     }
 
     /// <summary>TryRecoverChasePath 的业务处理入口；本方法直接依赖 EnemyAIManager.InvalidatePursuitDestination(VillagerController)、object.ReferenceEquals(object, object)、PathAgent.InvalidatePursuitResolutionCache()、VillagerController.RefreshChaseDestination()，调用方通过参数与返回结果交接本次处理。</summary>
@@ -3740,13 +4009,14 @@ bool requested = RefreshChaseDestination();
         }
 
         agent.InvalidatePursuitResolutionCache();
-        // receiverValue111（判空前缓存的敌人智能管理器的实例）：从敌人智能管理器的实例读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、VillagerController.TryRecoverChasePath()。
+        // 判空前缓存的敌人智能管理器的实例。
 global::EnemyAIManager receiverValue111 = EnemyAIManager.Instance;
         if (!global::System.Object.ReferenceEquals(receiverValue111, null))
         {
             receiverValue111.InvalidatePursuitDestination(this);
         }
 
+        InvalidateChaseRefreshFrame();
         return RefreshChaseDestination();
     }
 
@@ -3785,9 +4055,9 @@ global::EnemyAIManager receiverValue111 = EnemyAIManager.Instance;
     /// <remarks>静态调用链：上游 VillagerController.Player.get；下游（含内部回调体） Object.FindFirstObjectByType&lt;LeonController&gt;()、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     private LeonController ResolvePlayer()
     {
-        // receiverValue112（判空前缓存的敌人智能管理器的实例）：从敌人智能管理器的实例读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、VillagerController.ResolvePlayer()。
+        // 判空前缓存的敌人智能管理器的实例。
 global::EnemyAIManager receiverValue112 = EnemyAIManager.Instance;
-        // managerTarget（管理器目标）：使用位置：VillagerController.ResolvePlayer()。
+        // 管理器目标。
 LeonController managerTarget;
         if (!global::System.Object.ReferenceEquals(receiverValue112, null))
         {
@@ -3813,9 +4083,9 @@ LeonController managerTarget;
         return cachedPlayer;
     }
 
-    /// <summary>中文含义：生成候选。只读字段，初始化后不由普通写入口替换。使用位置：作为 NavigationQueryService.RecoverCollection(Vector3, float, List&lt;GraphNode&gt;) 的参数、VillagerController.RecoverInvalidNavigationSpawn()。</summary>
+    /// <summary>生成候选。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly List<GraphNode> spawnCandidate = new(128);
-    /// <summary>中文含义：是否等待中生成导航恢复。使用位置：VillagerController.RecoverInvalidNavigationSpawn()、VillagerController.Update()。</summary>
+    /// <summary>是否等待中生成导航恢复。</summary>
     private bool waitingSpawnNavigationRestore;
     /// <summary>RecoverInvalidNavigationSpawn 的业务处理入口；本方法直接依赖 AstarPath.GetNearest(Vector3, NearestNodeConstraint)、CharacterMotionExecutor.CommitPose(MotionControlToken, Vector3, Quaternion, bool)、Mathf.Abs(float)、Mathf.Max(float, float)、NavigationQueryService.RecoverCollection(Vector3, float, List&lt;GraphNode&gt;)、Physics.SyncTransforms()、VillagerController.IsNavigationTorsoClear(Vector3) 等共 8 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillagerController.Start()、VillagerController.Update()；下游（含内部回调体） AstarPath.GetNearest(Vector3, NearestNodeConstraint)、CharacterMotionExecutor.CommitPose(MotionControlToken, Vector3, Quaternion, bool)、Mathf.Abs(float)、Mathf.Max(float, float)、NavigationQueryService.RecoverCollection(Vector3, float, List&lt;GraphNode&gt;)、Physics.SyncTransforms()、VillagerController.IsNavigationTorsoClear(Vector3) 等共 8 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
@@ -3826,18 +4096,18 @@ LeonController managerTarget;
             return;
         }
 
-        // nearest（最近）：保存 AstarPath.GetNearest(Vector3, NearestNodeConstraint) 的返回结果，供当前步骤使用。使用位置：VillagerController.RecoverInvalidNavigationSpawn()。
+        // 最近。
 NNInfo nearest = AstarPath.active.GetNearest(transform.position, NearestNodeConstraint.Walkable);
         if (nearest.node == null)
         {
             return;
         }
 
-        // origin（原点）：使用位置：作为 NavigationQueryService.RecoverCollection(Vector3, float, List<GraphNode>) 的参数、VillagerController.RecoverInvalidNavigationSpawn()。
+        // 原点。
 Vector3 origin = transform.position;
-        // argumentValue115（按原顺序缓存的实参2f）：从2f读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 Mathf.Max(float, float) 的参数。
+        // 按原顺序缓存的实参2f。
 float argumentValue115 = 2f;
-        // selectedValue114（分支选出的寻路代理的导航图吸附距离）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：作为 Mathf.Max(float, float) 的参数、VillagerController.RecoverInvalidNavigationSpawn()。
+        // 分支选出的寻路代理的导航图吸附距离。
 float selectedValue114;
         if (agent != null)
         {
@@ -3848,15 +4118,15 @@ float selectedValue114;
             selectedValue114 = 3f;
         }
 
-        // maximumDistance（最大距离）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：作为 NavigationQueryService.RecoverCollection(Vector3, float, List<GraphNode>) 的参数、VillagerController.RecoverInvalidNavigationSpawn()。
+        // 最大距离。
 float maximumDistance = Mathf.Max(argumentValue115, selectedValue114);
-        // bestDistanceSqr（最佳距离平方）：使用位置：VillagerController.RecoverInvalidNavigationSpawn()。
+        // 最佳距离平方。
 float bestDistanceSqr = maximumDistance * maximumDistance;
-        // bestPosition（最佳位置）：使用位置：作为 CharacterMotionExecutor.CommitPose(MotionControlToken, Vector3, Quaternion, bool) 的参数、VillagerController.RecoverInvalidNavigationSpawn()。
+        // 最佳位置。
 Vector3 bestPosition = origin;
-        // found（是否已找到）：使用位置：VillagerController.RecoverInvalidNavigationSpawn()。
+        // 是否已找到。
 bool found = false;
-        // query（查询）：使用位置：VillagerController.RecoverInvalidNavigationSpawn()。
+        // 查询。
 global::NavigationQueryService query;
         if (EnemyAIManager.HasInstance)
         {
@@ -3881,16 +4151,16 @@ foreach (var node in spawnCandidate)
                 continue;
             }
 
-            // point（点）：使用位置：作为 VillagerController.IsNavigationTorsoClear(Vector3) 的参数、VillagerController.RecoverInvalidNavigationSpawn()。
+            // 点。
 Vector3 point = (Vector3)node.position;
-            // offset（偏移量）：使用位置：作为 Mathf.Abs(float) 的参数、VillagerController.RecoverInvalidNavigationSpawn()。
+            // 偏移量。
 Vector3 offset = point - origin;
             if (Mathf.Abs(offset.y) > Mathf.Max(0.8f, groundProbeDistance))
             {
                 continue;
             }
 
-            // distanceSqr（距离平方）：使用位置：VillagerController.RecoverInvalidNavigationSpawn()。
+            // 距离平方。
 float distanceSqr = offset.sqrMagnitude;
             if (distanceSqr >= bestDistanceSqr || !IsNavigationTorsoClear(point))
             {
@@ -3914,24 +4184,24 @@ float distanceSqr = offset.sqrMagnitude;
 
     /// <summary>IsNavigationTorsoClear 的业务处理入口；本方法直接依赖 DoorController.IsInsideOpenPassage(Vector3, float)、Mathf.Abs(float)、Mathf.Max(float, float)、NavigationCollisionCache.Enemy(Collider)、NavigationCollisionCache.Player(Collider)、Physics.OverlapSphereNonAlloc(Vector3, float, Collider[], int, QueryTriggerInteraction)、Transform.IsChildOf(Transform) 等共 8 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillagerController.RecoverInvalidNavigationSpawn()；下游（含内部回调体） DoorController.IsInsideOpenPassage(Vector3, float)、Mathf.Abs(float)、Mathf.Max(float, float)、NavigationCollisionCache.Enemy(Collider)、NavigationCollisionCache.Player(Collider)、Physics.OverlapSphereNonAlloc(Vector3, float, Collider[], int, QueryTriggerInteraction)、Transform.IsChildOf(Transform) 等共 8 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="position">中文含义：位置。使用位置：作为 DoorController.IsInsideOpenPassage(Vector3, float) 的参数、VillagerController.IsNavigationTorsoClear(Vector3)。</param>
+    /// <param name="position">位置。</param>
     private bool IsNavigationTorsoClear(Vector3 position)
     {
-        // scale（缩放）：使用位置：作为 Mathf.Abs(float) 的参数。
+        // 缩放。
 Vector3 scale = transform.lossyScale;
-        // radius（半径）：使用位置：作为 Mathf.Max(float, float) 的参数。
+        // 半径。
 float radius = movementCollider.radius * Mathf.Max(Mathf.Abs(scale.x), Mathf.Abs(scale.z));
-        // height（高度）：使用位置：作为 Mathf.Max(float, float) 的参数。
+        // 高度。
 float height = movementCollider.height * Mathf.Abs(scale.y);
-        // center（中心）：使用位置：作为 Physics.OverlapSphereNonAlloc(Vector3, float, Collider[], int, QueryTriggerInteraction) 的参数。
+        // 中心。
 Vector3 center = position + Vector3.up * Mathf.Max(radius + 0.25f, height * 0.55f);
         CombatPerformanceCounters.physicsQueryCount++;
-        // count（数量）：保存 Physics.OverlapSphereNonAlloc(Vector3, float, Collider[], int, QueryTriggerInteraction) 的返回结果，供当前步骤使用。使用位置：VillagerController.IsNavigationTorsoClear(Vector3)。
+        // 数量。
 int count = Physics.OverlapSphereNonAlloc(center, Mathf.Max(0.15f, radius * 0.82f), movementOverlaps, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore);
-        // i（当前遍历索引）：使用位置：VillagerController.IsNavigationTorsoClear(Vector3)。
+        // 当前遍历索引。
 for (int i = 0; i < count; i++)
         {
-            // other（另一个碰撞体）：使用位置：作为 NavigationCollisionCache.Enemy(Collider) 的参数、作为 NavigationCollisionCache.Player(Collider) 的参数、作为 VillagerController.IsEnemyStairBridgeCollider(Collider) 的参数 等共 4 处。
+            // 另一个碰撞体。
 Collider other = movementOverlaps[i];
             if (other == null || other.transform == transform || other.transform.IsChildOf(transform) || NavigationCollisionCache.Enemy(other) != null || NavigationCollisionCache.Player(other) != null || DoorController.IsInsideOpenPassage(position, 1.35f))
             {
@@ -3954,7 +4224,7 @@ Collider other = movementOverlaps[i];
         }
 
         nextManagerRegistrationTime = Time.time + 0.5f;
-        // receiverValue117（判空前缓存的敌人智能管理器的实例）：从敌人智能管理器的实例读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、VillagerController.RecoverManagerRegistration()。
+        // 判空前缓存的敌人智能管理器的实例。
 global::EnemyAIManager receiverValue117 = EnemyAIManager.Instance;
         if (!global::System.Object.ReferenceEquals(receiverValue117, null))
         {
@@ -3971,7 +4241,7 @@ global::EnemyAIManager receiverValue117 = EnemyAIManager.Instance;
             return;
         }
 
-        // direction（方向）：使用位置：作为 Quaternion.LookRotation(Vector3) 的参数、作为 VillagerController.RotateTowardsDirection(Vector3, float) 的参数、VillagerController.UpdateCrawlFacingBeforeAnimator()。
+        // 方向。
 Vector3 direction = lastStableCrawlMoveDirection;
         if (direction.sqrMagnitude <= 0.0001f && agent != null && agent.enabled && !agent.isStopped && agent.desiredDirection.sqrMagnitude > 0.0001f)
         {
@@ -4013,7 +4283,7 @@ Vector3 direction = lastStableCrawlMoveDirection;
     /// <remarks>静态调用链：上游 VillagerController.Update()；下游（含内部回调体） Mathf.Exp(float)、Mathf.Lerp(float, float, float)、Mathf.Max(float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     private void UpdateActualMovementSample()
     {
-        // currentPosition（当前位置）：使用位置：VillagerController.UpdateActualMovementSample()。
+        // 当前位置。
 Vector3 currentPosition = transform.position;
         if (!actualMovementSampleInitialized)
         {
@@ -4023,10 +4293,10 @@ Vector3 currentPosition = transform.position;
             return;
         }
 
-        // displacement（位移）：使用位置：VillagerController.UpdateActualMovementSample()。
+        // 位移。
 Vector3 displacement = currentPosition - actualMovementSamplePosition;
         displacement.y = 0f;
-        // rawSpeed（原始速度）：使用位置：作为 Mathf.Lerp(float, float, float) 的参数、VillagerController.UpdateActualMovementSample()。
+        // 原始速度。
 float rawSpeed;
         if (Time.deltaTime > 0.0001f)
         {
@@ -4037,7 +4307,7 @@ float rawSpeed;
             rawSpeed = 0f;
         }
 
-        // response（响应）：使用位置：作为 Mathf.Lerp(float, float, float) 的参数。
+        // 响应。
 float response = 1f - Mathf.Exp(-Mathf.Max(1f, actualMovementSpeedResponse) * Time.deltaTime);
         actualHorizontalMovementSpeed = Mathf.Lerp(actualHorizontalMovementSpeed, rawSpeed, response);
         actualMovementSamplePosition = currentPosition;
@@ -4045,7 +4315,7 @@ float response = 1f - Mathf.Exp(-Mathf.Max(1f, actualMovementSpeedResponse) * Ti
 
     /// <summary>UpdateStandingLocomotionVisibility 的业务处理入口；本方法直接依赖 EnemyAnimationAdapter.UpdateStandingLocomotionVisibility(bool)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） EnemyAnimationAdapter.UpdateStandingLocomotionVisibility(bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="hasMoveIntent">中文含义：是否具有移动意图。使用位置：作为 EnemyAnimationAdapter.UpdateStandingLocomotionVisibility(bool) 的参数。</param>
+    /// <param name="hasMoveIntent">是否具有移动意图。</param>
     private void UpdateStandingLocomotionVisibility(bool hasMoveIntent)
     {
         animationPresenter.UpdateStandingLocomotionVisibility(hasMoveIntent);
@@ -4053,8 +4323,8 @@ float response = 1f - Mathf.Exp(-Mathf.Max(1f, actualMovementSpeedResponse) * Ti
 
     /// <summary>SetMovementDirection 的业务处理入口；本方法直接依赖 EnemyAnimationAdapter.SetMovementDirection(float, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） EnemyAnimationAdapter.SetMovementDirection(float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="moveX">中文含义：移动横向。使用位置：作为 EnemyAnimationAdapter.SetMovementDirection(float, float) 的参数。</param>
-    /// <param name="moveY">中文含义：移动纵向。使用位置：作为 EnemyAnimationAdapter.SetMovementDirection(float, float) 的参数。</param>
+    /// <param name="moveX">移动横向。</param>
+    /// <param name="moveY">移动纵向。</param>
     private void SetMovementDirection(float moveX, float moveY)
     {
         animationPresenter.SetMovementDirection(moveX, moveY);
@@ -4069,7 +4339,7 @@ float response = 1f - Mathf.Exp(-Mathf.Max(1f, actualMovementSpeedResponse) * Ti
 
     /// <summary>SetLODActive 的业务处理入口；本方法直接依赖 EnemyAIManager.ReleaseCombatReservation(VillagerController)、EnemyAnimationAdapter.SetEnable(bool)、object.ReferenceEquals(object, object)、PathAgent.CancelPath()、VillagerController.ClearCombatEngagement(bool)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyAIManager.UpdateEnemyStates()；下游（含内部回调体） EnemyAIManager.ReleaseCombatReservation(VillagerController)、EnemyAnimationAdapter.SetEnable(bool)、object.ReferenceEquals(object, object)、PathAgent.CancelPath()、VillagerController.ClearCombatEngagement(bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="active">中文含义：是否生效。使用位置：作为 EnemyAnimationAdapter.SetEnable(bool) 的参数、VillagerController.SetLODActive(bool)。</param>
+    /// <param name="active">是否生效。</param>
     public void SetLODActive(bool active)
     {
         if (IsDead && active)
@@ -4085,7 +4355,7 @@ float response = 1f - Mathf.Exp(-Mathf.Max(1f, actualMovementSpeedResponse) * Ti
         IsActive = active;
         if (!active)
         {
-            // receiverValue119（判空前缓存的敌人智能管理器的实例）：从敌人智能管理器的实例读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、VillagerController.SetLODActive(bool)。
+            // 判空前缓存的敌人智能管理器的实例。
 global::EnemyAIManager receiverValue119 = EnemyAIManager.Instance;
             if (!global::System.Object.ReferenceEquals(receiverValue119, null))
             {
@@ -4125,7 +4395,7 @@ global::EnemyAIManager receiverValue119 = EnemyAIManager.Instance;
 
     /// <summary>TakeDamage 的业务处理入口；本方法直接依赖 EnemyCombatModule.TakeDamage(float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） EnemyCombatModule.TakeDamage(float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="damage">中文含义：伤害。使用位置：作为 EnemyCombatModule.TakeDamage(float) 的参数。</param>
+    /// <param name="damage">伤害。</param>
     public void TakeDamage(float damage)
     {
         combatModule.TakeDamage(damage);
@@ -4133,8 +4403,8 @@ global::EnemyAIManager receiverValue119 = EnemyAIManager.Instance;
 
     /// <summary>TakeDamage 的业务处理入口；本方法直接依赖 EnemyCombatModule.TakeDamage(float, Vector3)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） EnemyCombatModule.TakeDamage(float, Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="damage">中文含义：伤害。使用位置：作为 EnemyCombatModule.TakeDamage(float, Vector3) 的参数。</param>
-    /// <param name="hitPoint">中文含义：命中点位置。使用位置：作为 EnemyCombatModule.TakeDamage(float, Vector3) 的参数。</param>
+    /// <param name="damage">伤害。</param>
+    /// <param name="hitPoint">命中点位置。</param>
     public void TakeDamage(float damage, Vector3 hitPoint)
     {
         combatModule.TakeDamage(damage, hitPoint);
@@ -4142,9 +4412,9 @@ global::EnemyAIManager receiverValue119 = EnemyAIManager.Instance;
 
     /// <summary>TakeDamage 的业务处理入口；本方法直接依赖 EnemyCombatModule.TakeDamage(float, Vector3, HitboxType)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） EnemyCombatModule.TakeDamage(float, Vector3, HitboxType)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="damage">中文含义：伤害。使用位置：作为 EnemyCombatModule.TakeDamage(float, Vector3, HitboxType) 的参数。</param>
-    /// <param name="hitPoint">中文含义：命中点位置。使用位置：作为 EnemyCombatModule.TakeDamage(float, Vector3, HitboxType) 的参数。</param>
-    /// <param name="hitboxType">中文含义：命中盒类型。使用位置：作为 EnemyCombatModule.TakeDamage(float, Vector3, HitboxType) 的参数。</param>
+    /// <param name="damage">伤害。</param>
+    /// <param name="hitPoint">命中点位置。</param>
+    /// <param name="hitboxType">命中盒类型。</param>
     public void TakeDamage(float damage, Vector3 hitPoint, HitboxType hitboxType)
     {
         combatModule.TakeDamage(damage, hitPoint, hitboxType);
@@ -4152,10 +4422,10 @@ global::EnemyAIManager receiverValue119 = EnemyAIManager.Instance;
 
     /// <summary>TakeDamage 的业务处理入口；本方法直接依赖 EnemyCombatModule.TakeDamage(float, Vector3, HitboxType, Vector3)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 DamageResolutionModule.CommitEnemyHit(VillagerController, HitboxType, float, Vector3, Vector3)；下游（含内部回调体） EnemyCombatModule.TakeDamage(float, Vector3, HitboxType, Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="damage">中文含义：伤害。使用位置：作为 EnemyCombatModule.TakeDamage(float, Vector3, HitboxType, Vector3) 的参数。</param>
-    /// <param name="hitPoint">中文含义：命中点位置。使用位置：作为 EnemyCombatModule.TakeDamage(float, Vector3, HitboxType, Vector3) 的参数。</param>
-    /// <param name="hitboxType">中文含义：命中盒类型。使用位置：作为 EnemyCombatModule.TakeDamage(float, Vector3, HitboxType, Vector3) 的参数。</param>
-    /// <param name="hitNormal">中文含义：命中表面法线。使用位置：作为 EnemyCombatModule.TakeDamage(float, Vector3, HitboxType, Vector3) 的参数。</param>
+    /// <param name="damage">伤害。</param>
+    /// <param name="hitPoint">命中点位置。</param>
+    /// <param name="hitboxType">命中盒类型。</param>
+    /// <param name="hitNormal">命中表面法线。</param>
     public void TakeDamage(float damage, Vector3 hitPoint, HitboxType hitboxType, Vector3 hitNormal)
     {
         combatModule.TakeDamage(damage, hitPoint, hitboxType, hitNormal);
@@ -4163,8 +4433,8 @@ global::EnemyAIManager receiverValue119 = EnemyAIManager.Instance;
 
     /// <summary>TakeBodyTechniqueDamage 的业务处理入口；本方法直接依赖 EnemyCombatModule.TakeBodyTechniqueDamage(float, Vector3)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillagerQTEParticipant.ApplyBodyTechniqueHit(int, FullBodyActionType, Transform)；下游（含内部回调体） EnemyCombatModule.TakeBodyTechniqueDamage(float, Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="damage">中文含义：伤害。使用位置：作为 EnemyCombatModule.TakeBodyTechniqueDamage(float, Vector3) 的参数。</param>
-    /// <param name="hitPoint">中文含义：命中点位置。使用位置：作为 EnemyCombatModule.TakeBodyTechniqueDamage(float, Vector3) 的参数。</param>
+    /// <param name="damage">伤害。</param>
+    /// <param name="hitPoint">命中点位置。</param>
     public void TakeBodyTechniqueDamage(float damage, Vector3 hitPoint)
     {
         combatModule.TakeBodyTechniqueDamage(damage, hitPoint);
@@ -4172,9 +4442,9 @@ global::EnemyAIManager receiverValue119 = EnemyAIManager.Instance;
 
     /// <summary>BeginExternalKnockback 的业务处理入口；本方法直接依赖 MonoBehaviour.StartCoroutine(IEnumerator)、MonoBehaviour.StopCoroutine(Coroutine)、Vector3.Normalize()、VillagerController.DriveExternalKnockback(Vector3, float, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillagerQTEParticipant.ApplyBodyTechniqueKnockback(Transform)、VillagerQTEParticipant.ApplyBodyTechniqueSplashDamage(float, Vector3, Transform)；下游（含内部回调体） MonoBehaviour.StartCoroutine(IEnumerator)、MonoBehaviour.StopCoroutine(Coroutine)、Vector3.Normalize()、VillagerController.DriveExternalKnockback(Vector3, float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="direction">中文含义：方向。使用位置：作为 VillagerController.DriveExternalKnockback(Vector3, float, float) 的参数、VillagerController.BeginExternalKnockback(Vector3, float, float)。</param>
-    /// <param name="distance">中文含义：距离。使用位置：作为 VillagerController.DriveExternalKnockback(Vector3, float, float) 的参数、VillagerController.BeginExternalKnockback(Vector3, float, float)。</param>
-    /// <param name="duration">中文含义：持续时间。使用位置：作为 VillagerController.DriveExternalKnockback(Vector3, float, float) 的参数、VillagerController.BeginExternalKnockback(Vector3, float, float)。</param>
+    /// <param name="direction">方向。</param>
+    /// <param name="distance">距离。</param>
+    /// <param name="duration">持续时间。</param>
     public void BeginExternalKnockback(Vector3 direction, float distance, float duration)
     {
         direction.y = 0f;
@@ -4194,15 +4464,15 @@ global::EnemyAIManager receiverValue119 = EnemyAIManager.Instance;
 
     /// <summary>DriveExternalKnockback 的业务处理入口；本方法直接依赖 Mathf.Clamp01(float)、VillagerController.MaintainGroundContact()、VillagerController.MoveWithCollision(Vector3, bool, bool)、VillagerController.StopAndClearMovement()、VillagerController.TryExecuteStairActionDisplacement(Vector3)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillagerController.BeginExternalKnockback(Vector3, float, float)；下游（含内部回调体） Mathf.Clamp01(float)、VillagerController.MaintainGroundContact()、VillagerController.MoveWithCollision(Vector3, bool, bool)、VillagerController.StopAndClearMovement()、VillagerController.TryExecuteStairActionDisplacement(Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="direction">中文含义：方向。使用位置：VillagerController.DriveExternalKnockback(Vector3, float, float)。</param>
-    /// <param name="distance">中文含义：距离。使用位置：VillagerController.DriveExternalKnockback(Vector3, float, float)。</param>
-    /// <param name="duration">中文含义：持续时间。使用位置：作为 Mathf.Clamp01(float) 的参数、VillagerController.DriveExternalKnockback(Vector3, float, float)。</param>
+    /// <param name="direction">方向。</param>
+    /// <param name="distance">距离。</param>
+    /// <param name="duration">持续时间。</param>
     private IEnumerator DriveExternalKnockback(Vector3 direction, float distance, float duration)
     {
         StopAndClearMovement();
-        // elapsed（已用）：使用位置：作为 Mathf.Clamp01(float) 的参数、VillagerController.DriveExternalKnockback(Vector3, float, float)。
+        // 已用。
 float elapsed = 0f;
-        // previousDistance（前一次距离）：使用位置：VillagerController.DriveExternalKnockback(Vector3, float, float)。
+        // 前一次距离。
 float previousDistance = 0f;
         while (elapsed < duration)
         {
@@ -4212,18 +4482,18 @@ float previousDistance = 0f;
                 break;
             }
             elapsed += Time.deltaTime;
-            // normalized（归一化）：保存 Mathf.Clamp01(float) 的返回结果，供当前步骤使用。使用位置：VillagerController.DriveExternalKnockback(Vector3, float, float)。
+            // 归一化。
 float normalized = Mathf.Clamp01(elapsed / duration);
-            // eased（缓动后的）：使用位置：VillagerController.DriveExternalKnockback(Vector3, float, float)。
+            // 缓动后的。
 float eased = 1f - (1f - normalized) * (1f - normalized);
-            // currentDistance（当前距离）：使用位置：VillagerController.DriveExternalKnockback(Vector3, float, float)。
+            // 当前距离。
 float currentDistance = distance * eased;
-            // deltaDistance（增量距离）：使用位置：VillagerController.DriveExternalKnockback(Vector3, float, float)。
+            // 增量距离。
 float deltaDistance = currentDistance - previousDistance;
             previousDistance = currentDistance;
             if (deltaDistance > 0f)
             {
-                // displacement（位移）：使用位置：作为 VillagerController.MoveWithCollision(Vector3, bool, bool) 的参数、作为 VillagerController.TryExecuteStairActionDisplacement(Vector3) 的参数。
+                // 位移。
 Vector3 displacement = direction * deltaDistance;
                 MoveWithCollision(displacement, true, false);
             }
@@ -4237,8 +4507,8 @@ Vector3 displacement = direction * deltaDistance;
 
     /// <summary>TakeHeavyFrontDamage 的业务处理入口；本方法直接依赖 EnemyCombatModule.TakeHeavyFrontDamage(float, Vector3)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 DamageResolutionModule.CommitPairedActionHeavyStrike(VillagerController, float, Vector3)、EnemyCombatModule.ApplyDeadChainsawPulse()、EnemyCombatModule.TryApplyFriendlyFire(Vector3, Vector3, float)、VillagerQTEParticipant.ApplyBodyTechniqueSplashDamage(float, Vector3, Transform)；下游（含内部回调体） EnemyCombatModule.TakeHeavyFrontDamage(float, Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="damage">中文含义：伤害。使用位置：作为 EnemyCombatModule.TakeHeavyFrontDamage(float, Vector3) 的参数。</param>
-    /// <param name="hitPoint">中文含义：命中点位置。使用位置：作为 EnemyCombatModule.TakeHeavyFrontDamage(float, Vector3) 的参数。</param>
+    /// <param name="damage">伤害。</param>
+    /// <param name="hitPoint">命中点位置。</param>
     public void TakeHeavyFrontDamage(float damage, Vector3 hitPoint)
     {
         combatModule.TakeHeavyFrontDamage(damage, hitPoint);
@@ -4246,8 +4516,8 @@ Vector3 displacement = direction * deltaDistance;
 
     /// <summary>ResolveStaggerLevel 的业务处理入口；本方法直接依赖 EnemyCombatModule.ResolveStaggerLevel(HitboxType, bool)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） EnemyCombatModule.ResolveStaggerLevel(HitboxType, bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="hitboxType">中文含义：命中盒类型。使用位置：作为 EnemyCombatModule.ResolveStaggerLevel(HitboxType, bool) 的参数。</param>
-    /// <param name="forcedHeavyStagger">中文含义：是否强制重型硬直。使用位置：作为 EnemyCombatModule.ResolveStaggerLevel(HitboxType, bool) 的参数。</param>
+    /// <param name="hitboxType">命中盒类型。</param>
+    /// <param name="forcedHeavyStagger">是否强制重型硬直。</param>
     private int ResolveStaggerLevel(HitboxType hitboxType, bool forcedHeavyStagger)
     {
         return combatModule.ResolveStaggerLevel(hitboxType, forcedHeavyStagger);
@@ -4255,8 +4525,8 @@ Vector3 displacement = direction * deltaDistance;
 
     /// <summary>ShouldTriggerCriticalStagger 的业务处理入口；本方法直接依赖 EnemyCombatModule.ShouldTriggerCriticalStagger(HitboxType, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） EnemyCombatModule.ShouldTriggerCriticalStagger(HitboxType, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="hitboxType">中文含义：命中盒类型。使用位置：作为 EnemyCombatModule.ShouldTriggerCriticalStagger(HitboxType, float) 的参数。</param>
-    /// <param name="damage">中文含义：伤害。使用位置：作为 EnemyCombatModule.ShouldTriggerCriticalStagger(HitboxType, float) 的参数。</param>
+    /// <param name="hitboxType">命中盒类型。</param>
+    /// <param name="damage">伤害。</param>
     private bool ShouldTriggerCriticalStagger(HitboxType hitboxType, float damage)
     {
         return combatModule.ShouldTriggerCriticalStagger(hitboxType, damage);
@@ -4285,8 +4555,8 @@ Vector3 displacement = direction * deltaDistance;
 
     /// <summary>ResolveStaggerDirection 的业务处理入口；本方法直接依赖 EnemyCombatModule.ResolveStaggerDirection(Vector3, Vector3)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） EnemyCombatModule.ResolveStaggerDirection(Vector3, Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="hitNormal">中文含义：命中表面法线。使用位置：作为 EnemyCombatModule.ResolveStaggerDirection(Vector3, Vector3) 的参数。</param>
-    /// <param name="hitPoint">中文含义：命中点位置。使用位置：作为 EnemyCombatModule.ResolveStaggerDirection(Vector3, Vector3) 的参数。</param>
+    /// <param name="hitNormal">命中表面法线。</param>
+    /// <param name="hitPoint">命中点位置。</param>
     private int ResolveStaggerDirection(Vector3 hitNormal, Vector3 hitPoint)
     {
         return combatModule.ResolveStaggerDirection(hitNormal, hitPoint);
@@ -4322,9 +4592,9 @@ Vector3 displacement = direction * deltaDistance;
 
     /// <summary>SetObservableState 的业务处理入口；本方法直接依赖 EnemyActionCoordinator.SetObservableState(VillagerState, string, int)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillagerController.ArchitectureInvokeSetObservableState(VillagerState, string, int)、VillagerController.CompleteTraversalAndResumeChase()；下游（含内部回调体） EnemyActionCoordinator.SetObservableState(VillagerState, string, int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="state">中文含义：当前敌人状态。使用位置：作为 EnemyActionCoordinator.SetObservableState(VillagerState, string, int) 的参数。</param>
-    /// <param name="source">中文含义：来源。使用位置：作为 EnemyActionCoordinator.SetObservableState(VillagerState, string, int) 的参数。</param>
-    /// <param name="line">中文含义：线。使用位置：作为 EnemyActionCoordinator.SetObservableState(VillagerState, string, int) 的参数。</param>
+    /// <param name="state">当前敌人状态。</param>
+    /// <param name="source">来源。</param>
+    /// <param name="line">线。</param>
     private void SetObservableState(VillagerState state, [System.Runtime.CompilerServices.CallerMemberName] string source = "", [System.Runtime.CompilerServices.CallerLineNumber] int line = 0)
     {
         actionCoordinator.SetObservableState(state, source, line);
@@ -4336,7 +4606,7 @@ Vector3 displacement = direction * deltaDistance;
     {
         ClearCombatGroundMotion();
         // 特殊动作离开普通行走，立即释放入口让行登记与门洞占用。
-        // receiverValue120（判空前缓存的房屋第三区域导航的当前）：从房屋第三区域导航的当前读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、VillagerController.PrepareForSpecialTraversal()。
+        // 判空前缓存的房屋第三区域导航的当前。
 global::HouseThreeRegionNavigation receiverValue120 = // 特殊动作离开普通行走，立即释放入口让行登记与门洞占用。
  HouseThreeRegionNavigation.Current;
         if (!global::System.Object.ReferenceEquals(receiverValue120, null))
@@ -4385,6 +4655,7 @@ global::HouseThreeRegionNavigation receiverValue120 = // 特殊动作离开普�
             agent.isStopped = false;
         }
 
+        InvalidateChaseRefreshFrame();
         RefreshChaseDestination();
     }
 
@@ -4565,7 +4836,7 @@ global::HouseThreeRegionNavigation receiverValue120 = // 特殊动作离开普�
 
     /// <summary>BeginChase 的业务处理入口；本方法直接依赖 EnemyActionCoordinator.BeginChase(bool)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 PerformanceSamplingEntry.Tick()、VillagerController.ApplyPendingPursuitRegionChange()、VillagerController.ArchitectureInvokeBeginChase(bool)、VillagerController.MaintainChasePathRecoveryFacing()、VillagerController.MaintainIncompletePursuitArrival()；下游（含内部回调体） EnemyActionCoordinator.BeginChase(bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="notifyCombatEngaged">中文含义：是否通知战斗已接战。使用位置：作为 EnemyActionCoordinator.BeginChase(bool) 的参数。</param>
+    /// <param name="notifyCombatEngaged">是否通知战斗已接战。</param>
     public void BeginChase(bool notifyCombatEngaged = true)
     {
         actionCoordinator.BeginChase(notifyCombatEngaged);
@@ -4608,7 +4879,7 @@ global::HouseThreeRegionNavigation receiverValue120 = // 特殊动作离开普�
 
     /// <summary>BeginStationaryPatrol 的业务处理入口；本方法直接依赖 EnemyActionCoordinator.BeginStationaryPatrol(float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 PatrolInPlace.OnStart()；下游（含内部回调体） EnemyActionCoordinator.BeginStationaryPatrol(float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="signedTurnAngle">中文含义：有符号转向角度。使用位置：作为 EnemyActionCoordinator.BeginStationaryPatrol(float) 的参数。</param>
+    /// <param name="signedTurnAngle">有符号转向角度。</param>
     public void BeginStationaryPatrol(float signedTurnAngle)
     {
         actionCoordinator.BeginStationaryPatrol(signedTurnAngle);
@@ -4623,7 +4894,7 @@ global::HouseThreeRegionNavigation receiverValue120 = // 特殊动作离开普�
 
     /// <summary>UpdateStationaryPatrolFacing 的业务处理入口；本方法直接依赖 EnemyActionCoordinator.UpdateStationaryPatrolFacing(Quaternion)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 PatrolInPlace.OnUpdate()；下游（含内部回调体） EnemyActionCoordinator.UpdateStationaryPatrolFacing(Quaternion)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="targetRotation">中文含义：目标旋转。使用位置：作为 EnemyActionCoordinator.UpdateStationaryPatrolFacing(Quaternion) 的参数。</param>
+    /// <param name="targetRotation">目标旋转。</param>
     public void UpdateStationaryPatrolFacing(Quaternion targetRotation)
     {
         actionCoordinator.UpdateStationaryPatrolFacing(targetRotation);
@@ -4645,7 +4916,7 @@ global::HouseThreeRegionNavigation receiverValue120 = // 特殊动作离开普�
 
     /// <summary>SetPatrolTarget 的业务处理入口；本方法直接依赖 EnemyActionCoordinator.SetPatrolTarget(Vector3)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 SelectPatrolPoint.OnUpdate()；下游（含内部回调体） EnemyActionCoordinator.SetPatrolTarget(Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="target">中文含义：目标。使用位置：作为 EnemyActionCoordinator.SetPatrolTarget(Vector3) 的参数。</param>
+    /// <param name="target">目标。</param>
     public void SetPatrolTarget(Vector3 target)
     {
         actionCoordinator.SetPatrolTarget(target);
@@ -4681,7 +4952,7 @@ global::HouseThreeRegionNavigation receiverValue120 = // 特殊动作离开普�
 
     /// <summary>GetPatrolTurnDirection 的业务处理入口；本方法直接依赖 Mathf.Abs(float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillagerController.ArchitectureInvokeGetPatrolTurnDirection(float)；下游（含内部回调体） Mathf.Abs(float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="signedTurnAngle">中文含义：有符号转向角度。使用位置：作为 Mathf.Abs(float) 的参数、VillagerController.GetPatrolTurnDirection(float)。</param>
+    /// <param name="signedTurnAngle">有符号转向角度。</param>
     private static int GetPatrolTurnDirection(float signedTurnAngle)
     {
         if (Mathf.Abs(signedTurnAngle) >= 135f)
@@ -4729,7 +5000,7 @@ global::HouseThreeRegionNavigation receiverValue120 = // 特殊动作离开普�
 
     /// <summary>IsPlayerWithinCombatVerticalRange 的业务处理入口；本方法直接依赖 EnemyCombatModule.IsPlayerWithinCombatVerticalRange(LeonController)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillagerController.RequiresDirectNavigationTraversalToPlayer()、VillagerController.RequiresNavigationTraversalToPlayer()、VillagerController.ShouldUseCloseDirectPursuitTarget()；下游（含内部回调体） EnemyCombatModule.IsPlayerWithinCombatVerticalRange(LeonController)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="player">中文含义：玩家。使用位置：作为 EnemyCombatModule.IsPlayerWithinCombatVerticalRange(LeonController) 的参数。</param>
+    /// <param name="player">玩家。</param>
     private bool IsPlayerWithinCombatVerticalRange(LeonController player)
     {
         return combatModule.IsPlayerWithinCombatVerticalRange(player);
@@ -4739,7 +5010,7 @@ global::HouseThreeRegionNavigation receiverValue120 = // 特殊动作离开普�
     /// <remarks>静态调用链：上游 VillagerController.ArchitectureInvokeRequiresNavigationTraversalToPlayer()、VillagerController.HasIncompletePursuitArrival.get、VillagerController.RequiresNavigationToPlayer.get、VillagerController.ShouldHoldCombatPosition.get、VillagerController.TryResolveCloseDirectPursuitDirection(out Vector3)；下游（含内部回调体） DoorController.IsInsideOpenPassage(Vector3, float)、Mathf.Lerp(float, float, float)、Mathf.Max(float, float)、Vector3.Distance(Vector3, Vector3)、VillagerController.CanMoveDirectlyToNavigationPoint(Vector3, bool)、VillagerController.HasClearLineToPlayer(bool, float)、VillagerController.IsApproachingEnemyStairBridge() 等共 11 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     private bool RequiresNavigationTraversalToPlayer()
     {
-        // player（玩家）：使用位置：作为 DoorController.IsInsideOpenPassage(Vector3, float) 的参数、作为 Mathf.Lerp(float, float, float) 的参数、作为 Vector3.Distance(Vector3, Vector3) 的参数 等共 6 处。
+        // 玩家。
 LeonController player = Player;
         if (player == null)
         {
@@ -4764,7 +5035,7 @@ LeonController player = Player;
             return true;
         }
 
-        // lineCheckDistance（线检查距离）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：作为 VillagerController.HasClearLineToPlayer(bool, float) 的参数。
+        // 线检查距离。
 float lineCheckDistance = Mathf.Max(sightRange, Vector3.Distance(transform.position, player.transform.position) + 1f);
         if (fullyAwareOfPlayer && !HasClearLineToPlayer(false, lineCheckDistance))
         {
@@ -4776,26 +5047,26 @@ float lineCheckDistance = Mathf.Max(sightRange, Vector3.Distance(transform.posit
             return false;
         }
 
-        // passageProbeRadius（通道探测半径）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：作为 DoorController.IsInsideOpenPassage(Vector3, float) 的参数。
+        // 通道探测半径。
 float passageProbeRadius = Mathf.Max(doorOpenProbeRadius + 0.6f, directApproachStoppingDistance);
         if (DoorController.IsInsideOpenPassage(transform.position, passageProbeRadius) || DoorController.IsInsideOpenPassage(player.transform.position, passageProbeRadius))
         {
             return true;
         }
 
-        // offset（偏移量）：使用位置：VillagerController.RequiresNavigationTraversalToPlayer()。
+        // 偏移量。
 Vector3 offset = player.transform.position - transform.position;
         offset.y = 0f;
-        // distance（距离）：使用位置：作为 Mathf.Lerp(float, float, float) 的参数、VillagerController.RequiresNavigationTraversalToPlayer()。
+        // 距离。
 float distance = offset.magnitude;
-        // stoppingDistance（停止中距离）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Lerp(float, float, float) 的参数、VillagerController.RequiresNavigationTraversalToPlayer()。
+        // 停止中距离。
 float stoppingDistance = Mathf.Max(0.1f, directApproachStoppingDistance);
         if (distance <= stoppingDistance)
         {
             return false;
         }
 
-        // approachPoint（接近点）：使用位置：作为 VillagerController.CanMoveDirectlyToNavigationPoint(Vector3, bool) 的参数、VillagerController.RequiresNavigationTraversalToPlayer()。
+        // 接近点。
 Vector3 approachPoint = transform.position + offset / distance * (distance - stoppingDistance);
         approachPoint.y = Mathf.Lerp(transform.position.y, player.transform.position.y, (distance - stoppingDistance) / distance);
         return !CanMoveDirectlyToNavigationPoint(approachPoint);
@@ -4805,7 +5076,7 @@ Vector3 approachPoint = transform.position + offset / distance * (distance - sto
     /// <remarks>静态调用链：上游 VillagerController.RequiresDirectTraversalToPlayer.get；下游（含内部回调体） DoorController.IsInsideOpenPassage(Vector3, float)、Mathf.Max(float, float)、VillagerController.IsApproachingEnemyStairBridge()、VillagerController.IsPlayerWithinCombatVerticalRange(LeonController)、VillagerController.IsStandingOnEnemyStairBridge()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     private bool RequiresDirectNavigationTraversalToPlayer()
     {
-        // player（玩家）：使用位置：作为 DoorController.IsInsideOpenPassage(Vector3, float) 的参数、作为 VillagerController.IsPlayerWithinCombatVerticalRange(LeonController) 的参数、VillagerController.RequiresDirectNavigationTraversalToPlayer()。
+        // 玩家。
 LeonController player = Player;
         if (player == null)
         {
@@ -4817,7 +5088,7 @@ LeonController player = Player;
             return true;
         }
 
-        // passageProbeRadius（通道探测半径）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：作为 DoorController.IsInsideOpenPassage(Vector3, float) 的参数。
+        // 通道探测半径。
 float passageProbeRadius = Mathf.Max(doorOpenProbeRadius + 0.6f, directApproachStoppingDistance);
         return DoorController.IsInsideOpenPassage(transform.position, passageProbeRadius) || DoorController.IsInsideOpenPassage(player.transform.position, passageProbeRadius);
     }
@@ -4839,37 +5110,37 @@ float passageProbeRadius = Mathf.Max(doorOpenProbeRadius + 0.6f, directApproachS
             return false;
         }
 
-        // onElevatedSurface（是否高架表面时的通知回调）：保存 EnemyWindowTraversalRoute.IsPointOnAnyPlatformSide(Vector3) 的返回结果，供当前步骤使用。使用位置：VillagerController.IsStandingAttackSurfaceStable()。
+        // 是否高架表面时的通知回调。
 bool onElevatedSurface = EnemyWindowTraversalRoute.IsPointOnAnyPlatformSide(transform.position);
         if (!onElevatedSurface && agent != null && agent.CurrentPathState == PathAgentState.Valid && agent.TryGetCurrentWaypoint(out Vector3 /* 中文含义：路径点。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ waypoint) && Mathf.Abs(waypoint.y - transform.position.y) > Mathf.Max(0.1f, agent.waypointVerticalReachedTolerance))
         {
             return false;
         }
 
-        // origin（原点）：使用位置：作为 Physics.SphereCastNonAlloc(Vector3, float, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 的参数、VillagerController.IsStandingAttackSurfaceStable()。
+        // 原点。
 Vector3 origin = transform.position + Vector3.up * Mathf.Max(0.6f, groundProbeHeight);
         CombatPerformanceCounters.physicsQueryCount++;
         // 攻击起手与行走使用相同的足底支撑范围，避免已走到木板缝上
         // 却被中心射线误判悬空，始终保持追击状态顶住玩家。
-        // hitCount（命中数量）：保存 Physics.SphereCastNonAlloc(Vector3, float, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 的返回结果，供当前步骤使用。使用位置：VillagerController.IsStandingAttackSurfaceStable()。
+        // 命中数量。
 int hitCount = Physics.SphereCastNonAlloc(origin, NavigationFootBottomRadius(), Vector3.down, groundHits, Mathf.Max(1.2f, groundProbeHeight + maximumGroundDrop), Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore);
-        // nearestDistance（最近距离）：使用位置：VillagerController.IsStandingAttackSurfaceStable()。
+        // 最近距离。
 float nearestDistance = float.MaxValue;
-        // nearestHit（最近命中）：使用位置：作为 Mathf.Abs(float) 的参数、VillagerController.IsStandingAttackSurfaceStable()。
+        // 最近命中。
 RaycastHit nearestHit = default;
-        // foundGround（是否找到的地面）：使用位置：VillagerController.IsStandingAttackSurfaceStable()。
+        // 是否找到的地面。
 bool foundGround = false;
-        // i（当前遍历索引）：使用位置：VillagerController.IsStandingAttackSurfaceStable()。
+        // 当前遍历索引。
 for (int i = 0; i < hitCount; i++)
         {
-            // hit（命中）：使用位置：作为 NavigationCollisionCache.Enemy(Collider) 的参数、作为 NavigationCollisionCache.Player(Collider) 的参数、作为 Ray.Ray(Vector3, Vector3) 的参数 等共 7 处。
+            // 命中。
 RaycastHit hit = groundHits[i];
             if (hit.collider != null && hit.collider.Raycast(new Ray(hit.point + Vector3.up * .1f, Vector3.down), out RaycastHit /* 中文含义：踏面命中。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ treadHit, .2f))
             {
                 hit = treadHit;
             }
 
-            // conditionResult124（短路判断得到的限制的返回结果）：保存短路分支结果，未选中的分支不执行。使用位置：VillagerController.IsStandingAttackSurfaceStable()。
+            // 短路判断得到的限制的返回结果。
 bool conditionResult124;
             if (hit.collider == null || hit.collider.transform == transform || hit.collider.transform.IsChildOf(transform) || NavigationCollisionCache.Enemy(hit.collider) != null || NavigationCollisionCache.Player(hit.collider) != null || IsNavigationObstacle(hit.collider))
             {
@@ -4877,9 +5148,9 @@ bool conditionResult124;
             }
             else
             {
-                // leftOperand123（计算前缓存的左侧角度的返回结果）：从角度的返回结果读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：VillagerController.IsStandingAttackSurfaceStable()。
+                // 计算前缓存的左侧角度的返回结果。
 float leftOperand123 = Vector3.Angle(hit.normal, Vector3.up);
-                // selectedValue122（分支选出的最大的返回结果）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：作为 Mathf.Clamp(float, float, float) 的参数、VillagerController.IsStandingAttackSurfaceStable()。
+                // 分支选出的最大的返回结果。
 float selectedValue122;
                 if (onElevatedSurface)
                 {
@@ -4912,19 +5183,19 @@ float selectedValue122;
     {
         // 攻击起手要求平稳站位，但收尾只需仍有可站立的脚底支撑。
         // 木板缝隙与倾斜边缘可能漏掉中心射线，不能因此瞬移回攻击起点。
-        // supportRadius（支撑半径）：保存 VillagerController.NavigationFootBottomRadius() 的返回结果，供当前步骤使用。使用位置：作为 Physics.SphereCastNonAlloc(Vector3, float, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 的参数。
+        // 支撑半径。
 float supportRadius = NavigationFootBottomRadius();
-        // probeHeight（探测高度）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：作为 Physics.SphereCastNonAlloc(Vector3, float, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 的参数。
+        // 探测高度。
 float probeHeight = Mathf.Max(0.6f, groundProbeHeight);
         CombatPerformanceCounters.physicsQueryCount++;
-        // hitCount（命中数量）：保存 Physics.SphereCastNonAlloc(Vector3, float, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 的返回结果，供当前步骤使用。使用位置：VillagerController.HasAttackRecoveryGroundSupport()。
+        // 命中数量。
 int hitCount = Physics.SphereCastNonAlloc(transform.position + Vector3.up * probeHeight, supportRadius, Vector3.down, groundHits, probeHeight + Mathf.Max(0.1f, maximumGroundDrop), Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore);
-        // i（当前遍历索引）：使用位置：VillagerController.HasAttackRecoveryGroundSupport()。
+        // 当前遍历索引。
 for (int i = 0; i < hitCount; i++)
         {
-            // hit（命中）：使用位置：作为 Ray.Ray(Vector3, Vector3) 的参数、作为 Vector3.Angle(Vector3, Vector3) 的参数、VillagerController.HasAttackRecoveryGroundSupport()。
+            // 命中。
 RaycastHit hit = groundHits[i];
-            // candidate（候选）：使用位置：作为 NavigationCollisionCache.Enemy(Collider) 的参数、作为 NavigationCollisionCache.Player(Collider) 的参数、作为 VillagerController.IsEnemyStairBridgeCollider(Collider) 的参数 等共 5 处。
+            // 候选。
 Collider candidate = hit.collider;
             if (candidate == null || NavigationCollisionCache.Enemy(candidate) != null || NavigationCollisionCache.Player(candidate) != null || IsNavigationObstacle(candidate))
             {
@@ -4943,7 +5214,7 @@ Collider candidate = hit.collider;
                 continue;
             }
 
-            // heightChange（高度变化）：使用位置：VillagerController.HasAttackRecoveryGroundSupport()。
+            // 高度变化。
 float heightChange = hit.point.y + groundOffset - transform.position.y;
             if (heightChange <= Mathf.Max(0.05f, maximumGroundStepUp) && heightChange >= -Mathf.Max(0.05f, maximumGroundDrop))
             {
@@ -4977,7 +5248,7 @@ float heightChange = hit.point.y + groundOffset - transform.position.y;
 
     /// <summary>GetHorizontalVectorToPlayerBody 的业务处理入口；本方法直接依赖 EnemyCombatModule.GetHorizontalVectorToPlayerBody(LeonController)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） EnemyCombatModule.GetHorizontalVectorToPlayerBody(LeonController)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="player">中文含义：玩家。使用位置：作为 EnemyCombatModule.GetHorizontalVectorToPlayerBody(LeonController) 的参数。</param>
+    /// <param name="player">玩家。</param>
     private Vector3 GetHorizontalVectorToPlayerBody(LeonController player)
     {
         return combatModule.GetHorizontalVectorToPlayerBody(player);
@@ -4985,8 +5256,8 @@ float heightChange = hit.point.y + groundOffset - transform.position.y;
 
     /// <summary>HasClearLineToPlayer 的业务处理入口；本方法直接依赖 EnemyPerceptionModule.HasClearLineToPlayer(bool, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillagerController.ArchitectureInvokeHasClearLineToPlayer(bool, float)、VillagerController.RequiresNavigationTraversalToPlayer()；下游（含内部回调体） EnemyPerceptionModule.HasClearLineToPlayer(bool, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="requireSightAngle">中文含义：是否需要视野角度。使用位置：作为 EnemyPerceptionModule.HasClearLineToPlayer(bool, float) 的参数。</param>
-    /// <param name="maximumDistance">中文含义：最大距离。使用位置：作为 EnemyPerceptionModule.HasClearLineToPlayer(bool, float) 的参数。</param>
+    /// <param name="requireSightAngle">是否需要视野角度。</param>
+    /// <param name="maximumDistance">最大距离。</param>
     private bool HasClearLineToPlayer(bool requireSightAngle, float maximumDistance)
     {
         return perceptionModule.HasClearLineToPlayer(requireSightAngle, maximumDistance);
@@ -4994,7 +5265,7 @@ float heightChange = hit.point.y + groundOffset - transform.position.y;
 
     /// <summary>ResolveFallbackHitboxType 的业务处理入口；本方法直接依赖 EnemyCombatModule.ResolveFallbackHitboxType(Vector3)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 KnifeCombatModule.DetectBlade(KnifeTraversedInterval)、WeaponBase.ProcessHit(RaycastHit, float)；下游（含内部回调体） EnemyCombatModule.ResolveFallbackHitboxType(Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="hitPoint">中文含义：命中点位置。使用位置：作为 EnemyCombatModule.ResolveFallbackHitboxType(Vector3) 的参数。</param>
+    /// <param name="hitPoint">命中点位置。</param>
     public HitboxType ResolveFallbackHitboxType(Vector3 hitPoint)
     {
         return combatModule.ResolveFallbackHitboxType(hitPoint);
@@ -5002,7 +5273,7 @@ float heightChange = hit.point.y + groundOffset - transform.position.y;
 
     /// <summary>IsPlayerWithinChaseDisengageRange 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="player">中文含义：玩家。使用位置：VillagerController.IsPlayerWithinChaseDisengageRange(LeonController)。</param>
+    /// <param name="player">玩家。</param>
     private bool IsPlayerWithinChaseDisengageRange(LeonController player)
     {
         if (player == null)
@@ -5010,7 +5281,7 @@ float heightChange = hit.point.y + groundOffset - transform.position.y;
             return false;
         }
 
-        // offset（偏移量）：使用位置：VillagerController.IsPlayerWithinChaseDisengageRange(LeonController)。
+        // 偏移量。
 Vector3 offset = player.transform.position - transform.position;
         offset.y = 0f;
         return offset.sqrMagnitude <= chaseDisengageRange * chaseDisengageRange;
@@ -5018,7 +5289,7 @@ Vector3 offset = player.transform.position - transform.position;
 
     /// <summary>ClearCombatEngagement 的业务处理入口；本方法直接依赖 EnemyPerceptionModule.ClearCombatEngagement(bool)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillagerController.ArchitectureInvokeClearCombatEngagement(bool)、VillagerController.SetLODActive(bool)；下游（含内部回调体） EnemyPerceptionModule.ClearCombatEngagement(bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="preserveInvestigation">中文含义：是否保留调查。使用位置：作为 EnemyPerceptionModule.ClearCombatEngagement(bool) 的参数。</param>
+    /// <param name="preserveInvestigation">是否保留调查。</param>
     private void ClearCombatEngagement(bool preserveInvestigation)
     {
         perceptionModule.ClearCombatEngagement(preserveInvestigation);
@@ -5040,7 +5311,7 @@ Vector3 offset = player.transform.position - transform.position;
 
     /// <summary>ReceiveSharedCombatAlert 的业务处理入口；本方法直接依赖 EnemyPerceptionModule.ReceiveSharedCombatAlert(Vector3)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyAIManager.NotifyEnvironmentalDisturbance(Vector3, float)、EnemyAIManager.UpdateMovementNoiseAwareness()、EnemyAIManager.UpdateSharedCombatAlert()；下游（含内部回调体） EnemyPerceptionModule.ReceiveSharedCombatAlert(Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="playerPosition">中文含义：玩家位置。使用位置：作为 EnemyPerceptionModule.ReceiveSharedCombatAlert(Vector3) 的参数。</param>
+    /// <param name="playerPosition">玩家位置。</param>
     public void ReceiveSharedCombatAlert(Vector3 playerPosition)
     {
         perceptionModule.ReceiveSharedCombatAlert(playerPosition);
@@ -5052,8 +5323,8 @@ Vector3 offset = player.transform.position - transform.position;
     /// 管理器更新顺序从中间打断。
     /// </summary>
     /// <remarks>静态调用链：上游 EnemyAIManager.SynchronizePursuitRegionVersion(VillagerController)、EnemyAIManager.UpdatePlayerPursuitRegion()；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="regionVersion">中文含义：区域版本。使用位置：VillagerController.ReceivePursuitRegionChange(int, Vector3)。</param>
-    /// <param name="playerPosition">中文含义：玩家位置。使用位置：VillagerController.ReceivePursuitRegionChange(int, Vector3)。</param>
+    /// <param name="regionVersion">区域版本。</param>
+    /// <param name="playerPosition">玩家位置。</param>
     public void ReceivePursuitRegionChange(int regionVersion, Vector3 playerPosition)
     {
         if (regionVersion <= pendingPursuitRegionVersion || IsDead)
@@ -5088,7 +5359,7 @@ Vector3 offset = player.transform.position - transform.position;
             ClearPursuitIngress();
         }
 
-        // receiverValue125（判空前缓存的敌人智能管理器的实例）：从敌人智能管理器的实例读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、VillagerController.ApplyPendingPursuitRegionChange()。
+        // 判空前缓存的敌人智能管理器的实例。
 global::EnemyAIManager receiverValue125 = EnemyAIManager.Instance;
         if (!global::System.Object.ReferenceEquals(receiverValue125, null))
         {
@@ -5114,7 +5385,7 @@ global::EnemyAIManager receiverValue125 = EnemyAIManager.Instance;
 
     /// <summary>ReceiveVillagePursuitOrder 的业务处理入口；本方法直接依赖 EnemyPerceptionModule.ReceiveVillagePursuitOrder(Vector3)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyAIManager.EngageAllMissionEnemies(Vector3)、EnemyAIManager.RegisterEnemy(VillagerController)、EnemyAIManager.UpdateEnemyStates()；下游（含内部回调体） EnemyPerceptionModule.ReceiveVillagePursuitOrder(Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="playerPosition">中文含义：玩家位置。使用位置：作为 EnemyPerceptionModule.ReceiveVillagePursuitOrder(Vector3) 的参数。</param>
+    /// <param name="playerPosition">玩家位置。</param>
     public void ReceiveVillagePursuitOrder(Vector3 playerPosition)
     {
         perceptionModule.ReceiveVillagePursuitOrder(playerPosition);
@@ -5122,7 +5393,7 @@ global::EnemyAIManager receiverValue125 = EnemyAIManager.Instance;
 
     /// <summary>ReceiveGunshot 的业务处理入口；本方法直接依赖 EnemyPerceptionModule.ReceiveGunshot(Vector3)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyAIManager.HandleWeaponFired(CombatEventDispatcher.WeaponNoiseEvent)；下游（含内部回调体） EnemyPerceptionModule.ReceiveGunshot(Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="position">中文含义：位置。使用位置：作为 EnemyPerceptionModule.ReceiveGunshot(Vector3) 的参数。</param>
+    /// <param name="position">位置。</param>
     public void ReceiveGunshot(Vector3 position)
     {
         perceptionModule.ReceiveGunshot(position);
@@ -5143,14 +5414,14 @@ global::EnemyAIManager receiverValue125 = EnemyAIManager.Instance;
         {
             return door03TraversalRoute.ExteriorGate;
         }
-        // player（玩家）：使用位置：VillagerController.GetCurrentCombatTarget()。
+        // 玩家。
 LeonController player = Player;
         if (player == null)
         {
             return lastKnownPlayerPosition;
         }
 
-        // targetPosition（目标位置）：使用位置：作为 EnemyAIManager.GetCombatDestination(VillagerController, Vector3) 的参数、VillagerController.GetCurrentCombatTarget()。
+        // 目标位置。
 Vector3 targetPosition;
         if (combatEngaged || fullyAwareOfPlayer)
         {
@@ -5161,7 +5432,7 @@ Vector3 targetPosition;
             targetPosition = lastKnownPlayerPosition;
         }
 
-        // manager（当前敌人智能管理器）：使用位置：VillagerController.GetCurrentCombatTarget()。
+        // 当前敌人智能管理器。
 EnemyAIManager manager = EnemyAIManager.Instance;
         if (IsCrowdBypassing)
         {
@@ -5188,7 +5459,7 @@ EnemyAIManager manager = EnemyAIManager.Instance;
 
     /// <summary>TryResolveCloseDirectPursuitDirection 的业务处理入口；本方法直接依赖 VillagerController.RequiresNavigationTraversalToPlayer()、VillagerController.ShouldUseCloseDirectPursuitTarget()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillagerController.ResolveStandingPathDirection()、VillagerController.ResolveStandingPathDirectionForCurrentFrame()；下游（含内部回调体） VillagerController.RequiresNavigationTraversalToPlayer()、VillagerController.ShouldUseCloseDirectPursuitTarget()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="direction">中文含义：方向。输出参数，由本入口写入并交给调用方。使用位置：VillagerController.TryResolveCloseDirectPursuitDirection(out Vector3)。</param>
+    /// <param name="direction">方向。输出参数，由本入口写入并交给调用方。</param>
     private bool TryResolveCloseDirectPursuitDirection(out Vector3 direction)
     {
         direction = Vector3.zero;
@@ -5197,17 +5468,17 @@ EnemyAIManager manager = EnemyAIManager.Instance;
             return false;
         }
 
-        // player（玩家）：使用位置：VillagerController.TryResolveCloseDirectPursuitDirection(out Vector3)。
+        // 玩家。
 LeonController player = Player;
         if (player == null)
         {
             return false;
         }
 
-        // offset（偏移量）：使用位置：VillagerController.TryResolveCloseDirectPursuitDirection(out Vector3)。
+        // 偏移量。
 Vector3 offset = player.transform.position - transform.position;
         offset.y = 0f;
-        // distance（距离）：使用位置：VillagerController.TryResolveCloseDirectPursuitDirection(out Vector3)。
+        // 距离。
 float distance = offset.magnitude;
         if (distance <= 0.0001f)
         {
@@ -5222,7 +5493,7 @@ float distance = offset.magnitude;
     /// <remarks>静态调用链：上游 VillagerController.GetCurrentCombatTarget()、VillagerController.TryResolveCloseDirectPursuitDirection(out Vector3)；下游（含内部回调体） EnemyAIManager.ShouldUseDirectPressurePursuit(VillagerController, Vector3)、HouseThreeRegionNavigation.TreadRegion(Vector3)、Mathf.Max(float, float)、VillagerController.IsApproachingEnemyStairBridge()、VillagerController.IsPlayerWithinAttackStartRange()、VillagerController.IsPlayerWithinCombatVerticalRange(LeonController)、VillagerController.IsStandingOnEnemyStairBridge()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     private bool ShouldUseCloseDirectPursuitTarget()
     {
-        // player（玩家）：使用位置：作为 EnemyAIManager.ShouldUseDirectPressurePursuit(VillagerController, Vector3) 的参数、作为 VillagerController.IsPlayerWithinCombatVerticalRange(LeonController) 的参数、VillagerController.ShouldUseCloseDirectPursuitTarget()。
+        // 玩家。
 LeonController player = Player;
         if (player == null || IsCrowdBypassing || !combatEngaged || !IsPlayerWithinCombatVerticalRange(player) || IsPlayerWithinAttackStartRange())
         {
@@ -5232,50 +5503,60 @@ LeonController player = Player;
         // 外平台的木板接缝必须由当前导航段持续控制。接缝高度和视线的微小
         // 变化会让近距离直追逐帧开关，清空路径后又回头追旧入口，导致反复转身。
         // 到达导航末端后仍可按原有实体支撑检查接近目标。
-        // region（区域）：使用位置：VillagerController.ShouldUseCloseDirectPursuitTarget()。
+        // 区域。
 var region = HouseThreeRegionNavigation.Current;
-        if (region != null && agent != null && agent.CurrentPathState != PathAgentState.Arrived && region.TreadRegion(transform.position) == VillageTraversalRegion.SecondFloorOuterPlatform)
+        if (region != null && region.TreadRegion(transform.position) == VillageTraversalRegion.SecondFloorOuterPlatform)
         {
-            return false;
+            if (agent != null && agent.CurrentPathState != PathAgentState.Arrived)
+            {
+                return false;
+            }
+
+            float platformDirectRange = Mathf.Max(1.6f, attackStartRange + 0.25f);
+            if (HorizontalDistance(transform.position, player.transform.position) > platformDirectRange ||
+                !HasContinuousSteppedNavigationGround(player.transform.position))
+            {
+                return false;
+            }
         }
 
-        // offset（偏移量）：使用位置：VillagerController.ShouldUseCloseDirectPursuitTarget()。
+        // 偏移量。
 Vector3 offset = player.transform.position - transform.position;
         offset.y = 0f;
-        // directRange（直接范围）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：VillagerController.ShouldUseCloseDirectPursuitTarget()。
+        // 直接范围。
 float directRange = Mathf.Max(1f, closeDirectPursuitRange);
         if (offset.sqrMagnitude > directRange * directRange)
         {
             return false;
         }
 
-        // manager（当前敌人智能管理器）：使用位置：VillagerController.ShouldUseCloseDirectPursuitTarget()。
+        // 当前敌人智能管理器。
 EnemyAIManager manager = EnemyAIManager.Instance;
         return manager == null || manager.ShouldUseDirectPressurePursuit(this, player.transform.position);
     }
 
     /// <summary>CalculateStandingAdvanceSpeed 的业务处理入口；本方法直接依赖 EnemyContext.MoveSpeedToAgentSpeed(float)、Mathf.Clamp(float, float, float)、Mathf.InverseLerp(float, float, float)、Mathf.Lerp(float, float, float)、Mathf.Max(float, float)、Mathf.Min(float, float)、Vector3.Dot(Vector3, Vector3)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyAnimationAdapter.UpdateAnimator()；下游（含内部回调体） EnemyContext.MoveSpeedToAgentSpeed(float)、Mathf.Clamp(float, float, float)、Mathf.InverseLerp(float, float, float)、Mathf.Lerp(float, float, float)、Mathf.Max(float, float)、Mathf.Min(float, float)、Vector3.Dot(Vector3, Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="animationParameter">中文含义：动画参数。使用位置：作为 EnemyContext.MoveSpeedToAgentSpeed(float) 的参数。</param>
+    /// <param name="animationParameter">动画参数。</param>
     internal float CalculateStandingAdvanceSpeed(float animationParameter)
     {
-        // baseline（基准）：保存 EnemyContext.MoveSpeedToAgentSpeed(float) 的返回结果，供当前步骤使用。使用位置：VillagerController.CalculateStandingAdvanceSpeed(float)。
+        // 基准。
 float baseline = ctx.MoveSpeedToAgentSpeed(animationParameter);
-        // player（玩家）：使用位置：作为 Mathf.Clamp(float, float, float) 的参数、作为 Vector3.Dot(Vector3, Vector3) 的参数、VillagerController.CalculateStandingAdvanceSpeed(float)。
+        // 玩家。
 var player = ctx.Player;
         if (!player || CurrentState != VillagerState.Chase)
         {
             return baseline;
         }
 
-        // interval（间隔）：使用位置：作为 Mathf.InverseLerp(float, float, float) 的参数、作为 Vector3.Dot(Vector3, Vector3) 的参数、VillagerController.CalculateStandingAdvanceSpeed(float)。
+        // 间隔。
 Vector3 interval = player.transform.position - transform.position;
         interval.y = 0f;
-        // pullOpenSpeed（拉近打开速度）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Clamp(float, float, float) 的参数、作为 Mathf.Min(float, float) 的参数。
+        // 拉近打开速度。
 float pullOpenSpeed = Mathf.Max(0f, Vector3.Dot(player.HorizontalSpeed, interval.normalized));
-        // walkCatchUpSpeed（行走捕获向上速度）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：VillagerController.CalculateStandingAdvanceSpeed(float)。
+        // 行走捕获向上速度。
 float walkCatchUpSpeed = Mathf.Max(2.05f, Mathf.Min(3.45f, pullOpenSpeed + .22f));
-        // cruiseSpeed（巡航速度）：使用位置：VillagerController.CalculateStandingAdvanceSpeed(float)。
+        // 巡航速度。
 float cruiseSpeed;
         if (player.IsEffectiveSprinting)
         {
@@ -5298,13 +5579,13 @@ float cruiseSpeed;
             return ctx.TargetMoveSpeed;
         }
 
-        // normalizedTime（动画归一化播放时间）：保存 Mathf.Clamp01(float) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.SmoothStep(float, float, float) 的参数。
+        // 动画归一化播放时间。
 float normalizedTime = Mathf.Clamp01((Time.time - chaseStartedTime) / chaseAccelerationDuration);
-        // requestedSpeed（请求的速度）：保存 EnemyContext.ClampStandingMoveParameter(float) 的返回结果，供当前步骤使用。使用位置：作为 ChainsawManAnimationBridge.ResolveChaseMoveSpeed(float, float, float) 的参数、作为 Mathf.Clamp(float, float, float) 的参数、VillagerController.GetTargetMoveSpeed()。
+        // 请求的速度。
 float requestedSpeed = ctx.ClampStandingMoveParameter(chaseSpeed);
         if (chainsawBridge != null)
         {
-            // healthRatio（生命比例）：使用位置：作为 ChainsawManAnimationBridge.ResolveChaseMoveSpeed(float, float, float) 的参数、VillagerController.GetTargetMoveSpeed()。
+            // 生命比例。
 float healthRatio;
             if (maxHealth > 0f)
             {
@@ -5318,9 +5599,9 @@ float healthRatio;
             requestedSpeed = ctx.ClampStandingMoveParameter(chainsawBridge.ResolveChaseMoveSpeed(requestedSpeed, PlayerDistance, healthRatio));
         }
 
-        // startSpeed（起始速度）：保存 EnemyContext.ClampStandingMoveParameter(float) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.SmoothStep(float, float, float) 的参数。
+        // 起始速度。
 float startSpeed = ctx.ClampStandingMoveParameter(chaseStartMoveSpeed);
-        // targetSpeed（目标速度）：保存 Mathf.SmoothStep(float, float, float) 的返回结果，供当前步骤使用。使用位置：作为 EnemyContext.ClampStandingMoveParameter(float) 的参数、VillagerController.GetTargetMoveSpeed()。
+        // 目标速度。
 float targetSpeed = Mathf.SmoothStep(startSpeed, Mathf.Clamp(requestedSpeed, 0.1f, ctx.MaximumStandingMoveParameter), normalizedTime);
         EnemyAIManager manager = EnemyAIManager.Instance;
         if (manager != null && manager.TryReadTacticalMovement(this, out var movement) &&
@@ -5344,7 +5625,7 @@ float targetSpeed = Mathf.SmoothStep(startSpeed, Mathf.Clamp(requestedSpeed, 0.1
             return;
         }
 
-        // direction（方向）：使用位置：作为 Quaternion.LookRotation(Vector3) 的参数、VillagerController.FacePlayerImmediately()。
+        // 方向。
 Vector3 direction = Player.transform.position - transform.position;
         direction.y = 0f;
         if (direction.sqrMagnitude > 0.01f)
@@ -5355,11 +5636,11 @@ Vector3 direction = Player.transform.position - transform.position;
 
     /// <summary>FacePosition 的业务处理入口；本方法直接依赖 CharacterMotionExecutor.CommitNormalOrientation(Quaternion)、Quaternion.LookRotation(Vector3)、Quaternion.Slerp(Quaternion, Quaternion, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillagerController.ArchitectureInvokeFacePosition(Vector3, float)；下游（含内部回调体） CharacterMotionExecutor.CommitNormalOrientation(Quaternion)、Quaternion.LookRotation(Vector3)、Quaternion.Slerp(Quaternion, Quaternion, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="targetPosition">中文含义：目标位置。使用位置：VillagerController.FacePosition(Vector3, float)。</param>
-    /// <param name="turnSpeed">中文含义：转向速度。使用位置：作为 Quaternion.Slerp(Quaternion, Quaternion, float) 的参数。</param>
+    /// <param name="targetPosition">目标位置。</param>
+    /// <param name="turnSpeed">转向速度。</param>
     private void FacePosition(Vector3 targetPosition, float turnSpeed)
     {
-        // direction（方向）：使用位置：作为 Quaternion.LookRotation(Vector3) 的参数、VillagerController.FacePosition(Vector3, float)。
+        // 方向。
 Vector3 direction = targetPosition - transform.position;
         direction.y = 0f;
         if (direction.sqrMagnitude <= 0.01f)
@@ -5367,7 +5648,7 @@ Vector3 direction = targetPosition - transform.position;
             return;
         }
 
-        // targetRotation（目标旋转）：保存 Quaternion.LookRotation(Vector3) 的返回结果，供当前步骤使用。使用位置：作为 Quaternion.Slerp(Quaternion, Quaternion, float) 的参数。
+        // 目标旋转。
 Quaternion targetRotation = Quaternion.LookRotation(direction.normalized);
         motionExecutor.CommitNormalOrientation(Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * turnSpeed));
     }
@@ -5385,7 +5666,7 @@ Quaternion targetRotation = Quaternion.LookRotation(direction.normalized);
             return;
         }
 
-        // hitboxLayer（命中盒图层）：保存 LayerMask.NameToLayer(string) 的返回结果，供当前步骤使用。使用位置：作为 VillagerController.ConfigureRuntimeArmCapsule(HumanBodyBones, HumanBodyBones, HitboxType, float, int) 的参数、作为 VillagerController.ConfigureRuntimeCapsule(HumanBodyBones, HitboxType, float, float, Vector3, int) 的参数、作为 VillagerController.ConfigureRuntimeHandSphere(HumanBodyBones, HitboxType, float, int) 的参数 等共 6 处。
+        // 命中盒图层。
 int hitboxLayer = LayerMask.NameToLayer("EnemyHitbox");
         if (hitboxLayer < 0)
         {
@@ -5437,21 +5718,21 @@ int hitboxLayer = LayerMask.NameToLayer("EnemyHitbox");
 
     /// <summary>ConfigureRuntimeSphere 的业务处理入口；本方法直接依赖 Animator.GetBoneTransform(HumanBodyBones)、Component.GetComponent&lt;SphereCollider&gt;()、GameObject.AddComponent&lt;SphereCollider&gt;()、VillagerController.ConfigureRuntimeHitbox(Transform, HitboxType, int)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillagerController.EnsureRuntimeHitboxCoverage()；下游（含内部回调体） Animator.GetBoneTransform(HumanBodyBones)、Component.GetComponent&lt;SphereCollider&gt;()、GameObject.AddComponent&lt;SphereCollider&gt;()、VillagerController.ConfigureRuntimeHitbox(Transform, HitboxType, int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="bone">中文含义：骨骼。使用位置：作为 Animator.GetBoneTransform(HumanBodyBones) 的参数。</param>
-    /// <param name="type">中文含义：当前命中部位类别。使用位置：作为 VillagerController.ConfigureRuntimeHitbox(Transform, HitboxType, int) 的参数。</param>
-    /// <param name="radius">中文含义：半径。使用位置：VillagerController.ConfigureRuntimeSphere(HumanBodyBones, HitboxType, float, Vector3, int)。</param>
-    /// <param name="center">中文含义：中心。使用位置：VillagerController.ConfigureRuntimeSphere(HumanBodyBones, HitboxType, float, Vector3, int)。</param>
-    /// <param name="layer">中文含义：图层。使用位置：作为 VillagerController.ConfigureRuntimeHitbox(Transform, HitboxType, int) 的参数。</param>
+    /// <param name="bone">骨骼。</param>
+    /// <param name="type">当前命中部位类别。</param>
+    /// <param name="radius">半径。</param>
+    /// <param name="center">中心。</param>
+    /// <param name="layer">图层。</param>
     private void ConfigureRuntimeSphere(HumanBodyBones bone, HitboxType type, float radius, Vector3 center, int layer)
     {
-        // target（目标变换节点）：保存 Animator.GetBoneTransform(HumanBodyBones) 的返回结果，供当前步骤使用。使用位置：作为 VillagerController.ConfigureRuntimeHitbox(Transform, HitboxType, int) 的参数、VillagerController.ConfigureRuntimeSphere(HumanBodyBones, HitboxType, float, Vector3, int)。
+        // 目标变换节点。
         Transform target = AnimatorBoneBindings.Resolve(anim, bone);
         if (target == null)
         {
             return;
         }
 
-        // hitCollider（命中的碰撞体）：保存 Component.GetComponent<SphereCollider>() 的返回结果，供当前步骤使用。使用位置：VillagerController.ConfigureRuntimeSphere(HumanBodyBones, HitboxType, float, Vector3, int)。
+        // 命中的碰撞体。
 SphereCollider hitCollider = target.GetComponent<SphereCollider>();
         if (hitCollider == null)
         {
@@ -5466,22 +5747,22 @@ SphereCollider hitCollider = target.GetComponent<SphereCollider>();
 
     /// <summary>ConfigureRuntimeCapsule 的业务处理入口；本方法直接依赖 Animator.GetBoneTransform(HumanBodyBones)、Component.GetComponent&lt;CapsuleCollider&gt;()、GameObject.AddComponent&lt;CapsuleCollider&gt;()、Mathf.Max(float, float)、VillagerController.ConfigureRuntimeHitbox(Transform, HitboxType, int)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillagerController.ConfigureRuntimeLimb(HumanBodyBones, HitboxType, float, float, float, int)、VillagerController.EnsureRuntimeHitboxCoverage()；下游（含内部回调体） Animator.GetBoneTransform(HumanBodyBones)、Component.GetComponent&lt;CapsuleCollider&gt;()、GameObject.AddComponent&lt;CapsuleCollider&gt;()、Mathf.Max(float, float)、VillagerController.ConfigureRuntimeHitbox(Transform, HitboxType, int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="bone">中文含义：骨骼。使用位置：作为 Animator.GetBoneTransform(HumanBodyBones) 的参数。</param>
-    /// <param name="type">中文含义：当前命中部位类别。使用位置：作为 VillagerController.ConfigureRuntimeHitbox(Transform, HitboxType, int) 的参数。</param>
-    /// <param name="radius">中文含义：半径。使用位置：作为 Mathf.Max(float, float) 的参数、VillagerController.ConfigureRuntimeCapsule(HumanBodyBones, HitboxType, float, float, Vector3, int)。</param>
-    /// <param name="height">中文含义：高度。使用位置：作为 Mathf.Max(float, float) 的参数。</param>
-    /// <param name="center">中文含义：中心。使用位置：VillagerController.ConfigureRuntimeCapsule(HumanBodyBones, HitboxType, float, float, Vector3, int)。</param>
-    /// <param name="layer">中文含义：图层。使用位置：作为 VillagerController.ConfigureRuntimeHitbox(Transform, HitboxType, int) 的参数。</param>
+    /// <param name="bone">骨骼。</param>
+    /// <param name="type">当前命中部位类别。</param>
+    /// <param name="radius">半径。</param>
+    /// <param name="height">高度。</param>
+    /// <param name="center">中心。</param>
+    /// <param name="layer">图层。</param>
     private void ConfigureRuntimeCapsule(HumanBodyBones bone, HitboxType type, float radius, float height, Vector3 center, int layer)
     {
-        // target（目标变换节点）：保存 Animator.GetBoneTransform(HumanBodyBones) 的返回结果，供当前步骤使用。使用位置：作为 VillagerController.ConfigureRuntimeHitbox(Transform, HitboxType, int) 的参数、VillagerController.ConfigureRuntimeCapsule(HumanBodyBones, HitboxType, float, float, Vector3, int)。
+        // 目标变换节点。
         Transform target = AnimatorBoneBindings.Resolve(anim, bone);
         if (target == null)
         {
             return;
         }
 
-        // hitCollider（命中的碰撞体）：保存 Component.GetComponent<CapsuleCollider>() 的返回结果，供当前步骤使用。使用位置：VillagerController.ConfigureRuntimeCapsule(HumanBodyBones, HitboxType, float, float, Vector3, int)。
+        // 命中的碰撞体。
 CapsuleCollider hitCollider = target.GetComponent<CapsuleCollider>();
         if (hitCollider == null)
         {
@@ -5500,12 +5781,12 @@ CapsuleCollider hitCollider = target.GetComponent<CapsuleCollider>();
 
     /// <summary>ConfigureRuntimeLimb 的业务处理入口；本方法直接依赖 Vector3.Vector3(float, float, float)、VillagerController.ConfigureRuntimeCapsule(HumanBodyBones, HitboxType, float, float, Vector3, int)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillagerController.EnsureRuntimeHitboxCoverage()；下游（含内部回调体） Vector3.Vector3(float, float, float)、VillagerController.ConfigureRuntimeCapsule(HumanBodyBones, HitboxType, float, float, Vector3, int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="bone">中文含义：骨骼。使用位置：作为 VillagerController.ConfigureRuntimeCapsule(HumanBodyBones, HitboxType, float, float, Vector3, int) 的参数。</param>
-    /// <param name="type">中文含义：当前命中部位类别。使用位置：作为 VillagerController.ConfigureRuntimeCapsule(HumanBodyBones, HitboxType, float, float, Vector3, int) 的参数。</param>
-    /// <param name="radius">中文含义：半径。使用位置：作为 VillagerController.ConfigureRuntimeCapsule(HumanBodyBones, HitboxType, float, float, Vector3, int) 的参数。</param>
-    /// <param name="height">中文含义：高度。使用位置：作为 VillagerController.ConfigureRuntimeCapsule(HumanBodyBones, HitboxType, float, float, Vector3, int) 的参数。</param>
-    /// <param name="centerY">中文含义：中心纵向。使用位置：作为 Vector3.Vector3(float, float, float) 的参数。</param>
-    /// <param name="layer">中文含义：图层。使用位置：作为 VillagerController.ConfigureRuntimeCapsule(HumanBodyBones, HitboxType, float, float, Vector3, int) 的参数。</param>
+    /// <param name="bone">骨骼。</param>
+    /// <param name="type">当前命中部位类别。</param>
+    /// <param name="radius">半径。</param>
+    /// <param name="height">高度。</param>
+    /// <param name="centerY">中心纵向。</param>
+    /// <param name="layer">图层。</param>
     private void ConfigureRuntimeLimb(HumanBodyBones bone, HitboxType type, float radius, float height, float centerY, int layer)
     {
         ConfigureRuntimeCapsule(bone, type, radius, height, new Vector3(0f, centerY, 0f), layer);
@@ -5513,40 +5794,40 @@ CapsuleCollider hitCollider = target.GetComponent<CapsuleCollider>();
 
     /// <summary>ConfigureRuntimeArmCapsule 的业务处理入口；本方法直接依赖 Animator.GetBoneTransform(HumanBodyBones)、Component.GetComponent&lt;CapsuleCollider&gt;()、GameObject.AddComponent&lt;CapsuleCollider&gt;()、Mathf.Abs(float)、Mathf.Max(float, float)、Transform.InverseTransformPoint(Vector3)、VillagerController.ConfigureRuntimeHitbox(Transform, HitboxType, int)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillagerController.EnsureRuntimeHitboxCoverage()；下游（含内部回调体） Animator.GetBoneTransform(HumanBodyBones)、Component.GetComponent&lt;CapsuleCollider&gt;()、GameObject.AddComponent&lt;CapsuleCollider&gt;()、Mathf.Abs(float)、Mathf.Max(float, float)、Transform.InverseTransformPoint(Vector3)、VillagerController.ConfigureRuntimeHitbox(Transform, HitboxType, int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="bone">中文含义：骨骼。使用位置：作为 Animator.GetBoneTransform(HumanBodyBones) 的参数。</param>
-    /// <param name="nextBone">中文含义：下一次骨骼。使用位置：作为 Animator.GetBoneTransform(HumanBodyBones) 的参数。</param>
-    /// <param name="type">中文含义：当前命中部位类别。使用位置：作为 VillagerController.ConfigureRuntimeHitbox(Transform, HitboxType, int) 的参数。</param>
-    /// <param name="radius">中文含义：半径。使用位置：作为 Mathf.Max(float, float) 的参数、VillagerController.ConfigureRuntimeBoneCapsule(HumanBodyBones, HumanBodyBones, HitboxType, float, int)。</param>
-    /// <param name="layer">中文含义：图层。使用位置：作为 VillagerController.ConfigureRuntimeHitbox(Transform, HitboxType, int) 的参数。</param>
+    /// <param name="bone">骨骼。</param>
+    /// <param name="nextBone">下一次骨骼。</param>
+    /// <param name="type">当前命中部位类别。</param>
+    /// <param name="radius">半径。</param>
+    /// <param name="layer">图层。</param>
     private void ConfigureRuntimeBoneCapsule(HumanBodyBones bone, HumanBodyBones nextBone, HitboxType type, float radius, int layer)
     {
-        // current（当前变换节点）：保存 Animator.GetBoneTransform(HumanBodyBones) 的返回结果，供当前步骤使用。使用位置：作为 VillagerController.ConfigureRuntimeHitbox(Transform, HitboxType, int) 的参数、VillagerController.ConfigureRuntimeBoneCapsule(HumanBodyBones, HumanBodyBones, HitboxType, float, int)。
+        // 当前变换节点。
         Transform current = AnimatorBoneBindings.Resolve(anim, bone);
-        // next（下一个变换节点）：保存 Animator.GetBoneTransform(HumanBodyBones) 的返回结果，供当前步骤使用。使用位置：作为 Transform.InverseTransformPoint(Vector3) 的参数、VillagerController.ConfigureRuntimeBoneCapsule(HumanBodyBones, HumanBodyBones, HitboxType, float, int)。
+        // 下一个变换节点。
         Transform next = AnimatorBoneBindings.Resolve(anim, nextBone);
         if (current == null || next == null)
         {
             return;
         }
 
-        // localOffset（局部偏移量）：保存 Transform.InverseTransformPoint(Vector3) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Abs(float) 的参数、VillagerController.ConfigureRuntimeBoneCapsule(HumanBodyBones, HumanBodyBones, HitboxType, float, int)。
+        // 局部偏移量。
 Vector3 localOffset = current.InverseTransformPoint(next.position);
-        // boneLength（骨骼长度）：使用位置：VillagerController.ConfigureRuntimeBoneCapsule(HumanBodyBones, HumanBodyBones, HitboxType, float, int)。
+        // 骨骼长度。
 float boneLength = localOffset.magnitude;
         if ((next.position - current.position).sqrMagnitude < 0.000001f)
         {
             return;
         }
 
-        // center（中心）：使用位置：VillagerController.ConfigureRuntimeBoneCapsule(HumanBodyBones, HumanBodyBones, HitboxType, float, int)。
+        // 中心。
 Vector3 center = localOffset * 0.5f;
-        // absX（绝对值横向）：保存 Mathf.Abs(float) 的返回结果，供当前步骤使用。使用位置：VillagerController.ConfigureRuntimeBoneCapsule(HumanBodyBones, HumanBodyBones, HitboxType, float, int)。
+        // 绝对值横向。
 float absX = Mathf.Abs(localOffset.x);
-        // absY（绝对值纵向）：保存 Mathf.Abs(float) 的返回结果，供当前步骤使用。使用位置：VillagerController.ConfigureRuntimeBoneCapsule(HumanBodyBones, HumanBodyBones, HitboxType, float, int)。
+        // 绝对值纵向。
 float absY = Mathf.Abs(localOffset.y);
-        // absZ（绝对值深度）：保存 Mathf.Abs(float) 的返回结果，供当前步骤使用。使用位置：VillagerController.ConfigureRuntimeBoneCapsule(HumanBodyBones, HumanBodyBones, HitboxType, float, int)。
+        // 绝对值深度。
 float absZ = Mathf.Abs(localOffset.z);
-        // direction（方向）：使用位置：VillagerController.ConfigureRuntimeBoneCapsule(HumanBodyBones, HumanBodyBones, HitboxType, float, int)。
+        // 方向。
 int direction;
         if (absX >= absY && absX >= absZ)
         {
@@ -5554,7 +5835,7 @@ int direction;
         }
         else
         {
-            // selectedValue129（分支选出的1）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：VillagerController.ConfigureRuntimeBoneCapsule(HumanBodyBones, HumanBodyBones, HitboxType, float, int)。
+            // 分支选出的1。
 int selectedValue129;
             if (absY >= absZ)
             {
@@ -5571,7 +5852,7 @@ int selectedValue129;
         // height（高度）：使用位置：作为 Mathf.Max(float, float) 的参数。
         float localRadius = ToBoneColliderRadius(current, radius);
         float height = boneLength + localRadius;
-        // hitCollider（命中的碰撞体）：保存 Component.GetComponent<CapsuleCollider>() 的返回结果，供当前步骤使用。使用位置：VillagerController.ConfigureRuntimeBoneCapsule(HumanBodyBones, HumanBodyBones, HitboxType, float, int)。
+        // 命中的碰撞体。
 CapsuleCollider hitCollider = current.GetComponent<CapsuleCollider>();
         if (hitCollider == null)
         {
@@ -5588,20 +5869,20 @@ CapsuleCollider hitCollider = current.GetComponent<CapsuleCollider>();
 
     /// <summary>ConfigureRuntimeHandSphere 的业务处理入口；本方法直接依赖 Animator.GetBoneTransform(HumanBodyBones)、Component.GetComponent&lt;SphereCollider&gt;()、GameObject.AddComponent&lt;SphereCollider&gt;()、VillagerController.ConfigureRuntimeHitbox(Transform, HitboxType, int)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillagerController.EnsureRuntimeHitboxCoverage()；下游（含内部回调体） Animator.GetBoneTransform(HumanBodyBones)、Component.GetComponent&lt;SphereCollider&gt;()、GameObject.AddComponent&lt;SphereCollider&gt;()、VillagerController.ConfigureRuntimeHitbox(Transform, HitboxType, int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="bone">中文含义：骨骼。使用位置：作为 Animator.GetBoneTransform(HumanBodyBones) 的参数。</param>
-    /// <param name="type">中文含义：当前命中部位类别。使用位置：作为 VillagerController.ConfigureRuntimeHitbox(Transform, HitboxType, int) 的参数。</param>
-    /// <param name="radius">中文含义：半径。使用位置：VillagerController.ConfigureRuntimeHandSphere(HumanBodyBones, HitboxType, float, int)。</param>
-    /// <param name="layer">中文含义：图层。使用位置：作为 VillagerController.ConfigureRuntimeHitbox(Transform, HitboxType, int) 的参数。</param>
+    /// <param name="bone">骨骼。</param>
+    /// <param name="type">当前命中部位类别。</param>
+    /// <param name="radius">半径。</param>
+    /// <param name="layer">图层。</param>
     private void ConfigureRuntimeHandSphere(HumanBodyBones bone, HitboxType type, float radius, int layer)
     {
-        // target（目标变换节点）：保存 Animator.GetBoneTransform(HumanBodyBones) 的返回结果，供当前步骤使用。使用位置：作为 VillagerController.ConfigureRuntimeHitbox(Transform, HitboxType, int) 的参数、VillagerController.ConfigureRuntimeHandSphere(HumanBodyBones, HitboxType, float, int)。
+        // 目标变换节点。
         Transform target = AnimatorBoneBindings.Resolve(anim, bone);
         if (target == null)
         {
             return;
         }
 
-        // hitCollider（命中的碰撞体）：保存 Component.GetComponent<SphereCollider>() 的返回结果，供当前步骤使用。使用位置：VillagerController.ConfigureRuntimeHandSphere(HumanBodyBones, HitboxType, float, int)。
+        // 命中的碰撞体。
 SphereCollider hitCollider = target.GetComponent<SphereCollider>();
         if (hitCollider == null)
         {
@@ -5616,9 +5897,9 @@ SphereCollider hitCollider = target.GetComponent<SphereCollider>();
 
     /// <summary>ConfigureRuntimeHitbox 的业务处理入口；本方法直接依赖 Component.GetComponent&lt;EnemyHitbox&gt;()、GameObject.AddComponent&lt;EnemyHitbox&gt;()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillagerController.ConfigureRuntimeBoneCapsule(HumanBodyBones, HumanBodyBones, HitboxType, float, int)、VillagerController.ConfigureRuntimeCapsule(HumanBodyBones, HitboxType, float, float, Vector3, int)、VillagerController.ConfigureRuntimeHandSphere(HumanBodyBones, HitboxType, float, int)、VillagerController.ConfigureRuntimeSphere(HumanBodyBones, HitboxType, float, Vector3, int)；下游（含内部回调体） Component.GetComponent&lt;EnemyHitbox&gt;()、GameObject.AddComponent&lt;EnemyHitbox&gt;()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="target">中文含义：目标变换节点。使用位置：VillagerController.ConfigureRuntimeHitbox(Transform, HitboxType, int)。</param>
-    /// <param name="type">中文含义：当前命中部位类别。使用位置：VillagerController.ConfigureRuntimeHitbox(Transform, HitboxType, int)。</param>
-    /// <param name="layer">中文含义：图层。使用位置：VillagerController.ConfigureRuntimeHitbox(Transform, HitboxType, int)。</param>
+    /// <param name="target">目标变换节点。</param>
+    /// <param name="type">当前命中部位类别。</param>
+    /// <param name="layer">图层。</param>
     private static float ToBoneColliderRadius(Transform bone, float radius)
     {
         // 原版骨架节点的缩放可能为 100，命中尺寸按场景米数配置。
@@ -5630,7 +5911,7 @@ SphereCollider hitCollider = target.GetComponent<SphereCollider>();
     private static void ConfigureRuntimeHitbox(Transform target, HitboxType type, int layer)
     {
         target.gameObject.layer = layer;
-        // hitbox（命中盒）：保存 Component.GetComponent<EnemyHitbox>() 的返回结果，供当前步骤使用。使用位置：VillagerController.ConfigureRuntimeHitbox(Transform, HitboxType, int)。
+        // 命中盒。
 EnemyHitbox hitbox = target.GetComponent<EnemyHitbox>();
         if (hitbox == null)
         {
@@ -5645,7 +5926,7 @@ EnemyHitbox hitbox = target.GetComponent<EnemyHitbox>();
     /// 死亡语音可以抢占普通受击冷却
     /// </summary>
     /// <remarks>静态调用链：上游 VillagerController.ArchitectureInvokePlayVoice(ZombieVoiceType)；下游（含内部回调体） EnemyAnimationAdapter.PlayVoice(ZombieVoiceType)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="voiceType">中文含义：语音类型。使用位置：作为 EnemyAnimationAdapter.PlayVoice(ZombieVoiceType) 的参数。</param>
+    /// <param name="voiceType">语音类型。</param>
     private void PlayVoice(ZombieVoiceType voiceType)
     {
         animationPresenter.PlayVoice(voiceType);
@@ -5656,7 +5937,7 @@ EnemyHitbox hitbox = target.GetComponent<EnemyHitbox>();
     void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;
-        // bodyReach（身体抵达）：使用位置：作为 Gizmos.DrawWireSphere(Vector3, float) 的参数、VillagerController.OnDrawGizmosSelected()。
+        // 身体抵达。
 float bodyReach;
         if (colliderCtrl != null)
         {
@@ -5816,7 +6097,7 @@ float bodyReach;
 
     /// <summary>TryApplyAttackHit 的业务处理入口；本方法直接依赖 EnemyCombatModule.TryApplyAttackHit(int)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） EnemyCombatModule.TryApplyAttackHit(int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="hitIndex">中文含义：命中索引。使用位置：作为 EnemyCombatModule.TryApplyAttackHit(int) 的参数。</param>
+    /// <param name="hitIndex">命中索引。</param>
     void TryApplyAttackHit(int hitIndex)
     {
         combatModule.TryApplyAttackHit(hitIndex);
@@ -5824,7 +6105,7 @@ float bodyReach;
 
     /// <summary>ApplyKnifeParryStagger 的业务处理入口；本方法直接依赖 EnemyCombatModule.ApplyKnifeParryStagger(bool)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） EnemyCombatModule.ApplyKnifeParryStagger(bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="perfect">中文含义：是否完美。使用位置：作为 EnemyCombatModule.ApplyKnifeParryStagger(bool) 的参数。</param>
+    /// <param name="perfect">是否完美。</param>
     private void ApplyKnifeParryStagger(bool perfect)
     {
         combatModule.ApplyKnifeParryStagger(perfect);
@@ -5839,7 +6120,7 @@ float bodyReach;
 
     /// <summary>IsStandingAttackAnimation 的业务处理入口；本方法直接依赖 EnemyCombatModule.IsStandingAttackAnimation(AnimatorStateInfo)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） EnemyCombatModule.IsStandingAttackAnimation(AnimatorStateInfo)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="stateInfo">中文含义：当前动画状态信息。使用位置：作为 EnemyCombatModule.IsStandingAttackAnimation(AnimatorStateInfo) 的参数。</param>
+    /// <param name="stateInfo">当前动画状态信息。</param>
     private static bool IsStandingAttackAnimation(AnimatorStateInfo stateInfo)
     {
         return EnemyCombatModule.IsStandingAttackAnimation(stateInfo);
@@ -5847,9 +6128,9 @@ float bodyReach;
 
     /// <summary>TryApplyFriendlyFire 的业务处理入口；本方法直接依赖 EnemyCombatModule.TryApplyFriendlyFire(Vector3, Vector3, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） EnemyCombatModule.TryApplyFriendlyFire(Vector3, Vector3, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="origin">中文含义：原点。使用位置：作为 EnemyCombatModule.TryApplyFriendlyFire(Vector3, Vector3, float) 的参数。</param>
-    /// <param name="forward">中文含义：前向。使用位置：作为 EnemyCombatModule.TryApplyFriendlyFire(Vector3, Vector3, float) 的参数。</param>
-    /// <param name="baseDamage">中文含义：基础伤害。使用位置：作为 EnemyCombatModule.TryApplyFriendlyFire(Vector3, Vector3, float) 的参数。</param>
+    /// <param name="origin">原点。</param>
+    /// <param name="forward">前向。</param>
+    /// <param name="baseDamage">基础伤害。</param>
     private bool TryApplyFriendlyFire(Vector3 origin, Vector3 forward, float baseDamage)
     {
         return combatModule.TryApplyFriendlyFire(origin, forward, baseDamage);
@@ -5872,7 +6153,7 @@ float bodyReach;
             return;
         }
 
-        // deltaPos（增量位置）：使用位置：作为 CharacterMotionExecutor.CommitNormalPosition(Vector3) 的参数、作为 VillagerController.MoveWithCollision(Vector3, bool, bool) 的参数、作为 VillagerController.TryExecuteStairActionDisplacement(Vector3) 的参数 等共 4 处。
+        // 增量位置。
 Vector3 deltaPos = anim.deltaPosition;
         // 刺杀时只消费动画提供的水平位移，垂直方向仍由贴地锁定负责。
         // 其他快速反应事件继续由配对协调器完全控制位置。
@@ -5888,7 +6169,7 @@ Vector3 deltaPos = anim.deltaPosition;
             return;
         }
 
-        // diagPrePos（诊断前置位置）：使用位置：VillagerController.OnAnimatorMove()。
+        // 诊断前置位置。
 Vector3 diagPrePos = transform.position;
         switch (CurrentMovementMode)
         {
@@ -5897,7 +6178,7 @@ Vector3 diagPrePos = transform.position;
                 break;
             case EnemyMovementMode.StandingPathRootMotion:
             {
-                // standingDelta（站立增量）：使用位置：VillagerController.OnAnimatorMove()。
+                // 站立增量。
 Vector3 standingDelta = deltaPos;
                 standingDelta.y = 0f;
                 if (UsesNativeStandingStride)
@@ -5911,7 +6192,7 @@ Vector3 standingDelta = deltaPos;
                     UpdateCodeDrivenMovement(stride);
                     break;
                 }
-                // sampledSpeed（采样到的速度）：使用位置：作为 float.IsInfinity(float) 的参数、作为 float.IsNaN(float) 的参数、作为 Mathf.Lerp(float, float, float) 的参数 等共 4 处。
+                // 采样到的速度。
 float sampledSpeed;
                 if (Time.deltaTime > 0.0001f)
                 {
@@ -5937,7 +6218,7 @@ float sampledSpeed;
 
             case EnemyMovementMode.ActionRootMotion:
                 deltaPos.y = 0f;
-                // strictAttackCollision（是否严格攻击碰撞）：使用位置：作为 VillagerController.MoveWithCollision(Vector3, bool, bool) 的参数。
+                // 是否严格攻击碰撞。
                 bool strictAttackCollision = CurrentState == VillagerState.Attack || CurrentState == VillagerState.CrawlAttack
                     || CurrentState == VillagerState.Staggered;
                 if (CurrentState == VillagerState.Attack)
@@ -5996,7 +6277,7 @@ float sampledSpeed;
     /// 若动画尚未产出首帧根位移才使用寻路速度，避免状态切换首帧原地停顿。
     /// </summary>
     /// <remarks>静态调用链：上游 VillagerController.UpdateCodeDrivenMovement()；下游（含内部回调体） float.IsInfinity(float)、float.IsNaN(float)、Mathf.Clamp(float, float, float)、Mathf.Max(float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="fallbackSpeed">中文含义：后备速度。使用位置：作为 Mathf.Clamp(float, float, float) 的参数、作为 Mathf.Max(float, float) 的参数、VillagerController.ResolveStandingRootMotionSpeed(float)。</param>
+    /// <param name="fallbackSpeed">后备速度。</param>
     private float ResolveStandingRootMotionSpeed(float fallbackSpeed)
     {
         if (!useStandingAnimationSpeedForPath)
@@ -6020,7 +6301,7 @@ float sampledSpeed;
 
     /// <summary>UpdateLocomotionPlaybackRate 的业务处理入口；本方法直接依赖 EnemyAnimationAdapter.UpdateLocomotionPlaybackRate(Vector3)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillagerController.Update()；下游（含内部回调体） EnemyAnimationAdapter.UpdateLocomotionPlaybackRate(Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="movementStartPosition">中文含义：移动起始位置。使用位置：作为 EnemyAnimationAdapter.UpdateLocomotionPlaybackRate(Vector3) 的参数。</param>
+    /// <param name="movementStartPosition">移动起始位置。</param>
     private void UpdateLocomotionPlaybackRate(Vector3 movementStartPosition)
     {
         animationPresenter.UpdateLocomotionPlaybackRate(movementStartPosition);
@@ -6031,7 +6312,7 @@ float sampledSpeed;
     private void UpdateCodeDrivenMovement(float nativeStandingDistance = 0f)
     {
         actionCoordinator.ApproveMotionMode(CurrentMovementMode);
-        // diagPrePos（诊断前置位置）：使用位置：VillagerController.UpdateCodeDrivenMovement()。
+        // 诊断前置位置。
 Vector3 diagPrePos = transform.position;
         if (CurrentMovementMode == EnemyMovementMode.StandingPathRootMotion)
         {
@@ -6042,16 +6323,16 @@ Vector3 diagPrePos = transform.position;
             }
 
             ResolveCrowdOverlap();
-            // moveDirection（移动方向）：保存 VillagerController.ResolveStandingPathDirectionForCurrentFrame() 的返回结果，供当前步骤使用。使用位置：作为 VillagerController.ConstrainAvoidanceToPursuitDirection(Vector3, Vector3) 的参数、作为 VillagerController.TryOpenDoorOnPath(Vector3) 的参数、VillagerController.UpdateCodeDrivenMovement()。
+            // 移动方向。
 Vector3 moveDirection = ResolveStandingPathDirectionForCurrentFrame();
             TryOpenDoorOnPath(moveDirection);
             if (agent != null && agent.enabled)
             {
-                // hasPathDirection（是否具有路径方向）：使用位置：VillagerController.UpdateCodeDrivenMovement()。
+                // 是否具有路径方向。
 bool hasPathDirection = !agent.isStopped && moveDirection.sqrMagnitude > 0.01f;
-                // movementSpeed（移动速度）：保存 VillagerController.ResolveStandingRootMotionSpeed(float) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Max(float, float) 的参数、VillagerController.UpdateCodeDrivenMovement()。
+                // 移动速度。
 float movementSpeed = ResolveStandingRootMotionSpeed(agent.speed);
-                // pursuitIngressNeedsMovement（是否追击入口需要移动）：使用位置：VillagerController.UpdateCodeDrivenMovement()。
+                // 是否追击入口需要移动。
 bool pursuitIngressNeedsMovement = pursuitIngressDoor != null && hasPathDirection;
                 if (pursuitIngressNeedsMovement && movementSpeed <= 0.001f && !UsesNativeStandingStride)
                 {
@@ -6066,7 +6347,7 @@ bool pursuitIngressNeedsMovement = pursuitIngressDoor != null && hasPathDirectio
                 {
                     movementSpeed = Mathf.Max(0f, movementSpeed - EnemyContext.groundDecelerationAmount);
                 }
-                // selectedValue133（分支选出的移动方向）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：VillagerController.UpdateCodeDrivenMovement()。
+                // 分支选出的移动方向。
 global::UnityEngine.Vector3 selectedValue133;
                 if (hasPathDirection)
                 {
@@ -6096,18 +6377,18 @@ Vector3 displacement = (selectedValue133) * distance;
                 {
                     // 门洞队首和正在穿门的敌人必须沿门洞中心推进。此时若再
                     // 叠加侧向避让，会在门框前反复换边并堵住后续整条队列。
-                    // ownsPursuitIngressLane（是否持有追击入口通行带）：使用位置：VillagerController.UpdateCodeDrivenMovement()。
+                    // 是否持有追击入口通行带。
 bool ownsPursuitIngressLane = pursuitIngressDoor != null && (pursuitIngressCrossing || IsPursuitIngressQueueHead());
-                    // isCloseDirectPursuit（是否关闭直接追击）：使用位置：VillagerController.UpdateCodeDrivenMovement()。
+                    // 是否关闭直接追击。
 bool isCloseDirectPursuit = standingDirectPursuitForFrame;
-                    // directPursuitDirection（直接追击方向）：使用位置：VillagerController.UpdateCodeDrivenMovement()。
+                    // 直接追击方向。
 Vector3 directPursuitDirection = moveDirection;
                     // 窄通路沿中心推进，开阔处允许同伴避让。
                     // 身体朝向跟随本帧真实移动方向，短暂侧向目标完成后恢复直追，
                     // 避免后方一直朝同一条直线挤压停步的同伴。
-                    // bypassLateralAvoidance（是否绕过侧向避障）：使用位置：VillagerController.UpdateCodeDrivenMovement()。
+                    // 是否绕过侧向避障。
 bool bypassLateralAvoidance = ownsPursuitIngressLane || (agent != null && agent.RequiresPrecisePathFollowing);
-                    // pursuitDisplacement（追击位移）：使用位置：作为 VillagerController.ResolveLocalAvoidanceDisplacement(Vector3) 的参数、VillagerController.UpdateCodeDrivenMovement()。
+                    // 追击位移。
 Vector3 pursuitDisplacement;
                     if (isCloseDirectPursuit)
                     {
@@ -6118,7 +6399,7 @@ Vector3 pursuitDisplacement;
                         pursuitDisplacement = displacement;
                     }
 
-                    // avoidanceDisplacement（避障位移）：使用位置：作为 VillagerController.ConstrainAvoidanceToPursuitDirection(Vector3, Vector3) 的参数、作为 VillagerController.ResolveFacingLimitedStandingDisplacement(Vector3) 的参数、VillagerController.UpdateCodeDrivenMovement()。
+                    // 避障位移。
 Vector3 avoidanceDisplacement;
                     if (bypassLateralAvoidance)
                     {
@@ -6136,15 +6417,15 @@ Vector3 avoidanceDisplacement;
 
                     // 身体必须持续对齐实际追击方向，再计算前进限速。
                     // 仅在完全没有位移时才转向，会长期保留侧移或后退姿态。
-                    // facingDirection（朝向方向）：使用位置：作为 VillagerController.RotateTowardsDirection(Vector3, float) 的参数。
+                    // 朝向方向。
 Vector3 facingDirection = avoidanceDisplacement.normalized;
                     RotateTowardsDirection(facingDirection, ResolveStandingPursuitFacingTurnRate());
-                    // facingLimitedDisplacement（朝向受限位移）：保存 VillagerController.ResolveFacingLimitedStandingDisplacement(Vector3) 的返回结果，供当前步骤使用。使用位置：作为 HouseThreeRegionNavigation.StairAllowFrontEnter(VillagerController, Vector3) 的参数、作为 Vector3.ClampMagnitude(Vector3, float) 的参数、作为 VillagerController.MoveWithCollision(Vector3, bool, bool) 的参数 等共 4 处。
+                    // 朝向受限位移。
 Vector3 facingLimitedDisplacement = ResolveFacingLimitedStandingDisplacement(avoidanceDisplacement);
                     // 高速追击时也必须准确落到窄通路端点，避免跨过端点后反复折返。
                     if (agent.RequiresPrecisePathFollowing && agent.TryGetCurrentWaypoint(out Vector3 /* 中文含义：精确路径点。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ preciseWaypoint))
                     {
-                        // waypointOffset（路径点偏移量）：使用位置：作为 Vector3.ClampMagnitude(Vector3, float) 的参数、VillagerController.UpdateCodeDrivenMovement()。
+                        // 路径点偏移量。
 Vector3 waypointOffset = preciseWaypoint - transform.position;
                         waypointOffset.y = 0f;
                         facingLimitedDisplacement = Vector3.ClampMagnitude(facingLimitedDisplacement, waypointOffset.magnitude);
@@ -6160,7 +6441,7 @@ Vector3 waypointOffset = preciseWaypoint - transform.position;
                         facingLimitedDisplacement = Vector3.zero;
                     }
 
-                    // actualDisplacement（实际位移）：保存 VillagerController.MoveWithCollision(Vector3, bool, bool) 的返回结果，供当前步骤使用。使用位置：作为 VillagerController.UpdateStandingFacingFromActualDisplacement(Vector3) 的参数、VillagerController.UpdateCodeDrivenMovement()。
+                    // 实际位移。
 Vector3 actualDisplacement = MoveWithCollision(facingLimitedDisplacement, false, false);
                     if (actualDisplacement.sqrMagnitude > 0.000001f)
                     {
@@ -6191,13 +6472,13 @@ Vector3 actualDisplacement = MoveWithCollision(facingLimitedDisplacement, false,
             return;
         }
 
-        // moveDir（移动方向）：保存 VillagerController.ResolveStableCrawlMoveDirection() 的返回结果，供当前步骤使用。使用位置：作为 VillagerController.ResolveLocalAvoidanceDisplacement(Vector3) 的参数、作为 VillagerController.RotateTowardsDirection(Vector3, float) 的参数、作为 VillagerController.TryOpenDoorOnPath(Vector3) 的参数 等共 4 处。
+        // 移动方向。
 Vector3 moveDir = ResolveStableCrawlMoveDirection();
         TryOpenDoorOnPath(moveDir);
         if (moveDir != Vector3.zero)
         {
             RotateTowardsDirection(moveDir, ResolveCrawlFacingTurnRate());
-            // finalDisplacement（最终位移）：保存 VillagerController.ResolveLocalAvoidanceDisplacement(Vector3) 的返回结果，供当前步骤使用。使用位置：作为 VillagerController.MoveWithCollision(Vector3, bool, bool) 的参数。
+            // 最终位移。
 Vector3 finalDisplacement = ResolveLocalAvoidanceDisplacement(moveDir * ctx.CrawlSpeed * Time.deltaTime);
             MoveWithCollision(finalDisplacement, false, false);
         }
@@ -6231,7 +6512,7 @@ Vector3 finalDisplacement = ResolveLocalAvoidanceDisplacement(moveDir * ctx.Craw
             return;
         }
 
-        // expectsMovement（是否期望移动）：使用位置：VillagerController.UpdateChaseProgressRecovery()。
+        // 是否期望移动。
 bool expectsMovement = CurrentState == VillagerState.Chase && CurrentMovementMode == EnemyMovementMode.StandingPathRootMotion && ShouldChasePlayer && agent != null && agent.enabled && !agent.isStopped && agent.HasDestination && ((agent.CurrentPathState == PathAgentState.Valid && agent.remainingDistance > Mathf.Max(0.2f, agent.waypointReachedRadius)) || HasIncompletePursuitArrival);
         if (!expectsMovement)
         {
@@ -6262,13 +6543,13 @@ bool expectsMovement = CurrentState == VillagerState.Chase && CurrentMovementMod
             return;
         }
 
-        // currentRemainingDistance（当前剩余距离）：使用位置：VillagerController.UpdateChaseProgressRecovery()。
+        // 当前剩余距离。
 float currentRemainingDistance = agent.remainingDistance;
-        // requiredProgress（所需进度）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：VillagerController.UpdateChaseProgressRecovery()。
+        // 所需进度。
 float requiredProgress = Mathf.Max(0.01f, chaseProgressDistance);
-        // movedEnough（是否已移动足够）：使用位置：VillagerController.UpdateChaseProgressRecovery()。
+        // 是否已移动足够。
 bool movedEnough = Vector3.Distance(transform.position, chaseProgressPosition) >= requiredProgress;
-        // reducedRemainingDistance（是否降低后的剩余距离）：使用位置：VillagerController.UpdateChaseProgressRecovery()。
+        // 是否降低后的剩余距离。
 bool reducedRemainingDistance = chaseBestRemainingDistance - currentRemainingDistance >= requiredProgress;
         if (movedEnough && (reducedRemainingDistance || IsInsideTraversalBottleneck(Vector3.zero)))
         {
@@ -6310,7 +6591,7 @@ bool reducedRemainingDistance = chaseBestRemainingDistance - currentRemainingDis
         // 旧目标缓存并重新请求以里昂为终点的路径，不能只重置计时。
         lastStableStandingMoveDirection = Vector3.zero;
         agent.InvalidatePursuitResolutionCache();
-        // receiverValue137（判空前缓存的敌人智能管理器的实例）：从敌人智能管理器的实例读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、VillagerController.UpdateChaseProgressRecovery()。
+        // 判空前缓存的敌人智能管理器的实例。
 global::EnemyAIManager receiverValue137 = EnemyAIManager.Instance;
         if (!global::System.Object.ReferenceEquals(receiverValue137, null))
         {
@@ -6318,8 +6599,9 @@ global::EnemyAIManager receiverValue137 = EnemyAIManager.Instance;
         }
 
         // targetChanged（目标是否发生变化）：保存 VillagerController.RefreshChaseDestination() 的返回结果，供当前步骤使用。使用位置：作为 EnemyCombatTimeline.Describe(bool) 的参数、VillagerController.UpdateChaseProgressRecovery()。
+InvalidateChaseRefreshFrame();
 bool targetChanged = RefreshChaseDestination();
-        // requested（是否已经申请）：使用位置：作为 EnemyCombatTimeline.Describe(bool) 的参数。
+        // 是否已经申请。
 bool requested = targetChanged || agent.ForceRepath();
         if (EnemyCombatTimeline.IsRecord(this))
         {
@@ -6342,11 +6624,11 @@ bool requested = targetChanged || agent.ForceRepath();
             return Vector3.zero;
         }
 
-        // candidate（候选）：使用位置：作为 Vector3.RotateTowards(Vector3, Vector3, float, float) 的参数、VillagerController.ResolveStableCrawlMoveDirection()。
+        // 候选。
 Vector3 candidate = Vector3.zero;
-        // shouldFacePlayerForCloseCombat（是否应当面玩家用于关闭战斗）：使用位置：VillagerController.ResolveStableCrawlMoveDirection()。
+        // 是否应当面玩家用于关闭战斗。
 bool shouldFacePlayerForCloseCombat = CanEvaluateCrawlCombatAction && IsPlayerWithinAttackStartRange() && ctx.Player != null;
-        // hasReliablePathDirection（是否具有可靠路径方向）：使用位置：VillagerController.ResolveStableCrawlMoveDirection()。
+        // 是否具有可靠路径方向。
 bool hasReliablePathDirection = agent != null && agent.enabled && !agent.isStopped && agent.CurrentPathState == PathAgentState.Valid && agent.desiredDirection.sqrMagnitude > 0.01f;
         // 进入攻击距离后，朝向必须直接追随里昂。此时若继续沿用路径
         // 最后一个切线方向，爬行敌人会停在里昂脚边却始终达不到攻击
@@ -6379,7 +6661,7 @@ bool hasReliablePathDirection = agent != null && agent.enabled && !agent.isStopp
             return lastStableCrawlMoveDirection;
         }
 
-        // maxRadians（最大弧度）：使用位置：作为 Vector3.RotateTowards(Vector3, Vector3, float, float) 的参数。
+        // 最大弧度。
 float maxRadians = Mathf.Deg2Rad * Mathf.Max(1f, crawlDirectionTurnRate) * Time.deltaTime;
         lastStableCrawlMoveDirection = Vector3.RotateTowards(lastStableCrawlMoveDirection, candidate, maxRadians, 0f);
         if (lastStableCrawlMoveDirection.sqrMagnitude > 0.01f)
@@ -6392,12 +6674,12 @@ float maxRadians = Mathf.Deg2Rad * Mathf.Max(1f, crawlDirectionTurnRate) * Time.
 
     /// <summary>SetMovementMode 的业务处理入口；本方法直接依赖 CombatDiagnosticFields.Count(string, double)、CombatDiagnosticFields.Text(string, string)、EnemyActionCoordinator.ApproveMotionMode(EnemyMovementMode)、EnemyAnimationAdapter.SetRootMotion(bool)、EnemyCombatTimeline.Describe(string)、EnemyCombatTimeline.Describe&lt;EnemyMovementMode&gt;(EnemyMovementMode)、EnemyCombatTimeline.IsRecord(VillagerController) 等共 9 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyActionCoordinator.RequestMovementMode(EnemyMovementMode)、EnemyWindowTraversal.BeginTraversalState()、EnemyWindowTraversal.CancelTraversal(bool)、EnemyWindowTraversal.LateUpdate()、EnemyWindowTraversal.Update() 等共 16 处；下游（含内部回调体） CombatDiagnosticFields.Count(string, double)、CombatDiagnosticFields.Text(string, string)、EnemyActionCoordinator.ApproveMotionMode(EnemyMovementMode)、EnemyAnimationAdapter.SetRootMotion(bool)、EnemyCombatTimeline.Describe(string)、EnemyCombatTimeline.Describe&lt;EnemyMovementMode&gt;(EnemyMovementMode)、EnemyCombatTimeline.IsRecord(VillagerController) 等共 9 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="movementMode">中文含义：移动模式。使用位置：作为 EnemyActionCoordinator.ApproveMotionMode(EnemyMovementMode) 的参数、作为 EnemyAnimationAdapter.SetRootMotion(bool) 的参数、作为 EnemyCombatTimeline.Describe&lt;EnemyMovementMode&gt;(EnemyMovementMode) 的参数 等共 5 处。</param>
-    /// <param name="source">中文含义：来源。使用位置：作为 EnemyCombatTimeline.Describe(string) 的参数。</param>
-    /// <param name="line">中文含义：线。使用位置：作为 CombatDiagnosticFields.Count(string, double) 的参数。</param>
+    /// <param name="movementMode">移动模式。</param>
+    /// <param name="source">来源。</param>
+    /// <param name="line">线。</param>
     public void SetMovementMode(EnemyMovementMode movementMode, [System.Runtime.CompilerServices.CallerMemberName] string source = "", [System.Runtime.CompilerServices.CallerLineNumber] int line = 0)
     {
-        // prev（前一次）：使用位置：作为 EnemyCombatTimeline.Describe<EnemyMovementMode>(EnemyMovementMode) 的参数、作为 VillagerController.DiagLog(string, string) 的参数、VillagerController.SetMovementMode(EnemyMovementMode, string, int)。
+        // 前一次。
 EnemyMovementMode prev = CurrentMovementMode;
         actionCoordinator.ApproveMotionMode(movementMode);
         if (prev != movementMode)
@@ -6437,7 +6719,7 @@ EnemyMovementMode prev = CurrentMovementMode;
             return false;
         }
 
-        // desired（期望）：使用位置：作为 VillagerController.RotateTowardsDirection(Vector3, float) 的参数、VillagerController.RotateTowardsPath()。
+        // 期望。
 Vector3 desired = agent.desiredDirection;
         desired.y = 0f;
         if (desired.sqrMagnitude <= 0.01f)
@@ -6459,7 +6741,7 @@ Vector3 desired = agent.desiredDirection;
             return Vector3.zero;
         }
 
-        // desired（期望）：使用位置：作为 VillagerController.StabilizeStandingDirection(Vector3) 的参数、VillagerController.ResolveStandingPathDirection()。
+        // 期望。
 Vector3 desired = agent.desiredDirection;
         desired.y = 0f;
         if (desired.sqrMagnitude <= 0.0001f)
@@ -6507,7 +6789,7 @@ Vector3 desired = agent.desiredDirection;
     /// 此后沿当前门洞阶段的精确目标继续短距离推进，直到真正对齐并穿门。
     /// </summary>
     /// <remarks>静态调用链：上游 VillagerController.ResolveStandingPathDirection()；下游（含内部回调体） Vector3.Normalize()、VillagerController.TryGetPursuitIngressDestination(Vector3, out Vector3)、VillagerController.TryResolveDoor03IngressFinalSteering(out Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="direction">中文含义：方向。输出参数，由本入口写入并交给调用方。使用位置：作为 VillagerController.TryResolveDoor03IngressFinalSteering(out Vector3) 的参数、VillagerController.TryResolvePursuitIngressFinalSteering(out Vector3)。</param>
+    /// <param name="direction">方向。输出参数，由本入口写入并交给调用方。</param>
     private bool TryResolvePursuitIngressFinalSteering(out Vector3 direction)
     {
         direction = Vector3.zero;
@@ -6521,9 +6803,9 @@ Vector3 desired = agent.desiredDirection;
             return true;
         }
 
-        // player（玩家）：使用位置：VillagerController.TryResolvePursuitIngressFinalSteering(out Vector3)。
+        // 玩家。
 LeonController player = Player;
-        // targetPosition（目标位置）：使用位置：作为 VillagerController.TryGetPursuitIngressDestination(Vector3, out Vector3) 的参数、VillagerController.TryResolvePursuitIngressFinalSteering(out Vector3)。
+        // 目标位置。
 Vector3 targetPosition;
         if (player != null)
         {
@@ -6552,7 +6834,7 @@ Vector3 targetPosition;
 
     /// <summary>TryResolveDoor03IngressFinalSteering 的业务处理入口；本方法直接依赖 DoorwayTraversalOccupancy.ReadQueue(int)、Mathf.Max(float, float)、ReadOnlyCollection&lt;VillagerController&gt;.IndexOf(VillagerController)、Vector3.Normalize()、VillagerController.CleanupPursuitIngressWaiters()、VillagerController.ResolveDoor03ExteriorSourceSide(HouseThreeTraversalGeometry)、VillagerController.ResolveMovementHazardRadius()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillagerController.TryResolvePursuitIngressFinalSteering(out Vector3)；下游（含内部回调体） DoorwayTraversalOccupancy.ReadQueue(int)、Mathf.Max(float, float)、ReadOnlyCollection&lt;VillagerController&gt;.IndexOf(VillagerController)、Vector3.Normalize()、VillagerController.CleanupPursuitIngressWaiters()、VillagerController.ResolveDoor03ExteriorSourceSide(HouseThreeTraversalGeometry)、VillagerController.ResolveMovementHazardRadius()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="direction">中文含义：方向。输出参数，由本入口写入并交给调用方。使用位置：VillagerController.TryResolveDoor03IngressFinalSteering(out Vector3)。</param>
+    /// <param name="direction">方向。输出参数，由本入口写入并交给调用方。</param>
     private bool TryResolveDoor03IngressFinalSteering(out Vector3 direction)
     {
         direction = Vector3.zero;
@@ -6571,7 +6853,7 @@ Vector3 targetPosition;
             return false;
         }
 
-        // target（目标）：使用位置：VillagerController.TryResolveDoor03IngressFinalSteering(out Vector3)。
+        // 目标。
 Vector3 target;
         if (pursuitIngressCrossing)
         {
@@ -6580,16 +6862,16 @@ Vector3 target;
         else
         {
             CleanupPursuitIngressWaiters();
-            // waiters（等待者集合）：保存 DoorwayTraversalOccupancy.ReadQueue(int) 的返回结果，供当前步骤使用。使用位置：VillagerController.TryResolveDoor03IngressFinalSteering(out Vector3)。
+            // 等待者集合。
 var waiters = pursuitIngressDoor.TraversalOccupancy.ReadQueue(pursuitIngressSourceSide);
-            // queueIndex（队列索引）：保存 ReadOnlyCollection<VillagerController>.IndexOf(VillagerController) 的返回结果，供当前步骤使用。使用位置：VillagerController.TryResolveDoor03IngressFinalSteering(out Vector3)。
+            // 队列索引。
 int queueIndex = waiters.IndexOf(this);
             if (queueIndex < 0)
             {
                 return false;
             }
 
-            // inward（向内）：使用位置：VillagerController.TryResolveDoor03IngressFinalSteering(out Vector3)。
+            // 向内。
 Vector3 inward = door03TraversalRoute.InteriorGate - door03TraversalRoute.DoorGate;
             inward.y = 0f;
             if (inward.sqrMagnitude <= 0.0001f)
@@ -6598,7 +6880,7 @@ Vector3 inward = door03TraversalRoute.InteriorGate - door03TraversalRoute.DoorGa
             }
 
             inward.Normalize();
-            // queueSeparation（队列分离量）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：VillagerController.TryResolveDoor03IngressFinalSteering(out Vector3)。
+            // 队列分离量。
 float queueSeparation = Mathf.Max(door03TraversalRoute.entranceQueueSpacing, ResolveMovementHazardRadius() * 2f + 0.18f);
             target = door03TraversalRoute.ExteriorGate - inward * (queueIndex * queueSeparation);
         }
@@ -6627,13 +6909,13 @@ float queueSeparation = Mathf.Max(door03TraversalRoute.entranceQueueSpacing, Res
         }
 
         standingPathDirectionFrame = Time.frameCount;
-        // wasDirectPursuit（之前是否直接追击）：使用位置：VillagerController.ResolveStandingPathDirectionForCurrentFrame()。
+        // 之前是否直接追击。
 bool wasDirectPursuit = standingDirectPursuitForFrame;
         if (IsCrowdBypassing)
         {
             // 侧向目标已完整验证踏面和身体空间，短距离直接推进，不能再追公共旧拐点。
             standingDirectPursuitForFrame = false;
-            // bypassDirection（绕过方向）：使用位置：作为 VillagerController.StabilizeStandingDirection(Vector3) 的参数、VillagerController.ResolveStandingPathDirectionForCurrentFrame()。
+            // 绕过方向。
 Vector3 bypassDirection = crowdBypassDestination - transform.position;
             bypassDirection.y = 0f;
             standingPathDirectionForFrame = StabilizeStandingDirection(bypassDirection);
@@ -6643,7 +6925,7 @@ Vector3 bypassDirection = crowdBypassDestination - transform.position;
         standingDirectPursuitForFrame = agent != null && agent.enabled && !agent.isStopped && !agent.RequiresPrecisePathFollowing && CurrentState == VillagerState.Chase && TryResolveCloseDirectPursuitDirection(out _);
         if (standingDirectPursuitForFrame)
         {
-            // direction（方向）：使用位置：作为 VillagerController.StabilizeStandingDirection(Vector3) 的参数、VillagerController.ResolveStandingPathDirectionForCurrentFrame()。
+            // 方向。
 Vector3 direction = Player.transform.position - transform.position;
             direction.y = 0f;
             standingPathDirectionForFrame = StabilizeStandingDirection(direction);
@@ -6655,6 +6937,7 @@ Vector3 direction = Player.transform.position - transform.position;
             if (wasDirectPursuit && agent != null && agent.enabled && !agent.isStopped && CurrentState == VillagerState.Chase)
             {
                 agent.ResetPath();
+                InvalidateChaseRefreshFrame();
                 RefreshChaseDestination();
             }
 
@@ -6666,7 +6949,7 @@ Vector3 direction = Player.transform.position - transform.position;
 
     /// <summary>StabilizeStandingDirection 的业务处理入口；本方法直接依赖 Vector3.Normalize()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillagerController.ResolveStandingPathDirection()、VillagerController.ResolveStandingPathDirectionForCurrentFrame()；下游（含内部回调体） Vector3.Normalize()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="desired">中文含义：期望。使用位置：VillagerController.StabilizeStandingDirection(Vector3)。</param>
+    /// <param name="desired">期望。</param>
     private Vector3 StabilizeStandingDirection(Vector3 desired)
     {
         desired.y = 0f;
@@ -6688,7 +6971,7 @@ Vector3 direction = Player.transform.position - transform.position;
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） VillagerController.TryOpenDoorOnPath(Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     private void TryOpenDoorOnPath()
     {
-        // direction（方向）：使用位置：作为 VillagerController.TryOpenDoorOnPath(Vector3) 的参数、VillagerController.TryOpenDoorOnPath()。
+        // 方向。
 Vector3 direction;
         if (agent != null && agent.desiredDirection.sqrMagnitude > 0.0001f)
         {
@@ -6704,7 +6987,7 @@ Vector3 direction;
 
     /// <summary>TryOpenDoorOnPath 的业务处理入口；本方法直接依赖 DoorController.TryOpenNearestForAI(Vector3, Vector3, float, float, Transform)、Mathf.Max(float, float)、Vector3.Normalize()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillagerController.TryOpenDoorOnPath()、VillagerController.UpdateCodeDrivenMovement()；下游（含内部回调体） DoorController.TryOpenNearestForAI(Vector3, Vector3, float, float, Transform)、Mathf.Max(float, float)、Vector3.Normalize()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="direction">中文含义：方向。使用位置：作为 DoorController.TryOpenNearestForAI(Vector3, Vector3, float, float, Transform) 的参数、VillagerController.TryOpenDoorOnPath(Vector3)。</param>
+    /// <param name="direction">方向。</param>
     private void TryOpenDoorOnPath(Vector3 direction)
     {
         if (!enableAIDoorOpening || Time.time < nextDoorOpenProbeTime || IsDead)
@@ -6726,7 +7009,7 @@ Vector3 direction;
         }
 
         direction.Normalize();
-        // probePosition（探测位置）：使用位置：作为 DoorController.TryOpenNearestForAI(Vector3, Vector3, float, float, Transform) 的参数。
+        // 探测位置。
 Vector3 probePosition = transform.position + direction * doorOpenProbeDistance;
         DoorController.TryOpenNearestForAI(probePosition, direction, doorOpenProbeRadius, doorOpenProbeAngle, transform);
     }
@@ -6750,7 +7033,7 @@ Vector3 probePosition = transform.position + direction * doorOpenProbeDistance;
             return false;
         }
 
-        // direction（方向）：使用位置：VillagerController.HasCrawlMovementDirection()。
+        // 方向。
 Vector3 direction = ctx.Player.transform.position - transform.position;
         direction.y = 0f;
         return direction.sqrMagnitude > 0.01f;
@@ -6758,8 +7041,8 @@ Vector3 direction = ctx.Player.transform.position - transform.position;
 
     /// <summary>RotateTowardsDirection 的业务处理入口；本方法直接依赖 CharacterMotionExecutor.CommitNormalOrientation(Quaternion)、Mathf.Max(float, float)、Quaternion.LookRotation(Vector3)、Quaternion.RotateTowards(Quaternion, Quaternion, float)、VillagerController.ResolveStandingPursuitFacingTurnRate()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillagerController.ReconcileStandingPursuitFacingAfterAnimation()、VillagerController.RotateTowardsPath()、VillagerController.UpdateCodeDrivenMovement()、VillagerController.UpdateCrawlFacingBeforeAnimator()、VillagerController.UpdateStandingFacingFromActualDisplacement(Vector3)；下游（含内部回调体） CharacterMotionExecutor.CommitNormalOrientation(Quaternion)、Mathf.Max(float, float)、Quaternion.LookRotation(Vector3)、Quaternion.RotateTowards(Quaternion, Quaternion, float)、VillagerController.ResolveStandingPursuitFacingTurnRate()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="direction">中文含义：方向。使用位置：作为 Quaternion.LookRotation(Vector3) 的参数、VillagerController.RotateTowardsDirection(Vector3, float)。</param>
-    /// <param name="turnSpeed">中文含义：转向速度。使用位置：作为 Mathf.Max(float, float) 的参数、VillagerController.RotateTowardsDirection(Vector3, float)。</param>
+    /// <param name="direction">方向。</param>
+    /// <param name="turnSpeed">转向速度。</param>
     private void RotateTowardsDirection(Vector3 direction, float turnSpeed)
     {
         direction.y = 0f;
@@ -6779,7 +7062,7 @@ Vector3 direction = ctx.Player.transform.position - transform.position;
             turnSpeed = ResolveStandingPursuitFacingTurnRate();
         }
 
-        // targetRotation（目标旋转）：保存 Quaternion.LookRotation(Vector3) 的返回结果，供当前步骤使用。使用位置：作为 Quaternion.RotateTowards(Quaternion, Quaternion, float) 的参数。
+        // 目标旋转。
 Quaternion targetRotation = Quaternion.LookRotation(direction.normalized);
         motionExecutor.CommitNormalOrientation(Quaternion.RotateTowards(transform.rotation, targetRotation, Mathf.Max(1f, turnSpeed) * Time.deltaTime));
     }
@@ -6804,7 +7087,7 @@ Quaternion targetRotation = Quaternion.LookRotation(direction.normalized);
 
     /// <summary>ResolveFacingLimitedStandingDisplacement 的业务处理入口；本方法直接依赖 Mathf.InverseLerp(float, float, float)、Mathf.Max(float, float)、Mathf.Min(float, float)、Vector3.Angle(Vector3, Vector3)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillagerController.ExecuteCollisionMovement(Vector3, bool, bool, float)、VillagerController.UpdateCodeDrivenMovement()；下游（含内部回调体） Mathf.InverseLerp(float, float, float)、Mathf.Max(float, float)、Mathf.Min(float, float)、Vector3.Angle(Vector3, Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="displacement">中文含义：位移。使用位置：VillagerController.ResolveFacingLimitedStandingDisplacement(Vector3)。</param>
+    /// <param name="displacement">位移。</param>
     private Vector3 ResolveFacingLimitedStandingDisplacement(Vector3 displacement)
     {
         displacement.y = 0f;
@@ -6813,15 +7096,15 @@ Quaternion targetRotation = Quaternion.LookRotation(direction.normalized);
             return Vector3.zero;
         }
 
-        // direction（方向）：使用位置：作为 Vector3.Angle(Vector3, Vector3) 的参数。
+        // 方向。
 Vector3 direction = displacement.normalized;
-        // angle（角度）：保存 Vector3.Angle(Vector3, Vector3) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.InverseLerp(float, float, float) 的参数。
+        // 角度。
 float angle = Vector3.Angle(transform.forward, direction);
-        // fullSpeedAngle（完整速度角度）：保存 Mathf.Min(float, float) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.InverseLerp(float, float, float) 的参数、作为 Mathf.Max(float, float) 的参数。
+        // 完整速度角度。
 float fullSpeedAngle = Mathf.Min(movementFacingFullSpeedAngle, movementFacingStopAngle);
-        // stopAngle（停止角度）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.InverseLerp(float, float, float) 的参数。
+        // 停止角度。
 float stopAngle = Mathf.Max(fullSpeedAngle + 0.01f, movementFacingStopAngle);
-        // alignment（对齐状态）：使用位置：VillagerController.ResolveFacingLimitedStandingDisplacement(Vector3)。
+        // 对齐状态。
 float alignment = 1f - Mathf.InverseLerp(fullSpeedAngle, stopAngle, angle);
         // 大角度换向时先转身。转向在位移之前每帧执行，不依赖成功移动；
         // 因此无需保底侧移或后退，也不会为了绕过身后路点而画圆。
@@ -6830,7 +7113,7 @@ float alignment = 1f - Mathf.InverseLerp(fullSpeedAngle, stopAngle, angle);
 
     /// <summary>UpdateStandingFacingFromActualDisplacement 的业务处理入口；本方法直接依赖 VillagerController.ResolveStandingPursuitFacingTurnRate()、VillagerController.RotateTowardsDirection(Vector3, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillagerController.UpdateCodeDrivenMovement()；下游（含内部回调体） VillagerController.ResolveStandingPursuitFacingTurnRate()、VillagerController.RotateTowardsDirection(Vector3, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="actualDisplacement">中文含义：实际位移。使用位置：VillagerController.UpdateStandingFacingFromActualDisplacement(Vector3)。</param>
+    /// <param name="actualDisplacement">实际位移。</param>
     private void UpdateStandingFacingFromActualDisplacement(Vector3 actualDisplacement)
     {
         actualDisplacement.y = 0f;
@@ -6839,7 +7122,7 @@ float alignment = 1f - Mathf.InverseLerp(fullSpeedAngle, stopAngle, angle);
             return;
         }
 
-        // actualDirection（实际方向）：使用位置：作为 VillagerController.RotateTowardsDirection(Vector3, float) 的参数。
+        // 实际方向。
 Vector3 actualDirection = actualDisplacement.normalized;
         // 碰撞滑动和同伴避让只能影响本帧身体朝向，不能改写下一帧路径意图。
         RotateTowardsDirection(actualDirection, ResolveStandingPursuitFacingTurnRate());
@@ -6881,9 +7164,9 @@ Vector3 actualDirection = actualDisplacement.normalized;
 
     /// <summary>SnapToGround 的业务处理入口；本方法直接依赖 CharacterMotionExecutor.CommitNormalPosition(Vector3)、DoorController.IsInsideOpenPassage(Vector3, float)、Mathf.Clamp(float, float, float)、Mathf.Max(float, float)、NavigationCollisionCache.Enemy(Collider)、NavigationCollisionCache.Player(Collider)、Physics.RaycastNonAlloc(Vector3, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 等共 16 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillagerController.ArchitectureInvokeSnapToGround(float, float, bool)、VillagerController.MaintainGroundContact()、VillagerController.SnapToGround()、VillagerController.Start()；下游（含内部回调体） CharacterMotionExecutor.CommitNormalPosition(Vector3)、DoorController.IsInsideOpenPassage(Vector3, float)、Mathf.Clamp(float, float, float)、Mathf.Max(float, float)、NavigationCollisionCache.Enemy(Collider)、NavigationCollisionCache.Player(Collider)、Physics.RaycastNonAlloc(Vector3, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 等共 16 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="probeHeight">中文含义：探测高度。使用位置：作为 Physics.RaycastNonAlloc(Vector3, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 的参数、VillagerController.SnapToGround(float, float, bool)。</param>
-    /// <param name="probeDistance">中文含义：探测距离。使用位置：作为 Physics.RaycastNonAlloc(Vector3, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 的参数。</param>
-    /// <param name="allowLargeDrop">中文含义：是否允许较大掉落。使用位置：VillagerController.SnapToGround(float, float, bool)。</param>
+    /// <param name="probeHeight">探测高度。</param>
+    /// <param name="probeDistance">探测距离。</param>
+    /// <param name="allowLargeDrop">是否允许较大掉落。</param>
     private void SnapToGround(float probeHeight, float probeDistance, bool allowLargeDrop)
     {
         // 所有动作共用实际踏面支撑，不能在受击或死亡时投影到桥下地面。
@@ -6921,21 +7204,21 @@ Vector3 actualDirection = actualDisplacement.normalized;
             return;
         }
 
-        // origin（原点）：使用位置：作为 Physics.RaycastNonAlloc(Vector3, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 的参数。
+        // 原点。
 Vector3 origin = transform.position + Vector3.up * probeHeight;
         CombatPerformanceCounters.physicsQueryCount++;
-        // hitCount（命中数量）：保存 Physics.RaycastNonAlloc(Vector3, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 的返回结果，供当前步骤使用。使用位置：VillagerController.SnapToGround(float, float, bool)。
+        // 命中数量。
 int hitCount = Physics.RaycastNonAlloc(origin, Vector3.down, groundHits, probeHeight + probeDistance, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore);
-        // nearestDistance（最近距离）：使用位置：VillagerController.SnapToGround(float, float, bool)。
+        // 最近距离。
 float nearestDistance = float.MaxValue;
-        // foundGround（是否找到的地面）：使用位置：VillagerController.SnapToGround(float, float, bool)。
+        // 是否找到的地面。
 bool foundGround = false;
-        // groundPoint（地面点）：使用位置：作为 Vector3.Vector3(float, float, float) 的参数、VillagerController.SnapToGround(float, float, bool)。
+        // 地面点。
 Vector3 groundPoint = default;
-        // i（当前遍历索引）：使用位置：VillagerController.SnapToGround(float, float, bool)。
+        // 当前遍历索引。
 for (int i = 0; i < hitCount; i++)
         {
-            // hitCollider（命中的碰撞体）：使用位置：作为 NavigationCollisionCache.Enemy(Collider) 的参数、作为 NavigationCollisionCache.Player(Collider) 的参数、作为 VillagerController.IsNavigationObstacle(Collider) 的参数 等共 4 处。
+            // 命中的碰撞体。
 Collider hitCollider = groundHits[i].collider;
             if (hitCollider == null || hitCollider.transform == transform || hitCollider.transform.IsChildOf(transform) || NavigationCollisionCache.Enemy(hitCollider) != null || NavigationCollisionCache.Player(hitCollider) != null)
             {
@@ -6952,11 +7235,11 @@ Collider hitCollider = groundHits[i].collider;
                 continue;
             }
 
-            // targetY（目标纵向）：使用位置：VillagerController.SnapToGround(float, float, bool)。
+            // 目标纵向。
 float targetY = groundHits[i].point.y + groundOffset;
-            // verticalChange（竖直变化）：使用位置：VillagerController.SnapToGround(float, float, bool)。
+            // 竖直变化。
 float verticalChange = targetY - transform.position.y;
-            // allowedStepUp（允许的步进向上）：使用位置：作为 Mathf.Max(float, float) 的参数、VillagerController.SnapToGround(float, float, bool)。
+            // 允许的步进向上。
 float allowedStepUp;
             if (DoorController.IsInsideOpenPassage(transform.position, 1.6f))
             {
@@ -7002,28 +7285,71 @@ float allowedStepUp;
         return !enabled || CurrentMovementMode == EnemyMovementMode.FullyStopped || CurrentState == VillagerState.Staggered || (CurrentMovementMode == EnemyMovementMode.StandingPathRootMotion && actualHorizontalMovementSpeed < 0.05f && (chaseNoProgressDuration > 0.35f || movementBlockedDuration > 0.35f));
     }
 
-    /// <summary>IsRelevantCrowdNeighbor 的业务处理入口；本方法直接依赖 Component.GetComponentInParent&lt;VillagerController&gt;()、Mathf.Abs(float)，调用方通过参数与返回结果交接本次处理。</summary>
-    /// <remarks>静态调用链：上游 VillagerController.ConstrainCrowdDisplacement(Vector3, out VillagerController)、VillagerController.IsCrowdBypassDestinationOccupied(Vector3)、VillagerController.ResolveCrowdOverlap()；下游（含内部回调体） Component.GetComponentInParent&lt;VillagerController&gt;()、Mathf.Abs(float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="otherCollider">中文含义：另一个碰撞体。使用位置：VillagerController.IsRelevantCrowdNeighbor(Collider, out VillagerController)。</param>
-    /// <param name="other">中文含义：另一个村民敌人控制器。输出参数，由本入口写入并交给调用方。使用位置：作为 Mathf.Abs(float) 的参数、VillagerController.IsRelevantCrowdNeighbor(Collider, out VillagerController)。</param>
-    private bool IsRelevantCrowdNeighbor(Collider otherCollider, out VillagerController other)
+    private int ReadCrowdNeighbors(Vector3 center, float radius, out IReadOnlyList<VillagerController> neighbors)
     {
-        if (otherCollider != null)
+        var manager = EnemyAIManager.Instance;
+        if (manager != null)
         {
-            other = otherCollider.GetComponentInParent<VillagerController>();
+            neighbors = manager.ReadEnemies;
+            return neighbors.Count;
+        }
+
+        neighbors = null;
+        CombatPerformanceCounters.physicsQueryCount++;
+        return Physics.OverlapSphereNonAlloc(center, radius, movementOverlaps,
+            Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore);
+    }
+
+    private VillagerController ReadCrowdNeighbor(IReadOnlyList<VillagerController> neighbors, int index,
+        Vector3 center, float radius, bool requireMovementCollider = true)
+    {
+        VillagerController other;
+        if (neighbors != null)
+        {
+            other = neighbors[index];
         }
         else
         {
-            other = null;
+            Collider overlap = movementOverlaps[index];
+            if (overlap == null)
+            {
+                return null;
+            }
+            other = overlap.GetComponentInParent<VillagerController>();
+            if (requireMovementCollider && (other == null || overlap != other.movementCollider))
+            {
+                return null;
+            }
         }
 
-        return other != null && other != this && !other.IsDead && other.gameObject.activeInHierarchy && otherCollider == other.movementCollider && Mathf.Abs(other.transform.position.y - transform.position.y) <= 0.75f;
+        if (other == null || other == this || other.IsDead || !other.gameObject.activeInHierarchy
+            || Mathf.Abs(other.transform.position.y - transform.position.y) > 0.75f)
+        {
+            return null;
+        }
+        Collider otherBody = other.movementCollider;
+        if (requireMovementCollider && (otherBody == null || !otherBody.enabled || otherBody.isTrigger
+            || !otherBody.gameObject.activeInHierarchy))
+        {
+            return null;
+        }
+        if (neighbors != null)
+        {
+            Vector3 offset = other.transform.position - center;
+            offset.y = 0f;
+            if (offset.sqrMagnitude > radius * radius)
+            {
+                return null;
+            }
+        }
+
+        return other;
     }
 
     /// <summary>ConstrainCrowdDisplacement 的业务处理入口；本方法直接依赖 Mathf.Max(float, float)、Mathf.Sqrt(float)、Physics.OverlapSphereNonAlloc(Vector3, float, Collider[], int, QueryTriggerInteraction)、Vector3.Dot(Vector3, Vector3)、VillagerController.IsRelevantCrowdNeighbor(Collider, out VillagerController)、VillagerController.ResolveMovementHazardRadius()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillagerController.ExecuteCollisionMovement(Vector3, bool, bool, float)；下游（含内部回调体） Mathf.Max(float, float)、Mathf.Sqrt(float)、Physics.OverlapSphereNonAlloc(Vector3, float, Collider[], int, QueryTriggerInteraction)、Vector3.Dot(Vector3, Vector3)、VillagerController.IsRelevantCrowdNeighbor(Collider, out VillagerController)、VillagerController.ResolveMovementHazardRadius()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="displacement">中文含义：位移。使用位置：VillagerController.ConstrainCrowdDisplacement(Vector3, out VillagerController)。</param>
-    /// <param name="blocker">中文含义：阻挡者。输出参数，由本入口写入并交给调用方。使用位置：VillagerController.ConstrainCrowdDisplacement(Vector3, out VillagerController)。</param>
+    /// <param name="displacement">位移。</param>
+    /// <param name="blocker">阻挡者。输出参数，由本入口写入并交给调用方。</param>
     private Vector3 ConstrainCrowdDisplacement(Vector3 displacement, out VillagerController blocker)
     {
         blocker = null;
@@ -7032,45 +7358,46 @@ float allowedStepUp;
             return displacement;
         }
 
-        // distance（距离）：使用位置：作为 Physics.OverlapSphereNonAlloc(Vector3, float, Collider[], int, QueryTriggerInteraction) 的参数、VillagerController.ConstrainCrowdDisplacement(Vector3, out VillagerController)。
+        // 距离。
 float distance = displacement.magnitude;
-        // direction（方向）：使用位置：作为 Vector3.Dot(Vector3, Vector3) 的参数、VillagerController.ConstrainCrowdDisplacement(Vector3, out VillagerController)。
+        // 方向。
 Vector3 direction = displacement / distance;
-        // bodyRadius（身体半径）：保存 VillagerController.ResolveMovementHazardRadius() 的返回结果，供当前步骤使用。使用位置：作为 Physics.OverlapSphereNonAlloc(Vector3, float, Collider[], int, QueryTriggerInteraction) 的参数、VillagerController.ConstrainCrowdDisplacement(Vector3, out VillagerController)。
+        // 身体半径。
 float bodyRadius = ResolveMovementHazardRadius();
-        CombatPerformanceCounters.physicsQueryCount++;
-        // count（数量）：保存 Physics.OverlapSphereNonAlloc(Vector3, float, Collider[], int, QueryTriggerInteraction) 的返回结果，供当前步骤使用。使用位置：VillagerController.ConstrainCrowdDisplacement(Vector3, out VillagerController)。
-int count = Physics.OverlapSphereNonAlloc(transform.position, bodyRadius * 4f + distance, movementOverlaps, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore);
-        // allowed（允许的）：使用位置：VillagerController.ConstrainCrowdDisplacement(Vector3, out VillagerController)。
+        Vector3 queryCenter = transform.position;
+        float queryRadius = bodyRadius * 4f + distance;
+        int count = ReadCrowdNeighbors(queryCenter, queryRadius, out var neighbors);
+        // 允许的。
 float allowed = distance;
-        // i（当前遍历索引）：使用位置：VillagerController.ConstrainCrowdDisplacement(Vector3, out VillagerController)。
+        // 当前遍历索引。
 for (int i = 0; i < count; i++)
         {
-            if (!IsRelevantCrowdNeighbor(movementOverlaps[i], out VillagerController /* 中文含义：另一个村民敌人控制器。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ other))
+            VillagerController other = ReadCrowdNeighbor(neighbors, i, queryCenter, queryRadius);
+            if (other == null)
             {
                 continue;
             }
 
-            // offset（偏移量）：使用位置：作为 Mathf.Max(float, float) 的参数、作为 Vector3.Dot(Vector3, Vector3) 的参数、VillagerController.ConstrainCrowdDisplacement(Vector3, out VillagerController)。
+            // 偏移量。
 Vector3 offset = other.transform.position - transform.position;
             offset.y = 0f;
-            // separation（分离量）：使用位置：作为 Mathf.Sqrt(float) 的参数、VillagerController.ConstrainCrowdDisplacement(Vector3, out VillagerController)。
+            // 分离量。
 float separation = bodyRadius + other.ResolveMovementHazardRadius() + Mathf.Max(0.01f, movementCollisionSkin);
-            // toward（朝向）：保存 Vector3.Dot(Vector3, Vector3) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Max(float, float) 的参数、VillagerController.ConstrainCrowdDisplacement(Vector3, out VillagerController)。
+            // 朝向。
 float toward = Vector3.Dot(offset, direction);
             if (toward <= 0f)
             {
                 continue;
             }
 
-            // sideSquared（侧边平方）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Sqrt(float) 的参数、VillagerController.ConstrainCrowdDisplacement(Vector3, out VillagerController)。
+            // 侧边平方。
 float sideSquared = Mathf.Max(0f, offset.sqrMagnitude - toward * toward);
             if (sideSquared >= separation * separation)
             {
                 continue;
             }
 
-            // contact（接触）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：VillagerController.ConstrainCrowdDisplacement(Vector3, out VillagerController)。
+            // 接触。
 float contact = Mathf.Max(0f, toward - Mathf.Sqrt(separation * separation - sideSquared));
             if (contact >= allowed)
             {
@@ -7093,29 +7420,30 @@ float contact = Mathf.Max(0f, toward - Mathf.Sqrt(separation * separation - side
             return;
         }
 
-        // radius（半径）：保存 VillagerController.ResolveMovementHazardRadius() 的返回结果，供当前步骤使用。使用位置：作为 Physics.OverlapSphereNonAlloc(Vector3, float, Collider[], int, QueryTriggerInteraction) 的参数、VillagerController.ResolveCrowdOverlap()。
+        // 半径。
 float radius = ResolveMovementHazardRadius();
-        CombatPerformanceCounters.physicsQueryCount++;
-        // count（数量）：保存 Physics.OverlapSphereNonAlloc(Vector3, float, Collider[], int, QueryTriggerInteraction) 的返回结果，供当前步骤使用。使用位置：VillagerController.ResolveCrowdOverlap()。
-int count = Physics.OverlapSphereNonAlloc(transform.position, radius * 4f, movementOverlaps, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore);
-        // recovery（恢复）：使用位置：作为 VillagerController.TryResolveSupportedNavigationPosition(Vector3, float, out Vector3) 的参数、VillagerController.ResolveCrowdOverlap()。
+        Vector3 queryCenter = transform.position;
+        float queryRadius = radius * 4f;
+        int count = ReadCrowdNeighbors(queryCenter, queryRadius, out var neighbors);
+        // 恢复。
 Vector3 recovery = Vector3.zero;
-        // deepest（最深）：使用位置：VillagerController.ResolveCrowdOverlap()。
+        // 最深。
 float deepest = 0f;
-        // i（当前遍历索引）：使用位置：VillagerController.ResolveCrowdOverlap()。
+        // 当前遍历索引。
 for (int i = 0; i < count; i++)
         {
-            if (!IsRelevantCrowdNeighbor(movementOverlaps[i], out VillagerController /* 中文含义：另一个村民敌人控制器。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ other) || other.IsNavigationTraversalProtected || other.IsQTEControlled)
+            VillagerController other = ReadCrowdNeighbor(neighbors, i, queryCenter, queryRadius);
+            if (other == null || other.IsNavigationTraversalProtected || other.IsQTEControlled)
             {
                 continue;
             }
 
-            // away（远离）：使用位置：VillagerController.ResolveCrowdOverlap()。
+            // 远离。
 Vector3 away = transform.position - other.transform.position;
             away.y = 0f;
-            // distance（距离）：使用位置：VillagerController.ResolveCrowdOverlap()。
+            // 距离。
 float distance = away.magnitude;
-            // overlap（重叠）：使用位置：作为 Mathf.Min(float, float) 的参数、VillagerController.ResolveCrowdOverlap()。
+            // 重叠。
 float overlap = radius + other.ResolveMovementHazardRadius() - distance;
             if (overlap <= deepest)
             {
@@ -7126,15 +7454,15 @@ float overlap = radius + other.ResolveMovementHazardRadius() - distance;
             if (distance < 0.001f)
             {
                 // 完全同位时按固定身份确定相反的分离方向，不用随机数逐帧换边。
-                // first（首个）：保存 Mathf.Min(int, int) 的返回结果，供当前步骤使用。使用位置：VillagerController.ResolveCrowdOverlap()。
+                // 首个。
 int first = Mathf.Min(GetInstanceID(), other.GetInstanceID());
-                // second（第二）：保存 Mathf.Max(int, int) 的返回结果，供当前步骤使用。使用位置：VillagerController.ResolveCrowdOverlap()。
+                // 第二。
 int second = Mathf.Max(GetInstanceID(), other.GetInstanceID());
-                // angle（角度）：使用位置：作为 Mathf.Cos(float) 的参数、作为 Mathf.Sin(float) 的参数。
+                // 角度。
 float angle = ((first ^ second) & 1023) * (Mathf.PI * 2f / 1024f);
-                // leftOperand143（计算前缓存的左侧三维向量）：按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：VillagerController.ResolveCrowdOverlap()。
+                // 计算前缓存的左侧三维向量。
 global::UnityEngine.Vector3 leftOperand143 = new Vector3(Mathf.Cos(angle), 0f, Mathf.Sin(angle));
-                // selectedValue142（分支选出的1f）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：VillagerController.ResolveCrowdOverlap()。
+                // 分支选出的1f。
 float selectedValue142;
                 if (GetInstanceID() == first)
                 {
@@ -7156,27 +7484,36 @@ float selectedValue142;
             return;
         }
 
+        HouseThreeRegionNavigation outerRegion = HouseThreeRegionNavigation.Current;
+        if (outerRegion != null && outerRegion.IsOnSecondFloorOuterPlatform(transform.position) &&
+            outerRegion.IsInsideOuterPlatformWindowExclusionZone(supported, 1.35f))
+        {
+            // 禁止挤压恢复把角色退回二楼外平台窗外落脚禁区，防止持续堵塞后续翻窗同伴。
+            return;
+        }
+
         // 分离先验证真实踏面和墙体，只在可站立空间内渐进恢复，不能推离屋顶边缘。
         motionExecutor.CommitNormalPosition(supported);
     }
 
     /// <summary>IsCrowdBypassDestinationOccupied 的业务处理入口；本方法直接依赖 Physics.OverlapSphereNonAlloc(Vector3, float, Collider[], int, QueryTriggerInteraction)、VillagerController.HorizontalDistance(Vector3, Vector3)、VillagerController.IsRelevantCrowdNeighbor(Collider, out VillagerController)、VillagerController.ResolveMovementHazardRadius()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillagerController.TryMutualBlockingYield(VillagerController)、VillagerController.TryStartCrowdBypass(VillagerController)；下游（含内部回调体） Physics.OverlapSphereNonAlloc(Vector3, float, Collider[], int, QueryTriggerInteraction)、VillagerController.HorizontalDistance(Vector3, Vector3)、VillagerController.IsRelevantCrowdNeighbor(Collider, out VillagerController)、VillagerController.ResolveMovementHazardRadius()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="candidate">中文含义：候选。使用位置：作为 Physics.OverlapSphereNonAlloc(Vector3, float, Collider[], int, QueryTriggerInteraction) 的参数、作为 VillagerController.HorizontalDistance(Vector3, Vector3) 的参数。</param>
+    /// <param name="candidate">候选。</param>
     private bool IsCrowdBypassDestinationOccupied(Vector3 candidate)
     {
-        CombatPerformanceCounters.physicsQueryCount++;
-        // count（数量）：保存 Physics.OverlapSphereNonAlloc(Vector3, float, Collider[], int, QueryTriggerInteraction) 的返回结果，供当前步骤使用。使用位置：VillagerController.IsCrowdBypassDestinationOccupied(Vector3)。
-int count = Physics.OverlapSphereNonAlloc(candidate, 3f, movementOverlaps, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore);
-        // i（当前遍历索引）：使用位置：VillagerController.IsCrowdBypassDestinationOccupied(Vector3)。
+        Vector3 queryCenter = candidate;
+        float queryRadius = 3f;
+        int count = ReadCrowdNeighbors(queryCenter, queryRadius, out var neighbors);
+        // 当前遍历索引。
 for (int i = 0; i < count; i++)
         {
-            if (!IsRelevantCrowdNeighbor(movementOverlaps[i], out VillagerController /* 中文含义：另一个村民敌人控制器。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ other))
+            VillagerController other = ReadCrowdNeighbor(neighbors, i, queryCenter, queryRadius);
+            if (other == null)
             {
                 continue;
             }
 
-            // separation（分离量）：使用位置：VillagerController.IsCrowdBypassDestinationOccupied(Vector3)。
+            // 分离量。
 float separation = ResolveMovementHazardRadius() + other.ResolveMovementHazardRadius() + 0.1f;
             if (HorizontalDistance(candidate, other.transform.position) < separation || (other.IsCrowdBypassing && HorizontalDistance(candidate, other.crowdBypassDestination) < separation))
             {
@@ -7189,7 +7526,7 @@ float separation = ResolveMovementHazardRadius() + other.ResolveMovementHazardRa
 
     /// <summary>ResolveLocalAvoidanceDisplacement 的业务处理入口；本方法直接依赖 Component.GetComponentInParent&lt;VillagerController&gt;()、Mathf.Abs(float)、Mathf.Clamp(float, float, float)、Mathf.Max(float, float)、Mathf.Min(float, float)、Object.GetInstanceID()、Physics.OverlapSphereNonAlloc(Vector3, float, Collider[], int, QueryTriggerInteraction) 等共 16 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillagerController.ExecuteCollisionMovement(Vector3, bool, bool, float)、VillagerController.UpdateCodeDrivenMovement()；下游（含内部回调体） Component.GetComponentInParent&lt;VillagerController&gt;()、Mathf.Abs(float)、Mathf.Clamp(float, float, float)、Mathf.Max(float, float)、Mathf.Min(float, float)、Object.GetInstanceID()、Physics.OverlapSphereNonAlloc(Vector3, float, Collider[], int, QueryTriggerInteraction) 等共 16 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="displacement">中文含义：位移。使用位置：作为 VillagerController.IsInsideTraversalBottleneck(Vector3) 的参数、作为 VillagerController.StabilizeLocalAvoidanceDirection(Vector3, float, Vector3) 的参数、VillagerController.ResolveLocalAvoidanceDisplacement(Vector3)。</param>
+    /// <param name="displacement">位移。</param>
     private Vector3 ResolveLocalAvoidanceDisplacement(Vector3 displacement)
     {
         if (!enableLocalAvoidance || displacement.sqrMagnitude <= 0.000001f)
@@ -7197,44 +7534,37 @@ float separation = ResolveMovementHazardRadius() + other.ResolveMovementHazardRa
             return displacement;
         }
 
-        if (IsInsideTraversalBottleneck(displacement))
+        if (IsInsideTraversalBottleneck(displacement) || IsOnSecondFloorOuterPlatformArea(displacement))
         {
             lastStableAvoidanceDirection = displacement.normalized;
             return displacement;
         }
 
-        // direction（方向）：使用位置：作为 Vector3.Cross(Vector3, Vector3) 的参数、作为 Vector3.Dot(Vector3, Vector3) 的参数、作为 Vector3.Lerp(Vector3, Vector3, float) 的参数 等共 5 处。
+        // 方向。
 Vector3 direction = displacement.normalized;
-        CombatPerformanceCounters.physicsQueryCount++;
-        // overlapCount（重叠数量）：保存 Physics.OverlapSphereNonAlloc(Vector3, float, Collider[], int, QueryTriggerInteraction) 的返回结果，供当前步骤使用。使用位置：VillagerController.ResolveLocalAvoidanceDisplacement(Vector3)。
-int overlapCount = Physics.OverlapSphereNonAlloc(transform.position, enemyAvoidanceRadius, movementOverlaps, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore);
-        // side（侧边）：使用位置：作为 Vector3.Dot(Vector3, Vector3) 的参数、VillagerController.ResolveLocalAvoidanceDisplacement(Vector3)。
+        Vector3 queryCenter = transform.position;
+        float queryRadius = enemyAvoidanceRadius;
+        int overlapCount = ReadCrowdNeighbors(queryCenter, queryRadius, out var neighbors);
+        // 侧边。
 Vector3 side = Vector3.Cross(Vector3.up, direction).normalized;
-        // dominantNeighbor（主导邻居）：使用位置：作为 Vector3.Dot(Vector3, Vector3) 的参数、作为 VillagerController.TryStartCrowdBypass(VillagerController) 的参数、VillagerController.ResolveLocalAvoidanceDisplacement(Vector3)。
+        // 主导邻居。
 VillagerController dominantNeighbor = null;
-        // dominantWeight（主导权重）：使用位置：作为 Mathf.Max(float, float) 的参数、VillagerController.ResolveLocalAvoidanceDisplacement(Vector3)。
+        // 主导权重。
 float dominantWeight = 0f;
-        // i（当前遍历索引）：使用位置：VillagerController.ResolveLocalAvoidanceDisplacement(Vector3)。
+        // 当前遍历索引。
 for (int i = 0; i < overlapCount; i++)
         {
             // nearbyCollider（附近碰撞体）：使用位置：VillagerController.ResolveLocalAvoidanceDisplacement(Vector3)。
-Collider nearbyCollider = movementOverlaps[i];
-            if (nearbyCollider == null)
+            VillagerController nearbyEnemy = ReadCrowdNeighbor(neighbors, i, queryCenter, queryRadius, false);
+            if (nearbyEnemy == null)
             {
                 continue;
             }
 
-            // nearbyEnemy（附近敌人）：保存 Component.GetComponentInParent<VillagerController>() 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Abs(float) 的参数、VillagerController.ResolveLocalAvoidanceDisplacement(Vector3)。
-VillagerController nearbyEnemy = nearbyCollider.GetComponentInParent<VillagerController>();
-            if (nearbyEnemy == null || nearbyEnemy == this || nearbyEnemy.IsDead)
-            {
-                continue;
-            }
-
-            // offset（偏移量）：使用位置：VillagerController.ResolveLocalAvoidanceDisplacement(Vector3)。
+            // 偏移量。
 Vector3 offset = transform.position - nearbyEnemy.transform.position;
             offset.y = 0f;
-            // distance（距离）：使用位置：VillagerController.ResolveLocalAvoidanceDisplacement(Vector3)。
+            // 距离。
 float distance = offset.magnitude;
             if (distance >= enemyAvoidanceRadius || Mathf.Abs(transform.position.y - nearbyEnemy.transform.position.y) > 0.75f)
             {
@@ -7243,7 +7573,7 @@ float distance = offset.magnitude;
 
             if (distance > 0.001f)
             {
-                // towardEnemy（朝向敌人）：使用位置：作为 Vector3.Dot(Vector3, Vector3) 的参数。
+                // 朝向敌人。
 Vector3 towardEnemy = -offset / distance;
                 if (Vector3.Dot(direction, towardEnemy) < -0.25f)
                 {
@@ -7251,7 +7581,7 @@ Vector3 towardEnemy = -offset / distance;
                 }
             }
 
-            // weight（权重）：使用位置：VillagerController.ResolveLocalAvoidanceDisplacement(Vector3)。
+            // 权重。
 float weight = 1f - distance / enemyAvoidanceRadius;
             if (weight > dominantWeight)
             {
@@ -7271,7 +7601,7 @@ float weight = 1f - distance / enemyAvoidanceRadius;
             return StabilizeLocalAvoidanceDirection(direction, displacement.magnitude);
         }
 
-        // towardStoppedNeighbor（朝向已停止邻居）：使用位置：作为 Vector3.Dot(Vector3, Vector3) 的参数、VillagerController.ResolveLocalAvoidanceDisplacement(Vector3)。
+        // 朝向已停止邻居。
 Vector3 towardStoppedNeighbor = dominantNeighbor.transform.position - transform.position;
         towardStoppedNeighbor.y = 0f;
         if (dominantWeight > 0.25f && towardStoppedNeighbor.sqrMagnitude > 0.0001f && Vector3.Dot(direction, towardStoppedNeighbor.normalized) > 0.7f && dominantNeighbor.IsCrowdMovementStalled())
@@ -7280,18 +7610,18 @@ Vector3 towardStoppedNeighbor = dominantNeighbor.transform.position - transform.
             TryStartCrowdBypass(dominantNeighbor);
         }
 
-        // dominantId（主导编号）：保存 Object.GetInstanceID() 的返回结果，供当前步骤使用。使用位置：VillagerController.ResolveLocalAvoidanceDisplacement(Vector3)。
+        // 主导编号。
 int dominantId = dominantNeighbor.GetInstanceID();
         if (localAvoidanceSideSign == 0)
         {
             // 每名敌人的通过侧在一次接触中固定，不随“最近邻”在相邻
             // 敌人之间切换。此前分离向量会在邻居从左到右越过时反向，
             // 即使里昂静止也会持续左右摆动。
-            // neighborSide（邻居侧边）：保存 Vector3.Dot(Vector3, Vector3) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Abs(float) 的参数、VillagerController.ResolveLocalAvoidanceDisplacement(Vector3)。
+            // 邻居侧边。
 float neighborSide = Vector3.Dot(transform.position - dominantNeighbor.transform.position, side);
             if (Mathf.Abs(neighborSide) > 0.05f)
             {
-                // selectedValue144（分支选出的1）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：VillagerController.ResolveLocalAvoidanceDisplacement(Vector3)。
+                // 分支选出的1。
 int selectedValue144;
                 if (neighborSide > 0f)
                 {
@@ -7323,7 +7653,7 @@ int selectedValue144;
         // 局部避让只能在主追击方向的一侧产生有限偏移，不能把每帧的
         // 相对位置直接当作新目标方向。这样敌人会完成一次明确的绕行，
         // 而不是在前进途中持续向左右重新选边。
-        // steering（转向）：使用位置：作为 Mathf.Min(float, float) 的参数、作为 Vector3.Lerp(Vector3, Vector3, float) 的参数、VillagerController.ResolveLocalAvoidanceDisplacement(Vector3)。
+        // 转向。
 Vector3 steering = side * localAvoidanceSideSign * Mathf.Max(0.05f, enemyAvoidanceSideBias + dominantWeight * enemyAvoidanceStrength);
         steering.y = 0f;
         if (steering.sqrMagnitude <= 0.0001f)
@@ -7332,9 +7662,9 @@ Vector3 steering = side * localAvoidanceSideSign * Mathf.Max(0.05f, enemyAvoidan
         }
 
         // 追击方向始终占主导，局部避让只以有限权重修正。
-        // avoidanceWeight（避障权重）：保存 Mathf.Min(float, float) 的返回结果，供当前步骤使用。使用位置：作为 Vector3.Lerp(Vector3, Vector3, float) 的参数。
+        // 避障权重。
 float avoidanceWeight = Mathf.Min(Mathf.Clamp(enemyAvoidanceMaximumWeight, 0f, 0.22f), steering.magnitude * Mathf.Clamp(enemyAvoidanceMaximumWeight, 0f, 0.22f));
-        // avoidedDirection（已避开方向）：使用位置：作为 Vector3.RotateTowards(Vector3, Vector3, float, float) 的参数、作为 VillagerController.StabilizeLocalAvoidanceDirection(Vector3, float, Vector3) 的参数、VillagerController.ResolveLocalAvoidanceDisplacement(Vector3)。
+        // 已避开方向。
 Vector3 avoidedDirection = Vector3.Lerp(direction, steering.normalized, avoidanceWeight).normalized;
         avoidedDirection = Vector3.RotateTowards(direction, avoidedDirection, Mathf.Deg2Rad * ResolveLocalAvoidanceMaximumAngle(), 0f);
         return StabilizeLocalAvoidanceDirection(avoidedDirection, displacement.magnitude, direction);
@@ -7342,9 +7672,9 @@ Vector3 avoidedDirection = Vector3.Lerp(direction, steering.normalized, avoidanc
 
     /// <summary>StabilizeLocalAvoidanceDirection 的业务处理入口；本方法直接依赖 Mathf.Max(float, float)、Mathf.Min(float, float)、Vector3.Dot(Vector3, Vector3)、Vector3.Normalize()、Vector3.RotateTowards(Vector3, Vector3, float, float)、VillagerController.ResolveLocalAvoidanceMinimumForwardAlignment()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillagerController.ResolveLocalAvoidanceDisplacement(Vector3)；下游（含内部回调体） Mathf.Max(float, float)、Mathf.Min(float, float)、Vector3.Dot(Vector3, Vector3)、Vector3.Normalize()、Vector3.RotateTowards(Vector3, Vector3, float, float)、VillagerController.ResolveLocalAvoidanceMinimumForwardAlignment()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="desired">中文含义：期望。使用位置：作为 Vector3.RotateTowards(Vector3, Vector3, float, float) 的参数、VillagerController.StabilizeLocalAvoidanceDirection(Vector3, float, Vector3)。</param>
-    /// <param name="distance">中文含义：距离。使用位置：VillagerController.StabilizeLocalAvoidanceDirection(Vector3, float, Vector3)。</param>
-    /// <param name="forwardConstraint">中文含义：前向约束。使用位置：作为 Vector3.Dot(Vector3, Vector3) 的参数、VillagerController.StabilizeLocalAvoidanceDirection(Vector3, float, Vector3)。</param>
+    /// <param name="desired">期望。</param>
+    /// <param name="distance">距离。</param>
+    /// <param name="forwardConstraint">前向约束。</param>
     private Vector3 StabilizeLocalAvoidanceDirection(Vector3 desired, float distance, Vector3 forwardConstraint = default)
     {
         desired.y = 0f;
@@ -7359,7 +7689,7 @@ Vector3 avoidedDirection = Vector3.Lerp(direction, steering.normalized, avoidanc
             lastStableAvoidanceDirection = desired;
         }
 
-        // maximumRadians（最大弧度）：使用位置：作为 Vector3.RotateTowards(Vector3, Vector3, float, float) 的参数。
+        // 最大弧度。
 float maximumRadians = Mathf.Deg2Rad * Mathf.Min(180f, Mathf.Max(1f, localAvoidanceTurnRate)) * Time.deltaTime;
         lastStableAvoidanceDirection = Vector3.RotateTowards(lastStableAvoidanceDirection, desired, maximumRadians, 0f);
         forwardConstraint.y = 0f;
@@ -7383,7 +7713,7 @@ float maximumRadians = Mathf.Deg2Rad * Mathf.Min(180f, Mathf.Max(1f, localAvoida
     /// <remarks>静态调用链：上游 VillagerController.ConstrainAvoidanceToPursuitDirection(Vector3, Vector3)、VillagerController.ResolveLocalAvoidanceDisplacement(Vector3)、VillagerController.ResolveLocalAvoidanceMinimumForwardAlignment()；下游（含内部回调体） Mathf.Clamp(float, float, float)、Mathf.Max(float, float)、Mathf.Min(float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     private float ResolveLocalAvoidanceMaximumAngle()
     {
-        // facingSafeAngle（朝向安全角度）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Min(float, float) 的参数。
+        // 朝向安全角度。
 float facingSafeAngle = Mathf.Max(5f, movementFacingStopAngle - 5f);
         return Mathf.Min(Mathf.Clamp(enemyAvoidanceMaximumAngle, 5f, 60f), facingSafeAngle);
     }
@@ -7401,8 +7731,8 @@ float facingSafeAngle = Mathf.Max(5f, movementFacingStopAngle - 5f);
     /// 否则朝向限速会把有效追击路径错误地压成零位移。
     /// </summary>
     /// <remarks>静态调用链：上游 VillagerController.UpdateCodeDrivenMovement()；下游（含内部回调体） Vector3.Dot(Vector3, Vector3)、Vector3.Normalize()、Vector3.RotateTowards(Vector3, Vector3, float, float)、VillagerController.ResolveLocalAvoidanceMaximumAngle()、VillagerController.ResolveLocalAvoidanceMinimumForwardAlignment()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="avoidanceDisplacement">中文含义：避障位移。使用位置：VillagerController.ConstrainAvoidanceToPursuitDirection(Vector3, Vector3)。</param>
-    /// <param name="pursuitDirection">中文含义：追击方向。使用位置：作为 Vector3.Dot(Vector3, Vector3) 的参数、作为 Vector3.RotateTowards(Vector3, Vector3, float, float) 的参数、VillagerController.ConstrainAvoidanceToPursuitDirection(Vector3, Vector3)。</param>
+    /// <param name="avoidanceDisplacement">避障位移。</param>
+    /// <param name="pursuitDirection">追击方向。</param>
     private Vector3 ConstrainAvoidanceToPursuitDirection(Vector3 avoidanceDisplacement, Vector3 pursuitDirection)
     {
         avoidanceDisplacement.y = 0f;
@@ -7412,9 +7742,9 @@ float facingSafeAngle = Mathf.Max(5f, movementFacingStopAngle - 5f);
             return avoidanceDisplacement;
         }
 
-        // distance（距离）：使用位置：VillagerController.ConstrainAvoidanceToPursuitDirection(Vector3, Vector3)。
+        // 距离。
 float distance = avoidanceDisplacement.magnitude;
-        // avoidanceDirection（避障方向）：使用位置：作为 Vector3.Dot(Vector3, Vector3) 的参数、作为 Vector3.RotateTowards(Vector3, Vector3, float, float) 的参数。
+        // 避障方向。
 Vector3 avoidanceDirection = avoidanceDisplacement / distance;
         pursuitDirection.Normalize();
         if (Vector3.Dot(avoidanceDirection, pursuitDirection) >= ResolveLocalAvoidanceMinimumForwardAlignment())
@@ -7422,17 +7752,62 @@ Vector3 avoidanceDirection = avoidanceDisplacement / distance;
             return avoidanceDisplacement;
         }
 
-        // constrainedDirection（约束后的方向）：保存 Vector3.RotateTowards(Vector3, Vector3, float, float) 的返回结果，供当前步骤使用。使用位置：VillagerController.ConstrainAvoidanceToPursuitDirection(Vector3, Vector3)。
+        // 约束后的方向。
 Vector3 constrainedDirection = Vector3.RotateTowards(pursuitDirection, avoidanceDirection, Mathf.Deg2Rad * ResolveLocalAvoidanceMaximumAngle(), 0f);
         return constrainedDirection.normalized * distance;
     }
 
     /// <summary>IsInsideTraversalBottleneck 的业务处理入口；本方法直接依赖 DoorController.IsInsideOpenPassage(Vector3, float)、Mathf.Max(float, float)、Vector3.Normalize()、VillagerController.IsApproachingEnemyStairBridge()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillagerController.ResolveCrowdOverlap()、VillagerController.ResolveLocalAvoidanceDisplacement(Vector3)、VillagerController.TryStartCrowdBypass(VillagerController)、VillagerController.UpdateChaseProgressRecovery()；下游（含内部回调体） DoorController.IsInsideOpenPassage(Vector3, float)、Mathf.Max(float, float)、Vector3.Normalize()、VillagerController.IsApproachingEnemyStairBridge()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="displacement">中文含义：位移。使用位置：VillagerController.IsInsideTraversalBottleneck(Vector3)。</param>
+    /// <param name="displacement">位移。</param>
+    internal bool HasActivePlatformExitClearance
+    {
+        get
+        {
+            if (specialTraversal != null && specialTraversal.HasActivePlatformExitClearance)
+            {
+                return true;
+            }
+
+            return false;
+        }
+    }
+
+    internal void ClearStaleSawmanIntroTauntAfterTraversal()
+    {
+        if (chainsawBridge != null)
+        {
+            chainsawBridge.MarkIntroTauntResolvedAfterTraversal();
+        }
+    }
+
+    private bool IsOnSecondFloorOuterPlatformArea(Vector3 displacement)
+    {
+        HouseThreeRegionNavigation region = HouseThreeRegionNavigation.Current;
+        if (region == null)
+        {
+            return false;
+        }
+
+        if (region.IsOnSecondFloorOuterPlatform(transform.position))
+        {
+            return true;
+        }
+
+        Vector3 direction = displacement;
+        direction.y = 0f;
+        if (direction.sqrMagnitude > 0.0001f)
+        {
+            direction.Normalize();
+        }
+
+        Vector3 probe = transform.position + direction * Mathf.Max(0.35f, doorOpenProbeDistance);
+        return region.IsOnSecondFloorOuterPlatform(probe);
+    }
+
     private bool IsInsideTraversalBottleneck(Vector3 displacement)
     {
-        // direction（方向）：使用位置：VillagerController.IsInsideTraversalBottleneck(Vector3)。
+        // 方向。
 Vector3 direction = displacement;
         direction.y = 0f;
         if (direction.sqrMagnitude > 0.0001f)
@@ -7440,22 +7815,22 @@ Vector3 direction = displacement;
             direction.Normalize();
         }
 
-        // probe（探测）：使用位置：作为 DoorController.IsInsideOpenPassage(Vector3, float) 的参数。
+        // 探测。
 Vector3 probe = transform.position + direction * Mathf.Max(0.35f, doorOpenProbeDistance);
         return DoorController.IsInsideOpenPassage(transform.position, 2.75f) || DoorController.IsInsideOpenPassage(probe, 2.75f);
     }
 
     /// <summary>MoveWithCollision 的业务处理入口；本方法直接依赖 Mathf.CeilToInt(float)、PathAgent.TryGetCurrentWaypoint(out Vector3)、Vector3.ClampMagnitude(Vector3, float)、Vector3.Dot(Vector3, Vector3)、Vector3.ProjectOnPlane(Vector3, Vector3)、VillagerController.ExecuteCollisionMovement(Vector3, bool, bool, float)、VillagerController.GetHorizontalMovementSince(Vector3) 等共 9 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillagerController.DriveExternalKnockback(Vector3, float, float)、VillagerController.OnAnimatorMove()、VillagerController.TryExecuteStairActionDisplacement(Vector3)、VillagerController.UpdateCodeDrivenMovement()；下游（含内部回调体） Mathf.CeilToInt(float)、PathAgent.TryGetCurrentWaypoint(out Vector3)、Vector3.ClampMagnitude(Vector3, float)、Vector3.Dot(Vector3, Vector3)、Vector3.ProjectOnPlane(Vector3, Vector3)、VillagerController.ExecuteCollisionMovement(Vector3, bool, bool, float)、VillagerController.GetHorizontalMovementSince(Vector3) 等共 9 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="displacement">中文含义：位移。使用位置：作为 Vector3.ClampMagnitude(Vector3, float) 的参数、作为 Vector3.Dot(Vector3, Vector3) 的参数、作为 VillagerController.ExecuteCollisionMovement(Vector3, bool, bool, float) 的参数 等共 4 处。</param>
-    /// <param name="strictActionCollision">中文含义：是否严格动作碰撞。使用位置：作为 VillagerController.ExecuteCollisionMovement(Vector3, bool, bool, float) 的参数、VillagerController.MoveWithCollision(Vector3, bool, bool)。</param>
-    /// <param name="applyLocalAvoidance">中文含义：是否应用局部避障。使用位置：作为 VillagerController.ExecuteCollisionMovement(Vector3, bool, bool, float) 的参数。</param>
+    /// <param name="displacement">位移。</param>
+    /// <param name="strictActionCollision">是否严格动作碰撞。</param>
+    /// <param name="applyLocalAvoidance">是否应用局部避障。</param>
     private Vector3 MoveWithCollision(Vector3 displacement, bool strictActionCollision = false, bool applyLocalAvoidance = true)
     {
         displacement.y = 0f;
         if (!strictActionCollision && CurrentMovementMode == EnemyMovementMode.StandingPathRootMotion && !standingDirectPursuitForFrame && !IsCrowdBypassing && PlantNearHouseThreeTread(transform.position) && agent != null && agent.TryGetCurrentWaypoint(out Vector3 /* 中文含义：当前路径点。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ currentWaypoint))
         {
-            // toWaypoint（目标路径点）：保存 Vector3.ProjectOnPlane(Vector3, Vector3) 的返回结果，供当前步骤使用。使用位置：作为 Vector3.ClampMagnitude(Vector3, float) 的参数、作为 Vector3.Dot(Vector3, Vector3) 的参数、VillagerController.MoveWithCollision(Vector3, bool, bool)。
+            // 目标路径点。
 Vector3 toWaypoint = Vector3.ProjectOnPlane(currentWaypoint - transform.position, Vector3.up);
             // 长帧的整步可能越过近路点，再跨数级台阶返回，永远无法满足
             // 同时到达的高度条件。先实际踩到当前路点，再由寻路代理推进。
@@ -7465,7 +7840,7 @@ Vector3 toWaypoint = Vector3.ProjectOnPlane(currentWaypoint - transform.position
             }
         }
 
-        // distance（距离）：使用位置：作为 Mathf.CeilToInt(float) 的参数、VillagerController.MoveWithCollision(Vector3, bool, bool)。
+        // 距离。
 float distance = displacement.magnitude;
         if (distance <= .12f || !PlantNearHouseThreeTread(transform.position))
         {
@@ -7474,16 +7849,16 @@ float distance = displacement.magnitude;
 
         // 一帧较长时仍沿实体踏面连续移动，避免先横跨数阶再失去高度归属。
         // 每个短步仍经过同一个碰撞执行器，不改变目标、通行顺序或位移负责方。
-        // startPoint（起始点）：使用位置：作为 VillagerController.GetHorizontalMovementSince(Vector3) 的参数。
+        // 起始点。
 Vector3 startPoint = transform.position;
-        // count（数量）：保存 Mathf.CeilToInt(float) 的返回结果，供当前步骤使用。使用位置：作为 VillagerController.ExecuteCollisionMovement(Vector3, bool, bool, float) 的参数、VillagerController.MoveWithCollision(Vector3, bool, bool)。
+        // 数量。
 int count = Mathf.CeilToInt(distance / .12f);
-        // shortStep（短型步进）：使用位置：作为 VillagerController.ExecuteCollisionMovement(Vector3, bool, bool, float) 的参数。
+        // 短型步进。
 Vector3 shortStep = displacement / count;
-        // i（当前遍历索引）：使用位置：VillagerController.MoveWithCollision(Vector3, bool, bool)。
+        // 当前遍历索引。
 for (int i = 0; i < count; i++)
         {
-            // actual（实际）：保存 VillagerController.ExecuteCollisionMovement(Vector3, bool, bool, float) 的返回结果，供当前步骤使用。使用位置：VillagerController.MoveWithCollision(Vector3, bool, bool)。
+            // 实际。
 var actual = ExecuteCollisionMovement(shortStep, strictActionCollision, applyLocalAvoidance, Time.deltaTime / count);
             MaintainGroundContact();
             if (actual.sqrMagnitude < .00000001f)
@@ -7497,21 +7872,21 @@ var actual = ExecuteCollisionMovement(shortStep, strictActionCollision, applyLoc
 
     /// <summary>ExecuteCollisionMovement 的业务处理入口；本方法直接依赖 CharacterMotionExecutor.CommitNormalPosition(Vector3)、Mathf.Max(float, float)、Mathf.Min(float, float)、Vector3.ClampMagnitude(Vector3, float)、Vector3.Dot(Vector3, Vector3)、Vector3.Normalize()、Vector3.ProjectOnPlane(Vector3, Vector3) 等共 17 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillagerController.MoveWithCollision(Vector3, bool, bool)；下游（含内部回调体） CharacterMotionExecutor.CommitNormalPosition(Vector3)、Mathf.Max(float, float)、Mathf.Min(float, float)、Vector3.ClampMagnitude(Vector3, float)、Vector3.Dot(Vector3, Vector3)、Vector3.Normalize()、Vector3.ProjectOnPlane(Vector3, Vector3) 等共 17 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="displacement">中文含义：位移。使用位置：作为 CharacterMotionExecutor.CommitNormalPosition(Vector3) 的参数、作为 Vector3.Dot(Vector3, Vector3) 的参数、作为 VillagerController.ConstrainCrowdDisplacement(Vector3, out VillagerController) 的参数 等共 6 处。</param>
-    /// <param name="strictActionCollision">中文含义：是否严格动作碰撞。使用位置：作为 VillagerController.ResolveMovementOverlap(bool) 的参数、作为 VillagerController.TryFindMovementBlocker(Vector3, Vector3, float, Vector3, float, out RaycastHit, bool, bool, bool) 的参数、VillagerController.ExecuteCollisionMovement(Vector3, bool, bool, float)。</param>
-    /// <param name="applyLocalAvoidance">中文含义：是否应用局部避障。使用位置：VillagerController.ExecuteCollisionMovement(Vector3, bool, bool, float)。</param>
-    /// <param name="timeSlice">中文含义：时间片段。使用位置：作为 VillagerController.UpdateBlockedMovement(float, Vector3, RaycastHit, VillagerController, float) 的参数。</param>
+    /// <param name="displacement">位移。</param>
+    /// <param name="strictActionCollision">是否严格动作碰撞。</param>
+    /// <param name="applyLocalAvoidance">是否应用局部避障。</param>
+    /// <param name="timeSlice">时间片段。</param>
     private Vector3 ExecuteCollisionMovement(Vector3 displacement, bool strictActionCollision, bool applyLocalAvoidance, float timeSlice)
     {
         displacement.y = 0f;
-        // requestedDistance（请求的距离）：使用位置：作为 Vector3.ClampMagnitude(Vector3, float) 的参数、作为 VillagerController.ResolveFacingLimitedStandingDisplacement(Vector3) 的参数、作为 VillagerController.UpdateBlockedMovement(float, Vector3, RaycastHit, VillagerController, float) 的参数 等共 4 处。
+        // 请求的距离。
 float requestedDistance = displacement.magnitude;
         if (requestedDistance <= 0.0001f)
         {
             return Vector3.zero;
         }
 
-        // startPosition（起始位置）：使用位置：作为 VillagerController.GetHorizontalMovementSince(Vector3) 的参数、作为 VillagerController.UpdateBlockedMovement(float, Vector3, RaycastHit, VillagerController, float) 的参数。
+        // 起始位置。
 Vector3 startPosition = transform.position;
         ResolveMovementOverlap(strictActionCollision);
         if (!strictActionCollision && applyLocalAvoidance)
@@ -7519,7 +7894,7 @@ Vector3 startPosition = transform.position;
             displacement = ResolveLocalAvoidanceDisplacement(displacement);
         }
 
-        // crowdBlocker（人群阻挡者）：使用位置：作为 VillagerController.ConstrainCrowdDisplacement(Vector3, out VillagerController) 的参数、作为 VillagerController.UpdateBlockedMovement(float, Vector3, RaycastHit, VillagerController, float) 的参数、VillagerController.ExecuteCollisionMovement(Vector3, bool, bool, float)。
+        // 人群阻挡者。
 VillagerController crowdBlocker = null;
         if (!strictActionCollision)
         {
@@ -7528,22 +7903,22 @@ VillagerController crowdBlocker = null;
             {
                 // 侧向避让可能偏向紧贴身后的同伴，再被人群碰撞截停。
                 // 当前路点方向若仍有净空，就使用它；同样检测人群和墙体，不能穿过堵路者。
-                // pathDisplacement（路径位移）：保存 VillagerController.ResolveFacingLimitedStandingDisplacement(Vector3) 的返回结果，供当前步骤使用。使用位置：作为 Vector3.ProjectOnPlane(Vector3, Vector3) 的参数、作为 VillagerController.ConstrainCrowdDisplacement(Vector3, out VillagerController) 的参数。
+                // 路径位移。
 Vector3 pathDisplacement = ResolveFacingLimitedStandingDisplacement(agent.desiredDirection * requestedDistance);
-                // canWalkDisplacement（是否可以行走位移）：保存 VillagerController.ConstrainCrowdDisplacement(Vector3, out VillagerController) 的返回结果，供当前步骤使用。使用位置：VillagerController.ExecuteCollisionMovement(Vector3, bool, bool, float)。
+                // 是否可以行走位移。
 Vector3 canWalkDisplacement = ConstrainCrowdDisplacement(pathDisplacement, out var /* 中文含义：路径阻挡者。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ pathBlocker);
                 if (pathBlocker != null)
                 {
                     // 紧贴安全间距时，极小的朝内分量也会令圆形人群检测截停。
                     // 沿接触切线滑动并略微分离，避免转弯时被身后角色锁死。
-                    // separateDirection（分离方向）：使用位置：作为 Vector3.ClampMagnitude(Vector3, float) 的参数、作为 Vector3.ProjectOnPlane(Vector3, Vector3) 的参数。
+                    // 分离方向。
 Vector3 separateDirection = Vector3.ProjectOnPlane(transform.position - pathBlocker.transform.position, Vector3.up).normalized;
-                    // tangentialDisplacement（切向位移）：保存 Vector3.ProjectOnPlane(Vector3, Vector3) 的返回结果，供当前步骤使用。使用位置：作为 Vector3.ClampMagnitude(Vector3, float) 的参数、作为 Vector3.Dot(Vector3, Vector3) 的参数、作为 VillagerController.ConstrainCrowdDisplacement(Vector3, out VillagerController) 的参数 等共 4 处。
+                    // 切向位移。
 Vector3 tangentialDisplacement = Vector3.ProjectOnPlane(pathDisplacement, separateDirection);
                     if (tangentialDisplacement.sqrMagnitude > .000001f && Vector3.Dot(tangentialDisplacement.normalized, agent.desiredDirection) >= .85f)
                     {
                         tangentialDisplacement = Vector3.ClampMagnitude(tangentialDisplacement + separateDirection * requestedDistance * .05f, requestedDistance);
-                        // sliding（滑移中）：保存 VillagerController.ConstrainCrowdDisplacement(Vector3, out VillagerController) 的返回结果，供当前步骤使用。使用位置：VillagerController.ExecuteCollisionMovement(Vector3, bool, bool, float)。
+                        // 滑移中。
 var sliding = ConstrainCrowdDisplacement(tangentialDisplacement, out var /* 中文含义：滑移中阻挡者。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ slidingBlocker);
                         if (sliding.sqrMagnitude > canWalkDisplacement.sqrMagnitude)
                         {
@@ -7561,7 +7936,7 @@ var sliding = ConstrainCrowdDisplacement(tangentialDisplacement, out var /* 中�
             }
         }
 
-        // distance（距离）：使用位置：作为 Mathf.Min(float, float) 的参数、作为 VillagerController.TryFindMovementBlocker(Vector3, Vector3, float, Vector3, float, out RaycastHit, bool, bool, bool) 的参数、VillagerController.ExecuteCollisionMovement(Vector3, bool, bool, float)。
+        // 距离。
 float distance = displacement.magnitude;
         if (distance <= 0.0001f)
         {
@@ -7577,7 +7952,7 @@ float distance = displacement.magnitude;
             return GetHorizontalMovementSince(startPosition);
         }
 
-        // direction（方向）：使用位置：作为 CharacterMotionExecutor.CommitNormalPosition(Vector3) 的参数、作为 VillagerController.TryFindMovementBlocker(Vector3, Vector3, float, Vector3, float, out RaycastHit, bool, bool, bool) 的参数、VillagerController.ExecuteCollisionMovement(Vector3, bool, bool, float)。
+        // 方向。
 Vector3 direction = displacement / distance;
         if (!TryGetMovementCapsule(out Vector3 /* 中文含义：顶部。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ top, out Vector3 /* 中文含义：底部。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ bottom, out float /* 中文含义：半径。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ radius))
         {
@@ -7612,7 +7987,7 @@ Vector3 direction = displacement / distance;
             return GetHorizontalMovementSince(startPosition);
         }
 
-        // collisionClearance（碰撞净空）：使用位置：作为 Mathf.Max(float, float) 的参数、VillagerController.ExecuteCollisionMovement(Vector3, bool, bool, float)。
+        // 碰撞净空。
 float collisionClearance;
         if (strictActionCollision)
         {
@@ -7623,14 +7998,14 @@ float collisionClearance;
             collisionClearance = Mathf.Max(0.001f, movementCollisionSkin);
         }
 
-        // allowedDistance（允许的距离）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Min(float, float) 的参数、VillagerController.ExecuteCollisionMovement(Vector3, bool, bool, float)。
+        // 允许的距离。
 float allowedDistance = Mathf.Max(0f, hit.distance - collisionClearance);
         if (allowedDistance > 0f)
         {
             motionExecutor.CommitNormalPosition(transform.position + direction * Mathf.Min(distance, allowedDistance));
         }
 
-        // consumedDistance（已消耗距离）：保存 Mathf.Min(float, float) 的返回结果，供当前步骤使用。使用位置：VillagerController.ExecuteCollisionMovement(Vector3, bool, bool, float)。
+        // 已消耗距离。
 float consumedDistance = Mathf.Min(distance, allowedDistance);
         if (strictActionCollision)
         {
@@ -7638,23 +8013,23 @@ float consumedDistance = Mathf.Min(distance, allowedDistance);
             return GetHorizontalMovementSince(startPosition);
         }
 
-        // remaining（剩余）：使用位置：作为 Vector3.ProjectOnPlane(Vector3, Vector3) 的参数、VillagerController.ExecuteCollisionMovement(Vector3, bool, bool, float)。
+        // 剩余。
 Vector3 remaining = displacement - direction * consumedDistance;
-        // horizontalNormal（水平常规）：使用位置：作为 Vector3.ProjectOnPlane(Vector3, Vector3) 的参数、VillagerController.ExecuteCollisionMovement(Vector3, bool, bool, float)。
+        // 水平常规。
 Vector3 horizontalNormal = hit.normal;
         horizontalNormal.y = 0f;
         if (remaining.sqrMagnitude > 0.000001f && horizontalNormal.sqrMagnitude > 0.0001f)
         {
             horizontalNormal.Normalize();
-            // slide（滑移）：保存 Vector3.ProjectOnPlane(Vector3, Vector3) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Min(float, float) 的参数、作为 Vector3.Dot(Vector3, Vector3) 的参数、作为 VillagerController.ConstrainCrowdDisplacement(Vector3, out VillagerController) 的参数 等共 4 处。
+            // 滑移。
 Vector3 slide = Vector3.ProjectOnPlane(remaining, horizontalNormal);
             slide.y = 0f;
             slide = ConstrainCrowdDisplacement(slide, out _);
             if (slide.sqrMagnitude > 0.000001f && Vector3.Dot(slide, displacement) > 0f && TryGetMovementCapsule(out top, out bottom, out radius))
             {
-                // slideDistance（滑移距离）：使用位置：作为 Mathf.Min(float, float) 的参数、作为 VillagerController.TryFindMovementBlocker(Vector3, Vector3, float, Vector3, float, out RaycastHit, bool, bool, bool) 的参数、VillagerController.ExecuteCollisionMovement(Vector3, bool, bool, float)。
+                // 滑移距离。
 float slideDistance = slide.magnitude;
-                // slideDirection（滑移方向）：使用位置：作为 CharacterMotionExecutor.CommitNormalPosition(Vector3) 的参数、作为 VillagerController.TryFindMovementBlocker(Vector3, Vector3, float, Vector3, float, out RaycastHit, bool, bool, bool) 的参数。
+                // 滑移方向。
 Vector3 slideDirection = slide / slideDistance;
                 if (TryFindMovementBlocker(top, bottom, radius, slideDirection, slideDistance + movementCollisionSkin, out RaycastHit /* 中文含义：滑移命中。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ slideHit, strictActionCollision))
                 {
@@ -7674,10 +8049,10 @@ Vector3 slideDirection = slide / slideDistance;
 
     /// <summary>GetHorizontalMovementSince 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
     /// <remarks>静态调用链：上游 VillagerController.ExecuteCollisionMovement(Vector3, bool, bool, float)、VillagerController.MoveWithCollision(Vector3, bool, bool)；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="startPosition">中文含义：起始位置。使用位置：VillagerController.GetHorizontalMovementSince(Vector3)。</param>
+    /// <param name="startPosition">起始位置。</param>
     private Vector3 GetHorizontalMovementSince(Vector3 startPosition)
     {
-        // result（结果）：使用位置：VillagerController.GetHorizontalMovementSince(Vector3)。
+        // 结果。
 Vector3 result = transform.position - startPosition;
         result.y = 0f;
         return result;
@@ -7685,7 +8060,7 @@ Vector3 result = transform.position - startPosition;
 
     /// <summary>CanRaiseRaiseMovementCapsule 的业务处理入口；本方法直接依赖 Mathf.Max(float, float)、VillagerController.TryFindMovementBlocker(Vector3, Vector3, float, Vector3, float, out RaycastHit, bool, bool, bool)、VillagerController.TryGetMovementCapsule(out Vector3, out Vector3, out float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillagerController.SnapToGround(float, float, bool)、VillagerController.TryStepOntoWalkableSeam(Vector3, RaycastHit)；下游（含内部回调体） Mathf.Max(float, float)、VillagerController.TryFindMovementBlocker(Vector3, Vector3, float, Vector3, float, out RaycastHit, bool, bool, bool)、VillagerController.TryGetMovementCapsule(out Vector3, out Vector3, out float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="heightDifference">中文含义：高度差值。使用位置：作为 VillagerController.TryFindMovementBlocker(Vector3, Vector3, float, Vector3, float, out RaycastHit, bool, bool, bool) 的参数、VillagerController.CanRaiseRaiseMovementCapsule(float)。</param>
+    /// <param name="heightDifference">高度差值。</param>
     private bool CanRaiseRaiseMovementCapsule(float heightDifference)
     {
         return heightDifference <= Mathf.Max(.1f, maximumGroundStepUp) && TryGetMovementCapsule(out Vector3 /* 中文含义：顶部。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ top, out Vector3 /* 中文含义：底部。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ bottom, out float /* 中文含义：半径。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ radius) && // 由头顶球体上扫，避免脚底初始重叠遮住同一地图网格中的顶棚。
@@ -7694,8 +8069,8 @@ Vector3 result = transform.position - startPosition;
 
     /// <summary>TryStepOntoWalkableSeam 的业务处理入口；本方法直接依赖 CharacterMotionExecutor.CommitNormalPosition(Vector3)、NavigationCollisionCache.Enemy(Collider)、NavigationCollisionCache.Player(Collider)、VillagerController.CanRaiseRaiseMovementCapsule(float)、VillagerController.IsNavigationObstacle(Collider)、VillagerController.TryFindMovementBlocker(Vector3, Vector3, float, Vector3, float, out RaycastHit, bool, bool, bool)、VillagerController.TryGetMovementCapsule(out Vector3, out Vector3, out float) 等共 8 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillagerController.ExecuteCollisionMovement(Vector3, bool, bool, float)；下游（含内部回调体） CharacterMotionExecutor.CommitNormalPosition(Vector3)、NavigationCollisionCache.Enemy(Collider)、NavigationCollisionCache.Player(Collider)、VillagerController.CanRaiseRaiseMovementCapsule(float)、VillagerController.IsNavigationObstacle(Collider)、VillagerController.TryFindMovementBlocker(Vector3, Vector3, float, Vector3, float, out RaycastHit, bool, bool, bool)、VillagerController.TryGetMovementCapsule(out Vector3, out Vector3, out float) 等共 8 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="displacement">中文含义：位移。使用位置：作为 VillagerController.TryFindMovementBlocker(Vector3, Vector3, float, Vector3, float, out RaycastHit, bool, bool, bool) 的参数、作为 VillagerController.TryResolveSupportedNavigationPosition(Vector3, float, out Vector3) 的参数。</param>
-    /// <param name="blocker">中文含义：阻挡者。使用位置：作为 NavigationCollisionCache.Enemy(Collider) 的参数、作为 NavigationCollisionCache.Player(Collider) 的参数、作为 VillagerController.IsNavigationObstacle(Collider) 的参数 等共 4 处。</param>
+    /// <param name="displacement">位移。</param>
+    /// <param name="blocker">阻挡者。</param>
     private bool TryStepOntoWalkableSeam(Vector3 displacement, RaycastHit blocker)
     {
         if (blocker.collider == null || IsNavigationObstacle(blocker.collider) ||
@@ -7718,14 +8093,14 @@ Vector3 result = transform.position - startPosition;
             return false;
         }
 
-        // raiseRaise（抬高抬高）：使用位置：作为 VillagerController.CanRaiseRaiseMovementCapsule(float) 的参数、VillagerController.TryStepOntoWalkableSeam(Vector3, RaycastHit)。
+        // 抬高抬高。
 float raiseRaise = landPoint.y - transform.position.y;
         if (raiseRaise <= .02f || blocker.point.y > landPoint.y + movementCollisionSkin || !CanRaiseRaiseMovementCapsule(raiseRaise) || !TryGetMovementCapsule(out Vector3 /* 中文含义：顶部。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ top, out Vector3 /* 中文含义：底部。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ bottom, out float /* 中文含义：半径。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ radius))
         {
             return false;
         }
 
-        // raiseHeight（抬高高度）：使用位置：作为 VillagerController.TryFindMovementBlocker(Vector3, Vector3, float, Vector3, float, out RaycastHit, bool, bool, bool) 的参数。
+        // 抬高高度。
 Vector3 raiseHeight = Vector3.up * raiseRaise;
         // 抬升和前进分别检查完整身体空间；只执行本帧原有水平距离，
         // 不放宽墙体碰撞，也不把角色传送到接缝另一边。
@@ -7739,10 +8114,10 @@ Vector3 raiseHeight = Vector3.up * raiseRaise;
 
     /// <summary>PlantNearHouseThreeTread 的业务处理入口；本方法直接依赖 HouseThreeTraversalGeometry.TryResolveStairHeight(Vector3, out float)、Mathf.Abs(float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillagerController.IsStandingAttackSurfaceStable()、VillagerController.MoveWithCollision(Vector3, bool, bool)、VillagerController.ShouldIgnoreMovementCollider(Collider, Vector3, bool)、VillagerController.SnapToGround(float, float, bool)、VillagerController.TryExecuteStairActionDisplacement(Vector3) 等共 7 处；下游（含内部回调体） HouseThreeTraversalGeometry.TryResolveStairHeight(Vector3, out float)、Mathf.Abs(float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="position">中文含义：位置。使用位置：作为 HouseThreeTraversalGeometry.TryResolveStairHeight(Vector3, out float) 的参数、作为 Mathf.Abs(float) 的参数。</param>
+    /// <param name="position">位置。</param>
     internal bool PlantNearHouseThreeTread(Vector3 position)
     {
-        // traversal（通行）：使用位置：VillagerController.PlantNearHouseThreeTread(Vector3)。
+        // 通行。
 global::HouseThreeTraversalGeometry traversal;
         if (door03TraversalRoute)
         {
@@ -7758,7 +8133,7 @@ global::HouseThreeTraversalGeometry traversal;
 
     /// <summary>TryExecuteStairActionDisplacement 的业务处理入口；本方法直接依赖 VillagerController.MaintainGroundContact()、VillagerController.MoveWithCollision(Vector3, bool, bool)、VillagerController.PlantNearHouseThreeTread(Vector3)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillagerController.DriveExternalKnockback(Vector3, float, float)、VillagerController.OnAnimatorMove()；下游（含内部回调体） VillagerController.MaintainGroundContact()、VillagerController.MoveWithCollision(Vector3, bool, bool)、VillagerController.PlantNearHouseThreeTread(Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="displacement">中文含义：位移。使用位置：作为 VillagerController.MoveWithCollision(Vector3, bool, bool) 的参数、VillagerController.TryExecuteStairActionDisplacement(Vector3)。</param>
+    /// <param name="displacement">位移。</param>
     private bool TryExecuteStairActionDisplacement(Vector3 displacement)
     {
         if (!PlantNearHouseThreeTread(transform.position))
@@ -7776,8 +8151,8 @@ global::HouseThreeTraversalGeometry traversal;
 
     /// <summary>TryReadStairSupportHeight 的业务处理入口；本方法直接依赖 HouseThreeTraversalGeometry.TryResolveStairHeight(Vector3, out float)、Mathf.Max(float, float)、Mathf.Min(float, float)、Mathf.MoveTowards(float, float, float)、Mathf.Round(float)、NavigationCollisionCache.Enemy(Collider)、NavigationCollisionCache.Player(Collider) 等共 13 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillagerController.SnapToGround(float, float, bool)；下游（含内部回调体） HouseThreeTraversalGeometry.TryResolveStairHeight(Vector3, out float)、Mathf.Max(float, float)、Mathf.Min(float, float)、Mathf.MoveTowards(float, float, float)、Mathf.Round(float)、NavigationCollisionCache.Enemy(Collider)、NavigationCollisionCache.Player(Collider) 等共 13 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="position">中文含义：位置。使用位置：作为 HouseThreeTraversalGeometry.TryResolveStairHeight(Vector3, out float) 的参数、作为 Vector3.Vector3(float, float, float) 的参数、VillagerController.TryReadStairSupportHeight(Vector3, out float)。</param>
-    /// <param name="resolvedY">中文含义：解算后的纵向。输出参数，由本入口写入并交给调用方。使用位置：VillagerController.TryReadStairSupportHeight(Vector3, out float)。</param>
+    /// <param name="position">位置。</param>
+    /// <param name="resolvedY">解算后的纵向。输出参数，由本入口写入并交给调用方。</param>
     private bool TryReadStairSupportHeight(Vector3 position, out float resolvedY)
     {
         resolvedY = transform.position.y;
@@ -7794,21 +8169,21 @@ global::HouseThreeTraversalGeometry traversal;
         float expectedRouteY = authoredHeight + groundOffset;
 
         // 优先读取实际踏面，在踏面间隙使用楼梯中心线高度。
-        // probeOrigin（探测原点）：使用位置：作为 Physics.RaycastNonAlloc(Vector3, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 的参数。
+        // 探测原点。
 Vector3 probeOrigin = new Vector3(position.x, expectedRouteY + 1.2f, position.z);
         CombatPerformanceCounters.physicsQueryCount++;
-        // hitCount（命中数量）：保存 Physics.RaycastNonAlloc(Vector3, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 的返回结果，供当前步骤使用。使用位置：VillagerController.TryReadStairSupportHeight(Vector3, out float)。
+        // 命中数量。
 int hitCount = Physics.RaycastNonAlloc(probeOrigin, Vector3.down, groundHits, 2.5f, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore);
-        // groundDistance（地面距离）：使用位置：VillagerController.TryReadStairSupportHeight(Vector3, out float)。
+        // 地面距离。
 float groundDistance = float.MaxValue;
-        // foundPhysicalStep（是否找到的物理步进）：使用位置：VillagerController.TryReadStairSupportHeight(Vector3, out float)。
+        // 是否找到的物理步进。
 bool foundPhysicalStep = false;
-        // groundPoint（地面点）：使用位置：VillagerController.TryReadStairSupportHeight(Vector3, out float)。
+        // 地面点。
 Vector3 groundPoint = default;
-        // i（当前遍历索引）：使用位置：VillagerController.TryReadStairSupportHeight(Vector3, out float)。
+        // 当前遍历索引。
 for (int i = 0; i < hitCount; i++)
         {
-            // hit（命中）：使用位置：作为 NavigationCollisionCache.Enemy(Collider) 的参数、作为 NavigationCollisionCache.Player(Collider) 的参数、作为 Vector3.Angle(Vector3, Vector3) 的参数 等共 6 处。
+            // 命中。
 RaycastHit hit = groundHits[i];
             if (hit.collider == null || hit.collider.transform == transform || hit.collider.transform.IsChildOf(transform) || NavigationCollisionCache.Enemy(hit.collider) != null || NavigationCollisionCache.Player(hit.collider) != null)
             {
@@ -7820,18 +8195,18 @@ RaycastHit hit = groundHits[i];
                 continue;
             }
 
-            // physicalSurfaceY（物理表面纵向）：使用位置：VillagerController.TryReadStairSupportHeight(Vector3, out float)。
+            // 物理表面纵向。
 float physicalSurfaceY = hit.point.y + groundOffset;
-            // routeHeightDelta（路线高度增量）：使用位置：VillagerController.TryReadStairSupportHeight(Vector3, out float)。
+            // 路线高度增量。
 float routeHeightDelta = physicalSurfaceY - expectedRouteY;
-            // aboveRouteTolerance（上方路线容差）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：VillagerController.TryReadStairSupportHeight(Vector3, out float)。
+            // 上方路线容差。
 float aboveRouteTolerance = Mathf.Max(stairPhysicalSurfaceAboveRouteTolerance, stairVisualStepHeight + movementCollisionSkin);
             if (routeHeightDelta > aboveRouteTolerance || routeHeightDelta < -stairPhysicalSurfaceBelowRouteTolerance)
             {
                 continue;
             }
 
-            // heightDelta（高度增量）：使用位置：VillagerController.TryReadStairSupportHeight(Vector3, out float)。
+            // 高度增量。
 float heightDelta = physicalSurfaceY - transform.position.y;
             if (heightDelta > Mathf.Max(0.1f, maximumGroundStepUp) || heightDelta < -Mathf.Max(0.1f, maximumGroundDrop))
             {
@@ -7849,10 +8224,10 @@ float heightDelta = physicalSurfaceY - transform.position.y;
             return true;
         }
 
-        // stepHeight（步进高度）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Max(float, float) 的参数、作为 Mathf.Round(float) 的参数、VillagerController.TryReadStairSupportHeight(Vector3, out float)。
+        // 步进高度。
 float stepHeight = Mathf.Max(0.05f, stairVisualStepHeight);
         float steppedHeight = Mathf.Round(expectedRouteY / stepHeight) * stepHeight;
-        // maximumChange（最大变化）：使用位置：作为 Mathf.MoveTowards(float, float, float) 的参数、VillagerController.TryReadStairSupportHeight(Vector3, out float)。
+        // 最大变化。
 float maximumChange;
         if (steppedHeight >= transform.position.y)
         {
@@ -7869,8 +8244,8 @@ float maximumChange;
 
     /// <summary>HorizontalDistance 的业务处理入口；本方法直接依赖 Vector3.Distance(Vector3, Vector3)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillagerController.BeginTemporaryAvoidance(Vector3)、VillagerController.CanAdvancePastCompressedSteppedWaypoint(Vector3, Vector3)、VillagerController.CanTraverseSupportedNavigationSegment(Vector3, bool)、VillagerController.CollectCombatTimelineSnapshot()、VillagerController.HasIncompletePursuitArrival.get 等共 13 处；下游（含内部回调体） Vector3.Distance(Vector3, Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="a">中文含义：起点（三维向量）。使用位置：作为 Vector3.Distance(Vector3, Vector3) 的参数、VillagerController.HorizontalDistance(Vector3, Vector3)。</param>
-    /// <param name="b">中文含义：终点（三维向量）。使用位置：作为 Vector3.Distance(Vector3, Vector3) 的参数、VillagerController.HorizontalDistance(Vector3, Vector3)。</param>
+    /// <param name="a">起点（三维向量）。</param>
+    /// <param name="b">终点（三维向量）。</param>
     private static float HorizontalDistance(Vector3 a, Vector3 b)
     {
         a.y = 0f;
@@ -7880,24 +8255,24 @@ float maximumChange;
 
     /// <summary>DistanceToSegmentHorizontal 的业务处理入口；本方法直接依赖 Mathf.Clamp01(float)、Vector3.Distance(Vector3, Vector3)、Vector3.Dot(Vector3, Vector3)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） Mathf.Clamp01(float)、Vector3.Distance(Vector3, Vector3)、Vector3.Dot(Vector3, Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="point">中文含义：点。使用位置：作为 Vector3.Distance(Vector3, Vector3) 的参数、作为 Vector3.Dot(Vector3, Vector3) 的参数、VillagerController.DistanceToSegmentHorizontal(Vector3, Vector3, Vector3)。</param>
-    /// <param name="start">中文含义：起始。使用位置：作为 Vector3.Distance(Vector3, Vector3) 的参数、作为 Vector3.Dot(Vector3, Vector3) 的参数、VillagerController.DistanceToSegmentHorizontal(Vector3, Vector3, Vector3)。</param>
-    /// <param name="end">中文含义：结束。使用位置：VillagerController.DistanceToSegmentHorizontal(Vector3, Vector3, Vector3)。</param>
+    /// <param name="point">点。</param>
+    /// <param name="start">起始。</param>
+    /// <param name="end">结束。</param>
     private static float DistanceToSegmentHorizontal(Vector3 point, Vector3 start, Vector3 end)
     {
         point.y = 0f;
         start.y = 0f;
         end.y = 0f;
-        // segment（线段）：使用位置：作为 Vector3.Distance(Vector3, Vector3) 的参数、作为 Vector3.Dot(Vector3, Vector3) 的参数、VillagerController.DistanceToSegmentHorizontal(Vector3, Vector3, Vector3)。
+        // 线段。
 Vector3 segment = end - start;
-        // segmentLengthSquared（线段长度平方）：使用位置：作为 Mathf.Clamp01(float) 的参数、VillagerController.DistanceToSegmentHorizontal(Vector3, Vector3, Vector3)。
+        // 线段长度平方。
 float segmentLengthSquared = segment.sqrMagnitude;
         if (segmentLengthSquared <= 0.0001f)
         {
             return Vector3.Distance(point, start);
         }
 
-        // progress（进度）：保存 Mathf.Clamp01(float) 的返回结果，供当前步骤使用。使用位置：作为 Vector3.Distance(Vector3, Vector3) 的参数。
+        // 进度。
 float progress = Mathf.Clamp01(Vector3.Dot(point - start, segment) / segmentLengthSquared);
         return Vector3.Distance(point, start + segment * progress);
     }
@@ -7916,26 +8291,26 @@ float progress = Mathf.Clamp01(Vector3.Dot(point - start, segment) / segmentLeng
     [UnityEngine.Scripting.APIUpdating.MovedFrom(true, "", "Assembly-CSharp", "VillagerController+通行查询项")]
     private struct TraversalQueryEntry
     {
-        /// <summary>中文含义：frame 表示“帧”；collisionVersion 表示“碰撞版本”；pathVersion 表示“路径版本”。使用位置：VillagerController.CanMoveDirectlyToNavigationPoint(Vector3, bool)。；使用位置：VillagerController.CanMoveDirectlyToNavigationPoint(Vector3, bool)。；使用位置：VillagerController.CanMoveDirectlyToNavigationPoint(Vector3, bool)。</summary>
+        /// <summary>frame 表示“帧”；collisionVersion 表示“碰撞版本”；pathVersion 表示“路径版本”。</summary>
         internal int frame, collisionVersion, pathVersion;
-        /// <summary>中文含义：startPoint 表示“起始点”；endPoint 表示“结束点”；scale 表示“缩放”。使用位置：VillagerController.CanMoveDirectlyToNavigationPoint(Vector3, bool)。；使用位置：VillagerController.CanMoveDirectlyToNavigationPoint(Vector3, bool)。；使用位置：VillagerController.CanMoveDirectlyToNavigationPoint(Vector3, bool)。</summary>
+        /// <summary>startPoint 表示“起始点”；endPoint 表示“结束点”；scale 表示“缩放”。</summary>
         internal Vector3 startPoint, endPoint, scale;
-        /// <summary>中文含义：朝向。使用位置：VillagerController.CanMoveDirectlyToNavigationPoint(Vector3, bool)。</summary>
+        /// <summary>朝向。</summary>
         internal Quaternion orientation;
-        /// <summary>中文含义：当前敌人移动模式。使用位置：VillagerController.CanMoveDirectlyToNavigationPoint(Vector3, bool)。</summary>
+        /// <summary>当前敌人移动模式。</summary>
         internal EnemyMovementMode mode;
-        /// <summary>中文含义：是否结果。使用位置：VillagerController.CanMoveDirectlyToNavigationPoint(Vector3, bool)。</summary>
+        /// <summary>是否结果。</summary>
         internal bool result;
     }
 
-    /// <summary>中文含义：通行查询缓存。只读字段，初始化后不由普通写入口替换。使用位置：VillagerController.CanMoveDirectlyToNavigationPoint(Vector3, bool)。</summary>
+    /// <summary>通行查询缓存。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly TraversalQueryEntry[] traversalQueryCache = new TraversalQueryEntry[8];
-    /// <summary>中文含义：通行查询光标。使用位置：VillagerController.CanMoveDirectlyToNavigationPoint(Vector3, bool)。</summary>
+    /// <summary>通行查询光标。</summary>
     private int traversalQueryCursor;
     /// <summary>CanMoveDirectlyToNavigationPoint 的业务处理入口；本方法直接依赖 Quaternion.Equals(Quaternion)、Vector3.Equals(Vector3)、VillagerController.DetectNavigationTraversal(Vector3, bool)、VillagerController.TraversalQueryEntry.TraversalQueryEntry()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyWindowTraversal.TryResolveDropPursuitDestination(Vector3, out Vector3)、PathAgent.AdvanceToVisibleWaypoint()、PathAgent.ResolvePendingPathHandoffWaypoint(List&lt;Vector3&gt;)、PathAgent.ResolvePhysicallyReachablePathOrigin()、VillagerController.CanAdvancePastCompressedSteppedWaypoint(Vector3, Vector3) 等共 9 处；下游（含内部回调体） Quaternion.Equals(Quaternion)、Vector3.Equals(Vector3)、VillagerController.DetectNavigationTraversal(Vector3, bool)、VillagerController.TraversalQueryEntry.TraversalQueryEntry()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="target">中文含义：目标。使用位置：作为 Vector3.Equals(Vector3) 的参数、作为 VillagerController.DetectNavigationTraversal(Vector3, bool) 的参数、VillagerController.CanMoveDirectlyToNavigationPoint(Vector3, bool)。</param>
-    /// <param name="ignoreAlly">中文含义：是否忽略同伴。使用位置：VillagerController.CanMoveDirectlyToNavigationPoint(Vector3, bool)。</param>
+    /// <param name="target">目标。</param>
+    /// <param name="ignoreAlly">是否忽略同伴。</param>
     public bool CanMoveDirectlyToNavigationPoint(Vector3 target, bool ignoreAlly = false)
     {
         // 图上起点和路线裁剪只检查静态可达性。同伴的暂时占位由逐帧
@@ -7948,11 +8323,11 @@ float progress = Mathf.Clamp01(Vector3.Dot(point - start, segment) / segmentLeng
 
         // 中文含义：startPoint 为“起始点”。；scale 为“缩放”。
 Vector3 startPoint = transform.position, scale = transform.lossyScale;
-        // orientation（朝向）：使用位置：作为 Quaternion.Equals(Quaternion) 的参数、VillagerController.CanMoveDirectlyToNavigationPoint(Vector3, bool)。
+        // 朝向。
 Quaternion orientation = transform.rotation;
-        // version（版本）：使用位置：VillagerController.CanMoveDirectlyToNavigationPoint(Vector3, bool)。
+        // 版本。
 int version = NavigationCollisionCache.Version;
-        // pathVersion（路径版本）：使用位置：VillagerController.CanMoveDirectlyToNavigationPoint(Vector3, bool)。
+        // 路径版本。
 int pathVersion;
         if (agent != null)
         {
@@ -7963,10 +8338,10 @@ int pathVersion;
             pathVersion = 0;
         }
 
-        // sequence（序号）：使用位置：VillagerController.CanMoveDirectlyToNavigationPoint(Vector3, bool)。
+        // 序号。
 for (int sequence = 0; sequence < traversalQueryCache.Length; sequence++)
         {
-            // item（当前通行查询入口）：使用位置：VillagerController.CanMoveDirectlyToNavigationPoint(Vector3, bool)。
+            // 当前通行查询入口。
 ref var item = ref traversalQueryCache[sequence];
             if (item.frame == Time.frameCount && item.collisionVersion == version && item.pathVersion == pathVersion && item.startPoint.Equals(startPoint) && item.endPoint.Equals(target) && item.scale.Equals(scale) && item.orientation.Equals(orientation) && item.mode == CurrentMovementMode)
             {
@@ -7975,7 +8350,7 @@ ref var item = ref traversalQueryCache[sequence];
             }
         }
 
-        // result（是否结果）：保存 VillagerController.DetectNavigationTraversal(Vector3, bool) 的返回结果，供当前步骤使用。使用位置：VillagerController.CanMoveDirectlyToNavigationPoint(Vector3, bool)。
+        // 是否结果。
 bool result = DetectNavigationTraversal(target);
         traversalQueryCache[traversalQueryCursor] = new TraversalQueryEntry
         {
@@ -7995,8 +8370,8 @@ bool result = DetectNavigationTraversal(target);
 
     /// <summary>DetectNavigationTraversal 的业务处理入口；本方法直接依赖 Mathf.Abs(float)、Mathf.Max(float, float)、NavigationCollisionCache.Enemy(Collider)、NavigationCollisionCache.Player(Collider)、Physics.RaycastNonAlloc(Vector3, Vector3, RaycastHit[], float, int, QueryTriggerInteraction)、Transform.IsChildOf(Transform)、VillagerController.CanTraverseSupportedNavigationSegment(Vector3, bool) 等共 11 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillagerController.CanMoveDirectlyToNavigationPoint(Vector3, bool)；下游（含内部回调体） Mathf.Abs(float)、Mathf.Max(float, float)、NavigationCollisionCache.Enemy(Collider)、NavigationCollisionCache.Player(Collider)、Physics.RaycastNonAlloc(Vector3, Vector3, RaycastHit[], float, int, QueryTriggerInteraction)、Transform.IsChildOf(Transform)、VillagerController.CanTraverseSupportedNavigationSegment(Vector3, bool) 等共 11 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="target">中文含义：目标。使用位置：作为 Mathf.Abs(float) 的参数、作为 Mathf.Max(float, float) 的参数、作为 VillagerController.CanTraverseSupportedNavigationSegment(Vector3, bool) 的参数 等共 6 处。</param>
-    /// <param name="ignoreAlly">中文含义：是否忽略同伴。使用位置：作为 VillagerController.CanTraverseSupportedNavigationSegment(Vector3, bool) 的参数、作为 VillagerController.TryFindMovementBlocker(Vector3, Vector3, float, Vector3, float, out RaycastHit, bool, bool, bool) 的参数。</param>
+    /// <param name="target">目标。</param>
+    /// <param name="ignoreAlly">是否忽略同伴。</param>
     private bool DetectNavigationTraversal(Vector3 target, bool ignoreAlly = false)
     {
         bool requiresSteppedGround = Mathf.Abs(target.y - transform.position.y) > Mathf.Max(0.1f, maximumGroundStepUp);
@@ -8005,10 +8380,10 @@ bool result = DetectNavigationTraversal(target);
             return false;
         }
 
-        // offset（偏移量）：使用位置：作为 Physics.RaycastNonAlloc(Vector3, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 的参数、作为 VillagerController.TryFindMovementBlocker(Vector3, Vector3, float, Vector3, float, out RaycastHit, bool, bool, bool) 的参数、VillagerController.DetectNavigationTraversal(Vector3, bool)。
+        // 偏移量。
 Vector3 offset = target - transform.position;
         offset.y = 0f;
-        // distance（距离）：使用位置：作为 Physics.RaycastNonAlloc(Vector3, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 的参数、作为 VillagerController.TryFindMovementBlocker(Vector3, Vector3, float, Vector3, float, out RaycastHit, bool, bool, bool) 的参数、VillagerController.DetectNavigationTraversal(Vector3, bool)。
+        // 距离。
 float distance = offset.magnitude;
         if (distance <= Mathf.Max(0.05f, movementCollisionSkin))
         {
@@ -8029,12 +8404,12 @@ float distance = offset.magnitude;
         // 该接触被地面过滤后，后方墙体便被漏掉；用不接触地面的躯干射线补验，
         // 防止路线裁剪跨过墙角，再被逐帧碰撞挡住而反复回头。
         CombatPerformanceCounters.physicsQueryCount++;
-        // bodyHitCount（身体命中数量）：保存 Physics.RaycastNonAlloc(Vector3, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 的返回结果，供当前步骤使用。使用位置：VillagerController.DetectNavigationTraversal(Vector3, bool)。
+        // 身体命中数量。
 int bodyHitCount = Physics.RaycastNonAlloc((top + bottom) * 0.5f, offset / distance, movementHits, distance, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore);
-        // i（当前遍历索引）：使用位置：VillagerController.DetectNavigationTraversal(Vector3, bool)。
+        // 当前遍历索引。
 for (int i = 0; i < bodyHitCount; i++)
         {
-            // candidate（候选）：使用位置：作为 NavigationCollisionCache.Enemy(Collider) 的参数、作为 NavigationCollisionCache.Player(Collider) 的参数、VillagerController.DetectNavigationTraversal(Vector3, bool)。
+            // 候选。
 Collider candidate = movementHits[i].collider;
             if (candidate == null || candidate.transform.IsChildOf(transform) || NavigationCollisionCache.Enemy(candidate) != null || NavigationCollisionCache.Player(candidate) != null)
             {
@@ -8062,23 +8437,23 @@ Collider candidate = movementHits[i].collider;
 
     /// <summary>TryResolveSupportedNavigationPosition 的业务处理入口；本方法直接依赖 Collider.Raycast(Ray, out RaycastHit, float)、float.IsNegativeInfinity(float)、Mathf.Max(float, float)、NavigationCollisionCache.Enemy(Collider)、NavigationCollisionCache.Player(Collider)、Physics.RaycastNonAlloc(Vector3, Vector3, RaycastHit[], float, int, QueryTriggerInteraction)、Physics.SphereCastNonAlloc(Vector3, float, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 等共 15 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillagerController.CanTraverseSupportedNavigationSegment(Vector3, bool)、VillagerController.ResolveCrowdOverlap()、VillagerController.SnapToGround(float, float, bool)、VillagerController.TryMutualBlockingYield(VillagerController)、VillagerController.TryStepOntoWalkableSeam(Vector3, RaycastHit)；下游（含内部回调体） Collider.Raycast(Ray, out RaycastHit, float)、float.IsNegativeInfinity(float)、Mathf.Max(float, float)、NavigationCollisionCache.Enemy(Collider)、NavigationCollisionCache.Player(Collider)、Physics.RaycastNonAlloc(Vector3, Vector3, RaycastHit[], float, int, QueryTriggerInteraction)、Physics.SphereCastNonAlloc(Vector3, float, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 等共 15 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="samplePosition">中文含义：采样位置。使用位置：作为 Physics.RaycastNonAlloc(Vector3, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 的参数、作为 Physics.SphereCastNonAlloc(Vector3, float, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 的参数、作为 Vector3.Vector3(float, float, float) 的参数 等共 4 处。</param>
-    /// <param name="previousHeight">中文含义：前一次高度。使用位置：作为 Vector3.Vector3(float, float, float) 的参数、VillagerController.TryResolveSupportedNavigationPosition(Vector3, float, out Vector3)。</param>
-    /// <param name="supportedPosition">中文含义：支持的位置。输出参数，由本入口写入并交给调用方。使用位置：VillagerController.TryResolveSupportedNavigationPosition(Vector3, float, out Vector3)。</param>
+    /// <param name="samplePosition">采样位置。</param>
+    /// <param name="previousHeight">前一次高度。</param>
+    /// <param name="supportedPosition">支持的位置。输出参数，由本入口写入并交给调用方。</param>
     internal bool TryResolveSupportedNavigationPosition(Vector3 samplePosition, float previousHeight, out Vector3 supportedPosition)
     {
         supportedPosition = default;
-        // allowedStep（允许的步进）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：作为 Physics.RaycastNonAlloc(Vector3, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 的参数、作为 Physics.SphereCastNonAlloc(Vector3, float, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 的参数、VillagerController.TryResolveSupportedNavigationPosition(Vector3, float, out Vector3)。
+        // 允许的步进。
 float allowedStep = Mathf.Max(0.1f, maximumGroundStepUp);
-        // maximumDrop（最大掉落）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：作为 Physics.RaycastNonAlloc(Vector3, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 的参数、作为 Physics.SphereCastNonAlloc(Vector3, float, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 的参数、VillagerController.TryResolveSupportedNavigationPosition(Vector3, float, out Vector3)。
+        // 最大掉落。
 float maximumDrop = Mathf.Max(0.1f, maximumGroundDrop);
-        // actualStair（是否实际楼梯）：保存 VillagerController.PlantNearHouseThreeTread(Vector3) 的返回结果，供当前步骤使用。使用位置：VillagerController.TryResolveSupportedNavigationPosition(Vector3, float, out Vector3)。
+        // 是否实际楼梯。
 bool actualStair = PlantNearHouseThreeTread(new Vector3(samplePosition.x, previousHeight, samplePosition.z));
         samplePosition.y = previousHeight + allowedStep + groundProbeHeight;
         CombatPerformanceCounters.physicsQueryCount++;
         // 连续台阶仍按中心踏面推进，宽足底只用于普通地表接缝；
         // 否则前方高一级台阶会过早改变支撑高度，长帧下反复重接路径。
-        // count（数量）：使用位置：VillagerController.TryResolveSupportedNavigationPosition(Vector3, float, out Vector3)。
+        // 数量。
 int count;
         if (actualStair)
         {
@@ -8089,14 +8464,14 @@ int count;
             count = Physics.SphereCastNonAlloc(samplePosition, NavigationFootBottomRadius(), Vector3.down, groundHits, allowedStep + maximumDrop + groundProbeHeight, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore);
         }
 
-        // bestHeight（最佳高度）：使用位置：作为 float.IsNegativeInfinity(float) 的参数、VillagerController.TryResolveSupportedNavigationPosition(Vector3, float, out Vector3)。
+        // 最佳高度。
 float bestHeight = float.NegativeInfinity;
-        // i（当前遍历索引）：使用位置：VillagerController.TryResolveSupportedNavigationPosition(Vector3, float, out Vector3)。
+        // 当前遍历索引。
 for (int i = 0; i < count; i++)
         {
-            // hit（命中）：使用位置：作为 Ray.Ray(Vector3, Vector3) 的参数、作为 Vector3.Angle(Vector3, Vector3) 的参数、VillagerController.TryResolveSupportedNavigationPosition(Vector3, float, out Vector3)。
+            // 命中。
 RaycastHit hit = groundHits[i];
-            // other（另一个碰撞体）：使用位置：作为 NavigationCollisionCache.Enemy(Collider) 的参数、作为 NavigationCollisionCache.Player(Collider) 的参数、作为 VillagerController.IsEnemyStairBridgeCollider(Collider) 的参数 等共 5 处。
+            // 另一个碰撞体。
 Collider other = hit.collider;
             if (other == null || other.transform.IsChildOf(transform) || NavigationCollisionCache.Enemy(other) != null || NavigationCollisionCache.Player(other) != null || IsNavigationObstacle(other))
             {
@@ -8115,7 +8490,7 @@ Collider other = hit.collider;
                 continue;
             }
 
-            // height（高度）：使用位置：作为 Vector3.Vector3(float, float, float) 的参数、VillagerController.TryResolveSupportedNavigationPosition(Vector3, float, out Vector3)。
+            // 高度。
 float height = hit.point.y + groundOffset;
             if (height - previousHeight > allowedStep || previousHeight - height > maximumDrop || height <= bestHeight)
             {
@@ -8145,8 +8520,8 @@ float height = hit.point.y + groundOffset;
 
     /// <summary>CanTraverseSupportedNavigationSegment 的业务处理入口；本方法直接依赖 Mathf.Abs(float)、Mathf.CeilToInt(float)、Mathf.Clamp(int, int, int)、Mathf.Max(float, float)、NavigationCollisionCache.Enemy(Collider)、NavigationCollisionCache.Player(Collider)、Physics.CapsuleCastNonAlloc(Vector3, Vector3, float, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 等共 17 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillagerController.DetectNavigationTraversal(Vector3, bool)；下游（含内部回调体） Mathf.Abs(float)、Mathf.CeilToInt(float)、Mathf.Clamp(int, int, int)、Mathf.Max(float, float)、NavigationCollisionCache.Enemy(Collider)、NavigationCollisionCache.Player(Collider)、Physics.CapsuleCastNonAlloc(Vector3, Vector3, float, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 等共 17 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="target">中文含义：目标。使用位置：作为 Mathf.Abs(float) 的参数、作为 Vector3.Lerp(Vector3, Vector3, float) 的参数、作为 VillagerController.HorizontalDistance(Vector3, Vector3) 的参数。</param>
-    /// <param name="ignoreAlly">中文含义：是否忽略同伴。使用位置：VillagerController.CanTraverseSupportedNavigationSegment(Vector3, bool)。</param>
+    /// <param name="target">目标。</param>
+    /// <param name="ignoreAlly">是否忽略同伴。</param>
     private bool CanTraverseSupportedNavigationSegment(Vector3 target, bool ignoreAlly = false)
     {
         if (!TryGetMovementCapsule(out Vector3 /* 中文含义：顶部。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ top, out Vector3 /* 中文含义：底部。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ bottom, out float /* 中文含义：半径。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ radius))
@@ -8154,38 +8529,38 @@ float height = hit.point.y + groundOffset;
             return false;
         }
 
-        // origin（原点）：使用位置：作为 Vector3.Lerp(Vector3, Vector3, float) 的参数、作为 VillagerController.HorizontalDistance(Vector3, Vector3) 的参数、VillagerController.CanTraverseSupportedNavigationSegment(Vector3, bool)。
+        // 原点。
 Vector3 origin = transform.position;
-        // previous（前一次）：使用位置：作为 Mathf.Abs(float) 的参数、作为 Mathf.Max(float, float) 的参数、作为 VillagerController.IsInvalidInitialMovementHit(RaycastHit, float, float, Vector3?) 的参数 等共 5 处。
+        // 前一次。
 Vector3 previous = origin;
-        // count（数量）：保存 Mathf.Clamp(int, int, int) 的返回结果，供当前步骤使用。使用位置：作为 Vector3.Lerp(Vector3, Vector3, float) 的参数、VillagerController.CanTraverseSupportedNavigationSegment(Vector3, bool)。
+        // 数量。
 int count = Mathf.Clamp(Mathf.CeilToInt(HorizontalDistance(origin, target) / 0.12f), 1, 64);
-        // step（步进）：使用位置：作为 Vector3.Lerp(Vector3, Vector3, float) 的参数、VillagerController.CanTraverseSupportedNavigationSegment(Vector3, bool)。
+        // 步进。
 for (int step = 1; step <= count; step++)
         {
-            // sample（采样）：保存 Vector3.Lerp(Vector3, Vector3, float) 的返回结果，供当前步骤使用。使用位置：作为 VillagerController.TryResolveSupportedNavigationPosition(Vector3, float, out Vector3) 的参数。
+            // 采样。
 Vector3 sample = Vector3.Lerp(origin, target, step / (float)count);
             if (!TryResolveSupportedNavigationPosition(sample, previous.y, out Vector3 /* 中文含义：支持的。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ supported))
             {
                 return false;
             }
 
-            // offset（偏移量）：使用位置：作为 Physics.CapsuleCastNonAlloc(Vector3, Vector3, float, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 的参数、作为 Physics.RaycastNonAlloc(Vector3, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 的参数。
+            // 偏移量。
 Vector3 offset = previous - origin;
-            // segment（线段）：使用位置：作为 Physics.CapsuleCastNonAlloc(Vector3, Vector3, float, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 的参数、作为 Physics.RaycastNonAlloc(Vector3, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 的参数、VillagerController.CanTraverseSupportedNavigationSegment(Vector3, bool)。
+            // 线段。
 Vector3 segment = supported - previous;
-            // distance（距离）：使用位置：作为 Physics.CapsuleCastNonAlloc(Vector3, Vector3, float, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 的参数、作为 Physics.RaycastNonAlloc(Vector3, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 的参数、作为 VillagerController.IsInvalidInitialMovementHit(RaycastHit, float, float, Vector3?) 的参数 等共 4 处。
+            // 距离。
 float distance = segment.magnitude;
             if (distance > 0.0001f)
             {
                 // 躯干与胶囊沿真实踏面的高度前进，不能水平穿入上升屋顶后误报墙体。
                 CombatPerformanceCounters.physicsQueryCount++;
-                // bodyCount（身体数量）：保存 Physics.RaycastNonAlloc(Vector3, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 的返回结果，供当前步骤使用。使用位置：VillagerController.CanTraverseSupportedNavigationSegment(Vector3, bool)。
+                // 身体数量。
 int bodyCount = Physics.RaycastNonAlloc((top + bottom) * 0.5f + offset, segment / distance, movementHits, distance, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore);
-                // i（当前遍历索引）：使用位置：VillagerController.CanTraverseSupportedNavigationSegment(Vector3, bool)。
+                // 当前遍历索引。
 for (int i = 0; i < bodyCount; i++)
                 {
-                    // other（另一个碰撞体）：使用位置：作为 NavigationCollisionCache.Enemy(Collider) 的参数、作为 NavigationCollisionCache.Player(Collider) 的参数、VillagerController.CanTraverseSupportedNavigationSegment(Vector3, bool)。
+                    // 另一个碰撞体。
 Collider other = movementHits[i].collider;
                     if (other != null && !other.transform.IsChildOf(transform) && NavigationCollisionCache.Enemy(other) == null && NavigationCollisionCache.Player(other) == null)
                     {
@@ -8194,12 +8569,12 @@ Collider other = movementHits[i].collider;
                 }
 
                 CombatPerformanceCounters.physicsQueryCount++;
-                // capsuleCount（胶囊数量）：保存 Physics.CapsuleCastNonAlloc(Vector3, Vector3, float, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 的返回结果，供当前步骤使用。使用位置：VillagerController.CanTraverseSupportedNavigationSegment(Vector3, bool)。
+                // 胶囊数量。
 int capsuleCount = Physics.CapsuleCastNonAlloc(top + offset, bottom + offset, Mathf.Max(0.01f, radius - movementCollisionSkin), segment / distance, movementHits, distance, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore);
-                // i（当前遍历索引）：使用位置：VillagerController.CanTraverseSupportedNavigationSegment(Vector3, bool)。
+                // 当前遍历索引。
 for (int i = 0; i < capsuleCount; i++)
                 {
-                    // hit（命中）：使用位置：作为 NavigationCollisionCache.Enemy(Collider) 的参数、作为 NavigationCollisionCache.Player(Collider) 的参数、作为 Vector3.Angle(Vector3, Vector3) 的参数 等共 7 处。
+                    // 命中。
 RaycastHit hit = movementHits[i];
                     if (NavigationCollisionCache.Player(hit.collider) != null || (ignoreAlly && NavigationCollisionCache.Enemy(hit.collider) != null) || ShouldIgnoreMovementCollider(hit.collider, hit.point) || ShouldDeferCurrentIngressDoorBlocker(hit.collider) || IsInvalidInitialMovementHit(hit, radius, distance, previous))
                     {
@@ -8219,11 +8594,11 @@ RaycastHit hit = movementHits[i];
             previous = supported;
         }
 
-        // leftOperand156（计算前缓存的左侧绝对值的返回结果）：从绝对值的返回结果读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：VillagerController.CanTraverseSupportedNavigationSegment(Vector3, bool)。
+        // 计算前缓存的左侧绝对值的返回结果。
 float leftOperand156 = Mathf.Abs(previous.y - target.y);
-        // argumentValue155（按原顺序缓存的实参最大地面步进向上）：从最大地面步进向上读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 Mathf.Max(float, float) 的参数。
+        // 按原顺序缓存的实参最大地面步进向上。
 float argumentValue155 = maximumGroundStepUp;
-        // selectedValue154（分支选出的寻路代理的路径点竖直已抵达容差）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：作为 Mathf.Max(float, float) 的参数、VillagerController.CanTraverseSupportedNavigationSegment(Vector3, bool)。
+        // 分支选出的寻路代理的路径点竖直已抵达容差。
 float selectedValue154;
         if (agent != null)
         {
@@ -8241,8 +8616,8 @@ float selectedValue154;
     /// 跳过悬高的压缩路点前验证后续真实踏面及身体空间。
     /// </summary>
     /// <remarks>静态调用链：上游 PathAgent.CanAdvancePastCompressedSteppedWaypoint()；下游（含内部回调体） Mathf.Abs(float)、Mathf.Max(float, float)、VillagerController.CanMoveDirectlyToNavigationPoint(Vector3, bool)、VillagerController.HasContinuousSteppedNavigationGround(Vector3)、VillagerController.HorizontalDistance(Vector3, Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="compressedWaypoint">中文含义：压缩后的路径点。使用位置：作为 Mathf.Abs(float) 的参数、作为 VillagerController.HorizontalDistance(Vector3, Vector3) 的参数。</param>
-    /// <param name="followingWaypoint">中文含义：跟随中路径点。使用位置：作为 VillagerController.CanMoveDirectlyToNavigationPoint(Vector3, bool) 的参数、作为 VillagerController.HasContinuousSteppedNavigationGround(Vector3) 的参数、VillagerController.CanAdvancePastCompressedSteppedWaypoint(Vector3, Vector3)。</param>
+    /// <param name="compressedWaypoint">压缩后的路径点。</param>
+    /// <param name="followingWaypoint">跟随中路径点。</param>
     public bool CanAdvancePastCompressedSteppedWaypoint(Vector3 compressedWaypoint, Vector3 followingWaypoint)
     {
         if (agent == null)
@@ -8250,14 +8625,14 @@ float selectedValue154;
             return false;
         }
 
-        // horizontalDistance（水平距离）：保存 VillagerController.HorizontalDistance(Vector3, Vector3) 的返回结果，供当前步骤使用。使用位置：VillagerController.CanAdvancePastCompressedSteppedWaypoint(Vector3, Vector3)。
+        // 水平距离。
 float horizontalDistance = HorizontalDistance(transform.position, compressedWaypoint);
         if (horizontalDistance > Mathf.Max(0.05f, agent.waypointReachedRadius) || Mathf.Abs(transform.position.y - compressedWaypoint.y) <= Mathf.Max(0.05f, agent.waypointVerticalReachedTolerance))
         {
             return false;
         }
 
-        // followingOffset（跟随中偏移量）：使用位置：VillagerController.CanAdvancePastCompressedSteppedWaypoint(Vector3, Vector3)。
+        // 跟随中偏移量。
 Vector3 followingOffset = followingWaypoint - transform.position;
         followingOffset.y = 0f;
         if (followingOffset.sqrMagnitude <= 0.01f || !HasContinuousSteppedNavigationGround(followingWaypoint))
@@ -8274,57 +8649,57 @@ Vector3 followingOffset = followingWaypoint - transform.position;
     /// 这是一条通用地形规则，不依赖任何门或建筑名称。
     /// </summary>
     /// <remarks>静态调用链：上游 PathAgent.ResolvePendingPathHandoffWaypoint(List&lt;Vector3&gt;)、VillagerController.CanAdvancePastCompressedSteppedWaypoint(Vector3, Vector3)、VillagerController.CanTraverseCurrentPathGround(Collider, Vector3, float)、VillagerController.DetectNavigationTraversal(Vector3, bool)、VillagerController.TryStartCrowdBypass(VillagerController)；下游（含内部回调体） Mathf.Abs(float)、Mathf.CeilToInt(float)、Mathf.Clamp(float, float, float)、Mathf.Clamp(int, int, int)、Mathf.Max(float, float)、Mathf.Min(float, float)、NavigationCollisionCache.Enemy(Collider) 等共 14 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="target">中文含义：目标。使用位置：作为 Mathf.Abs(float) 的参数、作为 Mathf.Max(float, float) 的参数、作为 Mathf.Min(float, float) 的参数 等共 5 处。</param>
+    /// <param name="target">目标。</param>
     public bool HasContinuousSteppedNavigationGround(Vector3 target)
     {
-        // horizontalOffset（水平偏移量）：使用位置：VillagerController.HasContinuousSteppedNavigationGround(Vector3)。
+        // 水平偏移量。
 Vector3 horizontalOffset = target - transform.position;
         horizontalOffset.y = 0f;
-        // horizontalDistance（水平距离）：使用位置：作为 Mathf.CeilToInt(float) 的参数、VillagerController.HasContinuousSteppedNavigationGround(Vector3)。
+        // 水平距离。
 float horizontalDistance = horizontalOffset.magnitude;
         if (horizontalDistance <= 0.1f)
         {
             return false;
         }
 
-        // allowedStepUp（允许的步进向上）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：VillagerController.HasContinuousSteppedNavigationGround(Vector3)。
+        // 允许的步进向上。
 float allowedStepUp = Mathf.Max(0.1f, ResolveAllowedPathStepUp());
-        // maximumDrop（最大掉落）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：作为 Physics.RaycastNonAlloc(Vector3, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 的参数、VillagerController.HasContinuousSteppedNavigationGround(Vector3)。
+        // 最大掉落。
 float maximumDrop = Mathf.Max(0.1f, maximumGroundDrop);
-        // maximumSurfaceHeight（最大表面高度）：使用位置：作为 Physics.RaycastNonAlloc(Vector3, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 的参数、VillagerController.HasContinuousSteppedNavigationGround(Vector3)。
+        // 最大表面高度。
 float maximumSurfaceHeight = Mathf.Max(transform.position.y, target.y) + allowedStepUp + groundProbeHeight;
-        // sampleCount（采样数量）：保存 Mathf.Clamp(int, int, int) 的返回结果，供当前步骤使用。使用位置：作为 Vector3.Lerp(Vector3, Vector3, float) 的参数、VillagerController.HasContinuousSteppedNavigationGround(Vector3)。
+        // 采样数量。
 int sampleCount = Mathf.Clamp(Mathf.CeilToInt(horizontalDistance / 0.12f), 2, 48);
-        // previousHeight（前一次高度）：使用位置：作为 Mathf.Abs(float) 的参数、VillagerController.HasContinuousSteppedNavigationGround(Vector3)。
+        // 前一次高度。
 float previousHeight = transform.position.y;
-        // sampleIndex（采样索引）：使用位置：作为 Vector3.Lerp(Vector3, Vector3, float) 的参数、VillagerController.HasContinuousSteppedNavigationGround(Vector3)。
+        // 采样索引。
 for (int sampleIndex = 1; sampleIndex <= sampleCount; sampleIndex++)
         {
-            // samplePosition（采样位置）：保存 Vector3.Lerp(Vector3, Vector3, float) 的返回结果，供当前步骤使用。使用位置：作为 Physics.RaycastNonAlloc(Vector3, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 的参数、VillagerController.HasContinuousSteppedNavigationGround(Vector3)。
+            // 采样位置。
 Vector3 samplePosition = Vector3.Lerp(transform.position, target, sampleIndex / (float)sampleCount);
             samplePosition.y = maximumSurfaceHeight;
             CombatPerformanceCounters.physicsQueryCount++;
-            // hitCount（命中数量）：保存 Physics.RaycastNonAlloc(Vector3, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 的返回结果，供当前步骤使用。使用位置：VillagerController.HasContinuousSteppedNavigationGround(Vector3)。
+            // 命中数量。
 int hitCount = Physics.RaycastNonAlloc(samplePosition, Vector3.down, groundHits, maximumSurfaceHeight - Mathf.Min(transform.position.y, target.y) + maximumDrop + groundProbeHeight, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore);
-            // foundStep（是否找到的步进）：使用位置：VillagerController.HasContinuousSteppedNavigationGround(Vector3)。
+            // 是否找到的步进。
 bool foundStep = false;
-            // highestReachableHeight（最高可抵达高度）：使用位置：VillagerController.HasContinuousSteppedNavigationGround(Vector3)。
+            // 最高可抵达高度。
 float highestReachableHeight = float.NegativeInfinity;
-            // hitIndex（命中索引）：使用位置：VillagerController.HasContinuousSteppedNavigationGround(Vector3)。
+            // 命中索引。
 for (int hitIndex = 0; hitIndex < hitCount; hitIndex++)
             {
-                // hit（命中）：使用位置：作为 Vector3.Angle(Vector3, Vector3) 的参数、VillagerController.HasContinuousSteppedNavigationGround(Vector3)。
+                // 命中。
 RaycastHit hit = groundHits[hitIndex];
-                // hitCollider（命中的碰撞体）：使用位置：作为 NavigationCollisionCache.Enemy(Collider) 的参数、作为 NavigationCollisionCache.Player(Collider) 的参数、作为 VillagerController.IsNavigationObstacle(Collider) 的参数 等共 4 处。
+                // 命中的碰撞体。
 Collider hitCollider = hit.collider;
                 if (hitCollider == null || hitCollider.transform == transform || hitCollider.transform.IsChildOf(transform) || NavigationCollisionCache.Enemy(hitCollider) != null || NavigationCollisionCache.Player(hitCollider) != null || IsNavigationObstacle(hitCollider) || Vector3.Angle(hit.normal, Vector3.up) > Mathf.Clamp(maximumGroundSlope, 1f, 89f))
                 {
                     continue;
                 }
 
-                // surfaceHeight（表面高度）：使用位置：VillagerController.HasContinuousSteppedNavigationGround(Vector3)。
+                // 表面高度。
 float surfaceHeight = hit.point.y + groundOffset;
-                // heightChange（高度变化）：使用位置：VillagerController.HasContinuousSteppedNavigationGround(Vector3)。
+                // 高度变化。
 float heightChange = surfaceHeight - previousHeight;
                 if (heightChange > allowedStepUp || heightChange < -maximumDrop || surfaceHeight <= highestReachableHeight)
                 {
@@ -8343,11 +8718,11 @@ float heightChange = surfaceHeight - previousHeight;
             previousHeight = highestReachableHeight;
         }
 
-        // leftOperand159（计算前缓存的左侧绝对值的返回结果）：从绝对值的返回结果读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：VillagerController.HasContinuousSteppedNavigationGround(Vector3)。
+        // 计算前缓存的左侧绝对值的返回结果。
 float leftOperand159 = Mathf.Abs(previousHeight - target.y);
-        // argumentValue158（按原顺序缓存的实参允许的步进向上）：从允许的步进向上读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 Mathf.Max(float, float) 的参数。
+        // 按原顺序缓存的实参允许的步进向上。
 float argumentValue158 = allowedStepUp;
-        // selectedValue157（分支选出的寻路代理的路径点竖直已抵达容差）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：作为 Mathf.Max(float, float) 的参数、VillagerController.HasContinuousSteppedNavigationGround(Vector3)。
+        // 分支选出的寻路代理的路径点竖直已抵达容差。
 float selectedValue157;
         if (agent != null)
         {
@@ -8363,7 +8738,7 @@ float selectedValue157;
 
     /// <summary>HasContinuousNavigationGround 的业务处理入口；本方法直接依赖 DoorController.IsInsideOpenPassage(Vector3, float)、Mathf.Abs(float)、Mathf.CeilToInt(float)、Mathf.Clamp(float, float, float)、Mathf.Max(float, float)、Mathf.Max(int, int)、NavigationCollisionCache.Enemy(Collider) 等共 15 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillagerController.DetectNavigationTraversal(Vector3, bool)；下游（含内部回调体） DoorController.IsInsideOpenPassage(Vector3, float)、Mathf.Abs(float)、Mathf.CeilToInt(float)、Mathf.Clamp(float, float, float)、Mathf.Max(float, float)、Mathf.Max(int, int)、NavigationCollisionCache.Enemy(Collider) 等共 15 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="target">中文含义：目标。使用位置：作为 Vector3.Lerp(Vector3, Vector3, float) 的参数、VillagerController.HasContinuousNavigationGround(Vector3)。</param>
+    /// <param name="target">目标。</param>
     private bool HasContinuousNavigationGround(Vector3 target)
     {
         var house = HouseThreeRegionNavigation.Current;
@@ -8374,21 +8749,21 @@ float selectedValue157;
             return HasContinuousPlatformFootprint(target);
         }
 
-        // horizontalOffset（水平偏移量）：使用位置：VillagerController.HasContinuousNavigationGround(Vector3)。
+        // 水平偏移量。
 Vector3 horizontalOffset = target - transform.position;
         horizontalOffset.y = 0f;
-        // horizontalDistance（水平距离）：使用位置：作为 Mathf.CeilToInt(float) 的参数、VillagerController.HasContinuousNavigationGround(Vector3)。
+        // 水平距离。
 float horizontalDistance = horizontalOffset.magnitude;
         if (horizontalDistance <= 0.1f)
         {
             return true;
         }
 
-        // sampleCount（采样数量）：保存 Mathf.Max(int, int) 的返回结果，供当前步骤使用。使用位置：作为 Vector3.Lerp(Vector3, Vector3, float) 的参数、VillagerController.HasContinuousNavigationGround(Vector3)。
+        // 采样数量。
 int sampleCount = Mathf.Max(2, Mathf.CeilToInt(horizontalDistance / 0.25f));
-        // argumentValue161（按原顺序缓存的实参最大地面步进向上）：从最大地面步进向上读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 Mathf.Max(float, float) 的参数。
+        // 按原顺序缓存的实参最大地面步进向上。
 float argumentValue161 = maximumGroundStepUp;
-        // selectedValue160（分支选出的寻路代理的路径点竖直已抵达容差）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：作为 Mathf.Max(float, float) 的参数、VillagerController.HasContinuousNavigationGround(Vector3)。
+        // 分支选出的寻路代理的路径点竖直已抵达容差。
 float selectedValue160;
         if (agent != null)
         {
@@ -8399,30 +8774,30 @@ float selectedValue160;
             selectedValue160 = maximumGroundStepUp;
         }
 
-        // allowedHeightDifference（允许的高度差值）：使用位置：VillagerController.HasContinuousNavigationGround(Vector3)。
+        // 允许的高度差值。
 float allowedHeightDifference = Mathf.Max(argumentValue161, selectedValue160) + 0.05f;
         float supportRadius = NavigationFootBottomRadius();
         float allowedSlope = Mathf.Clamp(maximumGroundSlope, 1f, 89f);
-        // i（当前遍历索引）：使用位置：作为 Vector3.Lerp(Vector3, Vector3, float) 的参数、VillagerController.HasContinuousNavigationGround(Vector3)。
+        // 当前遍历索引。
 for (int i = 1; i <= sampleCount; i++)
         {
-            // expected（预期）：保存 Vector3.Lerp(Vector3, Vector3, float) 的返回结果，供当前步骤使用。使用位置：作为 DoorController.IsInsideOpenPassage(Vector3, float) 的参数、作为 Mathf.Abs(float) 的参数、VillagerController.HasContinuousNavigationGround(Vector3)。
+            // 预期。
 Vector3 expected = Vector3.Lerp(transform.position, target, i / (float)sampleCount);
-            // origin（原点）：使用位置：作为 Physics.SphereCastNonAlloc(Vector3, float, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 的参数。
+            // 原点。
 Vector3 origin = expected + Vector3.up * 1f;
             // 平台木板窄缝可能让中心射线漏地，但角色足底仍有真实支撑。
             // 使用小于身体半径的足底范围；坡度、高差和整段胶囊阻挡仍须通过。
             CombatPerformanceCounters.physicsQueryCount++;
-            // hitCount（命中数量）：保存 Physics.SphereCastNonAlloc(Vector3, float, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 的返回结果，供当前步骤使用。使用位置：VillagerController.HasContinuousNavigationGround(Vector3)。
+            // 命中数量。
 int hitCount = Physics.SphereCastNonAlloc(origin, supportRadius, Vector3.down, groundHits, 2.2f, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore);
-            // supported（是否支持的）：使用位置：VillagerController.HasContinuousNavigationGround(Vector3)。
+            // 是否支持的。
 bool supported = false;
-            // hitIndex（命中索引）：使用位置：VillagerController.HasContinuousNavigationGround(Vector3)。
+            // 命中索引。
 for (int hitIndex = 0; hitIndex < hitCount; hitIndex++)
             {
-                // hit（命中）：使用位置：作为 Mathf.Abs(float) 的参数、作为 Vector3.Angle(Vector3, Vector3) 的参数、VillagerController.HasContinuousNavigationGround(Vector3)。
+                // 命中。
 RaycastHit hit = groundHits[hitIndex];
-                // hitCollider（命中的碰撞体）：使用位置：作为 NavigationCollisionCache.Enemy(Collider) 的参数、作为 NavigationCollisionCache.Player(Collider) 的参数、作为 VillagerController.IsEnemyStairBridgeCollider(Collider) 的参数 等共 5 处。
+                // 命中的碰撞体。
 Collider hitCollider = hit.collider;
                 if (hitCollider == null || hitCollider.transform == transform || hitCollider.transform.IsChildOf(transform) || NavigationCollisionCache.Enemy(hitCollider) != null || NavigationCollisionCache.Player(hitCollider) != null || IsNavigationObstacle(hitCollider))
                 {
@@ -8460,7 +8835,7 @@ Collider hitCollider = hit.collider;
 
     /// <summary>ResolveMovementOverlap 的业务处理入口；本方法直接依赖 CharacterMotionExecutor.CommitNormalPosition(Vector3)、Mathf.Max(float, float)、Mathf.Min(float, float)、Physics.ComputePenetration(Collider, Vector3, Quaternion, Collider, Vector3, Quaternion, out Vector3, out float)、Physics.OverlapCapsuleNonAlloc(Vector3, Vector3, float, Collider[], int, QueryTriggerInteraction)、Vector3.ClampMagnitude(Vector3, float)、VillagerController.CanTraverseCurrentPathGround(Collider, Vector3, float) 等共 9 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillagerController.ExecuteCollisionMovement(Vector3, bool, bool, float)；下游（含内部回调体） CharacterMotionExecutor.CommitNormalPosition(Vector3)、Mathf.Max(float, float)、Mathf.Min(float, float)、Physics.ComputePenetration(Collider, Vector3, Quaternion, Collider, Vector3, Quaternion, out Vector3, out float)、Physics.OverlapCapsuleNonAlloc(Vector3, Vector3, float, Collider[], int, QueryTriggerInteraction)、Vector3.ClampMagnitude(Vector3, float)、VillagerController.CanTraverseCurrentPathGround(Collider, Vector3, float) 等共 9 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="strictActionCollision">中文含义：是否严格动作碰撞。使用位置：作为 VillagerController.ShouldIgnoreMovementCollider(Collider, Vector3, bool) 的参数、VillagerController.ResolveMovementOverlap(bool)。</param>
+    /// <param name="strictActionCollision">是否严格动作碰撞。</param>
     private void ResolveMovementOverlap(bool strictActionCollision = false)
     {
         if (!TryGetMovementCapsule(out Vector3 /* 中文含义：顶部。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ top, out Vector3 /* 中文含义：底部。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ bottom, out float /* 中文含义：半径。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ radius))
@@ -8468,27 +8843,27 @@ Collider hitCollider = hit.collider;
             return;
         }
 
-        // overlapCount（重叠数量）：保存 Physics.OverlapCapsuleNonAlloc(Vector3, Vector3, float, Collider[], int, QueryTriggerInteraction) 的返回结果，供当前步骤使用。使用位置：VillagerController.ResolveMovementOverlap(bool)。
+        // 重叠数量。
 int overlapCount = Physics.OverlapCapsuleNonAlloc(top, bottom, Mathf.Max(0.01f, radius), movementOverlaps, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore);
-        // recovery（恢复）：使用位置：作为 Vector3.ClampMagnitude(Vector3, float) 的参数、VillagerController.ResolveMovementOverlap(bool)。
+        // 恢复。
 Vector3 recovery = Vector3.zero;
-        // i（当前遍历索引）：使用位置：VillagerController.ResolveMovementOverlap(bool)。
+        // 当前遍历索引。
 for (int i = 0; i < overlapCount; i++)
         {
-            // other（另一个碰撞体）：使用位置：作为 Physics.ComputePenetration(Collider, Vector3, Quaternion, Collider, Vector3, Quaternion, out Vector3, out float) 的参数、作为 VillagerController.ShouldIgnoreMovementCollider(Collider, Vector3, bool) 的参数、VillagerController.ResolveMovementOverlap(bool)。
+            // 另一个碰撞体。
 Collider other = movementOverlaps[i];
             if (ShouldIgnoreMovementCollider(other, transform.position, strictActionCollision))
             {
                 continue;
             }
 
-            // conditionResult165（短路判断得到的分支判断）：保存短路分支结果，未选中的分支不执行。使用位置：VillagerController.ResolveMovementOverlap(bool)。
+            // 短路判断得到的分支判断。
 bool conditionResult165;
             if (!strictActionCollision)
             {
-                // argumentValue164（按原顺序缓存的实参另一个碰撞体）：从另一个读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 VillagerController.CanTraverseCurrentPathGround(Collider, Vector3, float) 的参数。
+                // 按原顺序缓存的实参另一个碰撞体。
 global::UnityEngine.Collider argumentValue164 = other;
-                // selectedValue163（分支选出的寻路代理的期望方向）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：作为 VillagerController.CanTraverseCurrentPathGround(Collider, Vector3, float) 的参数、VillagerController.ResolveMovementOverlap(bool)。
+                // 分支选出的寻路代理的期望方向。
 global::UnityEngine.Vector3 selectedValue163;
                 if (agent != null)
                 {
@@ -8539,19 +8914,23 @@ global::UnityEngine.Vector3 selectedValue163;
 
     /// <summary>UpdateBlockedMovement 的业务处理入口；本方法直接依赖 Mathf.Max(float, float)、NavigationCollisionCache.Enemy(Collider)、object.ReferenceEquals(object, object)、PathAgent.ForceRepath()、PathAgent.RegisterStaticObstacleHazard(RaycastHit, float)、Vector3.Dot(Vector3, Vector3)、Vector3.Normalize() 等共 10 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillagerController.ExecuteCollisionMovement(Vector3, bool, bool, float)；下游（含内部回调体） Mathf.Max(float, float)、NavigationCollisionCache.Enemy(Collider)、object.ReferenceEquals(object, object)、PathAgent.ForceRepath()、PathAgent.RegisterStaticObstacleHazard(RaycastHit, float)、Vector3.Dot(Vector3, Vector3)、Vector3.Normalize() 等共 10 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="requestedDistance">中文含义：请求的距离。使用位置：作为 Mathf.Max(float, float) 的参数。</param>
-    /// <param name="startPosition">中文含义：起始位置。使用位置：VillagerController.UpdateBlockedMovement(float, Vector3, RaycastHit, VillagerController, float)。</param>
-    /// <param name="blocker">中文含义：阻挡者。使用位置：作为 NavigationCollisionCache.Enemy(Collider) 的参数、作为 PathAgent.RegisterStaticObstacleHazard(RaycastHit, float) 的参数、VillagerController.UpdateBlockedMovement(float, Vector3, RaycastHit, VillagerController, float)。</param>
-    /// <param name="crowdBlocker">中文含义：人群阻挡者。使用位置：VillagerController.UpdateBlockedMovement(float, Vector3, RaycastHit, VillagerController, float)。</param>
-    /// <param name="timeSlice">中文含义：时间片段。使用位置：VillagerController.UpdateBlockedMovement(float, Vector3, RaycastHit, VillagerController, float)。</param>
+    /// <param name="requestedDistance">请求的距离。</param>
+    /// <param name="startPosition">起始位置。</param>
+    /// <param name="blocker">阻挡者。</param>
+    /// <param name="crowdBlocker">人群阻挡者。</param>
+    /// <param name="timeSlice">时间片段。</param>
     private void UpdateBlockedMovement(float requestedDistance, Vector3 startPosition, RaycastHit blocker = default, VillagerController crowdBlocker = null, float timeSlice = -1f)
     {
-        // actual（实际）：使用位置：作为 Vector3.Dot(Vector3, Vector3) 的参数、VillagerController.UpdateBlockedMovement(float, Vector3, RaycastHit, VillagerController, float)。
+        // 实际。
 Vector3 actual = transform.position - startPosition;
         actual.y = 0f;
-        // expectedDirection（预期方向）：使用位置：作为 Vector3.Dot(Vector3, Vector3) 的参数、VillagerController.UpdateBlockedMovement(float, Vector3, RaycastHit, VillagerController, float)。
+        // 预期方向。
 Vector3 expectedDirection;
-        if (agent != null)
+        if (IsCrowdBypassing)
+        {
+            expectedDirection = crowdBypassDestination - transform.position;
+        }
+        else if (agent != null)
         {
             expectedDirection = agent.desiredDirection;
         }
@@ -8566,7 +8945,7 @@ Vector3 expectedDirection;
             expectedDirection.Normalize();
         }
 
-        // forwardProgress（前向进度）：使用位置：VillagerController.UpdateBlockedMovement(float, Vector3, RaycastHit, VillagerController, float)。
+        // 前向进度。
 float forwardProgress;
         if (expectedDirection.sqrMagnitude > 0.0001f)
         {
@@ -8589,7 +8968,7 @@ float forwardProgress;
         }
         else
         {
-            // selectedValue168（分支选出的敌人的返回结果）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：VillagerController.UpdateBlockedMovement(float, Vector3, RaycastHit, VillagerController, float)。
+            // 分支选出的敌人的返回结果。
 global::VillagerController selectedValue168;
             if (blocker.collider != null)
             {
@@ -8603,9 +8982,9 @@ global::VillagerController selectedValue168;
             lastMovementBlockerEnemy = (selectedValue168);
         }
 
-        // previousValue170（复合赋值前保存的移动阻挡持续时间）：从移动阻挡持续时间读取一次后保存，供后续分支使用。在右侧分支前保存复合赋值原值，保持原读取顺序。使用位置：VillagerController.UpdateBlockedMovement(float, Vector3, RaycastHit, VillagerController, float)。
+        // 复合赋值前保存的移动阻挡持续时间。
 float previousValue170 = movementBlockedDuration;
-        // selectedValue171（分支选出的时间片段）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：VillagerController.UpdateBlockedMovement(float, Vector3, RaycastHit, VillagerController, float)。
+        // 分支选出的时间片段。
 float selectedValue171;
         if (timeSlice >= 0f)
         {
@@ -8628,7 +9007,7 @@ float selectedValue171;
             return;
         }
 
-        // registeredHazard（是否已登记危险区）：使用位置：VillagerController.UpdateBlockedMovement(float, Vector3, RaycastHit, VillagerController, float)。
+        // 是否已登记危险区。
 bool registeredHazard = agent != null && blocker.collider != null && agent.RegisterStaticObstacleHazard(blocker, ResolveMovementHazardRadius());
         var region = HouseThreeRegionNavigation.Current;
         bool blockedOnPlatform = region != null && region.TreadRegion(transform.position) == VillageTraversalRegion.SecondFloorOuterPlatform
@@ -8636,9 +9015,9 @@ bool registeredHazard = agent != null && blocker.collider != null && agent.Regis
         if (!registeredHazard && agent != null
             && (agent.CurrentPathState == PathAgentState.Failed || blockedOnPlatform))
         {
-            // receiverValue172（判空前缓存的寻路代理）：从寻路代理读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、VillagerController.UpdateBlockedMovement(float, Vector3, RaycastHit, VillagerController, float)。
+            // 判空前缓存的寻路代理。
 global::PathAgent receiverValue172 = agent;
-            // optionalValue173（条件访问得到的力度重新寻路的返回结果）：保存条件访问的结果，接收者为空时保持默认空值，非空时才执行原成员访问。使用位置：VillagerController.UpdateBlockedMovement(float, Vector3, RaycastHit, VillagerController, float)。
+            // 条件访问得到的力度重新寻路的返回结果。
 bool? optionalValue173;
             if (!global::System.Object.ReferenceEquals(receiverValue172, null))
             {
@@ -8673,9 +9052,9 @@ bool? optionalValue173;
 
     /// <summary>TryGetMovementCapsule 的业务处理入口；本方法直接依赖 Mathf.Abs(float)、Mathf.Max(float, float)、Transform.TransformPoint(Vector3)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillagerController.CanRaiseRaiseMovementCapsule(float)、VillagerController.CanTraverseSupportedNavigationSegment(Vector3, bool)、VillagerController.DetectNavigationTraversal(Vector3, bool)、VillagerController.ExecuteCollisionMovement(Vector3, bool, bool, float)、VillagerController.ResolveMovementHazardRadius() 等共 7 处；下游（含内部回调体） Mathf.Abs(float)、Mathf.Max(float, float)、Transform.TransformPoint(Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="top">中文含义：顶部。输出参数，由本入口写入并交给调用方。使用位置：VillagerController.TryGetMovementCapsule(out Vector3, out Vector3, out float)。</param>
-    /// <param name="bottom">中文含义：底部。输出参数，由本入口写入并交给调用方。使用位置：VillagerController.TryGetMovementCapsule(out Vector3, out Vector3, out float)。</param>
-    /// <param name="radius">中文含义：半径。输出参数，由本入口写入并交给调用方。使用位置：作为 Mathf.Max(float, float) 的参数、VillagerController.TryGetMovementCapsule(out Vector3, out Vector3, out float)。</param>
+    /// <param name="top">顶部。输出参数，由本入口写入并交给调用方。</param>
+    /// <param name="bottom">底部。输出参数，由本入口写入并交给调用方。</param>
+    /// <param name="radius">半径。输出参数，由本入口写入并交给调用方。</param>
     private bool TryGetMovementCapsule(out Vector3 top, out Vector3 bottom, out float radius, bool includeDisabled = false)
     {
         top = default;
@@ -8686,18 +9065,18 @@ bool? optionalValue173;
             return false;
         }
 
-        // scale（缩放）：使用位置：作为 Mathf.Abs(float) 的参数。
+        // 缩放。
 Vector3 scale = transform.lossyScale;
-        // horizontalScale（水平缩放）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：VillagerController.TryGetMovementCapsule(out Vector3, out Vector3, out float)。
+        // 水平缩放。
 float horizontalScale = Mathf.Max(Mathf.Abs(scale.x), Mathf.Abs(scale.z));
-        // verticalScale（竖直缩放）：保存 Mathf.Abs(float) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Max(float, float) 的参数。
+        // 竖直缩放。
 float verticalScale = Mathf.Abs(scale.y);
         radius = movementCollider.radius * horizontalScale;
-        // height（高度）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Max(float, float) 的参数。
+        // 高度。
 float height = Mathf.Max(movementCollider.height * verticalScale, radius * 2f);
-        // halfSegment（一半线段）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：VillagerController.TryGetMovementCapsule(out Vector3, out Vector3, out float)。
+        // 一半线段。
 float halfSegment = Mathf.Max(0f, height * 0.5f - radius);
-        // center（中心）：保存 Transform.TransformPoint(Vector3) 的返回结果，供当前步骤使用。使用位置：VillagerController.TryGetMovementCapsule(out Vector3, out Vector3, out float)。
+        // 中心。
 Vector3 center = transform.TransformPoint(movementCollider.center);
         top = center + Vector3.up * halfSegment;
         bottom = center - Vector3.up * halfSegment;
@@ -8706,15 +9085,15 @@ Vector3 center = transform.TransformPoint(movementCollider.center);
 
     /// <summary>TryFindMovementBlocker 的业务处理入口；本方法直接依赖 DoorController.IsInsideOpenPassage(Vector3, float)、Mathf.Clamp(float, float, float)、Mathf.Max(float, float)、NavigationCollisionCache.Enemy(Collider)、NavigationCollisionCache.Name(Collider)、NavigationCollisionCache.Player(Collider)、Physics.CapsuleCastNonAlloc(Vector3, Vector3, float, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 等共 14 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillagerController.CanRaiseRaiseMovementCapsule(float)、VillagerController.DetectNavigationTraversal(Vector3, bool)、VillagerController.ExecuteCollisionMovement(Vector3, bool, bool, float)、VillagerController.TryStepOntoWalkableSeam(Vector3, RaycastHit)；下游（含内部回调体） DoorController.IsInsideOpenPassage(Vector3, float)、Mathf.Clamp(float, float, float)、Mathf.Max(float, float)、NavigationCollisionCache.Enemy(Collider)、NavigationCollisionCache.Name(Collider)、NavigationCollisionCache.Player(Collider)、Physics.CapsuleCastNonAlloc(Vector3, Vector3, float, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 等共 14 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="top">中文含义：顶部。使用位置：作为 Physics.CapsuleCastNonAlloc(Vector3, Vector3, float, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 的参数。</param>
-    /// <param name="bottom">中文含义：底部。使用位置：作为 Physics.CapsuleCastNonAlloc(Vector3, Vector3, float, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 的参数。</param>
-    /// <param name="radius">中文含义：半径。使用位置：作为 Mathf.Max(float, float) 的参数、作为 VillagerController.IsInvalidInitialMovementHit(RaycastHit, float, float, Vector3?) 的参数。</param>
-    /// <param name="direction">中文含义：方向。使用位置：作为 Physics.CapsuleCastNonAlloc(Vector3, Vector3, float, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 的参数、作为 VillagerController.CanTraverseCurrentPathGround(Collider, Vector3, float) 的参数。</param>
-    /// <param name="distance">中文含义：距离。使用位置：作为 Mathf.Max(float, float) 的参数、作为 Physics.CapsuleCastNonAlloc(Vector3, Vector3, float, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 的参数、作为 VillagerController.IsInvalidInitialMovementHit(RaycastHit, float, float, Vector3?) 的参数。</param>
-    /// <param name="nearestHit">中文含义：最近命中。输出参数，由本入口写入并交给调用方。使用位置：VillagerController.TryFindMovementBlocker(Vector3, Vector3, float, Vector3, float, out RaycastHit, bool, bool, bool)。</param>
-    /// <param name="strictActionCollision">中文含义：是否严格动作碰撞。使用位置：作为 VillagerController.ShouldIgnoreMovementCollider(Collider, Vector3, bool) 的参数、VillagerController.TryFindMovementBlocker(Vector3, Vector3, float, Vector3, float, out RaycastHit, bool, bool, bool)。</param>
-    /// <param name="ignorePlayer">中文含义：是否忽略玩家。使用位置：作为 VillagerController.TryFindMovementBlocker(Vector3, Vector3, float, Vector3, float, out RaycastHit, bool, bool, bool) 的参数、VillagerController.TryFindMovementBlocker(Vector3, Vector3, float, Vector3, float, out RaycastHit, bool, bool, bool)。</param>
-    /// <param name="ignoreAlly">中文含义：是否忽略同伴。使用位置：作为 VillagerController.TryFindMovementBlocker(Vector3, Vector3, float, Vector3, float, out RaycastHit, bool, bool, bool) 的参数、VillagerController.TryFindMovementBlocker(Vector3, Vector3, float, Vector3, float, out RaycastHit, bool, bool, bool)。</param>
+    /// <param name="top">顶部。</param>
+    /// <param name="bottom">底部。</param>
+    /// <param name="radius">半径。</param>
+    /// <param name="direction">方向。</param>
+    /// <param name="distance">距离。</param>
+    /// <param name="nearestHit">最近命中。输出参数，由本入口写入并交给调用方。</param>
+    /// <param name="strictActionCollision">是否严格动作碰撞。</param>
+    /// <param name="ignorePlayer">是否忽略玩家。</param>
+    /// <param name="ignoreAlly">是否忽略同伴。</param>
     internal Vector3 PreviewStandingAttackDisplacement(Vector3 displacement)
     {
         float distance = displacement.magnitude;
@@ -8738,18 +9117,18 @@ Vector3 center = transform.TransformPoint(movementCollider.center);
     {
         nearestHit = default;
         CombatPerformanceCounters.physicsQueryCount++;
-        // hitCount（命中数量）：保存 Physics.CapsuleCastNonAlloc(Vector3, Vector3, float, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 的返回结果，供当前步骤使用。使用位置：VillagerController.TryFindMovementBlocker(Vector3, Vector3, float, Vector3, float, out RaycastHit, bool, bool, bool)。
+        // 命中数量。
 int hitCount = Physics.CapsuleCastNonAlloc(top, bottom, Mathf.Max(0.01f, radius - movementCollisionSkin), direction, movementHits, distance, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore);
-        // nearestDistance（最近距离）：使用位置：VillagerController.TryFindMovementBlocker(Vector3, Vector3, float, Vector3, float, out RaycastHit, bool, bool, bool)。
+        // 最近距离。
 float nearestDistance = float.MaxValue;
-        // allowedStepUp（允许的步进向上）：保存 VillagerController.ResolveAllowedPathStepUp() 的返回结果，供当前步骤使用。使用位置：VillagerController.TryFindMovementBlocker(Vector3, Vector3, float, Vector3, float, out RaycastHit, bool, bool, bool)。
+        // 允许的步进向上。
 float allowedStepUp = ResolveAllowedPathStepUp();
-        // found（是否已找到）：使用位置：VillagerController.TryFindMovementBlocker(Vector3, Vector3, float, Vector3, float, out RaycastHit, bool, bool, bool)。
+        // 是否已找到。
 bool found = false;
-        // i（当前遍历索引）：使用位置：VillagerController.TryFindMovementBlocker(Vector3, Vector3, float, Vector3, float, out RaycastHit, bool, bool, bool)。
+        // 当前遍历索引。
 for (int i = 0; i < hitCount; i++)
         {
-            // hitCollider（命中的碰撞体）：使用位置：作为 NavigationCollisionCache.Enemy(Collider) 的参数、作为 NavigationCollisionCache.Name(Collider) 的参数、作为 NavigationCollisionCache.Player(Collider) 的参数 等共 8 处。
+            // 命中的碰撞体。
 Collider hitCollider = movementHits[i].collider;
             if (ignoreAlly && NavigationCollisionCache.Enemy(hitCollider) != null)
             {
@@ -8811,7 +9190,7 @@ Collider hitCollider = movementHits[i].collider;
     /// 真正接近门时仍由门洞阶段先开门；该豁免仅用于到达开门距离前。
     /// </summary>
     /// <remarks>静态调用链：上游 VillagerController.CanTraverseSupportedNavigationSegment(Vector3, bool)、VillagerController.TryFindMovementBlocker(Vector3, Vector3, float, Vector3, float, out RaycastHit, bool, bool, bool)；下游（含内部回调体） Component.GetComponentInParent&lt;DoorController&gt;()、Mathf.Max(float, float)、VillagerController.HorizontalDistance(Vector3, Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="collider">中文含义：碰撞体。使用位置：VillagerController.ShouldDeferCurrentIngressDoorBlocker(Collider)。</param>
+    /// <param name="collider">碰撞体。</param>
     private bool ShouldDeferCurrentIngressDoorBlocker(Collider collider)
     {
         if (pursuitIngressDoor == null || pursuitIngressDoor.IsOpen || collider == null)
@@ -8819,43 +9198,43 @@ Collider hitCollider = movementHits[i].collider;
             return false;
         }
 
-        // colliderDoor（碰撞体门）：保存 Component.GetComponentInParent<DoorController>() 的返回结果，供当前步骤使用。使用位置：VillagerController.ShouldDeferCurrentIngressDoorBlocker(Collider)。
+        // 碰撞体门。
 DoorController colliderDoor = collider.GetComponentInParent<DoorController>();
         if (colliderDoor != pursuitIngressDoor)
         {
             return false;
         }
 
-        // openingDistance（开口距离）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：VillagerController.ShouldDeferCurrentIngressDoorBlocker(Collider)。
+        // 开口距离。
 float openingDistance = Mathf.Max(0.2f, doorOpenProbeDistance * 0.75f);
         return HorizontalDistance(transform.position, pursuitIngressDoor.PassageCenter) > openingDistance;
     }
 
     /// <summary>IsInvalidInitialMovementHit 的业务处理入口；本方法直接依赖 float.IsInfinity(float)、float.IsNaN(float)、Mathf.Max(float, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillagerController.CanTraverseSupportedNavigationSegment(Vector3, bool)、VillagerController.TryFindMovementBlocker(Vector3, Vector3, float, Vector3, float, out RaycastHit, bool, bool, bool)；下游（含内部回调体） float.IsInfinity(float)、float.IsNaN(float)、Mathf.Max(float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="hit">中文含义：命中。使用位置：VillagerController.IsInvalidInitialMovementHit(RaycastHit, float, float, Vector3?)。</param>
-    /// <param name="radius">中文含义：半径。使用位置：VillagerController.IsInvalidInitialMovementHit(RaycastHit, float, float, Vector3?)。</param>
-    /// <param name="castDistance">中文含义：投射距离。使用位置：VillagerController.IsInvalidInitialMovementHit(RaycastHit, float, float, Vector3?)。</param>
-    /// <param name="castOrigin">中文含义：投射原点。使用位置：VillagerController.IsInvalidInitialMovementHit(RaycastHit, float, float, Vector3?)。</param>
+    /// <param name="hit">命中。</param>
+    /// <param name="radius">半径。</param>
+    /// <param name="castDistance">投射距离。</param>
+    /// <param name="castOrigin">投射原点。</param>
     private bool IsInvalidInitialMovementHit(RaycastHit hit, float radius, float castDistance, Vector3? castOrigin = null)
     {
-        // contactThreshold（接触阈值）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：VillagerController.IsInvalidInitialMovementHit(RaycastHit, float, float, Vector3?)。
+        // 接触阈值。
 float contactThreshold = Mathf.Max(0.005f, movementCollisionSkin * 2f);
         if (hit.distance > contactThreshold)
         {
             return false;
         }
 
-        // point（点）：使用位置：作为 float.IsInfinity(float) 的参数、作为 float.IsNaN(float) 的参数、VillagerController.IsInvalidInitialMovementHit(RaycastHit, float, float, Vector3?)。
+        // 点。
 Vector3 point = hit.point;
         if (float.IsNaN(point.x) || float.IsNaN(point.y) || float.IsNaN(point.z) || float.IsInfinity(point.x) || float.IsInfinity(point.y) || float.IsInfinity(point.z))
         {
             return true;
         }
 
-        // availableValue174（空值判断前缓存的投射原点）：从投射原点读取一次后保存，供后续分支使用。保存空值判断之前的值，只读取一次，非空时不执行回退分支。使用位置：VillagerController.IsInvalidInitialMovementHit(RaycastHit, float, float, Vector3?)。
+        // 空值判断前缓存的投射原点。
 global::UnityEngine.Vector3? availableValue174 = castOrigin;
-        // queryOrigin（查询原点）：使用位置：VillagerController.IsInvalidInitialMovementHit(RaycastHit, float, float, Vector3?)。
+        // 查询原点。
 Vector3 queryOrigin;
         if (availableValue174.HasValue)
         {
@@ -8866,10 +9245,10 @@ Vector3 queryOrigin;
             queryOrigin = transform.position;
         }
 
-        // offset（偏移量）：使用位置：VillagerController.IsInvalidInitialMovementHit(RaycastHit, float, float, Vector3?)。
+        // 偏移量。
 Vector3 offset = point - queryOrigin;
         offset.y = 0f;
-        // maximumLocalDistance（最大局部距离）：使用位置：VillagerController.IsInvalidInitialMovementHit(RaycastHit, float, float, Vector3?)。
+        // 最大局部距离。
 float maximumLocalDistance = radius + castDistance + 0.2f;
         if (offset.sqrMagnitude > maximumLocalDistance * maximumLocalDistance)
         {
@@ -8888,20 +9267,20 @@ float maximumLocalDistance = radius + castDistance + 0.2f;
 
     /// <summary>HasRaisedMovementBlocker 的业务处理入口；本方法直接依赖 Mathf.Max(float, float)、Physics.CapsuleCastNonAlloc(Vector3, Vector3, float, Vector3, RaycastHit[], float, int, QueryTriggerInteraction)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） Mathf.Max(float, float)、Physics.CapsuleCastNonAlloc(Vector3, Vector3, float, Vector3, RaycastHit[], float, int, QueryTriggerInteraction)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="expectedCollider">中文含义：预期碰撞体。使用位置：VillagerController.HasRaisedMovementBlocker(Collider, Vector3, Vector3, float, Vector3, float)。</param>
-    /// <param name="top">中文含义：顶部。使用位置：作为 Physics.CapsuleCastNonAlloc(Vector3, Vector3, float, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 的参数。</param>
-    /// <param name="bottom">中文含义：底部。使用位置：作为 Physics.CapsuleCastNonAlloc(Vector3, Vector3, float, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 的参数。</param>
-    /// <param name="radius">中文含义：半径。使用位置：作为 Mathf.Max(float, float) 的参数。</param>
-    /// <param name="direction">中文含义：方向。使用位置：作为 Physics.CapsuleCastNonAlloc(Vector3, Vector3, float, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 的参数。</param>
-    /// <param name="distance">中文含义：距离。使用位置：作为 Physics.CapsuleCastNonAlloc(Vector3, Vector3, float, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 的参数。</param>
+    /// <param name="expectedCollider">预期碰撞体。</param>
+    /// <param name="top">顶部。</param>
+    /// <param name="bottom">底部。</param>
+    /// <param name="radius">半径。</param>
+    /// <param name="direction">方向。</param>
+    /// <param name="distance">距离。</param>
     private bool HasRaisedMovementBlocker(Collider expectedCollider, Vector3 top, Vector3 bottom, float radius, Vector3 direction, float distance)
     {
-        // clearance（净空）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：作为 Physics.CapsuleCastNonAlloc(Vector3, Vector3, float, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 的参数。
+        // 净空。
 float clearance = Mathf.Max(0.08f, movementCollisionSkin * 3f);
         CombatPerformanceCounters.physicsQueryCount++;
-        // hitCount（命中数量）：保存 Physics.CapsuleCastNonAlloc(Vector3, Vector3, float, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 的返回结果，供当前步骤使用。使用位置：VillagerController.HasRaisedMovementBlocker(Collider, Vector3, Vector3, float, Vector3, float)。
+        // 命中数量。
 int hitCount = Physics.CapsuleCastNonAlloc(top + Vector3.up * clearance, bottom + Vector3.up * clearance, Mathf.Max(0.01f, radius - movementCollisionSkin), direction, raisedMovementHits, distance, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore);
-        // i（当前遍历索引）：使用位置：VillagerController.HasRaisedMovementBlocker(Collider, Vector3, Vector3, float, Vector3, float)。
+        // 当前遍历索引。
 for (int i = 0; i < hitCount; i++)
         {
             if (raisedMovementHits[i].collider == expectedCollider)
@@ -8915,7 +9294,7 @@ for (int i = 0; i < hitCount; i++)
 
     /// <summary>IsSupportingGroundContact 的业务处理入口；本方法直接依赖 Physics.ComputePenetration(Collider, Vector3, Quaternion, Collider, Vector3, Quaternion, out Vector3, out float)、VillagerController.ResolveAllowedPathStepUp()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillagerController.TryFindMovementBlocker(Vector3, Vector3, float, Vector3, float, out RaycastHit, bool, bool, bool)；下游（含内部回调体） Physics.ComputePenetration(Collider, Vector3, Quaternion, Collider, Vector3, Quaternion, out Vector3, out float)、VillagerController.ResolveAllowedPathStepUp()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="collider">中文含义：碰撞体。使用位置：作为 Physics.ComputePenetration(Collider, Vector3, Quaternion, Collider, Vector3, Quaternion, out Vector3, out float) 的参数、VillagerController.IsSupportingGroundContact(Collider)。</param>
+    /// <param name="collider">碰撞体。</param>
     private bool IsSupportingGroundContact(Collider collider)
     {
         if (movementCollider == null || collider == null)
@@ -8935,28 +9314,28 @@ for (int i = 0; i < hitCount; i++)
     /// <remarks>静态调用链：上游 VillagerController.CanTraverseCurrentPathGround(Collider, Vector3, float)、VillagerController.HasContinuousSteppedNavigationGround(Vector3)、VillagerController.IsSupportingGroundContact(Collider)、VillagerController.SnapToGround(float, float, bool)、VillagerController.TryFindMovementBlocker(Vector3, Vector3, float, Vector3, float, out RaycastHit, bool, bool, bool)；下游（含内部回调体） Mathf.Atan2(float, float)、Mathf.Clamp(float, float, float)、Mathf.Max(float, float)、Mathf.Min(float, float)、PathAgent.TryGetCurrentWaypoint(out Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     private float ResolveAllowedPathStepUp()
     {
-        // allowedStepUp（允许的步进向上）：使用位置：作为 Mathf.Max(float, float) 的参数、VillagerController.ResolveAllowedPathStepUp()。
+        // 允许的步进向上。
 float allowedStepUp = maximumGroundStepUp;
         if (agent == null || !agent.TryGetCurrentWaypoint(out Vector3 /* 中文含义：路径点。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ waypoint))
         {
             return allowedStepUp;
         }
 
-        // verticalChange（竖直变化）：使用位置：作为 Mathf.Atan2(float, float) 的参数、作为 Mathf.Min(float, float) 的参数、VillagerController.ResolveAllowedPathStepUp()。
+        // 竖直变化。
 float verticalChange = waypoint.y - transform.position.y;
         if (verticalChange <= 0f)
         {
             return allowedStepUp;
         }
 
-        // horizontalOffset（水平偏移量）：使用位置：VillagerController.ResolveAllowedPathStepUp()。
+        // 水平偏移量。
 Vector3 horizontalOffset = waypoint - transform.position;
         horizontalOffset.y = 0f;
-        // horizontalDistance（水平距离）：使用位置：作为 Mathf.Max(float, float) 的参数。
+        // 水平距离。
 float horizontalDistance = horizontalOffset.magnitude;
-        // routeStepLimit（路线步进限制）：使用位置：作为 Mathf.Min(float, float) 的参数。
+        // 路线步进限制。
 float routeStepLimit = Mathf.Max(maximumGroundStepUp, agent.maxPathVerticalStep) + 0.15f;
-        // routeSlope（路线坡度）：使用位置：VillagerController.ResolveAllowedPathStepUp()。
+        // 路线坡度。
 float routeSlope = Mathf.Atan2(verticalChange, Mathf.Max(0.001f, horizontalDistance)) * Mathf.Rad2Deg;
         if (routeSlope > Mathf.Min(Mathf.Clamp(maximumGroundSlope, 1f, 89f), Mathf.Clamp(agent.maxPathSlope, 1f, 89f)) + 2f)
         {
@@ -8968,9 +9347,9 @@ float routeSlope = Mathf.Atan2(verticalChange, Mathf.Max(0.001f, horizontalDista
 
     /// <summary>CanTraverseCurrentPathGround 的业务处理入口；本方法直接依赖 Mathf.Atan2(float, float)、Mathf.Clamp(float, float, float)、Mathf.Max(float, float)、Mathf.Min(float, float)、NavigationCollisionCache.Name(Collider)、PathAgent.TryGetCurrentWaypoint(out Vector3)、Physics.RaycastNonAlloc(Vector3, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 等共 12 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillagerController.ResolveMovementOverlap(bool)、VillagerController.TryFindMovementBlocker(Vector3, Vector3, float, Vector3, float, out RaycastHit, bool, bool, bool)；下游（含内部回调体） Mathf.Atan2(float, float)、Mathf.Clamp(float, float, float)、Mathf.Max(float, float)、Mathf.Min(float, float)、NavigationCollisionCache.Name(Collider)、PathAgent.TryGetCurrentWaypoint(out Vector3)、Physics.RaycastNonAlloc(Vector3, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 等共 12 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="expectedCollider">中文含义：预期碰撞体。使用位置：作为 NavigationCollisionCache.Name(Collider) 的参数、作为 VillagerController.IsEnemyStairBridgeCollider(Collider) 的参数、VillagerController.CanTraverseCurrentPathGround(Collider, Vector3, float)。</param>
-    /// <param name="direction">中文含义：方向。使用位置：VillagerController.CanTraverseCurrentPathGround(Collider, Vector3, float)。</param>
-    /// <param name="forwardDistance">中文含义：前向距离。使用位置：作为 Mathf.Max(float, float) 的参数。</param>
+    /// <param name="expectedCollider">预期碰撞体。</param>
+    /// <param name="direction">方向。</param>
+    /// <param name="forwardDistance">前向距离。</param>
     private bool CanTraverseCurrentPathGround(Collider expectedCollider, Vector3 direction, float forwardDistance)
     {
         if (expectedCollider == null || agent == null)
@@ -8984,9 +9363,9 @@ float routeSlope = Mathf.Atan2(verticalChange, Mathf.Max(0.001f, horizontalDista
             return false;
         }
 
-        // routeOffset（路线偏移量）：使用位置：作为 Mathf.Atan2(float, float) 的参数、VillagerController.CanTraverseCurrentPathGround(Collider, Vector3, float)。
+        // 路线偏移量。
 Vector3 routeOffset = waypoint - transform.position;
-        // verticalRouteChange（竖直路线变化）：使用位置：作为 Mathf.Atan2(float, float) 的参数、VillagerController.CanTraverseCurrentPathGround(Collider, Vector3, float)。
+        // 竖直路线变化。
 float verticalRouteChange = routeOffset.y;
         routeOffset.y = 0f;
         if (verticalRouteChange <= 0.05f || routeOffset.sqrMagnitude <= 0.0001f)
@@ -8994,9 +9373,9 @@ float verticalRouteChange = routeOffset.y;
             return false;
         }
 
-        // routeSlope（路线坡度）：使用位置：VillagerController.CanTraverseCurrentPathGround(Collider, Vector3, float)。
+        // 路线坡度。
 float routeSlope = Mathf.Atan2(verticalRouteChange, routeOffset.magnitude) * Mathf.Rad2Deg;
-        // maximumRouteSlope（最大路线坡度）：使用位置：VillagerController.CanTraverseCurrentPathGround(Collider, Vector3, float)。
+        // 最大路线坡度。
 float maximumRouteSlope = Mathf.Min(Mathf.Clamp(maximumGroundSlope, 1f, 89f), Mathf.Clamp(agent.maxPathSlope, 1f, 89f)) + 2f;
         if (routeSlope > maximumRouteSlope && verticalRouteChange > maximumGroundStepUp)
         {
@@ -9006,7 +9385,7 @@ float maximumRouteSlope = Mathf.Min(Mathf.Clamp(maximumGroundSlope, 1f, 89f), Ma
             return HasContinuousSteppedNavigationGround(waypoint);
         }
 
-        // allowedStepUp（允许的步进向上）：保存 VillagerController.ResolveAllowedPathStepUp() 的返回结果，供当前步骤使用。使用位置：作为 Physics.RaycastNonAlloc(Vector3, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 的参数、VillagerController.CanTraverseCurrentPathGround(Collider, Vector3, float)。
+        // 允许的步进向上。
 float allowedStepUp = ResolveAllowedPathStepUp();
         direction.y = 0f;
         if (direction.sqrMagnitude <= 0.0001f)
@@ -9015,24 +9394,24 @@ float allowedStepUp = ResolveAllowedPathStepUp();
         }
 
         direction.Normalize();
-        // probeForward（探测前向）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：VillagerController.CanTraverseCurrentPathGround(Collider, Vector3, float)。
+        // 探测前向。
 float probeForward = Mathf.Max(0.2f, forwardDistance);
-        // origin（原点）：使用位置：作为 Physics.RaycastNonAlloc(Vector3, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 的参数。
+        // 原点。
 Vector3 origin = transform.position + direction * probeForward + Vector3.up * (allowedStepUp + groundProbeHeight);
         CombatPerformanceCounters.physicsQueryCount++;
-        // hitCount（命中数量）：保存 Physics.RaycastNonAlloc(Vector3, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 的返回结果，供当前步骤使用。使用位置：VillagerController.CanTraverseCurrentPathGround(Collider, Vector3, float)。
+        // 命中数量。
 int hitCount = Physics.RaycastNonAlloc(origin, Vector3.down, groundHits, allowedStepUp + groundProbeHeight + maximumGroundDrop, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore);
-        // i（当前遍历索引）：使用位置：VillagerController.CanTraverseCurrentPathGround(Collider, Vector3, float)。
+        // 当前遍历索引。
 for (int i = 0; i < hitCount; i++)
         {
-            // hit（命中）：使用位置：作为 NavigationCollisionCache.Name(Collider) 的参数、作为 Vector3.Angle(Vector3, Vector3) 的参数、VillagerController.CanTraverseCurrentPathGround(Collider, Vector3, float)。
+            // 命中。
 RaycastHit hit = groundHits[i];
             if (hit.collider != expectedCollider || Vector3.Angle(hit.normal, Vector3.up) > Mathf.Clamp(maximumGroundSlope, 1f, 89f))
             {
                 continue;
             }
 
-            // verticalChange（竖直变化）：使用位置：VillagerController.CanTraverseCurrentPathGround(Collider, Vector3, float)。
+            // 竖直变化。
 float verticalChange = hit.point.y + groundOffset - transform.position.y;
             if (verticalChange > allowedStepUp || verticalChange < -maximumGroundDrop)
             {
@@ -9047,9 +9426,9 @@ float verticalChange = hit.point.y + groundOffset - transform.position.y;
 
     /// <summary>ShouldIgnoreMovementCollider 的业务处理入口；本方法直接依赖 DoorController.IsInsideOpenPassage(Vector3, float)、DoorController.IsOpenDoorCollider(Collider)、HouseThreeTraversalGeometry.TryResolveStairHeight(Vector3, out float)、Mathf.Abs(float)、NavigationCollisionCache.Enemy(Collider)、NavigationCollisionCache.Name(Collider)、Transform.IsChildOf(Transform) 等共 9 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillagerController.CanTraverseSupportedNavigationSegment(Vector3, bool)、VillagerController.ResolveMovementOverlap(bool)、VillagerController.TryFindMovementBlocker(Vector3, Vector3, float, Vector3, float, out RaycastHit, bool, bool, bool)；下游（含内部回调体） DoorController.IsInsideOpenPassage(Vector3, float)、DoorController.IsOpenDoorCollider(Collider)、HouseThreeTraversalGeometry.TryResolveStairHeight(Vector3, out float)、Mathf.Abs(float)、NavigationCollisionCache.Enemy(Collider)、NavigationCollisionCache.Name(Collider)、Transform.IsChildOf(Transform) 等共 9 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="collider">中文含义：碰撞体。使用位置：作为 DoorController.IsOpenDoorCollider(Collider) 的参数、作为 NavigationCollisionCache.Enemy(Collider) 的参数、作为 NavigationCollisionCache.Name(Collider) 的参数 等共 5 处。</param>
-    /// <param name="contactPoint">中文含义：接触点。使用位置：作为 DoorController.IsInsideOpenPassage(Vector3, float) 的参数、作为 HouseThreeTraversalGeometry.TryResolveStairHeight(Vector3, out float) 的参数、VillagerController.ShouldIgnoreMovementCollider(Collider, Vector3, bool)。</param>
-    /// <param name="strictActionCollision">中文含义：是否严格动作碰撞。使用位置：VillagerController.ShouldIgnoreMovementCollider(Collider, Vector3, bool)。</param>
+    /// <param name="collider">碰撞体。</param>
+    /// <param name="contactPoint">接触点。</param>
+    /// <param name="strictActionCollision">是否严格动作碰撞。</param>
     private bool IgnoreWindowImpactCollider(Collider other)
     {
         var traversal = ArchitectureReadSpecialTraversal;
@@ -9067,7 +9446,7 @@ float verticalChange = hit.point.y + groundOffset - transform.position.y;
             return true;
         }
 
-        // otherEnemy（另一个敌人）：保存 NavigationCollisionCache.Enemy(Collider) 的返回结果，供当前步骤使用。使用位置：VillagerController.ShouldIgnoreMovementCollider(Collider, Vector3, bool)。
+        // 另一个敌人。
 VillagerController otherEnemy = NavigationCollisionCache.Enemy(collider);
         if (otherEnemy != null && otherEnemy != this)
         {
@@ -9084,7 +9463,7 @@ VillagerController otherEnemy = NavigationCollisionCache.Enemy(collider);
             return true;
         }
 
-        // isFollowingStairSurface（是否跟随中楼梯表面）：保存 VillagerController.PlantNearHouseThreeTread(Vector3) 的返回结果，供当前步骤使用。使用位置：VillagerController.ShouldIgnoreMovementCollider(Collider, Vector3, bool)。
+        // 是否跟随中楼梯表面。
 bool isFollowingStairSurface = PlantNearHouseThreeTread(transform.position);
         if (isFollowingStairSurface && door03TraversalRoute != null && door03TraversalRoute.IsNativeStairTread(collider))
         {
@@ -9096,12 +9475,12 @@ bool isFollowingStairSurface = PlantNearHouseThreeTread(transform.position);
 
     /// <summary>IsNavigationObstacle 的业务处理入口；本方法直接依赖 NavigationCollisionCache.IsObstacle(Collider)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillagerController.HasAttackRecoveryGroundSupport()、VillagerController.HasContinuousNavigationGround(Vector3)、VillagerController.HasContinuousSteppedNavigationGround(Vector3)、VillagerController.IsStandingAttackSurfaceStable()、VillagerController.SnapToGround(float, float, bool) 等共 8 处；下游（含内部回调体） NavigationCollisionCache.IsObstacle(Collider)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="collider">中文含义：碰撞体。使用位置：作为 NavigationCollisionCache.IsObstacle(Collider) 的参数。</param>
+    /// <param name="collider">碰撞体。</param>
     private static bool IsNavigationObstacle(Collider collider) => NavigationCollisionCache.IsObstacle(collider);
     // ================================================================
     //  移动诊断
     // ================================================================
-    /// <summary>中文含义：是否人群绕过中。使用位置：VillagerController.CollectCombatTimelineSnapshot()、VillagerController.GetCurrentCombatTarget()、VillagerController.IsCrowdBypassDestinationOccupied(Vector3) 等共 9 处。</summary>
+    /// <summary>是否人群绕过中。</summary>
     public bool IsCrowdBypassing => crowdBypassActive && Time.time < crowdBypassExpiresAt;
 
     /// <summary>UpdateCrowdBypass 的业务处理入口；本方法直接依赖 EnemyAIManager.InvalidatePursuitDestination(VillagerController)、EnemyCombatTimeline.IsRecord(VillagerController)、EnemyCombatTimeline.Record(VillagerController, string, string)、Mathf.Abs(float)、PathAgent.InvalidatePursuitResolutionCache()、PathAgent.ResetPath()、VillagerController.HorizontalDistance(Vector3, Vector3) 等共 8 处，调用方通过参数与返回结果交接本次处理。</summary>
@@ -9113,11 +9492,11 @@ bool isFollowingStairSurface = PlantNearHouseThreeTread(transform.position);
             return;
         }
 
-        // arrived（是否已抵达）：使用位置：VillagerController.UpdateCrowdBypass()。
+        // 是否已抵达。
 bool arrived = HorizontalDistance(transform.position, crowdBypassDestination) < 0.3f;
-        // interrupted（是否已中断）：使用位置：VillagerController.UpdateCrowdBypass()。
+        // 是否已中断。
 bool interrupted = IsDead || pendingHit || pendingCrawl || pendingStandUp || IsQTEControlled;
-        // playerMoved（是否玩家已移动）：使用位置：VillagerController.UpdateCrowdBypass()。
+        // 是否玩家已移动。
 bool playerMoved = Player == null || HorizontalDistance(Player.transform.position, crowdBypassPlayerAnchor) > 1.2f || Mathf.Abs(Player.transform.position.y - crowdBypassPlayerAnchor.y) > 0.4f;
         if (!arrived && !interrupted && !playerMoved && Time.time < crowdBypassExpiresAt)
         {
@@ -9127,11 +9506,11 @@ bool playerMoved = Player == null || HorizontalDistance(Player.transform.positio
         crowdBypassActive = false;
         if (EnemyCombatTimeline.IsRecord(this))
         {
-            // argumentValue179（按原顺序缓存的实参当前）：从当前读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 EnemyCombatTimeline.Record(VillagerController, string, string) 的参数。
+            // 按原顺序缓存的实参当前。
 global::VillagerController argumentValue179 = this;
-            // argumentValue180（按原顺序缓存的实参文字“绕行结束”）：从文字“绕行结束”读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 EnemyCombatTimeline.Record(VillagerController, string, string) 的参数。
+            // 按原顺序缓存的实参文字“绕行结束”。
 string argumentValue180 = "绕行结束";
-            // selectedValue178（分支选出的文字“抵达侧向目标，恢复追击玩家”）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：作为 EnemyCombatTimeline.Record(VillagerController, string, string) 的参数、VillagerController.UpdateCrowdBypass()。
+            // 分支选出的文字“抵达侧向目标，恢复追击玩家”。
 string selectedValue178;
             if (arrived)
             {
@@ -9168,13 +9547,14 @@ string selectedValue178;
         {
             agent.ResetPath();
             agent.InvalidatePursuitResolutionCache();
+            InvalidateChaseRefreshFrame();
             RefreshChaseDestination();
         }
     }
 
     /// <summary>TryStartCrowdBypass 的业务处理入口；本方法直接依赖 CombatDiagnosticFields.Count(string, double)、CombatDiagnosticFields.Position(string, Vector3)、CombatDiagnosticFields.Text(string, string)、EnemyCombatTimeline.IsRecord(VillagerController)、EnemyCombatTimeline.Record(VillagerController, string, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields)、Mathf.Abs(float)、Mathf.Max(float, float) 等共 20 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillagerController.ResolveLocalAvoidanceDisplacement(Vector3)、VillagerController.UpdateBlockedMovement(float, Vector3, RaycastHit, VillagerController, float)；下游（含内部回调体） CombatDiagnosticFields.Count(string, double)、CombatDiagnosticFields.Position(string, Vector3)、CombatDiagnosticFields.Text(string, string)、EnemyCombatTimeline.IsRecord(VillagerController)、EnemyCombatTimeline.Record(VillagerController, string, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields)、Mathf.Abs(float)、Mathf.Max(float, float) 等共 20 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="blocker">中文含义：阻挡者。使用位置：作为 Vector3.Dot(Vector3, Vector3) 的参数、作为 VillagerController.TryMutualBlockingYield(VillagerController) 的参数、VillagerController.TryStartCrowdBypass(VillagerController)。</param>
+    /// <param name="blocker">阻挡者。</param>
     private bool TryStartCrowdBypass(VillagerController blocker)
     {
         if (blocker == null || blocker.IsDead || Player == null || CurrentState != VillagerState.Chase || !ShouldChasePlayer || IsCrowdBypassing || Time.time < nextCrowdBypassTime)
@@ -9182,9 +9562,24 @@ string selectedValue178;
             return false;
         }
 
+        HouseThreeRegionNavigation outerRegion = HouseThreeRegionNavigation.Current;
+        bool onOuterPlatform = outerRegion != null && outerRegion.IsOnSecondFloorOuterPlatform(transform.position);
+        if (onOuterPlatform && outerRegion.IsInsideOuterPlatformWindowExclusionZone(transform.position, 1.35f))
+        {
+            return false;
+        }
+
         nextCrowdBypassTime = Time.time + 0.8f;
-        // forward（前向）：使用位置：作为 Vector3.Cross(Vector3, Vector3) 的参数、作为 VillagerController.IsInsideTraversalBottleneck(Vector3) 的参数、VillagerController.TryStartCrowdBypass(VillagerController)。
-Vector3 forward = Player.transform.position - transform.position;
+        // forward（前向）：在通道或桥面上优先按当前寻路方向错身，避免垂直玩家方向把角色挤向悬崖或窗口。
+        Vector3 forward = Vector3.zero;
+        if (agent != null && agent.hasPath && agent.desiredDirection.sqrMagnitude > 0.01f)
+        {
+            forward = agent.desiredDirection;
+        }
+        else
+        {
+            forward = Player.transform.position - transform.position;
+        }
         forward.y = 0f;
         if (forward.sqrMagnitude < 0.01f)
         {
@@ -9196,15 +9591,15 @@ Vector3 forward = Player.transform.position - transform.position;
         {
             if (EnemyCombatTimeline.IsRecord(this))
             {
-                // argumentValue183（按原顺序缓存的实参当前）：从当前读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 EnemyCombatTimeline.Record(VillagerController, string, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields) 的参数。
+                // 按原顺序缓存的实参当前。
 global::VillagerController argumentValue183 = this;
-                // argumentValue184（按原顺序缓存的实参文字“绕行受限”）：从文字“绕行受限”读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 EnemyCombatTimeline.Record(VillagerController, string, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields) 的参数。
+                // 按原顺序缓存的实参文字“绕行受限”。
 string argumentValue184 = "绕行受限";
-                // argumentValue185（按原顺序缓存的实参文字的返回结果）：从文字的返回结果读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 EnemyCombatTimeline.Record(VillagerController, string, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields) 的参数。
+                // 按原顺序缓存的实参文字的返回结果。
 global::CombatDiagnosticFields argumentValue185 = CombatDiagnosticFields.Text("原因", "保留特殊通路队列");
-                // argumentValue182（按原顺序缓存的实参文字“前方”）：从文字“前方”读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 CombatDiagnosticFields.Count(string, double) 的参数。
+                // 按原顺序缓存的实参文字“前方”。
 string argumentValue182 = "前方";
-                // selectedValue181（分支选出的阻挡者的诊断敌人数量）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：作为 CombatDiagnosticFields.Count(string, double) 的参数、VillagerController.TryStartCrowdBypass(VillagerController)。
+                // 分支选出的阻挡者的诊断敌人数量。
 int selectedValue181;
                 if (blocker != null)
                 {
@@ -9221,15 +9616,15 @@ int selectedValue181;
             return false;
         }
 
-        // side（侧边）：保存 Vector3.Cross(Vector3, Vector3) 的返回结果，供当前步骤使用。使用位置：作为 Vector3.Dot(Vector3, Vector3) 的参数、VillagerController.TryStartCrowdBypass(VillagerController)。
+        // 侧边。
 Vector3 side = Vector3.Cross(Vector3.up, forward);
-        // offset（偏移量）：保存 Vector3.Dot(Vector3, Vector3) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Abs(float) 的参数、VillagerController.TryStartCrowdBypass(VillagerController)。
+        // 偏移量。
 float offset = Vector3.Dot(transform.position - blocker.transform.position, side);
-        // sign（符号）：使用位置：VillagerController.TryStartCrowdBypass(VillagerController)。
+        // 符号。
 int sign;
         if (Mathf.Abs(offset) > 0.05f)
         {
-            // selectedValue186（分支选出的1）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：VillagerController.TryStartCrowdBypass(VillagerController)。
+            // 分支选出的1。
 int selectedValue186;
             if (offset > 0f)
             {
@@ -9254,10 +9649,10 @@ int selectedValue186;
             }
         }
 
-        // attempt（尝试）：使用位置：VillagerController.TryStartCrowdBypass(VillagerController)。
+        // 尝试。
 for (int attempt = 0; attempt < 6; attempt++)
         {
-            // trialSign（试探符号）：使用位置：VillagerController.TryStartCrowdBypass(VillagerController)。
+            // 试探符号。
 int trialSign;
             if (attempt % 2 == 0)
             {
@@ -9268,11 +9663,16 @@ int trialSign;
                 trialSign = -sign;
             }
 
-            // width（宽度）：使用位置：VillagerController.TryStartCrowdBypass(VillagerController)。
+            // 宽度。
 float width = Mathf.Max(0.9f, ResolveMovementHazardRadius() * 2f + 0.2f) + (attempt / 2) * 0.35f;
-            // candidate（候选）：使用位置：作为 VillagerController.HorizontalDistance(Vector3, Vector3) 的参数、作为 VillagerController.TryResolveReachableNavigationPoint(Vector3, out Vector3) 的参数。
+            // 候选。
 Vector3 candidate = transform.position + side * trialSign * width + forward * 0.3f;
             if (!TryResolveReachableNavigationPoint(candidate, out Vector3 /* 中文含义：解算后的。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ resolved) || HorizontalDistance(candidate, resolved) > 0.3f || (Mathf.Abs(resolved.y - transform.position.y) > 0.35f && !HasContinuousSteppedNavigationGround(resolved)) || IsCrowdBypassDestinationOccupied(resolved))
+            {
+                continue;
+            }
+
+            if (onOuterPlatform && (!outerRegion.IsOnSecondFloorOuterPlatform(resolved) || outerRegion.IsInsideOuterPlatformWindowExclusionZone(resolved, 1.35f)))
             {
                 continue;
             }
@@ -9285,13 +9685,13 @@ Vector3 candidate = transform.position + side * trialSign * width + forward * 0.
             BeginTemporaryAvoidance(resolved);
             if (EnemyCombatTimeline.IsRecord(this))
             {
-                // argumentValue194（按原顺序缓存的实参当前）：从当前读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 EnemyCombatTimeline.Record(VillagerController, string, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields) 的参数。
+                // 按原顺序缓存的实参当前。
 global::VillagerController argumentValue194 = this;
-                // argumentValue195（按原顺序缓存的实参文字“绕行开始”）：从文字“绕行开始”读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 EnemyCombatTimeline.Record(VillagerController, string, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields) 的参数。
+                // 按原顺序缓存的实参文字“绕行开始”。
 string argumentValue195 = "绕行开始";
-                // argumentValue191（按原顺序缓存的实参文字“前方”）：从文字“前方”读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 CombatDiagnosticFields.Count(string, double) 的参数。
+                // 按原顺序缓存的实参文字“前方”。
 string argumentValue191 = "前方";
-                // selectedValue190（分支选出的阻挡者的诊断敌人数量）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：作为 CombatDiagnosticFields.Count(string, double) 的参数、VillagerController.TryStartCrowdBypass(VillagerController)。
+                // 分支选出的阻挡者的诊断敌人数量。
 int selectedValue190;
                 if (blocker != null)
                 {
@@ -9302,11 +9702,11 @@ int selectedValue190;
                     selectedValue190 = 0;
                 }
 
-                // argumentValue196（按原顺序缓存的实参数量的返回结果）：从数量的返回结果读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 EnemyCombatTimeline.Record(VillagerController, string, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields) 的参数。
+                // 按原顺序缓存的实参数量的返回结果。
 global::CombatDiagnosticFields argumentValue196 = CombatDiagnosticFields.Count(argumentValue191, selectedValue190);
-                // argumentValue193（按原顺序缓存的实参文字“选择”）：从文字“选择”读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 CombatDiagnosticFields.Text(string, string) 的参数。
+                // 按原顺序缓存的实参文字“选择”。
 string argumentValue193 = "选择";
-                // selectedValue192（分支选出的文字“右侧”）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：作为 CombatDiagnosticFields.Text(string, string) 的参数、VillagerController.TryStartCrowdBypass(VillagerController)。
+                // 分支选出的文字“右侧”。
 string selectedValue192;
                 if (trialSign > 0)
                 {
@@ -9330,15 +9730,15 @@ string selectedValue192;
 
         if (EnemyCombatTimeline.IsRecord(this))
         {
-            // argumentValue199（按原顺序缓存的实参当前）：从当前读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 EnemyCombatTimeline.Record(VillagerController, string, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields) 的参数。
+            // 按原顺序缓存的实参当前。
 global::VillagerController argumentValue199 = this;
-            // argumentValue200（按原顺序缓存的实参文字“绕行受限”）：从文字“绕行受限”读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 EnemyCombatTimeline.Record(VillagerController, string, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields) 的参数。
+            // 按原顺序缓存的实参文字“绕行受限”。
 string argumentValue200 = "绕行受限";
-            // argumentValue201（按原顺序缓存的实参文字的返回结果）：从文字的返回结果读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 EnemyCombatTimeline.Record(VillagerController, string, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields) 的参数。
+            // 按原顺序缓存的实参文字的返回结果。
 global::CombatDiagnosticFields argumentValue201 = CombatDiagnosticFields.Text("原因", "两侧没有同层可达空间");
-            // argumentValue198（按原顺序缓存的实参文字“前方”）：从文字“前方”读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 CombatDiagnosticFields.Count(string, double) 的参数。
+            // 按原顺序缓存的实参文字“前方”。
 string argumentValue198 = "前方";
-            // selectedValue197（分支选出的阻挡者的诊断敌人数量）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：作为 CombatDiagnosticFields.Count(string, double) 的参数、VillagerController.TryStartCrowdBypass(VillagerController)。
+            // 分支选出的阻挡者的诊断敌人数量。
 int selectedValue197;
             if (blocker != null)
             {
@@ -9357,13 +9757,13 @@ int selectedValue197;
 
     /// <summary>BeginTemporaryAvoidance 的业务处理入口；本方法直接依赖 EnemyAIManager.InvalidatePursuitDestination(VillagerController)、Mathf.Max(float, float)、PathAgent.ResetPath()、VillagerController.HorizontalDistance(Vector3, Vector3)、VillagerController.RefreshChaseDestination()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillagerController.TryMutualBlockingYield(VillagerController)、VillagerController.TryStartCrowdBypass(VillagerController)；下游（含内部回调体） EnemyAIManager.InvalidatePursuitDestination(VillagerController)、Mathf.Max(float, float)、PathAgent.ResetPath()、VillagerController.HorizontalDistance(Vector3, Vector3)、VillagerController.RefreshChaseDestination()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="target">中文含义：目标。使用位置：作为 VillagerController.HorizontalDistance(Vector3, Vector3) 的参数、VillagerController.BeginTemporaryAvoidance(Vector3)。</param>
+    /// <param name="target">目标。</param>
     private void BeginTemporaryAvoidance(Vector3 target)
     {
         crowdBypassActive = true;
         crowdBypassDestination = target;
         crowdBypassPlayerAnchor = Player.transform.position;
-        crowdBypassExpiresAt = Time.time + Mathf.Max(1.8f, HorizontalDistance(transform.position, target) / Mathf.Max(.5f, agent.speed) + 1f);
+        crowdBypassExpiresAt = Time.time + Mathf.Max(.75f, HorizontalDistance(transform.position, target) / Mathf.Max(.5f, agent.speed) + .35f);
         lastStableAvoidanceDirection = Vector3.zero;
         standingPathDirectionFrame = -1;
         if (EnemyAIManager.HasInstance)
@@ -9373,50 +9773,66 @@ int selectedValue197;
 
         agent.ResetPath();
         agent.isStopped = false;
+        InvalidateChaseRefreshFrame();
         RefreshChaseDestination();
     }
 
     /// <summary>TryMutualBlockingYield 的业务处理入口；本方法直接依赖 Mathf.Abs(float)、Object.GetInstanceID()、Vector3.Cross(Vector3, Vector3)、Vector3.ProjectOnPlane(Vector3, Vector3)、VillagerController.BeginTemporaryAvoidance(Vector3)、VillagerController.CanMoveDirectlyToNavigationPoint(Vector3, bool)、VillagerController.HorizontalDistance(Vector3, Vector3) 等共 9 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillagerController.TryStartCrowdBypass(VillagerController)；下游（含内部回调体） Mathf.Abs(float)、Object.GetInstanceID()、Vector3.Cross(Vector3, Vector3)、Vector3.ProjectOnPlane(Vector3, Vector3)、VillagerController.BeginTemporaryAvoidance(Vector3)、VillagerController.CanMoveDirectlyToNavigationPoint(Vector3, bool)、VillagerController.HorizontalDistance(Vector3, Vector3) 等共 9 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="blocker">中文含义：阻挡者。使用位置：作为 Vector3.ProjectOnPlane(Vector3, Vector3) 的参数、作为 VillagerController.HorizontalDistance(Vector3, Vector3) 的参数、VillagerController.TryMutualBlockingYield(VillagerController)。</param>
+    /// <param name="blocker">阻挡者。</param>
     private bool TryMutualBlockingYield(VillagerController blocker)
     {
         // 双方都有有效路线也可能相互堵住。固定由离追击目标较远的一方
         // 先腾出真实空间，不创建通路票据，也不取消身体碰撞。
+        HouseThreeRegionNavigation outerRegion = HouseThreeRegionNavigation.Current;
+        bool onOuterPlatform = outerRegion != null && outerRegion.IsOnSecondFloorOuterPlatform(transform.position);
+        if (onOuterPlatform && outerRegion.IsInsideOuterPlatformWindowExclusionZone(transform.position, 1.35f))
+        {
+            return false;
+        }
+
         if (movementBlockedDuration < .6f || blocker.lastMovementBlockerEnemy != this || blocker.movementBlockedDuration < .6f || blocker.IsCrowdBypassing || blocker.CurrentState != VillagerState.Chase || blocker.IsNavigationTraversalProtected)
         {
             return false;
         }
 
-        // gap（间隙）：使用位置：作为 Mathf.Abs(float) 的参数、VillagerController.TryMutualBlockingYield(VillagerController)。
-float gap = HorizontalDistance(transform.position, Player.transform.position) - HorizontalDistance(blocker.transform.position, Player.transform.position);
+        // 间隙。
+        float gap;
+        if (onOuterPlatform && agent != null && agent.HasDestination && blocker.Agent != null && blocker.Agent.HasDestination)
+        {
+            gap = HorizontalDistance(transform.position, agent.Destination) - HorizontalDistance(blocker.transform.position, blocker.Agent.Destination);
+        }
+        else
+        {
+            gap = HorizontalDistance(transform.position, Player.transform.position) - HorizontalDistance(blocker.transform.position, Player.transform.position);
+        }
         if (gap < -.1f || Mathf.Abs(gap) <= .1f && GetInstanceID() < blocker.GetInstanceID())
         {
             return false;
         }
 
-        // farAway（远端远离）：使用位置：作为 Vector3.Cross(Vector3, Vector3) 的参数、VillagerController.TryMutualBlockingYield(VillagerController)。
+        // 远端远离。
 Vector3 farAway = Vector3.ProjectOnPlane(transform.position - blocker.transform.position, Vector3.up).normalized;
-        // sideDirection（侧边方向）：保存 Vector3.Cross(Vector3, Vector3) 的返回结果，供当前步骤使用。使用位置：VillagerController.TryMutualBlockingYield(VillagerController)。
+        // 侧边方向。
 Vector3 sideDirection = Vector3.Cross(Vector3.up, farAway);
-        // distanceLevel（距离级别）：使用位置：VillagerController.TryMutualBlockingYield(VillagerController)。
-for (int distanceLevel = 0; distanceLevel < 3; distanceLevel++)
+        // 距离级别。
+        for (int distanceLevel = 0; distanceLevel < 3; distanceLevel++)
         {
-            // sideLevel（侧边级别）：使用位置：VillagerController.TryMutualBlockingYield(VillagerController)。
-for (int sideLevel = 0; sideLevel < 5; sideLevel++)
+            // 优先尝试侧向错身让路，避免先笔直倒退堵死后排追兵。
+            int[] sideOrder = { 1, 2, 3, 4, 0 };
+            for (int orderIndex = 0; orderIndex < sideOrder.Length; orderIndex++)
             {
-                // strafe（横移）：使用位置：VillagerController.TryMutualBlockingYield(VillagerController)。
-float strafe;
+                int sideLevel = sideOrder[orderIndex];
+                float strafe;
+                float backwardScale = 1f;
                 if (sideLevel == 0)
                 {
-                    strafe = 0;
+                    strafe = 0f;
                 }
                 else
                 {
-                    // leftOperand203（计算前缓存的左侧浮点计算）：按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：VillagerController.TryMutualBlockingYield(VillagerController)。
-float leftOperand203 = ((sideLevel + 1) / 2) * .45f;
-                    // selectedValue202（分支选出的1）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：VillagerController.TryMutualBlockingYield(VillagerController)。
-int selectedValue202;
+                    float leftOperand203 = ((sideLevel + 1) / 2) * .45f;
+                    int selectedValue202;
                     if (sideLevel % 2 == 0)
                     {
                         selectedValue202 = -1;
@@ -9426,12 +9842,17 @@ int selectedValue202;
                         selectedValue202 = 1;
                     }
 
-                    strafe = leftOperand203 * (selectedValue202);
+                    strafe = leftOperand203 * selectedValue202;
+                    backwardScale = 0.45f;
                 }
 
-                // candidate（候选）：使用位置：作为 VillagerController.TryResolveSupportedNavigationPosition(Vector3, float, out Vector3) 的参数。
-Vector3 candidate = transform.position + farAway * (.65f + distanceLevel * .35f) + sideDirection * strafe;
+                Vector3 candidate = transform.position + farAway * ((.65f + distanceLevel * .35f) * backwardScale) + sideDirection * strafe;
                 if (!TryResolveSupportedNavigationPosition(candidate, transform.position.y, out Vector3 /* 中文含义：支撑。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ support) || Mathf.Abs(support.y - transform.position.y) > .35f || IsCrowdBypassDestinationOccupied(support) || !CanMoveDirectlyToNavigationPoint(support))
+                {
+                    continue;
+                }
+
+                if (onOuterPlatform && (!outerRegion.IsOnSecondFloorOuterPlatform(support) || outerRegion.IsInsideOuterPlatformWindowExclusionZone(support, 1.35f)))
                 {
                     continue;
                 }
@@ -9453,11 +9874,11 @@ Vector3 candidate = transform.position + farAway * (.65f + distanceLevel * .35f)
             return;
         }
 
-        // current（当前动画状态信息）：保存 Animator.GetCurrentAnimatorStateInfo(int) 的返回结果，供当前步骤使用。使用位置：作为 CombatDiagnosticFields.Count(string, double) 的参数、VillagerController.RecordTimelineAnimationChanges()。
+        // 当前动画状态信息。
 var current = anim.GetCurrentAnimatorStateInfo(0);
-        // transition（是否过渡）：保存 Animator.IsInTransition(int) 的返回结果，供当前步骤使用。使用位置：作为 EnemyCombatTimeline.Describe(bool) 的参数、VillagerController.RecordTimelineAnimationChanges()。
+        // 是否过渡。
 bool transition = anim.IsInTransition(0);
-        // next（下一次）：使用位置：作为 CombatDiagnosticFields.Count(string, double) 的参数、VillagerController.RecordTimelineAnimationChanges()。
+        // 下一次。
 int next;
         if (transition)
         {
@@ -9473,7 +9894,7 @@ int next;
             return;
         }
 
-        // previous（前一次）：使用位置：作为 CombatDiagnosticFields.Count(string, double) 的参数。
+        // 前一次。
 int previous = timelineBaseAnimation;
         timelineBaseAnimation = current.shortNameHash;
         timelineNextAnimation = next;
@@ -9494,7 +9915,7 @@ int previous = timelineBaseAnimation;
             return string.Empty;
         }
 
-        // text（文字）：使用位置：作为 CombatTimelineSnapshot.AppendValue(StringBuilder) 的参数、VillagerController.BuildCombatTimelineSnapshot()。
+        // 文字。
 var text = new System.Text.StringBuilder(2048);
         CollectCombatTimelineSnapshot().AppendValue(text);
         return text.ToString();
@@ -9504,7 +9925,7 @@ var text = new System.Text.StringBuilder(2048);
     /// <remarks>静态调用链：上游 EnemyCombatTimeline.LateUpdate()、VillagerController.BuildCombatTimelineSnapshot()；下游（含内部回调体） Animator.GetCurrentAnimatorStateInfo(int)、Animator.GetFloat(int)、Animator.IsInTransition(int)、CombatTimelineSnapshot.CombatTimelineSnapshot()、EnemyAIManager.FillCombatTimelineSnapshot(VillagerController, ref CombatTimelineSnapshot)、EnemyCombatTimeline.Describe&lt;VillagerController.PursuitIngressPhase&gt;(VillagerController.PursuitIngressPhase)、Enum.ToString() 等共 13 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     internal CombatTimelineSnapshot CollectCombatTimelineSnapshot()
     {
-        // reason（原因）：使用位置：VillagerController.CollectCombatTimelineSnapshot()。
+        // 原因。
 string reason;
         if (!gameObject.activeInHierarchy || !enabled || !IsActive)
         {
@@ -9591,7 +10012,7 @@ string reason;
             reason = "路径追击中";
         }
 
-        // createdValue206（本次新建的快照）：保存本次创建实例，按原先顺序完成逐项初始化后交给后续使用方。使用位置：VillagerController.CollectCombatTimelineSnapshot()。
+        // 本次新建的快照。
 global::CombatTimelineSnapshot createdValue206 = new CombatTimelineSnapshot();
         createdValue206.state = CurrentState;
         createdValue206.movement = CurrentMovementMode;
@@ -9625,9 +10046,9 @@ global::CombatTimelineSnapshot createdValue206 = new CombatTimelineSnapshot();
             createdValue206.stair = "未配置";
         }
 
-        // snapshot（快照）：使用位置：作为 EnemyAIManager.FillCombatTimelineSnapshot(VillagerController, ref CombatTimelineSnapshot) 的参数、作为 Mathf.Abs(float) 的参数、作为 PathAgent.TryGetCurrentWaypoint(out Vector3) 的参数 等共 5 处。
+        // 快照。
 var snapshot = createdValue206;
-        // player（玩家）：使用位置：VillagerController.CollectCombatTimelineSnapshot()。
+        // 玩家。
 var player = Player;
         if (player != null)
         {
@@ -9654,7 +10075,7 @@ var player = Player;
 
         if (anim != null)
         {
-            // state（当前动画状态信息）：保存 Animator.GetCurrentAnimatorStateInfo(int) 的返回结果，供当前步骤使用。使用位置：VillagerController.CollectCombatTimelineSnapshot()。
+            // 当前动画状态信息。
 var state = anim.GetCurrentAnimatorStateInfo(0);
             snapshot.hasAnimation = true;
             snapshot.animationIdentifier = state.shortNameHash;
@@ -9671,15 +10092,15 @@ var state = anim.GetCurrentAnimatorStateInfo(0);
         return snapshot;
     }
 
-    /// <summary>中文含义：下一次移动诊断时间。使用位置：VillagerController.CanLogMovementDiagnostic.get、VillagerController.DiagLog(string, string)。</summary>
+    /// <summary>下一次移动诊断时间。</summary>
     private float nextMovementDiagnosticTime;
-    /// <summary>中文含义：是否可以日志移动诊断。使用位置：VillagerController.ArchitectureReadCanLogMovementDiagnostic.get、VillagerController.DiagLog(string, string)、VillagerController.DiagLogAnimParams() 等共 10 处。</summary>
+    /// <summary>是否可以日志移动诊断。</summary>
     internal bool CanLogMovementDiagnostic => enableMovementDiagnostic && Time.time >= nextMovementDiagnosticTime;
 
     /// <summary>DiagLog 的业务处理入口；本方法直接依赖 Debug.Log(object, Object)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillagerController.ArchitectureInvokeDiagLog(string, string)、VillagerController.DiagLogAnimParams()、VillagerController.DiagLogBT(string, string)、VillagerController.DiagSample()、VillagerController.DiagTrackAnimationState() 等共 8 处；下游（含内部回调体） Debug.Log(object, Object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="tag">中文含义：标签。使用位置：作为 Debug.Log(object, Object) 的参数。</param>
-    /// <param name="msg">中文含义：消息内容。使用位置：作为 Debug.Log(object, Object) 的参数。</param>
+    /// <param name="tag">标签。</param>
+    /// <param name="msg">消息内容。</param>
     private void DiagLog(string tag, string msg)
     {
         if (!CanLogMovementDiagnostic)
@@ -9693,8 +10114,8 @@ var state = anim.GetCurrentAnimatorStateInfo(0);
 
     /// <summary>DiagLogBT 的业务处理入口；本方法直接依赖 VillagerController.DiagLog(string, string)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyTaskBase.DiagTaskEnd()、EnemyTaskBase.DiagTaskStart()；下游（含内部回调体） VillagerController.DiagLog(string, string)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="phase">中文含义：阶段。使用位置：作为 VillagerController.DiagLog(string, string) 的参数。</param>
-    /// <param name="taskName">中文含义：任务名称。使用位置：作为 VillagerController.DiagLog(string, string) 的参数。</param>
+    /// <param name="phase">阶段。</param>
+    /// <param name="taskName">任务名称。</param>
     public void DiagLogBT(string phase, string taskName)
     {
         if (!CanLogMovementDiagnostic)
@@ -9719,7 +10140,7 @@ var state = anim.GetCurrentAnimatorStateInfo(0);
 
         if (CanLogMovementDiagnostic)
         {
-            DiagLog("动画参数", $"MoveSpeed={anim.GetFloat("MoveSpeed"):F3}, " + $"MoveX={anim.GetFloat("MoveX"):F3}, " + $"MoveY={anim.GetFloat("MoveY"):F3}, " + $"HIT={anim.GetBool("HIT")}, " + $"IsCrawl={anim.GetBool("IsCrawl")}, " + $"CanTripOver={anim.GetBool("CanTripOver")}, " + $"HealthRatio={anim.GetFloat("HealthRatio"):F3}, " + $"ATK={anim.GetBool("ATK")}, " + $"HitDir={anim.GetInteger("HitDir")}");
+            DiagLog("动画参数", $"MoveSpeed={anim.GetFloat(HashMoveSpeed):F3}, " + $"MoveX={anim.GetFloat(HashMoveX):F3}, " + $"MoveY={anim.GetFloat(HashMoveY):F3}, " + $"HIT={anim.GetBool(HashHitDiagnostic)}, " + $"IsCrawl={anim.GetBool(HashIsCrawl)}, " + $"CanTripOver={anim.GetBool(HashCanTripOver)}, " + $"HealthRatio={anim.GetFloat(HashHealthRatio):F3}, " + $"ATK={anim.GetBool(HashATK)}, " + $"HitDir={anim.GetInteger(HashHitDir)}");
         }
     }
 
@@ -9727,12 +10148,12 @@ var state = anim.GetCurrentAnimatorStateInfo(0);
     /// <remarks>静态调用链：上游 VillagerController.DiagSample()；下游（含内部回调体） Animator.GetBool(string)、Animator.GetFloat(string)、HouseThreeRegionNavigation.TreadRegion(Vector3)、object.ReferenceEquals(object, object)、StringBuilder.Append(string)、StringBuilder.StringBuilder(int)、StringBuilder.ToString() 等共 8 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     private string DiagBuildSnapshot()
     {
-        // sb（文本构建器）：使用位置：VillagerController.DiagBuildSnapshot()。
+        // 文本构建器。
 System.Text.StringBuilder sb = new System.Text.StringBuilder(512);
         // 位置与位移
-        // pos（位置）：使用位置：作为 StringBuilder.Append(string) 的参数、VillagerController.DiagBuildSnapshot()。
+        // 位置。
 Vector3 pos = transform.position;
-        // disp（位移）：使用位置：作为 StringBuilder.Append(string) 的参数、VillagerController.DiagBuildSnapshot()。
+        // 位移。
 Vector3 disp;
         if (diagFirstSample)
         {
@@ -9746,18 +10167,18 @@ Vector3 disp;
         sb.Append($"位置=({pos.x:F3},{pos.y:F3},{pos.z:F3}), ");
         sb.Append($"位移=({disp.x:F4},{disp.y:F4},{disp.z:F4}), 幅度={disp.magnitude:F4}, ");
         // 玩家信息
-        // player（玩家）：使用位置：VillagerController.DiagBuildSnapshot()。
+        // 玩家。
 LeonController player = Player;
         if (player != null)
         {
-            // ppos（玩家位置）：使用位置：作为 StringBuilder.Append(string) 的参数、VillagerController.DiagBuildSnapshot()。
+            // 玩家位置。
 Vector3 ppos = player.transform.position;
-            // dist（距离）：使用位置：作为 StringBuilder.Append(string) 的参数。
+            // 距离。
 float dist = PlayerDistance;
-            // dirToPlayer（方向目标玩家）：使用位置：作为 Vector3.Angle(Vector3, Vector3) 的参数、VillagerController.DiagBuildSnapshot()。
+            // 方向目标玩家。
 Vector3 dirToPlayer = ppos - pos;
             dirToPlayer.y = 0f;
-            // facingAngle（朝向角度）：使用位置：作为 StringBuilder.Append(string) 的参数、VillagerController.DiagBuildSnapshot()。
+            // 朝向角度。
 float facingAngle;
             if (dirToPlayer.sqrMagnitude > 0.001f)
             {
@@ -9809,9 +10230,9 @@ float facingAngle;
 
         // 同时记录门洞动作与实际踏面区域，便于定位追击停滞。
         sb.Append($", 战斗={combatEngaged}, 完全警觉={fullyAwareOfPlayer}, ");
-        // callReceiver212（调用前缓存的文本构建器）：从文本构建器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：VillagerController.DiagBuildSnapshot()。
+        // 调用前缓存的文本构建器。
 global::System.Text.StringBuilder callReceiver212 = sb;
-        // selectedValue211（分支选出的追击入口门的名称）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：作为 StringBuilder.Append(string) 的参数、VillagerController.DiagBuildSnapshot()。
+        // 分支选出的追击入口门的名称。
 string selectedValue211;
         if (pursuitIngressDoor != null)
         {
@@ -9824,11 +10245,11 @@ string selectedValue211;
 
         callReceiver212.Append($"门洞={(selectedValue211)}, ");
         sb.Append($"门洞阶段={pursuitIngressPhase}, 门洞穿越={pursuitIngressCrossing}, 室内转折完成={door03InteriorTurnPassed}, ");
-        // callReceiver215（调用前缓存的文本构建器）：从文本构建器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：VillagerController.DiagBuildSnapshot()。
+        // 调用前缓存的文本构建器。
 global::System.Text.StringBuilder callReceiver215 = sb;
-        // receiverValue213（判空前缓存的房屋第三区域导航的当前）：从房屋第三区域导航的当前读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、VillagerController.DiagBuildSnapshot()。
+        // 判空前缓存的房屋第三区域导航的当前。
 global::HouseThreeRegionNavigation receiverValue213 = HouseThreeRegionNavigation.Current;
-        // optionalValue214（条件访问得到的踏面区域的返回结果）：保存条件访问的结果，接收者为空时保持默认空值，非空时才执行原成员访问。使用位置：作为 StringBuilder.Append(string) 的参数、VillagerController.DiagBuildSnapshot()。
+        // 条件访问得到的踏面区域的返回结果。
 global::VillageTraversalRegion? optionalValue214;
         if (!global::System.Object.ReferenceEquals(receiverValue213, null))
         {
@@ -9854,7 +10275,7 @@ global::VillageTraversalRegion? optionalValue214;
 
         if (!diagPrevAnimInit)
         {
-            // i（当前遍历索引）：使用位置：VillagerController.DiagTrackAnimationState()。
+            // 当前遍历索引。
 for (int i = 0; i < diagPrevAnimHashes.Length; i++)
             {
                 diagPrevAnimHashes[i] = -1;
@@ -9863,9 +10284,9 @@ for (int i = 0; i < diagPrevAnimHashes.Length; i++)
             diagPrevAnimInit = true;
         }
 
-        // layerCount（图层数量）：使用位置：VillagerController.DiagTrackAnimationState()。
+        // 图层数量。
 int layerCount = anim.layerCount;
-        // layer（图层）：使用位置：作为 Animator.GetCurrentAnimatorClipInfo(int) 的参数、作为 Animator.GetCurrentAnimatorStateInfo(int) 的参数、作为 Animator.GetNextAnimatorClipInfo(int) 的参数 等共 7 处。
+        // 图层。
 for (int layer = 0; layer < layerCount && layer < diagPrevAnimHashes.Length; layer++)
         {
             if (!CanLogMovementDiagnostic)
@@ -9873,7 +10294,7 @@ for (int layer = 0; layer < layerCount && layer < diagPrevAnimHashes.Length; lay
                 break;
             }
 
-            // stateInfo（当前动画状态信息）：保存 Animator.GetCurrentAnimatorStateInfo(int) 的返回结果，供当前步骤使用。使用位置：作为 VillagerController.DiagLog(string, string) 的参数、VillagerController.DiagTrackAnimationState()。
+            // 当前动画状态信息。
 AnimatorStateInfo stateInfo = anim.GetCurrentAnimatorStateInfo(layer);
             if (stateInfo.fullPathHash == diagPrevAnimHashes[layer])
             {
@@ -9881,9 +10302,9 @@ AnimatorStateInfo stateInfo = anim.GetCurrentAnimatorStateInfo(layer);
             }
 
             // 状态变化
-            // clipNames（动画片段名称列表）：使用位置：作为 VillagerController.DiagLog(string, string) 的参数、VillagerController.DiagTrackAnimationState()。
+            // 动画片段名称列表。
 string clipNames = "";
-            // clips（动画片段集合）：保存 Animator.GetCurrentAnimatorClipInfo(int) 的返回结果，供当前步骤使用。使用位置：作为 Array.ConvertAll<AnimatorClipInfo, string>(AnimatorClipInfo[], Converter<AnimatorClipInfo, string>) 的参数、VillagerController.DiagTrackAnimationState()。
+            // 动画片段集合。
 var clips = anim.GetCurrentAnimatorClipInfo(layer);
             if (clips.Length > 0)
             {
@@ -9900,17 +10321,17 @@ var clips = anim.GetCurrentAnimatorClipInfo(layer);
                 }));
             }
 
-            // inTransition（是否内部过渡）：保存 Animator.IsInTransition(int) 的返回结果，供当前步骤使用。使用位置：作为 VillagerController.DiagLog(string, string) 的参数、VillagerController.DiagTrackAnimationState()。
+            // 是否内部过渡。
 bool inTransition = anim.IsInTransition(layer);
-            // nextStateStr（下一次状态字符串）：使用位置：作为 VillagerController.DiagLog(string, string) 的参数、VillagerController.DiagTrackAnimationState()。
+            // 下一次状态字符串。
 string nextStateStr = "";
             if (inTransition)
             {
-                // nextInfo（下一次信息）：保存 Animator.GetNextAnimatorStateInfo(int) 的返回结果，供当前步骤使用。使用位置：VillagerController.DiagTrackAnimationState()。
+                // 下一次信息。
 AnimatorStateInfo nextInfo = anim.GetNextAnimatorStateInfo(layer);
-                // nextClips（下一次动画片段集合）：使用位置：VillagerController.DiagTrackAnimationState()。
+                // 下一次动画片段集合。
 string nextClips = "";
-                // nextClipArr（下一次动画片段数组）：保存 Animator.GetNextAnimatorClipInfo(int) 的返回结果，供当前步骤使用。使用位置：作为 Array.ConvertAll<AnimatorClipInfo, string>(AnimatorClipInfo[], Converter<AnimatorClipInfo, string>) 的参数、VillagerController.DiagTrackAnimationState()。
+                // 下一次动画片段数组。
 var nextClipArr = anim.GetNextAnimatorClipInfo(layer);
                 if (nextClipArr.Length > 0)
                 {
@@ -9967,9 +10388,9 @@ var nextClipArr = anim.GetNextAnimatorClipInfo(layer);
             return;
         }
 
-        // currentPos（当前位置）：使用位置：VillagerController.DiagSample()。
+        // 当前位置。
 Vector3 currentPos = transform.position;
-        // displacement（位移）：使用位置：VillagerController.DiagSample()。
+        // 位移。
 Vector3 displacement;
         if (diagFirstSample)
         {
@@ -9980,9 +10401,9 @@ Vector3 displacement;
             displacement = currentPos - diagLastSamplePos;
         }
 
-        // dispMag（位移弹匣）：使用位置：作为 VillagerController.DiagLog(string, string) 的参数、VillagerController.DiagSample()。
+        // 位移弹匣。
 float dispMag = displacement.magnitude;
-        // moveSpeed（移动速度）：使用位置：作为 VillagerController.DiagLog(string, string) 的参数、VillagerController.DiagSample()。
+        // 移动速度。
 float moveSpeed;
         if (anim != null)
         {
@@ -10035,61 +10456,61 @@ float moveSpeed;
     }
 
     // 阶段二组装端口：只读上下文与原运动执行方法，下一阶段再迁移运动职责。
-    /// <summary>中文含义：架构读取是否可以日志移动诊断。使用位置：EnemyActionCoordinator.CanLogMovementDiagnostic.get、EnemyCombatModule.CanLogMovementDiagnostic.get。</summary>
+    /// <summary>架构读取是否可以日志移动诊断。</summary>
     internal bool ArchitectureReadCanLogMovementDiagnostic => CanLogMovementDiagnostic;
-    /// <summary>中文含义：架构读取当前移动模式。使用位置：EnemyActionCoordinator.CurrentMovementMode.get、EnemyAnimationAdapter.CurrentMovementMode.get、EnemyCombatModule.CurrentMovementMode.get 等共 4 处。</summary>
+    /// <summary>架构读取当前移动模式。</summary>
     internal EnemyMovementMode ArchitectureReadCurrentMovementMode => CurrentMovementMode;
-    /// <summary>中文含义：架构读取当前状态。使用位置：EnemyActionCoordinator.CurrentState.get、EnemyAnimationAdapter.CurrentState.get、EnemyCombatModule.CurrentState.get 等共 4 处。</summary>
+    /// <summary>架构读取当前状态。</summary>
     internal VillagerState ArchitectureReadCurrentState => CurrentState;
-    /// <summary>中文含义：架构只读哈希编号攻击。使用位置：EnemyActionCoordinator.HashATK.get、EnemyAnimationAdapter.HashATK.get、EnemyCombatModule.HashATK.get。</summary>
+    /// <summary>架构只读哈希编号攻击。</summary>
     internal static int ArchitectureReadHashATK => HashATK;
-    /// <summary>中文含义：架构只读哈希编号攻击01状态。使用位置：EnemyCombatModule.HashAttack01State.get。</summary>
+    /// <summary>架构只读哈希编号攻击01状态。</summary>
     internal static int ArchitectureReadHashAttack01State => HashAttack01State;
-    /// <summary>中文含义：架构只读哈希编号攻击02状态。使用位置：EnemyCombatModule.HashAttack02State.get。</summary>
+    /// <summary>架构只读哈希编号攻击02状态。</summary>
     internal static int ArchitectureReadHashAttack02State => HashAttack02State;
-    /// <summary>中文含义：架构只读哈希编号攻击03状态。使用位置：EnemyCombatModule.HashAttack03State.get。</summary>
+    /// <summary>架构只读哈希编号攻击03状态。</summary>
     internal static int ArchitectureReadHashAttack03State => HashAttack03State;
-    /// <summary>中文含义：架构只读哈希编号攻击索引。使用位置：EnemyCombatModule.HashAttackIndex.get。</summary>
+    /// <summary>架构只读哈希编号攻击索引。</summary>
     internal static int ArchitectureReadHashAttackIndex => HashAttackIndex;
-    /// <summary>中文含义：架构只读哈希编号是否可以绊倒。使用位置：EnemyCombatModule.HashCanTripOver.get。</summary>
+    /// <summary>架构只读哈希编号是否可以绊倒。</summary>
     internal static int ArchitectureReadHashCanTripOver => HashCanTripOver;
-    /// <summary>中文含义：架构只读哈希编号命中。使用位置：EnemyActionCoordinator.HashHIT.get、EnemyAnimationAdapter.HashHIT.get、EnemyCombatModule.HashHIT.get。</summary>
+    /// <summary>架构只读哈希编号命中。</summary>
     internal static int ArchitectureReadHashHIT => HashHIT;
-    /// <summary>中文含义：架构只读哈希编号命中方向。使用位置：EnemyCombatModule.HashHitDir.get。</summary>
+    /// <summary>架构只读哈希编号命中方向。</summary>
     internal static int ArchitectureReadHashHitDir => HashHitDir;
-    /// <summary>中文含义：架构只读哈希编号命中触发器。使用位置：EnemyAnimationAdapter.HashHitTrigger.get、EnemyCombatModule.HashHitTrigger.get。</summary>
+    /// <summary>架构只读哈希编号命中触发器。</summary>
     internal static int ArchitectureReadHashHitTrigger => HashHitTrigger;
-    /// <summary>中文含义：架构只读哈希编号是否爬行。使用位置：EnemyCombatModule.HashIsCrawl.get。</summary>
+    /// <summary>架构只读哈希编号是否爬行。</summary>
     internal static int ArchitectureReadHashIsCrawl => HashIsCrawl;
-    /// <summary>中文含义：架构只读哈希编号移动速度。使用位置：EnemyAnimationAdapter.HashMoveSpeed.get、EnemyCombatModule.HashMoveSpeed.get。</summary>
+    /// <summary>架构只读哈希编号移动速度。</summary>
     internal static int ArchitectureReadHashMoveSpeed => HashMoveSpeed;
-    /// <summary>中文含义：架构只读哈希编号搜索模式。使用位置：EnemyActionCoordinator.HashSearchMode.get、EnemyCombatModule.HashSearchMode.get。</summary>
+    /// <summary>架构只读哈希编号搜索模式。</summary>
     internal static int ArchitectureReadHashSearchMode => HashSearchMode;
-    /// <summary>中文含义：架构只读哈希编号硬直方向。使用位置：EnemyCombatModule.HashStaggerDirection.get。</summary>
+    /// <summary>架构只读哈希编号硬直方向。</summary>
     internal static int ArchitectureReadHashStaggerDirection => HashStaggerDirection;
-    /// <summary>中文含义：架构只读哈希编号硬直级别。使用位置：EnemyCombatModule.HashStaggerLevel.get。</summary>
+    /// <summary>架构只读哈希编号硬直级别。</summary>
     internal static int ArchitectureReadHashStaggerLevel => HashStaggerLevel;
-    /// <summary>中文含义：架构只读哈希编号硬直触发器。使用位置：EnemyAnimationAdapter.HashStaggerTrigger.get、EnemyCombatModule.HashStaggerTrigger.get。</summary>
+    /// <summary>架构只读哈希编号硬直触发器。</summary>
     internal static int ArchitectureReadHashStaggerTrigger => HashStaggerTrigger;
-    /// <summary>中文含义：架构只读哈希编号转向方向。使用位置：EnemyActionCoordinator.HashTurnDir.get、EnemyCombatModule.HashTurnDir.get。</summary>
+    /// <summary>架构只读哈希编号转向方向。</summary>
     internal static int ArchitectureReadHashTurnDir => HashTurnDir;
-    /// <summary>中文含义：架构读取寻路代理。使用位置：EnemyActionCoordinator.agent.get、EnemyAnimationAdapter.agent.get、EnemyCombatModule.agent.get 等共 4 处。</summary>
+    /// <summary>架构读取寻路代理。</summary>
     internal PathAgent ArchitectureReadAgent => agent;
-    /// <summary>中文含义：架构读取动画。使用位置：EnemyActionCoordinator.anim.get、EnemyAnimationAdapter.anim.get、EnemyCombatModule.anim.get。</summary>
+    /// <summary>架构读取动画。</summary>
     internal Animator ArchitectureReadAnim => anim;
-    /// <summary>中文含义：架构读取攻击范围极小容差。使用位置：EnemyCombatModule.attackRangeEpsilon.get。</summary>
+    /// <summary>架构读取攻击范围极小容差。</summary>
     internal static float ArchitectureReadAttackRangeEpsilon => attackRangeEpsilon;
-    /// <summary>中文含义：架构读取行为树。使用位置：EnemyCombatModule.behaviorTree.get。</summary>
+    /// <summary>架构读取行为树。</summary>
     internal BehaviorTree ArchitectureReadBehaviorTree => behaviorTree;
-    /// <summary>中文含义：架构读取缓存玩家。使用位置：EnemyCombatModule.cachedPlayer.get。</summary>
+    /// <summary>架构读取缓存玩家。</summary>
     internal LeonController ArchitectureReadCachedPlayer => cachedPlayer;
-    /// <summary>中文含义：架构读取电锯桥接。使用位置：EnemyActionCoordinator.chainsawBridge.get、EnemyAnimationAdapter.UpdateLocomotionPlaybackRate(Vector3)、EnemyCombatModule.chainsawBridge.get 等共 4 处。</summary>
+    /// <summary>架构读取电锯桥接。</summary>
     internal ChainsawManAnimationBridge ArchitectureReadChainsawBridge => chainsawBridge;
-    /// <summary>中文含义：架构读取碰撞体控制器。使用位置：EnemyActionCoordinator.colliderCtrl.get、EnemyCombatModule.colliderCtrl.get。</summary>
+    /// <summary>架构读取碰撞体控制器。</summary>
     internal EnemyColliderController ArchitectureReadColliderCtrl => colliderCtrl;
-    /// <summary>中文含义：架构读取上下文。使用位置：EnemyActionCoordinator.ctx.get、EnemyAnimationAdapter.ctx.get、EnemyCombatModule.ctx.get。</summary>
+    /// <summary>架构读取上下文。</summary>
     internal EnemyContext ArchitectureReadCtx => ctx;
-    /// <summary>中文含义：架构读取特殊通行。使用位置：EnemyActionCoordinator.specialTraversal.get、EnemyCombatModule.specialTraversal.get、EnemyFootAction.AllowGroundContact.get。</summary>
+    /// <summary>架构读取特殊通行。</summary>
     internal EnemyWindowTraversal ArchitectureReadSpecialTraversal => specialTraversal;
 
     /// <summary>ArchitectureInvokeBecomeFullyAwareOfPlayer 的业务处理入口；本方法直接依赖 VillagerController.BecomeFullyAwareOfPlayer()，调用方通过参数与返回结果交接本次处理。</summary>
@@ -10101,7 +10522,7 @@ float moveSpeed;
 
     /// <summary>ArchitectureInvokeBeginChase 的业务处理入口；本方法直接依赖 VillagerController.BeginChase(bool)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） VillagerController.BeginChase(bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="notifyCombatEngaged">中文含义：是否通知战斗已接战。使用位置：作为 VillagerController.BeginChase(bool) 的参数。</param>
+    /// <param name="notifyCombatEngaged">是否通知战斗已接战。</param>
     internal void ArchitectureInvokeBeginChase(bool notifyCombatEngaged = true)
     {
         BeginChase(notifyCombatEngaged);
@@ -10123,8 +10544,8 @@ float moveSpeed;
 
     /// <summary>ArchitectureInvokeDiagLog 的业务处理入口；本方法直接依赖 VillagerController.DiagLog(string, string)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyActionCoordinator.DiagLog(string, string)、EnemyCombatModule.DiagLog(string, string)；下游（含内部回调体） VillagerController.DiagLog(string, string)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="tag">中文含义：标签。使用位置：作为 VillagerController.DiagLog(string, string) 的参数。</param>
-    /// <param name="msg">中文含义：消息内容。使用位置：作为 VillagerController.DiagLog(string, string) 的参数。</param>
+    /// <param name="tag">标签。</param>
+    /// <param name="msg">消息内容。</param>
     internal void ArchitectureInvokeDiagLog(string tag, string msg)
     {
         DiagLog(tag, msg);
@@ -10146,8 +10567,8 @@ float moveSpeed;
 
     /// <summary>ArchitectureInvokeHasClearLineToPlayer 的业务处理入口；本方法直接依赖 VillagerController.HasClearLineToPlayer(bool, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） VillagerController.HasClearLineToPlayer(bool, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="requireSightAngle">中文含义：是否需要视野角度。使用位置：作为 VillagerController.HasClearLineToPlayer(bool, float) 的参数。</param>
-    /// <param name="maximumDistance">中文含义：最大距离。使用位置：作为 VillagerController.HasClearLineToPlayer(bool, float) 的参数。</param>
+    /// <param name="requireSightAngle">是否需要视野角度。</param>
+    /// <param name="maximumDistance">最大距离。</param>
     internal bool ArchitectureInvokeHasClearLineToPlayer(bool requireSightAngle, float maximumDistance)
     {
         return HasClearLineToPlayer(requireSightAngle, maximumDistance);
@@ -10169,7 +10590,7 @@ float moveSpeed;
 
     /// <summary>ArchitectureInvokePlayVoice 的业务处理入口；本方法直接依赖 VillagerController.PlayVoice(ZombieVoiceType)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） VillagerController.PlayVoice(ZombieVoiceType)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="voiceType">中文含义：语音类型。使用位置：作为 VillagerController.PlayVoice(ZombieVoiceType) 的参数。</param>
+    /// <param name="voiceType">语音类型。</param>
     internal void ArchitectureInvokePlayVoice(ZombieVoiceType voiceType)
     {
         PlayVoice(voiceType);
@@ -10179,6 +10600,7 @@ float moveSpeed;
     /// <remarks>静态调用链：上游 EnemyCombatModule.RefreshChaseDestination()、EnemyPerceptionModule.RefreshChaseDestination()；下游（含内部回调体） VillagerController.RefreshChaseDestination()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     internal bool ArchitectureInvokeRefreshChaseDestination()
     {
+        InvalidateChaseRefreshFrame();
         return RefreshChaseDestination();
     }
 
@@ -10191,9 +10613,9 @@ float moveSpeed;
 
     /// <summary>ArchitectureInvokeSetMovementMode 的业务处理入口；本方法直接依赖 VillagerController.SetMovementMode(EnemyMovementMode, string, int)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyActionCoordinator.SetMovementMode(EnemyMovementMode, string, int)、EnemyCombatModule.SetMovementMode(EnemyMovementMode, string, int)、EnemyPerceptionModule.SetMovementMode(EnemyMovementMode, string, int)；下游（含内部回调体） VillagerController.SetMovementMode(EnemyMovementMode, string, int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="movementMode">中文含义：移动模式。使用位置：作为 VillagerController.SetMovementMode(EnemyMovementMode, string, int) 的参数。</param>
-    /// <param name="source">中文含义：来源。使用位置：作为 VillagerController.SetMovementMode(EnemyMovementMode, string, int) 的参数。</param>
-    /// <param name="line">中文含义：线。使用位置：作为 VillagerController.SetMovementMode(EnemyMovementMode, string, int) 的参数。</param>
+    /// <param name="movementMode">移动模式。</param>
+    /// <param name="source">来源。</param>
+    /// <param name="line">线。</param>
     internal void ArchitectureInvokeSetMovementMode(EnemyMovementMode movementMode, [System.Runtime.CompilerServices.CallerMemberName] string source = "", [System.Runtime.CompilerServices.CallerLineNumber] int line = 0)
     {
         SetMovementMode(movementMode, source, line);
@@ -10201,9 +10623,9 @@ float moveSpeed;
 
     /// <summary>ArchitectureInvokeSetObservableState 的业务处理入口；本方法直接依赖 VillagerController.SetObservableState(VillagerState, string, int)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） VillagerController.SetObservableState(VillagerState, string, int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="state">中文含义：当前敌人状态。使用位置：作为 VillagerController.SetObservableState(VillagerState, string, int) 的参数。</param>
-    /// <param name="source">中文含义：来源。使用位置：作为 VillagerController.SetObservableState(VillagerState, string, int) 的参数。</param>
-    /// <param name="line">中文含义：线。使用位置：作为 VillagerController.SetObservableState(VillagerState, string, int) 的参数。</param>
+    /// <param name="state">当前敌人状态。</param>
+    /// <param name="source">来源。</param>
+    /// <param name="line">线。</param>
     internal void ArchitectureInvokeSetObservableState(VillagerState state, [System.Runtime.CompilerServices.CallerMemberName] string source = "", [System.Runtime.CompilerServices.CallerLineNumber] int line = 0)
     {
         SetObservableState(state, source, line);
@@ -10218,9 +10640,9 @@ float moveSpeed;
 
     /// <summary>ArchitectureInvokeSnapToGround 的业务处理入口；本方法直接依赖 VillagerController.SnapToGround(float, float, bool)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyActionCoordinator.SnapToGround(float, float, bool)、EnemyCombatModule.SnapToGround(float, float, bool)；下游（含内部回调体） VillagerController.SnapToGround(float, float, bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="probeHeight">中文含义：探测高度。使用位置：作为 VillagerController.SnapToGround(float, float, bool) 的参数。</param>
-    /// <param name="probeDistance">中文含义：探测距离。使用位置：作为 VillagerController.SnapToGround(float, float, bool) 的参数。</param>
-    /// <param name="allowLargeDrop">中文含义：是否允许较大掉落。使用位置：作为 VillagerController.SnapToGround(float, float, bool) 的参数。</param>
+    /// <param name="probeHeight">探测高度。</param>
+    /// <param name="probeDistance">探测距离。</param>
+    /// <param name="allowLargeDrop">是否允许较大掉落。</param>
     internal void ArchitectureInvokeSnapToGround(float probeHeight, float probeDistance, bool allowLargeDrop)
     {
         SnapToGround(probeHeight, probeDistance, allowLargeDrop);
@@ -10240,22 +10662,28 @@ float moveSpeed;
         UpdateHealthAnimationParameter();
     }
 
-    /// <summary>中文含义：架构读取是否村庄入口战斗锁定。使用位置：EnemyActionCoordinator.IsVillageEntranceCombatLocked.get、EnemyPerceptionModule.IsVillageEntranceCombatLocked.get。</summary>
+    /// <summary>架构读取是否村庄入口战斗锁定。</summary>
     internal bool ArchitectureReadIsVillageEntranceCombatLocked => IsVillageEntranceCombatLocked;
 
     /// <summary>ArchitectureInvokeFacePosition 的业务处理入口；本方法直接依赖 VillagerController.FacePosition(Vector3, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyActionCoordinator.FacePosition(Vector3, float)、EnemyPerceptionModule.FacePosition(Vector3, float)；下游（含内部回调体） VillagerController.FacePosition(Vector3, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="targetPosition">中文含义：目标位置。使用位置：作为 VillagerController.FacePosition(Vector3, float) 的参数。</param>
-    /// <param name="turnSpeed">中文含义：转向速度。使用位置：作为 VillagerController.FacePosition(Vector3, float) 的参数。</param>
+    /// <param name="targetPosition">目标位置。</param>
+    /// <param name="turnSpeed">转向速度。</param>
     internal void ArchitectureInvokeFacePosition(Vector3 targetPosition, float turnSpeed)
     {
         FacePosition(targetPosition, turnSpeed);
     }
 
-    /// <summary>中文含义：架构只读哈希编号待机混合。使用位置：EnemyActionCoordinator.HashIdleBlend.get。</summary>
+    /// <summary>架构只读哈希编号待机混合。</summary>
     internal static int ArchitectureReadHashIdleBlend => HashIdleBlend;
-    /// <summary>中文含义：架构读取配对动作参与者。使用位置：CharacterMotionExecutor.Authorize(EnemyMovementMode, ActionHandle)、CharacterMotionExecutor.Valid(MotionControlToken)、EnemyActionCoordinator.qteParticipant.get。</summary>
+    /// <summary>架构读取配对动作参与者。</summary>
     internal VillagerQTEParticipant ArchitectureReadQteParticipant => qteParticipant;
+    internal int CrowdRegistrationVersion { get; private set; }
+
+    internal void AdvanceCrowdRegistration()
+    {
+        CrowdRegistrationVersion++;
+    }
 
     /// <summary>ArchitectureInvokeApplyDeathAnimatorParameters 的业务处理入口；本方法直接依赖 VillagerController.ApplyDeathAnimatorParameters()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） VillagerController.ApplyDeathAnimatorParameters()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
@@ -10273,7 +10701,7 @@ float moveSpeed;
 
     /// <summary>ArchitectureInvokeClearCombatEngagement 的业务处理入口；本方法直接依赖 VillagerController.ClearCombatEngagement(bool)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） VillagerController.ClearCombatEngagement(bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="preserveInvestigation">中文含义：是否保留调查。使用位置：作为 VillagerController.ClearCombatEngagement(bool) 的参数。</param>
+    /// <param name="preserveInvestigation">是否保留调查。</param>
     internal void ArchitectureInvokeClearCombatEngagement(bool preserveInvestigation)
     {
         ClearCombatEngagement(preserveInvestigation);
@@ -10281,7 +10709,7 @@ float moveSpeed;
 
     /// <summary>ArchitectureInvokeGetPatrolTurnDirection 的业务处理入口；本方法直接依赖 VillagerController.GetPatrolTurnDirection(float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyActionCoordinator.GetPatrolTurnDirection(float)；下游（含内部回调体） VillagerController.GetPatrolTurnDirection(float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="signedTurnAngle">中文含义：有符号转向角度。使用位置：作为 VillagerController.GetPatrolTurnDirection(float) 的参数。</param>
+    /// <param name="signedTurnAngle">有符号转向角度。</param>
     internal static int ArchitectureInvokeGetPatrolTurnDirection(float signedTurnAngle)
     {
         return GetPatrolTurnDirection(signedTurnAngle);
@@ -10294,29 +10722,29 @@ float moveSpeed;
         StopPathMovementWithAnimationBlend();
     }
 
-    /// <summary>中文含义：架构只读哈希编号爬行待机路径。使用位置：EnemyAnimationAdapter.HashCrawlIdlePath.get。</summary>
+    /// <summary>架构只读哈希编号爬行待机路径。</summary>
     internal static int ArchitectureReadHashCrawlIdlePath => HashCrawlIdlePath;
-    /// <summary>中文含义：架构只读哈希编号爬行待机状态。使用位置：EnemyAnimationAdapter.HashCrawlIdleState.get。</summary>
+    /// <summary>架构只读哈希编号爬行待机状态。</summary>
     internal static int ArchitectureReadHashCrawlIdleState => HashCrawlIdleState;
-    /// <summary>中文含义：架构只读哈希编号爬行子级状态路径。使用位置：EnemyAnimationAdapter.HashCrawlSubStatePath.get。</summary>
+    /// <summary>架构只读哈希编号爬行子级状态路径。</summary>
     internal static int ArchitectureReadHashCrawlSubStatePath => HashCrawlSubStatePath;
-    /// <summary>中文含义：架构只读哈希编号死亡。使用位置：EnemyAnimationAdapter.HashDIE.get。</summary>
+    /// <summary>架构只读哈希编号死亡。</summary>
     internal static int ArchitectureReadHashDIE => HashDIE;
-    /// <summary>中文含义：架构只读哈希编号生命比例。使用位置：EnemyAnimationAdapter.HashHealthRatio.get。</summary>
+    /// <summary>架构只读哈希编号生命比例。</summary>
     internal static int ArchitectureReadHashHealthRatio => HashHealthRatio;
-    /// <summary>中文含义：架构只读哈希编号移动行为播放速率。使用位置：EnemyAnimationAdapter.HashLocomotionPlaybackRate.get。</summary>
+    /// <summary>架构只读哈希编号移动行为播放速率。</summary>
     internal static int ArchitectureReadHashLocomotionPlaybackRate => HashLocomotionPlaybackRate;
-    /// <summary>中文含义：架构只读哈希编号移动横向。使用位置：EnemyAnimationAdapter.HashMoveX.get。</summary>
+    /// <summary>架构只读哈希编号移动横向。</summary>
     internal static int ArchitectureReadHashMoveX => HashMoveX;
-    /// <summary>中文含义：架构只读哈希编号移动纵向。使用位置：EnemyAnimationAdapter.HashMoveY.get。</summary>
+    /// <summary>架构只读哈希编号移动纵向。</summary>
     internal static int ArchitectureReadHashMoveY => HashMoveY;
-    /// <summary>中文含义：架构只读哈希编号行走。使用位置：EnemyAnimationAdapter.HashWALK.get。</summary>
+    /// <summary>架构只读哈希编号行走。</summary>
     internal static int ArchitectureReadHashWALK => HashWALK;
-    /// <summary>中文含义：架构读取实际水平移动速度。使用位置：EnemyAnimationAdapter.actualHorizontalMovementSpeed.get。</summary>
+    /// <summary>架构读取实际水平移动速度。</summary>
     internal float ArchitectureReadActualHorizontalMovementSpeed => actualHorizontalMovementSpeed;
-    /// <summary>中文含义：架构读取上一次稳定爬行移动方向。使用位置：EnemyAnimationAdapter.lastStableCrawlMoveDirection.get。</summary>
+    /// <summary>架构读取上一次稳定爬行移动方向。</summary>
     internal Vector3 ArchitectureReadLastStableCrawlMoveDirection => lastStableCrawlMoveDirection;
-    /// <summary>中文含义：架构读取上一次稳定站立移动方向。使用位置：EnemyAnimationAdapter.lastStableStandingMoveDirection.get。</summary>
+    /// <summary>架构读取上一次稳定站立移动方向。</summary>
     internal Vector3 ArchitectureReadLastStableStandingMoveDirection => lastStableStandingMoveDirection;
 
     /// <summary>ArchitectureInvokeGetTargetMoveSpeed 的业务处理入口；本方法直接依赖 VillagerController.GetTargetMoveSpeed()，调用方通过参数与返回结果交接本次处理。</summary>
@@ -10352,7 +10780,7 @@ float moveSpeed;
     /// <remarks>静态调用链：上游 EnemyActionCoordinator.BeginDeath()；下游（含内部回调体） Action&lt;VillagerController&gt;.Invoke(VillagerController)、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     internal void PublishDeathFact()
     {
-        // receiverValue220（判空前缓存的已死亡）：从已死亡读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、VillagerController.PublishDeathFact()。
+        // 判空前缓存的已死亡。
 global::System.Action<global::VillagerController> receiverValue220 = Died;
         if (!global::System.Object.ReferenceEquals(receiverValue220, null))
         {

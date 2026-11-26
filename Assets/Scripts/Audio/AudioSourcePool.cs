@@ -18,9 +18,9 @@ public struct AudioPlayHandle
 
     /// <summary>构造并初始化 AudioPlayHandle 的声明状态；具体外部协作见静态调用链。</summary>
     /// <remarks>静态调用链：上游 AudioManager.Play(AudioEventData)、AudioManager.Play3D(AudioEventData, Vector3, float)；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="id">中文含义：编号。使用位置：AudioPlayHandle.AudioPlayHandle(int, AudioSource, AudioEventData)。</param>
-    /// <param name="src">中文含义：当前音源。使用位置：AudioPlayHandle.AudioPlayHandle(int, AudioSource, AudioEventData)。</param>
-    /// <param name="data">中文含义：当前音频事件配置。使用位置：AudioPlayHandle.AudioPlayHandle(int, AudioSource, AudioEventData)。</param>
+    /// <param name="id">编号。</param>
+    /// <param name="src">当前音源。</param>
+    /// <param name="data">当前音频事件配置。</param>
     public AudioPlayHandle(int id, AudioSource src, AudioEventData data)
     {
         handleId = id;
@@ -35,40 +35,40 @@ public struct AudioPlayHandle
 /// </summary>
 public class AudioSourcePool
 {
-    /// <summary>中文含义：对象池。只读字段，初始化后不由普通写入口替换。使用位置：作为 List&lt;AudioSource&gt;.RemoveAt(int) 的参数、作为 List&lt;AudioSource&gt;.this[int] 的参数、作为 Object.Destroy(Object) 的参数 等共 10 处。</summary>
+    /// <summary>对象池。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly List<AudioSource> pool = new List<AudioSource>();
-    /// <summary>中文含义：生效。只读字段，初始化后不由普通写入口替换。使用位置：作为 Action&lt;AudioSourcePool.PooledSource&gt;.Invoke(AudioSourcePool.PooledSource) 的参数、作为 List&lt;int&gt;.Add(int) 的参数、AudioSourcePool.Acquire(Vector3, AudioEventData, int) 等共 13 处。</summary>
+    /// <summary>生效。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly List<PooledSource> active = new List<PooledSource>();
-    /// <summary>中文含义：对象池根节点。只读字段，初始化后不由普通写入口替换。使用位置：作为 Transform.SetParent(Transform, bool) 的参数、AudioSourcePool.AudioSourcePool(Transform, int, int, Action&lt;int&gt;)。</summary>
+    /// <summary>对象池根节点。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly Transform poolRoot;
-    /// <summary>中文含义：初始尺寸。只读字段，初始化后不由普通写入口替换。使用位置：作为 Mathf.Max(int, int) 的参数、AudioSourcePool.AudioSourcePool(Transform, int, int, Action&lt;int&gt;)。</summary>
+    /// <summary>初始尺寸。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly int initialSize;
-    /// <summary>中文含义：最大尺寸。只读字段，初始化后不由普通写入口替换。使用位置：AudioSourcePool.Acquire(Vector3, AudioEventData, int)、AudioSourcePool.AudioSourcePool(Transform, int, int, Action&lt;int&gt;)、AudioSourcePool.DoRelease(AudioSource)。</summary>
+    /// <summary>最大尺寸。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly int maxSize;
-    /// <summary>中文含义：句柄已释放。只读字段，初始化后不由普通写入口替换。使用位置：AudioSourcePool.Acquire(Vector3, AudioEventData, int)、AudioSourcePool.AudioSourcePool(Transform, int, int, Action&lt;int&gt;)、AudioSourcePool.RecycleFinished() 等共 5 处。</summary>
+    /// <summary>句柄已释放。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly System.Action<int> handleReleased;
-    /// <summary>中文含义：是否对象池已暂停。使用位置：AudioSourcePool.PauseActive(Func&lt;AudioCategory, bool&gt;)、AudioSourcePool.RecycleFinished()、AudioSourcePool.ReleaseAll() 等共 4 处。</summary>
+    /// <summary>是否对象池已暂停。</summary>
     private bool poolPaused;
     /// <summary>
     /// 池化的音源及其播放句柄信息
     /// </summary>
     public class PooledSource
     {
-        /// <summary>中文含义：来源音源。使用位置：作为 AudioPlayHandle.AudioPlayHandle(int, AudioSource, AudioEventData) 的参数、作为 AudioSourcePool.DoRelease(AudioSource) 的参数、作为 List&lt;AudioSource&gt;.Add(AudioSource) 的参数 等共 12 处。</summary>
+        /// <summary>来源音源。</summary>
         public AudioSource source;
-        /// <summary>中文含义：句柄编号。使用位置：作为 Action&lt;int&gt;.Invoke(int) 的参数、作为 List&lt;int&gt;.Add(int) 的参数、AudioSourcePool.Acquire(Vector3, AudioEventData, int) 等共 4 处。</summary>
+        /// <summary>句柄编号。</summary>
         public int handleId;
-        /// <summary>中文含义：事件配置。使用位置：AudioSourcePool.Acquire(Vector3, AudioEventData, int)、AudioSourcePool.GetActiveHandles(AudioEventData)、AudioSourcePool.RecycleFinished() 等共 5 处。</summary>
+        /// <summary>事件配置。</summary>
         public AudioEventData eventData;
-        /// <summary>中文含义：是否已释放。使用位置：AudioSourcePool.Acquire(Vector3, AudioEventData, int)、AudioSourcePool.FindLowestPriorityActive()、AudioSourcePool.ForEachActive(Action&lt;AudioSourcePool.PooledSource&gt;) 等共 9 处。</summary>
+        /// <summary>是否已释放。</summary>
         public bool isReleased;
         /// <summary>中文含义：是否循环。</summary>
         public bool isLoop;
-        /// <summary>中文含义：事件音量。使用位置：AudioManager.Play(AudioEventData)、AudioManager.Play3D(AudioEventData, Vector3, float)、AudioManager.RefreshActiveVolumes(AudioCategory)。</summary>
+        /// <summary>事件音量。</summary>
         public float eventVolume = 1f;
-        /// <summary>中文含义：类别。使用位置：作为 Func&lt;AudioCategory, bool&gt;.Invoke(AudioCategory) 的参数、AudioManager.Play(AudioEventData)、AudioManager.Play3D(AudioEventData, Vector3, float) 等共 4 处。</summary>
+        /// <summary>类别。</summary>
         public AudioCategory category = AudioCategory.SFX;
-        /// <summary>中文含义：是否已暂停依据系统。使用位置：AudioSourcePool.PauseActive(Func&lt;AudioCategory, bool&gt;)、AudioSourcePool.ResumePaused()。</summary>
+        /// <summary>是否已暂停依据系统。</summary>
         public bool pausedBySystem;
     }
 
@@ -76,17 +76,17 @@ public class AudioSourcePool
     /// 构造对象池
     /// </summary>
     /// <remarks>静态调用链：上游 AudioManager.Awake()；下游（含内部回调体） AudioSourcePool.CreateSource()、List&lt;AudioSource&gt;.Add(AudioSource)、Mathf.Max(int, int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="root">中文含义：根变换节点。使用位置：AudioSourcePool.AudioSourcePool(Transform, int, int, Action&lt;int&gt;)。</param>
-    /// <param name="initialSize">中文含义：初始尺寸。使用位置：作为 Mathf.Max(int, int) 的参数。</param>
-    /// <param name="maxSize">中文含义：最大尺寸。使用位置：作为 Mathf.Max(int, int) 的参数。</param>
-    /// <param name="handleReleased">中文含义：句柄已释放。使用位置：AudioSourcePool.AudioSourcePool(Transform, int, int, Action&lt;int&gt;)。</param>
+    /// <param name="root">根变换节点。</param>
+    /// <param name="initialSize">初始尺寸。</param>
+    /// <param name="maxSize">最大尺寸。</param>
+    /// <param name="handleReleased">句柄已释放。</param>
     public AudioSourcePool(Transform root, int initialSize, int maxSize, System.Action<int> handleReleased = null)
     {
         this.poolRoot = root;
         this.initialSize = Mathf.Max(1, initialSize);
         this.maxSize = Mathf.Max(this.initialSize, maxSize);
         this.handleReleased = handleReleased;
-        // i（当前遍历索引）：使用位置：AudioSourcePool.AudioSourcePool(Transform, int, int, Action<int>)。
+        // 当前遍历索引。
 for (int i = 0; i < this.initialSize; i++)
         {
             pool.Add(CreateSource());
@@ -97,14 +97,14 @@ for (int i = 0; i < this.initialSize; i++)
     /// 从池中获取一个 AudioSource，返回包含句柄的 PooledSource
     /// </summary>
     /// <remarks>静态调用链：上游 AudioManager.Play(AudioEventData)、AudioManager.Play3D(AudioEventData, Vector3, float)；下游（含内部回调体） Action&lt;int&gt;.Invoke(int)、AudioEventData.OnPlayFinished()、AudioSource.Stop()、AudioSourcePool.CreateSource()、AudioSourcePool.FindLowestPriorityActive()、AudioSourcePool.PooledSource.PooledSource()、GameObject.SetActive(bool) 等共 11 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="position">中文含义：位置。使用位置：AudioSourcePool.Acquire(Vector3, AudioEventData, int)。</param>
-    /// <param name="eventData">中文含义：事件配置。使用位置：AudioSourcePool.Acquire(Vector3, AudioEventData, int)。</param>
-    /// <param name="handleId">中文含义：句柄编号。使用位置：AudioSourcePool.Acquire(Vector3, AudioEventData, int)。</param>
+    /// <param name="position">位置。</param>
+    /// <param name="eventData">事件配置。</param>
+    /// <param name="handleId">句柄编号。</param>
     public PooledSource Acquire(Vector3 position, AudioEventData eventData, int handleId)
     {
-        // source（来源音源）：使用位置：AudioSourcePool.Acquire(Vector3, AudioEventData, int)。
+        // 来源音源。
 AudioSource source = null;
-        // oldPs（旧粒子系统）：使用位置：作为 Action<int>.Invoke(int) 的参数、作为 List<AudioSourcePool.PooledSource>.Remove(AudioSourcePool.PooledSource) 的参数、AudioSourcePool.Acquire(Vector3, AudioEventData, int)。
+        // 旧粒子系统。
 PooledSource oldPs = null;
         // 优先从空闲池中取
         if (pool.Count > 0)
@@ -126,14 +126,14 @@ PooledSource oldPs = null;
                 source = oldPs.source;
                 // 结算旧事件：使旧句柄失效
                 oldPs.isReleased = true;
-                // receiverValue1（判空前缓存的旧粒子系统的事件配置）：从旧粒子系统的事件配置读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、AudioSourcePool.Acquire(Vector3, AudioEventData, int)。
+                // 判空前缓存的旧粒子系统的事件配置。
 global::AudioEventData receiverValue1 = oldPs.eventData;
                 if (!global::System.Object.ReferenceEquals(receiverValue1, null))
                 {
                     receiverValue1.OnPlayFinished();
                 }
 
-                // receiverValue2（判空前缓存的句柄已释放）：从句柄已释放读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、AudioSourcePool.Acquire(Vector3, AudioEventData, int)。
+                // 判空前缓存的句柄已释放。
 global::System.Action<int> receiverValue2 = handleReleased;
                 if (!global::System.Object.ReferenceEquals(receiverValue2, null))
                 {
@@ -152,7 +152,7 @@ global::System.Action<int> receiverValue2 = handleReleased;
 
         source.transform.position = position;
         source.gameObject.SetActive(true);
-        // ps（粒子系统）：使用位置：作为 List<AudioSourcePool.PooledSource>.Add(AudioSourcePool.PooledSource) 的参数、AudioSourcePool.Acquire(Vector3, AudioEventData, int)。
+        // 粒子系统。
 var ps = new PooledSource
         {
             source = source,
@@ -168,25 +168,25 @@ var ps = new PooledSource
     /// 通过句柄回收 AudioSource（幂等，同一句柄只能回收一次）
     /// </summary>
     /// <remarks>静态调用链：上游 AudioManager.ReleaseAfterHandle(int, float, AudioSourcePool)、AudioManager.Stop(AudioPlayHandle)、AudioManager.StopAllInPool(AudioSourcePool, AudioEventData)；下游（含内部回调体） Action&lt;int&gt;.Invoke(int)、AudioEventData.OnPlayFinished()、AudioSourcePool.DoRelease(AudioSource)、List&lt;AudioSourcePool.PooledSource&gt;.RemoveAt(int)、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="handleId">中文含义：句柄编号。使用位置：AudioSourcePool.Release(int)。</param>
+    /// <param name="handleId">句柄编号。</param>
     public bool Release(int handleId)
     {
-        // i（当前遍历索引）：使用位置：作为 List<AudioSourcePool.PooledSource>.RemoveAt(int) 的参数、作为 List<AudioSourcePool.PooledSource>.this[int] 的参数、AudioSourcePool.Release(int)。
+        // 当前遍历索引。
 for (int i = 0; i < active.Count; i++)
         {
-            // ps（粒子系统）：使用位置：作为 Action<int>.Invoke(int) 的参数、作为 AudioSourcePool.DoRelease(AudioSource) 的参数、AudioSourcePool.Release(int)。
+            // 粒子系统。
 var ps = active[i];
             if (ps.handleId == handleId && !ps.isReleased)
             {
                 ps.isReleased = true;
-                // receiverValue3（判空前缓存的粒子系统的事件配置）：从粒子系统的事件配置读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、AudioSourcePool.Release(int)。
+                // 判空前缓存的粒子系统的事件配置。
 global::AudioEventData receiverValue3 = ps.eventData;
                 if (!global::System.Object.ReferenceEquals(receiverValue3, null))
                 {
                     receiverValue3.OnPlayFinished();
                 }
 
-                // receiverValue4（判空前缓存的句柄已释放）：从句柄已释放读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、AudioSourcePool.Release(int)。
+                // 判空前缓存的句柄已释放。
 global::System.Action<int> receiverValue4 = handleReleased;
                 if (!global::System.Object.ReferenceEquals(receiverValue4, null))
                 {
@@ -213,21 +213,21 @@ global::System.Action<int> receiverValue4 = handleReleased;
             return;
         }
 
-        // i（当前遍历索引）：使用位置：作为 List<AudioSourcePool.PooledSource>.RemoveAt(int) 的参数、作为 List<AudioSourcePool.PooledSource>.this[int] 的参数、AudioSourcePool.RecycleFinished()。
+        // 当前遍历索引。
 for (int i = active.Count - 1; i >= 0; i--)
         {
-            // ps（粒子系统）：使用位置：作为 Action<int>.Invoke(int) 的参数、作为 AudioSourcePool.DoRelease(AudioSource) 的参数、AudioSourcePool.RecycleFinished()。
+            // 粒子系统。
 var ps = active[i];
             if (ps.source == null)
             {
-                // receiverValue5（判空前缓存的粒子系统的事件配置）：从粒子系统的事件配置读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、AudioSourcePool.RecycleFinished()。
+                // 判空前缓存的粒子系统的事件配置。
 global::AudioEventData receiverValue5 = ps.eventData;
                 if (!global::System.Object.ReferenceEquals(receiverValue5, null))
                 {
                     receiverValue5.OnPlayFinished();
                 }
 
-                // receiverValue6（判空前缓存的句柄已释放）：从句柄已释放读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、AudioSourcePool.RecycleFinished()。
+                // 判空前缓存的句柄已释放。
 global::System.Action<int> receiverValue6 = handleReleased;
                 if (!global::System.Object.ReferenceEquals(receiverValue6, null))
                 {
@@ -241,14 +241,14 @@ global::System.Action<int> receiverValue6 = handleReleased;
             if (!ps.source.isPlaying && !ps.source.loop && !ps.isReleased)
             {
                 ps.isReleased = true;
-                // receiverValue7（判空前缓存的粒子系统的事件配置）：从粒子系统的事件配置读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、AudioSourcePool.RecycleFinished()。
+                // 判空前缓存的粒子系统的事件配置。
 global::AudioEventData receiverValue7 = ps.eventData;
                 if (!global::System.Object.ReferenceEquals(receiverValue7, null))
                 {
                     receiverValue7.OnPlayFinished();
                 }
 
-                // receiverValue8（判空前缓存的句柄已释放）：从句柄已释放读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、AudioSourcePool.RecycleFinished()。
+                // 判空前缓存的句柄已释放。
 global::System.Action<int> receiverValue8 = handleReleased;
                 if (!global::System.Object.ReferenceEquals(receiverValue8, null))
                 {
@@ -268,10 +268,10 @@ global::System.Action<int> receiverValue8 = handleReleased;
     public void ReleaseAll()
     {
         poolPaused = false;
-        // i（当前遍历索引）：使用位置：作为 List<AudioSourcePool.PooledSource>.this[int] 的参数、AudioSourcePool.ReleaseAll()。
+        // 当前遍历索引。
 for (int i = 0; i < active.Count; i++)
         {
-            // ps（粒子系统）：使用位置：作为 Action<int>.Invoke(int) 的参数、作为 List<AudioSource>.Add(AudioSource) 的参数、AudioSourcePool.ReleaseAll()。
+            // 粒子系统。
 var ps = active[i];
             if (ps.source != null)
             {
@@ -283,14 +283,14 @@ var ps = active[i];
             }
 
             ps.isReleased = true;
-            // receiverValue9（判空前缓存的粒子系统的事件配置）：从粒子系统的事件配置读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、AudioSourcePool.ReleaseAll()。
+            // 判空前缓存的粒子系统的事件配置。
 global::AudioEventData receiverValue9 = ps.eventData;
             if (!global::System.Object.ReferenceEquals(receiverValue9, null))
             {
                 receiverValue9.OnPlayFinished();
             }
 
-            // receiverValue10（判空前缓存的句柄已释放）：从句柄已释放读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、AudioSourcePool.ReleaseAll()。
+            // 判空前缓存的句柄已释放。
 global::System.Action<int> receiverValue10 = handleReleased;
             if (!global::System.Object.ReferenceEquals(receiverValue10, null))
             {
@@ -306,7 +306,7 @@ global::System.Action<int> receiverValue10 = handleReleased;
     /// 防止被暂停的非循环音效因 isPlaying==false 被提前回收。
     /// </summary>
     /// <remarks>静态调用链：上游 AudioManager.TransitionToPaused()；下游（含内部回调体） AudioSource.Pause()、Func&lt;AudioCategory, bool&gt;.Invoke(AudioCategory)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="shouldPause">中文含义：是否应当暂停。使用位置：AudioSourcePool.PauseActive(Func&lt;AudioCategory, bool&gt;)。</param>
+    /// <param name="shouldPause">是否应当暂停。</param>
     public void PauseActive(System.Func<AudioCategory, bool> shouldPause)
     {
         if (poolPaused)
@@ -315,10 +315,10 @@ global::System.Action<int> receiverValue10 = handleReleased;
         }
 
         poolPaused = true;
-        // i（当前遍历索引）：使用位置：作为 List<AudioSourcePool.PooledSource>.this[int] 的参数、AudioSourcePool.PauseActive(Func<AudioCategory, bool>)。
+        // 当前遍历索引。
 for (int i = 0; i < active.Count; i++)
         {
-            // ps（粒子系统）：使用位置：作为 Func<AudioCategory, bool>.Invoke(AudioCategory) 的参数、AudioSourcePool.PauseActive(Func<AudioCategory, bool>)。
+            // 粒子系统。
 var ps = active[i];
             if (ps.isReleased || ps.source == null)
             {
@@ -350,10 +350,10 @@ var ps = active[i];
         }
 
         poolPaused = false;
-        // i（当前遍历索引）：使用位置：作为 List<AudioSourcePool.PooledSource>.this[int] 的参数、AudioSourcePool.ResumePaused()。
+        // 当前遍历索引。
 for (int i = 0; i < active.Count; i++)
         {
-            // ps（粒子系统）：使用位置：AudioSourcePool.ResumePaused()。
+            // 粒子系统。
 var ps = active[i];
             if (!ps.pausedBySystem)
             {
@@ -375,7 +375,7 @@ var ps = active[i];
     public void Dispose()
     {
         ReleaseAll();
-        // i（当前遍历索引）：使用位置：作为 List<AudioSource>.this[int] 的参数、AudioSourcePool.Dispose()。
+        // 当前遍历索引。
 for (int i = 0; i < pool.Count; i++)
         {
             if (pool[i] != null && pool[i].gameObject != null)
@@ -405,46 +405,31 @@ for (int i = 0; i < pool.Count; i++)
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） List&lt;int&gt;.Add(int)、List&lt;int&gt;.List()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     public List<int> GetActiveHandles()
     {
-        // handles（句柄集合）：使用位置：AudioSourcePool.GetActiveHandles()。
-var handles = new List<int>();
-        // i（当前遍历索引）：使用位置：作为 List<AudioSourcePool.PooledSource>.this[int] 的参数、AudioSourcePool.GetActiveHandles()。
-for (int i = 0; i < active.Count; i++)
-        {
-            if (!active[i].isReleased)
-            {
-                handles.Add(active[i].handleId);
-            }
-        }
-
+        var handles = new List<int>();
+        CopyActiveHandles(handles, null, false);
         return handles;
     }
 
-    /// <summary>
-    /// 获取指定事件的活跃句柄列表。
-    /// </summary>
-    /// <remarks>静态调用链：上游 AudioManager.StopAllInPool(AudioSourcePool, AudioEventData)；下游（含内部回调体） List&lt;int&gt;.Add(int)、List&lt;int&gt;.List()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="eventData">中文含义：事件配置。使用位置：AudioSourcePool.GetActiveHandles(AudioEventData)。</param>
     public List<int> GetActiveHandles(AudioEventData eventData)
     {
-        // handles（句柄集合）：使用位置：AudioSourcePool.GetActiveHandles(AudioEventData)。
-var handles = new List<int>();
-        // i（当前遍历索引）：使用位置：作为 List<AudioSourcePool.PooledSource>.this[int] 的参数、AudioSourcePool.GetActiveHandles(AudioEventData)。
-for (int i = 0; i < active.Count; i++)
-        {
-            if (!active[i].isReleased && active[i].eventData == eventData)
-            {
-                handles.Add(active[i].handleId);
-            }
-        }
-
+        var handles = new List<int>();
+        CopyActiveHandles(handles, eventData);
         return handles;
     }
 
-    /// <summary>
-    /// 遍历当前活跃音源，用于分类音量变化时立即刷新播放中的声音。
-    /// </summary>
-    /// <remarks>静态调用链：上游 AudioManager.RefreshActiveVolumes(AudioCategory)；下游（含内部回调体） Action&lt;AudioSourcePool.PooledSource&gt;.Invoke(AudioSourcePool.PooledSource)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="action">中文含义：动作。使用位置：AudioSourcePool.ForEachActive(Action&lt;AudioSourcePool.PooledSource&gt;)。</param>
+    internal void CopyActiveHandles(List<int> handles, AudioEventData eventData, bool filterEvent = true)
+    {
+        handles.Clear();
+        for (int index = 0; index < active.Count; index++)
+        {
+            PooledSource source = active[index];
+            if (!source.isReleased && (!filterEvent || source.eventData == eventData))
+            {
+                handles.Add(source.handleId);
+            }
+        }
+    }
+
     public void ForEachActive(System.Action<PooledSource> action)
     {
         if (action == null)
@@ -452,7 +437,7 @@ for (int i = 0; i < active.Count; i++)
             return;
         }
 
-        // i（当前遍历索引）：使用位置：作为 List<AudioSourcePool.PooledSource>.this[int] 的参数、AudioSourcePool.ForEachActive(Action<AudioSourcePool.PooledSource>)。
+        // 当前遍历索引。
 for (int i = 0; i < active.Count; i++)
         {
             if (!active[i].isReleased)
@@ -464,7 +449,7 @@ for (int i = 0; i < active.Count; i++)
 
     /// <summary>DoRelease 的业务处理入口；本方法直接依赖 AudioSource.Stop()、GameObject.SetActive(bool)、List&lt;AudioSource&gt;.Add(AudioSource)、Object.Destroy(Object)、Transform.SetParent(Transform, bool)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 AudioSourcePool.RecycleFinished()、AudioSourcePool.Release(int)；下游（含内部回调体） AudioSource.Stop()、GameObject.SetActive(bool)、List&lt;AudioSource&gt;.Add(AudioSource)、Object.Destroy(Object)、Transform.SetParent(Transform, bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="source">中文含义：来源音源。使用位置：作为 List&lt;AudioSource&gt;.Add(AudioSource) 的参数、作为 Object.Destroy(Object) 的参数、AudioSourcePool.DoRelease(AudioSource)。</param>
+    /// <param name="source">来源音源。</param>
     private void DoRelease(AudioSource source)
     {
         if (source == null)
@@ -492,12 +477,12 @@ for (int i = 0; i < active.Count; i++)
     /// <remarks>静态调用链：上游 AudioSourcePool.Acquire(Vector3, AudioEventData, int)、AudioSourcePool.AudioSourcePool(Transform, int, int, Action&lt;int&gt;)；下游（含内部回调体） GameObject.AddComponent&lt;AudioSource&gt;()、GameObject.GameObject(string)、GameObject.SetActive(bool)、Transform.SetParent(Transform, bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     private AudioSource CreateSource()
     {
-        // go（当前游戏对象）：使用位置：AudioSourcePool.CreateSource()。
+        // 当前游戏对象。
 var go = new GameObject("AudioPool_Source");
         go.transform.SetParent(poolRoot, false);
         go.transform.localPosition = Vector3.zero;
         go.SetActive(false);
-        // source（来源音源）：保存 GameObject.AddComponent<AudioSource>() 的返回结果，供当前步骤使用。使用位置：AudioSourcePool.CreateSource()。
+        // 来源音源。
 var source = go.AddComponent<AudioSource>();
         source.playOnAwake = false;
         source.spatialBlend = 1f;
@@ -513,9 +498,9 @@ var source = go.AddComponent<AudioSource>();
             return null;
         }
 
-        // lowest（最低）：使用位置：AudioSourcePool.FindLowestPriorityActive()。
+        // 最低。
 PooledSource lowest = null;
-        // lowestPriority（最低优先级）：使用位置：AudioSourcePool.FindLowestPriorityActive()。
+        // 最低优先级。
 int lowestPriority = int.MinValue;
         // ps（粒子系统）：每轮从生效取得一个元素，仅代表当前这一项。使用位置：AudioSourcePool.FindLowestPriorityActive()。
 foreach (var ps in active)

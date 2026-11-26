@@ -12,14 +12,16 @@ using UnityEngine.Playables;
 [RequireComponent(typeof(VillagerController))]
 public partial class EnemyWindowTraversal : MonoBehaviour
 {
+    private readonly HitQueryBuffer windowHits = new();
+
     /// <summary>RequestWindowOccupancy 的业务处理入口；本方法直接依赖 EnemyWindowTraversalRoute.RequestTraversal(VillagerController, RequestContext)、RequestContext.RequestContext(string, ObjectIdentity, ObjectIdentity, long)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyWindowTraversal.TryBeginPendingWindowTraversal()；下游（含内部回调体） EnemyWindowTraversalRoute.RequestTraversal(VillagerController, RequestContext)、RequestContext.RequestContext(string, ObjectIdentity, ObjectIdentity, long)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="route">中文含义：路线。使用位置：作为 RequestContext.RequestContext(string, ObjectIdentity, ObjectIdentity, long) 的参数、EnemyWindowTraversal.RequestWindowOccupancy(EnemyWindowTraversalRoute)。</param>
+    /// <param name="route">路线。</param>
     private bool RequestWindowOccupancy(EnemyWindowTraversalRoute route)
     {
-        // action（动作）：使用位置：作为 RequestContext.RequestContext(string, ObjectIdentity, ObjectIdentity, long) 的参数。
+        // 动作。
 var action = controller.actionCoordinator.CurrentHandle;
-        // result（当前通行请求结果）：保存 EnemyWindowTraversalRoute.RequestTraversal(VillagerController, RequestContext) 的返回结果，供当前步骤使用。使用位置：EnemyWindowTraversal.RequestWindowOccupancy(EnemyWindowTraversalRoute)。
+        // 当前通行请求结果。
 var result = route.RequestTraversal(controller, new GameArchitecture.RequestContext("窗口通行执行", action.Object, route.TraversalIdentity, action.Id));
         windowToken = result.Token;
         return result.HasAccept;
@@ -27,117 +29,136 @@ var result = route.RequestTraversal(controller, new GameArchitecture.RequestCont
 
     /// <summary>RequestJumpLandOccupancy 的业务处理入口；本方法直接依赖 EnemyPlatformDropRoute.RequestTraversal(VillagerController, RequestContext)、RequestContext.RequestContext(string, ObjectIdentity, ObjectIdentity, long)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyWindowTraversal.TryBeginPendingDropTraversal()；下游（含内部回调体） EnemyPlatformDropRoute.RequestTraversal(VillagerController, RequestContext)、RequestContext.RequestContext(string, ObjectIdentity, ObjectIdentity, long)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="route">中文含义：路线。使用位置：作为 RequestContext.RequestContext(string, ObjectIdentity, ObjectIdentity, long) 的参数、EnemyWindowTraversal.RequestJumpLandOccupancy(EnemyPlatformDropRoute)。</param>
+    /// <param name="route">路线。</param>
     private bool RequestJumpLandOccupancy(EnemyPlatformDropRoute route)
     {
-        // action（动作）：使用位置：作为 RequestContext.RequestContext(string, ObjectIdentity, ObjectIdentity, long) 的参数。
+        // 动作。
 var action = controller.actionCoordinator.CurrentHandle;
-        // result（当前通行请求结果）：保存 EnemyPlatformDropRoute.RequestTraversal(VillagerController, RequestContext) 的返回结果，供当前步骤使用。使用位置：EnemyWindowTraversal.RequestJumpLandOccupancy(EnemyPlatformDropRoute)。
+        // 当前通行请求结果。
 var result = route.RequestTraversal(controller, new GameArchitecture.RequestContext("平台跳落执行", action.Object, route.TraversalIdentity, action.Id));
         jumpLandToken = result.Token;
         return result.HasAccept;
     }
 
-    /// <summary>中文含义：通行运动凭证。使用位置：作为 CharacterMotionExecutor.CommitPose(MotionControlToken, Vector3, Quaternion, bool) 的参数、作为 CharacterMotionExecutor.Valid(MotionControlToken) 的参数、EnemyWindowTraversal.BeginTraversalState()。</summary>
+    /// <summary>通行运动凭证。</summary>
     private GameArchitecture.MotionControlToken traversalMotionToken;
-    /// <summary>中文含义：窗口凭证。使用位置：作为 EnemyWindowTraversalRoute.ReleaseTraversal(TraversalToken, ReleaseReason) 的参数、作为 EnemyWindowTraversalRoute.TraversalValid(TraversalToken) 的参数、EnemyWindowTraversal.RequestWindowOccupancy(EnemyWindowTraversalRoute)。</summary>
+    /// <summary>窗口凭证。</summary>
     private GameArchitecture.TraversalToken windowToken;
-    /// <summary>中文含义：跳跃落地凭证。使用位置：作为 EnemyPlatformDropRoute.ReleaseTraversal(TraversalToken, ReleaseReason) 的参数、作为 EnemyPlatformDropRoute.TraversalValid(TraversalToken) 的参数、EnemyWindowTraversal.RequestJumpLandOccupancy(EnemyPlatformDropRoute)。</summary>
+    /// <summary>跳跃落地凭证。</summary>
     private GameArchitecture.TraversalToken jumpLandToken;
     /// <summary>CommitTraversalPose 的业务处理入口；本方法直接依赖 CharacterMotionExecutor.CommitPose(MotionControlToken, Vector3, Quaternion, bool)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyWindowTraversal.CompleteTraversal()、EnemyWindowTraversal.LateUpdate()、EnemyWindowTraversal.UpdateDropMotion(float)、EnemyWindowTraversal.UpdateWindowTraversal()；下游（含内部回调体） CharacterMotionExecutor.CommitPose(MotionControlToken, Vector3, Quaternion, bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="position">中文含义：位置。使用位置：作为 CharacterMotionExecutor.CommitPose(MotionControlToken, Vector3, Quaternion, bool) 的参数。</param>
-    /// <param name="orientation">中文含义：朝向。使用位置：作为 CharacterMotionExecutor.CommitPose(MotionControlToken, Vector3, Quaternion, bool) 的参数。</param>
+    /// <param name="position">位置。</param>
+    /// <param name="orientation">朝向。</param>
     private bool CommitTraversalPose(Vector3 position, Quaternion orientation)
     {
         return controller != null && controller.motionExecutor != null && controller.motionExecutor.CommitPose(traversalMotionToken, position, orientation);
     }
 
-    /// <summary>中文含义：最大路线投影距离。编译期常量，保持既有值与消费者映射。使用位置：作为 Mathf.Max(float, float) 的参数、EnemyWindowTraversal.RegisterWindowEntryPoint(EnemyWindowTraversalPlan, out Vector3)、EnemyWindowTraversal.TryResolveDropPursuitDestination(Vector3, out Vector3)。</summary>
+    /// <summary>最大路线投影距离。编译期常量，保持既有值与消费者映射。</summary>
     private const float maximumRouteProjectionDistance = 0.6f;
-    /// <summary>中文含义：村民敌人控制器。使用位置：作为 EnemyAIManager.InvalidatePursuitDestination(VillagerController) 的参数、作为 EnemyAIManager.ReleaseCombatReservation(VillagerController) 的参数、作为 EnemyPlatformDropRoute.CancelWait(VillagerController) 的参数 等共 25 处。</summary>
+    /// <summary>村民敌人控制器。</summary>
     [Header("组件引用")]
     public VillagerController controller;
-    /// <summary>中文含义：寻路代理。使用位置：EnemyWindowTraversal.CacheComponents()、EnemyWindowTraversal.CancelTraversal(bool)、EnemyWindowTraversal.CompleteTraversal() 等共 5 处。</summary>
+    /// <summary>寻路代理。</summary>
     public PathAgent agent;
-    /// <summary>中文含义：动画控制器。使用位置：作为 AnimationPlayableOutput.Create(PlayableGraph, string, Animator) 的参数、EnemyWindowTraversal.CacheComponents()、EnemyWindowTraversal.PlayTraversalClip(AnimationClip)。</summary>
+    /// <summary>动画控制器。</summary>
     public Animator animator;
-    /// <summary>中文含义：移动碰撞体。使用位置：作为 Mathf.Clamp(float, float, float) 的参数、EnemyWindowTraversal.BeginTraversalState()、EnemyWindowTraversal.CacheComponents() 等共 6 处。</summary>
+    /// <summary>移动碰撞体。</summary>
     public CapsuleCollider movementCollider;
-    /// <summary>中文含义：窗口弧线净空。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>窗口弧线净空。</summary>
     [Header("翻窗轨迹")]
     [Min(0f)]
     public float windowArcClearance = 0.18f;
-    /// <summary>中文含义：动画混合时长。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>动画混合时长。</summary>
     [Min(0.02f)]
     public float animationBlendDuration = 0.14f;
-    /// <summary>中文含义：窗口运动起始归一化时间。使用位置：作为 Mathf.InverseLerp(float, float, float) 的参数、作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>窗口运动起始归一化时间。</summary>
     [Range(0f, 0.4f)]
     public float windowMotionStartNormalizedTime = 0.12f;
-    /// <summary>中文含义：窗口运动结束归一化时间。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>窗口运动结束归一化时间。</summary>
     [Range(0.6f, 1f)]
     public float windowMotionEndNormalizedTime = 0.9f;
-    /// <summary>中文含义：边缘探测距离。使用位置：EnemyWindowTraversal.TryBeginDropFromHit(Vector3)。</summary>
+    /// <summary>边缘探测距离。</summary>
     [Header("平台坠落")]
     [Min(0.1f)]
     public float edgeProbeDistance = 0.7f;
-    /// <summary>中文含义：支撑探测距离。使用位置：作为 EnemyWindowTraversal.HasGroundSupport(Vector3, float) 的参数。</summary>
+    /// <summary>支撑探测距离。</summary>
     [Min(0.1f)]
     public float supportProbeDistance = 0.55f;
-    /// <summary>中文含义：最大掉落探测距离。使用位置：作为 Physics.RaycastAll(Vector3, Vector3, float, int, QueryTriggerInteraction) 的参数。</summary>
+    /// <summary>最大掉落探测距离。</summary>
     [Min(1f)]
     public float maximumDropProbeDistance = 8f;
-    /// <summary>中文含义：最小掉落高度。使用位置：EnemyWindowTraversal.ShouldPursueByDrop(Vector3)、EnemyWindowTraversal.TryFindDropLanding(Vector3, out Vector3)。</summary>
+    /// <summary>最小掉落高度。</summary>
     [Min(0.5f)]
     public float minimumDropHeight = 1.2f;
-    /// <summary>中文含义：掉落初始向上速度。使用位置：作为 Mathf.Sqrt(float) 的参数、EnemyWindowTraversal.TryBeginDrop(Vector3, Vector3)。</summary>
+    /// <summary>掉落初始向上速度。</summary>
     [Min(0f)]
     public float dropInitialUpwardSpeed = 1.1f;
     /// <summary>中文含义：掉落水平速度。</summary>
     [Min(0f)]
     public float dropHorizontalSpeed = 1.15f;
-    /// <summary>中文含义：掉落重力。使用位置：作为 Mathf.Max(float, float) 的参数、EnemyWindowTraversal.UpdateDropMotion(float)。</summary>
+    /// <summary>掉落重力。</summary>
     [Min(0.1f)]
     public float dropGravity = 18f;
-    /// <summary>中文含义：掉落起始持续时间。使用位置：EnemyWindowTraversal.UpdateSpecialTraversal()。</summary>
+    /// <summary>掉落起始持续时间。</summary>
     [Min(0.05f)]
     public float dropStartDuration = 0.33f;
-    /// <summary>中文含义：掉落落地持续时间。使用位置：EnemyWindowTraversal.UpdateSpecialTraversal()。</summary>
+    /// <summary>掉落落地持续时间。</summary>
     [Min(0.05f)]
     public float dropLandingDuration = 0.5f;
     [SerializeField] private AnimationClip nativeDropStart;
     [SerializeField] private AnimationClip nativeDropFall;
     [SerializeField] private AnimationClip nativeDropLanding;
-    /// <summary>中文含义：是否启用通行诊断。使用位置：EnemyWindowTraversal.CompleteTraversal()、EnemyWindowTraversal.ReportTraversalDiagnostic(string, string, bool)、EnemyWindowTraversal.TryBeginPendingWindowTraversal()。</summary>
+    /// <summary>是否启用通行诊断。</summary>
     [Header("翻窗诊断")]
     public bool enableTraversalDiagnostic;
-    /// <summary>中文含义：通行诊断间隔。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>通行诊断间隔。</summary>
     [Min(0.1f)]
     public float traversalDiagnosticInterval = 0.5f;
-    /// <summary>中文含义：窗口交接持续时间。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>窗口交接持续时间。</summary>
     [Min(0.02f)]
     public float windowHandoffDuration = 0.08f;
-    /// <summary>中文含义：通行交接直到。使用位置：EnemyWindowTraversal.CancelTraversal(bool)、EnemyWindowTraversal.CompleteTraversal()、EnemyWindowTraversal.LateUpdate() 等共 4 处。</summary>
+    /// <summary>通行交接直到。</summary>
     private float traversalHandoffUntil = float.NegativeInfinity;
-    /// <summary>中文含义：通行交接位置。使用位置：作为 EnemyWindowTraversal.CommitTraversalPose(Vector3, Quaternion) 的参数、EnemyWindowTraversal.CompleteTraversal()、EnemyWindowTraversal.UpdateWindowTraversal()。</summary>
+    /// <summary>通行交接位置。</summary>
     private Vector3 traversalHandoffPosition;
-    /// <summary>中文含义：通行交接旋转。使用位置：作为 EnemyWindowTraversal.CommitTraversalPose(Vector3, Quaternion) 的参数、EnemyWindowTraversal.CompleteTraversal()、EnemyWindowTraversal.UpdateWindowTraversal()。</summary>
+    /// <summary>通行交接旋转。</summary>
     private Quaternion traversalHandoffRotation;
-    /// <summary>中文含义：通行交接恢复执行是否仍待处理。使用位置：EnemyWindowTraversal.CancelTraversal(bool)、EnemyWindowTraversal.CompleteTraversal()、EnemyWindowTraversal.IsMovementProtected.get 等共 6 处。</summary>
+    /// <summary>通行交接恢复执行是否仍待处理。</summary>
     private bool traversalHandoffResumePending;
     private float platformExitClearanceUntil;
     private Vector3 platformExitClearanceTarget;
-    /// <summary>中文含义：阶段。使用位置：EnemyWindowTraversal.BeginDropFallAnimation()、EnemyWindowTraversal.BeginDropLanding()、EnemyWindowTraversal.BeginWindowTraversal(EnemyWindowTraversalPlan) 等共 10 处。</summary>
+    private EnemyWindowTraversalRoute delayedReleaseWindowRoute;
+    private GameArchitecture.TraversalToken delayedReleaseWindowToken;
+    private float delayedReleaseWindowUntil;
+    private Vector3 delayedReleaseWindowOrigin;
+    /// <summary>阶段。</summary>
     private TraversalPhase phase;
-    /// <summary>中文含义：待处理方案。使用位置：作为 EnemyWindowTraversal.BeginWindowTraversal(EnemyWindowTraversalPlan) 的参数、作为 EnemyWindowTraversal.HorizontalDistance(Vector3, Vector3) 的参数、作为 EnemyWindowTraversal.ReportTraversalDiagnostic(string, string, bool) 的参数 等共 9 处。</summary>
+    /// <summary>待处理方案。</summary>
     private EnemyWindowTraversalPlan pendingPlan;
-    /// <summary>中文含义：是否存在待处理的方案。使用位置：EnemyWindowTraversal.BeginWindowTraversal(EnemyWindowTraversalPlan)、EnemyWindowTraversal.ClearPendingRoute()、EnemyWindowTraversal.HasPendingRoute.get 等共 7 处。</summary>
+    /// <summary>是否存在待处理的方案。</summary>
     private bool hasPendingPlan;
-    /// <summary>中文含义：当前路线。使用位置：作为 Mathf.Max(float, float) 的参数、EnemyWindowTraversal.BeginWindowTraversal(EnemyWindowTraversalPlan)、EnemyWindowTraversal.CancelTraversal(bool) 等共 6 处。</summary>
+    /// <summary>当前路线。</summary>
     private EnemyWindowTraversalRoute currentRoute;
     private WindowTraversalPoint fallOpening;
     private Vector3 fallExit;
     private GameArchitecture.ObjectIdentity fallIdentity;
+
+    internal EnemyWindowTraversalRoute ReadActiveOrPendingWindowRoute()
+    {
+        if (currentRoute != null)
+        {
+            return currentRoute;
+        }
+
+        if (hasPendingPlan)
+        {
+            return pendingPlan.route;
+        }
+
+        return null;
+    }
 
     internal bool IsClearingOpening(WindowTraversalPoint opening)
     {
@@ -180,9 +201,11 @@ var result = route.RequestTraversal(controller, new GameArchitecture.RequestCont
         Vector3 root = transform.position;
         Vector3 direction = step.normalized;
         float allowed = step.magnitude;
-        foreach (RaycastHit hit in Physics.CapsuleCastAll(root + Vector3.up * .29f, root + Vector3.up * .98f,
-            .24f, direction, allowed + .025f, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore))
+        RaycastHit[] hits = windowHits.CapsuleCast(root + Vector3.up * .29f, root + Vector3.up * .98f,
+            .24f, direction, allowed + .025f, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore, out int hitCount);
+        for (int hitIndex = 0; hitIndex < hitCount; hitIndex++)
         {
+            RaycastHit hit = hits[hitIndex];
             if (hit.collider.transform.IsChildOf(transform) || fallOpening.ShouldIgnorePathCollider(hit.collider)
                 || hit.normal.y > .65f || Vector3.Dot(hit.normal, direction) >= -.04f)
             {
@@ -228,64 +251,76 @@ var result = route.RequestTraversal(controller, new GameArchitecture.RequestCont
         return true;
     }
 
-    /// <summary>中文含义：运动起始。使用位置：作为 Mathf.Max(float, float) 的参数、EnemyWindowTraversal.BeginWindowTraversal(EnemyWindowTraversalPlan)、EnemyWindowTraversal.UpdateWindowTraversal()。</summary>
+    /// <summary>运动起始。</summary>
     private Vector3 motionStart;
-    /// <summary>中文含义：运动控制。使用位置：EnemyWindowTraversal.BeginWindowTraversal(EnemyWindowTraversalPlan)、EnemyWindowTraversal.UpdateWindowTraversal()。</summary>
+    /// <summary>运动控制。</summary>
     private Vector3 motionControl;
-    /// <summary>中文含义：运动目的地。使用位置：作为 EnemyWindowTraversal.CommitTraversalPose(Vector3, Quaternion) 的参数、作为 Mathf.Max(float, float) 的参数、EnemyWindowTraversal.BeginWindowTraversal(EnemyWindowTraversalPlan) 等共 5 处。</summary>
+    /// <summary>运动目的地。</summary>
     private Vector3 motionDestination;
-    /// <summary>中文含义：运动旋转。使用位置：作为 EnemyWindowTraversal.CommitTraversalPose(Vector3, Quaternion) 的参数、作为 Quaternion.Slerp(Quaternion, Quaternion, float) 的参数、EnemyWindowTraversal.BeginWindowTraversal(EnemyWindowTraversalPlan) 等共 6 处。</summary>
+    /// <summary>运动旋转。</summary>
     private Quaternion motionRotation;
-    /// <summary>中文含义：运动起始旋转。使用位置：作为 Quaternion.Slerp(Quaternion, Quaternion, float) 的参数、EnemyWindowTraversal.BeginWindowTraversal(EnemyWindowTraversalPlan)。</summary>
+    /// <summary>运动起始旋转。</summary>
     private Quaternion motionStartRotation;
-    /// <summary>中文含义：掉落水平速度。使用位置：EnemyWindowTraversal.TryBeginDrop(Vector3, Vector3)、EnemyWindowTraversal.UpdateDropMotion(float)。</summary>
+    /// <summary>掉落水平速度。</summary>
     private Vector3 dropHorizontalVelocity;
-    /// <summary>中文含义：掉落竖直速度。使用位置：EnemyWindowTraversal.TryBeginDrop(Vector3, Vector3)、EnemyWindowTraversal.UpdateDropMotion(float)。</summary>
+    /// <summary>掉落竖直速度。</summary>
     private float dropVerticalSpeed;
-    /// <summary>中文含义：掉落落地位置。使用位置：作为 EnemyWindowTraversal.CommitTraversalPose(Vector3, Quaternion) 的参数、EnemyWindowTraversal.TryBeginDrop(Vector3, Vector3)、EnemyWindowTraversal.UpdateDropMotion(float)。</summary>
+    /// <summary>掉落落地位置。</summary>
     private Vector3 dropLandingPosition;
-    /// <summary>中文含义：阶段开始时间。使用位置：作为 Mathf.Clamp01(float) 的参数、EnemyWindowTraversal.BeginDropFallAnimation()、EnemyWindowTraversal.BeginDropLanding() 等共 6 处。</summary>
+    /// <summary>阶段开始时间。</summary>
     private float phaseStartedTime;
-    /// <summary>中文含义：前一次移动碰撞体是否启用。使用位置：EnemyWindowTraversal.BeginTraversalState()、EnemyWindowTraversal.CancelTraversal(bool)、EnemyWindowTraversal.CompleteTraversal()。</summary>
+    /// <summary>前一次移动碰撞体是否启用。</summary>
     private bool previousMovementColliderEnabled;
-    /// <summary>中文含义：跟踪的平台区域编号。使用位置：作为 EnemyNavigationElevatedWalkableVolume.ContainsBoundaryRegionPoint(string, Vector3) 的参数、作为 EnemyWindowTraversal.ResolveTargetPlatformState(string, Vector3) 的参数、作为 string.IsNullOrWhiteSpace(string) 的参数 等共 7 处。</summary>
+    /// <summary>跟踪的平台区域编号。</summary>
     private string trackedPlatformRegionId;
-    /// <summary>中文含义：是否具有平台区域状态。使用位置：EnemyWindowTraversal.CompleteTraversal()、EnemyWindowTraversal.InitializePlatformRegionState()、EnemyWindowTraversal.IsCurrentActorOnPlatform() 等共 8 处。</summary>
+    /// <summary>是否具有平台区域状态。</summary>
     private bool hasPlatformRegionState;
-    /// <summary>中文含义：是否事件跟踪的平台区域。使用位置：作为 EnemyWindowTraversal.ReportTraversalDiagnostic(string, string, bool) 的参数、作为 HouseThreeRegionNavigation.ReadPlatformOwnership(Vector3, bool) 的参数、EnemyWindowTraversal.CompleteTraversal() 等共 6 处。</summary>
+    /// <summary>是否事件跟踪的平台区域。</summary>
     private bool isOnTrackedPlatformRegion;
-    /// <summary>中文含义：是否存在待处理的窗口目的地事件平台。使用位置：EnemyWindowTraversal.BeginWindowTraversal(EnemyWindowTraversalPlan)、EnemyWindowTraversal.CompleteTraversal()。</summary>
+    /// <summary>是否存在待处理的窗口目的地事件平台。</summary>
     private bool pendingWindowDestinationOnPlatform;
-    /// <summary>中文含义：上一次平台支撑时间。使用位置：EnemyWindowTraversal.CompleteTraversal()、EnemyWindowTraversal.RecordPlatformSupportBeforeMovement()、EnemyWindowTraversal.TryBeginDropAfterMovement(Vector3)。</summary>
-    /// <summary>中文含义：动画导航图。使用位置：作为 AnimationClipPlayable.Create(PlayableGraph, AnimationClip) 的参数、作为 AnimationPlayableOutput.Create(PlayableGraph, string, Animator) 的参数、EnemyWindowTraversal.LoopCurrentClipIfNeeded() 等共 5 处。</summary>
+    /// <summary>上一次平台支撑时间。</summary>
+    /// <summary>动画导航图。</summary>
     private PlayableGraph animationGraph;
-    /// <summary>中文含义：动画片段可播放。使用位置：作为 AnimationClipPlayable.SetTime&lt;AnimationClipPlayable&gt;(double) 的参数、作为 AnimationPlayableOutput.SetSourcePlayable&lt;AnimationPlayableOutput, AnimationClipPlayable&gt;(AnimationClipPlayable) 的参数、EnemyWindowTraversal.LoopCurrentClipIfNeeded() 等共 5 处。</summary>
+    /// <summary>动画片段可播放。</summary>
     private AnimationClipPlayable clipPlayable;
-    /// <summary>中文含义：待处理掉落方案。使用位置：作为 EnemyWindowTraversal.HorizontalDistance(Vector3, Vector3) 的参数、作为 EnemyWindowTraversal.RequestJumpLandOccupancy(EnemyPlatformDropRoute) 的参数、作为 Mathf.Abs(float) 的参数 等共 6 处。</summary>
+    /// <summary>待处理掉落方案。</summary>
     private EnemyPlatformDropPlan pendingDropPlan;
     private Vector3 pendingDropApproach;
-    /// <summary>中文含义：当前掉落路线。使用位置：EnemyWindowTraversal.CancelTraversal(bool)、EnemyWindowTraversal.CompleteTraversal()、EnemyWindowTraversal.TryBeginPendingDropTraversal() 等共 4 处。</summary>
+    /// <summary>当前掉落路线。</summary>
     private EnemyPlatformDropRoute currentDropRoute;
-    /// <summary>中文含义：是否存在待处理的掉落方案。使用位置：EnemyWindowTraversal.ClearPendingDropPlan()、EnemyWindowTraversal.HasPendingDropRoute.get、EnemyWindowTraversal.LateUpdate() 等共 5 处。</summary>
+    /// <summary>是否存在待处理的掉落方案。</summary>
     private bool hasPendingDropPlan;
-    /// <summary>中文含义：是否前一次待处理命中。使用位置：EnemyWindowTraversal.LateUpdate()。</summary>
+    /// <summary>是否前一次待处理命中。</summary>
     private bool previousPendingHit;
-    /// <summary>中文含义：上一次通行诊断。使用位置：EnemyWindowTraversal.ReportTraversalDiagnostic(string, string, bool)。</summary>
+    /// <summary>上一次通行诊断。</summary>
     private string lastTraversalDiagnostic;
-    /// <summary>中文含义：下一次通行诊断时间。使用位置：EnemyWindowTraversal.ReportTraversalDiagnostic(string, string, bool)。</summary>
+    /// <summary>下一次通行诊断时间。</summary>
     private float nextTraversalDiagnosticTime;
-    /// <summary>中文含义：是否生效。使用位置：EnemyWindowTraversal.CancelTraversal(bool)、EnemyWindowTraversal.IsMovementProtected.get、EnemyWindowTraversal.LateUpdate() 等共 10 处。</summary>
+    /// <summary>是否生效。</summary>
     public bool IsActive => phase != TraversalPhase.None;
-    /// <summary>中文含义：是否移动受保护的。使用位置：EnemyActionCoordinator.ApprovalAndExecute(ActionRequest, bool)、EnemyActionCoordinator.BeginChase(bool)、EnemyFootAction.AllowGroundContact.get 等共 10 处。</summary>
+    /// <summary>是否移动受保护的。</summary>
     public bool IsMovementProtected => IsActive || traversalHandoffResumePending || HasActiveLadderTraversal;
     /// <summary>中文含义：是否翻窗通行生效。</summary>
     public bool IsWindowTraversalActive => phase == TraversalPhase.Window;
     /// <summary>中文含义：是否掉落生效。</summary>
     public bool IsDropActive => phase == TraversalPhase.DropStart || phase == TraversalPhase.DropFall || phase == TraversalPhase.DropLanding;
-    /// <summary>中文含义：是否存在待处理的路线。使用位置：VillagerController.RequiresNavigationTraversalToPlayer()。</summary>
+    /// <summary>是否存在待处理的路线。</summary>
     public bool HasPendingRoute => hasPendingPlan;
-    /// <summary>中文含义：是否存在待处理的掉落路线。使用位置：VillagerController.RequiresNavigationTraversalToPlayer()。</summary>
+    /// <summary>是否存在待处理的掉落路线。</summary>
     public bool HasPendingDropRoute => hasPendingDropPlan;
+    public bool HasActivePlatformExitClearance
+    {
+        get
+        {
+            if (Time.time < platformExitClearanceUntil && IsCurrentActorOnPlatform())
+            {
+                return true;
+            }
+
+            return false;
+        }
+    }
 
     /// <summary>敌人行为、动作与通行使用的 TraversalPhase 分类枚举；保持原成员顺序和数值，调用方据此选择业务分支。</summary>
     private enum TraversalPhase
@@ -310,13 +345,13 @@ var result = route.RequestTraversal(controller, new GameArchitecture.RequestCont
         InitializePlatformRegionState();
     }
 
-    /// <summary>中文含义：是否事件跟踪的平台。使用位置：EnemyCombatModule.EndAttack()。</summary>
+    /// <summary>是否事件跟踪的平台。</summary>
     public bool IsOnTrackedPlatform => IsCurrentActorOnPlatform();
 
     /// <summary>TryGetPlatformRegionState 的业务处理入口；本方法直接依赖 EnemyWindowTraversal.InitializePlatformRegionState()、EnemyWindowTraversal.IsCurrentActorOnPlatform()、string.IsNullOrWhiteSpace(string)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyCombatModule.IsPlayerWithinCombatVerticalRange(LeonController)、EnemyWindowTraversalRoute.TryBuildPlan(VillagerController, Vector3, bool, out EnemyWindowTraversalPlan)；下游（含内部回调体） EnemyWindowTraversal.InitializePlatformRegionState()、EnemyWindowTraversal.IsCurrentActorOnPlatform()、string.IsNullOrWhiteSpace(string)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="regionId">中文含义：区域编号。使用位置：作为 string.IsNullOrWhiteSpace(string) 的参数、EnemyWindowTraversal.TryGetPlatformRegionState(string, out bool)。</param>
-    /// <param name="isOnPlatform">中文含义：是否事件平台。输出参数，由本入口写入并交给调用方。使用位置：EnemyWindowTraversal.TryGetPlatformRegionState(string, out bool)。</param>
+    /// <param name="regionId">区域编号。</param>
+    /// <param name="isOnPlatform">是否事件平台。输出参数，由本入口写入并交给调用方。</param>
     public bool TryGetPlatformRegionState(string regionId, out bool isOnPlatform)
     {
         InitializePlatformRegionState();
@@ -333,17 +368,37 @@ var result = route.RequestTraversal(controller, new GameArchitecture.RequestCont
     internal bool TryReadPlatformExitClearance(out Vector3 destination)
     {
         destination = platformExitClearanceTarget;
-        if (Time.time >= platformExitClearanceUntil || !IsCurrentActorOnPlatform())
+        if (platformExitClearanceUntil <= 0f)
         {
             return false;
         }
 
-        Vector3 remaining = destination - transform.position;
-        remaining.y = 0f;
-        if (remaining.sqrMagnitude < 0.30f * 0.30f || controller == null
-            || !controller.CanMoveDirectlyToNavigationPoint(destination, true))
+        bool expired = Time.time >= platformExitClearanceUntil || !IsCurrentActorOnPlatform() || controller == null;
+        if (!expired)
+        {
+            Vector3 remaining = destination - transform.position;
+            remaining.y = 0f;
+            Vector3 walkedFromLanding = transform.position - traversalHandoffPosition;
+            walkedFromLanding.y = 0f;
+            if (remaining.sqrMagnitude < 0.30f * 0.30f
+                || walkedFromLanding.sqrMagnitude >= 1.25f * 1.25f
+                || !controller.CanMoveDirectlyToNavigationPoint(destination, true))
+            {
+                expired = true;
+            }
+        }
+
+        if (expired)
         {
             platformExitClearanceUntil = 0f;
+            if (agent != null && agent.enabled)
+            {
+                agent.RequestImmediateRepath();
+            }
+            if (controller != null)
+            {
+                controller.InvalidateChaseRefreshFrame();
+            }
             return false;
         }
 
@@ -367,38 +422,54 @@ var result = route.RequestTraversal(controller, new GameArchitecture.RequestCont
             return;
         }
 
-        // 窗外先沿可走的踏面让开出口，再把方向交回正式追击路径。
-        for (int candidate = 0; candidate < 3; candidate++)
+        // 优先沿着木板走廊切向与玩家方向脱离窗台落点，不再因近距离同伴阻挡或垂直阈值错失出口。
+        float sideSign = 1f;
+        if (controller.Player != null)
         {
-            float angle = 0f;
-            if (candidate == 1)
+            Vector3 toPlayer = Vector3.ProjectOnPlane(controller.Player.transform.position - landing, Vector3.up);
+            if (toPlayer.sqrMagnitude > 0.001f && Vector3.SignedAngle(heading, toPlayer, Vector3.up) < 0f)
             {
-                angle = -50f;
+                sideSign = -1f;
             }
-            else if (candidate == 2)
-            {
-                angle = 50f;
-            }
+        }
 
-            Vector3 direction = Quaternion.AngleAxis(angle, Vector3.up) * heading;
-            var clear = region.ReadSameSideNavigationPoint(landing + direction * .95f, true, .65f, .55f);
-            if (clear.node == null || start.node.Area != clear.node.Area
-                || Vector3.Dot(clear.position - landing, heading) < .35f
-                || !controller.CanMoveDirectlyToNavigationPoint(clear.position, true))
+        float[] probeDistances = new float[] { 1.65f, 1.35f, 1.05f };
+        float[] candidateAngles = new float[]
+        {
+            0f,
+            45f * sideSign,
+            75f * sideSign,
+            90f * sideSign,
+            -45f * sideSign,
+            -75f * sideSign,
+            -90f * sideSign
+        };
+        for (int distanceIndex = 0; distanceIndex < probeDistances.Length; distanceIndex++)
+        {
+            float probeDistance = probeDistances[distanceIndex];
+            for (int angleIndex = 0; angleIndex < candidateAngles.Length; angleIndex++)
             {
-                continue;
-            }
+                float angle = candidateAngles[angleIndex];
+                Vector3 direction = Quaternion.AngleAxis(angle, Vector3.up) * heading;
+                var clear = region.ReadSameSideNavigationPoint(landing + direction * probeDistance, true, .65f, .55f);
+                if (clear.node == null || start.node.Area != clear.node.Area
+                    || Vector3.Dot(clear.position - landing, heading) < -0.05f
+                    || !controller.CanMoveDirectlyToNavigationPoint(clear.position, true))
+                {
+                    continue;
+                }
 
-            platformExitClearanceTarget = clear.position;
-            platformExitClearanceUntil = Time.time + 1.65f;
-            return;
+                platformExitClearanceTarget = clear.position;
+                platformExitClearanceUntil = Time.time + 0.75f;
+                return;
+            }
         }
     }
 
     /// <summary>TryResolveSamePlatformPursuitDestination 的业务处理入口；本方法直接依赖 EnemyWindowTraversal.InitializePlatformRegionState()、EnemyWindowTraversal.ResolveTargetPlatformState(string, Vector3)、HouseThreeRegionNavigation.ReadChaseApproachPoint(Vector3, bool)、string.IsNullOrWhiteSpace(string)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillagerController.RefreshChaseDestination()；下游（含内部回调体） EnemyWindowTraversal.InitializePlatformRegionState()、EnemyWindowTraversal.ResolveTargetPlatformState(string, Vector3)、HouseThreeRegionNavigation.ReadChaseApproachPoint(Vector3, bool)、string.IsNullOrWhiteSpace(string)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="playerPosition">中文含义：玩家位置。使用位置：作为 EnemyWindowTraversal.ResolveTargetPlatformState(string, Vector3) 的参数、作为 HouseThreeRegionNavigation.ReadChaseApproachPoint(Vector3, bool) 的参数、EnemyWindowTraversal.TryResolveSamePlatformPursuitDestination(Vector3, out Vector3)。</param>
-    /// <param name="pursuitDestination">中文含义：追击目的地。输出参数，由本入口写入并交给调用方。使用位置：EnemyWindowTraversal.TryResolveSamePlatformPursuitDestination(Vector3, out Vector3)。</param>
+    /// <param name="playerPosition">玩家位置。</param>
+    /// <param name="pursuitDestination">追击目的地。输出参数，由本入口写入并交给调用方。</param>
     public bool TryResolveSamePlatformPursuitDestination(Vector3 playerPosition, out Vector3 pursuitDestination)
     {
         pursuitDestination = playerPosition;
@@ -413,11 +484,11 @@ var result = route.RequestTraversal(controller, new GameArchitecture.RequestCont
             return false;
         }
 
-        // region（区域）：使用位置：EnemyWindowTraversal.TryResolveSamePlatformPursuitDestination(Vector3, out Vector3)。
+        // 区域。
 var region = HouseThreeRegionNavigation.Current;
         if (region != null)
         {
-            // approachPoint（接近点）：保存 HouseThreeRegionNavigation.ReadChaseApproachPoint(Vector3, bool) 的返回结果，供当前步骤使用。使用位置：EnemyWindowTraversal.TryResolveSamePlatformPursuitDestination(Vector3, out Vector3)。
+            // 接近点。
 var approachPoint = region.ReadChaseApproachPoint(playerPosition, true);
             if (approachPoint.node == null)
             {
@@ -445,12 +516,12 @@ var approachPoint = region.ReadChaseApproachPoint(playerPosition, true);
             return;
         }
 
-        // routes（路线集合）：使用位置：EnemyWindowTraversal.InitializePlatformRegionState()。
+        // 路线集合。
 IReadOnlyList<EnemyWindowTraversalRoute> routes = EnemyWindowTraversalRoute.ActiveRoutes;
-        // i（当前遍历索引）：使用位置：作为 IReadOnlyList<EnemyWindowTraversalRoute>.this[int] 的参数、EnemyWindowTraversal.InitializePlatformRegionState()。
+        // 当前遍历索引。
 for (int i = 0; i < routes.Count; i++)
         {
-            // route（路线）：使用位置：作为 string.IsNullOrWhiteSpace(string) 的参数、EnemyWindowTraversal.InitializePlatformRegionState()。
+            // 路线。
 EnemyWindowTraversalRoute route = routes[i];
             if (route == null || !route.isActiveAndEnabled || string.IsNullOrWhiteSpace(route.platformRegionId))
             {
@@ -484,13 +555,13 @@ EnemyWindowTraversalRoute route = routes[i];
 
     /// <summary>ResolveTargetPlatformState 的业务处理入口；本方法直接依赖 Component.GetComponent&lt;LeonWindowTraversal&gt;()、EnemyNavigationElevatedWalkableVolume.ContainsBoundaryRegionPoint(string, Vector3)、LeonWindowTraversal.TryGetEnemyPlatformRegionState(string, out bool)、object.ReferenceEquals(object, object)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyWindowTraversal.ShouldPursueByDrop(Vector3)、EnemyWindowTraversal.TryResolvePursuitDestination(Vector3, out Vector3)、EnemyWindowTraversal.TryResolveSamePlatformPursuitDestination(Vector3, out Vector3)；下游（含内部回调体） Component.GetComponent&lt;LeonWindowTraversal&gt;()、EnemyNavigationElevatedWalkableVolume.ContainsBoundaryRegionPoint(string, Vector3)、LeonWindowTraversal.TryGetEnemyPlatformRegionState(string, out bool)、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="regionId">中文含义：区域编号。使用位置：作为 EnemyNavigationElevatedWalkableVolume.ContainsBoundaryRegionPoint(string, Vector3) 的参数、作为 LeonWindowTraversal.TryGetEnemyPlatformRegionState(string, out bool) 的参数。</param>
-    /// <param name="targetPosition">中文含义：目标位置。使用位置：作为 EnemyNavigationElevatedWalkableVolume.ContainsBoundaryRegionPoint(string, Vector3) 的参数。</param>
+    /// <param name="regionId">区域编号。</param>
+    /// <param name="targetPosition">目标位置。</param>
     private bool ResolveTargetPlatformState(string regionId, Vector3 targetPosition)
     {
-        // receiverValue1（判空前缓存的敌人智能管理器的实例）：从敌人智能管理器的实例读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、EnemyWindowTraversal.ResolveTargetPlatformState(string, Vector3)。
+        // 判空前缓存的敌人智能管理器的实例。
 global::EnemyAIManager receiverValue1 = EnemyAIManager.Instance;
-        // player（玩家）：使用位置：EnemyWindowTraversal.ResolveTargetPlatformState(string, Vector3)。
+        // 玩家。
 LeonController player;
         if (!global::System.Object.ReferenceEquals(receiverValue1, null))
         {
@@ -503,7 +574,7 @@ LeonController player;
 
         if (player != null)
         {
-            // traversal（通行）：保存 Component.GetComponent<LeonWindowTraversal>() 的返回结果，供当前步骤使用。使用位置：EnemyWindowTraversal.ResolveTargetPlatformState(string, Vector3)。
+            // 通行。
 LeonWindowTraversal traversal = player.GetComponent<LeonWindowTraversal>();
             if (traversal != null && traversal.TryGetEnemyPlatformRegionState(regionId, out bool /* 中文含义：是否跟踪的状态。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ trackedState))
             {
@@ -532,9 +603,12 @@ LeonWindowTraversal traversal = player.GetComponent<LeonWindowTraversal>();
 
         if (controller.IsDead)
         {
+            ReleaseDelayedWindowToken(GameArchitecture.ReleaseReason.Cancel);
             CancelTraversal(false);
             return;
         }
+
+        TickDelayedWindowTokenRelease();
 
         if ((IsActive || traversalHandoffResumePending) && !controller.motionExecutor.Valid(traversalMotionToken))
         {
@@ -554,7 +628,7 @@ LeonWindowTraversal traversal = player.GetComponent<LeonWindowTraversal>();
             if (IsActive)
             {
                 controller.SetMovementMode(EnemyMovementMode.TraversalCodeDriven);
-                // receiverValue3（判空前缓存的敌人智能管理器的实例）：从敌人智能管理器的实例读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、EnemyWindowTraversal.Update()。
+                // 判空前缓存的敌人智能管理器的实例。
 global::EnemyAIManager receiverValue3 = EnemyAIManager.Instance;
                 if (!global::System.Object.ReferenceEquals(receiverValue3, null))
                 {
@@ -589,20 +663,35 @@ global::EnemyAIManager receiverValue3 = EnemyAIManager.Instance;
         if (controller == null || controller.IsDead)
         {
             traversalHandoffResumePending = false;
+            ReleaseDelayedWindowToken(GameArchitecture.ReleaseReason.Cancel);
             return;
         }
 
+        TickDelayedWindowTokenRelease();
+
         if (traversalHandoffResumePending)
         {
-            if (!controller.motionExecutor.Valid(traversalMotionToken))
+            if (controller == null || !controller.motionExecutor.Valid(traversalMotionToken))
             {
                 CancelTraversal(false);
                 return;
             }
 
+            if (controller.IsDead || controller.HasPendingHit || controller.CurrentState == VillagerState.Staggered)
+            {
+                traversalHandoffResumePending = false;
+                traversalHandoffUntil = float.NegativeInfinity;
+                if (!controller.IsDead)
+                {
+                    controller.CompleteTraversalAndResumeChase();
+                }
+
+                return;
+            }
+
             CommitTraversalPose(traversalHandoffPosition, traversalHandoffRotation);
             controller.SetMovementMode(EnemyMovementMode.TraversalCodeDriven);
-            // receiverValue4（判空前缓存的敌人智能管理器的实例）：从敌人智能管理器的实例读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、EnemyWindowTraversal.LateUpdate()。
+            // 判空前缓存的敌人智能管理器的实例。
 global::EnemyAIManager receiverValue4 = EnemyAIManager.Instance;
             if (!global::System.Object.ReferenceEquals(receiverValue4, null))
             {
@@ -621,7 +710,7 @@ global::EnemyAIManager receiverValue4 = EnemyAIManager.Instance;
         if (IsActive)
         {
             controller.SetMovementMode(EnemyMovementMode.TraversalCodeDriven);
-            // receiverValue5（判空前缓存的敌人智能管理器的实例）：从敌人智能管理器的实例读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、EnemyWindowTraversal.LateUpdate()。
+            // 判空前缓存的敌人智能管理器的实例。
 global::EnemyAIManager receiverValue5 = EnemyAIManager.Instance;
             if (!global::System.Object.ReferenceEquals(receiverValue5, null))
             {
@@ -631,14 +720,14 @@ global::EnemyAIManager receiverValue5 = EnemyAIManager.Instance;
             return;
         }
 
-        // receivedReactiveHit（是否已接收响应式命中）：使用位置：EnemyWindowTraversal.LateUpdate()。
+        // 是否已接收响应式命中。
 bool receivedReactiveHit = controller.HasPendingHit && !previousPendingHit;
         previousPendingHit = controller.HasPendingHit;
-        // player（玩家）：使用位置：作为 EnemyWindowTraversal.TryResolveSpecialPursuitDestination(Vector3, out Vector3) 的参数、EnemyWindowTraversal.LateUpdate()。
+        // 玩家。
 LeonController player = controller.Player;
         if (receivedReactiveHit && player != null && !HasPendingWindowPriority())
         {
-            // hitNormal（命中表面法线）：使用位置：作为 EnemyWindowTraversal.TryBeginDropFromHit(Vector3) 的参数。
+            // 命中表面法线。
 Vector3 hitNormal = player.transform.position - transform.position;
             if (TryBeginDropFromHit(hitNormal))
             {
@@ -648,14 +737,22 @@ Vector3 hitNormal = player.transform.position - transform.position;
 
         if (controller.CurrentState == VillagerState.Chase && player != null)
         {
-            if (TryResolveSpecialPursuitDestination(player.transform.position, out Vector3 /* 中文含义：目的地。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ destination))
+            if (TryReadPlatformExitClearance(out _))
             {
-                if (agent != null && agent.enabled)
-                {
-                    agent.isStopped = false;
-                    agent.SetDestination(destination);
-                }
+                ClearPendingRoute();
+                ClearPendingDropPlan();
+                return;
+            }
 
+            if (TryResolveSamePlatformPursuitDestination(player.transform.position, out _))
+            {
+                ClearPendingRoute();
+                ClearPendingDropPlan();
+                return;
+            }
+
+            if (TryResolveSpecialPursuitDestination(player.transform.position, out _))
+            {
                 if (hasPendingDropPlan)
                 {
                     TryBeginPendingDropTraversal();
@@ -665,7 +762,7 @@ Vector3 hitNormal = player.transform.position - transform.position;
                     TryBeginPendingWindowTraversal();
                 }
 
-                // 未抵达入口或正在排队时，同样保持当前路线所有权。
+                // 未抵达入口或正在排队时，同样保持当前路线所有权；实际导航写入统一由 RefreshChaseDestination 负责。
                 return;
             }
 
@@ -678,7 +775,7 @@ Vector3 hitNormal = player.transform.position - transform.position;
             ClearPendingDropPlan();
         }
 
-        // movementDirection（移动方向）：使用位置：作为 EnemyWindowTraversal.TryBeginDropAfterMovement(Vector3) 的参数、EnemyWindowTraversal.LateUpdate()。
+        // 移动方向。
 Vector3 movementDirection;
         if (agent != null)
         {
@@ -718,13 +815,14 @@ Vector3 movementDirection;
 
         blockedWindows.Clear();
         windowRetreatUntil = 0f;
+        ReleaseDelayedWindowToken(GameArchitecture.ReleaseReason.Deactivate);
         CancelTraversal(false);
     }
 
     /// <summary>TryResolveSpecialPursuitDestination 的业务处理入口；本方法直接依赖 EnemyWindowTraversal.ClearPendingDropPlan()、EnemyWindowTraversal.ClearPendingRoute()、EnemyWindowTraversal.ClearRegionWindowRoute()、EnemyWindowTraversal.IsCurrentActorOnPlatform()、EnemyWindowTraversal.TryResolveDropPursuitDestination(Vector3, out Vector3)、EnemyWindowTraversal.TryResolvePursuitDestination(Vector3, out Vector3)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyWindowTraversal.LateUpdate()、VillagerController.RefreshChaseDestination()；下游（含内部回调体） EnemyWindowTraversal.ClearPendingDropPlan()、EnemyWindowTraversal.ClearPendingRoute()、EnemyWindowTraversal.ClearRegionWindowRoute()、EnemyWindowTraversal.IsCurrentActorOnPlatform()、EnemyWindowTraversal.TryResolveDropPursuitDestination(Vector3, out Vector3)、EnemyWindowTraversal.TryResolvePursuitDestination(Vector3, out Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="targetPosition">中文含义：目标位置。使用位置：作为 EnemyWindowTraversal.TryResolveDropPursuitDestination(Vector3, out Vector3) 的参数、作为 EnemyWindowTraversal.TryResolvePursuitDestination(Vector3, out Vector3) 的参数。</param>
-    /// <param name="destination">中文含义：目的地。输出参数，由本入口写入并交给调用方。使用位置：作为 EnemyWindowTraversal.TryResolveDropPursuitDestination(Vector3, out Vector3) 的参数、作为 EnemyWindowTraversal.TryResolvePursuitDestination(Vector3, out Vector3) 的参数。</param>
+    /// <param name="targetPosition">目标位置。</param>
+    /// <param name="destination">目的地。输出参数，由本入口写入并交给调用方。</param>
     public bool TryResolveSpecialPursuitDestination(Vector3 targetPosition, out Vector3 destination)
     {
         if (controller != null && controller.HasSiegeBreachOrder)
@@ -737,9 +835,10 @@ Vector3 movementDirection;
             return true;
         }
         // 普通更新和帧尾执行必须共用同一优先级，不能互相清除路线。
-        // 外平台已经确认回屋入口时，目标突然落地也先完成这段回屋。
-        // 否则队尾会被临时跳落计划拉离窗口，破坏已可执行的通行顺序。
-        if (hasPendingPlan && IsCurrentActorOnPlatform() && TryResolvePursuitDestination(targetPosition, out destination))
+        // 仅当外平台角色已逼近窗台准备翻回屋内时才保留原回屋计划，否则优先跳落追击地面目标。
+        bool closeToPendingWindow = hasPendingPlan && pendingPlan.route != null
+            && HorizontalDistance(transform.position, pendingPlan.sourceGround) <= 1.2f;
+        if (closeToPendingWindow && IsCurrentActorOnPlatform() && TryResolvePursuitDestination(targetPosition, out destination))
         {
             ClearPendingDropPlan();
             return true;
@@ -773,6 +872,19 @@ Vector3 movementDirection;
         generalSelectWindow.ClearValue();
     }
 
+    internal void ResetStalledPursuitPlans()
+    {
+        if (IsActive)
+        {
+            return;
+        }
+
+        ClearPendingRoute();
+        ClearPendingDropPlan();
+        ClearRegionWindowRoute();
+        windowRetreatUntil = 0f;
+    }
+
     internal void CancelPendingSiegeDetour()
     {
         ClearPendingRoute();
@@ -782,8 +894,8 @@ Vector3 movementDirection;
     }
     /// <summary>TryResolvePursuitDestination 的业务处理入口；本方法直接依赖 EnemyWindowTraversal.CacheComponents()、EnemyWindowTraversal.ClearPendingRoute()、EnemyWindowTraversal.IsCurrentActorOnPlatform()、EnemyWindowTraversal.RegisterWindowEntryPoint(EnemyWindowTraversalPlan, out Vector3)、EnemyWindowTraversal.ResolveTargetPlatformState(string, Vector3)、HouseThreeRegionNavigation.ReadChaseApproachPoint(Vector3, bool)、RegionWindowRouting.Select(VillagerController, Vector3, bool, bool, out EnemyWindowTraversalPlan)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyWindowTraversal.TryResolveSpecialPursuitDestination(Vector3, out Vector3)；下游（含内部回调体） EnemyWindowTraversal.CacheComponents()、EnemyWindowTraversal.ClearPendingRoute()、EnemyWindowTraversal.IsCurrentActorOnPlatform()、EnemyWindowTraversal.RegisterWindowEntryPoint(EnemyWindowTraversalPlan, out Vector3)、EnemyWindowTraversal.ResolveTargetPlatformState(string, Vector3)、HouseThreeRegionNavigation.ReadChaseApproachPoint(Vector3, bool)、RegionWindowRouting.Select(VillagerController, Vector3, bool, bool, out EnemyWindowTraversalPlan)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="targetPosition">中文含义：目标位置。使用位置：作为 EnemyWindowTraversal.ResolveTargetPlatformState(string, Vector3) 的参数、作为 HouseThreeRegionNavigation.ReadChaseApproachPoint(Vector3, bool) 的参数、作为 RegionWindowRouting.Select(VillagerController, Vector3, bool, bool, out EnemyWindowTraversalPlan) 的参数 等共 4 处。</param>
-    /// <param name="pursuitDestination">中文含义：追击目的地。输出参数，由本入口写入并交给调用方。使用位置：作为 EnemyWindowTraversal.RegisterWindowEntryPoint(EnemyWindowTraversalPlan, out Vector3) 的参数、EnemyWindowTraversal.TryResolvePursuitDestination(Vector3, out Vector3)。</param>
+    /// <param name="targetPosition">目标位置。</param>
+    /// <param name="pursuitDestination">追击目的地。输出参数，由本入口写入并交给调用方。</param>
     public bool TryResolvePursuitDestination(Vector3 targetPosition, out Vector3 pursuitDestination)
     {
         pursuitDestination = targetPosition;
@@ -800,13 +912,13 @@ Vector3 movementDirection;
             return false;
         }
 
-        // outside（是否外部）：保存 EnemyWindowTraversal.IsCurrentActorOnPlatform() 的返回结果，供当前步骤使用。使用位置：作为 RegionWindowRouting.Select(VillagerController, Vector3, bool, bool, out EnemyWindowTraversalPlan) 的参数、EnemyWindowTraversal.TryResolvePursuitDestination(Vector3, out Vector3)。
+        // 是否外部。
 bool outside = IsCurrentActorOnPlatform();
-        // targetOutside（是否目标外部）：保存 EnemyWindowTraversal.ResolveTargetPlatformState(string, Vector3) 的返回结果，供当前步骤使用。使用位置：作为 HouseThreeRegionNavigation.ReadChaseApproachPoint(Vector3, bool) 的参数、作为 RegionWindowRouting.Select(VillagerController, Vector3, bool, bool, out EnemyWindowTraversalPlan) 的参数、EnemyWindowTraversal.TryResolvePursuitDestination(Vector3, out Vector3)。
+        // 是否目标外部。
 bool targetOutside = ResolveTargetPlatformState(trackedPlatformRegionId, targetPosition);
         if (outside || targetOutside)
         {
-            // approachPoint（接近点）：保存 HouseThreeRegionNavigation.ReadChaseApproachPoint(Vector3, bool) 的返回结果，供当前步骤使用。使用位置：EnemyWindowTraversal.TryResolvePursuitDestination(Vector3, out Vector3)。
+            // 接近点。
 var approachPoint = HouseThreeRegionNavigation.Current.ReadChaseApproachPoint(targetPosition, targetOutside);
             if (approachPoint.node != null)
             {
@@ -827,7 +939,7 @@ var approachPoint = HouseThreeRegionNavigation.Current.ReadChaseApproachPoint(ta
         return RegisterWindowEntryPoint(plan, out pursuitDestination);
     }
 
-    /// <summary>中文含义：区域选择窗口。只读字段，初始化后不由普通写入口替换。使用位置：EnemyWindowTraversal.ClearRegionWindowRoute()、EnemyWindowTraversal.TryResolvePursuitDestination(Vector3, out Vector3)。</summary>
+    /// <summary>区域选择窗口。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly RegionWindowRouting regionSelectWindow = new RegionWindowRouting();
     private readonly RegionWindowRouting generalSelectWindow = new RegionWindowRouting();
     private readonly Dictionary<EnemyWindowTraversalRoute, float> blockedWindows = new();
@@ -840,13 +952,13 @@ var approachPoint = HouseThreeRegionNavigation.Current.ReadChaseApproachPoint(ta
     private float windowRetreatUntil;
     /// <summary>RegisterWindowEntryPoint 的业务处理入口；本方法直接依赖 EnemyWindowTraversal.HorizontalDistance(Vector3, Vector3)、EnemyWindowTraversalRoute.CancelWait(VillagerController)、EnemyWindowTraversalRoute.RegisterAndGetWaitingPoint(VillagerController, EnemyWindowTraversalPlan)、object.ReferenceEquals(object, object)、VillagerController.TryResolveReachableNavigationPoint(Vector3, out Vector3)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyWindowTraversal.TryResolvePursuitDestination(Vector3, out Vector3)；下游（含内部回调体） EnemyWindowTraversal.HorizontalDistance(Vector3, Vector3)、EnemyWindowTraversalRoute.CancelWait(VillagerController)、EnemyWindowTraversalRoute.RegisterAndGetWaitingPoint(VillagerController, EnemyWindowTraversalPlan)、object.ReferenceEquals(object, object)、VillagerController.TryResolveReachableNavigationPoint(Vector3, out Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="bestPlan">中文含义：最佳方案。使用位置：作为 EnemyWindowTraversalRoute.RegisterAndGetWaitingPoint(VillagerController, EnemyWindowTraversalPlan) 的参数、EnemyWindowTraversal.RegisterWindowEntryPoint(EnemyWindowTraversalPlan, out Vector3)。</param>
-    /// <param name="pursuitDestination">中文含义：追击目的地。输出参数，由本入口写入并交给调用方。使用位置：EnemyWindowTraversal.RegisterWindowEntryPoint(EnemyWindowTraversalPlan, out Vector3)。</param>
+    /// <param name="bestPlan">最佳方案。</param>
+    /// <param name="pursuitDestination">追击目的地。输出参数，由本入口写入并交给调用方。</param>
     private bool RegisterWindowEntryPoint(EnemyWindowTraversalPlan bestPlan, out Vector3 pursuitDestination)
     {
         if (hasPendingPlan && pendingPlan.route != bestPlan.route)
         {
-            // receiverValue7（判空前缓存的待处理方案的路线）：从待处理方案的路线读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、EnemyWindowTraversal.RegisterWindowEntryPoint(EnemyWindowTraversalPlan, out Vector3)。
+            // 判空前缓存的待处理方案的路线。
 global::EnemyWindowTraversalRoute receiverValue7 = pendingPlan.route;
             if (!global::System.Object.ReferenceEquals(receiverValue7, null))
             {
@@ -863,7 +975,7 @@ global::EnemyWindowTraversalRoute receiverValue7 = pendingPlan.route;
         }
         pendingPlan = bestPlan;
         hasPendingPlan = true;
-        // waitingPoint（等待中点）：保存 EnemyWindowTraversalRoute.RegisterAndGetWaitingPoint(VillagerController, EnemyWindowTraversalPlan) 的返回结果，供当前步骤使用。使用位置：作为 EnemyWindowTraversal.HorizontalDistance(Vector3, Vector3) 的参数、作为 VillagerController.TryResolveReachableNavigationPoint(Vector3, out Vector3) 的参数。
+        // 等待中点。
 Vector3 waitingPoint = bestPlan.route.RegisterAndGetWaitingPoint(controller, bestPlan);
         if (HorizontalDistance(waitingPoint, bestPlan.sourceGround) < 0.35f
             && HorizontalDistance(transform.position, bestPlan.sourceGround) < 1.15f
@@ -896,8 +1008,8 @@ Vector3 waitingPoint = bestPlan.route.RegisterAndGetWaitingPoint(controller, bes
 
     /// <summary>TryResolveDropPursuitDestination 的业务处理入口；本方法直接依赖 EnemyPlatformDropRoute.CancelWait(VillagerController)、EnemyPlatformDropRoute.RegisterAndGetWaitingPoint(VillagerController, EnemyPlatformDropPlan)、EnemyPlatformDropRoute.TryBuildPlan(VillagerController, Vector3, out EnemyPlatformDropPlan)、EnemyWindowTraversal.CacheComponents()、EnemyWindowTraversal.ClearPendingDropPlan()、EnemyWindowTraversal.HorizontalDistance(Vector3, Vector3)、EnemyWindowTraversal.ShouldPursueByDrop(Vector3) 等共 11 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyWindowTraversal.TryResolveSpecialPursuitDestination(Vector3, out Vector3)；下游（含内部回调体） EnemyPlatformDropRoute.CancelWait(VillagerController)、EnemyPlatformDropRoute.RegisterAndGetWaitingPoint(VillagerController, EnemyPlatformDropPlan)、EnemyPlatformDropRoute.TryBuildPlan(VillagerController, Vector3, out EnemyPlatformDropPlan)、EnemyWindowTraversal.CacheComponents()、EnemyWindowTraversal.ClearPendingDropPlan()、EnemyWindowTraversal.HorizontalDistance(Vector3, Vector3)、EnemyWindowTraversal.ShouldPursueByDrop(Vector3) 等共 11 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="targetPosition">中文含义：目标位置。使用位置：作为 EnemyPlatformDropRoute.TryBuildPlan(VillagerController, Vector3, out EnemyPlatformDropPlan) 的参数、作为 EnemyWindowTraversal.HorizontalDistance(Vector3, Vector3) 的参数、作为 EnemyWindowTraversal.ShouldPursueByDrop(Vector3) 的参数 等共 4 处。</param>
-    /// <param name="pursuitDestination">中文含义：追击目的地。输出参数，由本入口写入并交给调用方。使用位置：EnemyWindowTraversal.TryResolveDropPursuitDestination(Vector3, out Vector3)。</param>
+    /// <param name="targetPosition">目标位置。</param>
+    /// <param name="pursuitDestination">追击目的地。输出参数，由本入口写入并交给调用方。</param>
     public bool TryResolveDropPursuitDestination(Vector3 targetPosition, out Vector3 pursuitDestination)
     {
         pursuitDestination = targetPosition;
@@ -919,9 +1031,10 @@ Vector3 waitingPoint = bestPlan.route.RegisterAndGetWaitingPoint(controller, bes
                 continue;
             }
 
+            float allowedSourceLevelDiff = Mathf.Max(route.maximumSourceLevelDifference, 1.45f);
             if (!controller.TryResolveReachableNavigationPoint(plan.sourceGround, out Vector3 approach)
                 || HorizontalDistance(approach, plan.sourceGround) > maximumRouteProjectionDistance
-                || Mathf.Abs(approach.y - plan.sourceGround.y) > route.maximumSourceLevelDifference)
+                || Mathf.Abs(approach.y - plan.sourceGround.y) > allowedSourceLevelDiff)
             {
                 continue;
             }
@@ -937,7 +1050,9 @@ Vector3 waitingPoint = bestPlan.route.RegisterAndGetWaitingPoint(controller, bes
                 continue;
             }
 
-            float score = HorizontalDistance(transform.position, approach) + HorizontalDistance(targetPosition, plan.landingGround);
+            int activeQueueLoad = route.ReadActiveQueueLoad(controller);
+            float queueDiversionPenalty = activeQueueLoad * 1.8f;
+            float score = HorizontalDistance(transform.position, approach) + HorizontalDistance(targetPosition, plan.landingGround) + queueDiversionPenalty;
             if (keepsConfirmedRoute)
             {
                 score -= route.queueSpacing;
@@ -966,10 +1081,11 @@ Vector3 waitingPoint = bestPlan.route.RegisterAndGetWaitingPoint(controller, bes
         hasPendingDropPlan = true;
         pursuitDestination = bestApproach;
         Vector3 waitingPoint = bestPlan.route.RegisterAndGetWaitingPoint(controller, bestPlan, bestApproach);
+        float allowedWaitingLevelDiff = Mathf.Max(bestPlan.route.maximumSourceLevelDifference, 1.45f);
         if (waitingPoint != bestApproach
             && controller.TryResolveReachableNavigationPoint(waitingPoint, out Vector3 resolvedWaitingPoint)
             && HorizontalDistance(resolvedWaitingPoint, waitingPoint) <= maximumRouteProjectionDistance
-            && Mathf.Abs(resolvedWaitingPoint.y - bestPlan.sourceGround.y) <= bestPlan.route.maximumSourceLevelDifference)
+            && Mathf.Abs(resolvedWaitingPoint.y - bestPlan.sourceGround.y) <= allowedWaitingLevelDiff)
         {
             pursuitDestination = resolvedWaitingPoint;
         }
@@ -987,16 +1103,27 @@ Vector3 waitingPoint = bestPlan.route.RegisterAndGetWaitingPoint(controller, bes
 
         EnemyPlatformDropRoute route = pendingDropPlan.route;
         float captureDistance = route.captureDistance;
-        if (agent != null && agent.CurrentPathState == PathAgentState.Arrived
-            && HorizontalDistance(agent.Destination, pendingDropApproach) <= .05f)
+        bool agentStoppedAtApproach = agent != null
+            && (agent.CurrentPathState == PathAgentState.Arrived || agent.CurrentPathState == PathAgentState.Failed)
+            && HorizontalDistance(agent.Destination, pendingDropApproach) <= 0.45f;
+        if (agentStoppedAtApproach)
         {
-            // 寻路代理允许提前到达最后一个路点，跳落入口需要接住这个状态。
-            captureDistance = Mathf.Max(captureDistance, Mathf.Min(agent.waypointReachedRadius, maximumRouteProjectionDistance));
+            // 寻路代理提前停止或被同伴挤偏时，将捕获半径放宽至超过双敌最小间距，避免死锁在房檐。
+            float widenedCapture = 0.95f;
+            if (agent != null && agent.waypointReachedRadius > widenedCapture)
+            {
+                widenedCapture = agent.waypointReachedRadius;
+            }
+            captureDistance = Mathf.Max(captureDistance, widenedCapture);
         }
 
-        if (HorizontalDistance(transform.position, pendingDropApproach) > captureDistance
-            || Mathf.Abs(transform.position.y - pendingDropPlan.sourceGround.y) > route.maximumSourceLevelDifference
-            || !controller.CanMoveDirectlyToNavigationPoint(pendingDropApproach, true)
+        float allowedLevelDiff = Mathf.Max(route.maximumSourceLevelDifference, 1.45f);
+        float horizontalToApproach = HorizontalDistance(transform.position, pendingDropApproach);
+        bool canReachApproach = controller.CanMoveDirectlyToNavigationPoint(pendingDropApproach, true)
+            || (agentStoppedAtApproach && horizontalToApproach <= 0.95f);
+        if (horizontalToApproach > captureDistance
+            || Mathf.Abs(transform.position.y - pendingDropPlan.sourceGround.y) > allowedLevelDiff
+            || !canReachApproach
             || !RequestJumpLandOccupancy(route))
         {
             return false;
@@ -1019,11 +1146,11 @@ Vector3 waitingPoint = bestPlan.route.RegisterAndGetWaitingPoint(controller, bes
 
     /// <summary>ShouldPursueByDrop 的业务处理入口；本方法直接依赖 EnemyWindowTraversal.InitializePlatformRegionState()、EnemyWindowTraversal.IsCurrentActorOnPlatform()、EnemyWindowTraversal.ResolveTargetPlatformState(string, Vector3)、EnemyWindowTraversalRoute.IsPointOnAnyPlatformSide(Vector3)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyWindowTraversal.TryResolveDropPursuitDestination(Vector3, out Vector3)；下游（含内部回调体） EnemyWindowTraversal.InitializePlatformRegionState()、EnemyWindowTraversal.IsCurrentActorOnPlatform()、EnemyWindowTraversal.ResolveTargetPlatformState(string, Vector3)、EnemyWindowTraversalRoute.IsPointOnAnyPlatformSide(Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="targetPosition">中文含义：目标位置。使用位置：作为 EnemyWindowTraversal.ResolveTargetPlatformState(string, Vector3) 的参数、作为 EnemyWindowTraversalRoute.IsPointOnAnyPlatformSide(Vector3) 的参数、EnemyWindowTraversal.ShouldPursueByDrop(Vector3)。</param>
+    /// <param name="targetPosition">目标位置。</param>
     private bool ShouldPursueByDrop(Vector3 targetPosition)
     {
         InitializePlatformRegionState();
-        // targetOnPlatform（是否目标事件平台）：使用位置：EnemyWindowTraversal.ShouldPursueByDrop(Vector3)。
+        // 是否目标事件平台。
 bool targetOnPlatform;
         if (hasPlatformRegionState)
         {
@@ -1054,7 +1181,7 @@ bool targetOnPlatform;
             return false;
         }
 
-        // deltaTime（本帧时间间隔）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：作为 EnemyWindowTraversal.UpdateDropMotion(float) 的参数。
+        // 本帧时间间隔。
 float deltaTime = Mathf.Max(0f, Time.deltaTime);
         switch (phase)
         {
@@ -1111,7 +1238,7 @@ float deltaTime = Mathf.Max(0f, Time.deltaTime);
         }
 
         bool queued = !route.CanEnterWindowQueue(controller);
-        float captureDistance = route.captureDistance;
+        float captureDistance = Mathf.Max(0.45f, route.captureDistance);
         if (agent != null && agent.CurrentPathState == PathAgentState.Arrived
             && controller.CanMoveDirectlyToNavigationPoint(pendingPlan.sourceGround, true))
         {
@@ -1125,15 +1252,21 @@ float deltaTime = Mathf.Max(0f, Time.deltaTime);
 
         if (queued)
         {
+            bool hasAlternativeWindow = HasUnblockedAlternativeWindow(route);
             if (route.TryReadQueueLeader(controller, out VillagerController leader, out int queueIndex))
             {
                 bool changedLeader = leader != windowQueueLeader;
                 bool advancedInQueue = windowQueueIndex >= 0 && queueIndex >= 0 && queueIndex < windowQueueIndex;
                 bool leaderMoved = (leader.transform.position - windowQueueLeaderPosition).sqrMagnitude >= .08f * .08f;
-                if (changedLeader || advancedInQueue || leaderMoved)
+                // 晋升队首或更换领队时必定重置等待计时；仅前人微移受是否有替代空闲窗约束。
+                if (changedLeader || advancedInQueue || (!hasAlternativeWindow && leaderMoved))
                 {
                     // 前人正在接近或通过窗口时，队伍本身也在取得进展。
                     windowProgressAt = Time.time;
+                    windowQueueLeaderPosition = leader.transform.position;
+                }
+                else if (leaderMoved)
+                {
                     windowQueueLeaderPosition = leader.transform.position;
                 }
                 windowQueueLeader = leader;
@@ -1170,24 +1303,105 @@ float deltaTime = Mathf.Max(0f, Time.deltaTime);
     private bool DelayPendingWindow(string reason, float distance)
     {
         bool pathFailed = agent != null && agent.CurrentPathState == PathAgentState.Failed;
-        if (Time.time - windowProgressAt < 1.25f || distance > 3f && !pathFailed)
+        bool landingBlocked = string.Equals(reason, "翻窗落点受阻", System.StringComparison.Ordinal);
+        bool queueWaiting = string.Equals(reason, "窗口队首或占用尚未释放", System.StringComparison.Ordinal);
+        float waitLimit = 1.25f;
+        if (landingBlocked)
+        {
+            waitLimit = 1.10f;
+        }
+        else if (queueWaiting)
+        {
+            if (HasUnblockedAlternativeWindow(pendingPlan.route))
+            {
+                waitLimit = 0.90f;
+            }
+            else
+            {
+                waitLimit = 1.50f;
+            }
+        }
+
+        if (Time.time - windowProgressAt < waitLimit || distance > 3f && !pathFailed)
         {
             return false;
         }
 
         var plan = pendingPlan;
-        blockedWindows[plan.route] = Time.time + 2.25f;
+        bool isGeneralWindow = string.IsNullOrEmpty(plan.route.platformRegionId);
+        bool hasAlternativeWindow = HasUnblockedAlternativeWindow(plan.route);
+        if (!isGeneralWindow && !hasAlternativeWindow)
+        {
+            // 同区域没有其他可用且空闲的替代窗时，禁止拉黑最后一个可达窗口，也禁止向后倒退堵塞通道。
+            windowProgressAt = Time.time;
+            windowRetreatUntil = 0f;
+            return false;
+        }
+
+        float blockDuration = 2.5f;
+        if (isGeneralWindow)
+        {
+            blockDuration = 6.0f;
+        }
+        else if (landingBlocked)
+        {
+            blockDuration = 3.5f;
+        }
+        blockedWindows[plan.route] = Time.time + blockDuration;
         if (enableTraversalDiagnostic)
         {
             ReportTraversalDiagnostic("重新选择通路", $"路线={plan.route.name}，原因={reason}，距离={distance:F2}", true);
         }
 
-        if (TryFindWindowRetreat(plan, distance))
-        {
-            windowRetreatUntil = Time.time + 1.15f;
-        }
+        windowRetreatUntil = 0f;
         ClearPendingRoute();
         ClearRegionWindowRoute();
+        return false;
+    }
+
+    private bool HasUnblockedAlternativeWindow(EnemyWindowTraversalRoute excludedRoute)
+    {
+        if (excludedRoute == null || string.IsNullOrEmpty(excludedRoute.platformRegionId))
+        {
+            return false;
+        }
+
+        bool sourceOnPlatform = IsCurrentActorOnPlatform();
+        IReadOnlyList<EnemyWindowTraversalRoute> routes = EnemyWindowTraversalRoute.ActiveRoutes;
+        for (int i = 0; i < routes.Count; i++)
+        {
+            EnemyWindowTraversalRoute candidate = routes[i];
+            if (candidate == null || candidate == excludedRoute || !candidate.isActiveAndEnabled)
+            {
+                continue;
+            }
+
+            if (candidate.platformRegionId != excludedRoute.platformRegionId)
+            {
+                continue;
+            }
+
+            if (candidate.windowPoint == null || candidate.windowPoint.IsBarricaded)
+            {
+                continue;
+            }
+
+            if (blockedWindows.TryGetValue(candidate, out float blockedUntil) && Time.time < blockedUntil)
+            {
+                continue;
+            }
+
+            if (!candidate.TryBuildPlanFromSide(controller, sourceOnPlatform, out EnemyWindowTraversalPlan candidatePlan, true))
+            {
+                continue;
+            }
+
+            if (candidate.ReadOccupiedAndWaitingCount(controller) == 0 && IsWindowLandingClear(candidatePlan))
+            {
+                return true;
+            }
+        }
+
         return false;
     }
 
@@ -1254,7 +1468,7 @@ float deltaTime = Mathf.Max(0f, Time.deltaTime);
             return false;
         }
 
-        // pushDirection（推开方向）：使用位置：作为 EnemyWindowTraversal.TryBeginDrop(Vector3, Vector3) 的参数、EnemyWindowTraversal.TryBeginDropFromHit(Vector3)。
+        // 推开方向。
 Vector3 pushDirection = -hitNormal;
         pushDirection.y = 0f;
         if (pushDirection.sqrMagnitude <= 0.001f)
@@ -1263,7 +1477,7 @@ Vector3 pushDirection = -hitNormal;
         }
 
         pushDirection.Normalize();
-        // edgeProbe（边缘探测）：使用位置：作为 EnemyNavigationElevatedWalkableVolume.ContainsBoundaryRegionPoint(string, Vector3) 的参数、作为 EnemyWindowTraversal.HasGroundSupport(Vector3, float) 的参数、作为 EnemyWindowTraversal.TryBeginDrop(Vector3, Vector3) 的参数。
+        // 边缘探测。
 Vector3 edgeProbe = transform.position + pushDirection * edgeProbeDistance;
         if (hasPlatformRegionState && !string.IsNullOrWhiteSpace(trackedPlatformRegionId) && EnemyNavigationElevatedWalkableVolume.ContainsBoundaryRegionPoint(trackedPlatformRegionId, edgeProbe))
         {
@@ -1288,16 +1502,16 @@ Vector3 edgeProbe = transform.position + pushDirection * edgeProbeDistance;
 
     /// <summary>BeginWindowTraversal 的业务处理入口；本方法直接依赖 EnemyWindowTraversal.BeginTraversalState()、EnemyWindowTraversal.PlayTraversalClip(AnimationClip)、Mathf.Max(float, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyWindowTraversal.TryBeginPendingWindowTraversal()；下游（含内部回调体） EnemyWindowTraversal.BeginTraversalState()、EnemyWindowTraversal.PlayTraversalClip(AnimationClip)、Mathf.Max(float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="plan">中文含义：方案。使用位置：EnemyWindowTraversal.BeginWindowTraversal(EnemyWindowTraversalPlan)。</param>
+    /// <param name="plan">方案。</param>
     private void BeginWindowTraversal(EnemyWindowTraversalPlan plan)
     {
         currentRoute = plan.route;
         hasPendingPlan = false;
         if (plan.route != null)
         {
-            // leftOperand11（计算前缓存的左侧方案的来源侧边符号）：从方案的来源侧边符号读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：EnemyWindowTraversal.BeginWindowTraversal(EnemyWindowTraversalPlan)。
+            // 计算前缓存的左侧方案的来源侧边符号。
 int leftOperand11 = plan.sourceSideSign;
-            // selectedValue10（分支选出的1）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：EnemyWindowTraversal.BeginWindowTraversal(EnemyWindowTraversalPlan)。
+            // 分支选出的1。
 int selectedValue10;
             if (plan.route.platformSideSign >= 0)
             {
@@ -1324,12 +1538,12 @@ int selectedValue10;
         motionDestination = plan.destinationGround;
         motionStartRotation = transform.rotation;
         motionRotation = plan.facingRotation;
-        // center（中心）：使用位置：EnemyWindowTraversal.BeginWindowTraversal(EnemyWindowTraversalPlan)。
+        // 中心。
 Vector3 center = plan.route.windowPoint.OpeningCenterWorld;
-        // sillTop（窗台顶部）：使用位置：作为 Mathf.Max(float, float) 的参数。
+        // 窗台顶部。
 float sillTop = center.y - plan.route.windowPoint.openingHeight * 0.5f;
         motionControl = (motionStart + motionDestination) * 0.5f;
-        // desiredApex（期望顶点）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：EnemyWindowTraversal.BeginWindowTraversal(EnemyWindowTraversalPlan)。
+        // 期望顶点。
 float desiredApex = Mathf.Max(Mathf.Max(motionStart.y, motionDestination.y), sillTop + windowArcClearance);
         motionControl.y = desiredApex * 2f - (motionStart.y + motionDestination.y) * 0.5f;
         BeginTraversalState();
@@ -1340,7 +1554,7 @@ float desiredApex = Mathf.Max(Mathf.Max(motionStart.y, motionDestination.y), sil
             return;
         }
 
-        // selectedValue13（分支选出的敌人通行动画资源库的生效的窗口攀爬穿过）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：作为 EnemyWindowTraversal.PlayTraversalClip(AnimationClip) 的参数、EnemyWindowTraversal.BeginWindowTraversal(EnemyWindowTraversalPlan)。
+        // 分支选出的敌人通行动画资源库的生效的窗口攀爬穿过。
 global::UnityEngine.AnimationClip selectedValue13;
         if (EnemyTraversalAnimationLibrary.Active != null)
         {
@@ -1364,7 +1578,7 @@ global::UnityEngine.AnimationClip selectedValue13;
             return;
         }
 
-        // duration（持续时间）：使用位置：作为 Mathf.Clamp01(float) 的参数、EnemyWindowTraversal.UpdateWindowTraversal()。
+        // 持续时间。
 float duration;
         if (currentRoute != null)
         {
@@ -1375,21 +1589,21 @@ float duration;
             duration = 1.07f;
         }
 
-        // rawProgress（原始进度）：保存 Mathf.Clamp01(float) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.InverseLerp(float, float, float) 的参数、EnemyWindowTraversal.UpdateWindowTraversal()。
+        // 原始进度。
 float rawProgress = Mathf.Clamp01((Time.time - phaseStartedTime) / duration);
-        // motionProgress（运动进度）：保存 Mathf.InverseLerp(float, float, float) 的返回结果，供当前步骤使用。使用位置：EnemyWindowTraversal.UpdateWindowTraversal()。
+        // 运动进度。
 float motionProgress = Mathf.InverseLerp(windowMotionStartNormalizedTime, Mathf.Max(windowMotionStartNormalizedTime + 0.01f, windowMotionEndNormalizedTime), rawProgress);
-        // smoothedProgress（平滑后的进度）：使用位置：EnemyWindowTraversal.UpdateWindowTraversal()。
+        // 平滑后的进度。
 float smoothedProgress = motionProgress * motionProgress * (3f - 2f * motionProgress);
-        // remaining（剩余）：使用位置：EnemyWindowTraversal.UpdateWindowTraversal()。
+        // 剩余。
 float remaining = 1f - smoothedProgress;
-        // position（位置）：使用位置：作为 EnemyWindowTraversal.CommitTraversalPose(Vector3, Quaternion) 的参数。
+        // 位置。
 Vector3 position = remaining * remaining * motionStart + 2f * remaining * smoothedProgress * motionControl + smoothedProgress * smoothedProgress * motionDestination;
-        // rotationDuration（旋转持续时间）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Clamp01(float) 的参数。
+        // 旋转持续时间。
 float rotationDuration = Mathf.Max(0.01f, animationBlendDuration);
-        // rotationProgress（旋转进度）：保存 Mathf.Clamp01(float) 的返回结果，供当前步骤使用。使用位置：作为 Quaternion.Slerp(Quaternion, Quaternion, float) 的参数。
+        // 旋转进度。
 float rotationProgress = Mathf.Clamp01((Time.time - phaseStartedTime) / rotationDuration);
-        // rotation（旋转）：保存 Quaternion.Slerp(Quaternion, Quaternion, float) 的返回结果，供当前步骤使用。使用位置：作为 EnemyWindowTraversal.CommitTraversalPose(Vector3, Quaternion) 的参数。
+        // 旋转。
 Quaternion rotation = Quaternion.Slerp(motionStartRotation, motionRotation, rotationProgress);
         if (CommitTraversalPose(position, rotation))
         {
@@ -1400,7 +1614,7 @@ Quaternion rotation = Quaternion.Slerp(motionStartRotation, motionRotation, rota
             CommitTraversalPose(motionDestination, motionRotation);
             traversalHandoffPosition = motionDestination;
             traversalHandoffRotation = motionRotation;
-            traversalHandoffUntil = Time.time + Mathf.Max(0.02f, windowHandoffDuration);
+            traversalHandoffUntil = Time.time + 0.02f;
             traversalHandoffResumePending = true;
             CompleteTraversal();
         }
@@ -1428,8 +1642,8 @@ Quaternion rotation = Quaternion.Slerp(motionStartRotation, motionRotation, rota
 
     /// <summary>TryBeginDrop 的业务处理入口；本方法直接依赖 EnemyWindowTraversal.BeginTraversalState()、EnemyWindowTraversal.ClearPendingRoute()、EnemyWindowTraversal.PlayTraversalClip(AnimationClip)、EnemyWindowTraversal.TryFindDropLanding(Vector3, out Vector3)、Mathf.Max(float, float)、Mathf.Sqrt(float)、Quaternion.LookRotation(Vector3, Vector3) 等共 8 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyWindowTraversal.TryBeginDropAfterMovement(Vector3)、EnemyWindowTraversal.TryBeginDropFromHit(Vector3)、EnemyWindowTraversal.TryBeginPendingDropTraversal()；下游（含内部回调体） EnemyWindowTraversal.BeginTraversalState()、EnemyWindowTraversal.ClearPendingRoute()、EnemyWindowTraversal.PlayTraversalClip(AnimationClip)、EnemyWindowTraversal.TryFindDropLanding(Vector3, out Vector3)、Mathf.Max(float, float)、Mathf.Sqrt(float)、Quaternion.LookRotation(Vector3, Vector3) 等共 8 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="horizontalDirection">中文含义：水平方向。使用位置：作为 Quaternion.LookRotation(Vector3, Vector3) 的参数、EnemyWindowTraversal.TryBeginDrop(Vector3, Vector3)。</param>
-    /// <param name="landingProbePosition">中文含义：落地探测位置。使用位置：作为 EnemyWindowTraversal.TryFindDropLanding(Vector3, out Vector3) 的参数。</param>
+    /// <param name="horizontalDirection">水平方向。</param>
+    /// <param name="landingProbePosition">落地探测位置。</param>
     private bool TryBeginDrop(Vector3 horizontalDirection, Vector3 landingProbePosition, bool alreadyAirborne = false)
     {
         float dropHeight = minimumDropHeight;
@@ -1450,13 +1664,13 @@ Quaternion rotation = Quaternion.Slerp(motionStartRotation, motionRotation, rota
         }
 
         horizontalDirection.Normalize();
-        // gravity（重力）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Sqrt(float) 的参数、EnemyWindowTraversal.TryBeginDrop(Vector3, Vector3)。
+        // 重力。
 float gravity = Mathf.Max(0.01f, dropGravity);
-        // verticalDrop（竖直掉落）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Sqrt(float) 的参数。
+        // 竖直掉落。
 float verticalDrop = Mathf.Max(0f, transform.position.y - landingPosition.y);
-        // fallDuration（下落持续时间）：使用位置：作为 Mathf.Max(float, float) 的参数。
+        // 下落持续时间。
 float fallDuration = (dropInitialUpwardSpeed + Mathf.Sqrt(dropInitialUpwardSpeed * dropInitialUpwardSpeed + 2f * gravity * verticalDrop)) / gravity;
-        // horizontalOffset（水平偏移量）：使用位置：EnemyWindowTraversal.TryBeginDrop(Vector3, Vector3)。
+        // 水平偏移量。
 Vector3 horizontalOffset = landingPosition - transform.position;
         horizontalOffset.y = 0f;
         ClearPendingRoute();
@@ -1475,7 +1689,7 @@ Vector3 horizontalOffset = landingPosition - transform.position;
 
         phase = TraversalPhase.DropStart;
         phaseStartedTime = Time.time;
-        // selectedValue15（分支选出的敌人通行动画资源库的生效的掉落跳跃起始）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：作为 EnemyWindowTraversal.PlayTraversalClip(AnimationClip) 的参数、EnemyWindowTraversal.TryBeginDrop(Vector3, Vector3)。
+        // 分支选出的敌人通行动画资源库的生效的掉落跳跃起始。
 global::UnityEngine.AnimationClip selectedValue15;
         if (EnemyTraversalAnimationLibrary.Active != null)
         {
@@ -1503,7 +1717,7 @@ global::UnityEngine.AnimationClip selectedValue15;
     {
         phase = TraversalPhase.DropFall;
         phaseStartedTime = Time.time;
-        // selectedValue16（分支选出的敌人通行动画资源库的生效的掉落下落循环）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：作为 EnemyWindowTraversal.PlayTraversalClip(AnimationClip) 的参数、EnemyWindowTraversal.BeginDropFallAnimation()。
+        // 分支选出的敌人通行动画资源库的生效的掉落下落循环。
 global::UnityEngine.AnimationClip selectedValue16;
         if (EnemyTraversalAnimationLibrary.Active != null)
         {
@@ -1526,15 +1740,16 @@ global::UnityEngine.AnimationClip selectedValue16;
 
     /// <summary>UpdateDropMotion 的业务处理入口；本方法直接依赖 EnemyWindowTraversal.BeginDropLanding()、EnemyWindowTraversal.CommitTraversalPose(Vector3, Quaternion)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyWindowTraversal.UpdateSpecialTraversal()；下游（含内部回调体） EnemyWindowTraversal.BeginDropLanding()、EnemyWindowTraversal.CommitTraversalPose(Vector3, Quaternion)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="deltaTime">中文含义：本帧时间间隔。使用位置：EnemyWindowTraversal.UpdateDropMotion(float)。</param>
+    /// <param name="deltaTime">本帧时间间隔。</param>
     private void UpdateDropMotion(float deltaTime)
     {
         dropVerticalSpeed -= dropGravity * deltaTime;
-        // position（位置）：使用位置：作为 EnemyWindowTraversal.CommitTraversalPose(Vector3, Quaternion) 的参数、EnemyWindowTraversal.UpdateDropMotion(float)。
+        // 位置。
 Vector3 position = transform.position;
         position += dropHorizontalVelocity * deltaTime;
         position.y += dropVerticalSpeed * deltaTime;
-        if (dropVerticalSpeed <= 0f && position.y <= dropLandingPosition.y)
+        if (dropVerticalSpeed <= 0f && position.y <= dropLandingPosition.y
+            || Time.time - phaseStartedTime >= 1.65f)
         {
             CommitTraversalPose(dropLandingPosition, motionRotation);
             BeginDropLanding();
@@ -1550,7 +1765,7 @@ Vector3 position = transform.position;
     {
         phase = TraversalPhase.DropLanding;
         phaseStartedTime = Time.time;
-        // selectedValue17（分支选出的敌人通行动画资源库的生效的掉落落地）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：作为 EnemyWindowTraversal.PlayTraversalClip(AnimationClip) 的参数、EnemyWindowTraversal.BeginDropLanding()。
+        // 分支选出的敌人通行动画资源库的生效的掉落落地。
 global::UnityEngine.AnimationClip selectedValue17;
         if (EnemyTraversalAnimationLibrary.Active != null)
         {
@@ -1575,9 +1790,10 @@ global::UnityEngine.AnimationClip selectedValue17;
     /// <remarks>静态调用链：上游 EnemyWindowTraversal.BeginWindowTraversal(EnemyWindowTraversalPlan)、EnemyWindowTraversal.TryBeginDrop(Vector3, Vector3)；下游（含内部回调体） EnemyAIManager.ReleaseCombatReservation(VillagerController)、EnemyWindowTraversal.CacheComponents()、object.ReferenceEquals(object, object)、VillagerController.PrepareForSpecialTraversal()、VillagerController.SetMovementMode(EnemyMovementMode, string, int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     private void BeginTraversalState(bool keepMovementCollider = false)
     {
+        ReleaseDelayedWindowToken(GameArchitecture.ReleaseReason.Complete);
         CacheComponents();
         controller.PrepareForSpecialTraversal();
-        // receiverValue18（判空前缓存的敌人智能管理器的实例）：从敌人智能管理器的实例读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、EnemyWindowTraversal.BeginTraversalState()。
+        // 判空前缓存的敌人智能管理器的实例。
 global::EnemyAIManager receiverValue18 = EnemyAIManager.Instance;
         if (!global::System.Object.ReferenceEquals(receiverValue18, null))
         {
@@ -1597,15 +1813,15 @@ global::EnemyAIManager receiverValue18 = EnemyAIManager.Instance;
     /// <remarks>静态调用链：上游 EnemyWindowTraversal.UpdateSpecialTraversal()、EnemyWindowTraversal.UpdateWindowTraversal()；下游（含内部回调体） EnemyAIManager.InvalidatePursuitDestination(VillagerController)、EnemyPlatformDropRoute.ReleaseTraversal(TraversalToken, ReleaseReason)、EnemyWindowTraversal.ClearRegionWindowRoute()、EnemyWindowTraversal.CommitTraversalPose(Vector3, Quaternion)、EnemyWindowTraversal.ReportTraversalDiagnostic(string, string, bool)、EnemyWindowTraversal.StopTraversalClip()、EnemyWindowTraversalRoute.ReleaseTraversal(TraversalToken, ReleaseReason) 等共 12 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     private void CompleteTraversal()
     {
-        // completedRoute（已完成路线）：使用位置：作为 EnemyWindowTraversal.ReportTraversalDiagnostic(string, string, bool) 的参数、EnemyWindowTraversal.CompleteTraversal()。
+        // 已完成路线。
 EnemyWindowTraversalRoute completedRoute = currentRoute;
-        // completedDropRoute（已完成掉落路线）：使用位置：EnemyWindowTraversal.CompleteTraversal()。
+        // 已完成掉落路线。
 EnemyPlatformDropRoute completedDropRoute = currentDropRoute;
-        // completedWindow（是否已完成窗口）：使用位置：EnemyWindowTraversal.CompleteTraversal()。
+        // 是否已完成窗口。
 bool completedWindow = phase == TraversalPhase.Window;
-        // completedDrop（是否已完成掉落）：使用位置：EnemyWindowTraversal.CompleteTraversal()。
+        // 是否已完成掉落。
 bool completedDrop = phase == TraversalPhase.DropStart || phase == TraversalPhase.DropFall || phase == TraversalPhase.DropLanding;
-        // destinationOnPlatform（是否目的地事件平台）：使用位置：EnemyWindowTraversal.CompleteTraversal()。
+        // 是否目的地事件平台。
 bool destinationOnPlatform = pendingWindowDestinationOnPlatform;
         if (completedWindow)
         {
@@ -1626,28 +1842,31 @@ bool destinationOnPlatform = pendingWindowDestinationOnPlatform;
             movementCollider.enabled = previousMovementColliderEnabled;
         }
 
+        Physics.SyncTransforms();
+
         if (agent != null && agent.enabled)
         {
             agent.InvalidatePursuitResolutionCache();
             agent.ResetPath();
         }
 
-        // receiverValue19（判空前缓存的已完成路线）：从已完成路线读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、EnemyWindowTraversal.CompleteTraversal()。
-global::EnemyWindowTraversalRoute receiverValue19 = completedRoute;
-        // optionalValue20（条件访问得到的释放通行的返回结果）：保存条件访问的结果，接收者为空时保持默认空值，非空时才执行原成员访问。使用位置：EnemyWindowTraversal.CompleteTraversal()。
-bool? optionalValue20;
-        if (!global::System.Object.ReferenceEquals(receiverValue19, null))
+        ReleaseDelayedWindowToken(GameArchitecture.ReleaseReason.Complete);
+        if (completedWindow && completedRoute != null)
         {
-            optionalValue20 = receiverValue19.ReleaseTraversal(windowToken, GameArchitecture.ReleaseReason.Complete);
+            // 延后释放窗口占用至交接完成且开始脱离落点，避免后续敌人同一帧误判落点受阻并拉黑窗口。
+            delayedReleaseWindowRoute = completedRoute;
+            delayedReleaseWindowToken = windowToken;
+            delayedReleaseWindowOrigin = motionDestination;
+            delayedReleaseWindowUntil = Time.time + Mathf.Max(0.02f, windowHandoffDuration) + 0.45f;
         }
-        else
+        else if (completedRoute != null)
         {
-            optionalValue20 = default;
+            completedRoute.ReleaseTraversal(windowToken, GameArchitecture.ReleaseReason.Complete);
         }
 
-        // receiverValue21（判空前缓存的已完成掉落路线）：从已完成掉落路线读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、EnemyWindowTraversal.CompleteTraversal()。
+        // 判空前缓存的已完成掉落路线。
 global::EnemyPlatformDropRoute receiverValue21 = completedDropRoute;
-        // optionalValue22（条件访问得到的释放通行的返回结果）：保存条件访问的结果，接收者为空时保持默认空值，非空时才执行原成员访问。使用位置：EnemyWindowTraversal.CompleteTraversal()。
+        // 条件访问得到的释放通行的返回结果。
 bool? optionalValue22;
         if (!global::System.Object.ReferenceEquals(receiverValue21, null))
         {
@@ -1673,6 +1892,10 @@ bool? optionalValue22;
             if (isOnTrackedPlatformRegion)
             {
                 BeginPlatformExitClearance();
+                if (agent != null && agent.enabled)
+                {
+                    agent.RequestImmediateRepath();
+                }
             }
 
             ClearRegionWindowRoute();
@@ -1687,9 +1910,11 @@ bool? optionalValue22;
             return;
         }
 
+        controller.ClearStaleSawmanIntroTauntAfterTraversal();
+
         if (completedDrop)
         {
-            // receiverValue23（判空前缓存的敌人智能管理器的实例）：从敌人智能管理器的实例读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、EnemyWindowTraversal.CompleteTraversal()。
+            // 判空前缓存的敌人智能管理器的实例。
 global::EnemyAIManager receiverValue23 = EnemyAIManager.Instance;
             if (!global::System.Object.ReferenceEquals(receiverValue23, null))
             {
@@ -1710,14 +1935,52 @@ global::EnemyAIManager receiverValue23 = EnemyAIManager.Instance;
 
     /// <summary>CancelTraversal 的业务处理入口；本方法直接依赖 EnemyPlatformDropRoute.ReleaseTraversal(TraversalToken, ReleaseReason)、EnemyWindowTraversal.ClearPendingDropPlan()、EnemyWindowTraversal.ClearPendingRoute()、EnemyWindowTraversal.ClearRegionWindowRoute()、EnemyWindowTraversal.StopTraversalClip()、EnemyWindowTraversalRoute.ReleaseTraversal(TraversalToken, ReleaseReason)、PathAgent.InvalidatePursuitResolutionCache() 等共 9 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyWindowTraversal.CancelForDeath()、EnemyWindowTraversal.LateUpdate()、EnemyWindowTraversal.OnDisable()、EnemyWindowTraversal.Update()、EnemyWindowTraversal.UpdateSpecialTraversal()；下游（含内部回调体） EnemyPlatformDropRoute.ReleaseTraversal(TraversalToken, ReleaseReason)、EnemyWindowTraversal.ClearPendingDropPlan()、EnemyWindowTraversal.ClearPendingRoute()、EnemyWindowTraversal.ClearRegionWindowRoute()、EnemyWindowTraversal.StopTraversalClip()、EnemyWindowTraversalRoute.ReleaseTraversal(TraversalToken, ReleaseReason)、PathAgent.InvalidatePursuitResolutionCache() 等共 9 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="resumeMovement">中文含义：是否恢复执行移动。使用位置：EnemyWindowTraversal.CancelTraversal(bool)。</param>
+    /// <param name="resumeMovement">是否恢复执行移动。</param>
+    private void TickDelayedWindowTokenRelease()
+    {
+        if (delayedReleaseWindowRoute == null)
+        {
+            return;
+        }
+
+        bool interrupted = controller == null || controller.IsDead || controller.HasPendingHit || controller.IsQTEControlled;
+        if (interrupted)
+        {
+            ReleaseDelayedWindowToken(GameArchitecture.ReleaseReason.Cancel);
+            return;
+        }
+
+        if (traversalHandoffResumePending)
+        {
+            return;
+        }
+
+        bool movedAway = HorizontalDistance(transform.position, delayedReleaseWindowOrigin) >= 0.65f;
+        if (movedAway || Time.time >= delayedReleaseWindowUntil)
+        {
+            ReleaseDelayedWindowToken(GameArchitecture.ReleaseReason.Complete);
+        }
+    }
+
+    private void ReleaseDelayedWindowToken(GameArchitecture.ReleaseReason reason)
+    {
+        if (delayedReleaseWindowRoute != null)
+        {
+            delayedReleaseWindowRoute.ReleaseTraversal(delayedReleaseWindowToken, reason);
+            delayedReleaseWindowRoute = null;
+            delayedReleaseWindowToken = default;
+            delayedReleaseWindowUntil = 0f;
+        }
+    }
+
     private void CancelTraversal(bool resumeMovement)
     {
-        // wasActive（之前是否生效）：使用位置：EnemyWindowTraversal.CancelTraversal(bool)。
+        // 之前是否生效。
 bool wasActive = IsActive;
         traversalHandoffResumePending = false;
         traversalHandoffUntil = float.NegativeInfinity;
         platformExitClearanceUntil = 0f;
+        ReleaseDelayedWindowToken(GameArchitecture.ReleaseReason.Cancel);
         if (movementCollider != null && wasActive)
         {
             movementCollider.enabled = previousMovementColliderEnabled;
@@ -1746,8 +2009,19 @@ bool wasActive = IsActive;
         ClearRegionWindowRoute();
         phase = TraversalPhase.None;
         StopTraversalClip();
-        if (!resumeMovement || !wasActive || controller == null || controller.IsDead)
+        if (!wasActive || controller == null || controller.IsDead)
         {
+            return;
+        }
+
+        if (!resumeMovement)
+        {
+            if (!HasActiveLadderTraversal && !controller.IsQTEControlled
+                && controller.CurrentMovementMode == EnemyMovementMode.TraversalCodeDriven)
+            {
+                controller.SetMovementMode(EnemyMovementMode.StandingPathRootMotion);
+            }
+
             return;
         }
 
@@ -1760,7 +2034,7 @@ bool wasActive = IsActive;
     {
         if (hasPendingPlan)
         {
-            // receiverValue24（判空前缓存的待处理方案的路线）：从待处理方案的路线读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、EnemyWindowTraversal.ClearPendingRoute()。
+            // 判空前缓存的待处理方案的路线。
 global::EnemyWindowTraversalRoute receiverValue24 = pendingPlan.route;
             if (!global::System.Object.ReferenceEquals(receiverValue24, null))
             {
@@ -1778,7 +2052,7 @@ global::EnemyWindowTraversalRoute receiverValue24 = pendingPlan.route;
     {
         if (hasPendingDropPlan)
         {
-            // receiverValue25（判空前缓存的待处理掉落方案的路线）：从待处理掉落方案的路线读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、EnemyWindowTraversal.ClearPendingDropPlan()。
+            // 判空前缓存的待处理掉落方案的路线。
 global::EnemyPlatformDropRoute receiverValue25 = pendingDropPlan.route;
             if (!global::System.Object.ReferenceEquals(receiverValue25, null))
             {
@@ -1806,12 +2080,12 @@ global::EnemyPlatformDropRoute receiverValue25 = pendingDropPlan.route;
 
     /// <summary>HasGroundSupport 的业务处理入口；本方法直接依赖 Component.GetComponentInParent&lt;LeonController&gt;()、Component.GetComponentInParent&lt;VillagerController&gt;()、Mathf.Abs(float)、Mathf.Clamp(float, float, float)、Mathf.Max(float, float)、Physics.RaycastAll(Vector3, Vector3, float, int, QueryTriggerInteraction)、Physics.SphereCastAll(Vector3, float, Vector3, float, int, QueryTriggerInteraction) 等共 8 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyWindowTraversal.TryBeginDropAfterMovement(Vector3)、EnemyWindowTraversal.TryBeginDropFromHit(Vector3)；下游（含内部回调体） Component.GetComponentInParent&lt;LeonController&gt;()、Component.GetComponentInParent&lt;VillagerController&gt;()、Mathf.Abs(float)、Mathf.Clamp(float, float, float)、Mathf.Max(float, float)、Physics.RaycastAll(Vector3, Vector3, float, int, QueryTriggerInteraction)、Physics.SphereCastAll(Vector3, float, Vector3, float, int, QueryTriggerInteraction) 等共 8 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="position">中文含义：位置。使用位置：作为 Physics.RaycastAll(Vector3, Vector3, float, int, QueryTriggerInteraction) 的参数、作为 Physics.SphereCastAll(Vector3, float, Vector3, float, int, QueryTriggerInteraction) 的参数、EnemyWindowTraversal.HasGroundSupport(Vector3, float)。</param>
-    /// <param name="distance">中文含义：距离。使用位置：作为 Mathf.Max(float, float) 的参数。</param>
+    /// <param name="position">位置。</param>
+    /// <param name="distance">距离。</param>
     private bool HasGroundSupport(Vector3 position, float distance)
     {
         // 与普通追击的足底支撑尺度一致，避免木板窄缝被误认成平台边缘。
-        // supportRadius（支撑半径）：使用位置：作为 Physics.SphereCastAll(Vector3, float, Vector3, float, int, QueryTriggerInteraction) 的参数、EnemyWindowTraversal.HasGroundSupport(Vector3, float)。
+        // 支撑半径。
 float supportRadius;
         if (movementCollider != null)
         {
@@ -1822,12 +2096,12 @@ float supportRadius;
             supportRadius = 0.1f;
         }
 
-        // hits（命中结果）：保存 Physics.SphereCastAll(Vector3, float, Vector3, float, int, QueryTriggerInteraction) 的返回结果，供当前步骤使用。使用位置：EnemyWindowTraversal.HasGroundSupport(Vector3, float)。
-RaycastHit[] hits = Physics.SphereCastAll(position + Vector3.up * 0.25f, supportRadius, Vector3.down, Mathf.Max(0.1f, distance) + 0.25f, ~0, QueryTriggerInteraction.Ignore);
-        // i（当前遍历索引）：使用位置：EnemyWindowTraversal.HasGroundSupport(Vector3, float)。
-for (int i = 0; i < hits.Length; i++)
+        // 命中结果。
+        RaycastHit[] hits = windowHits.SphereCast(position + Vector3.up * 0.25f, supportRadius, Vector3.down, Mathf.Max(0.1f, distance) + 0.25f, ~0, QueryTriggerInteraction.Ignore, out int hitCount);
+        // 当前遍历索引。
+        for (int i = 0; i < hitCount; i++)
         {
-            // candidate（候选）：使用位置：EnemyWindowTraversal.HasGroundSupport(Vector3, float)。
+            // 候选。
 Collider candidate = hits[i].collider;
             if (candidate == null || candidate.transform.IsChildOf(transform) || candidate.GetComponentInParent<VillagerController>() != null || candidate.GetComponentInParent<LeonController>() != null || hits[i].normal.y < 0.45f)
             {
@@ -1838,11 +2112,11 @@ Collider candidate = hits[i].collider;
         }
 
         // 球体起点局部嵌入坡面时，球检测可能没有有效法线；足底仍有地面就不能跳落。
-        hits = Physics.RaycastAll(position + Vector3.up * 0.25f, Vector3.down, Mathf.Max(0.1f, distance) + 0.25f, ~0, QueryTriggerInteraction.Ignore);
-        // i（当前遍历索引）：使用位置：EnemyWindowTraversal.HasGroundSupport(Vector3, float)。
-for (int i = 0; i < hits.Length; i++)
+        hits = windowHits.Raycast(position + Vector3.up * 0.25f, Vector3.down, Mathf.Max(0.1f, distance) + 0.25f, ~0, QueryTriggerInteraction.Ignore, out hitCount);
+        // 当前遍历索引。
+        for (int i = 0; i < hitCount; i++)
         {
-            // candidate（候选）：使用位置：EnemyWindowTraversal.HasGroundSupport(Vector3, float)。
+            // 候选。
 Collider candidate = hits[i].collider;
             if (candidate == null || candidate.transform.IsChildOf(transform) || candidate.GetComponentInParent<VillagerController>() != null || candidate.GetComponentInParent<LeonController>() != null || hits[i].normal.y < 0.45f || hits[i].point.y > position.y + 0.05f)
             {
@@ -1857,23 +2131,23 @@ Collider candidate = hits[i].collider;
 
     /// <summary>TryFindDropLanding 的业务处理入口；本方法直接依赖 Component.GetComponentInParent&lt;LeonController&gt;()、Component.GetComponentInParent&lt;VillagerController&gt;()、Physics.RaycastAll(Vector3, Vector3, float, int, QueryTriggerInteraction)、Transform.IsChildOf(Transform)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyWindowTraversal.TryBeginDrop(Vector3, Vector3)；下游（含内部回调体） Component.GetComponentInParent&lt;LeonController&gt;()、Component.GetComponentInParent&lt;VillagerController&gt;()、Physics.RaycastAll(Vector3, Vector3, float, int, QueryTriggerInteraction)、Transform.IsChildOf(Transform)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="probePosition">中文含义：探测位置。使用位置：EnemyWindowTraversal.TryFindDropLanding(Vector3, out Vector3)。</param>
-    /// <param name="landingPosition">中文含义：落地位置。输出参数，由本入口写入并交给调用方。使用位置：EnemyWindowTraversal.TryFindDropLanding(Vector3, out Vector3)。</param>
+    /// <param name="probePosition">探测位置。</param>
+    /// <param name="landingPosition">落地位置。输出参数，由本入口写入并交给调用方。</param>
     private bool TryFindDropLanding(Vector3 probePosition, float minimumHeight, out Vector3 landingPosition)
     {
         landingPosition = default;
-        // origin（原点）：使用位置：作为 Physics.RaycastAll(Vector3, Vector3, float, int, QueryTriggerInteraction) 的参数。
+        // 原点。
 Vector3 origin = probePosition + Vector3.up * 0.5f;
-        // hits（命中结果）：保存 Physics.RaycastAll(Vector3, Vector3, float, int, QueryTriggerInteraction) 的返回结果，供当前步骤使用。使用位置：EnemyWindowTraversal.TryFindDropLanding(Vector3, out Vector3)。
-RaycastHit[] hits = Physics.RaycastAll(origin, Vector3.down, maximumDropProbeDistance, ~0, QueryTriggerInteraction.Ignore);
-        // nearestDistance（最近距离）：使用位置：EnemyWindowTraversal.TryFindDropLanding(Vector3, out Vector3)。
+        // 命中结果。
+        RaycastHit[] hits = windowHits.Raycast(origin, Vector3.down, maximumDropProbeDistance, ~0, QueryTriggerInteraction.Ignore, out int hitCount);
+        // 最近距离。
 float nearestDistance = float.MaxValue;
-        // found（是否已找到）：使用位置：EnemyWindowTraversal.TryFindDropLanding(Vector3, out Vector3)。
+        // 是否已找到。
 bool found = false;
-        // i（当前遍历索引）：使用位置：EnemyWindowTraversal.TryFindDropLanding(Vector3, out Vector3)。
-for (int i = 0; i < hits.Length; i++)
+        // 当前遍历索引。
+        for (int i = 0; i < hitCount; i++)
         {
-            // candidate（候选）：使用位置：EnemyWindowTraversal.TryFindDropLanding(Vector3, out Vector3)。
+            // 候选。
 Collider candidate = hits[i].collider;
             if (candidate == null || candidate.transform.IsChildOf(transform) || hits[i].normal.y < 0.45f || hits[i].distance >= nearestDistance)
             {
@@ -1897,7 +2171,7 @@ Collider candidate = hits[i].collider;
 
     /// <summary>PlayTraversalClip 的业务处理入口；本方法直接依赖 AnimationClipPlayable.Create(PlayableGraph, AnimationClip)、AnimationClipPlayable.SetApplyFootIK(bool)、AnimationClipPlayable.SetApplyPlayableIK(bool)、AnimationPlayableOutput.Create(PlayableGraph, string, Animator)、AnimationPlayableOutput.SetSourcePlayable&lt;AnimationPlayableOutput, AnimationClipPlayable&gt;(AnimationClipPlayable)、EnemyWindowTraversal.StopTraversalClip()、PlayableGraph.Create(string) 等共 9 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyWindowTraversal.BeginDropFallAnimation()、EnemyWindowTraversal.BeginDropLanding()、EnemyWindowTraversal.BeginWindowTraversal(EnemyWindowTraversalPlan)、EnemyWindowTraversal.TryBeginDrop(Vector3, Vector3)；下游（含内部回调体） AnimationClipPlayable.Create(PlayableGraph, AnimationClip)、AnimationClipPlayable.SetApplyFootIK(bool)、AnimationClipPlayable.SetApplyPlayableIK(bool)、AnimationPlayableOutput.Create(PlayableGraph, string, Animator)、AnimationPlayableOutput.SetSourcePlayable&lt;AnimationPlayableOutput, AnimationClipPlayable&gt;(AnimationClipPlayable)、EnemyWindowTraversal.StopTraversalClip()、PlayableGraph.Create(string) 等共 9 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="clip">中文含义：动画片段。使用位置：作为 AnimationClipPlayable.Create(PlayableGraph, AnimationClip) 的参数、EnemyWindowTraversal.PlayTraversalClip(AnimationClip)。</param>
+    /// <param name="clip">动画片段。</param>
     private void PlayTraversalClip(AnimationClip clip, float duration = 0f)
     {
         StopTraversalClip();
@@ -1919,7 +2193,7 @@ Collider candidate = hits[i].collider;
         }
         clipPlayable.SetApplyFootIK(false);
         clipPlayable.SetApplyPlayableIK(false);
-        // output（输出）：保存 AnimationPlayableOutput.Create(PlayableGraph, string, Animator) 的返回结果，供当前步骤使用。使用位置：EnemyWindowTraversal.PlayTraversalClip(AnimationClip)。
+        // 输出。
 AnimationPlayableOutput output = AnimationPlayableOutput.Create(animationGraph, "敌人特殊通行动画输出", animator);
         output.SetSourcePlayable(clipPlayable);
         animationGraph.Play();
@@ -1934,7 +2208,7 @@ AnimationPlayableOutput output = AnimationPlayableOutput.Create(animationGraph, 
             return;
         }
 
-        // duration（持续时间）：使用位置：作为 AnimationClipPlayable.SetTime<AnimationClipPlayable>(double) 的参数、EnemyWindowTraversal.LoopCurrentClipIfNeeded()。
+        // 持续时间。
 double duration;
         if (clipPlayable.GetAnimationClip() != null)
         {
@@ -1993,8 +2267,8 @@ double duration;
 
     /// <summary>HorizontalDistance 的业务处理入口；本方法直接依赖 Vector3.Distance(Vector3, Vector3)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyWindowTraversal.RegisterWindowEntryPoint(EnemyWindowTraversalPlan, out Vector3)、EnemyWindowTraversal.TryBeginPendingDropTraversal()、EnemyWindowTraversal.TryBeginPendingWindowTraversal()、EnemyWindowTraversal.TryResolveDropPursuitDestination(Vector3, out Vector3)；下游（含内部回调体） Vector3.Distance(Vector3, Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="first">中文含义：首个。使用位置：作为 Vector3.Distance(Vector3, Vector3) 的参数、EnemyWindowTraversal.HorizontalDistance(Vector3, Vector3)。</param>
-    /// <param name="second">中文含义：第二。使用位置：作为 Vector3.Distance(Vector3, Vector3) 的参数、EnemyWindowTraversal.HorizontalDistance(Vector3, Vector3)。</param>
+    /// <param name="first">首个。</param>
+    /// <param name="second">第二。</param>
     private static float HorizontalDistance(Vector3 first, Vector3 second)
     {
         first.y = 0f;
@@ -2004,9 +2278,9 @@ double duration;
 
     /// <summary>ReportTraversalDiagnostic 的业务处理入口；本方法直接依赖 Debug.Log(object, Object)、Mathf.Max(float, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyWindowTraversal.CompleteTraversal()、EnemyWindowTraversal.TryBeginPendingWindowTraversal()；下游（含内部回调体） Debug.Log(object, Object)、Mathf.Max(float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="stage">中文含义：阶段。使用位置：作为 Debug.Log(object, Object) 的参数、EnemyWindowTraversal.ReportTraversalDiagnostic(string, string, bool)。</param>
-    /// <param name="details">中文含义：详细记录。使用位置：作为 Debug.Log(object, Object) 的参数、EnemyWindowTraversal.ReportTraversalDiagnostic(string, string, bool)。</param>
-    /// <param name="force">中文含义：是否力度。使用位置：EnemyWindowTraversal.ReportTraversalDiagnostic(string, string, bool)。</param>
+    /// <param name="stage">阶段。</param>
+    /// <param name="details">详细记录。</param>
+    /// <param name="force">是否力度。</param>
     private void ReportTraversalDiagnostic(string stage, string details, bool force = false)
     {
         if (!enableTraversalDiagnostic)
@@ -2014,7 +2288,7 @@ double duration;
             return;
         }
 
-        // message（消息）：使用位置：EnemyWindowTraversal.ReportTraversalDiagnostic(string, string, bool)。
+        // 消息。
 string message = $"{stage}|{details}";
         if (!force && message == lastTraversalDiagnostic && Time.time < nextTraversalDiagnosticTime)
         {

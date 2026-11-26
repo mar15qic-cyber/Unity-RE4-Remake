@@ -10,43 +10,43 @@ using System.Collections;
 [RequireComponent(typeof(Collider))]
 public class StorageBoxController : MonoBehaviour, IInteractable
 {
-    /// <summary>中文含义：动画控制器。使用位置：作为 WaitUntil.WaitUntil(Func&lt;bool&gt;) 的参数、StorageBoxController.CloseRoutine()、StorageBoxController.OpenBox() 等共 5 处。</summary>
+    /// <summary>动画控制器。</summary>
     [Header("引用")]
     public Animator animator;
-    /// <summary>中文含义：交互范围。使用位置：StorageBoxController.InteractRange.get。</summary>
+    /// <summary>交互范围。</summary>
     [Header("交互")]
     [Min(0.25f)]
     public float interactionRange = 0.9f;
-    /// <summary>中文含义：打开音效。使用位置：作为 AudioManager.PlaySfx(string) 的参数。</summary>
+    /// <summary>打开音效。</summary>
     [Header("音效")]
     public string openSfx = "box_open";
-    /// <summary>中文含义：关闭音效。使用位置：作为 AudioManager.PlaySfx(string) 的参数。</summary>
+    /// <summary>关闭音效。</summary>
     public string closeSfx = "box_close";
-    /// <summary>中文含义：仓库场景名称。使用位置：作为 Application.CanStreamedLevelBeLoaded(string) 的参数、作为 Debug.LogError(object) 的参数、作为 SceneManager.LoadSceneAsync(string, LoadSceneMode) 的参数 等共 4 处。</summary>
+    /// <summary>仓库场景名称。</summary>
     [Header("场景")]
     public string storageSceneName = "StorageBoxScene";
-    /// <summary>中文含义：是否打开哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。使用位置：作为 Animator.SetBool(int, bool) 的参数。</summary>
+    /// <summary>是否打开哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly int IsOpenHash = Animator.StringToHash("isOpen");
-    /// <summary>中文含义：是否打开。使用位置：StorageBoxController.CloseRoutine()、StorageBoxController.IsOpen.get、StorageBoxController.OpenBox() 等共 4 处。</summary>
+    /// <summary>是否打开。</summary>
     private bool isOpen = false;
-    /// <summary>中文含义：界面是否打开。使用位置：StorageBoxController.CanInteract(Transform)、StorageBoxController.CloseBox()、StorageBoxController.GetPromptText() 等共 8 处。</summary>
+    /// <summary>界面是否打开。</summary>
     private bool uiOpen = false;
-    /// <summary>中文含义：列。使用位置：StorageBoxController.Start()。</summary>
+    /// <summary>列。</summary>
     private Collider col;
-    /// <summary>中文含义：游戏主摄像机。使用位置：StorageBoxController.CloseRoutine()、StorageBoxController.OpenUIWhenAnimationDone()、StorageBoxController.Start()。</summary>
+    /// <summary>游戏主摄像机。</summary>
     private Camera gameMainCamera;
-    /// <summary>中文含义：游戏画布。使用位置：StorageBoxController.CloseRoutine()、StorageBoxController.OpenUIWhenAnimationDone()、StorageBoxController.Start()。</summary>
+    /// <summary>游戏画布。</summary>
     [Header("游戏界面引用")]
     public Canvas gameCanvas;
-    /// <summary>中文含义：打开协程。使用位置：作为 MonoBehaviour.StopCoroutine(Coroutine) 的参数、StorageBoxController.CloseBox()、StorageBoxController.OpenBox()。</summary>
+    /// <summary>打开协程。</summary>
     private Coroutine openCoroutine;
-    /// <summary>中文含义：关闭协程。使用位置：作为 MonoBehaviour.StopCoroutine(Coroutine) 的参数、StorageBoxController.CloseBox()、StorageBoxController.CloseRoutine()。</summary>
+    /// <summary>关闭协程。</summary>
     private Coroutine closeCoroutine;
-    /// <summary>中文含义：是否关闭中。使用位置：StorageBoxController.CanInteract(Transform)、StorageBoxController.CloseBox()、StorageBoxController.CloseRoutine() 等共 7 处。</summary>
+    /// <summary>是否关闭中。</summary>
     private bool isClosing;
-    /// <summary>中文含义：生效控制器。使用位置：StorageBoxController.CanInteract(Transform)、StorageBoxController.CloseRoutine()、StorageBoxController.Interact() 等共 6 处。</summary>
+    /// <summary>生效控制器。</summary>
     private static StorageBoxController activeController;
-    /// <summary>中文含义：是否任意箱体忙碌。使用位置：InventorySceneLoader.Show()、InventorySceneLoader.Toggle()、LeonInputBridge.OnInventoryToggle(InputAction.CallbackContext) 等共 6 处。</summary>
+    /// <summary>是否任意箱体忙碌。</summary>
     public static bool IsAnyBoxBusy => activeController != null && (activeController.uiOpen || activeController.isClosing);
     /// <summary>中文含义：交互范围。</summary>
     public float InteractRange => interactionRange;
@@ -173,7 +173,7 @@ public class StorageBoxController : MonoBehaviour, IInteractable
         {
             animator.SetBool(IsOpenHash, true);
         }
-        // receiverValue2（判空前缓存的音频管理器的实例）：从音频管理器的实例读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、StorageBoxController.OpenBox()。
+        // 判空前缓存的音频管理器的实例。
 global::AudioManager receiverValue2 = AudioManager.Instance;
         if (!global::System.Object.ReferenceEquals(receiverValue2, null))
         {
@@ -285,7 +285,7 @@ global::AudioManager receiverValue2 = AudioManager.Instance;
         {
             animator.SetBool(IsOpenHash, false);
         }
-        // receiverValue4（判空前缓存的音频管理器的实例）：从音频管理器的实例读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、StorageBoxController.CloseRoutine()。
+        // 判空前缓存的音频管理器的实例。
 global::AudioManager receiverValue4 = AudioManager.Instance;
         if (!global::System.Object.ReferenceEquals(receiverValue4, null))
         {

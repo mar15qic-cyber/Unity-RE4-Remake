@@ -18,28 +18,28 @@ using Object = UnityEngine.Object;
 /// </summary>
 public static class LeonInjuredAnimationSetup
 {
-    /// <summary>中文含义：来源控制器路径。编译期常量，保持既有值与消费者映射。使用位置：作为 AssetDatabase.CopyAsset(string, string) 的参数、作为 AssetDatabase.LoadAssetAtPath&lt;AnimatorController&gt;(string) 的参数、作为 InvalidOperationException.InvalidOperationException(string) 的参数。</summary>
+    /// <summary>来源控制器路径。编译期常量，保持既有值与消费者映射。</summary>
     private const string SourceControllerPath = "Assets/Animations/玩家/控制器/LeonCombatController_New_RewriteTest.controller";
-    /// <summary>中文含义：受伤控制器路径。编译期常量，保持既有值与消费者映射。使用位置：作为 AssetDatabase.CopyAsset(string, string) 的参数、作为 AssetDatabase.LoadAllAssetsAtPath(string) 的参数、作为 AssetDatabase.LoadAssetAtPath&lt;AnimatorController&gt;(string) 的参数 等共 4 处。</summary>
+    /// <summary>受伤控制器路径。编译期常量，保持既有值与消费者映射。</summary>
     private const string InjuredControllerPath = "Assets/Animations/玩家/控制器/LeonCombatController_Injured.controller";
-    /// <summary>中文含义：受伤遮罩路径。编译期常量，保持既有值与消费者映射。使用位置：作为 AssetDatabase.CreateAsset(Object, string) 的参数、作为 AssetDatabase.LoadAssetAtPath&lt;AvatarMask&gt;(string) 的参数。</summary>
+    /// <summary>受伤遮罩路径。编译期常量，保持既有值与消费者映射。</summary>
     private const string InjuredMaskPath = "Assets/Animations/遮罩/受伤移动遮罩.mask";
-    /// <summary>中文含义：受伤下半身遮罩路径。编译期常量，保持既有值与消费者映射。使用位置：作为 AssetDatabase.CreateAsset(Object, string) 的参数、作为 AssetDatabase.LoadAssetAtPath&lt;AvatarMask&gt;(string) 的参数。</summary>
+    /// <summary>受伤下半身遮罩路径。编译期常量，保持既有值与消费者映射。</summary>
     private const string InjuredLowerBodyMaskPath = "Assets/Animations/遮罩/受伤下身遮罩.mask";
-    /// <summary>中文含义：受伤动画片段目录。编译期常量，保持既有值与消费者映射。使用位置：LeonInjuredAnimationSetup.LoadHurtClip(string)。</summary>
+    /// <summary>受伤动画片段目录。编译期常量，保持既有值与消费者映射。</summary>
     private const string HurtClipDirectory = "Assets/素材库/动画/YummyGames/Art/Animations/INPLACE/Locomotion/Hurt/";
-    /// <summary>中文含义：长枪装备动画片段路径。编译期常量，保持既有值与消费者映射。使用位置：作为 AssetDatabase.LoadAssetAtPath&lt;AnimationClip&gt;(string) 的参数、作为 InvalidOperationException.InvalidOperationException(string) 的参数。</summary>
+    /// <summary>长枪装备动画片段路径。编译期常量，保持既有值与消费者映射。</summary>
     private const string LongGunEquipClipPath = "Assets/Animations/LeonWeaponActions/EquipRifle_Anim.anim";
-    /// <summary>中文含义：里昂预制件路径。编译期常量，保持既有值与消费者映射。使用位置：作为 AssetDatabase.LoadAssetAtPath&lt;GameObject&gt;(string) 的参数、作为 Debug.Log(object) 的参数、作为 Debug.LogWarning(object) 的参数 等共 5 处。</summary>
+    /// <summary>里昂预制件路径。编译期常量，保持既有值与消费者映射。</summary>
     private const string LeonPrefabPath = "Assets/Prefab/LeonR4R.prefab";
-    /// <summary>中文含义：受伤图层名称。编译期常量，保持既有值与消费者映射。使用位置：作为 List&lt;AnimatorControllerLayer&gt;.FindIndex(Predicate&lt;AnimatorControllerLayer&gt;) 的参数、LeonInjuredAnimationSetup.EnsureInjuredLayers(AnimatorController, AvatarMask, AvatarMask)。</summary>
+    /// <summary>受伤图层名称。编译期常量，保持既有值与消费者映射。</summary>
     private const string InjuredLayerName = "Injured Movement";
-    /// <summary>中文含义：受伤下半身图层名称。编译期常量，保持既有值与消费者映射。使用位置：作为 List&lt;AnimatorControllerLayer&gt;.FindIndex(Predicate&lt;AnimatorControllerLayer&gt;) 的参数、LeonInjuredAnimationSetup.EnsureInjuredLayers(AnimatorController, AvatarMask, AvatarMask)。</summary>
+    /// <summary>受伤下半身图层名称。编译期常量，保持既有值与消费者映射。</summary>
     private const string InjuredLowerBodyLayerName = "Injured Lower Body";
-    /// <summary>中文含义：旧版受伤上部恢复图层名称。编译期常量，保持既有值与消费者映射。使用位置：作为 List&lt;AnimatorControllerLayer&gt;.FindIndex(Predicate&lt;AnimatorControllerLayer&gt;) 的参数。</summary>
+    /// <summary>旧版受伤上部恢复图层名称。编译期常量，保持既有值与消费者映射。</summary>
     private const string LegacyInjuredUpperRestoreLayerName = "Injured Upper Restore";
     // 八层契约（顺序即索引）
-    /// <summary>中文含义：预期图层名称列表。只读字段，初始化后不由普通写入口替换。使用位置：作为 InvalidOperationException.InvalidOperationException(string) 的参数、LeonInjuredAnimationSetup.EnsureInjuredLayers(AnimatorController, AvatarMask, AvatarMask)、LeonInjuredAnimationSetup.ValidateResult(AnimatorController)。</summary>
+    /// <summary>预期图层名称列表。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly string[] ExpectedLayerNames =
     {
         "Base Movement",
@@ -51,42 +51,42 @@ public static class LeonInjuredAnimationSetup
         "Weapon Action",
         "Full Body Action"
     };
-    /// <summary>中文含义：待机动画状态名称。编译期常量，保持既有值与消费者映射。使用位置：作为 InvalidOperationException.InvalidOperationException(string) 的参数、作为 LeonInjuredAnimationSetup.EnsureState(AnimatorStateMachine, string, Vector3) 的参数、LeonInjuredAnimationSetup.BuildInjuredStateMachine(AnimatorController) 等共 5 处。</summary>
+    /// <summary>待机动画状态名称。编译期常量，保持既有值与消费者映射。</summary>
     private const string IdleStateName = "HurtIdle";
-    /// <summary>中文含义：行走动画状态名称。编译期常量，保持既有值与消费者映射。使用位置：作为 LeonInjuredAnimationSetup.EnsureState(AnimatorStateMachine, string, Vector3) 的参数、LeonInjuredAnimationSetup.BuildInjuredStateMachine(AnimatorController)、LeonInjuredAnimationSetup.ConfigureInjuredLowerBodyOverrides(AnimatorController)。</summary>
+    /// <summary>行走动画状态名称。编译期常量，保持既有值与消费者映射。</summary>
     private const string WalkStateName = "HurtWalk";
-    /// <summary>中文含义：慢跑动画状态名称。编译期常量，保持既有值与消费者映射。使用位置：作为 LeonInjuredAnimationSetup.EnsureState(AnimatorStateMachine, string, Vector3) 的参数、LeonInjuredAnimationSetup.BuildInjuredStateMachine(AnimatorController)、LeonInjuredAnimationSetup.ConfigureInjuredLowerBodyOverrides(AnimatorController)。</summary>
+    /// <summary>慢跑动画状态名称。编译期常量，保持既有值与消费者映射。</summary>
     private const string JogStateName = "HurtJog";
-    /// <summary>中文含义：转向动画状态名称。编译期常量，保持既有值与消费者映射。使用位置：作为 LeonInjuredAnimationSetup.EnsureState(AnimatorStateMachine, string, Vector3) 的参数、LeonInjuredAnimationSetup.BuildInjuredStateMachine(AnimatorController)、LeonInjuredAnimationSetup.ConfigureInjuredLowerBodyOverrides(AnimatorController)。</summary>
+    /// <summary>转向动画状态名称。编译期常量，保持既有值与消费者映射。</summary>
     private const string TurnStateName = "HurtTurnInPlace";
-    /// <summary>中文含义：行走行为树名称。编译期常量，保持既有值与消费者映射。使用位置：作为 LeonInjuredAnimationSetup.FindOrCreateTree(AnimatorController, string) 的参数、LeonInjuredAnimationSetup.ConfigureWalkTree(BlendTree)。</summary>
+    /// <summary>行走行为树名称。编译期常量，保持既有值与消费者映射。</summary>
     private const string WalkTreeName = "HurtWalkDirections";
-    /// <summary>中文含义：慢跑行为树名称。编译期常量，保持既有值与消费者映射。使用位置：作为 LeonInjuredAnimationSetup.FindOrCreateTree(AnimatorController, string) 的参数、LeonInjuredAnimationSetup.ConfigureJogTree(BlendTree)。</summary>
+    /// <summary>慢跑行为树名称。编译期常量，保持既有值与消费者映射。</summary>
     private const string JogTreeName = "HurtJogDirections";
-    /// <summary>中文含义：转向行为树名称。编译期常量，保持既有值与消费者映射。使用位置：作为 LeonInjuredAnimationSetup.FindOrCreateTree(AnimatorController, string) 的参数、LeonInjuredAnimationSetup.ConfigureTurnTree(BlendTree)。</summary>
+    /// <summary>转向行为树名称。编译期常量，保持既有值与消费者映射。</summary>
     private const string TurnTreeName = "HurtTurnSelector";
     // 过渡时长：待机与移动 0.18，待机与转向 0.12
-    /// <summary>中文含义：待机移动过渡时长。编译期常量，保持既有值与消费者映射。使用位置：作为 LeonInjuredAnimationSetup.CreateTransition(AnimatorState, AnimatorState, float) 的参数。</summary>
+    /// <summary>待机移动过渡时长。编译期常量，保持既有值与消费者映射。</summary>
     private const float IdleMovementTransitionDuration = 0.18f;
     // 受伤步行到慢跑的过渡时长
-    /// <summary>中文含义：行走目标慢跑过渡时长。编译期常量，保持既有值与消费者映射。使用位置：作为 LeonInjuredAnimationSetup.CreateTransition(AnimatorState, AnimatorState, float) 的参数。</summary>
+    /// <summary>行走目标慢跑过渡时长。编译期常量，保持既有值与消费者映射。</summary>
     private const float WalkToJogTransitionDuration = 0.18f;
     // 受伤慢跑到步行的过渡时长
-    /// <summary>中文含义：慢跑目标行走过渡时长。编译期常量，保持既有值与消费者映射。使用位置：作为 LeonInjuredAnimationSetup.CreateTransition(AnimatorState, AnimatorState, float) 的参数。</summary>
+    /// <summary>慢跑目标行走过渡时长。编译期常量，保持既有值与消费者映射。</summary>
     private const float JogToWalkTransitionDuration = 0.20f;
-    /// <summary>中文含义：待机转向过渡时长。编译期常量，保持既有值与消费者映射。使用位置：作为 LeonInjuredAnimationSetup.CreateTransition(AnimatorState, AnimatorState, float) 的参数。</summary>
+    /// <summary>待机转向过渡时长。编译期常量，保持既有值与消费者映射。</summary>
     private const float IdleTurnTransitionDuration = 0.12f;
     // 受伤移动速度（写入 LeonLocomotion）
-    /// <summary>中文含义：受伤行走前向速度。编译期常量，保持既有值与消费者映射。使用位置：LeonInjuredAnimationSetup.WriteInjuredSpeeds(SerializedObject)。</summary>
+    /// <summary>受伤行走前向速度。编译期常量，保持既有值与消费者映射。</summary>
     private const float InjuredWalkForwardSpeed = 1.35f;
-    /// <summary>中文含义：受伤行走后退速度。编译期常量，保持既有值与消费者映射。使用位置：LeonInjuredAnimationSetup.WriteInjuredSpeeds(SerializedObject)。</summary>
+    /// <summary>受伤行走后退速度。编译期常量，保持既有值与消费者映射。</summary>
     private const float InjuredWalkBackwardSpeed = 1.10f;
-    /// <summary>中文含义：受伤横移速度。编译期常量，保持既有值与消费者映射。使用位置：LeonInjuredAnimationSetup.WriteInjuredSpeeds(SerializedObject)。</summary>
+    /// <summary>受伤横移速度。编译期常量，保持既有值与消费者映射。</summary>
     private const float InjuredStrafeSpeed = 0.95f;
-    /// <summary>中文含义：受伤慢跑速度。编译期常量，保持既有值与消费者映射。使用位置：LeonInjuredAnimationSetup.WriteInjuredSpeeds(SerializedObject)。</summary>
+    /// <summary>受伤慢跑速度。编译期常量，保持既有值与消费者映射。</summary>
     private const float InjuredJogSpeed = 2.35f;
     // 方向位置（单位圆，斜向为归一化分量）
-    /// <summary>中文含义：对角方向。编译期常量，保持既有值与消费者映射。使用位置：作为 LeonInjuredAnimationSetup.CreateDirectionalChild(string, float, float, float) 的参数。</summary>
+    /// <summary>对角方向。编译期常量，保持既有值与消费者映射。</summary>
     private const float Diagonal = 0.707f;
     /// <summary>编辑器菜单调用入口 Build；按当前参数和已绑定配置执行资源操作，下游调用见静态索引。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） AssetDatabase.Refresh()、AssetDatabase.SaveAssets()、Debug.Log(object)、Debug.LogError(object)、EditorUtility.SetDirty(Object)、LeonInjuredAnimationSetup.ApplyControllerToPrefabAndScene(AnimatorController)、LeonInjuredAnimationSetup.ApplyInjuredSpeeds() 等共 17 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
@@ -99,11 +99,11 @@ public static class LeonInjuredAnimationSetup
             return;
         }
 
-        // injuredMask（受伤遮罩）：保存 LeonInjuredAnimationSetup.EnsureInjuredMask() 的返回结果，供当前步骤使用。使用位置：作为 EditorUtility.SetDirty(Object) 的参数、作为 LeonInjuredAnimationSetup.EnsureInjuredLayers(AnimatorController, AvatarMask, AvatarMask) 的参数。
+        // 受伤遮罩。
 AvatarMask injuredMask = EnsureInjuredMask();
-        // lowerBodyMask（下半身遮罩）：保存 LeonInjuredAnimationSetup.EnsureInjuredLowerBodyMask() 的返回结果，供当前步骤使用。使用位置：作为 EditorUtility.SetDirty(Object) 的参数、作为 LeonInjuredAnimationSetup.EnsureInjuredLayers(AnimatorController, AvatarMask, AvatarMask) 的参数。
+        // 下半身遮罩。
 AvatarMask lowerBodyMask = EnsureInjuredLowerBodyMask();
-        // controller（动画控制器资源）：保存 LeonInjuredAnimationSetup.EnsureController() 的返回结果，供当前步骤使用。使用位置：作为 EditorUtility.SetDirty(Object) 的参数、作为 LeonInjuredAnimationSetup.ApplyControllerToPrefabAndScene(AnimatorController) 的参数、作为 LeonInjuredAnimationSetup.BuildInjuredStateMachine(AnimatorController) 的参数 等共 9 处。
+        // 动画控制器资源。
 AnimatorController controller = EnsureController();
         EnsureInjuredLayers(controller, injuredMask, lowerBodyMask);
         ConfigureLongGunEquipMotion(controller);
@@ -130,7 +130,7 @@ AnimatorController controller = EnsureController();
     /// <remarks>静态调用链：上游 LeonInjuredAnimationSetup.Build()；下游（含内部回调体） AssetDatabase.CreateAsset(Object, string)、AssetDatabase.LoadAssetAtPath&lt;AvatarMask&gt;(string)、AvatarMask.AvatarMask()、AvatarMask.SetHumanoidBodyPartActive(AvatarMaskBodyPart, bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     private static AvatarMask EnsureInjuredMask()
     {
-        // mask（遮罩）：保存 AssetDatabase.LoadAssetAtPath<AvatarMask>(string) 的返回结果，供当前步骤使用。使用位置：作为 AssetDatabase.CreateAsset(Object, string) 的参数、LeonInjuredAnimationSetup.EnsureInjuredMask()。
+        // 遮罩。
 AvatarMask mask = AssetDatabase.LoadAssetAtPath<AvatarMask>(InjuredMaskPath);
         if (mask == null)
         {
@@ -161,7 +161,7 @@ AvatarMask mask = AssetDatabase.LoadAssetAtPath<AvatarMask>(InjuredMaskPath);
     /// <remarks>静态调用链：上游 LeonInjuredAnimationSetup.Build()；下游（含内部回调体） AssetDatabase.CreateAsset(Object, string)、AssetDatabase.LoadAssetAtPath&lt;AvatarMask&gt;(string)、AvatarMask.AvatarMask()、AvatarMask.SetHumanoidBodyPartActive(AvatarMaskBodyPart, bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     private static AvatarMask EnsureInjuredLowerBodyMask()
     {
-        // mask（遮罩）：保存 AssetDatabase.LoadAssetAtPath<AvatarMask>(string) 的返回结果，供当前步骤使用。使用位置：作为 AssetDatabase.CreateAsset(Object, string) 的参数、LeonInjuredAnimationSetup.EnsureInjuredLowerBodyMask()。
+        // 遮罩。
 AvatarMask mask = AssetDatabase.LoadAssetAtPath<AvatarMask>(InjuredLowerBodyMaskPath);
         if (mask == null)
         {
@@ -191,7 +191,7 @@ AvatarMask mask = AssetDatabase.LoadAssetAtPath<AvatarMask>(InjuredLowerBodyMask
     /// <remarks>静态调用链：上游 LeonInjuredAnimationSetup.Build()；下游（含内部回调体） AssetDatabase.CopyAsset(string, string)、AssetDatabase.LoadAssetAtPath&lt;AnimatorController&gt;(string)、AssetDatabase.Refresh()、InvalidOperationException.InvalidOperationException(string)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     private static AnimatorController EnsureController()
     {
-        // controller（动画控制器资源）：保存 AssetDatabase.LoadAssetAtPath<AnimatorController>(string) 的返回结果，供当前步骤使用。使用位置：LeonInjuredAnimationSetup.EnsureController()。
+        // 动画控制器资源。
 AnimatorController controller = AssetDatabase.LoadAssetAtPath<AnimatorController>(InjuredControllerPath);
         if (controller != null)
         {
@@ -226,15 +226,15 @@ AnimatorController controller = AssetDatabase.LoadAssetAtPath<AnimatorController
     /// 重复执行时复用现有层，处理旧方案 Injured Upper Restore 的迁移。
     /// </summary>
     /// <remarks>静态调用链：上游 LeonInjuredAnimationSetup.Build()；下游（含内部回调体） AnimatorControllerLayer.AnimatorControllerLayer()、AnimatorStateMachine.AnimatorStateMachine()、AssetDatabase.AddObjectToAsset(Object, Object)、Dictionary&lt;string, AnimatorControllerLayer&gt;.ContainsKey(string)、Dictionary&lt;string, AnimatorControllerLayer&gt;.Dictionary()、Dictionary&lt;string, AnimatorControllerLayer&gt;.Remove(string)、IEnumerable&lt;AnimatorControllerLayer&gt;.ToList&lt;AnimatorControllerLayer&gt;() 等共 15 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="controller">中文含义：动画控制器资源。使用位置：作为 AssetDatabase.AddObjectToAsset(Object, Object) 的参数、LeonInjuredAnimationSetup.EnsureInjuredLayers(AnimatorController, AvatarMask, AvatarMask)。</param>
-    /// <param name="injuredMask">中文含义：受伤遮罩。使用位置：LeonInjuredAnimationSetup.EnsureInjuredLayers(AnimatorController, AvatarMask, AvatarMask)。</param>
-    /// <param name="lowerBodyMask">中文含义：下半身遮罩。使用位置：LeonInjuredAnimationSetup.EnsureInjuredLayers(AnimatorController, AvatarMask, AvatarMask)。</param>
+    /// <param name="controller">动画控制器资源。</param>
+    /// <param name="injuredMask">受伤遮罩。</param>
+    /// <param name="lowerBodyMask">下半身遮罩。</param>
     private static void EnsureInjuredLayers(AnimatorController controller, AvatarMask injuredMask, AvatarMask lowerBodyMask)
     {
-        // layerList（图层列表）：保存 IEnumerable<AnimatorControllerLayer>.ToList<AnimatorControllerLayer>() 的返回结果，供当前步骤使用。使用位置：LeonInjuredAnimationSetup.EnsureInjuredLayers(AnimatorController, AvatarMask, AvatarMask)。
+        // 图层列表。
 List<AnimatorControllerLayer> layerList = controller.layers.ToList();
         // 迁移：旧方案的 Injured Upper Restore 重命名为 Injured Lower Body
-        // legacyIndex（旧版索引）：保存 List<AnimatorControllerLayer>.FindIndex(Predicate<AnimatorControllerLayer>) 的返回结果，供当前步骤使用。使用位置：作为 List<AnimatorControllerLayer>.this[int] 的参数、LeonInjuredAnimationSetup.EnsureInjuredLayers(AnimatorController, AvatarMask, AvatarMask)。
+        // 旧版索引。
 int legacyIndex = layerList.FindIndex( /* 中文含义：图层。 */layer => layer.name == LegacyInjuredUpperRestoreLayerName);
         if (legacyIndex >= 0)
         {
@@ -251,11 +251,11 @@ int legacyIndex = layerList.FindIndex( /* 中文含义：图层。 */layer => la
         }
 
         // 去重：Injured Lower Body 只允许存在一个
-        // firstLowerIndex（首个下部索引）：保存 List<AnimatorControllerLayer>.FindIndex(Predicate<AnimatorControllerLayer>) 的返回结果，供当前步骤使用。使用位置：LeonInjuredAnimationSetup.EnsureInjuredLayers(AnimatorController, AvatarMask, AvatarMask)。
+        // 首个下部索引。
 int firstLowerIndex = layerList.FindIndex( /* 中文含义：图层。 */layer => layer.name == InjuredLowerBodyLayerName);
         if (firstLowerIndex >= 0)
         {
-            // i（当前遍历索引）：使用位置：作为 List<AnimatorControllerLayer>.RemoveAt(int) 的参数、作为 List<AnimatorControllerLayer>.this[int] 的参数、LeonInjuredAnimationSetup.EnsureInjuredLayers(AnimatorController, AvatarMask, AvatarMask)。
+            // 当前遍历索引。
 for (int i = layerList.Count - 1; i > firstLowerIndex; i--)
             {
                 if (layerList[i].name == InjuredLowerBodyLayerName)
@@ -266,13 +266,13 @@ for (int i = layerList.Count - 1; i > firstLowerIndex; i--)
         }
 
         // 受伤移动层：沿用或新建
-        // injuredIndex（受伤索引）：保存 List<AnimatorControllerLayer>.FindIndex(Predicate<AnimatorControllerLayer>) 的返回结果，供当前步骤使用。使用位置：作为 List<AnimatorControllerLayer>.RemoveAt(int) 的参数、作为 List<AnimatorControllerLayer>.this[int] 的参数、LeonInjuredAnimationSetup.EnsureInjuredLayers(AnimatorController, AvatarMask, AvatarMask)。
+        // 受伤索引。
 int injuredIndex = layerList.FindIndex( /* 中文含义：图层。 */layer => layer.name == InjuredLayerName);
-        // injuredLayer（受伤图层）：使用位置：作为 List<AnimatorControllerLayer>.Insert(int, AnimatorControllerLayer) 的参数、LeonInjuredAnimationSetup.EnsureInjuredLayers(AnimatorController, AvatarMask, AvatarMask)。
+        // 受伤图层。
 AnimatorControllerLayer injuredLayer;
         if (injuredIndex < 0)
         {
-            // machine（状态机）：使用位置：作为 AssetDatabase.AddObjectToAsset(Object, Object) 的参数、LeonInjuredAnimationSetup.EnsureInjuredLayers(AnimatorController, AvatarMask, AvatarMask)。
+            // 状态机。
 AnimatorStateMachine machine = new AnimatorStateMachine
             {
                 name = InjuredLayerName
@@ -304,9 +304,9 @@ AnimatorStateMachine machine = new AnimatorStateMachine
         }
 
         // 受伤下身层：沿用或新建（同步受伤移动层，无独立状态机）
-        // lowerIndex（下部索引）：保存 List<AnimatorControllerLayer>.FindIndex(Predicate<AnimatorControllerLayer>) 的返回结果，供当前步骤使用。使用位置：作为 List<AnimatorControllerLayer>.RemoveAt(int) 的参数、作为 List<AnimatorControllerLayer>.this[int] 的参数、LeonInjuredAnimationSetup.EnsureInjuredLayers(AnimatorController, AvatarMask, AvatarMask)。
+        // 下部索引。
 int lowerIndex = layerList.FindIndex( /* 中文含义：图层。 */layer => layer.name == InjuredLowerBodyLayerName);
-        // lowerLayer（下部图层）：使用位置：作为 List<AnimatorControllerLayer>.Insert(int, AnimatorControllerLayer) 的参数、LeonInjuredAnimationSetup.EnsureInjuredLayers(AnimatorController, AvatarMask, AvatarMask)。
+        // 下部图层。
 AnimatorControllerLayer lowerLayer;
         if (lowerIndex >= 0)
         {
@@ -336,7 +336,7 @@ AnimatorControllerLayer lowerLayer;
         // 按八层契约重排
         layerList.Insert(AnimatorLayerID.Injured, injuredLayer);
         layerList.Insert(AnimatorLayerID.InjuredLowerBody, lowerLayer);
-        // byName（依据名称）：使用位置：作为 List<AnimatorControllerLayer>.Add(AnimatorControllerLayer) 的参数、作为 string.Join(string, IEnumerable<string>) 的参数、LeonInjuredAnimationSetup.EnsureInjuredLayers(AnimatorController, AvatarMask, AvatarMask)。
+        // 依据名称。
 var byName = new Dictionary<string, AnimatorControllerLayer>();
         // layer（图层）：每轮从图层列表取得一个元素，仅代表当前这一项。使用位置：作为 Dictionary<string, AnimatorControllerLayer>.ContainsKey(string) 的参数、作为 Dictionary<string, AnimatorControllerLayer>.this[string] 的参数、作为 InvalidOperationException.InvalidOperationException(string) 的参数 等共 4 处。
 foreach (AnimatorControllerLayer layer in layerList)
@@ -349,7 +349,7 @@ foreach (AnimatorControllerLayer layer in layerList)
             byName[layer.name] = layer;
         }
 
-        // ordered（已排序）：使用位置：LeonInjuredAnimationSetup.EnsureInjuredLayers(AnimatorController, AvatarMask, AvatarMask)。
+        // 已排序。
 var ordered = new List<AnimatorControllerLayer>();
         // layerName（图层名称）：每轮从预期图层名称列表取得一个元素，仅代表当前这一项。使用位置：作为 Dictionary<string, AnimatorControllerLayer>.ContainsKey(string) 的参数、作为 Dictionary<string, AnimatorControllerLayer>.Remove(string) 的参数、作为 Dictionary<string, AnimatorControllerLayer>.this[string] 的参数 等共 4 处。
 foreach (string layerName in ExpectedLayerNames)
@@ -373,10 +373,10 @@ foreach (string layerName in ExpectedLayerNames)
 
     /// <summary>ConfigureInjuredLowerBodyOverrides 的业务处理入口；本方法直接依赖 AnimatorController.SetStateEffectiveMotion(AnimatorState, Motion, int)、IEnumerable&lt;AnimatorState&gt;.FirstOrDefault&lt;AnimatorState&gt;(Func&lt;AnimatorState, bool&gt;)、IEnumerable&lt;ChildAnimatorState&gt;.Select&lt;ChildAnimatorState, AnimatorState&gt;(Func&lt;ChildAnimatorState, AnimatorState&gt;)、InvalidOperationException.InvalidOperationException(string)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonInjuredAnimationSetup.Build()；下游（含内部回调体） AnimatorController.SetStateEffectiveMotion(AnimatorState, Motion, int)、IEnumerable&lt;AnimatorState&gt;.FirstOrDefault&lt;AnimatorState&gt;(Func&lt;AnimatorState, bool&gt;)、IEnumerable&lt;ChildAnimatorState&gt;.Select&lt;ChildAnimatorState, AnimatorState&gt;(Func&lt;ChildAnimatorState, AnimatorState&gt;)、InvalidOperationException.InvalidOperationException(string)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="controller">中文含义：动画控制器资源。使用位置：LeonInjuredAnimationSetup.ConfigureInjuredLowerBodyOverrides(AnimatorController)。</param>
+    /// <param name="controller">动画控制器资源。</param>
     private static void ConfigureInjuredLowerBodyOverrides(AnimatorController controller)
     {
-        // stateNames（状态名称列表）：使用位置：LeonInjuredAnimationSetup.ConfigureInjuredLowerBodyOverrides(AnimatorController)。
+        // 状态名称列表。
 string[] stateNames =
         {
             IdleStateName,
@@ -387,21 +387,21 @@ string[] stateNames =
         // stateName（动画状态名称）：每轮从状态名称列表取得一个元素，仅代表当前这一项。使用位置：作为 IEnumerable<AnimatorState>.FirstOrDefault<AnimatorState>(Func<AnimatorState, bool>) 的参数、作为 InvalidOperationException.InvalidOperationException(string) 的参数。
 foreach (string stateName in stateNames)
         {
-            // sourceMachine（来源状态机）：使用位置：LeonInjuredAnimationSetup.ConfigureInjuredLowerBodyOverrides(AnimatorController)。
+            // 来源状态机。
 AnimatorStateMachine sourceMachine = controller.layers[AnimatorLayerID.Injured].stateMachine;
             if (sourceMachine == null)
             {
                 throw new InvalidOperationException("受伤移动层缺少状态机，无法配置下身动作。");
             }
 
-            // state（当前动画状态）：保存 IEnumerable<AnimatorState>.FirstOrDefault<AnimatorState>(Func<AnimatorState, bool>) 的返回结果，供当前步骤使用。使用位置：作为 AnimatorController.SetStateEffectiveMotion(AnimatorState, Motion, int) 的参数、LeonInjuredAnimationSetup.ConfigureInjuredLowerBodyOverrides(AnimatorController)。
+            // 当前动画状态。
 AnimatorState state = sourceMachine.states.Select( /* 中文含义：子级。 */child => child.state).FirstOrDefault( /* 中文含义：候选。 */candidate => candidate.name == stateName);
             if (state == null || state.motion == null)
             {
                 throw new InvalidOperationException("受伤移动层存在空动作状态：" + stateName);
             }
 
-            // sourceMotion（来源运动）：使用位置：作为 AnimatorController.SetStateEffectiveMotion(AnimatorState, Motion, int) 的参数。
+            // 来源运动。
 Motion sourceMotion = state.motion;
             controller.SetStateEffectiveMotion(state, sourceMotion, AnimatorLayerID.InjuredLowerBody);
         }
@@ -409,39 +409,39 @@ Motion sourceMotion = state.motion;
 
     /// <summary>ConfigureLongGunEquipMotion 的业务处理入口；本方法直接依赖 AssetDatabase.LoadAssetAtPath&lt;AnimationClip&gt;(string)、EditorUtility.SetDirty(Object)、IEnumerable&lt;AnimatorState&gt;.FirstOrDefault&lt;AnimatorState&gt;(Func&lt;AnimatorState, bool&gt;)、IEnumerable&lt;ChildAnimatorState&gt;.Select&lt;ChildAnimatorState, AnimatorState&gt;(Func&lt;ChildAnimatorState, AnimatorState&gt;)、InvalidOperationException.InvalidOperationException(string)、Mathf.Approximately(float, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonInjuredAnimationSetup.Build()；下游（含内部回调体） AssetDatabase.LoadAssetAtPath&lt;AnimationClip&gt;(string)、EditorUtility.SetDirty(Object)、IEnumerable&lt;AnimatorState&gt;.FirstOrDefault&lt;AnimatorState&gt;(Func&lt;AnimatorState, bool&gt;)、IEnumerable&lt;ChildAnimatorState&gt;.Select&lt;ChildAnimatorState, AnimatorState&gt;(Func&lt;ChildAnimatorState, AnimatorState&gt;)、InvalidOperationException.InvalidOperationException(string)、Mathf.Approximately(float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="controller">中文含义：动画控制器资源。使用位置：LeonInjuredAnimationSetup.ConfigureLongGunEquipMotion(AnimatorController)。</param>
+    /// <param name="controller">动画控制器资源。</param>
     private static void ConfigureLongGunEquipMotion(AnimatorController controller)
     {
-        // equipClip（装备动画片段）：保存 AssetDatabase.LoadAssetAtPath<AnimationClip>(string) 的返回结果，供当前步骤使用。使用位置：LeonInjuredAnimationSetup.ConfigureLongGunEquipMotion(AnimatorController)。
+        // 装备动画片段。
 AnimationClip equipClip = AssetDatabase.LoadAssetAtPath<AnimationClip>(LongGunEquipClipPath);
         if (equipClip == null)
         {
             throw new InvalidOperationException("找不到真正的长枪掏枪动作：" + LongGunEquipClipPath);
         }
 
-        // actionLayer（动作图层）：使用位置：LeonInjuredAnimationSetup.ConfigureLongGunEquipMotion(AnimatorController)。
+        // 动作图层。
 AnimatorControllerLayer actionLayer = controller.layers[AnimatorLayerID.WeaponAction];
-        // equipState（装备状态）：保存 IEnumerable<AnimatorState>.FirstOrDefault<AnimatorState>(Func<AnimatorState, bool>) 的返回结果，供当前步骤使用。使用位置：LeonInjuredAnimationSetup.ConfigureLongGunEquipMotion(AnimatorController)。
+        // 装备状态。
 AnimatorState equipState = actionLayer.stateMachine.states.Select( /* 中文含义：子级。 */child => child.state).FirstOrDefault( /* 中文含义：当前动画状态。 */state => state.name == "Equip");
         if (equipState == null)
         {
             throw new InvalidOperationException("武器动作层缺少装备状态。");
         }
 
-        // selector（选择器）：使用位置：作为 EditorUtility.SetDirty(Object) 的参数、LeonInjuredAnimationSetup.ConfigureLongGunEquipMotion(AnimatorController)。
+        // 选择器。
 BlendTree selector = equipState.motion as BlendTree;
         if (selector == null || selector.blendParameter != "WeaponType")
         {
             throw new InvalidOperationException("装备状态缺少武器类型混合树。");
         }
 
-        // children（子对象集合）：使用位置：作为 Mathf.Approximately(float, float) 的参数、LeonInjuredAnimationSetup.ConfigureLongGunEquipMotion(AnimatorController)。
+        // 子对象集合。
 ChildMotion[] children = selector.children;
-        // rifleMapped（是否步枪映射后的）：使用位置：LeonInjuredAnimationSetup.ConfigureLongGunEquipMotion(AnimatorController)。
+        // 是否步枪映射后的。
 bool rifleMapped = false;
-        // shotgunMapped（是否霰弹枪映射后的）：使用位置：LeonInjuredAnimationSetup.ConfigureLongGunEquipMotion(AnimatorController)。
+        // 是否霰弹枪映射后的。
 bool shotgunMapped = false;
-        // i（当前遍历索引）：使用位置：LeonInjuredAnimationSetup.ConfigureLongGunEquipMotion(AnimatorController)。
+        // 当前遍历索引。
 for (int i = 0; i < children.Length; i++)
         {
             if (Mathf.Approximately(children[i].threshold, 1f))
@@ -467,10 +467,10 @@ for (int i = 0; i < children.Length; i++)
 
     /// <summary>ValidateLongGunEquipMotion 的业务处理入口；本方法直接依赖 AnimationUtility.GetAnimationEvents(AnimationClip)、AnimationUtility.GetCurveBindings(AnimationClip)、AssetDatabase.LoadAssetAtPath&lt;AnimationClip&gt;(string)、IEnumerable&lt;AnimationEvent&gt;.FirstOrDefault&lt;AnimationEvent&gt;(Func&lt;AnimationEvent, bool&gt;)、IEnumerable&lt;AnimatorState&gt;.FirstOrDefault&lt;AnimatorState&gt;(Func&lt;AnimatorState, bool&gt;)、IEnumerable&lt;ChildAnimatorState&gt;.Select&lt;ChildAnimatorState, AnimatorState&gt;(Func&lt;ChildAnimatorState, AnimatorState&gt;)、IEnumerable&lt;ChildMotion&gt;.FirstOrDefault&lt;ChildMotion&gt;(Func&lt;ChildMotion, bool&gt;) 等共 9 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonInjuredAnimationSetup.Build()；下游（含内部回调体） AnimationUtility.GetAnimationEvents(AnimationClip)、AnimationUtility.GetCurveBindings(AnimationClip)、AssetDatabase.LoadAssetAtPath&lt;AnimationClip&gt;(string)、IEnumerable&lt;AnimationEvent&gt;.FirstOrDefault&lt;AnimationEvent&gt;(Func&lt;AnimationEvent, bool&gt;)、IEnumerable&lt;AnimatorState&gt;.FirstOrDefault&lt;AnimatorState&gt;(Func&lt;AnimatorState, bool&gt;)、IEnumerable&lt;ChildAnimatorState&gt;.Select&lt;ChildAnimatorState, AnimatorState&gt;(Func&lt;ChildAnimatorState, AnimatorState&gt;)、IEnumerable&lt;ChildMotion&gt;.FirstOrDefault&lt;ChildMotion&gt;(Func&lt;ChildMotion, bool&gt;) 等共 9 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="controller">中文含义：动画控制器资源。使用位置：LeonInjuredAnimationSetup.ValidateLongGunEquipMotion(AnimatorController)。</param>
+    /// <param name="controller">动画控制器资源。</param>
     private static void ValidateLongGunEquipMotion(AnimatorController controller)
     {
-        // expected（预期）：保存 AssetDatabase.LoadAssetAtPath<AnimationClip>(string) 的返回结果，供当前步骤使用。使用位置：作为 AnimationUtility.GetAnimationEvents(AnimationClip) 的参数、作为 AnimationUtility.GetCurveBindings(AnimationClip) 的参数、LeonInjuredAnimationSetup.ValidateLongGunEquipMotion(AnimatorController)。
+        // 预期。
 AnimationClip expected = AssetDatabase.LoadAssetAtPath<AnimationClip>(LongGunEquipClipPath);
         if (expected == null)
         {
@@ -482,13 +482,13 @@ AnimationClip expected = AssetDatabase.LoadAssetAtPath<AnimationClip>(LongGunEqu
             throw new InvalidOperationException("长枪装备过渡动作没有动画曲线。");
         }
 
-        // events（事件集合）：保存 AnimationUtility.GetAnimationEvents(AnimationClip) 的返回结果，供当前步骤使用。使用位置：LeonInjuredAnimationSetup.ValidateLongGunEquipMotion(AnimatorController)。
+        // 事件集合。
 AnimationEvent[] events = AnimationUtility.GetAnimationEvents(expected);
-        // backHide（后方隐藏）：保存 IEnumerable<AnimationEvent>.FirstOrDefault<AnimationEvent>(Func<AnimationEvent, bool>) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Approximately(float, float) 的参数、LeonInjuredAnimationSetup.ValidateLongGunEquipMotion(AnimatorController)。
+        // 后方隐藏。
 AnimationEvent backHide = events.FirstOrDefault( /* 中文含义：动画事件。 */animationEvent => animationEvent.functionName == "OnRifleBackHideBeforeReveal");
-        // visualReveal（视觉表现显露）：保存 IEnumerable<AnimationEvent>.FirstOrDefault<AnimationEvent>(Func<AnimationEvent, bool>) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Approximately(float, float) 的参数、LeonInjuredAnimationSetup.ValidateLongGunEquipMotion(AnimatorController)。
+        // 视觉表现显露。
 AnimationEvent visualReveal = events.FirstOrDefault( /* 中文含义：动画事件。 */animationEvent => animationEvent.functionName == "OnEquipVisualReveal");
-        // supportHandGrip（支撑手部握持）：保存 IEnumerable<AnimationEvent>.FirstOrDefault<AnimationEvent>(Func<AnimationEvent, bool>) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Approximately(float, float) 的参数、LeonInjuredAnimationSetup.ValidateLongGunEquipMotion(AnimatorController)。
+        // 支撑手部握持。
 AnimationEvent supportHandGrip = events.FirstOrDefault( /* 中文含义：动画事件。 */animationEvent => animationEvent.functionName == "OnLongGunSupportHandGrip");
         if (backHide == null || visualReveal == null || supportHandGrip == null)
         {
@@ -505,9 +505,9 @@ AnimationEvent supportHandGrip = events.FirstOrDefault( /* 中文含义：动画
             throw new InvalidOperationException("长枪装备事件时间不匹配，期望为0.05、0.3166667和1.05秒。");
         }
 
-        // equipState（装备状态）：保存 IEnumerable<AnimatorState>.FirstOrDefault<AnimatorState>(Func<AnimatorState, bool>) 的返回结果，供当前步骤使用。使用位置：LeonInjuredAnimationSetup.ValidateLongGunEquipMotion(AnimatorController)。
+        // 装备状态。
 AnimatorState equipState = controller.layers[AnimatorLayerID.WeaponAction].stateMachine.states.Select( /* 中文含义：子级。 */child => child.state).FirstOrDefault( /* 中文含义：当前动画状态。 */state => state.name == "Equip");
-        // selector（选择器）：使用位置：LeonInjuredAnimationSetup.ValidateLongGunEquipMotion(AnimatorController)。
+        // 选择器。
 BlendTree selector;
         if (equipState != null)
         {
@@ -523,9 +523,9 @@ BlendTree selector;
             throw new InvalidOperationException("装备状态缺少有效混合树。");
         }
 
-        // rifle（步枪）：保存 IEnumerable<ChildMotion>.FirstOrDefault<ChildMotion>(Func<ChildMotion, bool>) 的返回结果，供当前步骤使用。使用位置：LeonInjuredAnimationSetup.ValidateLongGunEquipMotion(AnimatorController)。
+        // 步枪。
 ChildMotion rifle = selector.children.FirstOrDefault( /* 中文含义：子级。 */child => Mathf.Approximately(child.threshold, 1f));
-        // shotgun（霰弹枪）：保存 IEnumerable<ChildMotion>.FirstOrDefault<ChildMotion>(Func<ChildMotion, bool>) 的返回结果，供当前步骤使用。使用位置：LeonInjuredAnimationSetup.ValidateLongGunEquipMotion(AnimatorController)。
+        // 霰弹枪。
 ChildMotion shotgun = selector.children.FirstOrDefault( /* 中文含义：子级。 */child => Mathf.Approximately(child.threshold, 3f));
         if (rifle.motion != expected || shotgun.motion != expected)
         {
@@ -537,13 +537,13 @@ ChildMotion shotgun = selector.children.FirstOrDefault( /* 中文含义：子级
     /// 构建受伤层状态机：复用已有状态与混合树，清空并重建全部转换。
     /// </summary>
     /// <remarks>静态调用链：上游 LeonInjuredAnimationSetup.Build()；下游（含内部回调体） AnimatorStateMachine.RemoveState(AnimatorState)、IEnumerable&lt;ChildAnimatorState&gt;.ToArray&lt;ChildAnimatorState&gt;()、IEnumerable&lt;string&gt;.Contains&lt;string&gt;(string)、LeonInjuredAnimationSetup.ConfigureJogTree(BlendTree)、LeonInjuredAnimationSetup.ConfigureState(AnimatorState, Motion, bool)、LeonInjuredAnimationSetup.ConfigureTurnTree(BlendTree)、LeonInjuredAnimationSetup.ConfigureWalkTree(BlendTree) 等共 14 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="controller">中文含义：动画控制器资源。使用位置：作为 LeonInjuredAnimationSetup.FindOrCreateTree(AnimatorController, string) 的参数、LeonInjuredAnimationSetup.BuildInjuredStateMachine(AnimatorController)。</param>
+    /// <param name="controller">动画控制器资源。</param>
     private static void BuildInjuredStateMachine(AnimatorController controller)
     {
-        // machine（状态机）：使用位置：作为 LeonInjuredAnimationSetup.EnsureState(AnimatorStateMachine, string, Vector3) 的参数、作为 LeonInjuredAnimationSetup.RemoveIncomingTransitions(AnimatorStateMachine, AnimatorState) 的参数、LeonInjuredAnimationSetup.BuildInjuredStateMachine(AnimatorController)。
+        // 状态机。
 AnimatorStateMachine machine = controller.layers[AnimatorLayerID.Injured].stateMachine;
         // 移除不属于本工具的历史残留状态
-        // expectedStateNames（预期状态名称列表）：使用位置：LeonInjuredAnimationSetup.BuildInjuredStateMachine(AnimatorController)。
+        // 预期状态名称列表。
 string[] expectedStateNames =
         {
             IdleStateName,
@@ -563,26 +563,26 @@ foreach (ChildAnimatorState child in machine.states.ToArray())
             machine.RemoveState(child.state);
         }
 
-        // walkTree（行走行为树）：保存 LeonInjuredAnimationSetup.FindOrCreateTree(AnimatorController, string) 的返回结果，供当前步骤使用。使用位置：作为 LeonInjuredAnimationSetup.ConfigureState(AnimatorState, Motion, bool) 的参数、作为 LeonInjuredAnimationSetup.ConfigureWalkTree(BlendTree) 的参数。
+        // 行走行为树。
 BlendTree walkTree = FindOrCreateTree(controller, WalkTreeName);
         ConfigureWalkTree(walkTree);
-        // jogTree（慢跑行为树）：保存 LeonInjuredAnimationSetup.FindOrCreateTree(AnimatorController, string) 的返回结果，供当前步骤使用。使用位置：作为 LeonInjuredAnimationSetup.ConfigureJogTree(BlendTree) 的参数、作为 LeonInjuredAnimationSetup.ConfigureState(AnimatorState, Motion, bool) 的参数。
+        // 慢跑行为树。
 BlendTree jogTree = FindOrCreateTree(controller, JogTreeName);
         ConfigureJogTree(jogTree);
-        // turnTree（转向行为树）：保存 LeonInjuredAnimationSetup.FindOrCreateTree(AnimatorController, string) 的返回结果，供当前步骤使用。使用位置：作为 LeonInjuredAnimationSetup.ConfigureState(AnimatorState, Motion, bool) 的参数、作为 LeonInjuredAnimationSetup.ConfigureTurnTree(BlendTree) 的参数。
+        // 转向行为树。
 BlendTree turnTree = FindOrCreateTree(controller, TurnTreeName);
         ConfigureTurnTree(turnTree);
-        // idle（待机）：保存 LeonInjuredAnimationSetup.EnsureState(AnimatorStateMachine, string, Vector3) 的返回结果，供当前步骤使用。使用位置：作为 LeonInjuredAnimationSetup.ConfigureState(AnimatorState, Motion, bool) 的参数、作为 LeonInjuredAnimationSetup.RebuildTransitions(AnimatorState, AnimatorState, AnimatorState, AnimatorState) 的参数、LeonInjuredAnimationSetup.BuildInjuredStateMachine(AnimatorController)。
+        // 待机。
 AnimatorState idle = EnsureState(machine, IdleStateName, new Vector3(260f, 0f));
         ConfigureState(idle, LoadHurtClip("IP_Hurt_Idle"), true);
-        // walk（行走）：保存 LeonInjuredAnimationSetup.EnsureState(AnimatorStateMachine, string, Vector3) 的返回结果，供当前步骤使用。使用位置：作为 LeonInjuredAnimationSetup.ConfigureState(AnimatorState, Motion, bool) 的参数、作为 LeonInjuredAnimationSetup.RebuildTransitions(AnimatorState, AnimatorState, AnimatorState, AnimatorState) 的参数、LeonInjuredAnimationSetup.BuildInjuredStateMachine(AnimatorController)。
+        // 行走。
 AnimatorState walk = EnsureState(machine, WalkStateName, new Vector3(560f, 130f));
         ConfigureState(walk, walkTree, true);
-        // jog（慢跑）：保存 LeonInjuredAnimationSetup.EnsureState(AnimatorStateMachine, string, Vector3) 的返回结果，供当前步骤使用。使用位置：作为 LeonInjuredAnimationSetup.ConfigureState(AnimatorState, Motion, bool) 的参数、作为 LeonInjuredAnimationSetup.RebuildTransitions(AnimatorState, AnimatorState, AnimatorState, AnimatorState) 的参数、LeonInjuredAnimationSetup.BuildInjuredStateMachine(AnimatorController)。
+        // 慢跑。
 AnimatorState jog = EnsureState(machine, JogStateName, new Vector3(560f, 270f));
         // 慢跑同样启用脚部反向动力学，减轻人形重定向后的脚底漂移与骨盆摇摆
         ConfigureState(jog, jogTree, true);
-        // turn（转向）：保存 LeonInjuredAnimationSetup.EnsureState(AnimatorStateMachine, string, Vector3) 的返回结果，供当前步骤使用。使用位置：作为 LeonInjuredAnimationSetup.ConfigureState(AnimatorState, Motion, bool) 的参数、作为 LeonInjuredAnimationSetup.RebuildTransitions(AnimatorState, AnimatorState, AnimatorState, AnimatorState) 的参数、LeonInjuredAnimationSetup.BuildInjuredStateMachine(AnimatorController)。
+        // 转向。
 AnimatorState turn = EnsureState(machine, TurnStateName, new Vector3(260f, 300f));
         ConfigureState(turn, turnTree, true);
         machine.defaultState = idle;
@@ -607,46 +607,46 @@ foreach (AnimatorState state in new[]
     /// 重建受伤层全部转换：所有过渡关闭退出时间，使用固定时长。
     /// </summary>
     /// <remarks>静态调用链：上游 LeonInjuredAnimationSetup.BuildInjuredStateMachine(AnimatorController)；下游（含内部回调体） AnimatorTransitionBase.AddCondition(AnimatorConditionMode, float, string)、LeonInjuredAnimationSetup.CreateTransition(AnimatorState, AnimatorState, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="idle">中文含义：待机。使用位置：作为 LeonInjuredAnimationSetup.CreateTransition(AnimatorState, AnimatorState, float) 的参数。</param>
-    /// <param name="walk">中文含义：行走。使用位置：作为 LeonInjuredAnimationSetup.CreateTransition(AnimatorState, AnimatorState, float) 的参数。</param>
-    /// <param name="jog">中文含义：慢跑。使用位置：作为 LeonInjuredAnimationSetup.CreateTransition(AnimatorState, AnimatorState, float) 的参数。</param>
-    /// <param name="turn">中文含义：转向。使用位置：作为 LeonInjuredAnimationSetup.CreateTransition(AnimatorState, AnimatorState, float) 的参数。</param>
+    /// <param name="idle">待机。</param>
+    /// <param name="walk">行走。</param>
+    /// <param name="jog">慢跑。</param>
+    /// <param name="turn">转向。</param>
     private static void RebuildTransitions(AnimatorState idle, AnimatorState walk, AnimatorState jog, AnimatorState turn)
     {
         // 待机 → 步行：有移动输入且未按跑步
-        // idleToWalk（待机目标行走）：保存 LeonInjuredAnimationSetup.CreateTransition(AnimatorState, AnimatorState, float) 的返回结果，供当前步骤使用。使用位置：LeonInjuredAnimationSetup.RebuildTransitions(AnimatorState, AnimatorState, AnimatorState, AnimatorState)。
+        // 待机目标行走。
 AnimatorStateTransition idleToWalk = CreateTransition(idle, walk, IdleMovementTransitionDuration);
         idleToWalk.AddCondition(AnimatorConditionMode.Greater, 0.5f, "InputMagnitude");
         idleToWalk.AddCondition(AnimatorConditionMode.IfNot, 0f, "Sprint");
         // 待机 → 慢跑：按住跑步且有移动输入
-        // idleToJog（待机目标慢跑）：保存 LeonInjuredAnimationSetup.CreateTransition(AnimatorState, AnimatorState, float) 的返回结果，供当前步骤使用。使用位置：LeonInjuredAnimationSetup.RebuildTransitions(AnimatorState, AnimatorState, AnimatorState, AnimatorState)。
+        // 待机目标慢跑。
 AnimatorStateTransition idleToJog = CreateTransition(idle, jog, IdleMovementTransitionDuration);
         idleToJog.AddCondition(AnimatorConditionMode.Greater, 0.1f, "InputMagnitude");
         idleToJog.AddCondition(AnimatorConditionMode.If, 0f, "Sprint");
         // 待机 → 原地转向（左右各一条）
-        // idleToTurnRight（待机目标转向右侧）：保存 LeonInjuredAnimationSetup.CreateTransition(AnimatorState, AnimatorState, float) 的返回结果，供当前步骤使用。使用位置：LeonInjuredAnimationSetup.RebuildTransitions(AnimatorState, AnimatorState, AnimatorState, AnimatorState)。
+        // 待机目标转向右侧。
 AnimatorStateTransition idleToTurnRight = CreateTransition(idle, turn, IdleTurnTransitionDuration);
         idleToTurnRight.AddCondition(AnimatorConditionMode.Greater, 6f, "TurnAngle");
-        // idleToTurnLeft（待机目标转向左侧）：保存 LeonInjuredAnimationSetup.CreateTransition(AnimatorState, AnimatorState, float) 的返回结果，供当前步骤使用。使用位置：LeonInjuredAnimationSetup.RebuildTransitions(AnimatorState, AnimatorState, AnimatorState, AnimatorState)。
+        // 待机目标转向左侧。
 AnimatorStateTransition idleToTurnLeft = CreateTransition(idle, turn, IdleTurnTransitionDuration);
         idleToTurnLeft.AddCondition(AnimatorConditionMode.Less, -6f, "TurnAngle");
         // 步行 ↔ 慢跑（步行→慢跑 0.18，慢跑→步行 0.20）
-        // walkToJog（行走目标慢跑）：保存 LeonInjuredAnimationSetup.CreateTransition(AnimatorState, AnimatorState, float) 的返回结果，供当前步骤使用。使用位置：LeonInjuredAnimationSetup.RebuildTransitions(AnimatorState, AnimatorState, AnimatorState, AnimatorState)。
+        // 行走目标慢跑。
 AnimatorStateTransition walkToJog = CreateTransition(walk, jog, WalkToJogTransitionDuration);
         walkToJog.AddCondition(AnimatorConditionMode.If, 0f, "Sprint");
-        // jogToWalk（慢跑目标行走）：保存 LeonInjuredAnimationSetup.CreateTransition(AnimatorState, AnimatorState, float) 的返回结果，供当前步骤使用。使用位置：LeonInjuredAnimationSetup.RebuildTransitions(AnimatorState, AnimatorState, AnimatorState, AnimatorState)。
+        // 慢跑目标行走。
 AnimatorStateTransition jogToWalk = CreateTransition(jog, walk, JogToWalkTransitionDuration);
         jogToWalk.AddCondition(AnimatorConditionMode.IfNot, 0f, "Sprint");
         // 移动 → 待机
-        // walkToIdle（行走目标待机）：保存 LeonInjuredAnimationSetup.CreateTransition(AnimatorState, AnimatorState, float) 的返回结果，供当前步骤使用。使用位置：LeonInjuredAnimationSetup.RebuildTransitions(AnimatorState, AnimatorState, AnimatorState, AnimatorState)。
+        // 行走目标待机。
 AnimatorStateTransition walkToIdle = CreateTransition(walk, idle, IdleMovementTransitionDuration);
         walkToIdle.AddCondition(AnimatorConditionMode.Less, 0.5f, "InputMagnitude");
-        // jogToIdle（慢跑目标待机）：保存 LeonInjuredAnimationSetup.CreateTransition(AnimatorState, AnimatorState, float) 的返回结果，供当前步骤使用。使用位置：LeonInjuredAnimationSetup.RebuildTransitions(AnimatorState, AnimatorState, AnimatorState, AnimatorState)。
+        // 慢跑目标待机。
 AnimatorStateTransition jogToIdle = CreateTransition(jog, idle, IdleMovementTransitionDuration);
         jogToIdle.AddCondition(AnimatorConditionMode.Less, 0.5f, "InputMagnitude");
         jogToIdle.AddCondition(AnimatorConditionMode.IfNot, 0f, "Sprint");
         // 转向 → 待机：转向角回到小角度
-        // turnToIdle（转向目标待机）：保存 LeonInjuredAnimationSetup.CreateTransition(AnimatorState, AnimatorState, float) 的返回结果，供当前步骤使用。使用位置：LeonInjuredAnimationSetup.RebuildTransitions(AnimatorState, AnimatorState, AnimatorState, AnimatorState)。
+        // 转向目标待机。
 AnimatorStateTransition turnToIdle = CreateTransition(turn, idle, IdleTurnTransitionDuration);
         turnToIdle.AddCondition(AnimatorConditionMode.Less, 2f, "TurnAngle");
         turnToIdle.AddCondition(AnimatorConditionMode.Greater, -2f, "TurnAngle");
@@ -654,12 +654,12 @@ AnimatorStateTransition turnToIdle = CreateTransition(turn, idle, IdleTurnTransi
 
     /// <summary>CreateTransition 的业务处理入口；本方法直接依赖 AnimatorState.AddTransition(AnimatorState)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonInjuredAnimationSetup.RebuildTransitions(AnimatorState, AnimatorState, AnimatorState, AnimatorState)；下游（含内部回调体） AnimatorState.AddTransition(AnimatorState)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="source">中文含义：来源动画状态。使用位置：LeonInjuredAnimationSetup.CreateTransition(AnimatorState, AnimatorState, float)。</param>
-    /// <param name="destination">中文含义：目的地。使用位置：作为 AnimatorState.AddTransition(AnimatorState) 的参数。</param>
-    /// <param name="duration">中文含义：持续时间。使用位置：LeonInjuredAnimationSetup.CreateTransition(AnimatorState, AnimatorState, float)。</param>
+    /// <param name="source">来源动画状态。</param>
+    /// <param name="destination">目的地。</param>
+    /// <param name="duration">持续时间。</param>
     private static AnimatorStateTransition CreateTransition(AnimatorState source, AnimatorState destination, float duration)
     {
-        // transition（过渡）：保存 AnimatorState.AddTransition(AnimatorState) 的返回结果，供当前步骤使用。使用位置：LeonInjuredAnimationSetup.CreateTransition(AnimatorState, AnimatorState, float)。
+        // 过渡。
 AnimatorStateTransition transition = source.AddTransition(destination);
         transition.hasExitTime = false;
         transition.hasFixedDuration = true;
@@ -671,9 +671,9 @@ AnimatorStateTransition transition = source.AddTransition(destination);
 
     /// <summary>ConfigureState 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
     /// <remarks>静态调用链：上游 LeonInjuredAnimationSetup.BuildInjuredStateMachine(AnimatorController)；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="state">中文含义：当前动画状态。使用位置：LeonInjuredAnimationSetup.ConfigureState(AnimatorState, Motion, bool)。</param>
-    /// <param name="motion">中文含义：运动。使用位置：LeonInjuredAnimationSetup.ConfigureState(AnimatorState, Motion, bool)。</param>
-    /// <param name="footIk">中文含义：是否脚部反向动力学。使用位置：LeonInjuredAnimationSetup.ConfigureState(AnimatorState, Motion, bool)。</param>
+    /// <param name="state">当前动画状态。</param>
+    /// <param name="motion">运动。</param>
+    /// <param name="footIk">是否脚部反向动力学。</param>
     private static void ConfigureState(AnimatorState state, Motion motion, bool footIk)
     {
         state.motion = motion;
@@ -687,7 +687,7 @@ AnimatorStateTransition transition = source.AddTransition(destination);
     /// 避免共用倍率导致横移过慢或斜向步频失真。
     /// </summary>
     /// <remarks>静态调用链：上游 LeonInjuredAnimationSetup.BuildInjuredStateMachine(AnimatorController)；下游（含内部回调体） LeonInjuredAnimationSetup.CreateDirectionalChild(string, float, float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="tree">中文含义：行为树。使用位置：LeonInjuredAnimationSetup.ConfigureWalkTree(BlendTree)。</param>
+    /// <param name="tree">行为树。</param>
     private static void ConfigureWalkTree(BlendTree tree)
     {
         tree.name = WalkTreeName;
@@ -712,7 +712,7 @@ AnimatorStateTransition transition = source.AddTransition(destination);
     /// 按各原始片段的实际步幅分别计算播放倍率。
     /// </summary>
     /// <remarks>静态调用链：上游 LeonInjuredAnimationSetup.BuildInjuredStateMachine(AnimatorController)；下游（含内部回调体） LeonInjuredAnimationSetup.CreateDirectionalChild(string, float, float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="tree">中文含义：行为树。使用位置：LeonInjuredAnimationSetup.ConfigureJogTree(BlendTree)。</param>
+    /// <param name="tree">行为树。</param>
     private static void ConfigureJogTree(BlendTree tree)
     {
         tree.name = JogTreeName;
@@ -737,7 +737,7 @@ AnimatorStateTransition transition = source.AddTransition(destination);
     /// 中心用受伤待机占位避免左右转向互相混合。
     /// </summary>
     /// <remarks>静态调用链：上游 LeonInjuredAnimationSetup.BuildInjuredStateMachine(AnimatorController)；下游（含内部回调体） LeonInjuredAnimationSetup.CreateThresholdChild(string, float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="tree">中文含义：行为树。使用位置：LeonInjuredAnimationSetup.ConfigureTurnTree(BlendTree)。</param>
+    /// <param name="tree">行为树。</param>
     private static void ConfigureTurnTree(BlendTree tree)
     {
         tree.name = TurnTreeName;
@@ -756,10 +756,10 @@ AnimatorStateTransition transition = source.AddTransition(destination);
 
     /// <summary>CreateDirectionalChild 的业务处理入口；本方法直接依赖 ChildMotion.ChildMotion()、LeonInjuredAnimationSetup.LoadHurtClip(string)、Vector2.Vector2(float, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonInjuredAnimationSetup.ConfigureJogTree(BlendTree)、LeonInjuredAnimationSetup.ConfigureWalkTree(BlendTree)；下游（含内部回调体） ChildMotion.ChildMotion()、LeonInjuredAnimationSetup.LoadHurtClip(string)、Vector2.Vector2(float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="clipName">中文含义：动画片段名称。使用位置：作为 LeonInjuredAnimationSetup.LoadHurtClip(string) 的参数。</param>
-    /// <param name="x">中文含义：横向。使用位置：作为 Vector2.Vector2(float, float) 的参数。</param>
-    /// <param name="y">中文含义：纵向。使用位置：作为 Vector2.Vector2(float, float) 的参数。</param>
-    /// <param name="timeScale">中文含义：时间缩放。使用位置：LeonInjuredAnimationSetup.CreateDirectionalChild(string, float, float, float)。</param>
+    /// <param name="clipName">动画片段名称。</param>
+    /// <param name="x">横向。</param>
+    /// <param name="y">纵向。</param>
+    /// <param name="timeScale">时间缩放。</param>
     private static ChildMotion CreateDirectionalChild(string clipName, float x, float y, float timeScale)
     {
         return new ChildMotion
@@ -780,12 +780,12 @@ AnimatorStateTransition transition = source.AddTransition(destination);
     /// 重复运行时基于原始信号重新计算，结果一致，不会累加偏移。
     /// </summary>
     /// <remarks>静态调用链：上游 LeonInjuredAnimationSetup.Build()；下游（含内部回调体） AssetDatabase.LoadAssetAtPath&lt;GameObject&gt;(string)、GameObject.GetComponent&lt;Animator&gt;()、LeonInjuredAnimationSetup.CalibrateTreePhase(BlendTree, Animator, string)、LeonInjuredAnimationSetup.FindOrCreateTree(AnimatorController, string)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="controller">中文含义：动画控制器资源。使用位置：作为 LeonInjuredAnimationSetup.FindOrCreateTree(AnimatorController, string) 的参数。</param>
+    /// <param name="controller">动画控制器资源。</param>
     private static void CalibrateDirectionalPhaseOffsets(AnimatorController controller)
     {
-        // rigPrefab（绑定预制件）：保存 AssetDatabase.LoadAssetAtPath<GameObject>(string) 的返回结果，供当前步骤使用。使用位置：LeonInjuredAnimationSetup.CalibrateDirectionalPhaseOffsets(AnimatorController)。
+        // 绑定预制件。
 GameObject rigPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(LeonPrefabPath);
-        // sourceAnimator（来源动画控制器）：使用位置：作为 LeonInjuredAnimationSetup.CalibrateTreePhase(BlendTree, Animator, string) 的参数、LeonInjuredAnimationSetup.CalibrateDirectionalPhaseOffsets(AnimatorController)。
+        // 来源动画控制器。
 Animator sourceAnimator;
         if (rigPrefab != null)
         {
@@ -796,13 +796,9 @@ Animator sourceAnimator;
             sourceAnimator = null;
         }
 
-        // walkTreeMask（行走行为树遮罩）：
-AvatarMask walkTreeMask = null;
-        // jogTreeMask（慢跑行为树遮罩）：
-AvatarMask jogTreeMask = null;
-        // walkTree（行走行为树）：保存 LeonInjuredAnimationSetup.FindOrCreateTree(AnimatorController, string) 的返回结果，供当前步骤使用。使用位置：作为 LeonInjuredAnimationSetup.CalibrateTreePhase(BlendTree, Animator, string) 的参数。
+        // 行走行为树。
 var walkTree = FindOrCreateTree(controller, WalkTreeName);
-        // jogTree（慢跑行为树）：保存 LeonInjuredAnimationSetup.FindOrCreateTree(AnimatorController, string) 的返回结果，供当前步骤使用。使用位置：作为 LeonInjuredAnimationSetup.CalibrateTreePhase(BlendTree, Animator, string) 的参数。
+        // 慢跑行为树。
 var jogTree = FindOrCreateTree(controller, JogTreeName);
         CalibrateTreePhase(walkTree, sourceAnimator, "步行");
         CalibrateTreePhase(jogTree, sourceAnimator, "慢跑");
@@ -810,9 +806,9 @@ var jogTree = FindOrCreateTree(controller, JogTreeName);
 
     /// <summary>CalibrateTreePhase 的业务处理入口；本方法直接依赖 Debug.Log(object)、Debug.LogWarning(object)、EditorUtility.SetDirty(Object)、LeonInjuredAnimationSetup.CircuarSignalError(float[], float[], float)、LeonInjuredAnimationSetup.SampleFootPhaseSignal(AnimationClip, Animator, int)、Mathf.Approximately(float, float)、StringBuilder.AppendLine(string) 等共 9 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonInjuredAnimationSetup.CalibrateDirectionalPhaseOffsets(AnimatorController)；下游（含内部回调体） Debug.Log(object)、Debug.LogWarning(object)、EditorUtility.SetDirty(Object)、LeonInjuredAnimationSetup.CircuarSignalError(float[], float[], float)、LeonInjuredAnimationSetup.SampleFootPhaseSignal(AnimationClip, Animator, int)、Mathf.Approximately(float, float)、StringBuilder.AppendLine(string) 等共 9 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="tree">中文含义：行为树。使用位置：作为 EditorUtility.SetDirty(Object) 的参数、作为 Mathf.Approximately(float, float) 的参数、LeonInjuredAnimationSetup.CalibrateTreePhase(BlendTree, Animator, string)。</param>
-    /// <param name="animator">中文含义：动画控制器。使用位置：作为 LeonInjuredAnimationSetup.SampleFootPhaseSignal(AnimationClip, Animator, int) 的参数、LeonInjuredAnimationSetup.CalibrateTreePhase(BlendTree, Animator, string)。</param>
-    /// <param name="label">中文含义：标签。使用位置：作为 Debug.LogWarning(object) 的参数、作为 StringBuilder.AppendLine(string) 的参数。</param>
+    /// <param name="tree">行为树。</param>
+    /// <param name="animator">动画控制器。</param>
+    /// <param name="label">标签。</param>
     private static void CalibrateTreePhase(BlendTree tree, Animator animator, string label)
     {
         if (tree == null || animator == null || animator.avatar == null)
@@ -821,16 +817,16 @@ var jogTree = FindOrCreateTree(controller, JogTreeName);
             return;
         }
 
-        // sampleCount（采样数量）：使用位置：作为 LeonInjuredAnimationSetup.SampleFootPhaseSignal(AnimationClip, Animator, int) 的参数、LeonInjuredAnimationSetup.CalibrateTreePhase(BlendTree, Animator, string)。
+        // 采样数量。
 const int sampleCount = 128;
-        // signals（信号集合）：使用位置：作为 LeonInjuredAnimationSetup.CircuarSignalError(float[], float[], float) 的参数、LeonInjuredAnimationSetup.CalibrateTreePhase(BlendTree, Animator, string)。
+        // 信号集合。
 float[][] signals = new float[tree.children.Length][];
-        // clipNames（动画片段名称列表）：使用位置：作为 StringBuilder.AppendLine(string) 的参数、LeonInjuredAnimationSetup.CalibrateTreePhase(BlendTree, Animator, string)。
+        // 动画片段名称列表。
 string[] clipNames = new string[tree.children.Length];
-        // i（当前遍历索引）：使用位置：LeonInjuredAnimationSetup.CalibrateTreePhase(BlendTree, Animator, string)。
+        // 当前遍历索引。
 for (int i = 0; i < tree.children.Length; i++)
         {
-            // clip（动画片段）：使用位置：作为 LeonInjuredAnimationSetup.SampleFootPhaseSignal(AnimationClip, Animator, int) 的参数、LeonInjuredAnimationSetup.CalibrateTreePhase(BlendTree, Animator, string)。
+            // 动画片段。
 AnimationClip clip = tree.children[i].motion as AnimationClip;
             if (clip == null)
             {
@@ -843,9 +839,9 @@ AnimationClip clip = tree.children[i].motion as AnimationClip;
         }
 
         // 参考：前进动画（位置 (0,1) 的第一个子项）
-        // referenceIndex（引用索引）：使用位置：LeonInjuredAnimationSetup.CalibrateTreePhase(BlendTree, Animator, string)。
+        // 引用索引。
 int referenceIndex = -1;
-        // i（当前遍历索引）：使用位置：LeonInjuredAnimationSetup.CalibrateTreePhase(BlendTree, Animator, string)。
+        // 当前遍历索引。
 for (int i = 0; i < tree.children.Length; i++)
         {
             if (Mathf.Approximately(tree.children[i].position.x, 0f) && Mathf.Approximately(tree.children[i].position.y, 1f))
@@ -861,14 +857,14 @@ for (int i = 0; i < tree.children.Length; i++)
             return;
         }
 
-        // reference（引用）：使用位置：作为 LeonInjuredAnimationSetup.CircuarSignalError(float[], float[], float) 的参数。
+        // 引用。
 float[] reference = signals[referenceIndex];
-        // sb（文本构建器）：使用位置：作为 Debug.Log(object) 的参数、LeonInjuredAnimationSetup.CalibrateTreePhase(BlendTree, Animator, string)。
+        // 文本构建器。
 var sb = new System.Text.StringBuilder();
         sb.AppendLine($"[里昂受伤动画] {label}相位校准（参考: {clipNames[referenceIndex]}）:");
-        // children（子对象集合）：使用位置：作为 StringBuilder.AppendLine(string) 的参数、LeonInjuredAnimationSetup.CalibrateTreePhase(BlendTree, Animator, string)。
+        // 子对象集合。
 ChildMotion[] children = tree.children;
-        // i（当前遍历索引）：使用位置：LeonInjuredAnimationSetup.CalibrateTreePhase(BlendTree, Animator, string)。
+        // 当前遍历索引。
 for (int i = 0; i < children.Length; i++)
         {
             if (signals[i] == null)
@@ -884,20 +880,20 @@ for (int i = 0; i < children.Length; i++)
                 continue;
             }
 
-            // bestOffset（最佳偏移量）：使用位置：作为 StringBuilder.AppendLine(string) 的参数、LeonInjuredAnimationSetup.CalibrateTreePhase(BlendTree, Animator, string)。
+            // 最佳偏移量。
 float bestOffset = 0f;
-            // bestError（最佳错误）：使用位置：作为 StringBuilder.AppendLine(string) 的参数、LeonInjuredAnimationSetup.CalibrateTreePhase(BlendTree, Animator, string)。
+            // 最佳错误。
 float bestError = float.MaxValue;
-            // errorAtZero（错误所在零值）：保存 LeonInjuredAnimationSetup.CircuarSignalError(float[], float[], float) 的返回结果，供当前步骤使用。使用位置：作为 StringBuilder.AppendLine(string) 的参数。
+            // 错误所在零值。
 float errorAtZero = CircuarSignalError(signals[i], reference, 0f);
-            // steps（步数）：使用位置：LeonInjuredAnimationSetup.CalibrateTreePhase(BlendTree, Animator, string)。
+            // 步数。
 int steps = sampleCount;
-            // s（当前步态相位的采样索引）：使用位置：LeonInjuredAnimationSetup.CalibrateTreePhase(BlendTree, Animator, string)。
+            // 当前步态相位的采样索引。
 for (int s = 0; s < steps; s++)
             {
-                // offset（偏移量）：使用位置：作为 LeonInjuredAnimationSetup.CircuarSignalError(float[], float[], float) 的参数、LeonInjuredAnimationSetup.CalibrateTreePhase(BlendTree, Animator, string)。
+                // 偏移量。
 float offset = (float)s / steps;
-                // error（错误）：保存 LeonInjuredAnimationSetup.CircuarSignalError(float[], float[], float) 的返回结果，供当前步骤使用。使用位置：LeonInjuredAnimationSetup.CalibrateTreePhase(BlendTree, Animator, string)。
+                // 错误。
 float error = CircuarSignalError(signals[i], reference, offset);
                 if (error < bestError)
                 {
@@ -920,22 +916,22 @@ float error = CircuarSignalError(signals[i], reference, offset);
     /// 通过 AnimationMode 逐帧采样曲线，不依赖运行时。
     /// </summary>
     /// <remarks>静态调用链：上游 LeonInjuredAnimationSetup.CalibrateTreePhase(BlendTree, Animator, string)；下游（含内部回调体） AnimationMode.SampleAnimationClip(GameObject, AnimationClip, float)、AnimationMode.StartAnimationMode()、AnimationMode.StopAnimationMode()、Animator.GetBoneTransform(HumanBodyBones)、Transform.InverseTransformPoint(Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="clip">中文含义：动画片段。使用位置：作为 AnimationMode.SampleAnimationClip(GameObject, AnimationClip, float) 的参数、LeonInjuredAnimationSetup.SampleFootPhaseSignal(AnimationClip, Animator, int)。</param>
-    /// <param name="animator">中文含义：动画控制器。使用位置：LeonInjuredAnimationSetup.SampleFootPhaseSignal(AnimationClip, Animator, int)。</param>
-    /// <param name="sampleCount">中文含义：采样数量。使用位置：LeonInjuredAnimationSetup.SampleFootPhaseSignal(AnimationClip, Animator, int)。</param>
+    /// <param name="clip">动画片段。</param>
+    /// <param name="animator">动画控制器。</param>
+    /// <param name="sampleCount">采样数量。</param>
     private static float[] SampleFootPhaseSignal(AnimationClip clip, Animator animator, int sampleCount)
     {
         try
         {
             AnimationMode.StartAnimationMode();
-            // proxy（代理）：使用位置：作为 AnimationMode.SampleAnimationClip(GameObject, AnimationClip, float) 的参数。
+            // 代理。
 GameObject proxy = animator.gameObject;
             AnimationMode.SampleAnimationClip(proxy, clip, 0f);
-            // hips（髋部）：保存 Animator.GetBoneTransform(HumanBodyBones) 的返回结果，供当前步骤使用。使用位置：LeonInjuredAnimationSetup.SampleFootPhaseSignal(AnimationClip, Animator, int)。
+            // 髋部。
 Transform hips = animator.GetBoneTransform(HumanBodyBones.Hips);
-            // leftFoot（左脚）：保存 Animator.GetBoneTransform(HumanBodyBones) 的返回结果，供当前步骤使用。使用位置：作为 Transform.InverseTransformPoint(Vector3) 的参数、LeonInjuredAnimationSetup.SampleFootPhaseSignal(AnimationClip, Animator, int)。
+            // 左脚。
 Transform leftFoot = animator.GetBoneTransform(HumanBodyBones.LeftFoot);
-            // rightFoot（右脚）：保存 Animator.GetBoneTransform(HumanBodyBones) 的返回结果，供当前步骤使用。使用位置：作为 Transform.InverseTransformPoint(Vector3) 的参数、LeonInjuredAnimationSetup.SampleFootPhaseSignal(AnimationClip, Animator, int)。
+            // 右脚。
 Transform rightFoot = animator.GetBoneTransform(HumanBodyBones.RightFoot);
             if (hips == null || leftFoot == null || rightFoot == null)
             {
@@ -943,17 +939,17 @@ Transform rightFoot = animator.GetBoneTransform(HumanBodyBones.RightFoot);
                 return null;
             }
 
-            // signal（信号）：使用位置：LeonInjuredAnimationSetup.SampleFootPhaseSignal(AnimationClip, Animator, int)。
+            // 信号。
 float[] signal = new float[sampleCount];
-            // s（当前脚部相位的采样索引）：使用位置：LeonInjuredAnimationSetup.SampleFootPhaseSignal(AnimationClip, Animator, int)。
+            // 当前脚部相位的采样索引。
 for (int s = 0; s < sampleCount; s++)
             {
-                // time（时间）：使用位置：作为 AnimationMode.SampleAnimationClip(GameObject, AnimationClip, float) 的参数。
+                // 时间。
 float time = clip.length * s / sampleCount;
                 AnimationMode.SampleAnimationClip(proxy, clip, time);
-                // leftLocal（左侧局部）：使用位置：LeonInjuredAnimationSetup.SampleFootPhaseSignal(AnimationClip, Animator, int)。
+                // 左侧局部。
 float leftLocal = hips.InverseTransformPoint(leftFoot.position).y;
-                // rightLocal（右侧局部）：使用位置：LeonInjuredAnimationSetup.SampleFootPhaseSignal(AnimationClip, Animator, int)。
+                // 右侧局部。
 float rightLocal = hips.InverseTransformPoint(rightFoot.position).y;
                 signal[s] = leftLocal - rightLocal;
             }
@@ -979,23 +975,23 @@ float rightLocal = hips.InverseTransformPoint(rightFoot.position).y;
     /// 循环互相关误差：信号 a 偏移 offset 后与参考 b 的均方差。
     /// </summary>
     /// <remarks>静态调用链：上游 LeonInjuredAnimationSetup.CalibrateTreePhase(BlendTree, Animator, string)；下游（含内部回调体） Mathf.RoundToInt(float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="a">中文含义：当前浮点数值数组。使用位置：LeonInjuredAnimationSetup.CircuarSignalError(float[], float[], float)。</param>
-    /// <param name="reference">中文含义：引用。使用位置：LeonInjuredAnimationSetup.CircuarSignalError(float[], float[], float)。</param>
-    /// <param name="offset">中文含义：偏移量。使用位置：作为 Mathf.RoundToInt(float) 的参数。</param>
+    /// <param name="a">当前浮点数值数组。</param>
+    /// <param name="reference">引用。</param>
+    /// <param name="offset">偏移量。</param>
     private static float CircuarSignalError(float[] a, float[] reference, float offset)
     {
-        // n（要比较的步态信号采样数量）：使用位置：作为 Mathf.RoundToInt(float) 的参数、LeonInjuredAnimationSetup.CircuarSignalError(float[], float[], float)。
+        // 要比较的步态信号采样数量。
 int n = a.Length;
-        // shift（偏移）：使用位置：LeonInjuredAnimationSetup.CircuarSignalError(float[], float[], float)。
+        // 偏移。
 int shift = Mathf.RoundToInt(offset * n) % n;
-        // error（错误）：使用位置：LeonInjuredAnimationSetup.CircuarSignalError(float[], float[], float)。
+        // 错误。
 double error = 0.0;
-        // i（当前遍历索引）：使用位置：LeonInjuredAnimationSetup.CircuarSignalError(float[], float[], float)。
+        // 当前遍历索引。
 for (int i = 0; i < n; i++)
         {
-            // j（内层遍历索引）：使用位置：LeonInjuredAnimationSetup.CircuarSignalError(float[], float[], float)。
+            // 内层遍历索引。
 int j = (i + shift) % n;
-            // d（当前采样点与参考信号的差值）：使用位置：LeonInjuredAnimationSetup.CircuarSignalError(float[], float[], float)。
+            // 当前采样点与参考信号的差值。
 double d = a[j] - reference[i];
             error += d * d;
         }
@@ -1005,9 +1001,9 @@ double d = a[j] - reference[i];
 
     /// <summary>CreateThresholdChild 的业务处理入口；本方法直接依赖 ChildMotion.ChildMotion()、LeonInjuredAnimationSetup.LoadHurtClip(string)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonInjuredAnimationSetup.ConfigureTurnTree(BlendTree)；下游（含内部回调体） ChildMotion.ChildMotion()、LeonInjuredAnimationSetup.LoadHurtClip(string)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="clipName">中文含义：动画片段名称。使用位置：作为 LeonInjuredAnimationSetup.LoadHurtClip(string) 的参数。</param>
-    /// <param name="threshold">中文含义：阈值。使用位置：LeonInjuredAnimationSetup.CreateThresholdChild(string, float, float)。</param>
-    /// <param name="timeScale">中文含义：时间缩放。使用位置：LeonInjuredAnimationSetup.CreateThresholdChild(string, float, float)。</param>
+    /// <param name="clipName">动画片段名称。</param>
+    /// <param name="threshold">阈值。</param>
+    /// <param name="timeScale">时间缩放。</param>
     private static ChildMotion CreateThresholdChild(string clipName, float threshold, float timeScale)
     {
         return new ChildMotion
@@ -1022,11 +1018,11 @@ double d = a[j] - reference[i];
     /// 复用控制器内同名混合树子资产，避免重复运行产生冗余资产。
     /// </summary>
     /// <remarks>静态调用链：上游 LeonInjuredAnimationSetup.BuildInjuredStateMachine(AnimatorController)、LeonInjuredAnimationSetup.CalibrateDirectionalPhaseOffsets(AnimatorController)；下游（含内部回调体） AssetDatabase.AddObjectToAsset(Object, Object)、AssetDatabase.LoadAllAssetsAtPath(string)、BlendTree.BlendTree()、IEnumerable.OfType&lt;BlendTree&gt;()、IEnumerable&lt;BlendTree&gt;.FirstOrDefault&lt;BlendTree&gt;(Func&lt;BlendTree, bool&gt;)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="controller">中文含义：动画控制器资源。使用位置：作为 AssetDatabase.AddObjectToAsset(Object, Object) 的参数。</param>
-    /// <param name="treeName">中文含义：行为树名称。使用位置：作为 IEnumerable&lt;BlendTree&gt;.FirstOrDefault&lt;BlendTree&gt;(Func&lt;BlendTree, bool&gt;) 的参数、LeonInjuredAnimationSetup.FindOrCreateTree(AnimatorController, string)。</param>
+    /// <param name="controller">动画控制器资源。</param>
+    /// <param name="treeName">行为树名称。</param>
     private static BlendTree FindOrCreateTree(AnimatorController controller, string treeName)
     {
-        // tree（行为树）：保存 IEnumerable<BlendTree>.FirstOrDefault<BlendTree>(Func<BlendTree, bool>) 的返回结果，供当前步骤使用。使用位置：作为 AssetDatabase.AddObjectToAsset(Object, Object) 的参数、LeonInjuredAnimationSetup.FindOrCreateTree(AnimatorController, string)。
+        // 行为树。
 BlendTree tree = AssetDatabase.LoadAllAssetsAtPath(InjuredControllerPath).OfType<BlendTree>().FirstOrDefault( /* 中文含义：当前混合行为树。 */item => item.name == treeName);
         if (tree != null)
         {
@@ -1043,12 +1039,12 @@ BlendTree tree = AssetDatabase.LoadAllAssetsAtPath(InjuredControllerPath).OfType
 
     /// <summary>LoadHurtClip 的业务处理入口；本方法直接依赖 AssetDatabase.LoadAllAssetsAtPath(string)、IEnumerable.OfType&lt;AnimationClip&gt;()、IEnumerable&lt;AnimationClip&gt;.FirstOrDefault&lt;AnimationClip&gt;(Func&lt;AnimationClip, bool&gt;)、InvalidOperationException.InvalidOperationException(string)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonInjuredAnimationSetup.BuildInjuredStateMachine(AnimatorController)、LeonInjuredAnimationSetup.CreateDirectionalChild(string, float, float, float)、LeonInjuredAnimationSetup.CreateThresholdChild(string, float, float)；下游（含内部回调体） AssetDatabase.LoadAllAssetsAtPath(string)、IEnumerable.OfType&lt;AnimationClip&gt;()、IEnumerable&lt;AnimationClip&gt;.FirstOrDefault&lt;AnimationClip&gt;(Func&lt;AnimationClip, bool&gt;)、InvalidOperationException.InvalidOperationException(string)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="clipName">中文含义：动画片段名称。使用位置：作为 IEnumerable&lt;AnimationClip&gt;.FirstOrDefault&lt;AnimationClip&gt;(Func&lt;AnimationClip, bool&gt;) 的参数、LeonInjuredAnimationSetup.LoadHurtClip(string)。</param>
+    /// <param name="clipName">动画片段名称。</param>
     private static AnimationClip LoadHurtClip(string clipName)
     {
-        // assetPath（资源路径）：使用位置：作为 AssetDatabase.LoadAllAssetsAtPath(string) 的参数、作为 InvalidOperationException.InvalidOperationException(string) 的参数。
+        // 资源路径。
 string assetPath = HurtClipDirectory + clipName + ".fbx";
-        // clip（动画片段）：保存 IEnumerable<AnimationClip>.FirstOrDefault<AnimationClip>(Func<AnimationClip, bool>) 的返回结果，供当前步骤使用。使用位置：LeonInjuredAnimationSetup.LoadHurtClip(string)。
+        // 动画片段。
 AnimationClip clip = AssetDatabase.LoadAllAssetsAtPath(assetPath).OfType<AnimationClip>().FirstOrDefault( /* 中文含义：当前动画片段。 */item => item.name == clipName);
         if (clip == null)
         {
@@ -1060,12 +1056,12 @@ AnimationClip clip = AssetDatabase.LoadAllAssetsAtPath(assetPath).OfType<Animati
 
     /// <summary>EnsureState 的业务处理入口；本方法直接依赖 AnimatorStateMachine.AddState(string, Vector3)、LeonInjuredAnimationSetup.FindState(AnimatorStateMachine, string)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonInjuredAnimationSetup.BuildInjuredStateMachine(AnimatorController)；下游（含内部回调体） AnimatorStateMachine.AddState(string, Vector3)、LeonInjuredAnimationSetup.FindState(AnimatorStateMachine, string)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="machine">中文含义：状态机。使用位置：作为 LeonInjuredAnimationSetup.FindState(AnimatorStateMachine, string) 的参数、LeonInjuredAnimationSetup.EnsureState(AnimatorStateMachine, string, Vector3)。</param>
-    /// <param name="stateName">中文含义：动画状态名称。使用位置：作为 AnimatorStateMachine.AddState(string, Vector3) 的参数、作为 LeonInjuredAnimationSetup.FindState(AnimatorStateMachine, string) 的参数。</param>
-    /// <param name="position">中文含义：位置。使用位置：作为 AnimatorStateMachine.AddState(string, Vector3) 的参数。</param>
+    /// <param name="machine">状态机。</param>
+    /// <param name="stateName">动画状态名称。</param>
+    /// <param name="position">位置。</param>
     private static AnimatorState EnsureState(AnimatorStateMachine machine, string stateName, Vector3 position)
     {
-        // state（当前动画状态）：保存 LeonInjuredAnimationSetup.FindState(AnimatorStateMachine, string) 的返回结果，供当前步骤使用。使用位置：LeonInjuredAnimationSetup.EnsureState(AnimatorStateMachine, string, Vector3)。
+        // 当前动画状态。
 AnimatorState state = FindState(machine, stateName);
         if (state != null)
         {
@@ -1077,8 +1073,8 @@ AnimatorState state = FindState(machine, stateName);
 
     /// <summary>FindState 的业务处理入口；本方法直接依赖 IEnumerable&lt;AnimatorState&gt;.FirstOrDefault&lt;AnimatorState&gt;(Func&lt;AnimatorState, bool&gt;)、IEnumerable&lt;ChildAnimatorState&gt;.Select&lt;ChildAnimatorState, AnimatorState&gt;(Func&lt;ChildAnimatorState, AnimatorState&gt;)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonInjuredAnimationSetup.EnsureState(AnimatorStateMachine, string, Vector3)；下游（含内部回调体） IEnumerable&lt;AnimatorState&gt;.FirstOrDefault&lt;AnimatorState&gt;(Func&lt;AnimatorState, bool&gt;)、IEnumerable&lt;ChildAnimatorState&gt;.Select&lt;ChildAnimatorState, AnimatorState&gt;(Func&lt;ChildAnimatorState, AnimatorState&gt;)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="machine">中文含义：状态机。使用位置：LeonInjuredAnimationSetup.FindState(AnimatorStateMachine, string)。</param>
-    /// <param name="stateName">中文含义：动画状态名称。使用位置：作为 IEnumerable&lt;AnimatorState&gt;.FirstOrDefault&lt;AnimatorState&gt;(Func&lt;AnimatorState, bool&gt;) 的参数。</param>
+    /// <param name="machine">状态机。</param>
+    /// <param name="stateName">动画状态名称。</param>
     private static AnimatorState FindState(AnimatorStateMachine machine, string stateName)
     {
         return machine.states.Select( /* 中文含义：子级。 */child => child.state).FirstOrDefault( /* 中文含义：当前动画状态。 */state => state.name == stateName);
@@ -1086,7 +1082,7 @@ AnimatorState state = FindState(machine, stateName);
 
     /// <summary>RemoveStateTransitions 的业务处理入口；本方法直接依赖 AnimatorState.RemoveTransition(AnimatorStateTransition)、IEnumerable&lt;AnimatorStateTransition&gt;.ToArray&lt;AnimatorStateTransition&gt;()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonInjuredAnimationSetup.BuildInjuredStateMachine(AnimatorController)；下游（含内部回调体） AnimatorState.RemoveTransition(AnimatorStateTransition)、IEnumerable&lt;AnimatorStateTransition&gt;.ToArray&lt;AnimatorStateTransition&gt;()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="state">中文含义：当前动画状态。使用位置：LeonInjuredAnimationSetup.RemoveStateTransitions(AnimatorState)。</param>
+    /// <param name="state">当前动画状态。</param>
     private static void RemoveStateTransitions(AnimatorState state)
     {
         // transition（过渡）：每轮从目标数组的返回结果取得一个元素，仅代表当前这一项。使用位置：作为 AnimatorState.RemoveTransition(AnimatorStateTransition) 的参数。
@@ -1098,8 +1094,8 @@ foreach (AnimatorStateTransition transition in state.transitions.ToArray())
 
     /// <summary>RemoveIncomingTransitions 的业务处理入口；本方法直接依赖 AnimatorState.RemoveTransition(AnimatorStateTransition)、AnimatorStateMachine.RemoveAnyStateTransition(AnimatorStateTransition)、IEnumerable&lt;AnimatorStateTransition&gt;.ToArray&lt;AnimatorStateTransition&gt;()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonInjuredAnimationSetup.BuildInjuredStateMachine(AnimatorController)；下游（含内部回调体） AnimatorState.RemoveTransition(AnimatorStateTransition)、AnimatorStateMachine.RemoveAnyStateTransition(AnimatorStateTransition)、IEnumerable&lt;AnimatorStateTransition&gt;.ToArray&lt;AnimatorStateTransition&gt;()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="machine">中文含义：状态机。使用位置：LeonInjuredAnimationSetup.RemoveIncomingTransitions(AnimatorStateMachine, AnimatorState)。</param>
-    /// <param name="target">中文含义：目标动画状态。使用位置：LeonInjuredAnimationSetup.RemoveIncomingTransitions(AnimatorStateMachine, AnimatorState)。</param>
+    /// <param name="machine">状态机。</param>
+    /// <param name="target">目标动画状态。</param>
     private static void RemoveIncomingTransitions(AnimatorStateMachine machine, AnimatorState target)
     {
         // child（子级）：每轮从状态机的状态集合取得一个元素，仅代表当前这一项。使用位置：LeonInjuredAnimationSetup.RemoveIncomingTransitions(AnimatorStateMachine, AnimatorState)。
@@ -1129,7 +1125,7 @@ foreach (AnimatorStateTransition transition in machine.anyStateTransitions.ToArr
     /// 校验最终结构：八层、十九参数、受伤层遮罩与默认状态、恢复层同步配置。
     /// </summary>
     /// <remarks>静态调用链：上游 LeonInjuredAnimationSetup.Build()；下游（含内部回调体） AnimatorController.GetStateEffectiveMotion(AnimatorState, int)、IEnumerable&lt;AnimatorControllerParameter&gt;.Any&lt;AnimatorControllerParameter&gt;(Func&lt;AnimatorControllerParameter, bool&gt;)、InvalidOperationException.InvalidOperationException(string)、Mathf.Approximately(float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="controller">中文含义：动画控制器资源。使用位置：作为 InvalidOperationException.InvalidOperationException(string) 的参数、LeonInjuredAnimationSetup.ValidateResult(AnimatorController)。</param>
+    /// <param name="controller">动画控制器资源。</param>
     private static void ValidateResult(AnimatorController controller)
     {
         if (controller.layers.Length != 8)
@@ -1137,7 +1133,7 @@ foreach (AnimatorStateTransition transition in machine.anyStateTransitions.ToArr
             throw new InvalidOperationException("受伤控制器必须为八层，当前：" + controller.layers.Length);
         }
 
-        // i（当前遍历索引）：使用位置：作为 InvalidOperationException.InvalidOperationException(string) 的参数、LeonInjuredAnimationSetup.ValidateResult(AnimatorController)。
+        // 当前遍历索引。
 for (int i = 0; i < ExpectedLayerNames.Length; i++)
         {
             if (controller.layers[i].name != ExpectedLayerNames[i])
@@ -1151,7 +1147,7 @@ for (int i = 0; i < ExpectedLayerNames.Length; i++)
             throw new InvalidOperationException("参数数量必须保持19，当前：" + controller.parameters.Length);
         }
 
-        // requiredParameters（所需参数集合）：使用位置：LeonInjuredAnimationSetup.ValidateResult(AnimatorController)。
+        // 所需参数集合。
 string[] requiredParameters =
         {
             "Horizontal",
@@ -1169,7 +1165,7 @@ foreach (string parameterName in requiredParameters)
             }
         }
 
-        // injured（受伤）：使用位置：作为 InvalidOperationException.InvalidOperationException(string) 的参数、作为 Mathf.Approximately(float, float) 的参数、LeonInjuredAnimationSetup.ValidateResult(AnimatorController)。
+        // 受伤。
 AnimatorControllerLayer injured = controller.layers[AnimatorLayerID.Injured];
         if (injured.avatarMask == null)
         {
@@ -1201,7 +1197,7 @@ AnimatorControllerLayer injured = controller.layers[AnimatorLayerID.Injured];
             throw new InvalidOperationException("受伤移动层不允许存在任意状态转换。");
         }
 
-        // lowerBody（下半身）：使用位置：作为 InvalidOperationException.InvalidOperationException(string) 的参数、作为 Mathf.Approximately(float, float) 的参数、LeonInjuredAnimationSetup.ValidateResult(AnimatorController)。
+        // 下半身。
 AnimatorControllerLayer lowerBody = controller.layers[AnimatorLayerID.InjuredLowerBody];
         if (lowerBody.avatarMask == null)
         {
@@ -1226,15 +1222,15 @@ AnimatorControllerLayer lowerBody = controller.layers[AnimatorLayerID.InjuredLow
         // child（子级）：每轮从受伤的状态机的状态集合取得一个元素，仅代表当前这一项。使用位置：LeonInjuredAnimationSetup.ValidateResult(AnimatorController)。
 foreach (ChildAnimatorState child in injured.stateMachine.states)
         {
-            // state（当前动画状态）：使用位置：作为 AnimatorController.GetStateEffectiveMotion(AnimatorState, int) 的参数、作为 InvalidOperationException.InvalidOperationException(string) 的参数、LeonInjuredAnimationSetup.ValidateResult(AnimatorController)。
+            // 当前动画状态。
 AnimatorState state = child.state;
-            // overrideMotion（覆盖运动）：保存 AnimatorController.GetStateEffectiveMotion(AnimatorState, int) 的返回结果，供当前步骤使用。使用位置：LeonInjuredAnimationSetup.ValidateResult(AnimatorController)。
+            // 覆盖运动。
 Motion overrideMotion = controller.GetStateEffectiveMotion(state, AnimatorLayerID.InjuredLowerBody);
             if (state == null || state.motion == null || overrideMotion == null)
             {
-                // leftOperand4（计算前缓存的左侧文字“受伤下身层存在未解析的空动作：”）：从文字“受伤下身层存在未解析的空动作：”读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 InvalidOperationException.InvalidOperationException(string) 的参数。
+                // 计算前缓存的左侧文字“受伤下身层存在未解析的空动作：”。
 string leftOperand4 = "受伤下身层存在未解析的空动作：";
-                // selectedValue3（分支选出的文字“空状态”）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：作为 InvalidOperationException.InvalidOperationException(string) 的参数、LeonInjuredAnimationSetup.ValidateResult(AnimatorController)。
+                // 分支选出的文字“空状态”。
 string selectedValue3;
                 if (state == null)
                 {
@@ -1273,10 +1269,10 @@ string selectedValue3;
 
     /// <summary>WriteInjuredSpeeds 的业务处理入口；本方法直接依赖 InvalidOperationException.InvalidOperationException(string)、SerializedObject.ApplyModifiedPropertiesWithoutUndo()、SerializedObject.FindProperty(string)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonInjuredAnimationSetup.ApplyInjuredSpeedsToLoadedScenes()、LeonInjuredAnimationSetup.ApplyInjuredSpeedsToPrefab()；下游（含内部回调体） InvalidOperationException.InvalidOperationException(string)、SerializedObject.ApplyModifiedPropertiesWithoutUndo()、SerializedObject.FindProperty(string)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="serialized">中文含义：序列化的。使用位置：LeonInjuredAnimationSetup.WriteInjuredSpeeds(SerializedObject)。</param>
+    /// <param name="serialized">序列化的。</param>
     private static void WriteInjuredSpeeds(SerializedObject serialized)
     {
-        // fieldNames（字段名称列表）：使用位置：作为 InvalidOperationException.InvalidOperationException(string) 的参数、作为 SerializedObject.FindProperty(string) 的参数、LeonInjuredAnimationSetup.WriteInjuredSpeeds(SerializedObject)。
+        // 字段名称列表。
 string[] fieldNames =
         {
             "injuredWalkForwardSpeed",
@@ -1284,7 +1280,7 @@ string[] fieldNames =
             "injuredStrafeSpeed",
             "injuredJogSpeed"
         };
-        // values（数值集合）：使用位置：LeonInjuredAnimationSetup.WriteInjuredSpeeds(SerializedObject)。
+        // 数值集合。
 float[] values =
         {
             InjuredWalkForwardSpeed,
@@ -1292,10 +1288,10 @@ float[] values =
             InjuredStrafeSpeed,
             InjuredJogSpeed
         };
-        // i（当前遍历索引）：使用位置：LeonInjuredAnimationSetup.WriteInjuredSpeeds(SerializedObject)。
+        // 当前遍历索引。
 for (int i = 0; i < fieldNames.Length; i++)
         {
-            // property（属性）：保存 SerializedObject.FindProperty(string) 的返回结果，供当前步骤使用。使用位置：LeonInjuredAnimationSetup.WriteInjuredSpeeds(SerializedObject)。
+            // 属性。
 SerializedProperty property = serialized.FindProperty(fieldNames[i]);
             if (property == null)
             {
@@ -1312,7 +1308,7 @@ SerializedProperty property = serialized.FindProperty(fieldNames[i]);
     /// <remarks>静态调用链：上游 LeonInjuredAnimationSetup.ApplyInjuredSpeeds()；下游（含内部回调体） AssetDatabase.LoadAssetAtPath&lt;GameObject&gt;(string)、Debug.Log(object)、Debug.LogWarning(object)、GameObject.GetComponentInChildren&lt;LeonLocomotion&gt;(bool)、LeonInjuredAnimationSetup.WriteInjuredSpeeds(SerializedObject)、PrefabUtility.LoadPrefabContents(string)、PrefabUtility.SaveAsPrefabAsset(GameObject, string) 等共 9 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     private static void ApplyInjuredSpeedsToPrefab()
     {
-        // prefabRoot（预制件根节点）：保存 AssetDatabase.LoadAssetAtPath<GameObject>(string) 的返回结果，供当前步骤使用。使用位置：LeonInjuredAnimationSetup.ApplyInjuredSpeedsToPrefab()。
+        // 预制件根节点。
 GameObject prefabRoot = AssetDatabase.LoadAssetAtPath<GameObject>(LeonPrefabPath);
         if (prefabRoot == null)
         {
@@ -1320,11 +1316,11 @@ GameObject prefabRoot = AssetDatabase.LoadAssetAtPath<GameObject>(LeonPrefabPath
             return;
         }
 
-        // contents（内容集合）：保存 PrefabUtility.LoadPrefabContents(string) 的返回结果，供当前步骤使用。使用位置：作为 PrefabUtility.SaveAsPrefabAsset(GameObject, string) 的参数、作为 PrefabUtility.UnloadPrefabContents(GameObject) 的参数、LeonInjuredAnimationSetup.ApplyInjuredSpeedsToPrefab()。
+        // 内容集合。
 GameObject contents = PrefabUtility.LoadPrefabContents(LeonPrefabPath);
         try
         {
-            // locomotion（移动行为）：保存 GameObject.GetComponentInChildren<LeonLocomotion>(bool) 的返回结果，供当前步骤使用。使用位置：作为 SerializedObject.SerializedObject(Object) 的参数、LeonInjuredAnimationSetup.ApplyInjuredSpeedsToPrefab()。
+            // 移动行为。
 LeonLocomotion locomotion = contents.GetComponentInChildren<LeonLocomotion>(true);
             if (locomotion == null)
             {
@@ -1346,9 +1342,9 @@ LeonLocomotion locomotion = contents.GetComponentInChildren<LeonLocomotion>(true
     /// <remarks>静态调用链：上游 LeonInjuredAnimationSetup.ApplyInjuredSpeeds()；下游（含内部回调体） Debug.Log(object)、EditorSceneManager.MarkSceneDirty(Scene)、EditorSceneManager.SaveScene(Scene)、HashSet&lt;Scene&gt;.Add(Scene)、HashSet&lt;Scene&gt;.HashSet()、LeonInjuredAnimationSetup.WriteInjuredSpeeds(SerializedObject)、Object.FindObjectsByType&lt;LeonLocomotion&gt;(FindObjectsInactive, FindObjectsSortMode) 等共 8 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     private static void ApplyInjuredSpeedsToLoadedScenes()
     {
-        // dirtyScenes（未保存改动场景集合）：使用位置：LeonInjuredAnimationSetup.ApplyInjuredSpeedsToLoadedScenes()。
+        // 未保存改动场景集合。
 HashSet<Scene> dirtyScenes = new HashSet<Scene>();
-        // locomotions（移动行为集合）：保存 Object.FindObjectsByType<LeonLocomotion>(FindObjectsInactive, FindObjectsSortMode) 的返回结果，供当前步骤使用。使用位置：LeonInjuredAnimationSetup.ApplyInjuredSpeedsToLoadedScenes()。
+        // 移动行为集合。
 LeonLocomotion[] locomotions = Object.FindObjectsByType<LeonLocomotion>(FindObjectsInactive.Include, FindObjectsSortMode.None);
         // locomotion（移动行为）：每轮从移动行为集合取得一个元素，仅代表当前这一项。使用位置：作为 HashSet<Scene>.Add(Scene) 的参数、作为 SerializedObject.SerializedObject(Object) 的参数。
 foreach (LeonLocomotion locomotion in locomotions)
@@ -1372,7 +1368,7 @@ foreach (Scene scene in dirtyScenes)
     /// 将受伤控制器赋给里昂预制体和已加载场景中的里昂实例。
     /// </summary>
     /// <remarks>静态调用链：上游 LeonInjuredAnimationSetup.Build()；下游（含内部回调体） LeonInjuredAnimationSetup.ApplyControllerToLoadedScenes(AnimatorController)、LeonInjuredAnimationSetup.ApplyControllerToPrefab(AnimatorController)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="controller">中文含义：动画控制器资源。使用位置：作为 LeonInjuredAnimationSetup.ApplyControllerToLoadedScenes(AnimatorController) 的参数、作为 LeonInjuredAnimationSetup.ApplyControllerToPrefab(AnimatorController) 的参数。</param>
+    /// <param name="controller">动画控制器资源。</param>
     private static void ApplyControllerToPrefabAndScene(AnimatorController controller)
     {
         ApplyControllerToPrefab(controller);
@@ -1381,10 +1377,10 @@ foreach (Scene scene in dirtyScenes)
 
     /// <summary>ApplyControllerToPrefab 的业务处理入口；本方法直接依赖 AssetDatabase.LoadAssetAtPath&lt;GameObject&gt;(string)、Debug.Log(object)、Debug.LogWarning(object)、GameObject.GetComponent&lt;Animator&gt;()、PrefabUtility.GetPrefabAssetType(Object)、PrefabUtility.LoadPrefabContents(string)、PrefabUtility.SaveAsPrefabAsset(GameObject, string) 等共 8 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonInjuredAnimationSetup.ApplyControllerToPrefabAndScene(AnimatorController)；下游（含内部回调体） AssetDatabase.LoadAssetAtPath&lt;GameObject&gt;(string)、Debug.Log(object)、Debug.LogWarning(object)、GameObject.GetComponent&lt;Animator&gt;()、PrefabUtility.GetPrefabAssetType(Object)、PrefabUtility.LoadPrefabContents(string)、PrefabUtility.SaveAsPrefabAsset(GameObject, string) 等共 8 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="controller">中文含义：动画控制器资源。使用位置：LeonInjuredAnimationSetup.ApplyControllerToPrefab(AnimatorController)。</param>
+    /// <param name="controller">动画控制器资源。</param>
     private static void ApplyControllerToPrefab(AnimatorController controller)
     {
-        // prefabRoot（预制件根节点）：保存 AssetDatabase.LoadAssetAtPath<GameObject>(string) 的返回结果，供当前步骤使用。使用位置：作为 PrefabUtility.GetPrefabAssetType(Object) 的参数、LeonInjuredAnimationSetup.ApplyControllerToPrefab(AnimatorController)。
+        // 预制件根节点。
 GameObject prefabRoot = AssetDatabase.LoadAssetAtPath<GameObject>(LeonPrefabPath);
         if (prefabRoot == null)
         {
@@ -1398,11 +1394,11 @@ GameObject prefabRoot = AssetDatabase.LoadAssetAtPath<GameObject>(LeonPrefabPath
             return;
         }
 
-        // contents（内容集合）：保存 PrefabUtility.LoadPrefabContents(string) 的返回结果，供当前步骤使用。使用位置：作为 PrefabUtility.SaveAsPrefabAsset(GameObject, string) 的参数、作为 PrefabUtility.UnloadPrefabContents(GameObject) 的参数、LeonInjuredAnimationSetup.ApplyControllerToPrefab(AnimatorController)。
+        // 内容集合。
 GameObject contents = PrefabUtility.LoadPrefabContents(LeonPrefabPath);
         try
         {
-            // animator（动画控制器）：保存 GameObject.GetComponent<Animator>() 的返回结果，供当前步骤使用。使用位置：LeonInjuredAnimationSetup.ApplyControllerToPrefab(AnimatorController)。
+            // 动画控制器。
 Animator animator = contents.GetComponent<Animator>();
             if (animator == null)
             {
@@ -1427,17 +1423,17 @@ Animator animator = contents.GetComponent<Animator>();
 
     /// <summary>ApplyControllerToLoadedScenes 的业务处理入口；本方法直接依赖 Component.GetComponent&lt;Animator&gt;()、Debug.Log(object)、EditorSceneManager.MarkSceneDirty(Scene)、EditorSceneManager.SaveScene(Scene)、HashSet&lt;Scene&gt;.Add(Scene)、HashSet&lt;Scene&gt;.HashSet()、Object.FindObjectsByType&lt;LeonAnimatorDriver&gt;(FindObjectsInactive, FindObjectsSortMode)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonInjuredAnimationSetup.ApplyControllerToPrefabAndScene(AnimatorController)；下游（含内部回调体） Component.GetComponent&lt;Animator&gt;()、Debug.Log(object)、EditorSceneManager.MarkSceneDirty(Scene)、EditorSceneManager.SaveScene(Scene)、HashSet&lt;Scene&gt;.Add(Scene)、HashSet&lt;Scene&gt;.HashSet()、Object.FindObjectsByType&lt;LeonAnimatorDriver&gt;(FindObjectsInactive, FindObjectsSortMode)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="controller">中文含义：动画控制器资源。使用位置：LeonInjuredAnimationSetup.ApplyControllerToLoadedScenes(AnimatorController)。</param>
+    /// <param name="controller">动画控制器资源。</param>
     private static void ApplyControllerToLoadedScenes(AnimatorController controller)
     {
-        // dirtyScenes（未保存改动场景集合）：使用位置：LeonInjuredAnimationSetup.ApplyControllerToLoadedScenes(AnimatorController)。
+        // 未保存改动场景集合。
 HashSet<Scene> dirtyScenes = new HashSet<Scene>();
-        // drivers（驱动器集合）：保存 Object.FindObjectsByType<LeonAnimatorDriver>(FindObjectsInactive, FindObjectsSortMode) 的返回结果，供当前步骤使用。使用位置：LeonInjuredAnimationSetup.ApplyControllerToLoadedScenes(AnimatorController)。
+        // 驱动器集合。
 LeonAnimatorDriver[] drivers = Object.FindObjectsByType<LeonAnimatorDriver>(FindObjectsInactive.Include, FindObjectsSortMode.None);
         // driver（里昂动画控制器驱动器）：每轮从驱动器集合取得一个元素，仅代表当前这一项。使用位置：作为 HashSet<Scene>.Add(Scene) 的参数、LeonInjuredAnimationSetup.ApplyControllerToLoadedScenes(AnimatorController)。
 foreach (LeonAnimatorDriver driver in drivers)
         {
-            // animator（动画控制器）：保存 Component.GetComponent<Animator>() 的返回结果，供当前步骤使用。使用位置：LeonInjuredAnimationSetup.ApplyControllerToLoadedScenes(AnimatorController)。
+            // 动画控制器。
 Animator animator = driver.GetComponent<Animator>();
             if (animator == null || animator.runtimeAnimatorController == controller)
             {

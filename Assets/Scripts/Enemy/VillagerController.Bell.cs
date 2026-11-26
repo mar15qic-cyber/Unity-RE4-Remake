@@ -26,6 +26,11 @@ public partial class VillagerController
         }
 
         combatModule.EndAttack();
+        if (!needsGroundRecovery && combatModule.HasUnfinishedStandingHit)
+        {
+            combatModule.MaintainPairedSurvivorStaggerState(true);
+            return;
+        }
         if (needsGroundRecovery && combatModule.TryBeginPairedGroundRecovery())
         {
             return;

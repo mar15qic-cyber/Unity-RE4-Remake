@@ -7,26 +7,29 @@ using UnityEngine;
 /// </summary>
 public class EnemyTimedHitStateSMB : StateMachineBehaviour
 {
-    /// <summary>中文含义：动作协调器。使用位置：EnemyTimedHitStateSMB.OnStateEnter(Animator, AnimatorStateInfo, int)、EnemyTimedHitStateSMB.OnStateUpdate(Animator, AnimatorStateInfo, int)。</summary>
+    /// <summary>宿主村民控制器。</summary>
+    private VillagerController ownerController;
+    /// <summary>动作协调器。</summary>
     private EnemyActionCoordinator actionCoordinator;
-    /// <summary>中文含义：动作凭证。使用位置：作为 EnemyActionCoordinator.ReceiveAnimationNotification(ActionHandle, string) 的参数、EnemyTimedHitStateSMB.OnStateEnter(Animator, AnimatorStateInfo, int)。</summary>
+    /// <summary>动作凭证。</summary>
     private GameArchitecture.ActionHandle actionToken;
-    /// <summary>中文含义：完成归一化时间。使用位置：EnemyTimedHitStateSMB.OnStateUpdate(Animator, AnimatorStateInfo, int)、ZombieAnimatorSetup.SetTimedHitComplete(AnimatorState, float)。</summary>
+    /// <summary>完成归一化时间。</summary>
     [Header("通知时刻")]
     [Range(0.01f, 0.99f)]
     public float completeNormalizedTime = 0.9f;
-    /// <summary>中文含义：是否完成已发送。使用位置：EnemyTimedHitStateSMB.OnStateEnter(Animator, AnimatorStateInfo, int)、EnemyTimedHitStateSMB.OnStateUpdate(Animator, AnimatorStateInfo, int)。</summary>
+    /// <summary>是否完成已发送。</summary>
     private bool completeSent;
     [HideInInspector] public float opportunityTimeScale = 1f;
     /// <summary>实现基类的 OnStateEnter 重写入口；框架调用后按本方法分支执行，并通过下游成员完成协作。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） Component.GetComponent&lt;VillagerController&gt;()、GameObject.SendMessage(string, SendMessageOptions)、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="animator">中文含义：动画控制器。使用位置：EnemyTimedHitStateSMB.OnStateEnter(Animator, AnimatorStateInfo, int)。</param>
+    /// <param name="animator">动画控制器。</param>
     /// <param name="stateInfo">中文含义：当前动画状态信息。</param>
     /// <param name="layerIndex">中文含义：动画图层索引。</param>
     public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        // receiverValue1（判空前缓存的取得组件的返回结果）：从取得组件的返回结果读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、EnemyTimedHitStateSMB.OnStateEnter(Animator, AnimatorStateInfo, int)。
-global::VillagerController receiverValue1 = animator.GetComponent<VillagerController>();
+        // 判空前缓存的取得组件的返回结果。
+        global::VillagerController receiverValue1 = animator.GetComponent<VillagerController>();
+        ownerController = receiverValue1;
         if (!global::System.Object.ReferenceEquals(receiverValue1, null))
         {
             actionCoordinator = receiverValue1.actionCoordinator;
@@ -56,31 +59,44 @@ global::VillagerController receiverValue1 = animator.GetComponent<VillagerContro
     /// <summary>实现基类的 OnStateUpdate 重写入口；框架调用后按本方法分支执行，并通过下游成员完成协作。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） EnemyActionCoordinator.ReceiveAnimationNotification(ActionHandle, string)、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     /// <param name="animator">中文含义：动画控制器。</param>
-    /// <param name="stateInfo">中文含义：当前动画状态信息。使用位置：EnemyTimedHitStateSMB.OnStateUpdate(Animator, AnimatorStateInfo, int)。</param>
+    /// <param name="stateInfo">当前动画状态信息。</param>
     /// <param name="layerIndex">中文含义：动画图层索引。</param>
     public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
+        // 配对存活释放阶段可能先于 QTE 结束切入受击状态，QTE 释放前不提前吞掉完成通知。
+        if (!global::System.Object.ReferenceEquals(ownerController, null) && ownerController.IsQTEControlled)
+        {
+            return;
+        }
+
         if (!completeSent && stateInfo.normalizedTime >= completeNormalizedTime)
         {
-            completeSent = true;
-            // receiverValue4（判空前缓存的动作协调器）：从动作协调器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、EnemyTimedHitStateSMB.OnStateUpdate(Animator, AnimatorStateInfo, int)。
-global::EnemyActionCoordinator receiverValue4 = actionCoordinator;
-            // optionalValue5（条件访问得到的接收动画通知的返回结果）：保存条件访问的结果，接收者为空时保持默认空值，非空时才执行原成员访问。使用位置：EnemyTimedHitStateSMB.OnStateUpdate(Animator, AnimatorStateInfo, int)。
-bool? optionalValue5;
+            global::EnemyActionCoordinator receiverValue4 = actionCoordinator;
+            bool accepted = false;
             if (!global::System.Object.ReferenceEquals(receiverValue4, null))
             {
-                optionalValue5 = receiverValue4.ReceiveAnimationNotification(actionToken, "OnHitComplete");
+                accepted = receiverValue4.ReceiveAnimationNotification(actionToken, "OnHitComplete");
+                if (!accepted
+                    && !global::System.Object.ReferenceEquals(ownerController, null)
+                    && ownerController.CurrentState == VillagerState.Staggered
+                    && ownerController.HasPendingHit)
+                {
+                    // QTE 释放后行为树首次领取 Hit 动作会刷新凭证，此时同步当前有效凭证再提交一次。
+                    actionToken = receiverValue4.CurrentHandle;
+                    accepted = receiverValue4.ReceiveAnimationNotification(actionToken, "OnHitComplete");
+                }
             }
-            else
+
+            if (accepted || global::System.Object.ReferenceEquals(receiverValue4, null))
             {
-                optionalValue5 = default;
+                completeSent = true;
             }
         }
     }
 
     /// <summary>实现基类的 OnStateExit 重写入口；框架调用后按本方法分支执行，并通过下游成员完成协作。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） GameObject.SendMessage(string, SendMessageOptions)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="animator">中文含义：动画控制器。使用位置：EnemyTimedHitStateSMB.OnStateExit(Animator, AnimatorStateInfo, int)。</param>
+    /// <param name="animator">动画控制器。</param>
     /// <param name="stateInfo">中文含义：当前动画状态信息。</param>
     /// <param name="layerIndex">中文含义：动画图层索引。</param>
     public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)

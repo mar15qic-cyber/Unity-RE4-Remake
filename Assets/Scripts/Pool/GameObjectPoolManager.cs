@@ -7,18 +7,18 @@ using UnityEngine;
 [System.Serializable]
 public struct PrewarmConfig
 {
-    /// <summary>中文含义：要预热的预制体。使用位置：作为 PrefabPool.PrefabPool(GameObject, Transform, GameObjectPoolManager, int, int, bool) 的参数、GameObjectPoolManager.Start()。</summary>
+    /// <summary>要预热的预制体。</summary>
     [Tooltip("要预热的预制体")]
     public GameObject prefab;
-    /// <summary>中文含义：预热数量。使用位置：作为 Mathf.Min(int, int) 的参数、作为 PrefabPool.Prewarm(int) 的参数。</summary>
+    /// <summary>预热数量。</summary>
     [Tooltip("预热数量")]
     [Min(0)]
     public int prewarmCount;
-    /// <summary>中文含义：该预制体池的最大容量。使用位置：作为 Mathf.Min(int, int) 的参数、作为 PrefabPool.PrefabPool(GameObject, Transform, GameObjectPoolManager, int, int, bool) 的参数。</summary>
+    /// <summary>该预制体池的最大容量。</summary>
     [Tooltip("该预制体池的最大容量")]
     [Min(1)]
     public int maxSize;
-    /// <summary>中文含义：达到上限后是否允许扩容。使用位置：作为 PrefabPool.PrefabPool(GameObject, Transform, GameObjectPoolManager, int, int, bool) 的参数。</summary>
+    /// <summary>达到上限后是否允许扩容。</summary>
     [Tooltip("达到上限后是否允许扩容")]
     public bool expandable;
 }
@@ -33,36 +33,57 @@ public class GameObjectPoolManager : Singleton<GameObjectPoolManager>
     /// <summary>中文含义：切换场景时是否保留此单例对象。</summary>
     protected override bool Persistent => false;
 
-    /// <summary>中文含义：未在预热列表中配置的预制体的默认最大容量。使用位置：作为 PrefabPool.PrefabPool(GameObject, Transform, GameObjectPoolManager, int, int, bool) 的参数。</summary>
+    /// <summary>未在预热列表中配置的预制体的默认最大容量。</summary>
     [Header("默认池配置")]
     [Tooltip("未在预热列表中配置的预制体的默认最大容量")]
     [Min(1)]
     [SerializeField]
     private int defaultMaxSize = 50;
-    /// <summary>中文含义：未在预热列表中配置的预制体是否默认允许扩容。使用位置：作为 PrefabPool.PrefabPool(GameObject, Transform, GameObjectPoolManager, int, int, bool) 的参数。</summary>
+    /// <summary>未在预热列表中配置的预制体是否默认允许扩容。</summary>
     [Tooltip("未在预热列表中配置的预制体是否默认允许扩容")]
     [SerializeField]
     private bool defaultExpandable = true;
-    /// <summary>中文含义：场景启动时预热的预制体列表。使用位置：GameObjectPoolManager.Start()。</summary>
+    /// <summary>场景启动时预热的预制体列表。</summary>
     [Header("预热配置")]
     [Tooltip("场景启动时预热的预制体列表")]
     [SerializeField]
     private PrewarmConfig[] prewarmConfigs = new PrewarmConfig[0];
     // ═══════════════════ 内部状态 ═══════════════════
-    /// <summary>中文含义：对象池集合。只读字段，初始化后不由普通写入口替换。使用位置：GameObjectPoolManager.GetOrCreatePool(GameObject)、GameObjectPoolManager.GetStats(GameObject)、GameObjectPoolManager.OnDestroy() 等共 4 处。</summary>
+    /// <summary>对象池集合。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly Dictionary<int, PrefabPool> pools = new Dictionary<int, PrefabPool>();
-    /// <summary>中文含义：对象池根节点。使用位置：作为 PrefabPool.PrefabPool(GameObject, Transform, GameObjectPoolManager, int, int, bool) 的参数、GameObjectPoolManager.Awake()。</summary>
+    /// <summary>对象池根节点。</summary>
     private Transform poolRoot;
-    /// <summary>中文含义：延迟的归还列表。只读字段，初始化后不由普通写入口替换。使用位置：GameObjectPoolManager.OnDestroy()、GameObjectPoolManager.ReturnDelayed(GameObject, float)、GameObjectPoolManager.Update()。</summary>
+    /// <summary>延迟的归还列表。只读字段，初始化后不由普通写入口替换。</summary>
+    private readonly Dictionary<int, PooledObject> pooledInstances = new();
+
+    internal void RegisterInstance(GameObject instance, PooledObject pooled)
+    {
+        pooledInstances[instance.GetInstanceID()] = pooled;
+    }
+
+    internal void ForgetInstance(int instanceId)
+    {
+        pooledInstances.Remove(instanceId);
+    }
+
+    internal PooledObject ReadInstance(GameObject instance)
+    {
+        if (pooledInstances.TryGetValue(instance.GetInstanceID(), out var pooled) && pooled != null)
+        {
+            return pooled;
+        }
+        return null;
+    }
+
     private readonly List<DelayedReturn> delayedReturns = new List<DelayedReturn>(64);
     /// <summary>对象池与重置的结构化数据 DelayedReturn；声明字段保存该步骤需要的值，具体读写由使用方执行。</summary>
     private struct DelayedReturn
     {
-        /// <summary>中文含义：池化的。使用位置：作为 GameObjectPoolManager.Return(GameObject) 的参数、作为 List&lt;GameObjectPoolManager.DelayedReturn&gt;.Add(GameObjectPoolManager.DelayedReturn) 的参数、GameObjectPoolManager.Update()。</summary>
+        /// <summary>池化的。</summary>
         internal PooledObject pooled;
-        /// <summary>中文含义：version 表示“版本”；earliestFrame 表示“最早帧”。使用位置：作为 List&lt;GameObjectPoolManager.DelayedReturn&gt;.Add(GameObjectPoolManager.DelayedReturn) 的参数、GameObjectPoolManager.Update()。；使用位置：作为 List&lt;GameObjectPoolManager.DelayedReturn&gt;.Add(GameObjectPoolManager.DelayedReturn) 的参数、GameObjectPoolManager.Update()。</summary>
+        /// <summary>version 表示“版本”；earliestFrame 表示“最早帧”。</summary>
         internal int version, earliestFrame;
-        /// <summary>中文含义：到期。使用位置：作为 List&lt;GameObjectPoolManager.DelayedReturn&gt;.Add(GameObjectPoolManager.DelayedReturn) 的参数、GameObjectPoolManager.Update()。</summary>
+        /// <summary>到期。</summary>
         internal double due;
     }
 
@@ -76,14 +97,14 @@ public class GameObjectPoolManager : Singleton<GameObjectPoolManager>
             return;
         }
 
-        // now（当前时间）：使用位置：GameObjectPoolManager.Update()。
+        // 当前时间。
 double now = Time.timeAsDouble;
-        // i（当前遍历索引）：使用位置：作为 List<GameObjectPoolManager.DelayedReturn>.RemoveAt(int) 的参数、作为 List<GameObjectPoolManager.DelayedReturn>.this[int] 的参数、GameObjectPoolManager.Update()。
+        // 当前遍历索引。
 for (int i = delayedReturns.Count - 1; i >= 0; i--)
         {
-            // record（当前延迟的返回）：使用位置：作为 GameObjectPoolManager.Return(GameObject) 的参数、GameObjectPoolManager.Update()。
+            // 当前延迟的返回。
 DelayedReturn record = delayedReturns[i];
-            // expired（是否已过期）：使用位置：GameObjectPoolManager.Update()。
+            // 是否已过期。
 bool expired = record.pooled == null || record.pooled.Manager != this || !record.pooled.IsActive || record.pooled.RentalVersion != record.version;
             if (!expired && (Time.frameCount < record.earliestFrame || now < record.due))
             {
@@ -122,7 +143,7 @@ foreach (var config in prewarmConfigs)
                 continue;
             }
 
-            // key（键）：保存 Object.GetInstanceID() 的返回结果，供当前步骤使用。使用位置：作为 Dictionary<int, PrefabPool>.Add(int, PrefabPool) 的参数、作为 Dictionary<int, PrefabPool>.TryGetValue(int, out PrefabPool) 的参数。
+            // 键。
 int key = config.prefab.GetInstanceID();
             if (pools.TryGetValue(key, out var /* 中文含义：已有。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ existing))
             {
@@ -130,9 +151,9 @@ int key = config.prefab.GetInstanceID();
             }
             else
             {
-                // initial（初始）：保存 Mathf.Min(int, int) 的返回结果，供当前步骤使用。使用位置：作为 PrefabPool.PrefabPool(GameObject, Transform, GameObjectPoolManager, int, int, bool) 的参数。
+                // 初始。
 int initial = Mathf.Min(config.prewarmCount, config.maxSize);
-                // pool（对象池）：使用位置：作为 Dictionary<int, PrefabPool>.Add(int, PrefabPool) 的参数。
+                // 对象池。
 var pool = new PrefabPool(config.prefab, poolRoot, this, initial, config.maxSize, config.expandable);
                 pools.Add(key, pool);
             }
@@ -152,6 +173,7 @@ foreach (var kvp in pools)
         }
 
         pools.Clear();
+        pooledInstances.Clear();
         base.OnDestroy();
     }
 
@@ -172,7 +194,7 @@ foreach (var kvp in pools)
             return null;
         }
 
-        // pool（对象池）：保存 GameObjectPoolManager.GetOrCreatePool(GameObject) 的返回结果，供当前步骤使用。使用位置：GameObjectPoolManager.Get(GameObject, Vector3, Quaternion, Transform)。
+        // 对象池。
 var pool = GetOrCreatePool(prefab);
         return pool.Get(position, rotation, parent);
     }
@@ -181,14 +203,14 @@ var pool = GetOrCreatePool(prefab);
     /// 从池中获取一个实例并返回指定组件类型。
     /// </summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） GameObject.GetComponent&lt;T&gt;()、GameObjectPoolManager.Get(GameObject, Vector3, Quaternion, Transform)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="prefab">中文含义：预制件。使用位置：作为 GameObjectPoolManager.Get(GameObject, Vector3, Quaternion, Transform) 的参数。</param>
-    /// <param name="position">中文含义：位置。使用位置：作为 GameObjectPoolManager.Get(GameObject, Vector3, Quaternion, Transform) 的参数。</param>
-    /// <param name="rotation">中文含义：旋转。使用位置：作为 GameObjectPoolManager.Get(GameObject, Vector3, Quaternion, Transform) 的参数。</param>
-    /// <param name="parent">中文含义：父级。使用位置：作为 GameObjectPoolManager.Get(GameObject, Vector3, Quaternion, Transform) 的参数。</param>
+    /// <param name="prefab">预制件。</param>
+    /// <param name="position">位置。</param>
+    /// <param name="rotation">旋转。</param>
+    /// <param name="parent">父级。</param>
     public T Get</* 中文含义：由调用方指定的通用类型参数。 */ T>(GameObject prefab, Vector3 position, Quaternion rotation, Transform parent = null)
         where T : Component
     {
-        // instance（实例）：保存 GameObjectPoolManager.Get(GameObject, Vector3, Quaternion, Transform) 的返回结果，供当前步骤使用。使用位置：GameObjectPoolManager.Get<T>(GameObject, Vector3, Quaternion, Transform)。
+        // 实例。
 var instance = Get(prefab, position, rotation, parent);
         if (instance == null)
         {
@@ -203,7 +225,7 @@ var instance = Get(prefab, position, rotation, parent);
     /// 调用者无需传入 prefab，实例通过 PooledObject 组件自行识别所属池。
     /// </summary>
     /// <remarks>静态调用链：上游 GameObjectPoolManager.Update()；下游（含内部回调体） Debug.LogWarning(object)、GameObject.GetComponent&lt;PooledObject&gt;()、PrefabPool.ReturnInstance(GameObject)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="instance">中文含义：实例。使用位置：作为 Debug.LogWarning(object) 的参数、作为 PrefabPool.ReturnInstance(GameObject) 的参数、GameObjectPoolManager.Return(GameObject)。</param>
+    /// <param name="instance">实例。</param>
     public bool Return(GameObject instance)
     {
         if (instance == null)
@@ -212,8 +234,8 @@ var instance = Get(prefab, position, rotation, parent);
             return false;
         }
 
-        // pooled（池化的）：保存 GameObject.GetComponent<PooledObject>() 的返回结果，供当前步骤使用。使用位置：GameObjectPoolManager.Return(GameObject)。
-var pooled = instance.GetComponent<PooledObject>();
+        // 池化的。
+        PooledObject pooled = ReadInstance(instance);
         if (pooled == null)
         {
             Debug.LogWarning($"[Pool] Return 被拒绝: '{instance.name}' 不是池化对象。");
@@ -234,8 +256,8 @@ var pooled = instance.GetComponent<PooledObject>();
     /// 使用租用版本号机制确保旧延迟任务不会回收已重新租用的对象。
     /// </summary>
     /// <remarks>静态调用链：上游 EnemyHitEffectManager.PlayBloodEffect(Vector3, Vector3, HitboxType)、EnemyHitEffectManager.PlayBloodVisualOnly(Vector3, Vector3)、LeonCombat.SpawnParrySparks(Vector3, Vector3, bool)；下游（含内部回调体） Debug.LogWarning(object)、GameObject.GetComponent&lt;PooledObject&gt;()、GameObjectPoolManager.DelayedReturn.DelayedReturn()、List&lt;GameObjectPoolManager.DelayedReturn&gt;.Add(GameObjectPoolManager.DelayedReturn)、Mathf.Max(float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="instance">中文含义：实例。使用位置：作为 Debug.LogWarning(object) 的参数、GameObjectPoolManager.ReturnDelayed(GameObject, float)。</param>
-    /// <param name="delay">中文含义：延迟。使用位置：作为 Mathf.Max(float, float) 的参数。</param>
+    /// <param name="instance">实例。</param>
+    /// <param name="delay">延迟。</param>
     public bool ReturnDelayed(GameObject instance, float delay)
     {
         if (instance == null)
@@ -244,8 +266,8 @@ var pooled = instance.GetComponent<PooledObject>();
             return false;
         }
 
-        // pooled（池化的）：保存 GameObject.GetComponent<PooledObject>() 的返回结果，供当前步骤使用。使用位置：作为 List<GameObjectPoolManager.DelayedReturn>.Add(GameObjectPoolManager.DelayedReturn) 的参数、GameObjectPoolManager.ReturnDelayed(GameObject, float)。
-var pooled = instance.GetComponent<PooledObject>();
+        // 池化的。
+        PooledObject pooled = ReadInstance(instance);
         if (pooled == null)
         {
             Debug.LogWarning($"[Pool] ReturnDelayed 被拒绝: '{instance.name}' 不是池化对象。");
@@ -265,8 +287,8 @@ var pooled = instance.GetComponent<PooledObject>();
     /// 预热指定预制体的池（幂等，多次调用只增不减）。
     /// </summary>
     /// <remarks>静态调用链：上游 EnemyHitEffectManager.Start()；下游（含内部回调体） GameObjectPoolManager.GetOrCreatePool(GameObject)、PrefabPool.Prewarm(int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="prefab">中文含义：预制件。使用位置：作为 GameObjectPoolManager.GetOrCreatePool(GameObject) 的参数、GameObjectPoolManager.Prewarm(GameObject, int)。</param>
-    /// <param name="count">中文含义：数量。使用位置：作为 PrefabPool.Prewarm(int) 的参数。</param>
+    /// <param name="prefab">预制件。</param>
+    /// <param name="count">数量。</param>
     public void Prewarm(GameObject prefab, int count)
     {
         if (prefab == null)
@@ -274,7 +296,7 @@ var pooled = instance.GetComponent<PooledObject>();
             return;
         }
 
-        // pool（对象池）：保存 GameObjectPoolManager.GetOrCreatePool(GameObject) 的返回结果，供当前步骤使用。使用位置：GameObjectPoolManager.Prewarm(GameObject, int)。
+        // 对象池。
 var pool = GetOrCreatePool(prefab);
         pool.Prewarm(count);
     }
@@ -283,7 +305,7 @@ var pool = GetOrCreatePool(prefab);
     /// 获取指定预制体的池统计信息。
     /// </summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） Dictionary&lt;int, PrefabPool&gt;.TryGetValue(int, out PrefabPool)、Object.GetInstanceID()、PrefabPool.GetStats()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="prefab">中文含义：预制件。使用位置：GameObjectPoolManager.GetStats(GameObject)。</param>
+    /// <param name="prefab">预制件。</param>
     public PoolStats GetStats(GameObject prefab)
     {
         if (prefab == null)
@@ -291,7 +313,7 @@ var pool = GetOrCreatePool(prefab);
             return default;
         }
 
-        // key（键）：保存 Object.GetInstanceID() 的返回结果，供当前步骤使用。使用位置：作为 Dictionary<int, PrefabPool>.TryGetValue(int, out PrefabPool) 的参数。
+        // 键。
 int key = prefab.GetInstanceID();
         if (pools.TryGetValue(key, out var /* 中文含义：对象池。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ pool))
         {
@@ -304,12 +326,12 @@ int key = prefab.GetInstanceID();
     // ═══════════════════ 内部方法 ═══════════════════
     /// <summary>GetOrCreatePool 的业务处理入口；本方法直接依赖 Dictionary&lt;int, PrefabPool&gt;.Add(int, PrefabPool)、Dictionary&lt;int, PrefabPool&gt;.TryGetValue(int, out PrefabPool)、Object.GetInstanceID()、PrefabPool.PrefabPool(GameObject, Transform, GameObjectPoolManager, int, int, bool)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 GameObjectPoolManager.Get(GameObject, Vector3, Quaternion, Transform)、GameObjectPoolManager.Prewarm(GameObject, int)；下游（含内部回调体） Dictionary&lt;int, PrefabPool&gt;.Add(int, PrefabPool)、Dictionary&lt;int, PrefabPool&gt;.TryGetValue(int, out PrefabPool)、Object.GetInstanceID()、PrefabPool.PrefabPool(GameObject, Transform, GameObjectPoolManager, int, int, bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="prefab">中文含义：预制件。使用位置：作为 PrefabPool.PrefabPool(GameObject, Transform, GameObjectPoolManager, int, int, bool) 的参数、GameObjectPoolManager.GetOrCreatePool(GameObject)。</param>
+    /// <param name="prefab">预制件。</param>
     internal PrefabPool GetVisualPool(GameObject prefab) => GetOrCreatePool(prefab, false);
 
     private PrefabPool GetOrCreatePool(GameObject prefab, bool affectsNavigation = true)
     {
-        // key（键）：保存 Object.GetInstanceID() 的返回结果，供当前步骤使用。使用位置：作为 Dictionary<int, PrefabPool>.Add(int, PrefabPool) 的参数、作为 Dictionary<int, PrefabPool>.TryGetValue(int, out PrefabPool) 的参数。
+        // 键。
 int key = prefab.GetInstanceID();
         if (!pools.TryGetValue(key, out var /* 中文含义：对象池。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ pool))
         {

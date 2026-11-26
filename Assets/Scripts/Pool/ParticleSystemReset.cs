@@ -8,7 +8,7 @@ using UnityEngine;
 /// </summary>
 public class ParticleSystemReset : MonoBehaviour, IPoolable
 {
-    /// <summary>中文含义：全部粒子系统集合。使用位置：ParticleSystemReset.Awake()、ParticleSystemReset.OnPoolGet()、ParticleSystemReset.OnPoolReturn()。</summary>
+    /// <summary>全部粒子系统集合。</summary>
     private ParticleSystem[] allParticleSystems;
     /// <summary>Unity 组件初始化回调；状态处理与资源交接按函数内顺序执行，下游协作见调用链。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） Component.GetComponentsInChildren&lt;ParticleSystem&gt;(bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
@@ -18,7 +18,7 @@ public class ParticleSystemReset : MonoBehaviour, IPoolable
         allParticleSystems = GetComponentsInChildren<ParticleSystem>(true);
         // 将所有粒子系统的 StopAction 改为 None
         // 防止 ParticleSystem.StopAction.Destroy 销毁池对象
-        // i（当前遍历索引）：使用位置：ParticleSystemReset.Awake()。
+        // 当前遍历索引。
 for (int i = 0; i < allParticleSystems.Length; i++)
         {
             if (allParticleSystems[i] == null)
@@ -26,7 +26,7 @@ for (int i = 0; i < allParticleSystems.Length; i++)
                 continue;
             }
 
-            // main（主要）：使用位置：ParticleSystemReset.Awake()。
+            // 主要。
 var main = allParticleSystems[i].main;
             main.stopAction = ParticleSystemStopAction.None;
         }
@@ -41,7 +41,7 @@ var main = allParticleSystems[i].main;
             return;
         }
 
-        // i（当前遍历索引）：使用位置：ParticleSystemReset.OnPoolGet()。
+        // 当前遍历索引。
 for (int i = 0; i < allParticleSystems.Length; i++)
         {
             if (allParticleSystems[i] == null)
@@ -63,7 +63,7 @@ for (int i = 0; i < allParticleSystems.Length; i++)
             return;
         }
 
-        // i（当前遍历索引）：使用位置：ParticleSystemReset.OnPoolReturn()。
+        // 当前遍历索引。
 for (int i = 0; i < allParticleSystems.Length; i++)
         {
             if (allParticleSystems[i] == null)

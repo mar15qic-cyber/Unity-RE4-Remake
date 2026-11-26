@@ -13,58 +13,58 @@ public partial class ChapterOneMissionManager : Singleton<ChapterOneMissionManag
     /// <summary>中文含义：切换场景时是否保留此单例对象。</summary>
     protected override bool Persistent => false;
 
-    /// <summary>中文含义：村民敌人预制件集合。使用位置：ChapterOneMissionManager.ValidateConfiguration()、MissionSpawnExecutor.GetNextGanadoPrefab()、SceneStartupEntry.ConfigurationError()。</summary>
+    /// <summary>村民敌人预制件集合。</summary>
     [Header("普通敌人预制件")]
     public GameObject[] ganadoPrefabs;
-    /// <summary>中文含义：电锯敌人模板。绑定主场景层级中停用的 SawMan 对象，任务运行时从该对象克隆实例。使用位置：作为 ChapterOneMissionManager.TrySpawnEnemy(GameObject, MissionEnemyType) 的参数、作为 SceneStartupEntry.ValidateEnemyTemplate(GameObject, bool) 的参数、ChapterOneMissionManager.ValidateConfiguration()。</summary>
+    /// <summary>电锯敌人模板。绑定主场景层级中停用的 SawMan 对象，任务运行时从该对象克隆实例。</summary>
     [Header("电锯敌人模板")]
     [Tooltip("绑定主场景层级中停用的 SawMan 对象，任务运行时从该对象克隆实例。")]
     public GameObject sawmanTemplate;
-    /// <summary>中文含义：生成点集合。使用位置：作为 Random.Range(int, int) 的参数、ChapterOneMissionManager.ValidateConfiguration()、MissionSpawnExecutor.TryGetValidSpawn(GameObject, out Vector3, out Quaternion) 等共 4 处。</summary>
+    /// <summary>生成点集合。</summary>
     [Header("刷新点")]
     public Transform[] spawnPoints;
-    /// <summary>中文含义：生成吸附距离。使用位置：MissionSpawnExecutor.TryGetValidSpawn(GameObject, out Vector3, out Quaternion)。</summary>
+    /// <summary>生成吸附距离。</summary>
     [Min(0.1f)]
     public float spawnSnapDistance = 3f;
-    /// <summary>中文含义：生成吸附高度。使用位置：MissionSpawnExecutor.TryGetValidSpawn(GameObject, out Vector3, out Quaternion)。</summary>
+    /// <summary>生成吸附高度。</summary>
     [Min(0.1f)]
     public float spawnSnapHeight = 0.45f;
-    /// <summary>中文含义：最小玩家生成距离。使用位置：MissionSpawnExecutor.TryGetValidSpawn(GameObject, out Vector3, out Quaternion)。</summary>
+    /// <summary>最小玩家生成距离。</summary>
     [Min(0f)]
     public float minimumPlayerSpawnDistance = 10f;
-    /// <summary>中文含义：占用的生成半径。使用位置：MissionSpawnExecutor.IsSpawnOccupied(Vector3)。</summary>
+    /// <summary>占用的生成半径。</summary>
     [Min(0.1f)]
     public float occupiedSpawnRadius = 2f;
-    /// <summary>中文含义：预制件带胶囊碰撞体时会自动采用其真实尺寸。出生点检查使用的默认角色半径；预制件带胶囊碰撞体时会自动采用其真实尺寸。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>预制件带胶囊碰撞体时会自动采用其真实尺寸。出生点检查使用的默认角色半径；预制件带胶囊碰撞体时会自动采用其真实尺寸。</summary>
     [Header("出生实体净空")]
     [Tooltip("出生点检查使用的默认角色半径；预制件带胶囊碰撞体时会自动采用其真实尺寸。")]
     [Min(0.1f)]
     public float defaultSpawnCapsuleRadius = 0.35f;
-    /// <summary>中文含义：预制件带胶囊碰撞体时会自动采用其真实尺寸。出生点检查使用的默认角色高度；预制件带胶囊碰撞体时会自动采用其真实尺寸。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>预制件带胶囊碰撞体时会自动采用其真实尺寸。出生点检查使用的默认角色高度；预制件带胶囊碰撞体时会自动采用其真实尺寸。</summary>
     [Tooltip("出生点检查使用的默认角色高度；预制件带胶囊碰撞体时会自动采用其真实尺寸。")]
     [Min(0.2f)]
     public float defaultSpawnCapsuleHeight = 1.7f;
-    /// <summary>中文含义：胶囊从地面抬起的距离，避免把正常地面接触误判成阻挡。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>胶囊从地面抬起的距离，避免把正常地面接触误判成阻挡。</summary>
     [Tooltip("胶囊从地面抬起的距离，避免把正常地面接触误判成阻挡。")]
     [Min(0.005f)]
     public float spawnClearanceSkin = 0.05f;
-    /// <summary>中文含义：待搜索集合生成排除规则中心。谷堆中心附近不允许生成敌人，避免开局就把敌人放入高风险绕行区域。使用位置：MissionSpawnExecutor.IsInsideHaystackSpawnExclusion(Vector3)。</summary>
+    /// <summary>待搜索集合生成排除规则中心。谷堆中心附近不允许生成敌人，避免开局就把敌人放入高风险绕行区域。</summary>
     [Header("谷堆出生排除")]
     [Tooltip("谷堆中心附近不允许生成敌人，避免开局就把敌人放入高风险绕行区域。")]
     public Vector3 haystackSpawnExclusionCenter = new Vector3(2.4f, 0f, 14f);
-    /// <summary>中文含义：待搜索集合生成排除规则半径。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>待搜索集合生成排除规则半径。</summary>
     [Min(0.1f)]
     public float haystackSpawnExclusionRadius = 4.5f;
-    /// <summary>中文含义：波次配置。使用位置：ChapterOneMissionManager.firstWaveGanado.get、ChapterOneMissionManager.firstWaveSawman.get、ChapterOneMissionManager.ganadoTarget.get 等共 14 处。</summary>
+    /// <summary>波次配置。</summary>
     [Header("章节规则")]
     [UnityEngine.Serialization.FormerlySerializedAs("波次配置")]
     [UnityEngine.InspectorName("波次配置")]
     public ChapterWaveConfiguration waveConfiguration;
-    /// <summary>中文含义：村民敌人目标。使用位置：作为 ChapterOneMissionManager.LogMission(string) 的参数、作为 ChapterOneMissionManager.MeetsExterminationRequirement(int, int, int, int) 的参数、作为 MissionRulesModel.Initialize(int, int, float, float) 的参数。</summary>
+    /// <summary>村民敌人目标。</summary>
     public int ganadoTarget => waveConfiguration.NormalKillTarget;
-    /// <summary>中文含义：电锯敌人目标。使用位置：作为 ChapterOneMissionManager.LogMission(string) 的参数、作为 ChapterOneMissionManager.MeetsExterminationRequirement(int, int, int, int) 的参数、作为 MissionRulesModel.Initialize(int, int, float, float) 的参数。</summary>
+    /// <summary>电锯敌人目标。</summary>
     public int sawmanTarget => waveConfiguration.ChainsawKillTarget;
-    /// <summary>中文含义：生存持续时间。使用位置：作为 ChapterOneMissionManager.MeetsSurvivalRequirement(float, float) 的参数、作为 Mathf.Max(float, float) 的参数、作为 MissionRulesModel.Initialize(int, int, float, float) 的参数。</summary>
+    /// <summary>生存持续时间。</summary>
     public float survivalDuration
     {
         get
@@ -77,68 +77,68 @@ public partial class ChapterOneMissionManager : Singleton<ChapterOneMissionManag
             return waveConfiguration.SurvivalSeconds;
         }
     }
-    /// <summary>中文含义：首个波次村民敌人。使用位置：作为 ChapterOneMissionManager.SpawnFixedWave(int, int) 的参数、ChapterOneMissionManager.ConfiguredGanadoReserve.get。</summary>
+    /// <summary>首个波次村民敌人。</summary>
     public int firstWaveGanado => waveConfiguration.FirstWaveNormalCount;
-    /// <summary>中文含义：首个波次电锯敌人。使用位置：作为 ChapterOneMissionManager.SpawnFixedWave(int, int) 的参数、ChapterOneMissionManager.ConfiguredSawmanReserve.get。</summary>
+    /// <summary>首个波次电锯敌人。</summary>
     public int firstWaveSawman => waveConfiguration.FirstWaveChainsawCount;
-    /// <summary>中文含义：第二波次村民敌人。使用位置：作为 ChapterOneMissionManager.SpawnFixedWave(int, int) 的参数、ChapterOneMissionManager.ConfiguredGanadoReserve.get。</summary>
+    /// <summary>第二波次村民敌人。</summary>
     public int secondWaveGanado => waveConfiguration.OrdinalTwoWaveNormalCount;
-    /// <summary>中文含义：第二波次电锯敌人。使用位置：作为 ChapterOneMissionManager.SpawnFixedWave(int, int) 的参数、ChapterOneMissionManager.ConfiguredSawmanReserve.get。</summary>
+    /// <summary>第二波次电锯敌人。</summary>
     public int secondWaveSawman => waveConfiguration.OrdinalTwoWaveChainsawCount;
-    /// <summary>中文含义：第三波次村民敌人。使用位置：作为 ChapterOneMissionManager.SpawnFixedWave(int, int) 的参数、ChapterOneMissionManager.ConfiguredGanadoReserve.get。</summary>
+    /// <summary>第三波次村民敌人。</summary>
     public int thirdWaveGanado => waveConfiguration.OrdinalThreeWaveNormalCount;
-    /// <summary>中文含义：第三波次电锯敌人。使用位置：作为 ChapterOneMissionManager.SpawnFixedWave(int, int) 的参数、ChapterOneMissionManager.ConfiguredSawmanReserve.get。</summary>
+    /// <summary>第三波次电锯敌人。</summary>
     public int thirdWaveSawman => waveConfiguration.OrdinalThreeWaveChainsawCount;
-    /// <summary>中文含义：下一次波次剩余比例。使用位置：作为 MissionRulesModel.Initialize(int, int, float, float) 的参数。</summary>
+    /// <summary>下一次波次剩余比例。</summary>
     public float nextWaveRemainingRatio => waveConfiguration.AdvanceRemainingRatio;
-    /// <summary>中文含义：第二波次延迟。使用位置：作为 WaitForSeconds.WaitForSeconds(float) 的参数、ChapterOneMissionManager.StartNextWave()。</summary>
+    /// <summary>第二波次延迟。</summary>
     public float secondWaveDelay => waveConfiguration.SubsequentWaveDelay;
-    /// <summary>中文含义：波次生成间隔。使用位置：作为 WaitForSeconds.WaitForSeconds(float) 的参数、ChapterOneMissionManager.SpawnFixedWave(int, int)。</summary>
+    /// <summary>波次生成间隔。</summary>
     public float waveSpawnInterval => waveConfiguration.GenerateInterval;
-    /// <summary>中文含义：生成重试延迟。使用位置：作为 WaitForSeconds.WaitForSeconds(float) 的参数。</summary>
+    /// <summary>生成重试延迟。</summary>
     public float spawnRetryDelay => waveConfiguration.RetryInterval;
 
-    /// <summary>中文含义：是否日志任务事件集合。使用位置：ChapterOneMissionManager.LogMission(string)。</summary>
+    /// <summary>是否日志任务事件集合。</summary>
     [Header("诊断")]
     public bool logMissionEvents;
-    /// <summary>中文含义：村民敌人击杀数。使用位置：作为 ChapterOneMissionManager.LogMission(string) 的参数、作为 ChapterOneMissionManager.MeetsExterminationRequirement(int, int, int, int) 的参数。</summary>
+    /// <summary>村民敌人击杀数。</summary>
     public int GanadoKills => Rules.NormalKill;
-    /// <summary>中文含义：电锯敌人击杀数。使用位置：作为 ChapterOneMissionManager.LogMission(string) 的参数、作为 ChapterOneMissionManager.MeetsExterminationRequirement(int, int, int, int) 的参数。</summary>
+    /// <summary>电锯敌人击杀数。</summary>
     public int SawmanKills => Rules.ChainsawKill;
-    /// <summary>中文含义：已用玩法秒。使用位置：作为 ChapterOneMissionManager.MeetsSurvivalRequirement(float, float) 的参数、作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>已用玩法秒。</summary>
     public float ElapsedGameplaySeconds => Rules.UsedTime;
-    /// <summary>中文含义：是否运行中。使用位置：ChapterOneMissionManager.OnMissionEnemyDied(VillagerController)、ChapterOneMissionManager.Update()。</summary>
+    /// <summary>是否运行中。</summary>
     public bool IsRunning => Rules.RuntimeMiddle;
-    /// <summary>中文含义：是否已完成。使用位置：ChapterOneMissionManager.CompleteMission(MissionCompletionReason)、ChapterOneMissionManager.OnMissionEnemyDied(VillagerController)、ChapterOneMissionManager.Update()。</summary>
+    /// <summary>是否已完成。</summary>
     public bool IsCompleted => Rules.Completed;
-    /// <summary>中文含义：最新快照。使用位置：作为 MissionProgressHUD.UpdateView(MissionProgressSnapshot) 的参数、GameOverScreen.UpdateResultText()、PauseMenu.ShowResults() 等共 4 处。</summary>
+    /// <summary>最新快照。</summary>
     public MissionProgressSnapshot LatestSnapshot => BuildSnapshot();
 
-    /// <summary>中文含义：进度变化。事件通信成员 ProgressChanged，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。使用位置：ChapterOneMissionManager.PublishProgress(bool)、MissionProgressHUD.ConnectPresentation()、MissionProgressHUD.Unbind()。</summary>
+    /// <summary>进度变化。事件通信成员 ProgressChanged，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。</summary>
     public event Action<MissionProgressSnapshot> ProgressChanged;
-    /// <summary>中文含义：跟踪的敌人集合。只读字段，初始化后不由普通写入口替换。使用位置：作为 MissionSpawnExecutor.MissionSpawnExecutor(ChapterOneMissionManager, LeonController, HouseThreeTraversalGeometry, EnemyNavigationPreciseLink[], Dictionary&lt;VillagerController, MissionEnemyType&gt;) 的参数、ChapterOneMissionManager.OnMissionEnemyDied(VillagerController)、ChapterOneMissionManager.RemoveUnmanagedRuntimeEnemies() 等共 5 处。</summary>
+    /// <summary>跟踪的敌人集合。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly Dictionary<VillagerController, MissionEnemyType> trackedEnemies = new();
-    /// <summary>中文含义：玩家。使用位置：作为 MissionSpawnExecutor.MissionSpawnExecutor(ChapterOneMissionManager, LeonController, HouseThreeTraversalGeometry, EnemyNavigationPreciseLink[], Dictionary&lt;VillagerController, MissionEnemyType&gt;) 的参数、ChapterOneMissionManager.IsPlayerAlive()、ChapterOneMissionManager.Prepare(GameManager, EnemyAIManager, HouseThreeTraversalGeometry)。</summary>
+    /// <summary>玩家。</summary>
     private LeonController player;
-    /// <summary>中文含义：已生成村民敌人。使用位置：作为 ChapterOneMissionManager.LogMission(string) 的参数。</summary>
+    /// <summary>已生成村民敌人。</summary>
     private int spawnedGanado => Rules.NormalHasGenerate;
-    /// <summary>中文含义：已生成电锯敌人。使用位置：作为 ChapterOneMissionManager.LogMission(string) 的参数。</summary>
+    /// <summary>已生成电锯敌人。</summary>
     private int spawnedSawman => Rules.ChainsawHasGenerate;
 
-    /// <summary>中文含义：上一次已显示剩余第二。使用位置：ChapterOneMissionManager.PublishProgress(bool)、ChapterOneMissionManager.StartMissionWhenInitialEnemiesReady()。</summary>
+    /// <summary>上一次已显示剩余第二。</summary>
     private int lastDisplayedRemainingSecond = -1;
-    /// <summary>中文含义：启动协程。使用位置：作为 MonoBehaviour.StopCoroutine(Coroutine) 的参数、ChapterOneMissionManager.CompleteMission(MissionCompletionReason)、ChapterOneMissionManager.OpenReleaseMission() 等共 5 处。</summary>
+    /// <summary>启动协程。</summary>
     private Coroutine startupRoutine;
-    /// <summary>中文含义：波次协程。使用位置：作为 MonoBehaviour.StopCoroutine(Coroutine) 的参数、ChapterOneMissionManager.CompleteMission(MissionCompletionReason)、ChapterOneMissionManager.OnMissionEnemyDied(VillagerController) 等共 5 处。</summary>
+    /// <summary>波次协程。</summary>
     private Coroutine waveRoutine;
-    /// <summary>中文含义：当前波次。使用位置：作为 ChapterOneMissionManager.LogMission(string) 的参数、作为 EnemyCombatTimeline.Register(VillagerController, int) 的参数、ChapterOneMissionManager.StartNextWave()。</summary>
+    /// <summary>当前波次。</summary>
     private int currentWave => Rules.Wave;
-    /// <summary>中文含义：规则。使用位置：ChapterOneMissionManager.BuildSnapshot(bool)、ChapterOneMissionManager.CompleteMission(MissionCompletionReason)、ChapterOneMissionManager.currentWave.get 等共 18 处。</summary>
+    /// <summary>规则。</summary>
     public MissionRulesModel Rules { get; } = new MissionRulesModel();
 
-    /// <summary>中文含义：生成。使用位置：ChapterOneMissionManager.GetNextGanadoPrefab()、ChapterOneMissionManager.HasWalkableNavigationNodes()、ChapterOneMissionManager.Prepare(GameManager, EnemyAIManager, HouseThreeTraversalGeometry) 等共 4 处。</summary>
+    /// <summary>生成。</summary>
     private MissionSpawnExecutor generate;
-    /// <summary>中文含义：绑定对局。使用位置：ChapterOneMissionManager.CanAdvanceGameplay()、ChapterOneMissionManager.CompleteMission(MissionCompletionReason)、ChapterOneMissionManager.OnDestroy() 等共 4 处。</summary>
+    /// <summary>绑定对局。</summary>
     private GameManager bindingMatch;
     private VillageBellSequence bellSequence;
     private bool villagePatrolReady;
@@ -154,9 +154,9 @@ public partial class ChapterOneMissionManager : Singleton<ChapterOneMissionManag
     GameObject GetNextGanadoPrefab() => generate.GetNextGanadoPrefab();
     /// <summary>Prepare 的业务处理入口；本方法直接依赖 ChapterOneMissionManager.ValidateConfiguration()、MissionRulesModel.Initialize(int, int, float, float)、MissionSpawnExecutor.MissionSpawnExecutor(ChapterOneMissionManager, LeonController, HouseThreeTraversalGeometry, EnemyNavigationPreciseLink[], Dictionary&lt;VillagerController, MissionEnemyType&gt;)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 SceneStartupEntry.Start()；下游（含内部回调体） ChapterOneMissionManager.ValidateConfiguration()、MissionRulesModel.Initialize(int, int, float, float)、MissionSpawnExecutor.MissionSpawnExecutor(ChapterOneMissionManager, LeonController, HouseThreeTraversalGeometry, EnemyNavigationPreciseLink[], Dictionary&lt;VillagerController, MissionEnemyType&gt;)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="match">中文含义：对局。使用位置：ChapterOneMissionManager.Prepare(GameManager, EnemyAIManager, HouseThreeTraversalGeometry)。</param>
-    /// <param name="enemyGroup">中文含义：敌人分组。使用位置：作为 MissionSpawnExecutor.MissionSpawnExecutor(ChapterOneMissionManager, LeonController, HouseThreeTraversalGeometry, EnemyNavigationPreciseLink[], Dictionary&lt;VillagerController, MissionEnemyType&gt;) 的参数、ChapterOneMissionManager.Prepare(GameManager, EnemyAIManager, HouseThreeTraversalGeometry)。</param>
-    /// <param name="traversal">中文含义：通行。使用位置：作为 MissionSpawnExecutor.MissionSpawnExecutor(ChapterOneMissionManager, LeonController, HouseThreeTraversalGeometry, EnemyNavigationPreciseLink[], Dictionary&lt;VillagerController, MissionEnemyType&gt;) 的参数。</param>
+    /// <param name="match">对局。</param>
+    /// <param name="enemyGroup">敌人分组。</param>
+    /// <param name="traversal">通行。</param>
     internal bool Prepare(GameManager match, EnemyAIManager enemyGroup, HouseThreeTraversalGeometry traversal)
     {
         bindingMatch = match;
@@ -196,7 +196,7 @@ public partial class ChapterOneMissionManager : Singleton<ChapterOneMissionManag
         return true;
     }
 
-    /// <summary>中文含义：当前会话敌人分组。使用位置：ChapterOneMissionManager.CanAdvanceGameplay()、ChapterOneMissionManager.Prepare(GameManager, EnemyAIManager, HouseThreeTraversalGeometry)。</summary>
+    /// <summary>当前会话敌人分组。</summary>
     private EnemyAIManager currentSessionEnemyGroup;
     internal bool TracksVillageEnemy(VillagerController enemy)
     {
@@ -418,11 +418,11 @@ public partial class ChapterOneMissionManager : Singleton<ChapterOneMissionManag
 
     /// <summary>SpawnFixedWave 的业务处理入口；本方法直接依赖 ChapterOneMissionManager.GetNextGanadoPrefab()、ChapterOneMissionManager.TrySpawnEnemy(GameObject, MissionEnemyType)、WaitForSeconds.WaitForSeconds(float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 ChapterOneMissionManager.StartMissionWhenInitialEnemiesReady()、ChapterOneMissionManager.StartNextWave()；下游（含内部回调体） ChapterOneMissionManager.GetNextGanadoPrefab()、ChapterOneMissionManager.TrySpawnEnemy(GameObject, MissionEnemyType)、WaitForSeconds.WaitForSeconds(float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="ganadoCount">中文含义：村民敌人数量。使用位置：ChapterOneMissionManager.SpawnFixedWave(int, int)。</param>
-    /// <param name="sawmanCount">中文含义：电锯敌人数量。使用位置：ChapterOneMissionManager.SpawnFixedWave(int, int)。</param>
+    /// <param name="ganadoCount">村民敌人数量。</param>
+    /// <param name="sawmanCount">电锯敌人数量。</param>
     IEnumerator SpawnFixedWave(int ganadoCount, int sawmanCount)
     {
-        // index（当前元素索引）：使用位置：ChapterOneMissionManager.SpawnFixedWave(int, int)。
+        // 当前元素索引。
 for (int index = 0; index < sawmanCount; index++)
         {
             while (!TrySpawnEnemy(sawmanTemplate, MissionEnemyType.Sawman))
@@ -436,10 +436,10 @@ for (int index = 0; index < sawmanCount; index++)
             }
         }
 
-        // index（当前元素索引）：使用位置：ChapterOneMissionManager.SpawnFixedWave(int, int)。
+        // 当前元素索引。
 for (int index = 0; index < ganadoCount; index++)
         {
-            // prefab（预制件）：保存 ChapterOneMissionManager.GetNextGanadoPrefab() 的返回结果，供当前步骤使用。使用位置：作为 ChapterOneMissionManager.TrySpawnEnemy(GameObject, MissionEnemyType) 的参数、ChapterOneMissionManager.SpawnFixedWave(int, int)。
+            // 预制件。
 GameObject prefab = GetNextGanadoPrefab();
             while (!TrySpawnEnemy(prefab, MissionEnemyType.Ganado))
             {
@@ -481,8 +481,8 @@ GameObject prefab = GetNextGanadoPrefab();
 
     /// <summary>TrySpawnEnemy 的业务处理入口；本方法直接依赖 ChapterOneMissionManager.GetEnemyDisplayName(MissionEnemyType)、ChapterOneMissionManager.LogMission(string)、Dictionary&lt;VillagerController, MissionEnemyType&gt;.Add(VillagerController, MissionEnemyType)、EnemyCombatTimeline.Register(VillagerController, int)、GameObject.SetActive(bool)、MissionRulesModel.RegisterGenerate(int, MissionEnemyType)、MissionSpawnExecutor.Generate(GameObject) 等共 8 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 ChapterOneMissionManager.SpawnFixedWave(int, int)；下游（含内部回调体） ChapterOneMissionManager.GetEnemyDisplayName(MissionEnemyType)、ChapterOneMissionManager.LogMission(string)、Dictionary&lt;VillagerController, MissionEnemyType&gt;.Add(VillagerController, MissionEnemyType)、EnemyCombatTimeline.Register(VillagerController, int)、GameObject.SetActive(bool)、MissionRulesModel.RegisterGenerate(int, MissionEnemyType)、MissionSpawnExecutor.Generate(GameObject) 等共 8 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="prefab">中文含义：预制件。使用位置：作为 MissionSpawnExecutor.Generate(GameObject) 的参数。</param>
-    /// <param name="enemyType">中文含义：敌人类型。使用位置：作为 ChapterOneMissionManager.GetEnemyDisplayName(MissionEnemyType) 的参数、作为 Dictionary&lt;VillagerController, MissionEnemyType&gt;.Add(VillagerController, MissionEnemyType) 的参数、作为 MissionRulesModel.RegisterGenerate(int, MissionEnemyType) 的参数 等共 4 处。</param>
+    /// <param name="prefab">预制件。</param>
+    /// <param name="enemyType">敌人类型。</param>
     bool TrySpawnEnemy(GameObject prefab, MissionEnemyType enemyType)
     {
         // enemy（敌人）：保存 MissionSpawnExecutor.Generate(GameObject) 的返回结果，供当前步骤使用。使用位置：作为 Dictionary<VillagerController, MissionEnemyType>.Add(VillagerController, MissionEnemyType) 的参数、作为 EnemyCombatTimeline.Register(VillagerController, int) 的参数、作为 MissionRulesModel.RegisterGenerate(int, MissionEnemyType) 的参数 等共 4 处。
@@ -503,7 +503,7 @@ GameObject prefab = GetNextGanadoPrefab();
             return false;
         }
 
-        // enemyObject（敌人对象）：使用位置：ChapterOneMissionManager.TrySpawnEnemy(GameObject, MissionEnemyType)。
+        // 敌人对象。
 GameObject enemyObject = enemy.gameObject;
         enemy.missionEnemyType = enemyType;
         EnemyCombatTimeline.Register(enemy, currentWave);
@@ -520,7 +520,7 @@ GameObject enemyObject = enemy.gameObject;
 
     /// <summary>OnMissionEnemyDied 的业务处理入口；本方法直接依赖 ChapterOneMissionManager.CompleteMission(MissionCompletionReason)、ChapterOneMissionManager.GetEnemyDisplayName(MissionEnemyType)、ChapterOneMissionManager.IsPlayerAlive()、ChapterOneMissionManager.LogMission(string)、ChapterOneMissionManager.MeetsExterminationRequirement(int, int, int, int)、ChapterOneMissionManager.PublishProgress(bool)、ChapterOneMissionManager.ShouldStartNextWave() 等共 13 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） ChapterOneMissionManager.CompleteMission(MissionCompletionReason)、ChapterOneMissionManager.GetEnemyDisplayName(MissionEnemyType)、ChapterOneMissionManager.IsPlayerAlive()、ChapterOneMissionManager.LogMission(string)、ChapterOneMissionManager.MeetsExterminationRequirement(int, int, int, int)、ChapterOneMissionManager.PublishProgress(bool)、ChapterOneMissionManager.ShouldStartNextWave() 等共 13 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="enemy">中文含义：敌人。使用位置：作为 Dictionary&lt;VillagerController, MissionEnemyType&gt;.Remove(VillagerController, out MissionEnemyType) 的参数、作为 MissionRulesModel.RegisterDeath(int, bool) 的参数、ChapterOneMissionManager.OnMissionEnemyDied(VillagerController)。</param>
+    /// <param name="enemy">敌人。</param>
     void OnMissionEnemyDied(VillagerController enemy)
     {
         if (enemy == null || !trackedEnemies.Remove(enemy, out MissionEnemyType /* 中文含义：敌人类型。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ enemyType))
@@ -566,7 +566,7 @@ GameObject enemyObject = enemy.gameObject;
 
     /// <summary>CompleteMission 的业务处理入口；本方法直接依赖 ChapterOneMissionManager.BuildSnapshot(bool)、ChapterOneMissionManager.IsPlayerAlive()、ChapterOneMissionManager.LogMission(string)、ChapterOneMissionManager.PublishProgress(bool)、GameManager.TryCompleteMission(MissionResult)、MissionResult.MissionResult(MissionCompletionReason, MissionProgressSnapshot)、MissionRulesModel.ConfirmComplete() 等共 9 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 ChapterOneMissionManager.OnMissionEnemyDied(VillagerController)、ChapterOneMissionManager.Update()；下游（含内部回调体） ChapterOneMissionManager.BuildSnapshot(bool)、ChapterOneMissionManager.IsPlayerAlive()、ChapterOneMissionManager.LogMission(string)、ChapterOneMissionManager.PublishProgress(bool)、GameManager.TryCompleteMission(MissionResult)、MissionResult.MissionResult(MissionCompletionReason, MissionProgressSnapshot)、MissionRulesModel.ConfirmComplete() 等共 9 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="reason">中文含义：原因。使用位置：作为 MissionResult.MissionResult(MissionCompletionReason, MissionProgressSnapshot) 的参数、ChapterOneMissionManager.CompleteMission(MissionCompletionReason)。</param>
+    /// <param name="reason">原因。</param>
     void CompleteMission(MissionCompletionReason reason)
     {
         if (IsCompleted || IsBellEnding || !IsPlayerAlive())
@@ -574,7 +574,7 @@ GameObject enemyObject = enemy.gameObject;
             return;
         }
 
-        // result（当前任务结果）：使用位置：作为 GameManager.TryCompleteMission(MissionResult) 的参数。
+        // 当前任务结果。
 MissionResult result = new MissionResult(reason, BuildSnapshot(true));
         if (bellSequence != null)
         {
@@ -612,7 +612,7 @@ MissionResult result = new MissionResult(reason, BuildSnapshot(true));
         }
 
         PublishProgress(true);
-        // selectedValue1（分支选出的文字“已通过歼灭路线完成第一章。”）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：作为 ChapterOneMissionManager.LogMission(string) 的参数、ChapterOneMissionManager.CompleteMission(MissionCompletionReason)。
+        // 分支选出的文字“已通过歼灭路线完成第一章。”。
 string selectedValue1;
         if (result.CompletionReason == MissionCompletionReason.Extermination)
         {
@@ -630,7 +630,7 @@ string selectedValue1;
     /// <remarks>静态调用链：上游 ChapterOneMissionManager.Prepare(GameManager, EnemyAIManager, HouseThreeTraversalGeometry)；下游（含内部回调体） ChapterOneMissionManager.HasWalkableNavigationNodes()、Debug.LogError(object, Object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     bool ValidateConfiguration()
     {
-        // valid（是否有效）：使用位置：ChapterOneMissionManager.ValidateConfiguration()。
+        // 是否有效。
 bool valid = true;
         if (ganadoPrefabs == null || ganadoPrefabs.Length == 0)
         {
@@ -659,10 +659,10 @@ bool valid = true;
         return valid;
     }
 
-    /// <summary>中文含义：已配置村民敌人备弹。使用位置：作为 ChapterOneMissionManager.LogMission(string) 的参数。</summary>
+    /// <summary>已配置村民敌人备弹。</summary>
     int ConfiguredGanadoReserve => firstWaveGanado + secondWaveGanado + thirdWaveGanado;
 
-    /// <summary>中文含义：已配置电锯敌人备弹。使用位置：作为 ChapterOneMissionManager.LogMission(string) 的参数。</summary>
+    /// <summary>已配置电锯敌人备弹。</summary>
     int ConfiguredSawmanReserve => firstWaveSawman + secondWaveSawman + thirdWaveSawman;
 
     /// <summary>ShouldStartNextWave 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
@@ -670,9 +670,9 @@ bool valid = true;
     bool ShouldStartNextWave() => Rules.CanAdvanceWave;
     /// <summary>HasReachedWaveAdvanceThreshold 的业务处理入口；本方法直接依赖 MissionRulesModel.ReachWaveThreshold(int, int, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） MissionRulesModel.ReachWaveThreshold(int, int, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="activeEnemyCount">中文含义：生效敌人数量。使用位置：作为 MissionRulesModel.ReachWaveThreshold(int, int, float) 的参数。</param>
-    /// <param name="baselineEnemyCount">中文含义：基准敌人数量。使用位置：作为 MissionRulesModel.ReachWaveThreshold(int, int, float) 的参数。</param>
-    /// <param name="remainingRatio">中文含义：剩余比例。使用位置：作为 MissionRulesModel.ReachWaveThreshold(int, int, float) 的参数。</param>
+    /// <param name="activeEnemyCount">生效敌人数量。</param>
+    /// <param name="baselineEnemyCount">基准敌人数量。</param>
+    /// <param name="remainingRatio">剩余比例。</param>
     public static bool HasReachedWaveAdvanceThreshold(int activeEnemyCount, int baselineEnemyCount, float remainingRatio) => MissionRulesModel.ReachWaveThreshold(activeEnemyCount, baselineEnemyCount, remainingRatio);
     /// <summary>CanAdvanceGameplay 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
     /// <remarks>静态调用链：上游 ChapterOneMissionManager.Update()；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
@@ -710,10 +710,10 @@ bool valid = true;
 
     /// <summary>PublishProgress 的业务处理入口；本方法直接依赖 Action&lt;MissionProgressSnapshot&gt;.Invoke(MissionProgressSnapshot)、ChapterOneMissionManager.BuildSnapshot(bool)、Mathf.CeilToInt(float)、Mathf.Max(float, float)、object.ReferenceEquals(object, object)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 ChapterOneMissionManager.CompleteMission(MissionCompletionReason)、ChapterOneMissionManager.OnMissionEnemyDied(VillagerController)、ChapterOneMissionManager.StartMissionWhenInitialEnemiesReady()、ChapterOneMissionManager.StartNextWave()、ChapterOneMissionManager.Update()；下游（含内部回调体） Action&lt;MissionProgressSnapshot&gt;.Invoke(MissionProgressSnapshot)、ChapterOneMissionManager.BuildSnapshot(bool)、Mathf.CeilToInt(float)、Mathf.Max(float, float)、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="force">中文含义：是否力度。使用位置：ChapterOneMissionManager.PublishProgress(bool)。</param>
+    /// <param name="force">是否力度。</param>
     void PublishProgress(bool force)
     {
-        // remainingSecond（剩余第二）：保存 Mathf.CeilToInt(float) 的返回结果，供当前步骤使用。使用位置：ChapterOneMissionManager.PublishProgress(bool)。
+        // 剩余第二。
 int remainingSecond = Mathf.CeilToInt(Mathf.Max(0f, survivalDuration - ElapsedGameplaySeconds));
         if (!force && remainingSecond == lastDisplayedRemainingSecond)
         {
@@ -721,7 +721,7 @@ int remainingSecond = Mathf.CeilToInt(Mathf.Max(0f, survivalDuration - ElapsedGa
         }
 
         lastDisplayedRemainingSecond = remainingSecond;
-        // receiverValue2（判空前缓存的进度变化）：从进度变化读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、ChapterOneMissionManager.PublishProgress(bool)。
+        // 判空前缓存的进度变化。
 global::System.Action<global::MissionProgressSnapshot> receiverValue2 = ProgressChanged;
         if (!global::System.Object.ReferenceEquals(receiverValue2, null))
         {
@@ -731,7 +731,7 @@ global::System.Action<global::MissionProgressSnapshot> receiverValue2 = Progress
 
     /// <summary>BuildSnapshot 的业务处理入口；本方法直接依赖 MissionRulesModel.Snapshot(bool)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 ChapterOneMissionManager.CompleteMission(MissionCompletionReason)、ChapterOneMissionManager.LatestSnapshot.get、ChapterOneMissionManager.PublishProgress(bool)；下游（含内部回调体） MissionRulesModel.Snapshot(bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="completed">中文含义：是否已完成。使用位置：作为 MissionRulesModel.Snapshot(bool) 的参数。</param>
+    /// <param name="completed">是否已完成。</param>
     MissionProgressSnapshot BuildSnapshot(bool completed = false) => Rules.Snapshot(completed);
     /// <summary>UnsubscribeAllEnemies 的业务处理入口；本方法直接依赖 Dictionary&lt;VillagerController, MissionEnemyType&gt;.Clear()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 ChapterOneMissionManager.OnDestroy()；下游（含内部回调体） Dictionary&lt;VillagerController, MissionEnemyType&gt;.Clear()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
@@ -753,7 +753,7 @@ foreach (VillagerController enemy in trackedEnemies.Keys)
     /// <remarks>静态调用链：上游 ChapterOneMissionManager.StartMissionWhenInitialEnemiesReady()；下游（含内部回调体） Debug.LogWarning(object, Object)、Dictionary&lt;VillagerController, MissionEnemyType&gt;.ContainsKey(VillagerController)、Object.Destroy(Object)、Object.FindObjectsByType&lt;VillagerController&gt;(FindObjectsInactive, FindObjectsSortMode)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     void RemoveUnmanagedRuntimeEnemies()
     {
-        // activeEnemies（生效敌人集合）：保存 Object.FindObjectsByType<VillagerController>(FindObjectsInactive, FindObjectsSortMode) 的返回结果，供当前步骤使用。使用位置：ChapterOneMissionManager.RemoveUnmanagedRuntimeEnemies()。
+        // 生效敌人集合。
 VillagerController[] activeEnemies = FindObjectsByType<VillagerController>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
         // enemy（敌人）：每轮从生效敌人集合取得一个元素，仅代表当前这一项。使用位置：作为 Debug.LogWarning(object, Object) 的参数、作为 Dictionary<VillagerController, MissionEnemyType>.ContainsKey(VillagerController) 的参数、作为 Object.Destroy(Object) 的参数 等共 4 处。
 foreach (VillagerController enemy in activeEnemies)
@@ -770,7 +770,7 @@ foreach (VillagerController enemy in activeEnemies)
 
     /// <summary>LogMission 的业务处理入口；本方法直接依赖 Debug.Log(object, Object)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 ChapterOneMissionManager.CompleteMission(MissionCompletionReason)、ChapterOneMissionManager.OnMissionEnemyDied(VillagerController)、ChapterOneMissionManager.StartMissionWhenInitialEnemiesReady()、ChapterOneMissionManager.StartNextWave()、ChapterOneMissionManager.TrySpawnEnemy(GameObject, MissionEnemyType)；下游（含内部回调体） Debug.Log(object, Object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="message">中文含义：消息。使用位置：作为 Debug.Log(object, Object) 的参数。</param>
+    /// <param name="message">消息。</param>
     void LogMission(string message)
     {
         if (logMissionEvents)
@@ -781,7 +781,7 @@ foreach (VillagerController enemy in activeEnemies)
 
     /// <summary>GetEnemyDisplayName 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
     /// <remarks>静态调用链：上游 ChapterOneMissionManager.OnMissionEnemyDied(VillagerController)、ChapterOneMissionManager.TrySpawnEnemy(GameObject, MissionEnemyType)；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="enemyType">中文含义：敌人类型。使用位置：ChapterOneMissionManager.GetEnemyDisplayName(MissionEnemyType)。</param>
+    /// <param name="enemyType">敌人类型。</param>
     static string GetEnemyDisplayName(MissionEnemyType enemyType)
     {
         if (enemyType == MissionEnemyType.Sawman)
@@ -796,14 +796,14 @@ foreach (VillagerController enemy in activeEnemies)
 
     /// <summary>MeetsExterminationRequirement 的业务处理入口；本方法直接依赖 MissionRulesModel.ReachEliminationTarget(int, int, int, int)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 ChapterOneMissionManager.OnMissionEnemyDied(VillagerController)；下游（含内部回调体） MissionRulesModel.ReachEliminationTarget(int, int, int, int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="ganadoKills">中文含义：村民敌人击杀数。使用位置：作为 MissionRulesModel.ReachEliminationTarget(int, int, int, int) 的参数。</param>
-    /// <param name="sawmanKills">中文含义：电锯敌人击杀数。使用位置：作为 MissionRulesModel.ReachEliminationTarget(int, int, int, int) 的参数。</param>
-    /// <param name="requiredGanadoKills">中文含义：所需村民敌人击杀数。使用位置：作为 MissionRulesModel.ReachEliminationTarget(int, int, int, int) 的参数。</param>
-    /// <param name="requiredSawmanKills">中文含义：所需电锯敌人击杀数。使用位置：作为 MissionRulesModel.ReachEliminationTarget(int, int, int, int) 的参数。</param>
+    /// <param name="ganadoKills">村民敌人击杀数。</param>
+    /// <param name="sawmanKills">电锯敌人击杀数。</param>
+    /// <param name="requiredGanadoKills">所需村民敌人击杀数。</param>
+    /// <param name="requiredSawmanKills">所需电锯敌人击杀数。</param>
     public static bool MeetsExterminationRequirement(int ganadoKills, int sawmanKills, int requiredGanadoKills, int requiredSawmanKills) => MissionRulesModel.ReachEliminationTarget(ganadoKills, sawmanKills, requiredGanadoKills, requiredSawmanKills);
     /// <summary>MeetsSurvivalRequirement 的业务处理入口；本方法直接依赖 MissionRulesModel.ReachSurvivalTarget(float, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 ChapterOneMissionManager.Update()；下游（含内部回调体） MissionRulesModel.ReachSurvivalTarget(float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="elapsedSeconds">中文含义：已用秒。使用位置：作为 MissionRulesModel.ReachSurvivalTarget(float, float) 的参数。</param>
-    /// <param name="requiredSeconds">中文含义：所需秒。使用位置：作为 MissionRulesModel.ReachSurvivalTarget(float, float) 的参数。</param>
+    /// <param name="elapsedSeconds">已用秒。</param>
+    /// <param name="requiredSeconds">所需秒。</param>
     public static bool MeetsSurvivalRequirement(float elapsedSeconds, float requiredSeconds) => MissionRulesModel.ReachSurvivalTarget(elapsedSeconds, requiredSeconds);
 }

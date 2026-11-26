@@ -10,25 +10,25 @@ public class EnemyHitEffectManager : Singleton<EnemyHitEffectManager>
     /// <summary>中文含义：切换场景时是否保留此单例对象。</summary>
     protected override bool Persistent => false;
 
-    /// <summary>中文含义：身体/胸部受击音效事件。使用位置：EnemyHitEffectManager.PlayBloodEffect(Vector3, Vector3, HitboxType)。</summary>
+    /// <summary>身体/胸部受击音效事件。</summary>
     [Header("受击音效事件")]
     [Tooltip("身体/胸部受击音效事件")]
     [SerializeField]
     private AudioEventData bodyHitEvent;
-    /// <summary>中文含义：爆头受击音效事件。使用位置：EnemyHitEffectManager.PlayBloodEffect(Vector3, Vector3, HitboxType)。</summary>
+    /// <summary>爆头受击音效事件。</summary>
     [Tooltip("爆头受击音效事件")]
     [SerializeField]
     private AudioEventData headHitEvent;
-    /// <summary>中文含义：四肢受击音效事件。使用位置：EnemyHitEffectManager.PlayBloodEffect(Vector3, Vector3, HitboxType)。</summary>
+    /// <summary>四肢受击音效事件。</summary>
     [Tooltip("四肢受击音效事件")]
     [SerializeField]
     private AudioEventData limbHitEvent;
     // 缺失警告去重
-    /// <summary>中文含义：是否身体命中已警告。使用位置：EnemyHitEffectManager.PlayBloodEffect(Vector3, Vector3, HitboxType)。</summary>
+    /// <summary>是否身体命中已警告。</summary>
     private bool bodyHitWarned;
-    /// <summary>中文含义：是否头部命中已警告。使用位置：EnemyHitEffectManager.PlayBloodEffect(Vector3, Vector3, HitboxType)。</summary>
+    /// <summary>是否头部命中已警告。</summary>
     private bool headHitWarned;
-    /// <summary>中文含义：是否肢体命中已警告。使用位置：EnemyHitEffectManager.PlayBloodEffect(Vector3, Vector3, HitboxType)。</summary>
+    /// <summary>是否肢体命中已警告。</summary>
     private bool limbHitWarned;
     private readonly System.Collections.Generic.HashSet<GameObject> presentedTargets = new System.Collections.Generic.HashSet<GameObject>();
     private int lastPresentationFrame = -1;
@@ -48,7 +48,7 @@ public class EnemyHitEffectManager : Singleton<EnemyHitEffectManager>
 
     /// <summary>PresentHasResolveHit 的业务处理入口；本方法直接依赖 EnemyHitEffectManager.PlayBloodEffect(Vector3, Vector3, HitboxType)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） EnemyHitEffectManager.PlayBloodEffect(Vector3, Vector3, HitboxType)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="result">中文含义：当前命中结果。使用位置：作为 EnemyHitEffectManager.PlayBloodEffect(Vector3, Vector3, HitboxType) 的参数。</param>
+    /// <param name="result">当前命中结果。</param>
     private void PresentHasResolveHit(HitResult result)
     {
         if (result.deferBloodPresentation)
@@ -80,9 +80,9 @@ public class EnemyHitEffectManager : Singleton<EnemyHitEffectManager>
     /// 在命中位置生成血液特效 + 播放受击音效
     /// </summary>
     /// <remarks>静态调用链：上游 EnemyCombatModule.ApplyDeadChainsawPulse()、EnemyCombatModule.TryApplyFriendlyFire(Vector3, Vector3, float)、EnemyHitEffectManager.PresentHasResolveHit(HitResult)、VillagerQTEParticipant.ApplyBodyTechniqueSplashDamage(float, Vector3, Transform)；下游（含内部回调体） AudioManager.Play3D(AudioEventData, Vector3)、Debug.LogWarning(object)、GameObjectPoolManager.Get(GameObject, Vector3, Quaternion, Transform)、GameObjectPoolManager.ReturnDelayed(GameObject, float)、object.ReferenceEquals(object, object)、Quaternion.LookRotation(Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="position">中文含义：位置。使用位置：作为 AudioManager.Play3D(AudioEventData, Vector3) 的参数、作为 GameObjectPoolManager.Get(GameObject, Vector3, Quaternion, Transform) 的参数。</param>
-    /// <param name="normal">中文含义：表面法线。使用位置：作为 Quaternion.LookRotation(Vector3) 的参数、EnemyHitEffectManager.PlayBloodEffect(Vector3, Vector3, HitboxType)。</param>
-    /// <param name="hitPart">中文含义：命中部件。使用位置：EnemyHitEffectManager.PlayBloodEffect(Vector3, Vector3, HitboxType)。</param>
+    /// <param name="position">位置。</param>
+    /// <param name="normal">表面法线。</param>
+    /// <param name="hitPart">命中部件。</param>
     public void PlayBloodEffect(Vector3 position, Vector3 normal, HitboxType hitPart = HitboxType.Chest, bool playImpactSound = true,
         ChapterOneEffect bloodEffect = ChapterOneEffect.None)
     {
@@ -98,7 +98,7 @@ public class EnemyHitEffectManager : Singleton<EnemyHitEffectManager>
         }
 
         // 受击音效（根据命中部位选择事件）
-        // eventData（事件配置）：使用位置：作为 AudioManager.Play3D(AudioEventData, Vector3) 的参数、EnemyHitEffectManager.PlayBloodEffect(Vector3, Vector3, HitboxType)。
+        // 事件配置。
 AudioEventData eventData = hitPart switch
         {
             HitboxType.Head => headHitEvent,
@@ -107,9 +107,9 @@ AudioEventData eventData = hitPart switch
         };
         if (eventData != null)
         {
-            // receiverValue7（判空前缓存的音频管理器的实例）：从音频管理器的实例读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、EnemyHitEffectManager.PlayBloodEffect(Vector3, Vector3, HitboxType)。
+            // 判空前缓存的音频管理器的实例。
 global::AudioManager receiverValue7 = AudioManager.Instance;
-            // optionalValue8（条件访问得到的播放3距离的返回结果）：保存条件访问的结果，接收者为空时保持默认空值，非空时才执行原成员访问。使用位置：EnemyHitEffectManager.PlayBloodEffect(Vector3, Vector3, HitboxType)。
+            // 条件访问得到的播放3距离的返回结果。
 global::AudioPlayHandle? optionalValue8;
             if (!global::System.Object.ReferenceEquals(receiverValue7, null))
             {
@@ -161,8 +161,8 @@ global::AudioPlayHandle? optionalValue8;
     /// 用于里昂快速反应事件失败等玩家侧受伤场景。
     /// </summary>
     /// <remarks>静态调用链：上游 LeonController.TryApplyQTEFailureDamage(int, float, Vector3, Vector3)；下游（含内部回调体） GameObjectPoolManager.Get(GameObject, Vector3, Quaternion, Transform)、GameObjectPoolManager.ReturnDelayed(GameObject, float)、object.ReferenceEquals(object, object)、Quaternion.LookRotation(Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="position">中文含义：位置。使用位置：作为 GameObjectPoolManager.Get(GameObject, Vector3, Quaternion, Transform) 的参数。</param>
-    /// <param name="normal">中文含义：表面法线。使用位置：作为 Quaternion.LookRotation(Vector3) 的参数、EnemyHitEffectManager.PlayBloodVisualOnly(Vector3, Vector3)。</param>
+    /// <param name="position">位置。</param>
+    /// <param name="normal">表面法线。</param>
     public void PlayBloodVisualOnly(Vector3 position, Vector3 normal)
     {
         ChapterOneEffects.TryPlay(ChapterOneEffect.StabBlood, position, normal);

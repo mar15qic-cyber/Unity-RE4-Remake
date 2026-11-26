@@ -10,9 +10,9 @@ using UnityEngine;
 /// <summary>从已经验收的网页读取独立参考矩阵，不重新生成或覆盖网页。</summary>
 public static class KnifePreviewReferenceValidator
 {
-    /// <summary>中文含义：引用目录。编译期常量，保持既有值与消费者映射。使用位置：作为 File.ReadAllBytes(string) 的参数、作为 File.ReadAllText(string) 的参数。</summary>
+    /// <summary>引用目录。编译期常量，保持既有值与消费者映射。</summary>
     public const string ReferenceDirectory = "Library/KnifeApprovedReference";
-    /// <summary>中文含义：是否运行时捕获运行中。使用位置：KnifePreviewReferenceValidator.BeginRuntimeCapture()、KnifePreviewReferenceValidator.CaptureRuntime(KnifeCombatModule)。</summary>
+    /// <summary>是否运行时捕获运行中。</summary>
     public static bool RuntimeCaptureRunning { get; private set; }
 
     /// <summary>BeginRuntimeCapture 的业务处理入口；本方法直接依赖 KnifePreviewReferenceValidator.CaptureRuntime(KnifeCombatModule)、MonoBehaviour.StartCoroutine(IEnumerator)、Object.FindFirstObjectByType&lt;KnifeCombatModule&gt;()，调用方通过参数与返回结果交接本次处理。</summary>
@@ -24,7 +24,7 @@ public static class KnifePreviewReferenceValidator
             return "当前不能开始播放核验。";
         }
 
-        // module（模块）：保存 Object.FindFirstObjectByType<KnifeCombatModule>() 的返回结果，供当前步骤使用。使用位置：作为 KnifePreviewReferenceValidator.CaptureRuntime(KnifeCombatModule) 的参数、KnifePreviewReferenceValidator.BeginRuntimeCapture()。
+        // 模块。
 KnifeCombatModule module = UnityEngine.Object.FindFirstObjectByType<KnifeCombatModule>();
         module.StartCoroutine(CaptureRuntime(module));
         return "已开始正式角色姿态与网页逐帧核验。";
@@ -32,19 +32,19 @@ KnifeCombatModule module = UnityEngine.Object.FindFirstObjectByType<KnifeCombatM
 
     /// <summary>CaptureRuntime 的业务处理入口；本方法直接依赖 Buffer.BlockCopy(Array, int, Array, int, int)、Component.GetComponent&lt;LeonInputBridge&gt;()、Dictionary&lt;string, float[]&gt;.Dictionary()、Dictionary&lt;string, JObject&gt;.Dictionary()、File.ReadAllBytes(string)、File.ReadAllText(string)、File.WriteAllText(string, string) 等共 34 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 KnifePreviewReferenceValidator.BeginRuntimeCapture()；下游（含内部回调体） Buffer.BlockCopy(Array, int, Array, int, int)、Component.GetComponent&lt;LeonInputBridge&gt;()、Dictionary&lt;string, float[]&gt;.Dictionary()、Dictionary&lt;string, JObject&gt;.Dictionary()、File.ReadAllBytes(string)、File.ReadAllText(string)、File.WriteAllText(string, string) 等共 34 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="module">中文含义：模块。使用位置：作为 KnifeCombatConfiguration.Find(KnifeAction) 的参数、作为 KnifePreviewReferenceValidator.BindReference(GameObject, JObject) 的参数、作为 KnifePreviewReferenceValidator.CaptureViews(Transform, string) 的参数 等共 4 处。</param>
+    /// <param name="module">模块。</param>
     private static IEnumerator CaptureRuntime(KnifeCombatModule module)
     {
         RuntimeCaptureRunning = true;
-        // input（输入数据）：保存 Component.GetComponent<LeonInputBridge>() 的返回结果，供当前步骤使用。使用位置：KnifePreviewReferenceValidator.CaptureRuntime(KnifeCombatModule)。
+        // 输入数据。
 LeonInputBridge input = module.GetComponent<LeonInputBridge>();
-        // previousInput（是否前一次输入）：使用位置：KnifePreviewReferenceValidator.CaptureRuntime(KnifeCombatModule)。
+        // 是否前一次输入。
 bool previousInput = input.enabled;
-        // previousFrameRate（前一次帧速率）：使用位置：KnifePreviewReferenceValidator.CaptureRuntime(KnifeCombatModule)。
+        // 前一次帧速率。
 int previousFrameRate = Application.targetFrameRate;
-        // records（记录集合）：使用位置：作为 JsonConvert.SerializeObject(object?, Formatting) 的参数、KnifePreviewReferenceValidator.CaptureRuntime(KnifeCombatModule)。
+        // 记录集合。
 List<object> records = new List<object>();
-        // sourcePreview（来源预览）：使用位置：作为 KnifePreviewReferenceValidator.BindReference(GameObject, JObject) 的参数、KnifePreviewReferenceValidator.CaptureRuntime(KnifeCombatModule)。
+        // 来源预览。
 LeonKnifeAnimationPreview.PreviewCharacter sourcePreview = null;
         try
         {
@@ -52,17 +52,17 @@ LeonKnifeAnimationPreview.PreviewCharacter sourcePreview = null;
             module.player.SetMoveInput(Vector3.zero);
             module.Interrupt(false);
             Application.targetFrameRate = 60;
-            // metadata（元数据）：保存 JObject.Parse(string) 的返回结果，供当前步骤使用。使用位置：作为 KnifePreviewReferenceValidator.BindReference(GameObject, JObject) 的参数、KnifePreviewReferenceValidator.CaptureRuntime(KnifeCombatModule)。
+            // 元数据。
 JObject metadata = JObject.Parse(File.ReadAllText(ReferenceDirectory + "/reference.json"));
-            // bindings（绑定集合）：保存 KnifePreviewReferenceValidator.BindReference(GameObject, JObject) 的返回结果，供当前步骤使用。使用位置：作为 KnifePreviewReferenceValidator.ReadMatrix(float[], int) 的参数、作为 Transform.InverseTransformPoint(Vector3) 的参数、KnifePreviewReferenceValidator.CaptureRuntime(KnifeCombatModule)。
+            // 绑定集合。
 BoneBinding[] bindings = BindReference(module.gameObject, metadata);
             sourcePreview = new LeonKnifeAnimationPreview.PreviewCharacter();
             sourcePreview.bakePreviewMesh = false;
-            // sourceBindings（来源绑定集合）：保存 KnifePreviewReferenceValidator.BindReference(GameObject, JObject) 的返回结果，供当前步骤使用。使用位置：作为 Vector3.Distance(Vector3, Vector3) 的参数。
+            // 来源绑定集合。
 BoneBinding[] sourceBindings = BindReference(sourcePreview.Model, metadata);
-            // actions（动作集合）：使用位置：KnifePreviewReferenceValidator.CaptureRuntime(KnifeCombatModule)。
+            // 动作集合。
 Dictionary<string, JObject> actions = new Dictionary<string, JObject>();
-            // data（当前键值映射表）：使用位置：作为 KnifePreviewReferenceValidator.ReadMatrix(float[], int) 的参数、KnifePreviewReferenceValidator.CaptureRuntime(KnifeCombatModule)。
+            // 当前键值映射表。
 Dictionary<string, float[]> data = new Dictionary<string, float[]>();
             // action（动作）：每轮从被遍历的集合取得一个元素，仅代表当前这一项。使用位置：作为 File.ReadAllBytes(string) 的参数、KnifePreviewReferenceValidator.CaptureRuntime(KnifeCombatModule)。
 foreach (JObject action in metadata["actions"])
@@ -72,19 +72,19 @@ foreach (JObject action in metadata["actions"])
                     continue;
                 }
 
-                // name（名称）：使用位置：作为 Dictionary<string, float[]>.this[string] 的参数、作为 Dictionary<string, JObject>.this[string] 的参数。
+                // 名称。
 string name = (string)action["name"];
                 actions[name] = action;
-                // bytes（字节集合）：保存 File.ReadAllBytes(string) 的返回结果，供当前步骤使用。使用位置：作为 Buffer.BlockCopy(Array, int, Array, int, int) 的参数、KnifePreviewReferenceValidator.CaptureRuntime(KnifeCombatModule)。
+                // 字节集合。
 byte[] bytes = File.ReadAllBytes(ReferenceDirectory + "/" + (string)action["file"]);
-                // values（数值集合）：使用位置：作为 Buffer.BlockCopy(Array, int, Array, int, int) 的参数、KnifePreviewReferenceValidator.CaptureRuntime(KnifeCombatModule)。
+                // 数值集合。
 float[] values = new float[bytes.Length / 4];
                 Buffer.BlockCopy(bytes, 0, values, 0, bytes.Length);
                 data[name] = values;
             }
 
             yield return new WaitForSeconds(.3f);
-            // scenario（场景用例）：使用位置：作为 KnifePreviewReferenceValidator.CaptureViews(Transform, string) 的参数、作为 List<object>.Add(object) 的参数、KnifePreviewReferenceValidator.CaptureRuntime(KnifeCombatModule)。
+            // 场景用例。
 for (int scenario = 0; scenario < 3; scenario++)
             {
                 module.Interrupt(false);
@@ -95,13 +95,13 @@ for (int scenario = 0; scenario < 3; scenario++)
                     yield return new WaitForSeconds(.5f);
                 }
 
-                // start（起始）：使用位置：作为 KnifeCombatModule.CommitAttack(double) 的参数、作为 KnifeCombatModule.CommitAttackReleased(double) 的参数、KnifePreviewReferenceValidator.CaptureRuntime(KnifeCombatModule)。
+                // 起始。
 double start = Time.timeAsDouble;
                 module.CommitAttack(start);
                 module.CommitAttackReleased(start + .0001);
-                // queued（是否缓存了待执行的）：使用位置：KnifePreviewReferenceValidator.CaptureRuntime(KnifeCombatModule)。
+                // 是否缓存了待执行的。
 bool queued = false;
-                // captured（是否已捕获）：使用位置：KnifePreviewReferenceValidator.CaptureRuntime(KnifeCombatModule)。
+                // 是否已捕获。
 bool captured = false;
                 while (Time.timeAsDouble - start < 2.1)
                 {
@@ -113,57 +113,57 @@ bool captured = false;
                         queued = true;
                     }
 
-                    // clip（动画片段）：保存 KnifeCombatConfiguration.Find(KnifeAction) 的返回结果，供当前步骤使用。使用位置：作为 LeonKnifeAnimationPreview.PreviewCharacter.Sample(AnimationClip, float, int, float) 的参数、KnifePreviewReferenceValidator.CaptureRuntime(KnifeCombatModule)。
+                    // 动画片段。
 KnifeActionConfiguration clip = module.configuration.Find(module.CurrentAction);
                     if (clip == null || clip.sourceClip == null || module.CurrentActionTime < .1)
                     {
                         continue;
                     }
 
-                    // name（名称）：使用位置：作为 Dictionary<string, float[]>.this[string] 的参数、作为 Dictionary<string, JObject>.this[string] 的参数、作为 List<object>.Add(object) 的参数。
+                    // 名称。
 string name = clip.sourceClip.name;
-                    // action（动作）：使用位置：作为 Mathf.Clamp(float, float, float) 的参数、KnifePreviewReferenceValidator.CaptureRuntime(KnifeCombatModule)。
+                    // 动作。
 JObject action = actions[name];
-                    // time（时间）：使用位置：作为 LeonKnifeAnimationPreview.PreviewCharacter.Sample(AnimationClip, float, int, float) 的参数、作为 List<object>.Add(object) 的参数、作为 Mathf.Clamp(float, float, float) 的参数。
+                    // 时间。
 float time = clip.sourceStart + (float)module.CurrentActionTime;
-                    // count（数量）：使用位置：作为 Mathf.Clamp(float, float, float) 的参数、作为 Mathf.Min(int, int) 的参数。
+                    // 数量。
 int count = (int)action["frames"];
-                    // frame（帧）：保存 Mathf.Clamp(float, float, float) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.FloorToInt(float) 的参数、KnifePreviewReferenceValidator.CaptureRuntime(KnifeCombatModule)。
+                    // 帧。
 float frame = Mathf.Clamp(time / (float)action["duration"] * (count - 1), 0, count - 1);
-                    // first（首个）：保存 Mathf.FloorToInt(float) 的返回结果，供当前步骤使用。使用位置：作为 KnifePreviewReferenceValidator.ReadMatrix(float[], int) 的参数、作为 Mathf.Min(int, int) 的参数、KnifePreviewReferenceValidator.CaptureRuntime(KnifeCombatModule)。
+                    // 首个。
 int first = Mathf.FloorToInt(frame);
-                    // second（第二）：保存 Mathf.Min(int, int) 的返回结果，供当前步骤使用。使用位置：作为 KnifePreviewReferenceValidator.ReadMatrix(float[], int) 的参数。
+                    // 第二。
 int second = Mathf.Min(first + 1, count - 1);
-                    // fraction（比例）：使用位置：作为 Mathf.Lerp(float, float, float) 的参数。
+                    // 比例。
 float fraction = frame - first;
-                    // error（错误）：使用位置：作为 List<object>.Add(object) 的参数、KnifePreviewReferenceValidator.CaptureRuntime(KnifeCombatModule)。
+                    // 错误。
 float error = 0;
-                    // sourceError（来源错误）：使用位置：作为 List<object>.Add(object) 的参数、作为 Mathf.Max(float, float) 的参数、KnifePreviewReferenceValidator.CaptureRuntime(KnifeCombatModule)。
+                    // 来源错误。
 float sourceError = 0;
-                    // worstBone（最差骨骼）：使用位置：作为 List<object>.Add(object) 的参数、KnifePreviewReferenceValidator.CaptureRuntime(KnifeCombatModule)。
+                    // 最差骨骼。
 string worstBone = "";
                     sourcePreview.Sample(clip.sourceClip, time, 0, time);
-                    // index（当前元素索引）：使用位置：作为 KnifePreviewReferenceValidator.ReadMatrix(float[], int) 的参数、KnifePreviewReferenceValidator.CaptureRuntime(KnifeCombatModule)。
+                    // 当前元素索引。
 for (int index = 0; index < bindings.Length; index++)
                     {
-                        // firstMatrix（首个矩阵）：保存 KnifePreviewReferenceValidator.ReadMatrix(float[], int) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Lerp(float, float, float) 的参数。
+                        // 首个矩阵。
 Matrix4x4 firstMatrix = ReadMatrix(data[name], (first * bindings.Length + index) * 16);
-                        // secondMatrix（第二矩阵）：保存 KnifePreviewReferenceValidator.ReadMatrix(float[], int) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Lerp(float, float, float) 的参数。
+                        // 第二矩阵。
 Matrix4x4 secondMatrix = ReadMatrix(data[name], (second * bindings.Length + index) * 16);
-                        // blended（混合后的）：使用位置：KnifePreviewReferenceValidator.CaptureRuntime(KnifeCombatModule)。
+                        // 混合后的。
 Matrix4x4 blended = new Matrix4x4();
-                        // element（元素）：使用位置：作为 Matrix4x4.this[int] 的参数、KnifePreviewReferenceValidator.CaptureRuntime(KnifeCombatModule)。
+                        // 元素。
 for (int element = 0; element < 16; element++)
                         {
                             blended[element] = Mathf.Lerp(firstMatrix[element], secondMatrix[element], fraction);
                         }
 
-                        // expected（预期）：使用位置：作为 Vector3.Distance(Vector3, Vector3) 的参数。
+                        // 预期。
 Matrix4x4 expected = blended * bindings[index].bindPose.inverse;
-                        // actual（实际）：保存 Transform.InverseTransformPoint(Vector3) 的返回结果，供当前步骤使用。使用位置：作为 Vector3.Distance(Vector3, Vector3) 的参数。
+                        // 实际。
 Vector3 actual = module.transform.InverseTransformPoint(bindings[index].bone.position);
                         sourceError = Mathf.Max(sourceError, Vector3.Distance(sourceBindings[index].bone.position, actual));
-                        // distance（距离）：保存 Vector3.Distance(Vector3, Vector3) 的返回结果，供当前步骤使用。使用位置：KnifePreviewReferenceValidator.CaptureRuntime(KnifeCombatModule)。
+                        // 距离。
 float distance = Vector3.Distance(expected.GetColumn(3), actual);
                         if (distance > error)
                         {
@@ -198,32 +198,32 @@ float distance = Vector3.Distance(expected.GetColumn(3), actual);
 
     /// <summary>CaptureViews 的业务处理入口；本方法直接依赖 Camera.Render()、File.WriteAllBytes(string, byte[])、GameObject.AddComponent&lt;Camera&gt;()、GameObject.GameObject(string)、Object.DestroyImmediate(Object)、Rect.Rect(float, float, float, float)、RenderTexture.GetTemporary(int, int, int) 等共 15 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 KnifePreviewReferenceValidator.CaptureRuntime(KnifeCombatModule)；下游（含内部回调体） Camera.Render()、File.WriteAllBytes(string, byte[])、GameObject.AddComponent&lt;Camera&gt;()、GameObject.GameObject(string)、Object.DestroyImmediate(Object)、Rect.Rect(float, float, float, float)、RenderTexture.GetTemporary(int, int, int) 等共 15 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="player">中文含义：玩家。使用位置：作为 Transform.LookAt(Vector3) 的参数、KnifePreviewReferenceValidator.CaptureViews(Transform, string)。</param>
-    /// <param name="prefix">中文含义：前缀。使用位置：作为 File.WriteAllBytes(string, byte[]) 的参数。</param>
+    /// <param name="player">玩家。</param>
+    /// <param name="prefix">前缀。</param>
     private static void CaptureViews(Transform player, string prefix)
     {
-        // offsets（偏移量集合）：使用位置：作为 Transform.TransformPoint(Vector3) 的参数、KnifePreviewReferenceValidator.CaptureViews(Transform, string)。
+        // 偏移量集合。
 Vector3[] offsets =
         {
             new Vector3(.1f, 1.35f, 3.2f),
             new Vector3(3.2f, 1.35f, .1f),
             new Vector3(.4f, 1.55f, -2.4f)
         };
-        // cameraObject（摄像机对象）：使用位置：作为 Object.DestroyImmediate(Object) 的参数、KnifePreviewReferenceValidator.CaptureViews(Transform, string)。
+        // 摄像机对象。
 GameObject cameraObject = new GameObject("姿态核验临时相机");
-        // camera（摄像机）：保存 GameObject.AddComponent<Camera>() 的返回结果，供当前步骤使用。使用位置：KnifePreviewReferenceValidator.CaptureViews(Transform, string)。
+        // 摄像机。
 Camera camera = cameraObject.AddComponent<Camera>();
         camera.fieldOfView = 40;
-        // target（目标渲染纹理）：保存 RenderTexture.GetTemporary(int, int, int) 的返回结果，供当前步骤使用。使用位置：作为 RenderTexture.ReleaseTemporary(RenderTexture) 的参数、KnifePreviewReferenceValidator.CaptureViews(Transform, string)。
+        // 目标渲染纹理。
 RenderTexture target = RenderTexture.GetTemporary(700, 850, 24);
-        // previous（前一次）：使用位置：KnifePreviewReferenceValidator.CaptureViews(Transform, string)。
+        // 前一次。
 RenderTexture previous = RenderTexture.active;
-        // image（图像）：使用位置：作为 File.WriteAllBytes(string, byte[]) 的参数、作为 Object.DestroyImmediate(Object) 的参数、KnifePreviewReferenceValidator.CaptureViews(Transform, string)。
+        // 图像。
 Texture2D image = new Texture2D(700, 850, TextureFormat.RGB24, false);
         try
         {
             camera.targetTexture = target;
-            // view（视图）：使用位置：作为 File.WriteAllBytes(string, byte[]) 的参数、KnifePreviewReferenceValidator.CaptureViews(Transform, string)。
+            // 视图。
 for (int view = 0; view < offsets.Length; view++)
             {
                 camera.transform.position = player.TransformPoint(offsets[view]);
@@ -248,20 +248,20 @@ for (int view = 0; view < offsets.Length; view++)
     /// <summary>编辑器配置与校验模块 BoneBinding；通过方法参数、返回值及声明成员与调用方通信，静态调用索引记录可解析的直接依赖。</summary>
     public sealed class BoneBinding
     {
-        /// <summary>中文含义：骨骼。使用位置：作为 Quaternion.Angle(Quaternion, Quaternion) 的参数、作为 Transform.InverseTransformPoint(Vector3) 的参数、作为 Vector3.Distance(Vector3, Vector3) 的参数 等共 6 处。</summary>
+        /// <summary>骨骼。</summary>
         public Transform bone;
-        /// <summary>中文含义：绑定姿态。使用位置：KnifePreviewReferenceValidator.BindReference(GameObject, JObject)、KnifePreviewReferenceValidator.CaptureRuntime(KnifeCombatModule)、KnifePreviewReferenceValidator.CompareSourcePreview(bool)。</summary>
+        /// <summary>绑定姿态。</summary>
         public Matrix4x4 bindPose;
     }
 
     /// <summary>DecodeFloats 的业务处理入口；本方法直接依赖 Buffer.BlockCopy(Array, int, Array, int, int)、Convert.FromBase64String(string)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 KnifePreviewReferenceValidator.BindReference(GameObject, JObject)；下游（含内部回调体） Buffer.BlockCopy(Array, int, Array, int, int)、Convert.FromBase64String(string)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="encoded">中文含义：编码后的。使用位置：作为 Convert.FromBase64String(string) 的参数。</param>
+    /// <param name="encoded">编码后的。</param>
     public static float[] DecodeFloats(string encoded)
     {
-        // bytes（字节集合）：保存 Convert.FromBase64String(string) 的返回结果，供当前步骤使用。使用位置：作为 Buffer.BlockCopy(Array, int, Array, int, int) 的参数、KnifePreviewReferenceValidator.DecodeFloats(string)。
+        // 字节集合。
 byte[] bytes = Convert.FromBase64String(encoded);
-        // values（数值集合）：使用位置：作为 Buffer.BlockCopy(Array, int, Array, int, int) 的参数、KnifePreviewReferenceValidator.DecodeFloats(string)。
+        // 数值集合。
 float[] values = new float[bytes.Length / 4];
         Buffer.BlockCopy(bytes, 0, values, 0, bytes.Length);
         return values;
@@ -269,24 +269,24 @@ float[] values = new float[bytes.Length / 4];
 
     /// <summary>BindReference 的业务处理入口；本方法直接依赖 GameObject.GetComponentsInChildren&lt;SkinnedMeshRenderer&gt;(bool)、GameObject.GetComponentsInChildren&lt;Transform&gt;(bool)、IEnumerable&lt;KnifePreviewReferenceValidator.BoneBinding&gt;.Any&lt;KnifePreviewReferenceValidator.BoneBinding&gt;(Func&lt;KnifePreviewReferenceValidator.BoneBinding, bool&gt;)、IEnumerable&lt;SkinnedMeshRenderer&gt;.First&lt;SkinnedMeshRenderer&gt;(Func&lt;SkinnedMeshRenderer, bool&gt;)、IEnumerable&lt;Transform&gt;.First&lt;Transform&gt;(Func&lt;Transform, bool&gt;)、InvalidOperationException.InvalidOperationException(string)、KnifePreviewReferenceValidator.BoneBinding.BoneBinding() 等共 8 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 KnifePreviewReferenceValidator.CaptureRuntime(KnifeCombatModule)、KnifePreviewReferenceValidator.CompareSourcePreview(bool)；下游（含内部回调体） GameObject.GetComponentsInChildren&lt;SkinnedMeshRenderer&gt;(bool)、GameObject.GetComponentsInChildren&lt;Transform&gt;(bool)、IEnumerable&lt;KnifePreviewReferenceValidator.BoneBinding&gt;.Any&lt;KnifePreviewReferenceValidator.BoneBinding&gt;(Func&lt;KnifePreviewReferenceValidator.BoneBinding, bool&gt;)、IEnumerable&lt;SkinnedMeshRenderer&gt;.First&lt;SkinnedMeshRenderer&gt;(Func&lt;SkinnedMeshRenderer, bool&gt;)、IEnumerable&lt;Transform&gt;.First&lt;Transform&gt;(Func&lt;Transform, bool&gt;)、InvalidOperationException.InvalidOperationException(string)、KnifePreviewReferenceValidator.BoneBinding.BoneBinding() 等共 8 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="model">中文含义：模型。使用位置：KnifePreviewReferenceValidator.BindReference(GameObject, JObject)。</param>
-    /// <param name="metadata">中文含义：元数据。使用位置：KnifePreviewReferenceValidator.BindReference(GameObject, JObject)。</param>
+    /// <param name="model">模型。</param>
+    /// <param name="metadata">元数据。</param>
     public static BoneBinding[] BindReference(GameObject model, JObject metadata)
     {
-        // bindings（绑定集合）：使用位置：KnifePreviewReferenceValidator.BindReference(GameObject, JObject)。
+        // 绑定集合。
 BoneBinding[] bindings = new BoneBinding[(int)metadata["boneCount"]];
         // meshData（网格数据）：每轮从被遍历的集合取得一个元素，仅代表当前这一项。使用位置：作为 KnifePreviewReferenceValidator.DecodeFloats(string) 的参数、KnifePreviewReferenceValidator.BindReference(GameObject, JObject)。
 foreach (JObject meshData in metadata["meshes"])
         {
-            // meshName（网格名称）：使用位置：作为 IEnumerable<SkinnedMeshRenderer>.First<SkinnedMeshRenderer>(Func<SkinnedMeshRenderer, bool>) 的参数、作为 IEnumerable<Transform>.First<Transform>(Func<Transform, bool>) 的参数、作为 InvalidOperationException.InvalidOperationException(string) 的参数。
+            // 网格名称。
 string meshName = (string)meshData["name"];
-            // joints（关节集合）：保存 KnifePreviewReferenceValidator.DecodeFloats(string) 的返回结果，供当前步骤使用。使用位置：KnifePreviewReferenceValidator.BindReference(GameObject, JObject)。
+            // 关节集合。
 float[] joints = DecodeFloats((string)meshData["joints"]);
-            // weights（权重集合）：保存 KnifePreviewReferenceValidator.DecodeFloats(string) 的返回结果，供当前步骤使用。使用位置：KnifePreviewReferenceValidator.BindReference(GameObject, JObject)。
+            // 权重集合。
 float[] weights = DecodeFloats((string)meshData["weights"]);
             if ((bool)meshData["knife"])
             {
-                // found（找到的）：保存 IEnumerable<Transform>.First<Transform>(Func<Transform, bool>) 的返回结果，供当前步骤使用。使用位置：KnifePreviewReferenceValidator.BindReference(GameObject, JObject)。
+                // 找到的。
 Transform found = model.GetComponentsInChildren<Transform>(true).First( /* 中文含义：当前变换节点。 */item => item.name == meshName);
                 bindings[(int)joints[0]] = new BoneBinding
                 {
@@ -296,25 +296,25 @@ Transform found = model.GetComponentsInChildren<Transform>(true).First( /* 中�
                 continue;
             }
 
-            // renderer（渲染器）：保存 IEnumerable<SkinnedMeshRenderer>.First<SkinnedMeshRenderer>(Func<SkinnedMeshRenderer, bool>) 的返回结果，供当前步骤使用。使用位置：KnifePreviewReferenceValidator.BindReference(GameObject, JObject)。
+            // 渲染器。
 SkinnedMeshRenderer renderer = model.GetComponentsInChildren<SkinnedMeshRenderer>(true).First( /* 中文含义：当前蒙皮网格渲染器。 */item => item.name == meshName);
-            // boneWeights（骨骼权重集合）：使用位置：KnifePreviewReferenceValidator.BindReference(GameObject, JObject)。
+            // 骨骼权重集合。
 BoneWeight[] boneWeights = renderer.sharedMesh.boneWeights;
-            // meshBones（网格骨骼集合）：使用位置：KnifePreviewReferenceValidator.BindReference(GameObject, JObject)。
+            // 网格骨骼集合。
 Transform[] meshBones = renderer.bones;
-            // bindPoses（绑定姿态集合）：使用位置：KnifePreviewReferenceValidator.BindReference(GameObject, JObject)。
+            // 绑定姿态集合。
 Matrix4x4[] bindPoses = renderer.sharedMesh.bindposes;
             if (boneWeights.Length * 4 != joints.Length)
             {
                 throw new InvalidOperationException("网页与角色网格顶点数不一致：" + meshName);
             }
 
-            // vertex（顶点）：使用位置：KnifePreviewReferenceValidator.BindReference(GameObject, JObject)。
+            // 顶点。
 for (int vertex = 0; vertex < boneWeights.Length; vertex++)
             {
-                // weight（权重）：使用位置：KnifePreviewReferenceValidator.BindReference(GameObject, JObject)。
+                // 权重。
 BoneWeight weight = boneWeights[vertex];
-                // indices（索引集合）：使用位置：KnifePreviewReferenceValidator.BindReference(GameObject, JObject)。
+                // 索引集合。
 int[] indices =
                 {
                     weight.boneIndex0,
@@ -322,7 +322,7 @@ int[] indices =
                     weight.boneIndex2,
                     weight.boneIndex3
                 };
-                // slot（槽位）：使用位置：KnifePreviewReferenceValidator.BindReference(GameObject, JObject)。
+                // 槽位。
 for (int slot = 0; slot < 4; slot++)
                 {
                     if (weights[vertex * 4 + slot] <= 0)
@@ -330,9 +330,9 @@ for (int slot = 0; slot < 4; slot++)
                         continue;
                     }
 
-                    // globalIndex（全局索引）：使用位置：KnifePreviewReferenceValidator.BindReference(GameObject, JObject)。
+                    // 全局索引。
 int globalIndex = (int)joints[vertex * 4 + slot];
-                    // localIndex（局部索引）：使用位置：KnifePreviewReferenceValidator.BindReference(GameObject, JObject)。
+                    // 局部索引。
 int localIndex = indices[slot];
                     if (bindings[globalIndex] != null && bindings[globalIndex].bone != meshBones[localIndex])
                     {
@@ -361,13 +361,13 @@ int localIndex = indices[slot];
 
     /// <summary>ReadMatrix 的业务处理入口；本方法直接依赖 Matrix4x4.Matrix4x4()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 KnifePreviewReferenceValidator.CaptureRuntime(KnifeCombatModule)、KnifePreviewReferenceValidator.CompareSourcePreview(bool)；下游（含内部回调体） Matrix4x4.Matrix4x4()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="values">中文含义：数值集合。使用位置：KnifePreviewReferenceValidator.ReadMatrix(float[], int)。</param>
-    /// <param name="offset">中文含义：偏移量。使用位置：KnifePreviewReferenceValidator.ReadMatrix(float[], int)。</param>
+    /// <param name="values">数值集合。</param>
+    /// <param name="offset">偏移量。</param>
     public static Matrix4x4 ReadMatrix(float[] values, int offset)
     {
-        // matrix（矩阵）：使用位置：KnifePreviewReferenceValidator.ReadMatrix(float[], int)。
+        // 矩阵。
 Matrix4x4 matrix = new Matrix4x4();
-        // element（元素）：使用位置：作为 Matrix4x4.this[int] 的参数、KnifePreviewReferenceValidator.ReadMatrix(float[], int)。
+        // 元素。
 for (int element = 0; element < 16; element++)
         {
             matrix[element] = values[offset + element];
@@ -378,32 +378,32 @@ for (int element = 0; element < 16; element++)
 
     /// <summary>CompareSourcePreview 的业务处理入口；本方法直接依赖 Animator.GetBoneTransform(HumanBodyBones)、AssetDatabase.LoadAssetAtPath&lt;AnimationClip&gt;(string)、AssetDatabase.LoadAssetAtPath&lt;KnifeCombatConfiguration&gt;(string)、Buffer.BlockCopy(Array, int, Array, int, int)、Directory.CreateDirectory(string)、File.ReadAllBytes(string)、File.ReadAllText(string) 等共 27 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） Animator.GetBoneTransform(HumanBodyBones)、AssetDatabase.LoadAssetAtPath&lt;AnimationClip&gt;(string)、AssetDatabase.LoadAssetAtPath&lt;KnifeCombatConfiguration&gt;(string)、Buffer.BlockCopy(Array, int, Array, int, int)、Directory.CreateDirectory(string)、File.ReadAllBytes(string)、File.ReadAllText(string) 等共 27 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="useRuntimeSampler">中文含义：是否使用运行时采样器。使用位置：KnifePreviewReferenceValidator.CompareSourcePreview(bool)。</param>
+    /// <param name="useRuntimeSampler">是否使用运行时采样器。</param>
     public static string CompareSourcePreview(bool useRuntimeSampler = false)
     {
-        // metadata（元数据）：保存 JObject.Parse(string) 的返回结果，供当前步骤使用。使用位置：作为 KnifePreviewReferenceValidator.BindReference(GameObject, JObject) 的参数、KnifePreviewReferenceValidator.CompareSourcePreview(bool)。
+        // 元数据。
 JObject metadata = JObject.Parse(File.ReadAllText(ReferenceDirectory + "/reference.json"));
-        // results（结果集合）：使用位置：作为 JsonConvert.SerializeObject(object?, Formatting) 的参数、KnifePreviewReferenceValidator.CompareSourcePreview(bool)。
+        // 结果集合。
 List<object> results = new List<object>();
         // preview（预览）：本次步骤使用的资源句柄，仅在 using 作用域内使用；离开作用域时按原流程释放。
 using (var preview = new LeonKnifeAnimationPreview.PreviewCharacter())
         {
             preview.bakePreviewMesh = false;
-            // bindings（绑定集合）：保存 KnifePreviewReferenceValidator.BindReference(GameObject, JObject) 的返回结果，供当前步骤使用。使用位置：作为 KnifePreviewReferenceValidator.ReadMatrix(float[], int) 的参数、KnifePreviewReferenceValidator.CompareSourcePreview(bool)。
+            // 绑定集合。
 BoneBinding[] bindings = BindReference(preview.Model, metadata);
-            // sampler（采样器）：使用位置：KnifePreviewReferenceValidator.CompareSourcePreview(bool)。
+            // 采样器。
 KnifePoseSampler sampler = null;
-            // hand（手部）：保存 Animator.GetBoneTransform(HumanBodyBones) 的返回结果，供当前步骤使用。使用位置：作为 Transform.GetChild(int) 的参数、KnifePreviewReferenceValidator.CompareSourcePreview(bool)。
+            // 手部。
 Transform hand = preview.AnimatorValue.GetBoneTransform(HumanBodyBones.RightHand);
-            // knife（小刀）：保存 Transform.GetChild(int) 的返回结果，供当前步骤使用。使用位置：作为 LeonKnifeGrip.ApplyKnifeVisual(Transform, Vector3, Quaternion, AnimationClip) 的参数、KnifePreviewReferenceValidator.CompareSourcePreview(bool)。
+            // 小刀。
 Transform knife = hand.GetChild(hand.childCount - 1);
-            // knifePosition（小刀位置）：使用位置：作为 LeonKnifeGrip.ApplyKnifeVisual(Transform, Vector3, Quaternion, AnimationClip) 的参数。
+            // 小刀位置。
 Vector3 knifePosition = knife.localPosition;
-            // knifeRotation（小刀旋转）：使用位置：作为 LeonKnifeGrip.ApplyKnifeVisual(Transform, Vector3, Quaternion, AnimationClip) 的参数。
+            // 小刀旋转。
 Quaternion knifeRotation = knife.localRotation;
             if (useRuntimeSampler)
             {
-                // configuration（配置）：保存 AssetDatabase.LoadAssetAtPath<KnifeCombatConfiguration>(string) 的返回结果，供当前步骤使用。使用位置：作为 KnifePoseSampler.KnifePoseSampler(KnifeCombatConfiguration, Animator) 的参数。
+                // 配置。
 KnifeCombatConfiguration configuration = AssetDatabase.LoadAssetAtPath<KnifeCombatConfiguration>(KnifeCombatBuilder.configurationPath);
                 sampler = new KnifePoseSampler(configuration, preview.AnimatorValue);
             }
@@ -413,38 +413,38 @@ KnifeCombatConfiguration configuration = AssetDatabase.LoadAssetAtPath<KnifeComb
                 // action（动作）：每轮从被遍历的集合取得一个元素，仅代表当前这一项。使用位置：作为 File.ReadAllBytes(string) 的参数、KnifePreviewReferenceValidator.CompareSourcePreview(bool)。
 foreach (JObject action in metadata["actions"])
                 {
-                    // name（名称）：使用位置：作为 AssetDatabase.LoadAssetAtPath<AnimationClip>(string) 的参数、作为 KnifePoseSampler.Sample(AnimationClip, float, int, float, float, bool) 的参数、作为 List<object>.Add(object) 的参数 等共 4 处。
+                    // 名称。
 string name = (string)action["name"];
-                    // clip（动画片段）：保存 AssetDatabase.LoadAssetAtPath<AnimationClip>(string) 的返回结果，供当前步骤使用。使用位置：作为 KnifePoseSampler.Sample(AnimationClip, float, int, float, float, bool) 的参数、作为 LeonKnifeAnimationPreview.PreviewCharacter.Sample(AnimationClip, float, int, float) 的参数、作为 LeonKnifeGrip.ApplyKnifeVisual(Transform, Vector3, Quaternion, AnimationClip) 的参数 等共 5 处。
+                    // 动画片段。
 AnimationClip clip = AssetDatabase.LoadAssetAtPath<AnimationClip>("Assets/Animations/左臂整体重构/" + name + ".anim");
                     if (clip == null)
                     {
                         continue;
                     }
 
-                    // mode（模式）：使用位置：作为 KnifePoseSampler.Sample(AnimationClip, float, int, float, float, bool) 的参数、作为 LeonKnifeAnimationPreview.PreviewCharacter.Sample(AnimationClip, float, int, float) 的参数、作为 List<object>.Add(object) 的参数。
+                    // 模式。
 int mode = (int)action["mode"];
-                    // frames（帧集合）：使用位置：KnifePreviewReferenceValidator.CompareSourcePreview(bool)。
+                    // 帧集合。
 int frames = (int)action["frames"];
-                    // duration（持续时间）：使用位置：KnifePreviewReferenceValidator.CompareSourcePreview(bool)。
+                    // 持续时间。
 float duration = (float)action["duration"];
-                    // bytes（字节集合）：保存 File.ReadAllBytes(string) 的返回结果，供当前步骤使用。使用位置：作为 Buffer.BlockCopy(Array, int, Array, int, int) 的参数、KnifePreviewReferenceValidator.CompareSourcePreview(bool)。
+                    // 字节集合。
 byte[] bytes = File.ReadAllBytes(ReferenceDirectory + "/" + (string)action["file"]);
-                    // matrices（矩阵集合）：使用位置：作为 Buffer.BlockCopy(Array, int, Array, int, int) 的参数、作为 KnifePreviewReferenceValidator.ReadMatrix(float[], int) 的参数。
+                    // 矩阵集合。
 float[] matrices = new float[bytes.Length / 4];
                     Buffer.BlockCopy(bytes, 0, matrices, 0, bytes.Length);
-                    // maximumPositionError（最大位置错误）：使用位置：作为 List<object>.Add(object) 的参数、KnifePreviewReferenceValidator.CompareSourcePreview(bool)。
+                    // 最大位置错误。
 float maximumPositionError = 0;
-                    // maximumRotationError（最大旋转错误）：使用位置：作为 List<object>.Add(object) 的参数、作为 Mathf.Max(float, float) 的参数、KnifePreviewReferenceValidator.CompareSourcePreview(bool)。
+                    // 最大旋转错误。
 float maximumRotationError = 0;
-                    // worstBone（最差骨骼）：使用位置：作为 List<object>.Add(object) 的参数、KnifePreviewReferenceValidator.CompareSourcePreview(bool)。
+                    // 最差骨骼。
 string worstBone = "";
-                    // frame（帧）：使用位置：作为 KnifePreviewReferenceValidator.ReadMatrix(float[], int) 的参数、KnifePreviewReferenceValidator.CompareSourcePreview(bool)。
+                    // 帧。
 for (int frame = 0; frame < frames; frame++)
                     {
-                        // time（时间）：使用位置：作为 KnifePoseSampler.Sample(AnimationClip, float, int, float, float, bool) 的参数、作为 LeonKnifeAnimationPreview.PreviewCharacter.Sample(AnimationClip, float, int, float) 的参数、作为 Mathf.Repeat(float, float) 的参数 等共 4 处。
+                        // 时间。
 float time = duration * frame / (frames - 1);
-                        // localTime（局部时间）：使用位置：作为 KnifePoseSampler.Sample(AnimationClip, float, int, float, float, bool) 的参数、作为 LeonKnifeAnimationPreview.PreviewCharacter.Sample(AnimationClip, float, int, float) 的参数、KnifePreviewReferenceValidator.CompareSourcePreview(bool)。
+                        // 局部时间。
 float localTime = time;
                         if (name == "低位待机" || name == "防守保持")
                         {
@@ -462,14 +462,14 @@ float localTime = time;
                             LeonKnifeGrip.ApplyKnifeVisual(knife, knifePosition, knifeRotation, clip);
                         }
 
-                        // index（当前元素索引）：使用位置：作为 KnifePreviewReferenceValidator.ReadMatrix(float[], int) 的参数、KnifePreviewReferenceValidator.CompareSourcePreview(bool)。
+                        // 当前元素索引。
 for (int index = 0; index < bindings.Length; index++)
                         {
-                            // binding（绑定）：使用位置：作为 Quaternion.Angle(Quaternion, Quaternion) 的参数、作为 Vector3.Distance(Vector3, Vector3) 的参数、KnifePreviewReferenceValidator.CompareSourcePreview(bool)。
+                            // 绑定。
 BoneBinding binding = bindings[index];
-                            // expected（预期）：使用位置：作为 Quaternion.Angle(Quaternion, Quaternion) 的参数、作为 Vector3.Distance(Vector3, Vector3) 的参数。
+                            // 预期。
 Matrix4x4 expected = ReadMatrix(matrices, (frame * bindings.Length + index) * 16) * binding.bindPose.inverse;
-                            // error（错误）：保存 Vector3.Distance(Vector3, Vector3) 的返回结果，供当前步骤使用。使用位置：KnifePreviewReferenceValidator.CompareSourcePreview(bool)。
+                            // 错误。
 float error = Vector3.Distance(expected.GetColumn(3), binding.bone.position);
                             if (error > maximumPositionError)
                             {
@@ -493,10 +493,10 @@ float error = Vector3.Distance(expected.GetColumn(3), binding.bone.position);
             }
         }
 
-        // report（报告）：保存 JsonConvert.SerializeObject(object?, Formatting) 的返回结果，供当前步骤使用。使用位置：作为 File.WriteAllText(string, string) 的参数。
+        // 报告。
 string report = Newtonsoft.Json.JsonConvert.SerializeObject(results, Newtonsoft.Json.Formatting.Indented);
         Directory.CreateDirectory("战斗日志/小刀重构");
-        // file（文件）：使用位置：作为 File.WriteAllText(string, string) 的参数、KnifePreviewReferenceValidator.CompareSourcePreview(bool)。
+        // 文件。
 string file = "网页与制作源核对.json";
         if (useRuntimeSampler)
         {

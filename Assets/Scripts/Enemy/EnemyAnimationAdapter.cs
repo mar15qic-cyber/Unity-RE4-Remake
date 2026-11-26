@@ -10,7 +10,7 @@ using UnityEngine;
 [UnityEngine.Scripting.APIUpdating.MovedFrom(true, "", "Assembly-CSharp", "敌人动画适配器")]
 public sealed partial class EnemyAnimationAdapter : MonoBehaviour
 {
-    /// <summary>中文含义：宿主。使用位置：EnemyAnimationAdapter.ActionCoordinator.get、EnemyAnimationAdapter.actualHorizontalMovementSpeed.get、EnemyAnimationAdapter.actualMovementSpeedResponse.get 等共 35 处。</summary>
+    /// <summary>宿主。</summary>
     [Header("角色组装引用")]
     [UnityEngine.Serialization.FormerlySerializedAs("宿主")]
     [UnityEngine.InspectorName("宿主")]
@@ -82,150 +82,150 @@ public sealed partial class EnemyAnimationAdapter : MonoBehaviour
     /// <summary>中文含义：动画显示器。</summary>
     private EnemyAnimationAdapter AnimationPresenter => host.animationPresenter;
 
-    /// <summary>中文含义：上一次语音时间。使用位置：EnemyAnimationAdapter.PlayVoice(ZombieVoiceType)、EnemyAnimationAdapter.ReadLastVoiceTime.get。</summary>
+    /// <summary>上一次语音时间。</summary>
     private float lastVoiceTime = float.NegativeInfinity;
-    /// <summary>中文含义：读取上一次语音时间。使用位置：VillagerController.lastVoiceTime.get。</summary>
+    /// <summary>读取上一次语音时间。</summary>
     internal float ReadLastVoiceTime => lastVoiceTime;
 
-    /// <summary>中文含义：是否绕过语音冷却下一次调用。使用位置：EnemyAnimationAdapter.AllowLowerOnceVoiceBypassCooldown()、EnemyAnimationAdapter.PlayVoice(ZombieVoiceType)、EnemyAnimationAdapter.ReadBypassVoiceCooldownNextCall.get。</summary>
+    /// <summary>是否绕过语音冷却下一次调用。</summary>
     private bool bypassVoiceCooldownNextCall;
-    /// <summary>中文含义：是否读取绕过语音冷却下一次调用。使用位置：VillagerController.bypassVoiceCooldownNextCall.get。</summary>
+    /// <summary>是否读取绕过语音冷却下一次调用。</summary>
     internal bool ReadBypassVoiceCooldownNextCall => bypassVoiceCooldownNextCall;
 
-    /// <summary>中文含义：当前语音句柄。使用位置：作为 AudioManager.Stop(AudioPlayHandle) 的参数、EnemyAnimationAdapter.PlayVoice(ZombieVoiceType)、EnemyAnimationAdapter.ReadCurrentVoiceHandle.get。</summary>
+    /// <summary>当前语音句柄。</summary>
     private AudioPlayHandle currentVoiceHandle;
     private float currentVoiceEndTime;
     private AudioEventData.VoicePriority currentVoicePriority;
-    /// <summary>中文含义：读取当前语音句柄。使用位置：VillagerController.currentVoiceHandle.get。</summary>
+    /// <summary>读取当前语音句柄。</summary>
     internal AudioPlayHandle ReadCurrentVoiceHandle => currentVoiceHandle;
 
-    /// <summary>中文含义：是否具有移动行为播放速率。使用位置：EnemyAnimationAdapter.InitializeAnimationParameter()、EnemyAnimationAdapter.ReadHasLocomotionPlaybackRate.get、EnemyAnimationAdapter.UpdateLocomotionPlaybackRate(Vector3)。</summary>
+    /// <summary>是否具有移动行为播放速率。</summary>
     private bool hasLocomotionPlaybackRate;
-    /// <summary>中文含义：读取是否具有移动行为播放速率。使用位置：VillagerController.hasLocomotionPlaybackRate.get。</summary>
+    /// <summary>读取是否具有移动行为播放速率。</summary>
     internal bool ReadHasLocomotionPlaybackRate => hasLocomotionPlaybackRate;
 
-    /// <summary>中文含义：移动行为播放速率。使用位置：作为 Animator.SetFloat(int, float) 的参数、作为 Mathf.Lerp(float, float, float) 的参数、EnemyAnimationAdapter.ReadLocomotionPlaybackRate.get 等共 4 处。</summary>
+    /// <summary>移动行为播放速率。</summary>
     private float locomotionPlaybackRate = 1f;
-    /// <summary>中文含义：行走动画片段。只读字段，初始化后不由普通写入口替换。使用位置：作为 Animator.GetCurrentAnimatorClipInfo(int, List&lt;AnimatorClipInfo&gt;) 的参数、EnemyAnimationAdapter.UpdateLocomotionPlaybackRate(Vector3)。</summary>
+    /// <summary>行走动画片段。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly List<AnimatorClipInfo> walkClip = new List<AnimatorClipInfo>(8);
-    /// <summary>中文含义：读取移动行为播放速率。使用位置：VillagerController.locomotionPlaybackRate.get。</summary>
+    /// <summary>读取移动行为播放速率。</summary>
     internal float ReadLocomotionPlaybackRate => locomotionPlaybackRate;
 
-    /// <summary>中文含义：是否生命比例参数可用。使用位置：EnemyAnimationAdapter.InitializeAnimationParameter()、EnemyAnimationAdapter.ReadHealthRatioParameterAvailable.get、EnemyAnimationAdapter.UpdateHealthAnimationParameter()。</summary>
+    /// <summary>是否生命比例参数可用。</summary>
     private bool healthRatioParameterAvailable;
-    /// <summary>中文含义：是否读取生命比例参数可用。使用位置：VillagerController.healthRatioParameterAvailable.get。</summary>
+    /// <summary>是否读取生命比例参数可用。</summary>
     internal bool ReadHealthRatioParameterAvailable => healthRatioParameterAvailable;
 
-    /// <summary>中文含义：是否硬直触发器参数可用。使用位置：EnemyAnimationAdapter.ApplyDeathAnimatorParameters()、EnemyAnimationAdapter.InitializeAnimationParameter()、EnemyAnimationAdapter.ReadStaggerTriggerParameterAvailable.get。</summary>
+    /// <summary>是否硬直触发器参数可用。</summary>
     private bool staggerTriggerParameterAvailable;
-    /// <summary>中文含义：是否读取硬直触发器参数可用。使用位置：EnemyCombatModule.staggerTriggerParameterAvailable.get、VillagerController.staggerTriggerParameterAvailable.get。</summary>
+    /// <summary>是否读取硬直触发器参数可用。</summary>
     internal bool ReadStaggerTriggerParameterAvailable => staggerTriggerParameterAvailable;
 
-    /// <summary>中文含义：请求的站立移动参数。使用位置：作为 Mathf.MoveTowards(float, float, float) 的参数、作为 VillagerController.CalculateStandingAdvanceSpeed(float) 的参数、EnemyAnimationAdapter.ReadRequestedStandingMoveParameter.get 等共 5 处。</summary>
+    /// <summary>请求的站立移动参数。</summary>
     private float requestedStandingMoveParameter;
-    /// <summary>中文含义：读取请求的站立移动参数。使用位置：VillagerController.requestedStandingMoveParameter.get。</summary>
+    /// <summary>读取请求的站立移动参数。</summary>
     internal float ReadRequestedStandingMoveParameter => requestedStandingMoveParameter;
 
-    /// <summary>中文含义：上一次站立指令指定的速度。使用位置：EnemyAnimationAdapter.ReadLastStandingCommandedSpeed.get、EnemyAnimationAdapter.ResetMovementPresentationCache()、EnemyAnimationAdapter.UpdateAnimator() 等共 4 处。</summary>
+    /// <summary>上一次站立指令指定的速度。</summary>
     private float lastStandingCommandedSpeed;
-    /// <summary>中文含义：读取上一次站立指令指定的速度。使用位置：VillagerController.lastStandingCommandedSpeed.get。</summary>
+    /// <summary>读取上一次站立指令指定的速度。</summary>
     internal float ReadLastStandingCommandedSpeed => lastStandingCommandedSpeed;
 
-    /// <summary>中文含义：是否此前具有站立移动意图。使用位置：EnemyAnimationAdapter.ReadHadStandingMoveIntent.get、EnemyAnimationAdapter.ResetMovementPresentationCache()、EnemyAnimationAdapter.UpdateAnimator()。</summary>
+    /// <summary>是否此前具有站立移动意图。</summary>
     private bool hadStandingMoveIntent;
-    /// <summary>中文含义：是否读取此前具有站立移动意图。使用位置：VillagerController.hadStandingMoveIntent.get。</summary>
+    /// <summary>是否读取此前具有站立移动意图。</summary>
     internal bool ReadHadStandingMoveIntent => hadStandingMoveIntent;
 
-    /// <summary>中文含义：站立移动行为是否可见。使用位置：EnemyAnimationAdapter.ReadStandingLocomotionVisible.get、EnemyAnimationAdapter.ResetMovementPresentationCache()、EnemyAnimationAdapter.UpdateAnimator() 等共 4 处。</summary>
+    /// <summary>站立移动行为是否可见。</summary>
     private bool standingLocomotionVisible;
-    /// <summary>中文含义：读取站立移动行为是否可见。使用位置：VillagerController.standingLocomotionVisible.get。</summary>
+    /// <summary>读取站立移动行为是否可见。</summary>
     internal bool ReadStandingLocomotionVisible => standingLocomotionVisible;
 
-    /// <summary>中文含义：移动行为阻挡持续时间。使用位置：EnemyAnimationAdapter.ReadLocomotionBlockedDuration.get、EnemyAnimationAdapter.ResetMovementPresentationCache()、EnemyAnimationAdapter.UpdateAnimator() 等共 4 处。</summary>
+    /// <summary>移动行为阻挡持续时间。</summary>
     private float locomotionBlockedDuration;
-    /// <summary>中文含义：读取移动行为阻挡持续时间。使用位置：VillagerController.locomotionBlockedDuration.get。</summary>
+    /// <summary>读取移动行为阻挡持续时间。</summary>
     internal float ReadLocomotionBlockedDuration => locomotionBlockedDuration;
 
-    /// <summary>中文含义：移动行为移动中持续时间。使用位置：EnemyAnimationAdapter.ReadLocomotionMovingDuration.get、EnemyAnimationAdapter.ResetMovementPresentationCache()、EnemyAnimationAdapter.UpdateAnimator() 等共 4 处。</summary>
+    /// <summary>移动行为移动中持续时间。</summary>
     private float locomotionMovingDuration;
-    /// <summary>中文含义：读取移动行为移动中持续时间。使用位置：VillagerController.locomotionMovingDuration.get。</summary>
+    /// <summary>读取移动行为移动中持续时间。</summary>
     internal float ReadLocomotionMovingDuration => locomotionMovingDuration;
 
-    /// <summary>中文含义：站立移动意图开始时间。使用位置：EnemyAnimationAdapter.ReadStandingMoveIntentStartedTime.get、EnemyAnimationAdapter.UpdateAnimator()、EnemyAnimationAdapter.UpdateStandingLocomotionVisibility(bool)。</summary>
+    /// <summary>站立移动意图开始时间。</summary>
     private float standingMoveIntentStartedTime = float.NegativeInfinity;
-    /// <summary>中文含义：读取站立移动意图开始时间。使用位置：VillagerController.standingMoveIntentStartedTime.get。</summary>
+    /// <summary>读取站立移动意图开始时间。</summary>
     internal float ReadStandingMoveIntentStartedTime => standingMoveIntentStartedTime;
-    /// <summary>中文含义：当前移动模式。使用位置：EnemyAnimationAdapter.UpdateAnimator()、EnemyAnimationAdapter.UpdateLocomotionPlaybackRate(Vector3)。</summary>
+    /// <summary>当前移动模式。</summary>
     private EnemyMovementMode CurrentMovementMode => host.ArchitectureReadCurrentMovementMode;
-    /// <summary>中文含义：当前状态。使用位置：EnemyAnimationAdapter.UpdateAnimator()。</summary>
+    /// <summary>当前状态。</summary>
     private VillagerState CurrentState => host.ArchitectureReadCurrentState;
-    /// <summary>中文含义：攻击的哈希编号。使用位置：作为 Animator.SetBool(int, bool) 的参数。</summary>
+    /// <summary>攻击的哈希编号。</summary>
     private static int HashATK => VillagerController.ArchitectureReadHashATK;
-    /// <summary>中文含义：爬行待机路径的哈希编号。使用位置：作为 Animator.HasState(int, int) 的参数、EnemyAnimationAdapter.PlayCrawlIdleImmediately()。</summary>
+    /// <summary>爬行待机路径的哈希编号。</summary>
     private static int HashCrawlIdlePath => VillagerController.ArchitectureReadHashCrawlIdlePath;
-    /// <summary>中文含义：爬行待机状态的哈希编号。使用位置：作为 Animator.HasState(int, int) 的参数、EnemyAnimationAdapter.PlayCrawlIdleImmediately()。</summary>
+    /// <summary>爬行待机状态的哈希编号。</summary>
     private static int HashCrawlIdleState => VillagerController.ArchitectureReadHashCrawlIdleState;
-    /// <summary>中文含义：爬行子级状态路径的哈希编号。使用位置：作为 Animator.HasState(int, int) 的参数、EnemyAnimationAdapter.PlayCrawlIdleImmediately()。</summary>
+    /// <summary>爬行子级状态路径的哈希编号。</summary>
     private static int HashCrawlSubStatePath => VillagerController.ArchitectureReadHashCrawlSubStatePath;
-    /// <summary>中文含义：死亡的哈希编号。使用位置：作为 Animator.SetBool(int, bool) 的参数。</summary>
+    /// <summary>死亡的哈希编号。</summary>
     private static int HashDIE => VillagerController.ArchitectureReadHashDIE;
-    /// <summary>中文含义：命中的哈希编号。使用位置：作为 Animator.SetBool(int, bool) 的参数。</summary>
+    /// <summary>命中的哈希编号。</summary>
     private static int HashHIT => VillagerController.ArchitectureReadHashHIT;
-    /// <summary>中文含义：生命比例的哈希编号。使用位置：作为 Animator.SetFloat(int, float) 的参数。</summary>
+    /// <summary>生命比例的哈希编号。</summary>
     private static int HashHealthRatio => VillagerController.ArchitectureReadHashHealthRatio;
-    /// <summary>中文含义：命中触发器的哈希编号。使用位置：作为 Animator.ResetTrigger(int) 的参数。</summary>
+    /// <summary>命中触发器的哈希编号。</summary>
     private static int HashHitTrigger => VillagerController.ArchitectureReadHashHitTrigger;
-    /// <summary>中文含义：移动行为播放速率的哈希编号。使用位置：作为 Animator.SetFloat(int, float) 的参数、EnemyAnimationAdapter.InitializeAnimationParameter()。</summary>
+    /// <summary>移动行为播放速率的哈希编号。</summary>
     private static int HashLocomotionPlaybackRate => VillagerController.ArchitectureReadHashLocomotionPlaybackRate;
-    /// <summary>中文含义：移动速度的哈希编号。使用位置：作为 Animator.GetFloat(int) 的参数、作为 Animator.SetFloat(int, float) 的参数。</summary>
+    /// <summary>移动速度的哈希编号。</summary>
     private static int HashMoveSpeed => VillagerController.ArchitectureReadHashMoveSpeed;
-    /// <summary>中文含义：移动横向的哈希编号。使用位置：作为 Animator.SetFloat(int, float) 的参数。</summary>
+    /// <summary>移动横向的哈希编号。</summary>
     private static int HashMoveX => VillagerController.ArchitectureReadHashMoveX;
-    /// <summary>中文含义：移动纵向的哈希编号。使用位置：作为 Animator.SetFloat(int, float) 的参数。</summary>
+    /// <summary>移动纵向的哈希编号。</summary>
     private static int HashMoveY => VillagerController.ArchitectureReadHashMoveY;
-    /// <summary>中文含义：硬直触发器的哈希编号。使用位置：作为 Animator.ResetTrigger(int) 的参数。</summary>
+    /// <summary>硬直触发器的哈希编号。</summary>
     private static int HashStaggerTrigger => VillagerController.ArchitectureReadHashStaggerTrigger;
-    /// <summary>中文含义：行走的哈希编号。使用位置：作为 Animator.SetBool(int, bool) 的参数。</summary>
+    /// <summary>行走的哈希编号。</summary>
     private static int HashWALK => VillagerController.ArchitectureReadHashWALK;
-    /// <summary>中文含义：实际水平移动速度。使用位置：EnemyAnimationAdapter.UpdateStandingLocomotionVisibility(bool)。</summary>
+    /// <summary>实际水平移动速度。</summary>
     private float actualHorizontalMovementSpeed => host.ArchitectureReadActualHorizontalMovementSpeed;
-    /// <summary>中文含义：实际移动速度响应。使用位置：EnemyAnimationAdapter.UpdateLocomotionPlaybackRate(Vector3)。</summary>
+    /// <summary>实际移动速度响应。</summary>
     private float actualMovementSpeedResponse => host.actualMovementSpeedResponse;
-    /// <summary>中文含义：寻路代理。使用位置：EnemyAnimationAdapter.UpdateAnimator()。</summary>
+    /// <summary>寻路代理。</summary>
     private PathAgent agent => host.ArchitectureReadAgent;
-    /// <summary>中文含义：动画控制器。使用位置：EnemyAnimationAdapter.ApplyDeathAnimatorParameters()、EnemyAnimationAdapter.ClearTrigger(int)、EnemyAnimationAdapter.InitializeAnimationParameter() 等共 18 处。</summary>
+    /// <summary>动画控制器。</summary>
     private Animator anim => host.ArchitectureReadAnim;
-    /// <summary>中文含义：当前敌人上下文。使用位置：EnemyAnimationAdapter.UpdateAnimator()、EnemyAnimationAdapter.UpdateLocomotionPlaybackRate(Vector3)。</summary>
+    /// <summary>当前敌人上下文。</summary>
     private EnemyContext ctx => host.ArchitectureReadCtx;
-    /// <summary>中文含义：当前生命值。使用位置：作为 Mathf.Clamp01(float) 的参数。</summary>
+    /// <summary>当前生命值。</summary>
     private float currentHealth => host.currentHealth;
-    /// <summary>中文含义：保持站立移动行为期间是否受阻。使用位置：EnemyAnimationAdapter.UpdateStandingLocomotionVisibility(bool)。</summary>
+    /// <summary>保持站立移动行为期间是否受阻。</summary>
     private bool keepStandingLocomotionWhileBlocked => host.keepStandingLocomotionWhileBlocked;
-    /// <summary>中文含义：上一次稳定爬行移动方向。使用位置：EnemyAnimationAdapter.UpdateAnimator()。</summary>
+    /// <summary>上一次稳定爬行移动方向。</summary>
     private Vector3 lastStableCrawlMoveDirection => host.ArchitectureReadLastStableCrawlMoveDirection;
-    /// <summary>中文含义：上一次稳定站立移动方向。使用位置：EnemyAnimationAdapter.UpdateAnimator()。</summary>
+    /// <summary>上一次稳定站立移动方向。</summary>
     private Vector3 lastStableStandingMoveDirection => host.ArchitectureReadLastStableStandingMoveDirection;
-    /// <summary>中文含义：移动行为重新开始速度。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>移动行为重新开始速度。</summary>
     private float locomotionRestartSpeed => host.locomotionRestartSpeed;
-    /// <summary>中文含义：移动行为起始确认持续时间。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>移动行为起始确认持续时间。</summary>
     private float locomotionStartConfirmationDuration => host.locomotionStartConfirmationDuration;
-    /// <summary>中文含义：移动行为停止确认持续时间。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>移动行为停止确认持续时间。</summary>
     private float locomotionStopConfirmationDuration => host.locomotionStopConfirmationDuration;
-    /// <summary>中文含义：移动行为停止速度。使用位置：作为 Mathf.Max(float, float) 的参数、EnemyAnimationAdapter.UpdateLocomotionPlaybackRate(Vector3)。</summary>
+    /// <summary>移动行为停止速度。</summary>
     private float locomotionStopSpeed => host.locomotionStopSpeed;
-    /// <summary>中文含义：最大生命值。使用位置：作为 Mathf.Clamp01(float) 的参数、EnemyAnimationAdapter.UpdateHealthAnimationParameter()。</summary>
+    /// <summary>最大生命值。</summary>
     private float maxHealth => host.maxHealth;
-    /// <summary>中文含义：移动动画起始宽限持续时间。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>移动动画起始宽限持续时间。</summary>
     private float movementAnimationStartGraceDuration => host.movementAnimationStartGraceDuration;
-    /// <summary>中文含义：移动混合速度。使用位置：作为 Mathf.MoveTowards(float, float, float) 的参数。</summary>
+    /// <summary>移动混合速度。</summary>
     private float movementBlendSpeed => host.movementBlendSpeed;
-    /// <summary>中文含义：移动方向混合时间。使用位置：作为 Animator.SetFloat(string, float, float, float) 的参数、EnemyAnimationAdapter.SetMovementDirection(float, float)。</summary>
+    /// <summary>移动方向混合时间。</summary>
     private float movementDirectionBlendTime => host.movementDirectionBlendTime;
-    /// <summary>中文含义：是否使用站立动画速度用于路径。使用位置：EnemyAnimationAdapter.UpdateLocomotionPlaybackRate(Vector3)。</summary>
+    /// <summary>是否使用站立动画速度用于路径。</summary>
     private bool useStandingAnimationSpeedForPath => host.useStandingAnimationSpeedForPath;
-    /// <summary>中文含义：语音最小间隔。使用位置：EnemyAnimationAdapter.PlayVoice(ZombieVoiceType)。</summary>
+    /// <summary>语音最小间隔。</summary>
     private float voiceMinInterval => host.voiceMinInterval;
-    /// <summary>中文含义：语音配置档。使用位置：EnemyAnimationAdapter.PlayVoice(ZombieVoiceType)。</summary>
+    /// <summary>语音配置档。</summary>
     private ZombieAudioProfile voiceProfile => host.voiceProfile;
 
     /// <summary>GetTargetMoveSpeed 的业务处理入口；本方法直接依赖 VillagerController.ArchitectureInvokeGetTargetMoveSpeed()，调用方通过参数与返回结果交接本次处理。</summary>
@@ -286,7 +286,7 @@ public sealed partial class EnemyAnimationAdapter : MonoBehaviour
                 return;
             }
 
-            // crawlMoveSpeed（爬行移动速度）：使用位置：作为 Animator.SetFloat(int, float) 的参数、EnemyAnimationAdapter.UpdateAnimator()。
+            // 爬行移动速度。
 float crawlMoveSpeed;
             if (HasCrawlMovementDirection())
             {
@@ -299,7 +299,7 @@ float crawlMoveSpeed;
 
             anim.SetFloat(HashMoveSpeed, crawlMoveSpeed);
             agent.speed = ctx.CrawlSpeed;
-            // crawlAnimDirection（爬行动画方向）：使用位置：作为 Transform.InverseTransformDirection(Vector3) 的参数、EnemyAnimationAdapter.UpdateAnimator()。
+            // 爬行动画方向。
 Vector3 crawlAnimDirection = lastStableCrawlMoveDirection;
             if (crawlAnimDirection.sqrMagnitude <= 0.0001f && agent != null && agent.enabled && !agent.isStopped && agent.desiredDirection.sqrMagnitude > 0.0001f)
             {
@@ -308,7 +308,7 @@ Vector3 crawlAnimDirection = lastStableCrawlMoveDirection;
 
             if (crawlAnimDirection.sqrMagnitude > 0.0001f)
             {
-                // localDir（局部方向）：保存 Transform.InverseTransformDirection(Vector3) 的返回结果，供当前步骤使用。使用位置：作为 EnemyAnimationAdapter.SetMovementDirection(float, float) 的参数。
+                // 局部方向。
 Vector3 localDir = transform.InverseTransformDirection(crawlAnimDirection.normalized);
                 SetMovementDirection(localDir.x, localDir.z);
             }
@@ -321,7 +321,7 @@ Vector3 localDir = transform.InverseTransformDirection(crawlAnimDirection.normal
             return;
         }
 
-        // moveDirection（移动方向）：使用位置：作为 Transform.InverseTransformDirection(Vector3) 的参数、EnemyAnimationAdapter.UpdateAnimator()。
+        // 移动方向。
 Vector3 moveDirection;
         if (CurrentMovementMode == EnemyMovementMode.StandingPathRootMotion)
         {
@@ -332,13 +332,13 @@ Vector3 moveDirection;
             moveDirection = lastStableStandingMoveDirection;
         }
 
-        // hasMoveIntent（是否具有移动意图）：使用位置：作为 EnemyAnimationAdapter.UpdateStandingLocomotionVisibility(bool) 的参数、EnemyAnimationAdapter.UpdateAnimator()。
+        // 是否具有移动意图。
 bool hasMoveIntent = CurrentMovementMode == EnemyMovementMode.StandingPathRootMotion && !agent.isStopped && moveDirection.sqrMagnitude > 0.0001f;
-        // lv（层级）：保存 Transform.InverseTransformDirection(Vector3) 的返回结果，供当前步骤使用。使用位置：作为 EnemyAnimationAdapter.SetMovementDirection(float, float) 的参数。
+        // 层级。
 Vector3 lv = transform.InverseTransformDirection(moveDirection);
         try
         {
-            // requestedTargetMoveSpeed（请求的目标移动速度）：使用位置：作为 Mathf.MoveTowards(float, float, float) 的参数、EnemyAnimationAdapter.UpdateAnimator()。
+            // 请求的目标移动速度。
 float requestedTargetMoveSpeed;
             if (hasMoveIntent)
             {
@@ -350,7 +350,7 @@ float requestedTargetMoveSpeed;
             }
 
             requestedStandingMoveParameter = Mathf.MoveTowards(requestedStandingMoveParameter, requestedTargetMoveSpeed, movementBlendSpeed * Time.deltaTime);
-            // commandedSpeed（指令指定的速度）：保存 VillagerController.CalculateStandingAdvanceSpeed(float) 的返回结果，供当前步骤使用。使用位置：EnemyAnimationAdapter.UpdateAnimator()。
+            // 指令指定的速度。
 float commandedSpeed = host.CalculateStandingAdvanceSpeed(requestedStandingMoveParameter);
             if (hasMoveIntent && !hadStandingMoveIntent)
             {
@@ -369,7 +369,7 @@ float commandedSpeed = host.CalculateStandingAdvanceSpeed(requestedStandingMoveP
             {
                 UpdateStandingLocomotionVisibility(hasMoveIntent);
             }
-            // actualTargetMoveSpeed（实际目标移动速度）：使用位置：作为 Mathf.MoveTowards(float, float, float) 的参数、EnemyAnimationAdapter.UpdateAnimator()。
+            // 实际目标移动速度。
 float actualTargetMoveSpeed;
             if (standingLocomotionVisible)
             {
@@ -380,9 +380,9 @@ float actualTargetMoveSpeed;
                 actualTargetMoveSpeed = 0f;
             }
 
-            // currentMoveSpeed（当前移动速度）：保存 Animator.GetFloat(string) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.MoveTowards(float, float, float) 的参数。
-float currentMoveSpeed = anim.GetFloat("MoveSpeed");
-            // newMoveSpeed（新移动速度）：保存 Mathf.MoveTowards(float, float, float) 的返回结果，供当前步骤使用。使用位置：作为 Animator.SetBool(int, bool) 的参数、作为 Animator.SetFloat(int, float) 的参数。
+            // 当前移动速度。
+float currentMoveSpeed = anim.GetFloat(HashMoveSpeed);
+            // 新移动速度。
 float newMoveSpeed = Mathf.MoveTowards(currentMoveSpeed, actualTargetMoveSpeed, movementBlendSpeed * Time.deltaTime);
             anim.SetFloat(HashMoveSpeed, newMoveSpeed);
             agent.speed = commandedSpeed;
@@ -397,7 +397,7 @@ float newMoveSpeed = Mathf.MoveTowards(currentMoveSpeed, actualTargetMoveSpeed, 
 
     /// <summary>UpdateStandingLocomotionVisibility 的业务处理入口；本方法直接依赖 Mathf.Max(float, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyAnimationAdapter.UpdateAnimator()、VillagerController.UpdateStandingLocomotionVisibility(bool)；下游（含内部回调体） Mathf.Max(float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="hasMoveIntent">中文含义：是否具有移动意图。使用位置：EnemyAnimationAdapter.UpdateStandingLocomotionVisibility(bool)。</param>
+    /// <param name="hasMoveIntent">是否具有移动意图。</param>
     internal void UpdateStandingLocomotionVisibility(bool hasMoveIntent)
     {
         if (!hasMoveIntent)
@@ -419,7 +419,7 @@ float newMoveSpeed = Mathf.MoveTowards(currentMoveSpeed, actualTargetMoveSpeed, 
             return;
         }
 
-        // insideStartGrace（是否内部起始宽限）：使用位置：EnemyAnimationAdapter.UpdateStandingLocomotionVisibility(bool)。
+        // 是否内部起始宽限。
 bool insideStartGrace = Time.time - standingMoveIntentStartedTime <= Mathf.Max(0f, movementAnimationStartGraceDuration);
         if (insideStartGrace || lastStandingCommandedSpeed <= 0.01f)
         {
@@ -448,7 +448,7 @@ bool insideStartGrace = Time.time - standingMoveIntentStartedTime <= Mathf.Max(0
             return;
         }
 
-        // restartSpeed（重新开始速度）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：EnemyAnimationAdapter.UpdateStandingLocomotionVisibility(bool)。
+        // 重新开始速度。
 float restartSpeed = Mathf.Max(locomotionStopSpeed + 0.01f, locomotionRestartSpeed);
         if (actualHorizontalMovementSpeed < restartSpeed)
         {
@@ -467,8 +467,8 @@ float restartSpeed = Mathf.Max(locomotionStopSpeed + 0.01f, locomotionRestartSpe
 
     /// <summary>SetMovementDirection 的业务处理入口；本方法直接依赖 Animator.SetFloat(int, float)、Animator.SetFloat(string, float, float, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyAnimationAdapter.UpdateAnimator()、VillagerController.SetMovementDirection(float, float)；下游（含内部回调体） Animator.SetFloat(int, float)、Animator.SetFloat(string, float, float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="moveX">中文含义：移动横向。使用位置：作为 Animator.SetFloat(int, float) 的参数、作为 Animator.SetFloat(string, float, float, float) 的参数。</param>
-    /// <param name="moveY">中文含义：移动纵向。使用位置：作为 Animator.SetFloat(int, float) 的参数、作为 Animator.SetFloat(string, float, float, float) 的参数。</param>
+    /// <param name="moveX">移动横向。</param>
+    /// <param name="moveY">移动纵向。</param>
     internal void SetMovementDirection(float moveX, float moveY)
     {
         if (movementDirectionBlendTime <= 0f)
@@ -478,8 +478,8 @@ float restartSpeed = Mathf.Max(locomotionStopSpeed + 0.01f, locomotionRestartSpe
             return;
         }
 
-        anim.SetFloat("MoveX", moveX, movementDirectionBlendTime, Time.deltaTime);
-        anim.SetFloat("MoveY", moveY, movementDirectionBlendTime, Time.deltaTime);
+        anim.SetFloat(HashMoveX, moveX, movementDirectionBlendTime, Time.deltaTime);
+        anim.SetFloat(HashMoveY, moveY, movementDirectionBlendTime, Time.deltaTime);
     }
 
     /// <summary>UpdateHealthAnimationParameter 的业务处理入口；本方法直接依赖 Animator.SetFloat(int, float)、Mathf.Clamp01(float)，调用方通过参数与返回结果交接本次处理。</summary>
@@ -491,7 +491,7 @@ float restartSpeed = Mathf.Max(locomotionStopSpeed + 0.01f, locomotionRestartSpe
             return;
         }
 
-        // healthRatio（生命比例）：使用位置：作为 Animator.SetFloat(int, float) 的参数、EnemyAnimationAdapter.UpdateHealthAnimationParameter()。
+        // 生命比例。
 float healthRatio;
         if (maxHealth > 0f)
         {
@@ -514,7 +514,7 @@ float healthRatio;
             return;
         }
 
-        // stateHash（状态哈希编号）：使用位置：作为 Animator.Play(int, int, float) 的参数、EnemyAnimationAdapter.PlayCrawlIdleImmediately()。
+        // 状态哈希编号。
 int stateHash = 0;
         if (anim.HasState(0, HashCrawlIdlePath))
         {
@@ -559,7 +559,7 @@ int stateHash = 0;
 
     /// <summary>PlayVoice 的业务处理入口；本方法直接依赖 AudioManager.Play3D(AudioEventData, Vector3)、AudioManager.Stop(AudioPlayHandle)、object.ReferenceEquals(object, object)、ZombieAudioProfile.GetEvent(ZombieVoiceType)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyActionCoordinator.PlayVoice(ZombieVoiceType)、EnemyCombatModule.PlayVoice(ZombieVoiceType)、EnemyPerceptionModule.PlayVoice(ZombieVoiceType)、VillagerController.PlayVoice(ZombieVoiceType)；下游（含内部回调体） AudioManager.Play3D(AudioEventData, Vector3)、AudioManager.Stop(AudioPlayHandle)、object.ReferenceEquals(object, object)、ZombieAudioProfile.GetEvent(ZombieVoiceType)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="voiceType">中文含义：语音类型。使用位置：作为 ZombieAudioProfile.GetEvent(ZombieVoiceType) 的参数、EnemyAnimationAdapter.PlayVoice(ZombieVoiceType)。</param>
+    /// <param name="voiceType">语音类型。</param>
     internal void PlayVoice(ZombieVoiceType voiceType)
     {
         if (voiceProfile == null)
@@ -567,7 +567,7 @@ int stateHash = 0;
             return;
         }
 
-        // eventData（事件配置）：保存 ZombieAudioProfile.GetEvent(ZombieVoiceType) 的返回结果，供当前步骤使用。使用位置：作为 AudioManager.Play3D(AudioEventData, Vector3) 的参数、EnemyAnimationAdapter.PlayVoice(ZombieVoiceType)。
+        // 事件配置。
 AudioEventData eventData = voiceProfile.GetEvent(voiceType);
         if (eventData == null)
         {
@@ -623,7 +623,7 @@ AudioEventData eventData = voiceProfile.GetEvent(voiceType);
 
     /// <summary>UpdateLocomotionPlaybackRate 的业务处理入口；本方法直接依赖 Animator.GetCurrentAnimatorClipInfo(int, List&lt;AnimatorClipInfo&gt;)、Animator.GetCurrentAnimatorStateInfo(int)、Animator.GetFloat(int)、Animator.SetFloat(int, float)、AnimatorStateInfo.IsName(string)、EnemyContext.MoveSpeedToAgentSpeed(float)、Mathf.Clamp(float, float, float) 等共 11 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillagerController.UpdateLocomotionPlaybackRate(Vector3)；下游（含内部回调体） Animator.GetCurrentAnimatorClipInfo(int, List&lt;AnimatorClipInfo&gt;)、Animator.GetCurrentAnimatorStateInfo(int)、Animator.GetFloat(int)、Animator.SetFloat(int, float)、AnimatorStateInfo.IsName(string)、EnemyContext.MoveSpeedToAgentSpeed(float)、Mathf.Clamp(float, float, float) 等共 11 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="movementStartPosition">中文含义：移动起始位置。使用位置：EnemyAnimationAdapter.UpdateLocomotionPlaybackRate(Vector3)。</param>
+    /// <param name="movementStartPosition">移动起始位置。</param>
     internal void UpdateLocomotionPlaybackRate(Vector3 movementStartPosition)
     {
         if (!hasLocomotionPlaybackRate || anim == null)
@@ -638,7 +638,7 @@ AudioEventData eventData = voiceProfile.GetEvent(voiceType);
             return;
         }
 
-        // moveParameter（移动参数）：保存 Animator.GetFloat(int) 的返回结果，供当前步骤使用。使用位置：作为 EnemyContext.MoveSpeedToAgentSpeed(float) 的参数、EnemyAnimationAdapter.UpdateLocomotionPlaybackRate(Vector3)。
+        // 移动参数。
 float moveParameter = anim.GetFloat(HashMoveSpeed);
         if (CurrentMovementMode != EnemyMovementMode.StandingPathRootMotion || moveParameter <= 0.02f)
         {
@@ -648,27 +648,27 @@ float moveParameter = anim.GetFloat(HashMoveSpeed);
         {
             // 使用本帧经过碰撞、避让和转向限速后的真实位移同步脚步。
             // 参数只绑定移动状态，攻击、翻窗和配对动作保持原有播放节奏。
-            // displacement（位移）：使用位置：EnemyAnimationAdapter.UpdateLocomotionPlaybackRate(Vector3)。
+            // 位移。
 Vector3 displacement = transform.position - movementStartPosition;
             displacement.y = 0f;
-            // actualSpeed（实际速度）：使用位置：作为 Mathf.Clamp(float, float, float) 的参数、EnemyAnimationAdapter.UpdateLocomotionPlaybackRate(Vector3)。
+            // 实际速度。
 float actualSpeed = displacement.magnitude / Mathf.Max(Time.deltaTime, 0.0001f);
-            // strideSpeed（步幅速度）：保存 EnemyContext.MoveSpeedToAgentSpeed(float) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Max(float, float) 的参数、EnemyAnimationAdapter.UpdateLocomotionPlaybackRate(Vector3)。
+            // 步幅速度。
 float strideSpeed = ctx.MoveSpeedToAgentSpeed(moveParameter);
             // 代码推进的村民完全受阻时暂停脚步，避免最低倍率继续原地踏动。
             // 动画根运动推进仍保留起步倍率，防止动画与位移互相等待。
-            // multiplierMaximum（倍率最大）：使用位置：作为 Mathf.Clamp(float, float, float) 的参数、EnemyAnimationAdapter.UpdateLocomotionPlaybackRate(Vector3)。
+            // 倍率最大。
 float multiplierMaximum = 1.15f;
             if (host.ArchitectureReadChainsawBridge && anim.GetCurrentAnimatorStateInfo(0).IsName("Base Layer.Locomotion"))
             {
                 // 电锯慢走的原始步幅比村民短，按当前混合片段的水平根速度换算实际步频。
                 anim.GetCurrentAnimatorClipInfo(0, walkClip);
-                // clipSpeed（动画片段速度）：使用位置：EnemyAnimationAdapter.UpdateLocomotionPlaybackRate(Vector3)。
+                // 动画片段速度。
 float clipSpeed = 0f;
                 // clipValue（动画片段值）：每轮从行走动画片段取得一个元素，仅代表当前这一项。使用位置：EnemyAnimationAdapter.UpdateLocomotionPlaybackRate(Vector3)。
 foreach (var clipValue in walkClip)
                 {
-                    // speed（速度）：使用位置：作为 Mathf.Sqrt(float) 的参数。
+                    // 速度。
 var speed = clipValue.clip.averageSpeed;
                     clipSpeed += clipValue.weight * Mathf.Sqrt(speed.x * speed.x + speed.z * speed.z);
                 }
@@ -681,7 +681,7 @@ var speed = clipValue.clip.averageSpeed;
                 multiplierMaximum = 2.5f;
             }
 
-            // minimumRate（最小速率）：使用位置：作为 Mathf.Clamp(float, float, float) 的参数、EnemyAnimationAdapter.UpdateLocomotionPlaybackRate(Vector3)。
+            // 最小速率。
 float minimumRate;
             if (useStandingAnimationSpeedForPath)
             {
@@ -692,7 +692,7 @@ float minimumRate;
                 minimumRate = 0f;
             }
 
-            // targetRate（目标速率）：保存 Mathf.Clamp(float, float, float) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Lerp(float, float, float) 的参数、EnemyAnimationAdapter.UpdateLocomotionPlaybackRate(Vector3)。
+            // 目标速率。
 float targetRate = Mathf.Clamp(actualSpeed / Mathf.Max(0.01f, strideSpeed), minimumRate, multiplierMaximum);
             if (!useStandingAnimationSpeedForPath && actualSpeed <= locomotionStopSpeed)
             {
@@ -700,9 +700,9 @@ float targetRate = Mathf.Clamp(actualSpeed / Mathf.Max(0.01f, strideSpeed), mini
             }
             else
             {
-                // leftOperand10（计算前缓存的左侧实际移动速度响应）：从实际移动速度响应读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：EnemyAnimationAdapter.UpdateLocomotionPlaybackRate(Vector3)。
+                // 计算前缓存的左侧实际移动速度响应。
 float leftOperand10 = actualMovementSpeedResponse;
-                // selectedValue9（分支选出的2f）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：EnemyAnimationAdapter.UpdateLocomotionPlaybackRate(Vector3)。
+                // 分支选出的2f。
 float selectedValue9;
                 if (targetRate < locomotionPlaybackRate)
                 {
@@ -713,7 +713,7 @@ float selectedValue9;
                     selectedValue9 = 1f;
                 }
 
-                // response（响应）：使用位置：作为 Mathf.Exp(float) 的参数。
+                // 响应。
 float response = leftOperand10 * (selectedValue9);
                 locomotionPlaybackRate = Mathf.Lerp(locomotionPlaybackRate, targetRate, 1f - Mathf.Exp(-response * Time.deltaTime));
             }
@@ -779,8 +779,8 @@ foreach (AnimatorControllerParameter parameter in anim.parameters)
     // 所有敌人动画写入统一经过此处，调用方只提交表现参数。
     /// <summary>SetBoolean 的业务处理入口；本方法直接依赖 Animator.SetBool(int, bool)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyActionCoordinator.BeginChase(bool)、EnemyActionCoordinator.BeginCombatHold()、EnemyActionCoordinator.BeginStationaryPatrol(float)、EnemyActionCoordinator.EndStationaryPatrol()、EnemyCombatModule.ApplyKnifeParryStagger(bool) 等共 26 处；下游（含内部回调体） Animator.SetBool(int, bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="parameter">中文含义：参数。使用位置：作为 Animator.SetBool(int, bool) 的参数。</param>
-    /// <param name="value">中文含义：是否值。使用位置：作为 Animator.SetBool(int, bool) 的参数。</param>
+    /// <param name="parameter">参数。</param>
+    /// <param name="value">是否值。</param>
     internal void SetBoolean(int parameter, bool value)
     {
         if (anim != null)
@@ -791,8 +791,8 @@ foreach (AnimatorControllerParameter parameter in anim.parameters)
 
     /// <summary>SetIntegerValue 的业务处理入口；本方法直接依赖 Animator.SetInteger(int, int)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyActionCoordinator.BeginStationaryPatrol(float)、EnemyActionCoordinator.EndStationaryPatrol()、EnemyActionCoordinator.ReleaseStationaryPatrolTurn()、EnemyCombatModule.BeginAttack()、EnemyCombatModule.BeginHit() 等共 13 处；下游（含内部回调体） Animator.SetInteger(int, int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="parameter">中文含义：参数。使用位置：作为 Animator.SetInteger(int, int) 的参数。</param>
-    /// <param name="value">中文含义：值。使用位置：作为 Animator.SetInteger(int, int) 的参数。</param>
+    /// <param name="parameter">参数。</param>
+    /// <param name="value">值。</param>
     internal void SetIntegerValue(int parameter, int value)
     {
         if (anim != null)
@@ -803,8 +803,8 @@ foreach (AnimatorControllerParameter parameter in anim.parameters)
 
     /// <summary>SetFloatValue 的业务处理入口；本方法直接依赖 Animator.SetFloat(int, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyActionCoordinator.BeginStationaryPatrol(float)、EnemyActionCoordinator.EndStationaryPatrol()、EnemyCombatModule.BeginCrawlAttack()、VillagerController.MaintainAssassinationShowcaseIdle()、VillagerController.StopAndClearMovement()；下游（含内部回调体） Animator.SetFloat(int, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="parameter">中文含义：参数。使用位置：作为 Animator.SetFloat(int, float) 的参数。</param>
-    /// <param name="value">中文含义：值。使用位置：作为 Animator.SetFloat(int, float) 的参数。</param>
+    /// <param name="parameter">参数。</param>
+    /// <param name="value">值。</param>
     internal void SetFloatValue(int parameter, float value)
     {
         if (anim != null)
@@ -815,10 +815,10 @@ foreach (AnimatorControllerParameter parameter in anim.parameters)
 
     /// <summary>SetFloatValue 的业务处理入口；本方法直接依赖 Animator.SetFloat(int, float, float, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） Animator.SetFloat(int, float, float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="parameter">中文含义：参数。使用位置：作为 Animator.SetFloat(int, float, float, float) 的参数。</param>
-    /// <param name="value">中文含义：值。使用位置：作为 Animator.SetFloat(int, float, float, float) 的参数。</param>
-    /// <param name="smoothing">中文含义：平滑。使用位置：作为 Animator.SetFloat(int, float, float, float) 的参数。</param>
-    /// <param name="duration">中文含义：持续时间。使用位置：作为 Animator.SetFloat(int, float, float, float) 的参数。</param>
+    /// <param name="parameter">参数。</param>
+    /// <param name="value">值。</param>
+    /// <param name="smoothing">平滑。</param>
+    /// <param name="duration">持续时间。</param>
     internal void SetFloatValue(int parameter, float value, float smoothing, float duration)
     {
         if (anim != null)
@@ -829,7 +829,7 @@ foreach (AnimatorControllerParameter parameter in anim.parameters)
 
     /// <summary>TriggerPresentation 的业务处理入口；本方法直接依赖 Animator.SetTrigger(int)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 ChainsawManAnimationBridge.BeginChainsawStart()、ChainsawManAnimationBridge.BeginIntroTaunt(float)、EnemyCombatModule.BeginHit()；下游（含内部回调体） Animator.SetTrigger(int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="parameter">中文含义：参数。使用位置：作为 Animator.SetTrigger(int) 的参数。</param>
+    /// <param name="parameter">参数。</param>
     internal void TriggerPresentation(int parameter)
     {
         if (anim != null)
@@ -840,7 +840,7 @@ foreach (AnimatorControllerParameter parameter in anim.parameters)
 
     /// <summary>ClearTrigger 的业务处理入口；本方法直接依赖 Animator.ResetTrigger(int)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 ChainsawManAnimationBridge.BeginIntroTaunt(float)、ChainsawManAnimationBridge.CancelChainsawStart()、ChainsawManAnimationBridge.CancelIntroTaunt()、ChainsawManAnimationBridge.ResetRuntimeState()、EnemyCombatModule.ClearActionParameters() 等共 6 处；下游（含内部回调体） Animator.ResetTrigger(int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="parameter">中文含义：参数。使用位置：作为 Animator.ResetTrigger(int) 的参数。</param>
+    /// <param name="parameter">参数。</param>
     internal void ClearTrigger(int parameter)
     {
         if (anim != null)
@@ -851,8 +851,8 @@ foreach (AnimatorControllerParameter parameter in anim.parameters)
 
     /// <summary>SetLayerWeightValue 的业务处理入口；本方法直接依赖 Animator.SetLayerWeight(int, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillagerQTEParticipant.BeginAction(int, EnemyQTEAction)、VillagerQTEParticipant.BlendQTEEntryLayer(int)、VillagerQTEParticipant.EndAction(int)、VillagerQTEParticipant.ForceExitQTEForDeath(int)、VillagerQTEParticipant.LateUpdate() 等共 9 处；下游（含内部回调体） Animator.SetLayerWeight(int, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="layer">中文含义：图层。使用位置：作为 Animator.SetLayerWeight(int, float) 的参数。</param>
-    /// <param name="weight">中文含义：权重。使用位置：作为 Animator.SetLayerWeight(int, float) 的参数。</param>
+    /// <param name="layer">图层。</param>
+    /// <param name="weight">权重。</param>
     internal void SetLayerWeightValue(int layer, float weight)
     {
         if (anim != null)
@@ -863,9 +863,9 @@ foreach (AnimatorControllerParameter parameter in anim.parameters)
 
     /// <summary>PlayState 的业务处理入口；本方法直接依赖 Animator.Play(int, int, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillagerQTEParticipant.BeginAction(int, EnemyQTEAction)；下游（含内部回调体） Animator.Play(int, int, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="state">中文含义：状态。使用位置：作为 Animator.Play(int, int, float) 的参数。</param>
-    /// <param name="layer">中文含义：图层。使用位置：作为 Animator.Play(int, int, float) 的参数。</param>
-    /// <param name="progress">中文含义：进度。使用位置：作为 Animator.Play(int, int, float) 的参数。</param>
+    /// <param name="state">状态。</param>
+    /// <param name="layer">图层。</param>
+    /// <param name="progress">进度。</param>
     internal void PlayState(int state, int layer, float progress)
     {
         if (anim != null)
@@ -876,7 +876,7 @@ foreach (AnimatorControllerParameter parameter in anim.parameters)
 
     /// <summary>SetPlaySpeed 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
     /// <remarks>静态调用链：上游 VillagerQTEParticipant.ForceExitQTEForDeath(int)、VillagerQTEParticipant.HandleActionCompleted(Animator, EnemyQTEAction, int)、VillagerQTEParticipant.Release(int)、VillagerQTEParticipant.ReleaseBodyTechniqueReservation()、VillagerQTEParticipant.TryReserveBodyTechnique(int)；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="speedValue">中文含义：速度值。使用位置：EnemyAnimationAdapter.SetPlaySpeed(float)。</param>
+    /// <param name="speedValue">速度值。</param>
     internal void SetPlaySpeed(float speedValue)
     {
         if (anim != null)
@@ -887,7 +887,7 @@ foreach (AnimatorControllerParameter parameter in anim.parameters)
 
     /// <summary>SetRootMotion 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
     /// <remarks>静态调用链：上游 VillagerController.SetMovementMode(EnemyMovementMode, string, int)、VillagerQTEParticipant.ForceExitQTEForDeath(int)、VillagerQTEParticipant.Release(int)、VillagerQTEParticipant.TryAcquire(int, QTEKind)；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="enable">中文含义：是否启用。使用位置：EnemyAnimationAdapter.SetRootMotion(bool)。</param>
+    /// <param name="enable">是否启用。</param>
     internal void SetRootMotion(bool enable)
     {
         if (anim != null)
@@ -898,7 +898,7 @@ foreach (AnimatorControllerParameter parameter in anim.parameters)
 
     /// <summary>SetEnable 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
     /// <remarks>静态调用链：上游 VillagerController.SetLODActive(bool)；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="enable">中文含义：是否启用。使用位置：EnemyAnimationAdapter.SetEnable(bool)。</param>
+    /// <param name="enable">是否启用。</param>
     internal void SetEnable(bool enable)
     {
         if (anim != null)

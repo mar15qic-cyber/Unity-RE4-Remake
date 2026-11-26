@@ -10,110 +10,110 @@ using System.Collections;
 /// <remarks>仓库与背包的存取界面，把选择和转移意图交给已有宿主及规则服务，完成后读取双方当前结果刷新显示。</remarks>
 public class StorageBoxUI : MonoBehaviour
 {
-    /// <summary>中文含义：界面视觉主题配置。使用位置：作为 MenuThemeApplier.Apply(Transform, UIVisualTheme) 的参数、InterfaceReworkBuilder.ConfigurationOtherInterface()、StorageBoxUI.CreateStorageEntry(GridItem) 等共 4 处。</summary>
+    /// <summary>界面视觉主题配置。</summary>
     [Header("统一视觉主题")]
     public UIVisualTheme visualTheme;
-    /// <summary>中文含义：物品预览。使用位置：作为 UnityEvent&lt;BaseEventData&gt;.AddListener(UnityAction&lt;BaseEventData&gt;) 的参数、StorageBoxUI.Close()、StorageBoxUI.OnInventoryItemHoverEnter(GridItem) 等共 7 处。</summary>
+    /// <summary>物品预览。</summary>
     [Header("物品三维预览")]
     [UnityEngine.Serialization.FormerlySerializedAs("物品预览")]
     [UnityEngine.InspectorName("物品预览")]
     public StoredItemPreview itemPreview;
-    /// <summary>中文含义：实例。使用位置：CombatHUD.IsCombatVisualBlocked()、DoorController.IsPlayerBlocked()、LeonInputBridge.CanStartWeaponWheel() 等共 13 处。</summary>
+    /// <summary>实例。</summary>
     public static StorageBoxUI Instance { get; private set; }
 
-    /// <summary>中文含义：面板。使用位置：StorageBoxUI.FadeIn()、StorageBoxUI.FadeOut()、StorageBoxUI.Show(StorageBoxController) 等共 5 处。</summary>
+    /// <summary>面板。</summary>
     [Header("面板引用")]
     public CanvasGroup panel;
-    /// <summary>中文含义：仓库列表容器。使用位置：作为 Transform.SetParent(Transform, bool) 的参数、StorageBoxUI.CacheReusableStorageEntries()、StorageBoxUI.IsPointerOverStorageList(Vector2) 等共 4 处。</summary>
+    /// <summary>仓库列表容器。</summary>
     public RectTransform storageListContainer;
-    /// <summary>中文含义：背包网格容器。使用位置：StorageBoxUI.ResolveGridView()。</summary>
+    /// <summary>背包网格容器。</summary>
     public RectTransform inventoryGridContainer;
-    /// <summary>中文含义：留空时自动使用箱子滚动区域。背包物品拖入箱子时使用的投放区域；留空时自动使用箱子滚动区域。使用位置：StorageBoxUI.IsPointerOverStorageList(Vector2)、VillageInterfaceRefinementConfigurator.ConfigurationStored(Scene)。</summary>
+    /// <summary>留空时自动使用箱子滚动区域。背包物品拖入箱子时使用的投放区域；留空时自动使用箱子滚动区域。</summary>
     [Tooltip("背包物品拖入箱子时使用的投放区域；留空时自动使用箱子滚动区域。")]
     public RectTransform storageDropArea;
-    /// <summary>中文含义：标题文字。使用位置：作为 VillageInterfaceRefinementConfigurator.Locate(RectTransform, float, float, float, float) 的参数、VillageInterfaceRefinementConfigurator.ConfigurationStored(Scene)。</summary>
+    /// <summary>标题文字。</summary>
     [Header("标题")]
     public Text titleText;
-    /// <summary>中文含义：仓库标题文字。使用位置：作为 VillageInterfaceRefinementConfigurator.Locate(RectTransform, float, float, float, float) 的参数、VillageInterfaceRefinementConfigurator.ConfigurationStored(Scene)。</summary>
+    /// <summary>仓库标题文字。</summary>
     public Text storageTitleText;
-    /// <summary>中文含义：背包标题文字。使用位置：作为 VillageInterfaceRefinementConfigurator.Locate(RectTransform, float, float, float, float) 的参数、VillageInterfaceRefinementConfigurator.ConfigurationStored(Scene)。</summary>
+    /// <summary>背包标题文字。</summary>
     public Text inventoryTitleText;
-    /// <summary>中文含义：操作提示栏文字。使用位置：作为 VillageInterfaceRefinementConfigurator.Locate(RectTransform, float, float, float, float) 的参数、StorageBoxUI.Start()、VillageInterfaceRefinementConfigurator.ConfigurationStored(Scene)。</summary>
+    /// <summary>操作提示栏文字。</summary>
     [Header("提示")]
     public Text hintText;
-    /// <summary>中文含义：界面淡入淡出的持续时间。使用位置：StorageBoxUI.FadeIn()、StorageBoxUI.FadeOut()。</summary>
+    /// <summary>界面淡入淡出的持续时间。</summary>
     [Header("动画")]
     public float fadeDuration = 0.25f;
-    /// <summary>中文含义：背包网格视图组件。右侧背包网格视图组件。使用位置：作为 RectTransformUtility.RectangleContainsScreenPoint(RectTransform, Vector2) 的参数、作为 VillageInterfaceRefinementConfigurator.Locate(RectTransform, float, float, float, float) 的参数、StorageBoxUI.ConfigureGridCallbacks() 等共 13 处。</summary>
+    /// <summary>背包网格视图组件。右侧背包网格视图组件。</summary>
     [Header("共享网格视图")]
     [Tooltip("右侧背包网格视图组件")]
     public InventoryGridView gridView;
-    /// <summary>中文含义：左侧箱子区域投放高亮 Image。使用位置：作为 VillageInterfaceRefinementConfigurator.Locate(RectTransform, float, float, float, float) 的参数、StorageBoxUI.ClearDragContext()、StorageBoxUI.OnInventoryItemDrag(GridItem, Vector2) 等共 6 处。</summary>
+    /// <summary>左侧箱子区域投放高亮 Image。</summary>
     [Header("投放高亮")]
     [Tooltip("左侧箱子区域投放高亮 Image")]
     public Image dropZoneHighlight;
-    /// <summary>中文含义：投放高亮颜色。使用位置：InterfaceReworkBuilder.ConfigurationOtherInterface()、StorageBoxUI.OnInventoryItemDrag(GridItem, Vector2)、VillageInterfaceRefinementConfigurator.ConfigurationStored(Scene)。</summary>
+    /// <summary>投放高亮颜色。</summary>
     [Tooltip("投放高亮颜色")]
     public Color dropZoneColor = new Color(0.15f, 1f, 0.35f, 0.3f);
-    /// <summary>中文含义：右侧背包区域投放高亮 Image。使用位置：作为 UnityEvent&lt;BaseEventData&gt;.AddListener(UnityAction&lt;BaseEventData&gt;) 的参数、作为 VillageInterfaceRefinementConfigurator.Locate(RectTransform, float, float, float, float) 的参数、StorageBoxUI.ClearDragContext() 等共 4 处。</summary>
+    /// <summary>右侧背包区域投放高亮 Image。</summary>
     [Tooltip("右侧背包区域投放高亮 Image")]
     public Image inventoryDropZoneHighlight;
-    /// <summary>中文含义：右侧投放高亮颜色。使用位置：作为 UnityEvent&lt;BaseEventData&gt;.AddListener(UnityAction&lt;BaseEventData&gt;) 的参数、InterfaceReworkBuilder.ConfigurationOtherInterface()、VillageInterfaceRefinementConfigurator.ConfigurationStored(Scene)。</summary>
+    /// <summary>右侧投放高亮颜色。</summary>
     [Tooltip("右侧投放高亮颜色")]
     public Color inventoryDropZoneColor = new Color(0.3f, 0.6f, 1f, 0.3f);
-    /// <summary>中文含义：操作失败提示文本。使用位置：作为 VillageInterfaceRefinementConfigurator.Locate(RectTransform, float, float, float, float) 的参数、StorageBoxUI.FailHintRoutine(string)、StorageBoxUI.ShowFailHint(string) 等共 5 处。</summary>
+    /// <summary>操作失败提示文本。</summary>
     [Header("失败提示")]
     [Tooltip("操作失败提示文本")]
     public Text failHintText;
-    /// <summary>中文含义：失败提示持续时间。使用位置：StorageBoxUI.FailHintRoutine(string)。</summary>
+    /// <summary>失败提示持续时间。</summary>
     public float failHintDuration = 1.5f;
-    /// <summary>中文含义：拖拽时跟随光标的图标（留空则自动创建）。使用位置：StorageBoxUI.EnsureDragGhost()、StorageBoxUI.HideDragGhost()、StorageBoxUI.ShowDragGhost(GridItem)。</summary>
+    /// <summary>拖拽时跟随光标的图标（留空则自动创建）。</summary>
     [Header("拖拽幽灵图标")]
     [Tooltip("拖拽时跟随光标的图标（留空则自动创建）")]
     public Image dragGhost;
-    /// <summary>中文含义：拖拽幽灵预览矩形变换。使用位置：StorageBoxUI.EnsureDragGhost()、StorageBoxUI.UpdateDragGhostPos(Vector2)。</summary>
+    /// <summary>拖拽幽灵预览矩形变换。</summary>
     private RectTransform dragGhostRt;
-    /// <summary>中文含义：是否可见。使用位置：StorageBoxUI.Close()、StorageBoxUI.IsVisible.get、StorageBoxUI.Show(StorageBoxController) 等共 4 处。</summary>
+    /// <summary>是否可见。</summary>
     private bool isVisible;
-    /// <summary>中文含义：是否可见。使用位置：CombatHUD.IsCombatVisualBlocked()、DoorController.IsPlayerBlocked()、LeonInputBridge.CanStartWeaponWheel() 等共 10 处。</summary>
+    /// <summary>是否可见。</summary>
     public bool IsVisible => isVisible;
 
-    /// <summary>中文含义：淡入淡出协程。使用位置：作为 MonoBehaviour.StopCoroutine(Coroutine) 的参数、StorageBoxUI.Close()、StorageBoxUI.Show(StorageBoxController)。</summary>
+    /// <summary>淡入淡出协程。</summary>
     private Coroutine fadeRoutine;
-    /// <summary>中文含义：失败提示协程。使用位置：作为 MonoBehaviour.StopCoroutine(Coroutine) 的参数、StorageBoxUI.ShowFailHint(string)。</summary>
+    /// <summary>失败提示协程。</summary>
     private Coroutine failHintRoutine;
-    /// <summary>中文含义：生效控制器。使用位置：StorageBoxUI.Close()、StorageBoxUI.Show(StorageBoxController)。</summary>
+    /// <summary>生效控制器。</summary>
     private StorageBoxController activeController;
-    /// <summary>中文含义：是否网格警告已显示。使用位置：StorageBoxUI.ResolveGridView()。</summary>
+    /// <summary>是否网格警告已显示。</summary>
     private bool gridWarningShown;
-    /// <summary>中文含义：已订阅仓库管理器。使用位置：StorageBoxUI.BindManagerEvents()、StorageBoxUI.UnbindManagerEvents()。</summary>
+    /// <summary>已订阅仓库管理器。</summary>
     private StorageBoxManager subscribedStorageManager;
     // 复用寄存箱行，隐藏时只保留一次待刷新标记。
-    /// <summary>中文含义：仓库条目集合。只读字段，初始化后不由普通写入口替换。使用位置：作为 List&lt;GridItem&gt;.List(IEnumerable&lt;GridItem&gt;) 的参数、StorageBoxUI.CacheReusableStorageEntries()、StorageBoxUI.RefreshStorageList()。</summary>
+    /// <summary>仓库条目集合。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly System.Collections.Generic.Dictionary<GridItem, GameObject> storageEntries = new System.Collections.Generic.Dictionary<GridItem, GameObject>();
-    /// <summary>中文含义：池化的仓库条目集合。只读字段，初始化后不由普通写入口替换。使用位置：StorageBoxUI.CacheReusableStorageEntries()、StorageBoxUI.RefreshStorageList()、StorageBoxUI.ReleaseStorageEntry(GameObject)。</summary>
+    /// <summary>池化的仓库条目集合。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly System.Collections.Generic.List<GameObject> pooledStorageEntries = new System.Collections.Generic.List<GameObject>();
-    /// <summary>中文含义：仓库刷新是否仍待处理。使用位置：StorageBoxUI.RequestStorageRefresh()、StorageBoxUI.Show(StorageBoxController)、StorageBoxUI.Update()。</summary>
+    /// <summary>仓库刷新是否仍待处理。</summary>
     private bool storageRefreshPending;
-    /// <summary>中文含义：背包刷新是否仍待处理。使用位置：StorageBoxUI.RequestInventoryRefresh()、StorageBoxUI.Show(StorageBoxController)、StorageBoxUI.Update()。</summary>
+    /// <summary>背包刷新是否仍待处理。</summary>
     private bool inventoryRefreshPending;
-    /// <summary>中文含义：是否可复用的仓库条目集合缓存。使用位置：StorageBoxUI.CacheReusableStorageEntries()。</summary>
+    /// <summary>是否可复用的仓库条目集合缓存。</summary>
     private bool reusableStorageEntriesCached;
-    /// <summary>中文含义：已订阅背包管理器。使用位置：StorageBoxUI.BindManagerEvents()、StorageBoxUI.UnbindManagerEvents()。</summary>
+    /// <summary>已订阅背包管理器。</summary>
     private InventoryManager subscribedInventoryManager;
     // 拖拽上下文
-    /// <summary>中文含义：拖拽上下文。使用位置：作为 Dictionary&lt;GridItem, GameObject&gt;.ContainsKey(GridItem) 的参数、作为 UnityEvent&lt;BaseEventData&gt;.AddListener(UnityAction&lt;BaseEventData&gt;) 的参数、StorageBoxUI.ClearDragContext() 等共 9 处。</summary>
+    /// <summary>拖拽上下文。</summary>
     private DragContext dragContext;
     /// <summary>界面交互与显示的结构化数据 DragContext；声明字段保存该步骤需要的值，具体读写由使用方执行。</summary>
     struct DragContext
     {
-        /// <summary>中文含义：当前背包网格物品。使用位置：作为 Dictionary&lt;GridItem, GameObject&gt;.ContainsKey(GridItem) 的参数、作为 UnityEvent&lt;BaseEventData&gt;.AddListener(UnityAction&lt;BaseEventData&gt;) 的参数、StorageBoxUI.OnInventoryItemDrag(GridItem, Vector2) 等共 7 处。</summary>
+        /// <summary>当前背包网格物品。</summary>
         public GridItem item;
-        /// <summary>中文含义：来源网格来源。使用位置：作为 UnityEvent&lt;BaseEventData&gt;.AddListener(UnityAction&lt;BaseEventData&gt;) 的参数、StorageBoxUI.OnInventoryItemPointerDown(GridItem, Vector2)、StorageBoxUI.RefreshInventoryGridInternal() 等共 4 处。</summary>
+        /// <summary>来源网格来源。</summary>
         public InventoryGridView.GridSource source;
-        /// <summary>中文含义：原始位置。使用位置：作为 UnityEvent&lt;BaseEventData&gt;.AddListener(UnityAction&lt;BaseEventData&gt;) 的参数、StorageBoxUI.OnInventoryItemPointerDown(GridItem, Vector2)。</summary>
+        /// <summary>原始位置。</summary>
         public Vector2 originalPos;
-        /// <summary>中文含义：是否已完成。使用位置：作为 UnityEvent&lt;BaseEventData&gt;.AddListener(UnityAction&lt;BaseEventData&gt;) 的参数、StorageBoxUI.OnInventoryItemClicked(GridItem, PointerEventData.InputButton, Vector2)、StorageBoxUI.OnInventoryItemDrag(GridItem, Vector2) 等共 6 处。</summary>
+        /// <summary>是否已完成。</summary>
         public bool completed;
     }
 
@@ -229,7 +229,7 @@ public class StorageBoxUI : MonoBehaviour
 
     /// <summary>Show 的业务处理入口；本方法直接依赖 GameObject.SetActive(bool)、GameUIManager.RegisterModal(Object, GameUIManager.State, bool, bool, bool)、MenuThemeApplier.Apply(Transform, UIVisualTheme)、MonoBehaviour.StartCoroutine(IEnumerator)、MonoBehaviour.StopCoroutine(Coroutine)、object.ReferenceEquals(object, object)、StorageBoxManager.Open() 等共 14 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 StorageBoxController.OpenUIWhenAnimationDone()；下游（含内部回调体） GameObject.SetActive(bool)、GameUIManager.RegisterModal(Object, GameUIManager.State, bool, bool, bool)、MenuThemeApplier.Apply(Transform, UIVisualTheme)、MonoBehaviour.StartCoroutine(IEnumerator)、MonoBehaviour.StopCoroutine(Coroutine)、object.ReferenceEquals(object, object)、StorageBoxManager.Open() 等共 14 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="controller">中文含义：当前仓库箱体控制器。使用位置：StorageBoxUI.Show(StorageBoxController)。</param>
+    /// <param name="controller">当前仓库箱体控制器。</param>
     public void Show(StorageBoxController controller = null)
     {
         TryShow(controller);
@@ -242,7 +242,7 @@ public class StorageBoxUI : MonoBehaviour
             return false;
         }
 
-        // loader（加载器）：使用位置：StorageBoxUI.Show(StorageBoxController)。
+        // 加载器。
 InventorySceneLoader loader = InventorySceneLoader.Instance;
         if (loader != null && (loader.IsVisible || loader.IsLoading))
         {
@@ -262,14 +262,14 @@ InventorySceneLoader loader = InventorySceneLoader.Instance;
         BindManagerEvents();
         activeController = controller;
         isVisible = true;
-        // receiverValue1（判空前缓存的仓库箱体管理器的实例）：从仓库箱体管理器的实例读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、StorageBoxUI.Show(StorageBoxController)。
+        // 判空前缓存的仓库箱体管理器的实例。
 global::StorageBoxManager receiverValue1 = StorageBoxManager.Instance;
         if (!global::System.Object.ReferenceEquals(receiverValue1, null))
         {
             receiverValue1.Open();
         }
 
-        // receiverValue2（判空前缓存的游戏界面管理器的实例）：从游戏界面管理器的实例读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、StorageBoxUI.Show(StorageBoxController)。
+        // 判空前缓存的游戏界面管理器的实例。
 global::GameUIManager receiverValue2 = GameUIManager.Instance;
         if (!global::System.Object.ReferenceEquals(receiverValue2, null))
         {
@@ -328,7 +328,7 @@ global::GameUIManager receiverValue2 = GameUIManager.Instance;
 
         if (gridView.gridContainer == null)
         {
-            // assignmentReceiver3（赋值前保存的目标背包网格视图组件）：从背包网格视图组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：StorageBoxUI.ResolveGridView()。
+            // 赋值前保存的目标背包网格视图组件。
 global::InventoryGridView assignmentReceiver3 = gridView;
             if (inventoryGridContainer != null)
             {
@@ -375,7 +375,7 @@ global::InventoryGridView assignmentReceiver3 = gridView;
     /// <remarks>静态调用链：上游 StorageBoxUI.Show(StorageBoxController)、StorageBoxUI.Start()；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     void BindManagerEvents()
     {
-        // storageManager（仓库数据与操作宿主）：使用位置：StorageBoxUI.BindManagerEvents()。
+        // 仓库数据与操作宿主。
 StorageBoxManager storageManager = StorageBoxManager.Instance;
         if (subscribedStorageManager != storageManager)
         {
@@ -393,7 +393,7 @@ StorageBoxManager storageManager = StorageBoxManager.Instance;
             }
         }
 
-        // inventoryManager（背包数据与操作宿主）：使用位置：StorageBoxUI.BindManagerEvents()。
+        // 背包数据与操作宿主。
 InventoryManager inventoryManager = InventoryManager.Instance;
         if (subscribedInventoryManager == inventoryManager)
         {
@@ -433,12 +433,12 @@ InventoryManager inventoryManager = InventoryManager.Instance;
 
     /// <summary>FindRectTransform 的业务处理入口；本方法直接依赖 Component.GetComponentsInChildren&lt;RectTransform&gt;(bool)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 StorageBoxUI.ResolveGridView()；下游（含内部回调体） Component.GetComponentsInChildren&lt;RectTransform&gt;(bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="objectName">中文含义：对象名称。使用位置：StorageBoxUI.FindRectTransform(string)。</param>
+    /// <param name="objectName">对象名称。</param>
     RectTransform FindRectTransform(string objectName)
     {
-        // rects（矩形集合）：保存 Component.GetComponentsInChildren<RectTransform>(bool) 的返回结果，供当前步骤使用。使用位置：StorageBoxUI.FindRectTransform(string)。
+        // 矩形集合。
 RectTransform[] rects = GetComponentsInChildren<RectTransform>(true);
-        // i（当前遍历索引）：使用位置：StorageBoxUI.FindRectTransform(string)。
+        // 当前遍历索引。
 for (int i = 0; i < rects.Length; i++)
         {
             if (rects[i].name == objectName)
@@ -470,21 +470,21 @@ for (int i = 0; i < rects.Length; i++)
             itemPreview.Close();
         }
 
-        // receiverValue5（判空前缓存的仓库箱体管理器的实例）：从仓库箱体管理器的实例读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、StorageBoxUI.Close()。
+        // 判空前缓存的仓库箱体管理器的实例。
 global::StorageBoxManager receiverValue5 = StorageBoxManager.Instance;
         if (!global::System.Object.ReferenceEquals(receiverValue5, null))
         {
             receiverValue5.Close();
         }
 
-        // receiverValue6（判空前缓存的游戏界面管理器的实例）：从游戏界面管理器的实例读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、StorageBoxUI.Close()。
+        // 判空前缓存的游戏界面管理器的实例。
 global::GameUIManager receiverValue6 = GameUIManager.Instance;
         if (!global::System.Object.ReferenceEquals(receiverValue6, null))
         {
             receiverValue6.UnregisterModal(this);
         }
 
-        // receiverValue7（判空前缓存的生效控制器）：从生效控制器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、StorageBoxUI.Close()。
+        // 判空前缓存的生效控制器。
 global::StorageBoxController receiverValue7 = activeController;
         if (!global::System.Object.ReferenceEquals(receiverValue7, null))
         {
@@ -509,13 +509,13 @@ global::StorageBoxController receiverValue7 = activeController;
             yield break;
         }
 
-        // elapsed（已用）：使用位置：StorageBoxUI.FadeIn()。
+        // 已用。
 float elapsed = 0f;
         while (elapsed < fadeDuration)
         {
-            // t（当前界面动画的归一化进度）：使用位置：StorageBoxUI.FadeIn()。
+            // 当前界面动画的归一化进度。
 float t = elapsed / fadeDuration;
-            // eased（缓动后的）：使用位置：StorageBoxUI.FadeIn()。
+            // 缓动后的。
 float eased = 1f - (1f - t) * (1f - t) * (1f - t);
             panel.alpha = eased;
             elapsed += Time.unscaledDeltaTime;
@@ -536,15 +536,15 @@ float eased = 1f - (1f - t) * (1f - t) * (1f - t);
             yield break;
         }
 
-        // elapsed（已用）：使用位置：StorageBoxUI.FadeOut()。
+        // 已用。
 float elapsed = 0f;
-        // startAlpha（起始透明度）：使用位置：StorageBoxUI.FadeOut()。
+        // 起始透明度。
 float startAlpha = panel.alpha;
         while (elapsed < fadeDuration)
         {
-            // t（当前界面动画的归一化进度）：使用位置：StorageBoxUI.FadeOut()。
+            // 当前界面动画的归一化进度。
 float t = elapsed / fadeDuration;
-            // eased（缓动后的）：使用位置：StorageBoxUI.FadeOut()。
+            // 缓动后的。
 float eased = 1f - t * t * t;
             panel.alpha = startAlpha * eased;
             elapsed += Time.unscaledDeltaTime;
@@ -568,9 +568,9 @@ float eased = 1f - t * t * t;
         }
 
         CacheReusableStorageEntries();
-        // desiredItems（期望物品列表）：使用位置：StorageBoxUI.RefreshStorageList()。
+        // 期望物品列表。
 var desiredItems = new System.Collections.Generic.List<GridItem>();
-        // mgr（当前仓库管理器）：使用位置：StorageBoxUI.RefreshStorageList()。
+        // 当前仓库管理器。
 StorageBoxManager mgr = StorageBoxManager.Instance;
         if (mgr != null)
         {
@@ -585,19 +585,19 @@ foreach (GridItem gi in mgr.GetStorageItems())
         }
 
         // 先回收失效行，再申请新行，保证同容量换物品时不会额外增长。
-        // activeItems（生效物品列表）：使用位置：StorageBoxUI.RefreshStorageList()。
+        // 生效物品列表。
 var activeItems = new System.Collections.Generic.List<GridItem>(storageEntries.Keys);
-        // i（当前遍历索引）：使用位置：作为 List<GridItem>.this[int] 的参数、StorageBoxUI.RefreshStorageList()。
+        // 当前遍历索引。
 for (int i = 0; i < activeItems.Count; i++)
         {
-            // activeItem（生效物品）：使用位置：作为 Dictionary<GridItem, GameObject>.Remove(GridItem) 的参数、作为 Dictionary<GridItem, GameObject>.TryGetValue(GridItem, out GameObject) 的参数、作为 List<GridItem>.Contains(GridItem) 的参数 等共 4 处。
+            // 生效物品。
 GridItem activeItem = activeItems[i];
             if (desiredItems.Contains(activeItem))
             {
                 continue;
             }
 
-            // staleEntry（过期的入口）：使用位置：作为 Dictionary<GridItem, GameObject>.TryGetValue(GridItem, out GameObject) 的参数、作为 StorageBoxUI.ReleaseStorageEntry(GameObject) 的参数。
+            // 过期的入口。
 GameObject staleEntry;
             if (storageEntries.TryGetValue(activeItem, out staleEntry))
             {
@@ -611,12 +611,12 @@ GameObject staleEntry;
             }
         }
 
-        // i（当前遍历索引）：使用位置：作为 List<GridItem>.this[int] 的参数、作为 Transform.SetSiblingIndex(int) 的参数、StorageBoxUI.RefreshStorageList()。
+        // 当前遍历索引。
 for (int i = 0; i < desiredItems.Count; i++)
         {
-            // gi（背包网格物品）：使用位置：作为 Dictionary<GridItem, GameObject>.this[GridItem] 的参数、作为 Dictionary<GridItem, GameObject>.TryGetValue(GridItem, out GameObject) 的参数、作为 StorageBoxUI.ConfigureStorageEntry(GameObject, GridItem, bool) 的参数 等共 4 处。
+            // 背包网格物品。
 GridItem gi = desiredItems[i];
-            // entry（当前游戏对象）：使用位置：作为 Dictionary<GridItem, GameObject>.TryGetValue(GridItem, out GameObject) 的参数、作为 StorageBoxUI.ConfigureStorageEntry(GameObject, GridItem, bool) 的参数、StorageBoxUI.RefreshStorageList()。
+            // 当前游戏对象。
 GameObject entry;
             if (storageEntries.TryGetValue(gi, out entry))
             {
@@ -624,7 +624,7 @@ GameObject entry;
             }
             else if (pooledStorageEntries.Count > 0)
             {
-                // lastIndex（上一次索引）：使用位置：作为 List<GameObject>.RemoveAt(int) 的参数、作为 List<GameObject>.this[int] 的参数。
+                // 上一次索引。
 int lastIndex = pooledStorageEntries.Count - 1;
                 entry = pooledStorageEntries[lastIndex];
                 pooledStorageEntries.RemoveAt(lastIndex);
@@ -648,13 +648,13 @@ int lastIndex = pooledStorageEntries.Count - 1;
 
     /// <summary>CreateStorageEntry 的业务处理入口；本方法直接依赖 GameObject.AddComponent&lt;LayoutElement&gt;()、GameObject.GameObject(string, params Type[])、GameObject.GetComponent&lt;HorizontalLayoutGroup&gt;()、GameObject.GetComponent&lt;Image&gt;()、GameObject.GetComponent&lt;LayoutElement&gt;()、GameObject.GetComponent&lt;RectTransform&gt;()、GameObject.GetComponent&lt;Text&gt;() 等共 14 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 StorageBoxUI.RefreshStorageList()；下游（含内部回调体） GameObject.AddComponent&lt;LayoutElement&gt;()、GameObject.GameObject(string, params Type[])、GameObject.GetComponent&lt;HorizontalLayoutGroup&gt;()、GameObject.GetComponent&lt;Image&gt;()、GameObject.GetComponent&lt;LayoutElement&gt;()、GameObject.GetComponent&lt;RectTransform&gt;()、GameObject.GetComponent&lt;Text&gt;() 等共 14 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="gi">中文含义：背包网格物品。使用位置：作为 StorageBoxUI.ConfigureStorageEntry(GameObject, GridItem, bool) 的参数。</param>
+    /// <param name="gi">背包网格物品。</param>
     GameObject CreateStorageEntry(GridItem gi)
     {
-        // go（当前游戏对象）：使用位置：作为 RefinedMenuStyle.AddRowLine(Transform) 的参数、作为 StorageBoxUI.ConfigureStorageEntry(GameObject, GridItem, bool) 的参数、作为 Transform.SetParent(Transform, bool) 的参数 等共 4 处。
+        // 当前游戏对象。
 GameObject go = new GameObject("StorageEntry", typeof(RectTransform), typeof(HorizontalLayoutGroup), typeof(LayoutElement), typeof(Image), typeof(EventTrigger));
         go.transform.SetParent(storageListContainer, false);
-        // layoutGroup（布局分组）：保存 GameObject.GetComponent<HorizontalLayoutGroup>() 的返回结果，供当前步骤使用。使用位置：StorageBoxUI.CreateStorageEntry(GridItem)。
+        // 布局分组。
 HorizontalLayoutGroup layoutGroup = go.GetComponent<HorizontalLayoutGroup>();
         layoutGroup.spacing = 12f;
         layoutGroup.childControlWidth = true;
@@ -662,35 +662,35 @@ HorizontalLayoutGroup layoutGroup = go.GetComponent<HorizontalLayoutGroup>();
         layoutGroup.childForceExpandWidth = false;
         layoutGroup.childForceExpandHeight = true;
         layoutGroup.padding = new RectOffset(10, 10, 4, 4);
-        // layoutElement（布局元素）：保存 GameObject.GetComponent<LayoutElement>() 的返回结果，供当前步骤使用。使用位置：StorageBoxUI.CreateStorageEntry(GridItem)。
+        // 布局元素。
 LayoutElement layoutElement = go.GetComponent<LayoutElement>();
         layoutElement.preferredHeight = 44f;
         layoutElement.flexibleWidth = 1f;
-        // background（背景）：保存 GameObject.GetComponent<Image>() 的返回结果，供当前步骤使用。使用位置：StorageBoxUI.CreateStorageEntry(GridItem)。
+        // 背景。
 Image background = go.GetComponent<Image>();
         background.raycastTarget = true;
-        // rect（矩形）：保存 GameObject.GetComponent<RectTransform>() 的返回结果，供当前步骤使用。使用位置：StorageBoxUI.CreateStorageEntry(GridItem)。
+        // 矩形。
 RectTransform rect = go.GetComponent<RectTransform>();
         rect.sizeDelta = new Vector2(0f, 44f);
-        // iconObject（图标对象）：使用位置：StorageBoxUI.CreateStorageEntry(GridItem)。
+        // 图标对象。
 GameObject iconObject = new GameObject("Icon", typeof(RectTransform), typeof(Image));
         iconObject.transform.SetParent(go.transform, false);
-        // iconLayout（图标布局）：保存 GameObject.AddComponent<LayoutElement>() 的返回结果，供当前步骤使用。使用位置：StorageBoxUI.CreateStorageEntry(GridItem)。
+        // 图标布局。
 LayoutElement iconLayout = iconObject.AddComponent<LayoutElement>();
         iconLayout.preferredWidth = 64f;
         iconLayout.preferredHeight = 36f;
         iconLayout.flexibleWidth = 0f;
         iconObject.GetComponent<Image>().raycastTarget = false;
-        // labelObject（标签对象）：使用位置：StorageBoxUI.CreateStorageEntry(GridItem)。
+        // 标签对象。
 GameObject labelObject = new GameObject("Label", typeof(RectTransform), typeof(Text));
         labelObject.transform.SetParent(go.transform, false);
-        // labelLayout（标签布局）：保存 GameObject.AddComponent<LayoutElement>() 的返回结果，供当前步骤使用。使用位置：StorageBoxUI.CreateStorageEntry(GridItem)。
+        // 标签布局。
 LayoutElement labelLayout = labelObject.AddComponent<LayoutElement>();
         labelLayout.flexibleWidth = 1f;
         labelLayout.preferredHeight = 44f;
-        // label（标签）：保存 GameObject.GetComponent<Text>() 的返回结果，供当前步骤使用。使用位置：StorageBoxUI.CreateStorageEntry(GridItem)。
+        // 标签。
 Text label = labelObject.GetComponent<Text>();
-        // assignmentReceiver8（赋值前保存的目标标签）：从标签读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：StorageBoxUI.CreateStorageEntry(GridItem)。
+        // 赋值前保存的目标标签。
 global::UnityEngine.UI.Text assignmentReceiver8 = label;
         if (visualTheme != null)
         {
@@ -712,9 +712,9 @@ global::UnityEngine.UI.Text assignmentReceiver8 = label;
 
     /// <summary>ConfigureStorageEntry 的业务处理入口；本方法直接依赖 Color.Color(float, float, float, float)、Component.GetComponent&lt;Image&gt;()、Component.GetComponent&lt;Text&gt;()、EventTrigger.Entry.Entry()、GameObject.AddComponent&lt;EventTrigger&gt;()、GameObject.GetComponent&lt;EventTrigger&gt;()、GameObject.GetComponent&lt;Image&gt;() 等共 20 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 StorageBoxUI.CreateStorageEntry(GridItem)、StorageBoxUI.RefreshStorageList()；下游（含内部回调体） Color.Color(float, float, float, float)、Component.GetComponent&lt;Image&gt;()、Component.GetComponent&lt;Text&gt;()、EventTrigger.Entry.Entry()、GameObject.AddComponent&lt;EventTrigger&gt;()、GameObject.GetComponent&lt;EventTrigger&gt;()、GameObject.GetComponent&lt;Image&gt;() 等共 20 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="go">中文含义：当前游戏对象。使用位置：作为 UnityEvent&lt;BaseEventData&gt;.AddListener(UnityAction&lt;BaseEventData&gt;) 的参数、StorageBoxUI.ConfigureStorageEntry(GameObject, GridItem, bool)。</param>
-    /// <param name="gi">中文含义：背包网格物品。使用位置：作为 StorageBoxManager.TransferToInventory(GridItem) 的参数、作为 StorageBoxUI.ShowDragGhost(GridItem) 的参数、作为 StoredItemPreview.Select(GridItem) 的参数 等共 5 处。</param>
-    /// <param name="rebindCallbacks">中文含义：是否重新绑定回调集合。使用位置：StorageBoxUI.ConfigureStorageEntry(GameObject, GridItem, bool)。</param>
+    /// <param name="go">当前游戏对象。</param>
+    /// <param name="gi">背包网格物品。</param>
+    /// <param name="rebindCallbacks">是否重新绑定回调集合。</param>
     void ConfigureStorageEntry(GameObject go, GridItem gi, bool rebindCallbacks)
     {
         if (go == null || gi == null || gi.item == null)
@@ -723,11 +723,11 @@ global::UnityEngine.UI.Text assignmentReceiver8 = label;
         }
 
         go.name = "Storage_" + gi.item.displayName;
-        // normalColor（普通状态颜色）：使用位置：作为 UnityEvent<BaseEventData>.AddListener(UnityAction<BaseEventData>) 的参数、StorageBoxUI.ConfigureStorageEntry(GameObject, GridItem, bool)。
+        // 普通状态颜色。
 Color normalColor = Color.clear;
-        // hoverColor（悬停颜色）：使用位置：作为 UnityEvent<BaseEventData>.AddListener(UnityAction<BaseEventData>) 的参数。
+        // 悬停颜色。
 Color hoverColor = new Color(.75f, .77f, .73f, .52f);
-        // background（背景）：保存 GameObject.GetComponent<Image>() 的返回结果，供当前步骤使用。使用位置：StorageBoxUI.ConfigureStorageEntry(GameObject, GridItem, bool)。
+        // 背景。
 Image background = go.GetComponent<Image>();
         if (background != null)
         {
@@ -745,9 +745,9 @@ Image background = go.GetComponent<Image>();
             background.raycastTarget = true;
         }
 
-        // iconTransform（图标变换）：保存 Transform.Find(string) 的返回结果，供当前步骤使用。使用位置：StorageBoxUI.ConfigureStorageEntry(GameObject, GridItem, bool)。
+        // 图标变换。
 Transform iconTransform = go.transform.Find("Icon");
-        // icon（图标）：使用位置：StorageBoxUI.ConfigureStorageEntry(GameObject, GridItem, bool)。
+        // 图标。
 Image icon;
         if (iconTransform != null)
         {
@@ -762,7 +762,7 @@ Image icon;
         {
             icon.sprite = gi.item.icon;
             icon.preserveAspect = true;
-            // assignmentReceiver11（赋值前保存的目标图标）：从图标读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：StorageBoxUI.ConfigureStorageEntry(GameObject, GridItem, bool)。
+            // 赋值前保存的目标图标。
 global::UnityEngine.UI.Image assignmentReceiver11 = icon;
             if (gi.item.icon != null)
             {
@@ -776,9 +776,9 @@ global::UnityEngine.UI.Image assignmentReceiver11 = icon;
             icon.raycastTarget = false;
         }
 
-        // labelTransform（标签变换）：保存 Transform.Find(string) 的返回结果，供当前步骤使用。使用位置：StorageBoxUI.ConfigureStorageEntry(GameObject, GridItem, bool)。
+        // 标签变换。
 Transform labelTransform = go.transform.Find("Label");
-        // label（标签）：使用位置：StorageBoxUI.ConfigureStorageEntry(GameObject, GridItem, bool)。
+        // 标签。
 Text label;
         if (labelTransform != null)
         {
@@ -800,7 +800,7 @@ Text label;
             return;
         }
 
-        // trigger（触发器）：保存 GameObject.GetComponent<EventTrigger>() 的返回结果，供当前步骤使用。使用位置：StorageBoxUI.ConfigureStorageEntry(GameObject, GridItem, bool)。
+        // 触发器。
 EventTrigger trigger = go.GetComponent<EventTrigger>();
         if (trigger == null)
         {
@@ -808,7 +808,7 @@ EventTrigger trigger = go.GetComponent<EventTrigger>();
         }
 
         trigger.triggers.Clear();
-        // enterEntry（进入入口）：使用位置：作为 List<EventTrigger.Entry>.Add(EventTrigger.Entry) 的参数、StorageBoxUI.ConfigureStorageEntry(GameObject, GridItem, bool)。
+        // 进入入口。
 EventTrigger.Entry enterEntry = new EventTrigger.Entry
         {
             eventID = EventTriggerType.PointerEnter
@@ -821,7 +821,7 @@ EventTrigger.Entry enterEntry = new EventTrigger.Entry
                 itemPreview.Select(gi);
             }
 
-            // image（图像）：保存 GameObject.GetComponent<Image>() 的返回结果，供当前步骤使用。使用位置：作为 UnityEvent<BaseEventData>.AddListener(UnityAction<BaseEventData>) 的参数。
+            // 图像。
 Image image = go.GetComponent<Image>();
             if (image != null)
             {
@@ -829,14 +829,14 @@ Image image = go.GetComponent<Image>();
             }
         });
         trigger.triggers.Add(enterEntry);
-        // exitEntry（退出入口）：使用位置：作为 List<EventTrigger.Entry>.Add(EventTrigger.Entry) 的参数、StorageBoxUI.ConfigureStorageEntry(GameObject, GridItem, bool)。
+        // 退出入口。
 EventTrigger.Entry exitEntry = new EventTrigger.Entry
         {
             eventID = EventTriggerType.PointerExit
         };
         exitEntry.callback.AddListener( /* 中文含义：当前流程中不使用的传入结果。 */_ =>
         {
-            // image（图像）：保存 GameObject.GetComponent<Image>() 的返回结果，供当前步骤使用。使用位置：作为 UnityEvent<BaseEventData>.AddListener(UnityAction<BaseEventData>) 的参数。
+            // 图像。
 Image image = go.GetComponent<Image>();
             if (image != null)
             {
@@ -844,14 +844,14 @@ Image image = go.GetComponent<Image>();
             }
         });
         trigger.triggers.Add(exitEntry);
-        // downEntry（向下入口）：使用位置：作为 List<EventTrigger.Entry>.Add(EventTrigger.Entry) 的参数、StorageBoxUI.ConfigureStorageEntry(GameObject, GridItem, bool)。
+        // 向下入口。
 EventTrigger.Entry downEntry = new EventTrigger.Entry
         {
             eventID = EventTriggerType.PointerDown
         };
         downEntry.callback.AddListener( /* 中文含义：当前基础事件配置。 */e =>
         {
-            // pointer（指针）：使用位置：作为 StorageBoxUI.UpdateDragGhostPos(Vector2) 的参数、作为 UnityEvent<BaseEventData>.AddListener(UnityAction<BaseEventData>) 的参数。
+            // 指针。
 PointerEventData pointer = (PointerEventData)e;
             if (pointer.button != PointerEventData.InputButton.Left)
             {
@@ -869,7 +869,7 @@ PointerEventData pointer = (PointerEventData)e;
             UpdateDragGhostPos(pointer.position);
         });
         trigger.triggers.Add(downEntry);
-        // dragEntry（拖拽入口）：使用位置：作为 List<EventTrigger.Entry>.Add(EventTrigger.Entry) 的参数、StorageBoxUI.ConfigureStorageEntry(GameObject, GridItem, bool)。
+        // 拖拽入口。
 EventTrigger.Entry dragEntry = new EventTrigger.Entry
         {
             eventID = EventTriggerType.Drag
@@ -881,10 +881,10 @@ EventTrigger.Entry dragEntry = new EventTrigger.Entry
                 return;
             }
 
-            // pointer（指针）：使用位置：作为 StorageBoxUI.IsPointerOverInventoryGrid(Vector2) 的参数、作为 StorageBoxUI.UpdateDragGhostPos(Vector2) 的参数。
+            // 指针。
 PointerEventData pointer = (PointerEventData)e;
             UpdateDragGhostPos(pointer.position);
-            // overGrid（是否上方网格）：保存 StorageBoxUI.IsPointerOverInventoryGrid(Vector2) 的返回结果，供当前步骤使用。使用位置：作为 GameObject.SetActive(bool) 的参数。
+            // 是否上方网格。
 bool overGrid = IsPointerOverInventoryGrid(pointer.position);
             var presentation = gridView.threeDimensionalPresentation;
             if (presentation != null && presentation.Interactive)
@@ -898,7 +898,7 @@ bool overGrid = IsPointerOverInventoryGrid(pointer.position);
             }
         });
         trigger.triggers.Add(dragEntry);
-        // upEntry（向上入口）：使用位置：作为 List<EventTrigger.Entry>.Add(EventTrigger.Entry) 的参数、StorageBoxUI.ConfigureStorageEntry(GameObject, GridItem, bool)。
+        // 向上入口。
 EventTrigger.Entry upEntry = new EventTrigger.Entry
         {
             eventID = EventTriggerType.PointerUp
@@ -916,14 +916,14 @@ EventTrigger.Entry upEntry = new EventTrigger.Entry
             {
                 gridView.threeDimensionalPresentation.EndDrag();
             }
-            // pointer（指针）：使用位置：作为 StorageBoxUI.IsPointerOverInventoryGrid(Vector2) 的参数。
+            // 指针。
 PointerEventData pointer = (PointerEventData)e;
             if (inventoryDropZoneHighlight != null)
             {
                 inventoryDropZoneHighlight.gameObject.SetActive(false);
             }
 
-            // storageManager（仓库数据与操作宿主）：使用位置：作为 UnityEvent<BaseEventData>.AddListener(UnityAction<BaseEventData>) 的参数。
+            // 仓库数据与操作宿主。
 StorageBoxManager storageManager = StorageBoxManager.Instance;
             if (IsPointerOverInventoryGrid(pointer.position) && storageManager != null && !storageManager.TransferToInventory(gi))
             {
@@ -933,7 +933,7 @@ StorageBoxManager storageManager = StorageBoxManager.Instance;
             dragContext.item = null;
         });
         trigger.triggers.Add(upEntry);
-        // clickEntry（点击入口）：使用位置：作为 List<EventTrigger.Entry>.Add(EventTrigger.Entry) 的参数、StorageBoxUI.ConfigureStorageEntry(GameObject, GridItem, bool)。
+        // 点击入口。
 EventTrigger.Entry clickEntry = new EventTrigger.Entry
         {
             eventID = EventTriggerType.PointerClick
@@ -946,9 +946,9 @@ EventTrigger.Entry clickEntry = new EventTrigger.Entry
                 return;
             }
 
-            // pointer（指针）：使用位置：作为 UnityEvent<BaseEventData>.AddListener(UnityAction<BaseEventData>) 的参数。
+            // 指针。
 PointerEventData pointer = (PointerEventData)e;
-            // storageManager（仓库数据与操作宿主）：使用位置：作为 UnityEvent<BaseEventData>.AddListener(UnityAction<BaseEventData>) 的参数。
+            // 仓库数据与操作宿主。
 StorageBoxManager storageManager = StorageBoxManager.Instance;
             if (pointer.button == PointerEventData.InputButton.Left && storageManager != null && !storageManager.TransferToInventory(gi))
             {
@@ -986,17 +986,17 @@ StorageBoxManager storageManager = StorageBoxManager.Instance;
         }
 
         reusableStorageEntriesCached = true;
-        // i（当前遍历索引）：使用位置：作为 Transform.GetChild(int) 的参数、StorageBoxUI.CacheReusableStorageEntries()。
+        // 当前遍历索引。
 for (int i = storageListContainer.childCount - 1; i >= 0; i--)
         {
-            // child（子级）：保存 Transform.GetChild(int) 的返回结果，供当前步骤使用。使用位置：StorageBoxUI.CacheReusableStorageEntries()。
+            // 子级。
 Transform child = storageListContainer.GetChild(i);
             if (!child.name.StartsWith("Storage_", System.StringComparison.Ordinal))
             {
                 continue;
             }
 
-            // entry（当前游戏对象）：使用位置：作为 Dictionary<GridItem, GameObject>.ContainsValue(GameObject) 的参数、作为 List<GameObject>.Add(GameObject) 的参数、作为 List<GameObject>.Contains(GameObject) 的参数 等共 4 处。
+            // 当前游戏对象。
 GameObject entry = child.gameObject;
             if (storageEntries.ContainsValue(entry) || pooledStorageEntries.Contains(entry))
             {
@@ -1010,7 +1010,7 @@ GameObject entry = child.gameObject;
 
     /// <summary>ReleaseStorageEntry 的业务处理入口；本方法直接依赖 GameObject.GetComponent&lt;EventTrigger&gt;()、GameObject.SetActive(bool)、List&lt;EventTrigger.Entry&gt;.Clear()、List&lt;GameObject&gt;.Add(GameObject)、List&lt;GameObject&gt;.Contains(GameObject)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 StorageBoxUI.RefreshStorageList()；下游（含内部回调体） GameObject.GetComponent&lt;EventTrigger&gt;()、GameObject.SetActive(bool)、List&lt;EventTrigger.Entry&gt;.Clear()、List&lt;GameObject&gt;.Add(GameObject)、List&lt;GameObject&gt;.Contains(GameObject)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="entry">中文含义：当前游戏对象。使用位置：作为 List&lt;GameObject&gt;.Add(GameObject) 的参数、作为 List&lt;GameObject&gt;.Contains(GameObject) 的参数、StorageBoxUI.ReleaseStorageEntry(GameObject)。</param>
+    /// <param name="entry">当前游戏对象。</param>
     void ReleaseStorageEntry(GameObject entry)
     {
         if (entry == null)
@@ -1018,7 +1018,7 @@ GameObject entry = child.gameObject;
             return;
         }
 
-        // trigger（触发器）：保存 GameObject.GetComponent<EventTrigger>() 的返回结果，供当前步骤使用。使用位置：StorageBoxUI.ReleaseStorageEntry(GameObject)。
+        // 触发器。
 EventTrigger trigger = entry.GetComponent<EventTrigger>();
         if (trigger != null)
         {
@@ -1037,14 +1037,14 @@ EventTrigger trigger = entry.GetComponent<EventTrigger>();
     /// <remarks>静态调用链：上游 StorageBoxUI.Show(StorageBoxController)、StorageBoxUI.Update()；下游（含内部回调体） InventoryGridView.GetItemWidget(GridItem)、InventoryGridView.Rebuild(int, int, IReadOnlyList&lt;GridItem&gt;)、InventoryGridView.SetItemDragAlpha(GridItem, bool)、InventoryGridView.SetItemWidgetPosition(GridItem, Vector2)、InventoryManager.GetItems()、StorageBoxUI.ClearDragContext()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     void RefreshInventoryGridInternal()
     {
-        // mgr（当前背包管理器）：使用位置：作为 InventoryGridView.Rebuild(int, int, IReadOnlyList<GridItem>) 的参数、StorageBoxUI.RefreshInventoryGridInternal()。
+        // 当前背包管理器。
 var mgr = InventoryManager.Instance;
         if (mgr == null || gridView == null)
         {
             return;
         }
 
-        // activeDragItem（生效拖拽物品）：使用位置：作为 InventoryGridView.GetItemWidget(GridItem) 的参数、作为 InventoryGridView.SetItemDragAlpha(GridItem, bool) 的参数、作为 InventoryGridView.SetItemWidgetPosition(GridItem, Vector2) 的参数 等共 4 处。
+        // 生效拖拽物品。
 GridItem activeDragItem;
         if (dragContext.source == InventoryGridView.GridSource.Inventory)
         {
@@ -1055,13 +1055,13 @@ GridItem activeDragItem;
             activeDragItem = null;
         }
 
-        // dragVisualPosition（拖拽视觉表现位置）：使用位置：作为 InventoryGridView.SetItemWidgetPosition(GridItem, Vector2) 的参数、StorageBoxUI.RefreshInventoryGridInternal()。
+        // 拖拽视觉表现位置。
 Vector2 dragVisualPosition = Vector2.zero;
-        // hadDragVisual（是否此前具有拖拽视觉表现）：使用位置：StorageBoxUI.RefreshInventoryGridInternal()。
+        // 是否此前具有拖拽视觉表现。
 bool hadDragVisual = false;
         if (activeDragItem != null)
         {
-            // dragWidget（拖拽界面控件）：保存 InventoryGridView.GetItemWidget(GridItem) 的返回结果，供当前步骤使用。使用位置：StorageBoxUI.RefreshInventoryGridInternal()。
+            // 拖拽界面控件。
 RectTransform dragWidget = gridView.GetItemWidget(activeDragItem);
             if (dragWidget != null)
             {
@@ -1076,7 +1076,7 @@ RectTransform dragWidget = gridView.GetItemWidget(activeDragItem);
             return;
         }
 
-        // refreshedDragWidget（刷新后的拖拽界面控件）：保存 InventoryGridView.GetItemWidget(GridItem) 的返回结果，供当前步骤使用。使用位置：StorageBoxUI.RefreshInventoryGridInternal()。
+        // 刷新后的拖拽界面控件。
 RectTransform refreshedDragWidget = gridView.GetItemWidget(activeDragItem);
         if (refreshedDragWidget == null)
         {
@@ -1093,7 +1093,7 @@ RectTransform refreshedDragWidget = gridView.GetItemWidget(activeDragItem);
     // ===== 拖拽：从背包拖入箱子 =====
     /// <summary>OnInventoryItemPointerDown 的业务处理入口；本方法直接依赖 InventoryGridView.SetItemDragAlpha(GridItem, bool)、InventoryGridView.ShowSelected(GridItem)、StorageBoxUI.DragContext.DragContext()、StorageBoxUI.GetItemAnchoredPos(GridItem)、StorageBoxUI.HideDragGhost()、StoredItemPreview.Select(GridItem)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） InventoryGridView.SetItemDragAlpha(GridItem, bool)、InventoryGridView.ShowSelected(GridItem)、StorageBoxUI.DragContext.DragContext()、StorageBoxUI.GetItemAnchoredPos(GridItem)、StorageBoxUI.HideDragGhost()、StoredItemPreview.Select(GridItem)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="gi">中文含义：背包网格物品。使用位置：作为 InventoryGridView.SetItemDragAlpha(GridItem, bool) 的参数、作为 InventoryGridView.ShowSelected(GridItem) 的参数、作为 StorageBoxUI.GetItemAnchoredPos(GridItem) 的参数 等共 5 处。</param>
+    /// <param name="gi">背包网格物品。</param>
     /// <param name="screenPos">中文含义：屏幕位置。</param>
     void OnInventoryItemPointerDown(GridItem gi, Vector2 screenPos)
     {
@@ -1121,8 +1121,8 @@ RectTransform refreshedDragWidget = gridView.GetItemWidget(activeDragItem);
 
     /// <summary>OnInventoryItemDrag 的业务处理入口；本方法直接依赖 GameObject.SetActive(bool)、InventoryGridView.SetItemWidgetPosition(GridItem, Vector2)、InventoryGridView.TryScreenPointToLocal(Vector2, out Vector2)、StorageBoxUI.IsPointerOverStorageList(Vector2)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） GameObject.SetActive(bool)、InventoryGridView.SetItemWidgetPosition(GridItem, Vector2)、InventoryGridView.TryScreenPointToLocal(Vector2, out Vector2)、StorageBoxUI.IsPointerOverStorageList(Vector2)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="gi">中文含义：背包网格物品。使用位置：作为 InventoryGridView.SetItemWidgetPosition(GridItem, Vector2) 的参数。</param>
-    /// <param name="screenPos">中文含义：屏幕位置。使用位置：作为 InventoryGridView.TryScreenPointToLocal(Vector2, out Vector2) 的参数、作为 StorageBoxUI.IsPointerOverStorageList(Vector2) 的参数。</param>
+    /// <param name="gi">背包网格物品。</param>
+    /// <param name="screenPos">屏幕位置。</param>
     void OnInventoryItemDrag(GridItem gi, Vector2 screenPos)
     {
         if (dragContext.item == null || dragContext.completed)
@@ -1137,7 +1137,7 @@ RectTransform refreshedDragWidget = gridView.GetItemWidget(activeDragItem);
         }
 
         // 检测是否进入左侧投放区
-        // overDropZone（是否上方掉落区）：保存 StorageBoxUI.IsPointerOverStorageList(Vector2) 的返回结果，供当前步骤使用。使用位置：作为 GameObject.SetActive(bool) 的参数。
+        // 是否上方掉落区。
 bool overDropZone = IsPointerOverStorageList(screenPos);
         if (dropZoneHighlight != null)
         {
@@ -1148,8 +1148,8 @@ bool overDropZone = IsPointerOverStorageList(screenPos);
 
     /// <summary>OnInventoryItemPointerUp 的业务处理入口；本方法直接依赖 GameObject.SetActive(bool)、InventoryGridView.SetItemDragAlpha(GridItem, bool)、StorageBoxManager.TransferToStorage(GridItem)、StorageBoxUI.IsPointerOverStorageList(Vector2)、StorageBoxUI.RequestInventoryRefresh()、StorageBoxUI.ShowFailHint(string)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） GameObject.SetActive(bool)、InventoryGridView.SetItemDragAlpha(GridItem, bool)、StorageBoxManager.TransferToStorage(GridItem)、StorageBoxUI.IsPointerOverStorageList(Vector2)、StorageBoxUI.RequestInventoryRefresh()、StorageBoxUI.ShowFailHint(string)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="gi">中文含义：背包网格物品。使用位置：作为 InventoryGridView.SetItemDragAlpha(GridItem, bool) 的参数、作为 StorageBoxManager.TransferToStorage(GridItem) 的参数。</param>
-    /// <param name="screenPos">中文含义：屏幕位置。使用位置：作为 StorageBoxUI.IsPointerOverStorageList(Vector2) 的参数。</param>
+    /// <param name="gi">背包网格物品。</param>
+    /// <param name="screenPos">屏幕位置。</param>
     void OnInventoryItemPointerUp(GridItem gi, Vector2 screenPos)
     {
         if (dragContext.item == null || dragContext.completed)
@@ -1164,7 +1164,7 @@ bool overDropZone = IsPointerOverStorageList(screenPos);
             dropZoneHighlight.gameObject.SetActive(false);
         }
 
-        // overDropZone（是否上方掉落区）：保存 StorageBoxUI.IsPointerOverStorageList(Vector2) 的返回结果，供当前步骤使用。使用位置：StorageBoxUI.OnInventoryItemPointerUp(GridItem, Vector2)。
+        // 是否上方掉落区。
 bool overDropZone = IsPointerOverStorageList(screenPos);
         if (overDropZone)
         {
@@ -1187,8 +1187,8 @@ bool overDropZone = IsPointerOverStorageList(screenPos);
 
     /// <summary>OnInventoryItemClicked 的业务处理入口；本方法直接依赖 StorageBoxManager.TransferToStorage(GridItem)、StorageBoxUI.ShowFailHint(string)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） StorageBoxManager.TransferToStorage(GridItem)、StorageBoxUI.ShowFailHint(string)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="gi">中文含义：背包网格物品。使用位置：作为 StorageBoxManager.TransferToStorage(GridItem) 的参数。</param>
-    /// <param name="button">中文含义：按钮。使用位置：StorageBoxUI.OnInventoryItemClicked(GridItem, PointerEventData.InputButton, Vector2)。</param>
+    /// <param name="gi">背包网格物品。</param>
+    /// <param name="button">按钮。</param>
     /// <param name="screenPos">中文含义：屏幕位置。</param>
     void OnInventoryItemClicked(GridItem gi, PointerEventData.InputButton button, Vector2 screenPos)
     {
@@ -1220,7 +1220,7 @@ bool overDropZone = IsPointerOverStorageList(screenPos);
 
     /// <summary>OnInventoryItemHoverEnter 的业务处理入口；本方法直接依赖 InventoryGridView.ShowHover(GridItem)、StoredItemPreview.Select(GridItem)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） InventoryGridView.ShowHover(GridItem)、StoredItemPreview.Select(GridItem)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="gi">中文含义：背包网格物品。使用位置：作为 InventoryGridView.ShowHover(GridItem) 的参数、作为 StoredItemPreview.Select(GridItem) 的参数。</param>
+    /// <param name="gi">背包网格物品。</param>
     void OnInventoryItemHoverEnter(GridItem gi)
     {
         AudioManager.PlayInterface(AudioEventNames.UICaseHover);
@@ -1251,14 +1251,14 @@ bool overDropZone = IsPointerOverStorageList(screenPos);
             return;
         }
 
-        // canvas（画布）：保存 Component.GetComponentInParent<Canvas>() 的返回结果，供当前步骤使用。使用位置：作为 Transform.SetParent(Transform, bool) 的参数、StorageBoxUI.EnsureDragGhost()。
+        // 画布。
 var canvas = GetComponentInParent<Canvas>();
         if (canvas == null)
         {
             return;
         }
 
-        // go（当前游戏对象）：使用位置：StorageBoxUI.EnsureDragGhost()。
+        // 当前游戏对象。
 var go = new GameObject("DragGhost", typeof(Image));
         go.transform.SetParent(canvas.transform, false);
         dragGhost = go.GetComponent<Image>();
@@ -1272,7 +1272,7 @@ var go = new GameObject("DragGhost", typeof(Image));
 
     /// <summary>ShowDragGhost 的业务处理入口；本方法直接依赖 Color.Color(float, float, float, float)、GameObject.SetActive(bool)、StorageBoxUI.EnsureDragGhost()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 StorageBoxUI.ConfigureStorageEntry(GameObject, GridItem, bool)；下游（含内部回调体） Color.Color(float, float, float, float)、GameObject.SetActive(bool)、StorageBoxUI.EnsureDragGhost()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="gi">中文含义：背包网格物品。使用位置：StorageBoxUI.ShowDragGhost(GridItem)。</param>
+    /// <param name="gi">背包网格物品。</param>
     void ShowDragGhost(GridItem gi)
     {
         if (dragGhost == null)
@@ -1302,7 +1302,7 @@ global::UnityEngine.UI.Image assignmentReceiver15 = dragGhost;
 
     /// <summary>UpdateDragGhostPos 的业务处理入口；本方法直接依赖 RectTransformUtility.ScreenPointToLocalPointInRectangle(RectTransform, Vector2, Camera, out Vector2)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 StorageBoxUI.ConfigureStorageEntry(GameObject, GridItem, bool)；下游（含内部回调体） RectTransformUtility.ScreenPointToLocalPointInRectangle(RectTransform, Vector2, Camera, out Vector2)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="screenPos">中文含义：屏幕位置。使用位置：作为 RectTransformUtility.ScreenPointToLocalPointInRectangle(RectTransform, Vector2, Camera, out Vector2) 的参数。</param>
+    /// <param name="screenPos">屏幕位置。</param>
     void UpdateDragGhostPos(Vector2 screenPos)
     {
         if (dragGhostRt == null)
@@ -1310,14 +1310,14 @@ global::UnityEngine.UI.Image assignmentReceiver15 = dragGhost;
             return;
         }
 
-        // parent（父级）：使用位置：作为 RectTransformUtility.ScreenPointToLocalPointInRectangle(RectTransform, Vector2, Camera, out Vector2) 的参数、StorageBoxUI.UpdateDragGhostPos(Vector2)。
+        // 父级。
 var parent = dragGhostRt.parent as RectTransform;
         if (parent == null)
         {
             return;
         }
 
-        // localPos（局部位置）：使用位置：作为 RectTransformUtility.ScreenPointToLocalPointInRectangle(RectTransform, Vector2, Camera, out Vector2) 的参数、StorageBoxUI.UpdateDragGhostPos(Vector2)。
+        // 局部位置。
 Vector2 localPos;
         RectTransformUtility.ScreenPointToLocalPointInRectangle(parent, screenPos, null, out localPos);
         dragGhostRt.anchoredPosition = localPos;
@@ -1335,10 +1335,10 @@ Vector2 localPos;
 
     /// <summary>IsPointerOverStorageList 的业务处理入口；本方法直接依赖 Component.GetComponentInParent&lt;Canvas&gt;()、RectTransformUtility.RectangleContainsScreenPoint(RectTransform, Vector2, Camera)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 StorageBoxUI.OnInventoryItemDrag(GridItem, Vector2)、StorageBoxUI.OnInventoryItemPointerUp(GridItem, Vector2)；下游（含内部回调体） Component.GetComponentInParent&lt;Canvas&gt;()、RectTransformUtility.RectangleContainsScreenPoint(RectTransform, Vector2, Camera)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="screenPos">中文含义：屏幕位置。使用位置：作为 RectTransformUtility.RectangleContainsScreenPoint(RectTransform, Vector2, Camera) 的参数。</param>
+    /// <param name="screenPos">屏幕位置。</param>
     bool IsPointerOverStorageList(Vector2 screenPos)
     {
-        // target（目标界面矩形变换）：使用位置：作为 RectTransformUtility.RectangleContainsScreenPoint(RectTransform, Vector2, Camera) 的参数、StorageBoxUI.IsPointerOverStorageList(Vector2)。
+        // 目标界面矩形变换。
 RectTransform target = storageDropArea;
         if (target == null && storageListContainer != null)
         {
@@ -1355,9 +1355,9 @@ RectTransform target = storageDropArea;
             return false;
         }
 
-        // canvas（画布）：保存 Component.GetComponentInParent<Canvas>() 的返回结果，供当前步骤使用。使用位置：StorageBoxUI.IsPointerOverStorageList(Vector2)。
+        // 画布。
 Canvas canvas = target.GetComponentInParent<Canvas>();
-        // eventCamera（事件摄像机）：使用位置：作为 RectTransformUtility.RectangleContainsScreenPoint(RectTransform, Vector2, Camera) 的参数、StorageBoxUI.IsPointerOverStorageList(Vector2)。
+        // 事件摄像机。
 Camera eventCamera;
         if (canvas != null && canvas.renderMode != RenderMode.ScreenSpaceOverlay)
         {
@@ -1373,7 +1373,7 @@ Camera eventCamera;
 
     /// <summary>IsPointerOverInventoryGrid 的业务处理入口；本方法直接依赖 RectTransformUtility.RectangleContainsScreenPoint(RectTransform, Vector2)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 StorageBoxUI.ConfigureStorageEntry(GameObject, GridItem, bool)；下游（含内部回调体） RectTransformUtility.RectangleContainsScreenPoint(RectTransform, Vector2)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="screenPos">中文含义：屏幕位置。使用位置：作为 RectTransformUtility.RectangleContainsScreenPoint(RectTransform, Vector2) 的参数。</param>
+    /// <param name="screenPos">屏幕位置。</param>
     bool IsPointerOverInventoryGrid(Vector2 screenPos)
     {
         if (gridView == null || gridView.gridArea == null)
@@ -1398,10 +1398,10 @@ Camera eventCamera;
 
     /// <summary>GetItemAnchoredPos 的业务处理入口；本方法直接依赖 InventoryGridView.GetItemWidget(GridItem)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 StorageBoxUI.OnInventoryItemPointerDown(GridItem, Vector2)；下游（含内部回调体） InventoryGridView.GetItemWidget(GridItem)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="gi">中文含义：背包网格物品。使用位置：作为 InventoryGridView.GetItemWidget(GridItem) 的参数。</param>
+    /// <param name="gi">背包网格物品。</param>
     Vector2 GetItemAnchoredPos(GridItem gi)
     {
-        // widget（界面控件）：使用位置：StorageBoxUI.GetItemAnchoredPos(GridItem)。
+        // 界面控件。
 RectTransform widget;
         if (gridView != null)
         {
@@ -1424,7 +1424,7 @@ RectTransform widget;
 
     /// <summary>ShowFailHint 的业务处理入口；本方法直接依赖 MonoBehaviour.StartCoroutine(IEnumerator)、MonoBehaviour.StopCoroutine(Coroutine)、StorageBoxUI.FailHintRoutine(string)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 StorageBoxUI.ConfigureStorageEntry(GameObject, GridItem, bool)、StorageBoxUI.OnInventoryItemClicked(GridItem, PointerEventData.InputButton, Vector2)、StorageBoxUI.OnInventoryItemPointerUp(GridItem, Vector2)；下游（含内部回调体） MonoBehaviour.StartCoroutine(IEnumerator)、MonoBehaviour.StopCoroutine(Coroutine)、StorageBoxUI.FailHintRoutine(string)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="message">中文含义：消息。使用位置：作为 StorageBoxUI.FailHintRoutine(string) 的参数。</param>
+    /// <param name="message">消息。</param>
     void ShowFailHint(string message)
     {
         AudioManager.PlayInterface(AudioEventNames.UICaseError);
@@ -1443,20 +1443,20 @@ RectTransform widget;
 
     /// <summary>FailHintRoutine 的业务处理入口；本方法直接依赖 Color.Color(float, float, float, float)、GameObject.SetActive(bool)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 StorageBoxUI.ShowFailHint(string)；下游（含内部回调体） Color.Color(float, float, float, float)、GameObject.SetActive(bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="message">中文含义：消息。使用位置：StorageBoxUI.FailHintRoutine(string)。</param>
+    /// <param name="message">消息。</param>
     IEnumerator FailHintRoutine(string message)
     {
         failHintText.gameObject.SetActive(true);
         failHintText.text = message;
         failHintText.color = new Color(1f, 0.4f, 0.4f, 1f);
-        // elapsed（已用）：使用位置：StorageBoxUI.FailHintRoutine(string)。
+        // 已用。
 float elapsed = 0f;
         while (elapsed < failHintDuration)
         {
             elapsed += Time.unscaledDeltaTime;
-            // t（当前界面动画的归一化进度）：使用位置：StorageBoxUI.FailHintRoutine(string)。
+            // 当前界面动画的归一化进度。
 float t = elapsed / failHintDuration;
-            // alpha（透明度）：使用位置：作为 Color.Color(float, float, float, float) 的参数、StorageBoxUI.FailHintRoutine(string)。
+            // 透明度。
 float alpha;
             if (t < 0.2f)
             {
@@ -1464,7 +1464,7 @@ float alpha;
             }
             else
             {
-                // selectedValue20（分支选出的1f）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：StorageBoxUI.FailHintRoutine(string)。
+                // 分支选出的1f。
 float selectedValue20;
                 if (t > 0.7f)
                 {

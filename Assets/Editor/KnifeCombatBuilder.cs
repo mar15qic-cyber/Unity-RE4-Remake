@@ -14,13 +14,13 @@ using Object = UnityEngine.Object;
 [UnityEngine.Scripting.APIUpdating.MovedFrom(true, "", "Assembly-CSharp-Editor", "小刀战斗构建器")]
 public static class KnifeCombatBuilder
 {
-    /// <summary>中文含义：输出目录。编译期常量，保持既有值与消费者映射。使用位置：作为 AssetDatabase.IsValidFolder(string) 的参数、KnifeCombatBuilder.AuthoringSound(string, int)、KnifeCombatBuilder.configurationPath 等共 5 处。</summary>
+    /// <summary>输出目录。编译期常量，保持既有值与消费者映射。</summary>
     public const string outputDirectory = "Assets/Animations/小刀战斗";
-    /// <summary>中文含义：配置路径。编译期常量，保持既有值与消费者映射。使用位置：作为 AssetDatabase.CreateAsset(Object, string) 的参数、作为 AssetDatabase.LoadAssetAtPath&lt;KnifeCombatConfiguration&gt;(string) 的参数。</summary>
+    /// <summary>配置路径。编译期常量，保持既有值与消费者映射。</summary>
     public const string configurationPath = outputDirectory + "/小刀战斗配置.asset";
-    /// <summary>中文含义：控制器路径。编译期常量，保持既有值与消费者映射。使用位置：作为 AssetDatabase.CopyAsset(string, string) 的参数、作为 AssetDatabase.LoadAssetAtPath&lt;AnimatorController&gt;(string) 的参数。</summary>
+    /// <summary>控制器路径。编译期常量，保持既有值与消费者映射。</summary>
     public const string controllerPath = outputDirectory + "/里昂小刀战斗.controller";
-    /// <summary>中文含义：来源目录。编译期常量，保持既有值与消费者映射。使用位置：作为 AssetDatabase.LoadAssetAtPath&lt;AnimationClip&gt;(string) 的参数、作为 File.ReadAllText(string) 的参数。</summary>
+    /// <summary>来源目录。编译期常量，保持既有值与消费者映射。</summary>
     private const string sourceDirectory = "Assets/Animations/左臂整体重构/";
     public static string RefreshMainLeonNativeKnife()
     {
@@ -184,7 +184,7 @@ public static class KnifeCombatBuilder
 
     /// <summary>Read 的业务处理入口；本方法直接依赖 AssetDatabase.LoadAssetAtPath&lt;AnimationClip&gt;(string)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 AddValue(KnifeAction, string, float, bool)、KnifeCombatBuilder.Derived(string, AnimationClip, float, float, bool, bool)；下游（含内部回调体） AssetDatabase.LoadAssetAtPath&lt;AnimationClip&gt;(string)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="name">中文含义：名称。使用位置：作为 AssetDatabase.LoadAssetAtPath&lt;AnimationClip&gt;(string) 的参数。</param>
+    /// <param name="name">名称。</param>
 
     private static AnimationClip Read(string name) => AssetDatabase.LoadAssetAtPath<AnimationClip>(sourceDirectory + name + ".anim");
     /// <summary>编辑器菜单调用入口 Build；按当前参数和已绑定配置执行资源操作，下游调用见静态索引。</summary>
@@ -197,7 +197,7 @@ public static class KnifeCombatBuilder
             throw new InvalidOperationException("请退出播放后生成资源。");
         }
 
-        // player（玩家）：保存 Object.FindFirstObjectByType<LeonController>() 的返回结果，供当前步骤使用。使用位置：作为 EditorSceneManager.MarkSceneDirty(Scene) 的参数、作为 EditorSceneManager.SaveScene(Scene) 的参数、作为 KnifeCombatBuilder.BakeTrajectory(LeonController, KnifeCombatConfiguration) 的参数 等共 6 处。
+        // 玩家。
 var player = Object.FindFirstObjectByType<LeonController>();
         if (player == null)
         {
@@ -209,7 +209,7 @@ var player = Object.FindFirstObjectByType<LeonController>();
             AssetDatabase.CreateFolder("Assets/Animations", "小刀战斗");
         }
 
-        // configuration（配置）：保存 AssetDatabase.LoadAssetAtPath<KnifeCombatConfiguration>(string) 的返回结果，供当前步骤使用。使用位置：作为 AssetDatabase.CreateAsset(Object, string) 的参数、作为 EditorUtility.SetDirty(Object) 的参数、作为 KnifeCombatBuilder.BakeTrajectory(LeonController, KnifeCombatConfiguration) 的参数 等共 7 处。
+        // 配置。
 var configuration = AssetDatabase.LoadAssetAtPath<KnifeCombatConfiguration>(configurationPath);
         if (configuration == null)
         {
@@ -217,21 +217,21 @@ var configuration = AssetDatabase.LoadAssetAtPath<KnifeCombatConfiguration>(conf
             AssetDatabase.CreateAsset(configuration, configurationPath);
         }
 
-        // rules（规则）：使用位置：AddValue(KnifeAction, string, float, bool)。
+        // 规则。
 var rules = new KnifeCombatRules();
-        // cacheEntry（缓存入口）：使用位置：AddValue(KnifeAction, string, float, bool)、KnifeCombatBuilder.Build()。
+        // 缓存入口。
 var cacheEntry = new List<KnifeActionConfiguration>();
         /// <summary>AddValue 的业务处理入口；本方法直接依赖 Enum.ToString()、KnifeActionConfiguration.KnifeActionConfiguration()、KnifeCombatBuilder.Derived(string, AnimationClip, float, float, bool, bool)、KnifeCombatBuilder.Read(string)、KnifeCombatRules.Query(KnifeAction)、List&lt;KnifeActionConfiguration&gt;.Add(KnifeActionConfiguration)，调用方通过参数与返回结果交接本次处理。</summary>
         /// <remarks>静态调用链：上游 KnifeCombatBuilder.Build()；下游（含内部回调体） Enum.ToString()、KnifeActionConfiguration.KnifeActionConfiguration()、KnifeCombatBuilder.Derived(string, AnimationClip, float, float, bool, bool)、KnifeCombatBuilder.Read(string)、KnifeCombatRules.Query(KnifeAction)、List&lt;KnifeActionConfiguration&gt;.Add(KnifeActionConfiguration)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-        /// <param name="action">中文含义：动作。使用位置：作为 KnifeCombatBuilder.Derived(string, AnimationClip, float, float, bool, bool) 的参数、作为 KnifeCombatRules.Query(KnifeAction) 的参数、作为 List&lt;KnifeActionConfiguration&gt;.Add(KnifeActionConfiguration) 的参数。</param>
-        /// <param name="source">中文含义：来源。使用位置：作为 KnifeCombatBuilder.Read(string) 的参数。</param>
-        /// <param name="startPoint">中文含义：起始点。使用位置：作为 KnifeCombatBuilder.Derived(string, AnimationClip, float, float, bool, bool) 的参数。</param>
-        /// <param name="shortRestore">中文含义：是否短型恢复。使用位置：作为 AddValue(KnifeAction, string, float, bool) 的参数、作为 KnifeCombatBuilder.Derived(string, AnimationClip, float, float, bool, bool) 的参数。</param>
+        /// <param name="action">动作。</param>
+        /// <param name="source">来源。</param>
+        /// <param name="startPoint">起始点。</param>
+        /// <param name="shortRestore">是否短型恢复。</param>
         void AddValue(KnifeAction action, string source, float startPoint = 0, bool shortRestore = false)
         {
-            // timing（时序）：保存 KnifeCombatRules.Query(KnifeAction) 的返回结果，供当前步骤使用。使用位置：作为 KnifeCombatBuilder.Derived(string, AnimationClip, float, float, bool, bool) 的参数、作为 List<KnifeActionConfiguration>.Add(KnifeActionConfiguration) 的参数。
+            // 时序。
 var timing = rules.Query(action);
-            // clip（动画片段）：保存 KnifeCombatBuilder.Derived(string, AnimationClip, float, float, bool, bool) 的返回结果，供当前步骤使用。使用位置：作为 List<KnifeActionConfiguration>.Add(KnifeActionConfiguration) 的参数。
+            // 动画片段。
 var clip = Derived(action.ToString(), Read(source), startPoint, timing.duration, timing.loop, shortRestore);
             cacheEntry.Add(new KnifeActionConfiguration { action = action, timing = timing, clip = clip });
         }
@@ -253,9 +253,9 @@ var clip = Derived(action.ToString(), Read(source), startPoint, timing.duration,
         AddValue(KnifeAction.OutwardDeflectionNormal, "斜上外拨弹反", shortRestore: true);
         AddValue(KnifeAction.OutwardDeflectionPerfect, "斜上外拨弹反");
         configuration.actionClip = cacheEntry.ToArray();
-        // calibration（校准）：保存 JObject.Parse(string) 的返回结果，供当前步骤使用。使用位置：KnifeCombatBuilder.Build()。
+        // 校准。
 var calibration = Newtonsoft.Json.Linq.JObject.Parse(File.ReadAllText(sourceDirectory + "握柄标定.json"));
-        // fingerBone（手指骨骼）：保存 JToken.ToObject<Dictionary<string, float[]>>() 的返回结果，供当前步骤使用。使用位置：KnifeCombatBuilder.Build()。
+        // 手指骨骼。
 var fingerBone = calibration["指骨局部旋转"].ToObject<Dictionary<string, float[]>>();
         configuration.fingerBoneName = fingerBone.Keys.ToArray();
         configuration.fingerBoneRotation = fingerBone.Values.Select( /* 中文含义：当前浮点数值数组。 */q => new Quaternion(q[0], q[1], q[2], q[3])).ToArray();
@@ -268,16 +268,16 @@ var fingerBone = calibration["指骨局部旋转"].ToObject<Dictionary<string, f
         configuration.perfectParrySound = AuthoringSound("完美弹反", 4);
         configuration.knifeBreakSound = AuthoringSound("断刀", 5);
         EditorUtility.SetDirty(configuration);
-        // controller（动画控制器资源）：保存 KnifeCombatBuilder.CreateController(Animator, KnifeCombatConfiguration) 的返回结果，供当前步骤使用。使用位置：作为 KnifeCombatBuilder.BindingPlayer(LeonController, KnifeCombatConfiguration, AnimatorController) 的参数。
+        // 动画控制器资源。
 var controller = CreateController(player.GetComponent<Animator>(), configuration);
-        // preControlPath（前置控制路径）：使用位置：作为 PrefabUtility.LoadPrefabContents(string) 的参数、作为 PrefabUtility.SaveAsPrefabAsset(GameObject, string) 的参数。
+        // 前置控制路径。
 var preControlPath = "Assets/Prefab/LeonR4R.prefab";
-        // content（内容）：保存 PrefabUtility.LoadPrefabContents(string) 的返回结果，供当前步骤使用。使用位置：作为 PrefabUtility.SaveAsPrefabAsset(GameObject, string) 的参数、作为 PrefabUtility.UnloadPrefabContents(GameObject) 的参数、KnifeCombatBuilder.Build()。
+        // 内容。
 var content = PrefabUtility.LoadPrefabContents(preControlPath);
         try
         {
             // 此项目的同名预制件只是展示模型，正式业务组件挂在场景模型实例上。
-            // preControlPlayer（前置控制玩家）：保存 GameObject.GetComponent<LeonController>() 的返回结果，供当前步骤使用。使用位置：作为 KnifeCombatBuilder.BindingPlayer(LeonController, KnifeCombatConfiguration, AnimatorController) 的参数、KnifeCombatBuilder.Build()。
+            // 前置控制玩家。
 var preControlPlayer = content.GetComponent<LeonController>();
             if (preControlPlayer != null)
             {
@@ -291,19 +291,19 @@ var preControlPlayer = content.GetComponent<LeonController>();
         }
 
         BindingPlayer(player, configuration, controller);
-        // count（数量）：使用位置：KnifeCombatBuilder.Build()。
+        // 数量。
 int count = 0;
         // path（路径）：每轮从被遍历的集合取得一个元素，仅代表当前这一项。使用位置：作为 AssetDatabase.LoadAssetAtPath<GameObject>(string) 的参数、作为 PrefabUtility.LoadPrefabContents(string) 的参数、作为 PrefabUtility.SaveAsPrefabAsset(GameObject, string) 的参数。
 foreach (var path in AssetDatabase.FindAssets("t:Prefab", new[] { "Assets/Prefab" }).Select(AssetDatabase.GUIDToAssetPath))
         {
-            // asset（资源）：保存 AssetDatabase.LoadAssetAtPath<GameObject>(string) 的返回结果，供当前步骤使用。使用位置：KnifeCombatBuilder.Build()。
+            // 资源。
 var asset = AssetDatabase.LoadAssetAtPath<GameObject>(path);
             if (asset.GetComponent<VillagerController>() == null)
             {
                 continue;
             }
 
-            // root（根游戏对象）：保存 PrefabUtility.LoadPrefabContents(string) 的返回结果，供当前步骤使用。使用位置：作为 KnifeCombatBuilder.BindingEnemy(VillagerController) 的参数、作为 PrefabUtility.SaveAsPrefabAsset(GameObject, string) 的参数、作为 PrefabUtility.UnloadPrefabContents(GameObject) 的参数。
+            // 根游戏对象。
 var root = PrefabUtility.LoadPrefabContents(path);
             try
             {
@@ -331,12 +331,12 @@ foreach (var enemy in Object.FindObjectsByType<VillagerController>(FindObjectsIn
 
     /// <summary>Derived 的业务处理入口；本方法直接依赖 AnimationClip.AnimationClip()、AnimationClip.ClearCurves()、AnimationClip.EnsureQuaternionContinuity()、AnimationCurve.AnimationCurve(params Keyframe[])、AnimationCurve.Evaluate(float)、AnimationUtility.GetAnimationClipSettings(AnimationClip)、AnimationUtility.GetCurveBindings(AnimationClip) 等共 28 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 AddValue(KnifeAction, string, float, bool)；下游（含内部回调体） AnimationClip.AnimationClip()、AnimationClip.ClearCurves()、AnimationClip.EnsureQuaternionContinuity()、AnimationCurve.AnimationCurve(params Keyframe[])、AnimationCurve.Evaluate(float)、AnimationUtility.GetAnimationClipSettings(AnimationClip)、AnimationUtility.GetCurveBindings(AnimationClip) 等共 28 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="nameValue">中文含义：名称值。使用位置：作为 InvalidOperationException.InvalidOperationException(string) 的参数、KnifeCombatBuilder.Derived(string, AnimationClip, float, float, bool, bool)。</param>
-    /// <param name="source">中文含义：来源动画片段。使用位置：作为 AnimationUtility.GetAnimationClipSettings(AnimationClip) 的参数、作为 AnimationUtility.GetCurveBindings(AnimationClip) 的参数、作为 AnimationUtility.GetEditorCurve(AnimationClip, EditorCurveBinding) 的参数 等共 5 处。</param>
-    /// <param name="startPoint">中文含义：起始点。使用位置：作为 Mathf.Min(float, float) 的参数。</param>
-    /// <param name="duration">中文含义：持续时间。使用位置：作为 Mathf.CeilToInt(float) 的参数、作为 Mathf.InverseLerp(float, float, float) 的参数、作为 Mathf.Min(float, float) 的参数 等共 4 处。</param>
-    /// <param name="loop">中文含义：是否循环。使用位置：KnifeCombatBuilder.Derived(string, AnimationClip, float, float, bool, bool)。</param>
-    /// <param name="shortRestore">中文含义：是否短型恢复。使用位置：KnifeCombatBuilder.Derived(string, AnimationClip, float, float, bool, bool)。</param>
+    /// <param name="nameValue">名称值。</param>
+    /// <param name="source">来源动画片段。</param>
+    /// <param name="startPoint">起始点。</param>
+    /// <param name="duration">持续时间。</param>
+    /// <param name="loop">是否循环。</param>
+    /// <param name="shortRestore">是否短型恢复。</param>
     private static AnimationClip Derived(string nameValue, AnimationClip source, float startPoint, float duration, bool loop, bool shortRestore)
     {
         if (source == null)
@@ -344,9 +344,9 @@ foreach (var enemy in Object.FindObjectsByType<VillagerController>(FindObjectsIn
             throw new InvalidOperationException("缺少制作源：" + nameValue);
         }
 
-        // path（路径）：使用位置：作为 AssetDatabase.CreateAsset(Object, string) 的参数、作为 AssetDatabase.LoadAssetAtPath<AnimationClip>(string) 的参数。
+        // 路径。
 string path = outputDirectory + "/" + nameValue + ".anim";
-        // target（目标动画片段）：保存 AssetDatabase.LoadAssetAtPath<AnimationClip>(string) 的返回结果，供当前步骤使用。使用位置：作为 AnimationUtility.SetAnimationClipSettings(AnimationClip, AnimationClipSettings) 的参数、作为 AnimationUtility.SetAnimationEvents(AnimationClip, AnimationEvent[]) 的参数、作为 AnimationUtility.SetEditorCurve(AnimationClip, EditorCurveBinding, AnimationCurve) 的参数 等共 6 处。
+        // 目标动画片段。
 var target = AssetDatabase.LoadAssetAtPath<AnimationClip>(path);
         if (target == null)
         {
@@ -357,14 +357,14 @@ var target = AssetDatabase.LoadAssetAtPath<AnimationClip>(path);
         target.ClearCurves();
         target.name = nameValue;
         target.frameRate = 120;
-        // guard（防守）：保存 KnifeCombatBuilder.Read(string) 的返回结果，供当前步骤使用。使用位置：作为 AnimationUtility.GetEditorCurve(AnimationClip, EditorCurveBinding) 的参数。
+        // 防守。
 var guard = Read("防守保持");
         // binding（绑定）：每轮从取得曲线绑定集合的返回结果取得一个元素，仅代表当前这一项。使用位置：作为 AnimationUtility.GetEditorCurve(AnimationClip, EditorCurveBinding) 的参数、作为 AnimationUtility.SetEditorCurve(AnimationClip, EditorCurveBinding, AnimationCurve) 的参数。
 foreach (var binding in AnimationUtility.GetCurveBindings(source))
         {
-            // original（原始）：保存 AnimationUtility.GetEditorCurve(AnimationClip, EditorCurveBinding) 的返回结果，供当前步骤使用。使用位置：KnifeCombatBuilder.Derived(string, AnimationClip, float, float, bool, bool)。
+            // 原始。
 var original = AnimationUtility.GetEditorCurve(source, binding);
-            // recover（恢复）：使用位置：作为 Mathf.Lerp(float, float, float) 的参数、KnifeCombatBuilder.Derived(string, AnimationClip, float, float, bool, bool)。
+            // 恢复。
 global::UnityEngine.AnimationCurve recover;
             if (shortRestore)
             {
@@ -375,16 +375,16 @@ global::UnityEngine.AnimationCurve recover;
                 recover = null;
             }
 
-            // key（键）：使用位置：作为 AnimationCurve.AnimationCurve(params Keyframe[]) 的参数、KnifeCombatBuilder.Derived(string, AnimationClip, float, float, bool, bool)。
+            // 键。
 var key = new List<Keyframe>();
-            // count（数量）：保存 Mathf.CeilToInt(float) 的返回结果，供当前步骤使用。使用位置：KnifeCombatBuilder.Derived(string, AnimationClip, float, float, bool, bool)。
+            // 数量。
 int count = Mathf.CeilToInt(duration * 120);
-            // index（当前元素索引）：使用位置：作为 Mathf.Min(float, float) 的参数、KnifeCombatBuilder.Derived(string, AnimationClip, float, float, bool, bool)。
+            // 当前元素索引。
 for (int index = 0; index <= count; index++)
             {
-                // time（时间）：保存 Mathf.Min(float, float) 的返回结果，供当前步骤使用。使用位置：作为 Keyframe.Keyframe(float, float) 的参数、作为 Mathf.InverseLerp(float, float, float) 的参数、作为 Mathf.Min(float, float) 的参数。
+                // 时间。
 float time = Mathf.Min(duration, index / 120f);
-                // value（值）：保存 AnimationCurve.Evaluate(float) 的返回结果，供当前步骤使用。使用位置：作为 Keyframe.Keyframe(float, float) 的参数、作为 Mathf.Lerp(float, float, float) 的参数、KnifeCombatBuilder.Derived(string, AnimationClip, float, float, bool, bool)。
+                // 值。
 float value = original.Evaluate(Mathf.Min(source.length, startPoint + time));
                 if (recover != null)
                 {
@@ -394,9 +394,9 @@ float value = original.Evaluate(Mathf.Min(source.length, startPoint + time));
                 key.Add(new Keyframe(time, value));
             }
 
-            // curve（曲线）：使用位置：作为 AnimationUtility.SetEditorCurve(AnimationClip, EditorCurveBinding, AnimationCurve) 的参数、作为 AnimationUtility.SetKeyLeftTangentMode(AnimationCurve, int, AnimationUtility.TangentMode) 的参数、作为 AnimationUtility.SetKeyRightTangentMode(AnimationCurve, int, AnimationUtility.TangentMode) 的参数 等共 4 处。
+            // 曲线。
 var curve = new AnimationCurve(key.ToArray());
-            // index（当前元素索引）：使用位置：作为 AnimationUtility.SetKeyLeftTangentMode(AnimationCurve, int, AnimationUtility.TangentMode) 的参数、作为 AnimationUtility.SetKeyRightTangentMode(AnimationCurve, int, AnimationUtility.TangentMode) 的参数、KnifeCombatBuilder.Derived(string, AnimationClip, float, float, bool, bool)。
+            // 当前元素索引。
 for (int index = 0; index < curve.length; index++)
             {
                 AnimationUtility.SetKeyLeftTangentMode(curve, index, AnimationUtility.TangentMode.ClampedAuto);
@@ -406,7 +406,7 @@ for (int index = 0; index < curve.length; index++)
             AnimationUtility.SetEditorCurve(target, binding, curve);
         }
 
-        // set（集合）：保存 AnimationUtility.GetAnimationClipSettings(AnimationClip) 的返回结果，供当前步骤使用。使用位置：作为 AnimationUtility.SetAnimationClipSettings(AnimationClip, AnimationClipSettings) 的参数、KnifeCombatBuilder.Derived(string, AnimationClip, float, float, bool, bool)。
+        // 集合。
 var set = AnimationUtility.GetAnimationClipSettings(source);
         set.startTime = 0;
         set.stopTime = duration;
@@ -426,13 +426,13 @@ var set = AnimationUtility.GetAnimationClipSettings(source);
 
     /// <summary>BakeTrajectory 的业务处理入口；本方法直接依赖 AnimationClip.SampleAnimation(GameObject, float)、Animator.GetBoneTransform(HumanBodyBones)、AssetDatabase.LoadAssetAtPath&lt;GameObject&gt;(string)、Component.GetComponent&lt;Animator&gt;()、Component.GetComponent&lt;LeonWeaponVisualController&gt;()、Component.GetComponentsInChildren&lt;MeshFilter&gt;(bool)、EditorSceneManager.ClosePreviewScene(Scene) 等共 25 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 KnifeCombatBuilder.Build()；下游（含内部回调体） AnimationClip.SampleAnimation(GameObject, float)、Animator.GetBoneTransform(HumanBodyBones)、AssetDatabase.LoadAssetAtPath&lt;GameObject&gt;(string)、Component.GetComponent&lt;Animator&gt;()、Component.GetComponent&lt;LeonWeaponVisualController&gt;()、Component.GetComponentsInChildren&lt;MeshFilter&gt;(bool)、EditorSceneManager.ClosePreviewScene(Scene) 等共 25 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="player">中文含义：玩家。使用位置：KnifeCombatBuilder.BakeTrajectory(LeonController, KnifeCombatConfiguration)。</param>
-    /// <param name="configuration">中文含义：配置。使用位置：作为 Transform.TransformPoint(Vector3) 的参数、作为 Vector3.Lerp(Vector3, Vector3, float) 的参数、KnifeCombatBuilder.BakeTrajectory(LeonController, KnifeCombatConfiguration)。</param>
+    /// <param name="player">玩家。</param>
+    /// <param name="configuration">配置。</param>
     private static void BakeTrajectory(LeonController player, KnifeCombatConfiguration configuration)
     {
-        // scene（场景）：保存 EditorSceneManager.NewPreviewScene() 的返回结果，供当前步骤使用。使用位置：作为 EditorSceneManager.ClosePreviewScene(Scene) 的参数、作为 SceneManager.MoveGameObjectToScene(GameObject, Scene) 的参数。
+        // 场景。
 var scene = EditorSceneManager.NewPreviewScene();
-        // model（模型）：使用位置：作为 AnimationClip.SampleAnimation(GameObject, float) 的参数、作为 Object.DestroyImmediate(Object) 的参数、作为 SceneManager.MoveGameObjectToScene(GameObject, Scene) 的参数 等共 4 处。
+        // 模型。
 GameObject model = null;
         try
         {
@@ -440,29 +440,29 @@ GameObject model = null;
             SceneManager.MoveGameObjectToScene(model, scene);
             model.transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
             model.transform.localScale = Vector3.one;
-            // animator（动画控制器）：保存 GameObject.GetComponent<Animator>() 的返回结果，供当前步骤使用。使用位置：KnifeCombatBuilder.BakeTrajectory(LeonController, KnifeCombatConfiguration)。
+            // 动画控制器。
 var animator = model.GetComponent<Animator>();
             animator.applyRootMotion = false;
-            // sourceAnimator（来源动画控制器）：保存 Component.GetComponent<Animator>() 的返回结果，供当前步骤使用。使用位置：KnifeCombatBuilder.BakeTrajectory(LeonController, KnifeCombatConfiguration)。
+            // 来源动画控制器。
 var sourceAnimator = player.GetComponent<Animator>();
-            // sourceHand（来源手部）：保存 Animator.GetBoneTransform(HumanBodyBones) 的返回结果，供当前步骤使用。使用位置：作为 Quaternion.Inverse(Quaternion) 的参数、作为 Vector3.Vector3(float, float, float) 的参数、KnifeCombatBuilder.BakeTrajectory(LeonController, KnifeCombatConfiguration)。
+            // 来源手部。
 var sourceHand = AnimatorBoneBindings.Resolve(sourceAnimator, HumanBodyBones.RightHand);
-            // hand（手部）：保存 Animator.GetBoneTransform(HumanBodyBones) 的返回结果，供当前步骤使用。使用位置：作为 Object.Instantiate<GameObject>(GameObject, Transform, bool) 的参数、作为 Transform.InverseTransformPoint(Vector3) 的参数。
+            // 手部。
 var hand = animator.GetBoneTransform(HumanBodyBones.RightHand);
-            // sourceKnife（来源小刀）：保存 LeonWeaponVisualController.GetWeaponVisualRoot(WeaponType) 的返回结果，供当前步骤使用。使用位置：作为 Object.Instantiate<GameObject>(GameObject, Transform, bool) 的参数、作为 Transform.InverseTransformPoint(Vector3) 的参数、作为 Vector3.Vector3(float, float, float) 的参数 等共 4 处。
+            // 来源小刀。
 var sourceKnife = player.GetComponent<LeonWeaponVisualController>().GetWeaponVisualRoot(WeaponType.Knife);
-            // knife（小刀）：使用位置：作为 Transform.InverseTransformPoint(Vector3) 的参数、KnifeCombatBuilder.BakeTrajectory(LeonController, KnifeCombatConfiguration)。
+            // 小刀。
 var knife = Object.Instantiate(sourceKnife.gameObject, hand, false).transform;
-            // originalPosition（原始位置）：保存 Transform.InverseTransformPoint(Vector3) 的返回结果，供当前步骤使用。使用位置：KnifeCombatBuilder.BakeTrajectory(LeonController, KnifeCombatConfiguration)。
+            // 原始位置。
 Vector3 originalPosition = sourceHand.InverseTransformPoint(sourceKnife.position);
-            // originalRotation（原始旋转）：使用位置：作为 Quaternion.Inverse(Quaternion) 的参数、KnifeCombatBuilder.BakeTrajectory(LeonController, KnifeCombatConfiguration)。
+            // 原始旋转。
 Quaternion originalRotation = Quaternion.Inverse(sourceHand.rotation) * sourceKnife.rotation;
             knife.localPosition = originalPosition;
             knife.localRotation = originalRotation;
             knife.localScale = new Vector3(sourceKnife.lossyScale.x / sourceHand.lossyScale.x, sourceKnife.lossyScale.y / sourceHand.lossyScale.y, sourceKnife.lossyScale.z / sourceHand.lossyScale.z);
-            // axis（轴）：使用位置：作为 Vector3.Dot(Vector3, Vector3) 的参数。
+            // 轴。
 Vector3 axis = Quaternion.Inverse(originalRotation) * LeonKnifeGrip.originalKnifeAxis;
-            // farthest（最远）：使用位置：作为 float.IsNegativeInfinity(float) 的参数、KnifeCombatBuilder.BakeTrajectory(LeonController, KnifeCombatConfiguration)。
+            // 最远。
 float farthest = float.NegativeInfinity;
             // mesh（网格）：每轮从取得组件集合内部子对象集合的返回结果取得一个元素，仅代表当前这一项。使用位置：作为 Transform.InverseTransformPoint(Vector3) 的参数、KnifeCombatBuilder.BakeTrajectory(LeonController, KnifeCombatConfiguration)。
 foreach (var mesh in knife.GetComponentsInChildren<MeshFilter>(true))
@@ -470,7 +470,7 @@ foreach (var mesh in knife.GetComponentsInChildren<MeshFilter>(true))
                 // top（顶部）：每轮从网格的共享网格的顶点集合取得一个元素，仅代表当前这一项。使用位置：作为 Transform.TransformPoint(Vector3) 的参数。
 foreach (var top in mesh.sharedMesh.vertices)
                 {
-                    // point（点）：保存 Transform.InverseTransformPoint(Vector3) 的返回结果，供当前步骤使用。使用位置：作为 Vector3.Dot(Vector3, Vector3) 的参数、KnifeCombatBuilder.BakeTrajectory(LeonController, KnifeCombatConfiguration)。
+                    // 点。
 Vector3 point = knife.InverseTransformPoint(mesh.transform.TransformPoint(top));
                     if (Vector3.Dot(point, axis) <= farthest)
                     {
@@ -487,7 +487,7 @@ Vector3 point = knife.InverseTransformPoint(mesh.transform.TransformPoint(top));
                 throw new InvalidOperationException("未能读取刀具网格。");
             }
 
-            // grip（握持）：保存 Transform.InverseTransformPoint(Vector3) 的返回结果，供当前步骤使用。使用位置：作为 Vector3.Lerp(Vector3, Vector3, float) 的参数。
+            // 握持。
 Vector3 grip = knife.InverseTransformPoint(hand.TransformPoint(configuration.originalGripCenter));
             configuration.bladeBaseLocal = Vector3.Lerp(grip, configuration.bladeTipLocal, .35f);
             // item（当前小刀动作配置）：每轮从配置的动作动画片段取得一个元素，仅代表当前这一项。使用位置：作为 Mathf.CeilToInt(float) 的参数、作为 Mathf.Min(float, float) 的参数、KnifeCombatBuilder.BakeTrajectory(LeonController, KnifeCombatConfiguration)。
@@ -498,12 +498,12 @@ foreach (var item in configuration.actionClip)
                     continue;
                 }
 
-                // count（数量）：使用位置：KnifeCombatBuilder.BakeTrajectory(LeonController, KnifeCombatConfiguration)。
+                // 数量。
 int count = Mathf.CeilToInt(item.timing.duration * 120) + 1;
                 item.bladeBaseTrajectory = new Vector3[count];
                 item.bladeTipTrajectory = new Vector3[count];
                 item.sampleInterval = 1f / 120;
-                // index（当前元素索引）：使用位置：作为 Mathf.Min(float, float) 的参数、KnifeCombatBuilder.BakeTrajectory(LeonController, KnifeCombatConfiguration)。
+                // 当前元素索引。
 for (int index = 0; index < count; index++)
                 {
                     float time = Mathf.Min(item.timing.duration, index / 120f);
@@ -536,11 +536,11 @@ for (int index = 0; index < count; index++)
 
     /// <summary>CreateController 的业务处理入口；本方法直接依赖 AnimatorStateMachine.AddState(string)、AnimatorStateMachine.AddStateMachine(string)、AssetDatabase.CopyAsset(string, string)、AssetDatabase.GetAssetPath(Object)、AssetDatabase.LoadAssetAtPath&lt;AnimatorController&gt;(string)、EditorUtility.SetDirty(Object)、IEnumerable&lt;AnimatorState&gt;.FirstOrDefault&lt;AnimatorState&gt;(Func&lt;AnimatorState, bool&gt;) 等共 13 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 KnifeCombatBuilder.Build()；下游（含内部回调体） AnimatorStateMachine.AddState(string)、AnimatorStateMachine.AddStateMachine(string)、AssetDatabase.CopyAsset(string, string)、AssetDatabase.GetAssetPath(Object)、AssetDatabase.LoadAssetAtPath&lt;AnimatorController&gt;(string)、EditorUtility.SetDirty(Object)、IEnumerable&lt;AnimatorState&gt;.FirstOrDefault&lt;AnimatorState&gt;(Func&lt;AnimatorState, bool&gt;) 等共 13 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="animator">中文含义：动画控制器。使用位置：作为 AssetDatabase.GetAssetPath(Object) 的参数。</param>
-    /// <param name="configuration">中文含义：配置。使用位置：KnifeCombatBuilder.CreateController(Animator, KnifeCombatConfiguration)。</param>
+    /// <param name="animator">动画控制器。</param>
+    /// <param name="configuration">配置。</param>
     private static AnimatorController CreateController(Animator animator, KnifeCombatConfiguration configuration)
     {
-        // controller（动画控制器资源）：保存 AssetDatabase.LoadAssetAtPath<AnimatorController>(string) 的返回结果，供当前步骤使用。使用位置：作为 EditorUtility.SetDirty(Object) 的参数、KnifeCombatBuilder.CreateController(Animator, KnifeCombatConfiguration)。
+        // 动画控制器资源。
 var controller = AssetDatabase.LoadAssetAtPath<AnimatorController>(controllerPath);
         if (controller == null)
         {
@@ -554,7 +554,7 @@ var controller = AssetDatabase.LoadAssetAtPath<AnimatorController>(controllerPat
 
         /// <summary>RemovePreviousEntryPoint 的业务处理入口；本方法直接依赖 AnimatorState.RemoveTransition(AnimatorStateTransition)、AnimatorStateMachine.RemoveAnyStateTransition(AnimatorStateTransition)、IEnumerable&lt;AnimatorStateTransition&gt;.ToArray&lt;AnimatorStateTransition&gt;()、IEnumerable&lt;AnimatorStateTransition&gt;.Where&lt;AnimatorStateTransition&gt;(Func&lt;AnimatorStateTransition, bool&gt;)、RemovePreviousEntryPoint(AnimatorStateMachine)，调用方通过参数与返回结果交接本次处理。</summary>
         /// <remarks>静态调用链：上游 KnifeCombatBuilder.CreateController(Animator, KnifeCombatConfiguration)、RemovePreviousEntryPoint(AnimatorStateMachine)；下游（含内部回调体） AnimatorState.RemoveTransition(AnimatorStateTransition)、AnimatorStateMachine.RemoveAnyStateTransition(AnimatorStateTransition)、IEnumerable&lt;AnimatorStateTransition&gt;.ToArray&lt;AnimatorStateTransition&gt;()、IEnumerable&lt;AnimatorStateTransition&gt;.Where&lt;AnimatorStateTransition&gt;(Func&lt;AnimatorStateTransition, bool&gt;)、RemovePreviousEntryPoint(AnimatorStateMachine)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-        /// <param name="machine">中文含义：状态机。使用位置：RemovePreviousEntryPoint(AnimatorStateMachine)。</param>
+        /// <param name="machine">状态机。</param>
         void RemovePreviousEntryPoint(AnimatorStateMachine machine)
         {
             if (machine == null)
@@ -564,7 +564,7 @@ var controller = AssetDatabase.LoadAssetAtPath<AnimatorController>(controllerPat
 
             /// <summary>PreviousCondition 的业务处理入口；本方法直接依赖 IEnumerable&lt;AnimatorCondition&gt;.Any&lt;AnimatorCondition&gt;(Func&lt;AnimatorCondition, bool&gt;)，调用方通过参数与返回结果交接本次处理。</summary>
             /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） IEnumerable&lt;AnimatorCondition&gt;.Any&lt;AnimatorCondition&gt;(Func&lt;AnimatorCondition, bool&gt;)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-            /// <param name="rotate">中文含义：旋转。使用位置：PreviousCondition(AnimatorStateTransition)。</param>
+            /// <param name="rotate">旋转。</param>
             bool PreviousCondition(AnimatorStateTransition rotate)
             {
                 return rotate.conditions.Any( /* 中文含义：当前动画控制器条件。 */c => c.parameter == "FullBodyAction" && c.mode == AnimatorConditionMode.Equals && (c.threshold == (int)FullBodyActionType.KnifeQuickAttack || c.threshold == (int)FullBodyActionType.KnifeParry));
@@ -599,11 +599,11 @@ foreach (var layer in controller.layers)
             RemovePreviousEntryPoint(layer.stateMachine);
         }
 
-        // root（根动画状态机）：使用位置：KnifeCombatBuilder.CreateController(Animator, KnifeCombatConfiguration)。
+        // 根动画状态机。
 var root = controller.layers[AnimatorLayerID.WeaponAction].stateMachine;
-        // availableValue2（空值判断前缓存的选择的返回结果）：从选择的返回结果读取一次后保存，供后续分支使用。保存空值判断之前的值，只读取一次，非空时不执行回退分支。使用位置：作为 object.ReferenceEquals(object, object) 的参数、KnifeCombatBuilder.CreateController(Animator, KnifeCombatConfiguration)。
+        // 空值判断前缓存的选择的返回结果。
 global::UnityEditor.Animations.AnimatorStateMachine availableValue2 = root.stateMachines.Select( /* 中文含义：横向。 */x => x.stateMachine).FirstOrDefault( /* 中文含义：横向。 */x => x.name == "小刀重构");
-        // subStateMachine（子级状态机）：使用位置：KnifeCombatBuilder.CreateController(Animator, KnifeCombatConfiguration)。
+        // 子级状态机。
 global::UnityEditor.Animations.AnimatorStateMachine subStateMachine;
         if (!global::System.Object.ReferenceEquals(availableValue2, null))
         {
@@ -617,7 +617,7 @@ global::UnityEditor.Animations.AnimatorStateMachine subStateMachine;
         // itemValue（物品值）：每轮从配置的动作动画片段取得一个元素，仅代表当前这一项。使用位置：作为 AnimatorStateMachine.AddState(string) 的参数、作为 IEnumerable<AnimatorState>.FirstOrDefault<AnimatorState>(Func<AnimatorState, bool>) 的参数、KnifeCombatBuilder.CreateController(Animator, KnifeCombatConfiguration)。
 foreach (var itemValue in configuration.actionClip)
         {
-            // state（当前动画状态）：保存 IEnumerable<AnimatorState>.FirstOrDefault<AnimatorState>(Func<AnimatorState, bool>) 的返回结果，供当前步骤使用。使用位置：KnifeCombatBuilder.CreateController(Animator, KnifeCombatConfiguration)。
+            // 当前动画状态。
 var state = subStateMachine.states.Select( /* 中文含义：当前子级动画控制器状态。 */item => item.state).FirstOrDefault( /* 中文含义：当前动画状态。 */item => item.name == itemValue.StateName);
             if (state == null)
             {
@@ -635,14 +635,14 @@ var state = subStateMachine.states.Select( /* 中文含义：当前子级动画�
 
     /// <summary>BindingPlayer 的业务处理入口；本方法直接依赖 Component.GetComponent&lt;Animator&gt;()、Component.GetComponent&lt;KnifeCombatModule&gt;()、Component.GetComponent&lt;LeonAnimationActionCoordinator&gt;()、Component.GetComponent&lt;LeonAnimatorDriver&gt;()、Component.GetComponent&lt;LeonAnimRig&gt;()、Component.GetComponent&lt;LeonCombat&gt;()、Component.GetComponent&lt;LeonWeaponHandler&gt;() 等共 13 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 KnifeCombatBuilder.Build()；下游（含内部回调体） Component.GetComponent&lt;Animator&gt;()、Component.GetComponent&lt;KnifeCombatModule&gt;()、Component.GetComponent&lt;LeonAnimationActionCoordinator&gt;()、Component.GetComponent&lt;LeonAnimatorDriver&gt;()、Component.GetComponent&lt;LeonAnimRig&gt;()、Component.GetComponent&lt;LeonCombat&gt;()、Component.GetComponent&lt;LeonWeaponHandler&gt;() 等共 13 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="player">中文含义：玩家。使用位置：作为 EditorUtility.SetDirty(Object) 的参数、作为 PrefabUtility.RecordPrefabInstancePropertyModifications(Object) 的参数、KnifeCombatBuilder.BindingPlayer(LeonController, KnifeCombatConfiguration, AnimatorController)。</param>
-    /// <param name="configuration">中文含义：配置。使用位置：KnifeCombatBuilder.BindingPlayer(LeonController, KnifeCombatConfiguration, AnimatorController)。</param>
-    /// <param name="controller">中文含义：动画控制器资源。使用位置：KnifeCombatBuilder.BindingPlayer(LeonController, KnifeCombatConfiguration, AnimatorController)。</param>
+    /// <param name="player">玩家。</param>
+    /// <param name="configuration">配置。</param>
+    /// <param name="controller">动画控制器资源。</param>
     private static void BindingPlayer(LeonController player, KnifeCombatConfiguration configuration, AnimatorController controller)
     {
-        // availableValue4（空值判断前缓存的取得组件的返回结果）：从取得组件的返回结果读取一次后保存，供后续分支使用。保存空值判断之前的值，只读取一次，非空时不执行回退分支。使用位置：作为 object.ReferenceEquals(object, object) 的参数、KnifeCombatBuilder.BindingPlayer(LeonController, KnifeCombatConfiguration, AnimatorController)。
+        // 空值判断前缓存的取得组件的返回结果。
 global::KnifeCombatModule availableValue4 = player.GetComponent<KnifeCombatModule>();
-        // module（模块）：使用位置：作为 EditorUtility.SetDirty(Object) 的参数、作为 PrefabUtility.RecordPrefabInstancePropertyModifications(Object) 的参数、KnifeCombatBuilder.BindingPlayer(LeonController, KnifeCombatConfiguration, AnimatorController)。
+        // 模块。
 global::KnifeCombatModule module;
         if (!global::System.Object.ReferenceEquals(availableValue4, null))
         {
@@ -677,12 +677,12 @@ global::KnifeCombatModule module;
 
     /// <summary>BindingEnemy 的业务处理入口；本方法直接依赖 Component.GetComponent&lt;Animator&gt;()、Component.GetComponent&lt;ChainsawManAnimationBridge&gt;()、Component.GetComponent&lt;KnifeHitStop&gt;()、EditorUtility.SetDirty(Object)、EnemyCombatModule.ConfigureKnifeAttackProfiles(KnifeEnemyAttackProfile[])、Enumerable.Range(int, int)、GameObject.AddComponent&lt;KnifeHitStop&gt;() 等共 13 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 KnifeCombatBuilder.Build()；下游（含内部回调体） Component.GetComponent&lt;Animator&gt;()、Component.GetComponent&lt;ChainsawManAnimationBridge&gt;()、Component.GetComponent&lt;KnifeHitStop&gt;()、EditorUtility.SetDirty(Object)、EnemyCombatModule.ConfigureKnifeAttackProfiles(KnifeEnemyAttackProfile[])、Enumerable.Range(int, int)、GameObject.AddComponent&lt;KnifeHitStop&gt;() 等共 13 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="enemy">中文含义：敌人。使用位置：作为 EditorUtility.SetDirty(Object) 的参数、作为 IEnumerable&lt;int&gt;.Select&lt;int, KnifeEnemyAttackProfile&gt;(Func&lt;int, KnifeEnemyAttackProfile&gt;) 的参数、作为 Mathf.Min(int, int) 的参数 等共 5 处。</param>
+    /// <param name="enemy">敌人。</param>
     private static void BindingEnemy(VillagerController enemy)
     {
-        // availableValue6（空值判断前缓存的取得组件的返回结果）：从取得组件的返回结果读取一次后保存，供后续分支使用。保存空值判断之前的值，只读取一次，非空时不执行回退分支。使用位置：作为 object.ReferenceEquals(object, object) 的参数、KnifeCombatBuilder.BindingEnemy(VillagerController)。
+        // 空值判断前缓存的取得组件的返回结果。
 global::KnifeHitStop availableValue6 = enemy.GetComponent<KnifeHitStop>();
-        // pause（暂停）：使用位置：作为 EditorUtility.SetDirty(Object) 的参数、KnifeCombatBuilder.BindingEnemy(VillagerController)。
+        // 暂停。
 global::KnifeHitStop pause;
         if (!global::System.Object.ReferenceEquals(availableValue6, null))
         {
@@ -710,17 +710,17 @@ global::KnifeHitStop pause;
     // 临时合成的六类反馈音可独立替换，不冒充原作录音。
     /// <summary>AuthoringSound 的业务处理入口；本方法直接依赖 AssetDatabase.ImportAsset(string)、AssetDatabase.LoadAssetAtPath&lt;AudioClip&gt;(string)、BinaryWriter.BinaryWriter(Stream)、BinaryWriter.Write(byte[])、BinaryWriter.Write(int)、BinaryWriter.Write(short)、Encoding.GetBytes(string) 等共 17 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 KnifeCombatBuilder.Build()；下游（含内部回调体） AssetDatabase.ImportAsset(string)、AssetDatabase.LoadAssetAtPath&lt;AudioClip&gt;(string)、BinaryWriter.BinaryWriter(Stream)、BinaryWriter.Write(byte[])、BinaryWriter.Write(int)、BinaryWriter.Write(short)、Encoding.GetBytes(string) 等共 17 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="name">中文含义：名称。使用位置：KnifeCombatBuilder.AuthoringSound(string, int)。</param>
-    /// <param name="category">中文含义：类别。使用位置：作为 Random.Random(int) 的参数、KnifeCombatBuilder.AuthoringSound(string, int)。</param>
+    /// <param name="name">名称。</param>
+    /// <param name="category">类别。</param>
     private static AudioClip AuthoringSound(string name, int category)
     {
-        // path（路径）：使用位置：作为 AssetDatabase.ImportAsset(string) 的参数、作为 AssetDatabase.LoadAssetAtPath<AudioClip>(string) 的参数、作为 File.Create(string) 的参数 等共 4 处。
+        // 路径。
 string path = outputDirectory + "/" + name + ".wav";
         if (!File.Exists(path))
         {
-            // sampleRate（采样速率）：使用位置：作为 BinaryWriter.Write(int) 的参数、作为 Mathf.RoundToInt(float) 的参数、KnifeCombatBuilder.AuthoringSound(string, int)。
+            // 采样速率。
 const int sampleRate = 44100;
-            // duration（持续时间）：使用位置：作为 Mathf.RoundToInt(float) 的参数、KnifeCombatBuilder.AuthoringSound(string, int)。
+            // 持续时间。
 float duration;
             if (category == 4)
             {
@@ -738,11 +738,11 @@ float duration;
                 }
             }
 
-            // totalCount（总计数量）：保存 Mathf.RoundToInt(float) 的返回结果，供当前步骤使用。使用位置：作为 BinaryWriter.Write(int) 的参数、KnifeCombatBuilder.AuthoringSound(string, int)。
+            // 总计数量。
 int totalCount = Mathf.RoundToInt(sampleRate * duration);
-            // random（随机）：使用位置：KnifeCombatBuilder.AuthoringSound(string, int)。
+            // 随机。
 var random = new System.Random(173 + category);
-            // previousNoise（前一次噪声）：使用位置：KnifeCombatBuilder.AuthoringSound(string, int)。
+            // 前一次噪声。
 float previousNoise = 0;
             // stream（数据流）：本次步骤使用的资源句柄，仅在 using 作用域内使用；离开作用域时按原流程释放。
 using (var stream = new BinaryWriter(File.Create(path)))
@@ -759,19 +759,19 @@ using (var stream = new BinaryWriter(File.Create(path)))
                 stream.Write((short)16);
                 stream.Write(System.Text.Encoding.ASCII.GetBytes("data"));
                 stream.Write(totalCount * 2);
-                // index（当前元素索引）：使用位置：KnifeCombatBuilder.AuthoringSound(string, int)。
+                // 当前元素索引。
 for (int index = 0; index < totalCount; index++)
                 {
 
                     // 中文含义：time 为“时间”。；ratio 为“比例”。
 float time = index / (float)sampleRate, ratio = time / duration;
-                    // noise（噪声）：使用位置：KnifeCombatBuilder.AuthoringSound(string, int)。
+                    // 噪声。
 float noise = (float)random.NextDouble() * 2 - 1;
-                    // argumentValue11（按原顺序缓存的实参前一次噪声）：从前一次噪声读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 Mathf.Lerp(float, float, float) 的参数。
+                    // 按原顺序缓存的实参前一次噪声。
 float argumentValue11 = previousNoise;
-                    // argumentValue12（按原顺序缓存的实参噪声）：从噪声读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 Mathf.Lerp(float, float, float) 的参数。
+                    // 按原顺序缓存的实参噪声。
 float argumentValue12 = noise;
-                    // selectedValue10（分支选出的浮点计算）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：作为 Mathf.Lerp(float, float, float) 的参数、KnifeCombatBuilder.AuthoringSound(string, int)。
+                    // 分支选出的浮点计算。
 float selectedValue10;
                     if (category == 1)
                     {
@@ -783,7 +783,7 @@ float selectedValue10;
                     }
 
                     previousNoise = Mathf.Lerp(argumentValue11, argumentValue12, selectedValue10);
-                    // envelope（包络）：使用位置：KnifeCombatBuilder.AuthoringSound(string, int)。
+                    // 包络。
 float envelope;
                     if (category == 0)
                     {
@@ -791,9 +791,9 @@ float envelope;
                     }
                     else
                     {
-                        // leftOperand14（计算前缓存的左侧浮点计算）：按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 Mathf.Exp(float) 的参数。
+                        // 计算前缓存的左侧浮点计算。
 float leftOperand14 = -time;
-                        // selectedValue13（分支选出的15）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：作为 Mathf.Exp(float) 的参数、KnifeCombatBuilder.AuthoringSound(string, int)。
+                        // 分支选出的15。
 int selectedValue13;
                         if (category == 4)
                         {
@@ -807,9 +807,9 @@ int selectedValue13;
                         envelope = Mathf.Exp(leftOperand14 * (selectedValue13)) * Mathf.Min(1, time * 1500);
                     }
 
-                    // leftOperand17（计算前缓存的左侧浮点计算）：按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 Mathf.Sin(float) 的参数。
+                    // 计算前缓存的左侧浮点计算。
 float leftOperand17 = time * Mathf.PI * 2;
-                    // selectedValue16（分支选出的2150）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：作为 Mathf.Sin(float) 的参数、KnifeCombatBuilder.AuthoringSound(string, int)。
+                    // 分支选出的2150。
 int selectedValue16;
                     if (category == 4)
                     {
@@ -820,9 +820,9 @@ int selectedValue16;
                         selectedValue16 = 1550;
                     }
 
-                    // metal（金属）：使用位置：KnifeCombatBuilder.AuthoringSound(string, int)。
+                    // 金属。
 float metal = Mathf.Sin(leftOperand17 * (selectedValue16)) * .35f + Mathf.Sin(time * Mathf.PI * 2 * 3871) * .20f;
-                    // selectedValue18（分支选出的前一次噪声）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：KnifeCombatBuilder.AuthoringSound(string, int)。
+                    // 分支选出的前一次噪声。
 float selectedValue18;
                     if (category < 2)
                     {
@@ -833,7 +833,7 @@ float selectedValue18;
                         selectedValue18 = metal + previousNoise * .30f;
                     }
 
-                    // sample（采样）：使用位置：作为 Mathf.Clamp(float, float, float) 的参数。
+                    // 采样。
 float sample = (selectedValue18) * envelope * .35f;
                     stream.Write((short)(Mathf.Clamp(sample, -1, 1) * short.MaxValue));
                 }

@@ -586,6 +586,15 @@
           "processors": "",
           "interactions": "Press(behavior=1)",
           "initialStateCheck": false
+        },
+        {
+          "name": "KnifeEscape",
+          "type": 1,
+          "id": "7e6ccb4d-fafc-46ff-9281-801536f4bf8a",
+          "expectedControlType": "Button",
+          "processors": "",
+          "interactions": "",
+          "initialStateCheck": false
         }
       ],
       "bindings": [
@@ -597,6 +606,17 @@
           "processors": "",
           "groups": "",
           "action": "EscapePress",
+          "isComposite": false,
+          "isPartOfComposite": false
+        },
+        {
+          "name": "",
+          "id": "492a427e-7d4a-4016-96fe-d21656ccb299",
+          "path": "<Mouse>/leftButton",
+          "interactions": "",
+          "processors": "",
+          "groups": "",
+          "action": "KnifeEscape",
           "isComposite": false,
           "isPartOfComposite": false
         }

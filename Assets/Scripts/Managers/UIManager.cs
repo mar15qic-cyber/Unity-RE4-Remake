@@ -13,22 +13,22 @@ using UnityEngine.UI;
 public class UIManager : Singleton<UIManager>
 {
 #region ===== UI元素引用 =====
-    /// <summary>中文含义：生命值滑块。血条Slider组件（Inspector拖拽或运行时注册）。使用位置：UIManager.RefreshHPDisplay(float)、UIManager.RegisterUIElements(Slider, Text, Text, Image)。</summary>
+    /// <summary>生命值滑块。血条Slider组件（Inspector拖拽或运行时注册）。</summary>
     [Header("血条UI")]
     [Tooltip("血条Slider组件（Inspector拖拽或运行时注册）")]
     public Slider hpSlider;
-    /// <summary>中文含义：血量数值文本。使用位置：UIManager.RefreshHPDisplay(float)、UIManager.RegisterUIElements(Slider, Text, Text, Image)。</summary>
+    /// <summary>血量数值文本。</summary>
     [Tooltip("血量数值文本")]
     public Text hpText;
-    /// <summary>中文含义：血量渐变平滑速度，越小越慢（模拟生化危机式掉血效果）。使用位置：作为 Mathf.Lerp(float, float, float) 的参数。</summary>
+    /// <summary>血量渐变平滑速度，越小越慢（模拟生化危机式掉血效果）。</summary>
     [Header("血量渐变参数")]
     [Tooltip("血量渐变平滑速度，越小越慢（模拟生化危机式掉血效果）")]
     public float hpLerpSpeed = 2f;
-    /// <summary>中文含义：弹药数量文本。使用位置：UIManager.RefreshAmmoDisplay(int, int)、UIManager.RegisterUIElements(Slider, Text, Text, Image)。</summary>
+    /// <summary>弹药数量文本。</summary>
     [Header("弹药UI")]
     [Tooltip("弹药数量文本")]
     public Text ammoText;
-    /// <summary>中文含义：武器图标Image组件。使用位置：UIManager.RefreshGunIcon(Sprite)、UIManager.RegisterUIElements(Slider, Text, Text, Image)。</summary>
+    /// <summary>武器图标Image组件。</summary>
     [Header("武器图标")]
     [Tooltip("武器图标Image组件")]
     public Image gunIcon;
@@ -53,10 +53,10 @@ public class UIManager : Singleton<UIManager>
     /// 仅在UIManager自身字段为空时才会被覆盖（Inspector赋值优先）
     /// </summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="hpSliderRef">中文含义：生命值滑块引用。使用位置：UIManager.RegisterUIElements(Slider, Text, Text, Image)。</param>
-    /// <param name="hpTextRef">中文含义：生命值文字引用。使用位置：UIManager.RegisterUIElements(Slider, Text, Text, Image)。</param>
-    /// <param name="ammoTextRef">中文含义：弹药文字引用。使用位置：UIManager.RegisterUIElements(Slider, Text, Text, Image)。</param>
-    /// <param name="gunIconRef">中文含义：枪械图标引用。使用位置：UIManager.RegisterUIElements(Slider, Text, Text, Image)。</param>
+    /// <param name="hpSliderRef">生命值滑块引用。</param>
+    /// <param name="hpTextRef">生命值文字引用。</param>
+    /// <param name="ammoTextRef">弹药文字引用。</param>
+    /// <param name="gunIconRef">枪械图标引用。</param>
     public void RegisterUIElements(Slider hpSliderRef, Text hpTextRef, Text ammoTextRef, Image gunIconRef)
     {
         if (hpSlider == null)
@@ -127,7 +127,7 @@ public class UIManager : Singleton<UIManager>
     /// 刷新血条Slider和血量文本到屏幕
     /// </summary>
     /// <remarks>静态调用链：上游 UIManager.InitHP(float)、UIManager.UpdateHPDisplay(float, float)；下游（含内部回调体） Mathf.CeilToInt(float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="maxHp">中文含义：最大生命值。使用位置：UIManager.RefreshHPDisplay(float)。</param>
+    /// <param name="maxHp">最大生命值。</param>
     private void RefreshHPDisplay(float maxHp)
     {
         if (hpSlider != null)

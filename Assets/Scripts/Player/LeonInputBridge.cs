@@ -9,120 +9,117 @@ using UnityEngine.InputSystem.LowLevel;
 /// <remarks>输入动作资产的运行桥接，读取有效重绑定并按玩法、模态界面及配对上下文路由意图；通过控制器和已有动作宿主入口提交，不硬编码替代可改键动作。</remarks>
 public partial class LeonInputBridge : MonoBehaviour
 {
-    /// <summary>中文含义：正式引用，Inspector 绑定。运行时优先使用。使用位置：LeonInputBridge.Start()。</summary>
+    /// <summary>正式引用，Inspector 绑定。运行时优先使用。</summary>
     [Header("输入资源")]
     [Tooltip("正式引用，Inspector 绑定。运行时优先使用。")]
     [SerializeField]
     private InputActionAsset inputActionAsset;
-    /// <summary>中文含义：输入资源。使用位置：作为 InputBindingPersistence.Load(InputActionAsset) 的参数、作为 Object.Destroy(Object) 的参数、LeonInputBridge.OnDestroy() 等共 4 处。</summary>
+    /// <summary>输入资源。</summary>
     private InputActionAsset inputAsset;
-    /// <summary>中文含义：玩家映射。使用位置：LeonInputBridge.EnableAndBindActions()、LeonInputBridge.EnterQTEInput(int)、LeonInputBridge.ExitQTEInput(int) 等共 7 处。</summary>
+    /// <summary>玩家映射。</summary>
     private InputActionMap playerMap;
     private LeonActionMotionDriver movementDriver;
     private LeonAnimationActionCoordinator actions;
+    private LeonAnimatorDriver driver;
     private bool movementInputRefreshPending;
-    private bool movementInputAwaitingUpdate;
-    private enum PickupInput { None, Interact, Shoot, Reload }
-    private int pickupInputTransaction;
-    private bool pickupInputReleased;
-    private bool pendingPickupAim;
-    private PickupInput pendingPickupAction;
-    /// <summary>中文含义：配对动作映射。使用位置：LeonInputBridge.EnableAndBindActions()、LeonInputBridge.EnterQTEInput(int)、LeonInputBridge.ExitQTEInput(int) 等共 6 处。</summary>
+    /// <summary>配对动作映射。</summary>
     private InputActionMap qteMap;
-    /// <summary>中文含义：物品检视映射。使用位置：LeonInputBridge.BeginItemInspectionInput(Action)、LeonInputBridge.EnableAndBindActions()、LeonInputBridge.EndItemInspectionInput() 等共 5 处。</summary>
+    /// <summary>物品检视映射。</summary>
     private InputActionMap itemInspectionMap;
-    /// <summary>中文含义：里昂玩家控制器。使用位置：作为 InteractionSystem.InteractNearby(Transform) 的参数、LeonInputBridge.EnterQTEInput(int)、LeonInputBridge.ExitQTEInput(int) 等共 19 处。</summary>
+    /// <summary>里昂玩家控制器。</summary>
     private LeonController controller;
-    /// <summary>中文含义：战斗。使用位置：LeonInputBridge.EnterQTEInput(int)、LeonInputBridge.HandleScrollWeaponWheel()、LeonInputBridge.LockForDeath() 等共 15 处。</summary>
+    /// <summary>战斗。</summary>
     private LeonCombat combat;
-    /// <summary>中文含义：当前里昂配对动作协调器。使用位置：LeonInputBridge.OnEscapePress(InputAction.CallbackContext)、LeonInputBridge.OnInteract(InputAction.CallbackContext)、LeonInputBridge.Start()。</summary>
+    /// <summary>当前里昂配对动作协调器。</summary>
     private LeonQTECoordinator qteCoordinator;
-    /// <summary>中文含义：武器轮盘。使用位置：作为 Mathf.Max(float, float) 的参数、LeonInputBridge.CanStartWeaponWheel()、LeonInputBridge.CloseWeaponWheel(bool) 等共 7 处。</summary>
+    /// <summary>武器轮盘。</summary>
     private WeaponWheelUI weaponWheel;
-    /// <summary>中文含义：移动教学输入阈值。使用位置：LeonInputBridge.OnMove(InputAction.CallbackContext)。</summary>
+    /// <summary>移动教学输入阈值。</summary>
     [Header("教学事件")]
     [SerializeField]
     private float moveTutorialInputThreshold = 0.1f;
-    /// <summary>中文含义：是否滚动开放武器轮盘。使用位置：LeonInputBridge.HandleScrollWeaponWheel()。</summary>
+    /// <summary>是否滚动开放武器轮盘。</summary>
     [Header("快速武器轮盘")]
     [SerializeField]
     private bool scrollOpensWeaponWheel = true;
-    /// <summary>中文含义：滚动自动确认延迟。使用位置：作为 Mathf.Max(float, float) 的参数、LeonInputBridge.HandleScrollWeaponWheel()。</summary>
+    /// <summary>滚动自动确认延迟。</summary>
     [SerializeField, Min(0.05f)]
     private float scrollAutoConfirmDelay = 0.45f;
-    /// <summary>中文含义：移动动作。使用位置：LeonInputBridge.EnableAndBindActions()、LeonInputBridge.ExitQTEInput(int)、LeonInputBridge.OnDisable() 等共 5 处。</summary>
+    /// <summary>移动动作。</summary>
     private InputAction moveAction;
-    /// <summary>中文含义：观察动作。使用位置：LeonInputBridge.EnableAndBindActions()、LeonInputBridge.OnDisable()、LeonInputBridge.SetGameplayInputEnabled(bool) 等共 4 处。</summary>
+    /// <summary>观察动作。</summary>
     private InputAction lookAction;
-    /// <summary>中文含义：瞄准动作。使用位置：作为 LeonCombat.HandleAim(bool) 的参数、LeonInputBridge.EnableAndBindActions()、LeonInputBridge.OnDisable() 等共 6 处。</summary>
+    /// <summary>瞄准动作。</summary>
     private InputAction aimAction;
-    /// <summary>中文含义：射击动作。使用位置：LeonInputBridge.EnableAndBindActions()、LeonInputBridge.OnDisable()、LeonInputBridge.SetGameplayInputEnabled(bool) 等共 4 处。</summary>
+    /// <summary>射击动作。</summary>
     private InputAction shootAction;
-    /// <summary>中文含义：换弹动作。使用位置：LeonInputBridge.EnableAndBindActions()、LeonInputBridge.OnDisable()、LeonInputBridge.Start()。</summary>
+    /// <summary>换弹动作。</summary>
     private InputAction reloadAction;
-    /// <summary>中文含义：招架动作。使用位置：LeonInputBridge.EnableAndBindActions()、LeonInputBridge.OnDisable()、LeonInputBridge.SetGameplayInputEnabled(bool) 等共 4 处。</summary>
+    /// <summary>招架动作。</summary>
     private InputAction parryAction;
     private readonly InputAction[] quickSlotActions = new InputAction[WeaponWheelUI.SlotCount];
-    /// <summary>中文含义：冲刺动作。使用位置：作为 LeonController.SetSprinting(bool) 的参数、LeonInputBridge.EnableAndBindActions()、LeonInputBridge.ExitQTEInput(int) 等共 6 处。</summary>
+    /// <summary>冲刺动作。</summary>
     private InputAction sprintAction;
-    /// <summary>中文含义：蹲伏动作。使用位置：LeonInputBridge.EnableAndBindActions()、LeonInputBridge.OnDisable()、LeonInputBridge.SetGameplayInputEnabled(bool) 等共 4 处。</summary>
+    /// <summary>蹲伏动作。</summary>
     private InputAction crouchAction;
-    /// <summary>中文含义：自由环顾动作。使用位置：LeonInputBridge.AllowFreeViewInput.get、LeonInputBridge.EnableAndBindActions()、LeonInputBridge.FreeViewKeyActualHeld.get 等共 6 处。</summary>
+    /// <summary>自由环顾动作。</summary>
     private InputAction freeLookAction;
-    /// <summary>中文含义：背包动作。使用位置：LeonInputBridge.EnableAndBindActions()、LeonInputBridge.OnDisable()、LeonInputBridge.Start()。</summary>
+    /// <summary>背包动作。</summary>
     private InputAction inventoryAction;
-    /// <summary>中文含义：交互动作。使用位置：LeonInputBridge.EnableAndBindActions()、LeonInputBridge.FindKeyboardInteractPath()、LeonInputBridge.OnDisable() 等共 5 处。</summary>
+    /// <summary>交互动作。</summary>
     private InputAction interactAction;
-    /// <summary>中文含义：排序动作。使用位置：LeonInputBridge.EnableAndBindActions()、LeonInputBridge.OnDisable()、LeonInputBridge.Start()。</summary>
+    /// <summary>排序动作。</summary>
     private InputAction sortAction;
-    /// <summary>中文含义：逃脱按下动作。使用位置：LeonInputBridge.EnableAndBindActions()、LeonInputBridge.EnterQTEInput(int)、LeonInputBridge.IsQTEInputReady.get 等共 5 处。</summary>
+    /// <summary>逃脱按下动作。</summary>
     private InputAction escapePressAction;
-    /// <summary>中文含义：物品检视关闭动作。使用位置：LeonInputBridge.BeginItemInspectionInput(Action)、LeonInputBridge.EnableAndBindActions()、LeonInputBridge.OnDisable() 等共 4 处。</summary>
+    private InputAction knifeEscapeAction;
+    private bool knifeEscapeAwaitingRelease;
+    /// <summary>物品检视关闭动作。</summary>
     private InputAction itemInspectionCloseAction;
-    /// <summary>中文含义：物品检视关闭回调。使用位置：LeonInputBridge.BeginItemInspectionInput(Action)、LeonInputBridge.EndItemInspectionInput()、LeonInputBridge.OnDisable() 等共 4 处。</summary>
+    /// <summary>物品检视关闭回调。</summary>
     private System.Action itemInspectionCloseCallback;
-    /// <summary>中文含义：动作集合是否已绑定。使用位置：LeonInputBridge.EnableAndBindActions()、LeonInputBridge.OnDisable()。</summary>
+    /// <summary>动作集合是否已绑定。</summary>
     private bool actionsBound;
-    /// <summary>中文含义：是否输入时钟已捕获。使用位置：LeonInputBridge.CaptureInputClock()、LeonInputBridge.ConvertInputTime(double)、LeonInputBridge.OnDisable() 等共 4 处。</summary>
+    /// <summary>是否输入时钟已捕获。</summary>
     private bool inputClockCaptured;
-    /// <summary>中文含义：inputUpdateRealtime 表示“输入更新真实时间”；inputUpdateGameTime 表示“输入更新游戏时间”。使用位置：LeonInputBridge.CaptureInputClock()、LeonInputBridge.ConvertInputTime(double)。；使用位置：LeonInputBridge.CaptureInputClock()、LeonInputBridge.ConvertInputTime(double)。</summary>
+    /// <summary>inputUpdateRealtime 表示“输入更新真实时间”；inputUpdateGameTime 表示“输入更新游戏时间”。</summary>
     private double inputUpdateRealtime, inputUpdateGameTime;
-    /// <summary>中文含义：输入更新时间缩放。使用位置：LeonInputBridge.CaptureInputClock()、LeonInputBridge.ConvertInputTime(double)。</summary>
+    /// <summary>输入更新时间缩放。</summary>
     private float inputUpdateTimeScale;
-    /// <summary>中文含义：是否等待场景开放。使用位置：LeonInputBridge.AllowFreeViewInput.get、LeonInputBridge.EnableAndBindActions()、LeonInputBridge.SetGameplayInputEnabled(bool) 等共 4 处。</summary>
+    /// <summary>是否等待场景开放。</summary>
     [Header("本局启动")]
     [UnityEngine.Serialization.FormerlySerializedAs("等待场景开放")]
     [UnityEngine.InspectorName("等待场景开放")]
     public bool waitingSceneOpenRelease;
-    /// <summary>中文含义：输入是否就绪。使用位置：SceneStartupEntry.Start()。</summary>
+    /// <summary>输入是否就绪。</summary>
     internal bool InputReady => started;
 
-    /// <summary>中文含义：是否已订阅打开输入的释放事件。使用位置：LeonInputBridge.AllowFreeViewInput.get、LeonInputBridge.EnableAndBindActions()、LeonInputBridge.SetGameplayInputEnabled(bool) 等共 4 处。</summary>
+    /// <summary>是否已订阅打开输入的释放事件。</summary>
     private bool hasOpenRelease;
     /// <summary>SetSceneOpenRelease 的业务处理入口；本方法直接依赖 LeonInputBridge.SetGameplayInputEnabled(bool)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 SceneStartupEntry.OnDisable()、SceneStartupEntry.Start()；下游（含内部回调体） LeonInputBridge.SetGameplayInputEnabled(bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="openRelease">中文含义：是否打开释放。使用位置：作为 LeonInputBridge.SetGameplayInputEnabled(bool) 的参数、LeonInputBridge.SetSceneOpenRelease(bool)。</param>
+    /// <param name="openRelease">是否打开释放。</param>
     internal void SetSceneOpenRelease(bool openRelease)
     {
         hasOpenRelease = openRelease;
         SetGameplayInputEnabled(openRelease);
     }
 
-    /// <summary>中文含义：是否已开始。使用位置：LeonInputBridge.EnterQTEInput(int)、LeonInputBridge.InputReady.get、LeonInputBridge.IsQTEInputReady.get 等共 5 处。</summary>
+    /// <summary>是否已开始。</summary>
     private bool started;
-    /// <summary>中文含义：玩家映射之前是否启用。使用位置：LeonInputBridge.EnterQTEInput(int)、LeonInputBridge.ExitQTEInput(int)、LeonInputBridge.LockForDeath() 等共 4 处。</summary>
+    /// <summary>玩家映射之前是否启用。</summary>
     private bool playerMapWasEnabled;
-    /// <summary>中文含义：生效配对动作会话编号。使用位置：作为 LeonQTECoordinator.SubmitEscapePress(int) 的参数、LeonInputBridge.AllowFreeViewInput.get、LeonInputBridge.EnterQTEInput(int) 等共 8 处。</summary>
+    /// <summary>生效配对动作会话编号。</summary>
     private int activeQteSessionId = -1;
-    /// <summary>中文含义：是否持有输入资源。使用位置：LeonInputBridge.OnDestroy()、LeonInputBridge.Start()。</summary>
+    /// <summary>是否持有输入资源。</summary>
     private bool ownsInputAsset;
-    /// <summary>中文含义：死亡输入是否锁定。使用位置：LeonInputBridge.AllowFreeViewInput.get、LeonInputBridge.CanStartWeaponWheel()、LeonInputBridge.EnableAndBindActions() 等共 8 处。</summary>
+    /// <summary>死亡输入是否锁定。</summary>
     private bool deathInputLocked;
-    /// <summary>中文含义：输入许可。使用位置：LeonInputBridge.EnterQTEInput(int)、LeonInputBridge.ExitQTEInput(int)、LeonInputBridge.LockForDeath() 等共 4 处。</summary>
+    /// <summary>输入许可。</summary>
     private GameplayPermissionService inputPermission;
-    /// <summary>中文含义：pairedActionInputPermission 表示“已配对动作输入许可”；deathInputPermission 表示“死亡输入许可”。使用位置：作为 GameplayPermissionService.Release(GameplayPermissionHandle) 的参数、LeonInputBridge.EnterQTEInput(int)、LeonInputBridge.ExitQTEInput(int) 等共 5 处。；使用位置：作为 GameplayPermissionService.Release(GameplayPermissionHandle) 的参数、LeonInputBridge.LockForDeath()、LeonInputBridge.OnDisable()。</summary>
+    /// <summary>pairedActionInputPermission 表示“已配对动作输入许可”；deathInputPermission 表示“死亡输入许可”。</summary>
     private GameArchitecture.GameplayPermissionHandle pairedActionInputPermission, deathInputPermission;
-    /// <summary>中文含义：是否具有已报告移动输入。使用位置：LeonInputBridge.OnMove(InputAction.CallbackContext)。</summary>
+    /// <summary>是否具有已报告移动输入。</summary>
     private bool hasReportedMoveInput;
 
     internal float ReadLadderVerticalInput()
@@ -139,12 +136,12 @@ public partial class LeonInputBridge : MonoBehaviour
 
         return moveAction.ReadValue<Vector2>().y;
     }
-    /// <summary>中文含义：武器轮盘是否打开。使用位置：LeonInputBridge.AllowFreeViewInput.get、LeonInputBridge.CanStartWeaponWheel()、LeonInputBridge.CloseWeaponWheel(bool) 等共 16 处。</summary>
+    /// <summary>武器轮盘是否打开。</summary>
     private bool weaponWheelOpen;
-    /// <summary>中文含义：是否允许自由视图输入。使用位置：LeonController.AllowFreeObserve.get。</summary>
+    /// <summary>是否允许自由视图输入。</summary>
     public bool AllowFreeViewInput => isActiveAndEnabled && !deathInputLocked && activeQteSessionId <= 0 && !weaponWheelOpen && (!waitingSceneOpenRelease || hasOpenRelease) && freeLookAction != null && freeLookAction.enabled;
 
-    /// <summary>中文含义：自由视图键实际是否保持按住。使用位置：作为 LeonController.SetFreeLooking(bool) 的参数、LeonInputBridge.OnFreeLookEnd(InputAction.CallbackContext)。</summary>
+    /// <summary>自由视图键实际是否保持按住。</summary>
     private bool FreeViewKeyActualHeld
     {
         get
@@ -167,16 +164,16 @@ foreach (var control in freeLookAction.controls)
         }
     }
 
-    /// <summary>中文含义：武器轮盘自动确认时间。使用位置：作为 Mathf.Max(float, float) 的参数、LeonInputBridge.HandleScrollWeaponWheel()、LeonInputBridge.UpdateScrollWeaponWheelAutoConfirm()。</summary>
+    /// <summary>武器轮盘自动确认时间。</summary>
     private float weaponWheelAutoConfirmTime;
-    /// <summary>中文含义：下一次武器轮盘滚动打开时间。使用位置：LeonInputBridge.CloseWeaponWheel(bool)、LeonInputBridge.HandleScrollWeaponWheel()。</summary>
+    /// <summary>下一次武器轮盘滚动打开时间。</summary>
     private float nextWeaponWheelScrollOpenTime;
     // 瞄准模式：0=长按，1=切换
-    /// <summary>中文含义：瞄准模式。使用位置：LeonInputBridge.OnAim(InputAction.CallbackContext)、LeonInputBridge.Start()、LeonInputBridge.SyncAimAfterWeaponWheel()。</summary>
+    /// <summary>瞄准模式。</summary>
     private int aimMode;
-    /// <summary>中文含义：瞄准切换是否生效。使用位置：作为 LeonCombat.HandleAim(bool) 的参数、LeonInputBridge.LockForDeath()、LeonInputBridge.OnAim(InputAction.CallbackContext) 等共 5 处。</summary>
+    /// <summary>瞄准切换是否生效。</summary>
     private bool aimToggleActive;
-    /// <summary>中文含义：玩家已移动时的通知回调。事件通信成员 OnPlayerMoved，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。使用位置：LeonInputBridge.OnMove(InputAction.CallbackContext)、TutorialManager.BindEvents()、TutorialManager.UnbindEvents()。</summary>
+    /// <summary>玩家已移动时的通知回调。事件通信成员 OnPlayerMoved，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。</summary>
     public event System.Action OnPlayerMoved;
     /// <summary>Unity 首次启用后的启动回调；状态处理与资源交接按函数内顺序执行，下游协作见调用链。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） AssetDatabase.LoadAssetAtPath&lt;InputActionAsset&gt;(string)、Component.GetComponent&lt;LeonCombat&gt;()、Component.GetComponent&lt;LeonController&gt;()、Component.GetComponent&lt;LeonQTECoordinator&gt;()、Component.GetComponent&lt;WeaponWheelUI&gt;()、Debug.LogError(object)、GameObject.AddComponent&lt;WeaponWheelUI&gt;() 等共 15 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
@@ -185,6 +182,7 @@ foreach (var control in freeLookAction.controls)
         controller = GetComponent<LeonController>();
         movementDriver = GetComponent<LeonActionMotionDriver>();
         actions = GetComponent<LeonAnimationActionCoordinator>();
+        driver = GetComponent<LeonAnimatorDriver>();
         combat = GetComponent<LeonCombat>();
         qteCoordinator = GetComponent<LeonQTECoordinator>();
         weaponWheel = GetComponent<WeaponWheelUI>();
@@ -194,7 +192,7 @@ foreach (var control in freeLookAction.controls)
         }
 
         // 运行时使用独立副本，避免与界面输入模块共享启用状态。
-        // sourceAsset（来源资源）：使用位置：作为 Object.Instantiate<InputActionAsset>(InputActionAsset) 的参数、LeonInputBridge.Start()。
+        // 来源资源。
 InputActionAsset sourceAsset = inputActionAsset;
         if (sourceAsset == null)
         {
@@ -245,7 +243,7 @@ InputActionAsset sourceAsset = inputActionAsset;
         }
 
         // 启用 UI ActionMap（InputSystemUIInputModule 需要）
-        // uiMap（界面映射）：保存 InputActionAsset.FindActionMap(string, bool) 的返回结果，供当前步骤使用。使用位置：LeonInputBridge.Start()。
+        // 界面映射。
 var uiMap = inputAsset.FindActionMap("UI");
         if (uiMap != null)
         {
@@ -274,6 +272,12 @@ var uiMap = inputAsset.FindActionMap("UI");
         interactAction = playerMap.FindAction("Interact");
         sortAction = playerMap.FindAction("Sort");
         escapePressAction = qteMap.FindAction("EscapePress");
+        knifeEscapeAction = qteMap.FindAction("KnifeEscape");
+        // 兼容仍引用旧输入资源的场景实例。
+        if (knifeEscapeAction == null)
+        {
+            knifeEscapeAction = qteMap.AddAction("KnifeEscape", InputActionType.Button, "<Mouse>/leftButton");
+        }
         itemInspectionCloseAction = itemInspectionMap.FindAction("Close");
         if (escapePressAction == null)
         {
@@ -295,12 +299,12 @@ var uiMap = inputAsset.FindActionMap("UI");
     /// 背包打开时禁用 Player ActionMap（避免吞噬鼠标事件），保留 Inventory + Sort 动作
     /// </summary>
     /// <remarks>静态调用链：上游 GameManager.ApplyPermission(GameplayPermissionSnapshot)、LeonInputBridge.OnInventoryToggle(InputAction.CallbackContext)、LeonInputBridge.SetSceneOpenRelease(bool)；下游（含内部回调体） InputAction.Disable()、InputActionMap.Disable()、InputActionMap.Enable()、LeonCombat.HandleKnifeHold(bool)、LeonController.ResetFreeView()、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="enabled">中文含义：是否启用。使用位置：LeonInputBridge.SetGameplayInputEnabled(bool)。</param>
+    /// <param name="enabled">是否启用。</param>
     public void SetGameplayInputEnabled(bool enabled)
     {
         if (!enabled)
         {
-            // receiverValue1（判空前缓存的战斗）：从战斗读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonInputBridge.SetGameplayInputEnabled(bool)。
+            // 判空前缓存的战斗。
 global::LeonCombat receiverValue1 = combat;
             if (!global::System.Object.ReferenceEquals(receiverValue1, null))
             {
@@ -325,7 +329,7 @@ global::LeonCombat receiverValue1 = combat;
 
         if (!enabled || deathInputLocked || activeQteSessionId > 0 || (waitingSceneOpenRelease && !hasOpenRelease))
         {
-            // receiverValue2（判空前缓存的里昂玩家控制器）：从控制器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonInputBridge.SetGameplayInputEnabled(bool)。
+            // 判空前缓存的里昂玩家控制器。
 global::LeonController receiverValue2 = controller;
             if (!global::System.Object.ReferenceEquals(receiverValue2, null))
             {
@@ -358,7 +362,7 @@ global::LeonController receiverValue2 = controller;
         else
         {
             // 只禁用会吞噬鼠标的动作，保留 Inventory/Sort/Reload(旋转)等
-            // receiverValue3（判空前缓存的移动动作）：从移动动作读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonInputBridge.SetGameplayInputEnabled(bool)。
+            // 判空前缓存的移动动作。
 global::UnityEngine.InputSystem.InputAction receiverValue3 = // 只禁用会吞噬鼠标的动作，保留 Inventory/Sort/Reload(旋转)等
  moveAction;
             if (!global::System.Object.ReferenceEquals(receiverValue3, null))
@@ -366,28 +370,28 @@ global::UnityEngine.InputSystem.InputAction receiverValue3 = // 只禁用会吞�
                 receiverValue3.Disable();
             }
 
-            // receiverValue4（判空前缓存的观察动作）：从观察动作读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonInputBridge.SetGameplayInputEnabled(bool)。
+            // 判空前缓存的观察动作。
 global::UnityEngine.InputSystem.InputAction receiverValue4 = lookAction;
             if (!global::System.Object.ReferenceEquals(receiverValue4, null))
             {
                 receiverValue4.Disable();
             }
 
-            // receiverValue5（判空前缓存的瞄准动作）：从瞄准动作读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonInputBridge.SetGameplayInputEnabled(bool)。
+            // 判空前缓存的瞄准动作。
 global::UnityEngine.InputSystem.InputAction receiverValue5 = aimAction;
             if (!global::System.Object.ReferenceEquals(receiverValue5, null))
             {
                 receiverValue5.Disable();
             }
 
-            // receiverValue6（判空前缓存的射击动作）：从射击动作读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonInputBridge.SetGameplayInputEnabled(bool)。
+            // 判空前缓存的射击动作。
 global::UnityEngine.InputSystem.InputAction receiverValue6 = shootAction;
             if (!global::System.Object.ReferenceEquals(receiverValue6, null))
             {
                 receiverValue6.Disable();
             }
 
-            // receiverValue8（判空前缓存的招架动作）：从招架动作读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonInputBridge.SetGameplayInputEnabled(bool)。
+            // 判空前缓存的招架动作。
 global::UnityEngine.InputSystem.InputAction receiverValue8 = parryAction;
             if (!global::System.Object.ReferenceEquals(receiverValue8, null))
             {
@@ -409,21 +413,21 @@ global::UnityEngine.InputSystem.InputAction receiverValue11 = sprintAction;
                 receiverValue11.Disable();
             }
 
-            // receiverValue12（判空前缓存的蹲伏动作）：从蹲伏动作读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonInputBridge.SetGameplayInputEnabled(bool)。
+            // 判空前缓存的蹲伏动作。
 global::UnityEngine.InputSystem.InputAction receiverValue12 = crouchAction;
             if (!global::System.Object.ReferenceEquals(receiverValue12, null))
             {
                 receiverValue12.Disable();
             }
 
-            // receiverValue13（判空前缓存的自由环顾动作）：从自由环顾动作读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonInputBridge.SetGameplayInputEnabled(bool)。
+            // 判空前缓存的自由环顾动作。
 global::UnityEngine.InputSystem.InputAction receiverValue13 = freeLookAction;
             if (!global::System.Object.ReferenceEquals(receiverValue13, null))
             {
                 receiverValue13.Disable();
             }
 
-            // receiverValue14（判空前缓存的交互动作）：从交互动作读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonInputBridge.SetGameplayInputEnabled(bool)。
+            // 判空前缓存的交互动作。
 global::UnityEngine.InputSystem.InputAction receiverValue14 = interactAction;
             if (!global::System.Object.ReferenceEquals(receiverValue14, null))
             {
@@ -461,14 +465,14 @@ global::UnityEngine.InputSystem.InputAction receiverValue14 = interactAction;
             EnableGameplayMap();
         }
 
-        // receiverValue15（判空前缓存的配对动作映射）：从配对动作映射读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonInputBridge.EnableAndBindActions()。
+        // 判空前缓存的配对动作映射。
 global::UnityEngine.InputSystem.InputActionMap receiverValue15 = qteMap;
         if (!global::System.Object.ReferenceEquals(receiverValue15, null))
         {
             receiverValue15.Disable();
         }
 
-        // receiverValue16（判空前缓存的物品检视映射）：从物品检视映射读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonInputBridge.EnableAndBindActions()。
+        // 判空前缓存的物品检视映射。
 global::UnityEngine.InputSystem.InputActionMap receiverValue16 = itemInspectionMap;
         if (!global::System.Object.ReferenceEquals(receiverValue16, null))
         {
@@ -551,6 +555,7 @@ global::UnityEngine.InputSystem.InputActionMap receiverValue16 = itemInspectionM
         }
 
         escapePressAction.performed += OnEscapePress;
+        knifeEscapeAction.performed += OnKnifeEscape;
         itemInspectionCloseAction.performed += OnItemInspectionClose;
         actionsBound = true;
     }
@@ -564,23 +569,22 @@ global::UnityEngine.InputSystem.InputActionMap receiverValue16 = itemInspectionM
         InputSystem.onAfterUpdate -= ReleaseInputClock;
         inputClockCaptured = false;
         movementInputRefreshPending = false;
-        movementInputAwaitingUpdate = false;
-        ClearPickupInput();
-        // receiverValue17（判空前缓存的战斗）：从战斗读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonInputBridge.OnDisable()。
+        ClearPickupBufferState();
+        // 判空前缓存的战斗。
 global::LeonCombat receiverValue17 = combat;
         if (!global::System.Object.ReferenceEquals(receiverValue17, null))
         {
             receiverValue17.HandleKnifeHold(false);
         }
 
-        // receiverValue18（判空前缓存的里昂玩家控制器）：从控制器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonInputBridge.OnDisable()。
+        // 判空前缓存的里昂玩家控制器。
 global::LeonController receiverValue18 = controller;
         if (!global::System.Object.ReferenceEquals(receiverValue18, null))
         {
             receiverValue18.ResetFreeView();
         }
 
-        // receiverValue19（判空前缓存的物品检视映射）：从物品检视映射读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonInputBridge.OnDisable()。
+        // 判空前缓存的物品检视映射。
 global::UnityEngine.InputSystem.InputActionMap receiverValue19 = itemInspectionMap;
         if (!global::System.Object.ReferenceEquals(receiverValue19, null))
         {
@@ -672,6 +676,10 @@ global::UnityEngine.InputSystem.InputActionMap receiverValue19 = itemInspectionM
         {
             escapePressAction.performed -= OnEscapePress;
         }
+        if (knifeEscapeAction != null)
+        {
+            knifeEscapeAction.performed -= OnKnifeEscape;
+        }
 
         if (itemInspectionCloseAction != null)
         {
@@ -679,14 +687,14 @@ global::UnityEngine.InputSystem.InputActionMap receiverValue19 = itemInspectionM
         }
 
         playerMap.Disable();
-        // receiverValue20（判空前缓存的配对动作映射）：从配对动作映射读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonInputBridge.OnDisable()。
+        // 判空前缓存的配对动作映射。
 global::UnityEngine.InputSystem.InputActionMap receiverValue20 = qteMap;
         if (!global::System.Object.ReferenceEquals(receiverValue20, null))
         {
             receiverValue20.Disable();
         }
 
-        // receiverValue21（判空前缓存的物品检视映射）：从物品检视映射读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonInputBridge.OnDisable()。
+        // 判空前缓存的物品检视映射。
 global::UnityEngine.InputSystem.InputActionMap receiverValue21 = itemInspectionMap;
         if (!global::System.Object.ReferenceEquals(receiverValue21, null))
         {
@@ -694,9 +702,9 @@ global::UnityEngine.InputSystem.InputActionMap receiverValue21 = itemInspectionM
         }
 
         actionsBound = false;
-        // receiverValue22（判空前缓存的输入许可）：从输入许可读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonInputBridge.OnDisable()。
+        // 判空前缓存的输入许可。
 global::GameplayPermissionService receiverValue22 = inputPermission;
-        // optionalValue23（条件访问得到的释放的返回结果）：保存条件访问的结果，接收者为空时保持默认空值，非空时才执行原成员访问。使用位置：LeonInputBridge.OnDisable()。
+        // 条件访问得到的释放的返回结果。
 bool? optionalValue23;
         if (!global::System.Object.ReferenceEquals(receiverValue22, null))
         {
@@ -709,9 +717,9 @@ bool? optionalValue23;
 
         deathInputPermission = default;
         activeQteSessionId = -1;
-        // receiverValue24（判空前缓存的输入许可）：从输入许可读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonInputBridge.OnDisable()。
+        // 判空前缓存的输入许可。
 global::GameplayPermissionService receiverValue24 = inputPermission;
-        // optionalValue25（条件访问得到的释放的返回结果）：保存条件访问的结果，接收者为空时保持默认空值，非空时才执行原成员访问。使用位置：LeonInputBridge.OnDisable()。
+        // 条件访问得到的释放的返回结果。
 bool? optionalValue25;
         if (!global::System.Object.ReferenceEquals(receiverValue24, null))
         {
@@ -728,7 +736,7 @@ bool? optionalValue25;
         if (aimToggleActive)
         {
             aimToggleActive = false;
-            // receiverValue26（判空前缓存的战斗）：从战斗读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonInputBridge.OnDisable()。
+            // 判空前缓存的战斗。
 global::LeonCombat receiverValue26 = combat;
             if (!global::System.Object.ReferenceEquals(receiverValue26, null))
             {
@@ -742,7 +750,7 @@ global::LeonCombat receiverValue26 = combat;
     /// 返回适合显示在关闭提示中的互动键名称。
     /// </summary>
     /// <remarks>静态调用链：上游 ItemInspectionUI.ShowRoutine(ItemData, GameObject)；下游（含内部回调体） InputAction.ApplyBindingOverride(int, string)、InputAction.GetBindingDisplayString(int, InputBinding.DisplayStringOptions)、InputAction.RemoveBindingOverride(int)、InputActionMap.Enable()、LeonInputBridge.FindKeyboardInteractPath()、string.IsNullOrEmpty(string)、string.IsNullOrWhiteSpace(string)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="closeCallback">中文含义：关闭回调。使用位置：LeonInputBridge.BeginItemInspectionInput(Action)。</param>
+    /// <param name="closeCallback">关闭回调。</param>
     public string BeginItemInspectionInput(System.Action closeCallback)
     {
         itemInspectionCloseCallback = closeCallback;
@@ -751,7 +759,7 @@ global::LeonCombat receiverValue26 = combat;
             return "F";
         }
 
-        // interactPath（交互路径）：保存 LeonInputBridge.FindKeyboardInteractPath() 的返回结果，供当前步骤使用。使用位置：作为 InputAction.ApplyBindingOverride(int, string) 的参数、作为 string.IsNullOrEmpty(string) 的参数。
+        // 交互路径。
 string interactPath = FindKeyboardInteractPath();
         itemInspectionCloseAction.RemoveBindingOverride(0);
         if (!string.IsNullOrEmpty(interactPath))
@@ -760,7 +768,7 @@ string interactPath = FindKeyboardInteractPath();
         }
 
         itemInspectionMap.Enable();
-        // displayName（显示名称）：保存 InputAction.GetBindingDisplayString(int, InputBinding.DisplayStringOptions) 的返回结果，供当前步骤使用。使用位置：作为 string.IsNullOrWhiteSpace(string) 的参数、LeonInputBridge.BeginItemInspectionInput(Action)。
+        // 显示名称。
 string displayName = itemInspectionCloseAction.GetBindingDisplayString(0, InputBinding.DisplayStringOptions.DontIncludeInteractions);
         if (string.IsNullOrWhiteSpace(displayName))
         {
@@ -776,7 +784,7 @@ string displayName = itemInspectionCloseAction.GetBindingDisplayString(0, InputB
     /// <remarks>静态调用链：上游 ItemInspectionUI.CleanupImmediately()、ItemInspectionUI.HideRoutine()、LeonInputBridge.OnDestroy()；下游（含内部回调体） InputActionMap.Disable()、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     public void EndItemInspectionInput()
     {
-        // receiverValue28（判空前缓存的物品检视映射）：从物品检视映射读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonInputBridge.EndItemInspectionInput()。
+        // 判空前缓存的物品检视映射。
 global::UnityEngine.InputSystem.InputActionMap receiverValue28 = itemInspectionMap;
         if (!global::System.Object.ReferenceEquals(receiverValue28, null))
         {
@@ -795,17 +803,17 @@ global::UnityEngine.InputSystem.InputActionMap receiverValue28 = itemInspectionM
             return null;
         }
 
-        // i（当前遍历索引）：使用位置：作为 ReadOnlyArray<InputBinding>.this[int] 的参数、LeonInputBridge.FindKeyboardInteractPath()。
+        // 当前遍历索引。
 for (int i = 0; i < interactAction.bindings.Count; i++)
         {
-            // binding（绑定）：使用位置：LeonInputBridge.FindKeyboardInteractPath()。
+            // 绑定。
 InputBinding binding = interactAction.bindings[i];
             if (binding.isComposite || binding.isPartOfComposite)
             {
                 continue;
             }
 
-            // effectivePath（实际生效的路径）：使用位置：作为 string.IsNullOrEmpty(string) 的参数、LeonInputBridge.FindKeyboardInteractPath()。
+            // 实际生效的路径。
 string effectivePath = binding.effectivePath;
             if (!string.IsNullOrEmpty(effectivePath) && effectivePath.IndexOf("<Keyboard>", System.StringComparison.OrdinalIgnoreCase) >= 0)
             {
@@ -818,12 +826,12 @@ string effectivePath = binding.effectivePath;
 
     /// <summary>OnItemInspectionClose 的业务处理入口；本方法直接依赖 Action.Invoke()、object.ReferenceEquals(object, object)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） Action.Invoke()、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="context">中文含义：上下文。使用位置：LeonInputBridge.OnItemInspectionClose(InputAction.CallbackContext)。</param>
+    /// <param name="context">上下文。</param>
     void OnItemInspectionClose(InputAction.CallbackContext context)
     {
         if (context.performed)
         {
-            // receiverValue29（判空前缓存的物品检视关闭回调）：从物品检视关闭回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonInputBridge.OnItemInspectionClose(InputAction.CallbackContext)。
+            // 判空前缓存的物品检视关闭回调。
 global::System.Action receiverValue29 = itemInspectionCloseCallback;
             if (!global::System.Object.ReferenceEquals(receiverValue29, null))
             {
@@ -858,7 +866,7 @@ global::System.Action receiverValue29 = itemInspectionCloseCallback;
 
     /// <summary>EnterQTEInput 的业务处理入口；本方法直接依赖 GameplayPermissionService.Request(ObjectIdentity, bool, bool, bool, float)、InputActionMap.Disable()、InputActionMap.Enable()、LeonCombat.InterruptForQTE()、LeonController.SetFreeLooking(bool)、LeonController.SetLookInput(Vector2)、LeonController.SetMoveInput(Vector3) 等共 12 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonQTECoordinator.TryStart(QTEKind, IEnemyQTEParticipant, out int)；下游（含内部回调体） GameplayPermissionService.Request(ObjectIdentity, bool, bool, bool, float)、InputActionMap.Disable()、InputActionMap.Enable()、LeonCombat.InterruptForQTE()、LeonController.SetFreeLooking(bool)、LeonController.SetLookInput(Vector2)、LeonController.SetMoveInput(Vector3) 等共 12 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="sessionId">中文含义：会话编号。使用位置：LeonInputBridge.EnterQTEInput(int)。</param>
+    /// <param name="sessionId">会话编号。</param>
     public bool EnterQTEInput(int sessionId)
     {
         if (deathInputLocked)
@@ -898,55 +906,56 @@ global::System.Action receiverValue29 = itemInspectionCloseCallback;
             pairedActionInputPermission = inputPermission.Request(new GameArchitecture.ObjectIdentity(GetInstanceID(), 1), true, false, false);
         }
 
-        // receiverValue31（判空前缓存的玩家映射）：从玩家映射读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonInputBridge.EnterQTEInput(int)。
+        // 判空前缓存的玩家映射。
 global::UnityEngine.InputSystem.InputActionMap receiverValue31 = playerMap;
         if (!global::System.Object.ReferenceEquals(receiverValue31, null))
         {
             receiverValue31.Disable();
         }
 
-        // receiverValue32（判空前缓存的里昂玩家控制器）：从控制器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonInputBridge.EnterQTEInput(int)。
+        // 判空前缓存的里昂玩家控制器。
 global::LeonController receiverValue32 = controller;
         if (!global::System.Object.ReferenceEquals(receiverValue32, null))
         {
             receiverValue32.SetMoveInput(Vector3.zero);
         }
 
-        // receiverValue33（判空前缓存的里昂玩家控制器）：从控制器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonInputBridge.EnterQTEInput(int)。
+        // 判空前缓存的里昂玩家控制器。
 global::LeonController receiverValue33 = controller;
         if (!global::System.Object.ReferenceEquals(receiverValue33, null))
         {
             receiverValue33.SetLookInput(Vector2.zero);
         }
 
-        // receiverValue34（判空前缓存的里昂玩家控制器）：从控制器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonInputBridge.EnterQTEInput(int)。
+        // 判空前缓存的里昂玩家控制器。
 global::LeonController receiverValue34 = controller;
         if (!global::System.Object.ReferenceEquals(receiverValue34, null))
         {
             receiverValue34.SetSprinting(false);
         }
 
-        // receiverValue35（判空前缓存的里昂玩家控制器）：从控制器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonInputBridge.EnterQTEInput(int)。
+        // 判空前缓存的里昂玩家控制器。
 global::LeonController receiverValue35 = controller;
         if (!global::System.Object.ReferenceEquals(receiverValue35, null))
         {
             receiverValue35.SetFreeLooking(false);
         }
 
-        // receiverValue36（判空前缓存的战斗）：从战斗读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonInputBridge.EnterQTEInput(int)。
+        // 判空前缓存的战斗。
 global::LeonCombat receiverValue36 = combat;
         if (!global::System.Object.ReferenceEquals(receiverValue36, null))
         {
             receiverValue36.InterruptForQTE();
         }
 
+        knifeEscapeAwaitingRelease = IsKnifeEscapeControlPressed();
         qteMap.Enable();
         return true;
     }
 
     /// <summary>ExitQTEInput 的业务处理入口；本方法直接依赖 GameplayPermissionService.Release(GameplayPermissionHandle)、InputAction.IsPressed()、InputAction.ReadValue&lt;Vector2&gt;()、InputActionMap.Disable()、InputActionMap.Enable()、LeonController.SetMoveInput(Vector3)、LeonController.SetSprinting(bool) 等共 10 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonQTECoordinator.ReleasePlayer(int)；下游（含内部回调体） GameplayPermissionService.Release(GameplayPermissionHandle)、InputAction.IsPressed()、InputAction.ReadValue&lt;Vector2&gt;()、InputActionMap.Disable()、InputActionMap.Enable()、LeonController.SetMoveInput(Vector3)、LeonController.SetSprinting(bool) 等共 10 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="sessionId">中文含义：会话编号。使用位置：LeonInputBridge.ExitQTEInput(int)。</param>
+    /// <param name="sessionId">会话编号。</param>
     public void ExitQTEInput(int sessionId)
     {
         if (sessionId <= 0 || activeQteSessionId != sessionId)
@@ -954,7 +963,7 @@ global::LeonCombat receiverValue36 = combat;
             return;
         }
 
-        // receiverValue37（判空前缓存的配对动作映射）：从配对动作映射读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonInputBridge.ExitQTEInput(int)。
+        // 判空前缓存的配对动作映射。
 global::UnityEngine.InputSystem.InputActionMap receiverValue37 = qteMap;
         if (!global::System.Object.ReferenceEquals(receiverValue37, null))
         {
@@ -962,9 +971,9 @@ global::UnityEngine.InputSystem.InputActionMap receiverValue37 = qteMap;
         }
 
         activeQteSessionId = -1;
-        // receiverValue38（判空前缓存的输入许可）：从输入许可读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonInputBridge.ExitQTEInput(int)。
+        // 判空前缓存的输入许可。
 global::GameplayPermissionService receiverValue38 = inputPermission;
-        // optionalValue39（条件访问得到的释放的返回结果）：保存条件访问的结果，接收者为空时保持默认空值，非空时才执行原成员访问。使用位置：LeonInputBridge.ExitQTEInput(int)。
+        // 条件访问得到的释放的返回结果。
 bool? optionalValue39;
         if (!global::System.Object.ReferenceEquals(receiverValue38, null))
         {
@@ -979,7 +988,7 @@ bool? optionalValue39;
         if (!deathInputLocked && isActiveAndEnabled && ShouldRestoreGameplayMapAfterQTE())
         {
             EnableGameplayMap();
-            RequestMovementInputRefresh();
+            SyncHeldMovementAfterQTE();
         }
 
         playerMapWasEnabled = false;
@@ -994,11 +1003,24 @@ bool? optionalValue39;
 
         bool movementWasDisabled = moveAction != null && !moveAction.enabled;
         bool sprintWasDisabled = sprintAction != null && !sprintAction.enabled;
+        bool combatWasDisabled = (aimAction != null && !aimAction.enabled)
+            || (parryAction != null && !parryAction.enabled);
         playerMap.Enable();
         if (movementWasDisabled || sprintWasDisabled)
         {
-            movementInputAwaitingUpdate = true;
             RequestMovementInputRefresh();
+        }
+
+        if (movementWasDisabled || sprintWasDisabled || combatWasDisabled)
+        {
+            restoreHeldAim = true;
+            restoreHeldGuard = true;
+        }
+
+        if (CanUseGameplayMovementSync())
+        {
+            SyncHeldMovementImmediately();
+            NotifyActionWindowOpened();
         }
     }
 
@@ -1007,21 +1029,114 @@ bool? optionalValue39;
         movementInputRefreshPending = true;
     }
 
-    internal void RestoreMovementInput()
+    private bool CanUseGameplayMovementSync()
     {
-        if (movementInputAwaitingUpdate || !isActiveAndEnabled || weaponWheelOpen ||
-            deathInputLocked || activeQteSessionId > 0 || (waitingSceneOpenRelease && !hasOpenRelease))
+        if (!isActiveAndEnabled || controller == null || weaponWheelOpen || deathInputLocked)
         {
-            return;
+            return false;
         }
 
-        if (controller == null || (!controller.CanAct() && !(controller.currentState == LeonState.Staggered && controller.AnimDriver != null && controller.AnimDriver.HitMovementReleased)) || moveAction == null || !moveAction.enabled ||
-            sprintAction == null || !sprintAction.enabled)
+        if (activeQteSessionId > 0 || (waitingSceneOpenRelease && !hasOpenRelease))
         {
-            return;
+            return false;
         }
 
         if (GameManager.HasInstance && !GameManager.Instance.Permission.Current.AllowInput)
+        {
+            return false;
+        }
+
+        if (GameUIManager.HasInstance && GameUIManager.Instance.IsPlayerInputBlocked)
+        {
+            return false;
+        }
+
+        if (InventorySceneLoader.HasInstance && (InventorySceneLoader.Instance.IsVisible || InventorySceneLoader.Instance.IsLoading))
+        {
+            return false;
+        }
+
+        if (StorageBoxUI.Instance != null && StorageBoxUI.Instance.IsVisible)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    internal Vector2 ReadEffectiveMoveInput()
+    {
+        if (moveAction == null)
+        {
+            return Vector2.zero;
+        }
+
+        Vector2 actionValue = Vector2.zero;
+        if (moveAction.enabled)
+        {
+            actionValue = moveAction.ReadValue<Vector2>();
+        }
+
+        if (actionValue.sqrMagnitude > 0.0001f)
+        {
+            return actionValue;
+        }
+
+        Vector2 rawValue = ReadRawMoveInput();
+        if (rawValue.sqrMagnitude > 0.0001f)
+        {
+            return rawValue;
+        }
+
+        return Vector2.zero;
+    }
+
+    internal bool IsEffectiveSprintPressed()
+    {
+        if (sprintAction != null && sprintAction.enabled && sprintAction.IsPressed())
+        {
+            return true;
+        }
+
+        return IsRawSprintPressed();
+    }
+
+    internal bool IsEffectiveAimPressed()
+    {
+        if (aimAction != null && aimAction.enabled && aimAction.IsPressed())
+        {
+            return true;
+        }
+
+        return IsRawAimPressed();
+    }
+
+    internal bool IsEffectiveGuardPressed()
+    {
+        if (parryAction != null && parryAction.enabled && parryAction.IsPressed())
+        {
+            return true;
+        }
+
+        return IsActionControlPressed(parryAction);
+    }
+
+    internal void RestoreMovementInput()
+    {
+        if (!CanUseGameplayMovementSync())
+        {
+            return;
+        }
+
+        bool canMoveWhileHitReleased = controller.currentState == LeonState.Staggered
+            && controller.AnimDriver != null
+            && controller.AnimDriver.HitMovementReleased;
+        if (!controller.CanAct() && !canMoveWhileHitReleased)
+        {
+            return;
+        }
+
+        if (moveAction == null || !moveAction.enabled || sprintAction == null || !sprintAction.enabled)
         {
             return;
         }
@@ -1037,12 +1152,7 @@ bool? optionalValue39;
             return;
         }
 
-        if (GameUIManager.HasInstance && GameUIManager.Instance.IsPlayerInputBlocked)
-        {
-            return;
-        }
-
-        Vector2 movement = moveAction.ReadValue<Vector2>();
+        Vector2 movement = ReadEffectiveMoveInput();
         Vector3 heldMovement = new Vector3(movement.x, 0f, movement.y);
         if (movementInputRefreshPending || controller.MoveInput != heldMovement)
         {
@@ -1050,7 +1160,7 @@ bool? optionalValue39;
         }
 
         movementInputRefreshPending = false;
-        controller.SetSprinting(sprintAction.IsPressed());
+        controller.SetSprinting(IsEffectiveSprintPressed());
     }
 
     /// <summary>ShouldRestoreGameplayMapAfterQTE 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
@@ -1113,9 +1223,9 @@ bool? optionalValue39;
 
         playerMapWasEnabled = false;
         activeQteSessionId = -1;
-        // receiverValue42（判空前缓存的输入许可）：从输入许可读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonInputBridge.LockForDeath()。
+        // 判空前缓存的输入许可。
 global::GameplayPermissionService receiverValue42 = inputPermission;
-        // optionalValue43（条件访问得到的释放的返回结果）：保存条件访问的结果，接收者为空时保持默认空值，非空时才执行原成员访问。使用位置：LeonInputBridge.LockForDeath()。
+        // 条件访问得到的释放的返回结果。
 bool? optionalValue43;
         if (!global::System.Object.ReferenceEquals(receiverValue42, null))
         {
@@ -1128,42 +1238,42 @@ bool? optionalValue43;
 
         pairedActionInputPermission = default;
         CloseWeaponWheel(false);
-        // receiverValue44（判空前缓存的玩家映射）：从玩家映射读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonInputBridge.LockForDeath()。
+        // 判空前缓存的玩家映射。
 global::UnityEngine.InputSystem.InputActionMap receiverValue44 = playerMap;
         if (!global::System.Object.ReferenceEquals(receiverValue44, null))
         {
             receiverValue44.Disable();
         }
 
-        // receiverValue45（判空前缓存的配对动作映射）：从配对动作映射读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonInputBridge.LockForDeath()。
+        // 判空前缓存的配对动作映射。
 global::UnityEngine.InputSystem.InputActionMap receiverValue45 = qteMap;
         if (!global::System.Object.ReferenceEquals(receiverValue45, null))
         {
             receiverValue45.Disable();
         }
 
-        // receiverValue46（判空前缓存的里昂玩家控制器）：从控制器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonInputBridge.LockForDeath()。
+        // 判空前缓存的里昂玩家控制器。
 global::LeonController receiverValue46 = controller;
         if (!global::System.Object.ReferenceEquals(receiverValue46, null))
         {
             receiverValue46.SetMoveInput(Vector3.zero);
         }
 
-        // receiverValue47（判空前缓存的里昂玩家控制器）：从控制器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonInputBridge.LockForDeath()。
+        // 判空前缓存的里昂玩家控制器。
 global::LeonController receiverValue47 = controller;
         if (!global::System.Object.ReferenceEquals(receiverValue47, null))
         {
             receiverValue47.SetLookInput(Vector2.zero);
         }
 
-        // receiverValue48（判空前缓存的里昂玩家控制器）：从控制器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonInputBridge.LockForDeath()。
+        // 判空前缓存的里昂玩家控制器。
 global::LeonController receiverValue48 = controller;
         if (!global::System.Object.ReferenceEquals(receiverValue48, null))
         {
             receiverValue48.SetSprinting(false);
         }
 
-        // receiverValue49（判空前缓存的里昂玩家控制器）：从控制器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonInputBridge.LockForDeath()。
+        // 判空前缓存的里昂玩家控制器。
 global::LeonController receiverValue49 = controller;
         if (!global::System.Object.ReferenceEquals(receiverValue49, null))
         {
@@ -1171,14 +1281,14 @@ global::LeonController receiverValue49 = controller;
         }
 
         aimToggleActive = false;
-        // receiverValue50（判空前缓存的战斗）：从战斗读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonInputBridge.LockForDeath()。
+        // 判空前缓存的战斗。
 global::LeonCombat receiverValue50 = combat;
         if (!global::System.Object.ReferenceEquals(receiverValue50, null))
         {
             receiverValue50.HandleAim(false);
         }
 
-        // receiverValue51（判空前缓存的战斗）：从战斗读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonInputBridge.LockForDeath()。
+        // 判空前缓存的战斗。
 global::LeonCombat receiverValue51 = combat;
         if (!global::System.Object.ReferenceEquals(receiverValue51, null))
         {
@@ -1193,12 +1303,11 @@ global::LeonCombat receiverValue51 = combat;
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） LeonController.SetFreeLooking(bool)、LeonInputBridge.HandleScrollWeaponWheel()、LeonInputBridge.UpdateScrollWeaponWheelAutoConfirm()、object.ReferenceEquals(object, object)、UICursorManager.HideCustomCursor()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     void Update()
     {
-        ReplayPickupInput();
         ReplayGameplayIntents();
         // 动作映射禁用后仍读取真实按键，防止取消回调冒充松键。
         if (Application.isFocused)
         {
-            // receiverValue52（判空前缓存的里昂玩家控制器）：从控制器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonInputBridge.Update()。
+            // 判空前缓存的里昂玩家控制器。
 global::LeonController receiverValue52 = controller;
             if (!global::System.Object.ReferenceEquals(receiverValue52, null))
             {
@@ -1208,14 +1317,13 @@ global::LeonController receiverValue52 = controller;
 
         if (!CanUseQuickSelect())
         {
-            ClearGameplayIntents();
             CloseWeaponWheel(false);
             return;
         }
 
         HandleScrollWeaponWheel();
         UpdateScrollWeaponWheelAutoConfirm();
-        // receiverValue53（判空前缓存的界面光标管理器的实例）：从界面光标管理器的实例读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonInputBridge.Update()。
+        // 判空前缓存的界面光标管理器的实例。
 global::UICursorManager receiverValue53 = UICursorManager.Instance;
         if (!global::System.Object.ReferenceEquals(receiverValue53, null))
         {
@@ -1223,7 +1331,7 @@ global::UICursorManager receiverValue53 = UICursorManager.Instance;
         }
     }
 
-    private bool CanUsePickupInput()
+    private bool CanUseGameplayInput()
     {
         return controller != null && Application.isFocused && !weaponWheelOpen && !deathInputLocked
             && activeQteSessionId <= 0 && (!waitingSceneOpenRelease || hasOpenRelease)
@@ -1233,119 +1341,9 @@ global::UICursorManager receiverValue53 = UICursorManager.Instance;
             && (StorageBoxUI.Instance == null || !StorageBoxUI.Instance.IsVisible);
     }
 
-    private bool BufferPickupInput(PickupInput action)
-    {
-        if (actions == null || !actions.IsItemPickupActive)
-        {
-            return false;
-        }
-
-        if (CanUsePickupInput())
-        {
-            int transactionId = actions.CurrentFullBodyTransactionId;
-            if (pickupInputTransaction != transactionId)
-            {
-                ClearPickupInput();
-                pickupInputTransaction = transactionId;
-            }
-
-            if (action != PickupInput.None)
-            {
-                pendingPickupAction = action;
-            }
-        }
-        return true;
-    }
-
-    internal bool HasBufferedPickupInput(int transactionId)
-    {
-        return pickupInputTransaction == transactionId && (pendingPickupAim || pendingPickupAction != PickupInput.None);
-    }
-
-    internal void ReleaseBufferedPickupInput(int transactionId)
-    {
-        if (HasBufferedPickupInput(transactionId))
-        {
-            pickupInputReleased = true;
-        }
-    }
-
-    internal void DiscardPendingPickupInput(int transactionId)
-    {
-        if (pickupInputTransaction == transactionId)
-        {
-            ClearPickupInput();
-        }
-    }
-
-    private void ClearPickupInput()
-    {
-        pickupInputTransaction = 0;
-        pickupInputReleased = false;
-        pendingPickupAim = false;
-        pendingPickupAction = PickupInput.None;
-    }
-
-    private void ReplayPickupInput()
-    {
-        if (pickupInputTransaction == 0)
-        {
-            return;
-        }
-        if (!CanUsePickupInput())
-        {
-            ClearPickupInput();
-            return;
-        }
-        if (!pickupInputReleased)
-        {
-            return;
-        }
-
-        PickupInput action = pendingPickupAction;
-        bool aim = pendingPickupAim && aimAction != null && aimAction.enabled &&
-            (aimMode == 1 && aimToggleActive || aimMode != 1 && aimAction.IsPressed());
-        ClearPickupInput();
-        if (!controller.CanAct() || actions == null || actions.HasActiveFullBodyAction)
-        {
-            return;
-        }
-
-        if (aim && combat != null)
-        {
-            combat.HandleAim(true);
-        }
-        if (action == PickupInput.Interact && interactAction != null && interactAction.enabled)
-        {
-            TryInteract();
-        }
-        else if (action == PickupInput.Shoot && combat != null && shootAction != null && shootAction.enabled)
-        {
-            combat.CommitAttackInput(Time.timeAsDouble);
-        }
-        else if (action == PickupInput.Reload && combat != null && reloadAction != null && reloadAction.enabled)
-        {
-            combat.HandleReload();
-        }
-    }
-
-    private bool BufferPickupAim(bool aim)
-    {
-        if (!BufferPickupInput(PickupInput.None))
-        {
-            return false;
-        }
-
-        if (pickupInputTransaction != 0 && !pickupInputReleased)
-        {
-            pendingPickupAim = aim;
-        }
-        return true;
-    }
-
     /// <summary>OnMove 的业务处理入口；本方法直接依赖 Action.Invoke()、InputAction.CallbackContext.ReadValue&lt;Vector2&gt;()、LeonController.SetMoveInput(Vector3)、object.ReferenceEquals(object, object)、Vector3.Vector3(float, float, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） Action.Invoke()、InputAction.CallbackContext.ReadValue&lt;Vector2&gt;()、LeonController.SetMoveInput(Vector3)、object.ReferenceEquals(object, object)、Vector3.Vector3(float, float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="ctx">中文含义：当前回调上下文。使用位置：LeonInputBridge.OnMove(InputAction.CallbackContext)。</param>
+    /// <param name="ctx">当前回调上下文。</param>
     void OnMove(InputAction.CallbackContext ctx)
     {
         if (InventorySceneLoader.Instance != null && InventorySceneLoader.Instance.IsVisible)
@@ -1353,7 +1351,7 @@ global::UICursorManager receiverValue53 = UICursorManager.Instance;
             return;
         }
 
-        // v（读取值的返回结果）：保存 InputAction.CallbackContext.ReadValue<Vector2>() 的返回结果，供当前步骤使用。使用位置：作为 Vector3.Vector3(float, float, float) 的参数、LeonInputBridge.OnMove(InputAction.CallbackContext)。
+        // 读取值的返回结果。
 var v = ctx.ReadValue<Vector2>();
         if (controller)
         {
@@ -1371,7 +1369,7 @@ var v = ctx.ReadValue<Vector2>();
         }
 
         hasReportedMoveInput = true;
-        // receiverValue54（判空前缓存的玩家已移动时的通知回调）：从玩家已移动时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonInputBridge.OnMove(InputAction.CallbackContext)。
+        // 判空前缓存的玩家已移动时的通知回调。
 global::System.Action receiverValue54 = OnPlayerMoved;
         if (!global::System.Object.ReferenceEquals(receiverValue54, null))
         {
@@ -1381,7 +1379,7 @@ global::System.Action receiverValue54 = OnPlayerMoved;
 
     /// <summary>OnLook 的业务处理入口；本方法直接依赖 InputAction.CallbackContext.ReadValue&lt;Vector2&gt;()、LeonController.SetLookInput(Vector2)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） InputAction.CallbackContext.ReadValue&lt;Vector2&gt;()、LeonController.SetLookInput(Vector2)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="ctx">中文含义：当前回调上下文。使用位置：作为 LeonController.SetLookInput(Vector2) 的参数。</param>
+    /// <param name="ctx">当前回调上下文。</param>
     void OnLook(InputAction.CallbackContext ctx)
     {
         if (InventorySceneLoader.Instance != null && InventorySceneLoader.Instance.IsVisible)
@@ -1401,7 +1399,7 @@ global::System.Action receiverValue54 = OnPlayerMoved;
 
     /// <summary>OnAim 的业务处理入口；本方法直接依赖 InputAction.CallbackContext.ReadValueAsButton()、LeonCombat.HandleAim(bool)、LeonInputBridge.CloseWeaponWheel(bool)、object.ReferenceEquals(object, object)、PlayerPrefs.GetInt(string, int)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） InputAction.CallbackContext.ReadValueAsButton()、LeonCombat.HandleAim(bool)、LeonInputBridge.CloseWeaponWheel(bool)、object.ReferenceEquals(object, object)、PlayerPrefs.GetInt(string, int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="ctx">中文含义：当前回调上下文。使用位置：作为 LeonCombat.HandleAim(bool) 的参数、LeonInputBridge.OnAim(InputAction.CallbackContext)。</param>
+    /// <param name="ctx">当前回调上下文。</param>
     void OnAim(InputAction.CallbackContext ctx)
     {
         if (InventorySceneLoader.Instance != null && InventorySceneLoader.Instance.IsVisible)
@@ -1416,17 +1414,26 @@ global::System.Action receiverValue54 = OnPlayerMoved;
 
         // 重新读取设置，确保运行时修改立即生效
         aimMode = PlayerPrefs.GetInt("AimMode", 0);
+        bool pickupActive = actions != null && actions.IsItemPickupActive;
         if (aimMode == 1)
         {
             // 切换模式：仅 performed 时切换状态
             if (ctx.performed)
             {
                 aimToggleActive = !aimToggleActive;
-                if (BufferPickupAim(aimToggleActive))
+                if (pickupActive)
+                {
+                    BufferPickupAim(aimToggleActive);
+                    return;
+                }
+
+                restoreHeldAim = aimToggleActive;
+                if (GameplayActionRecovering(GameplayIntentKind.Shoot))
                 {
                     return;
                 }
-                // receiverValue55（判空前缓存的战斗）：从战斗读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonInputBridge.OnAim(InputAction.CallbackContext)。
+
+                // 判空前缓存的战斗。
 global::LeonCombat receiverValue55 = combat;
                 if (!global::System.Object.ReferenceEquals(receiverValue55, null))
                 {
@@ -1437,23 +1444,32 @@ global::LeonCombat receiverValue55 = combat;
         else
         {
             // 长按模式：performed=true, canceled=false
-            if (BufferPickupAim(ctx.ReadValueAsButton()))
+            bool aimHeld = ctx.ReadValueAsButton();
+            if (pickupActive)
+            {
+                BufferPickupAim(aimHeld);
+                return;
+            }
+
+            restoreHeldAim = aimHeld;
+            if (aimHeld && GameplayActionRecovering(GameplayIntentKind.Shoot))
             {
                 return;
             }
-            // receiverValue56（判空前缓存的战斗）：从战斗读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonInputBridge.OnAim(InputAction.CallbackContext)。
+
+            // 判空前缓存的战斗。
 global::LeonCombat receiverValue56 = // 长按模式：performed=true, canceled=false
  combat;
             if (!global::System.Object.ReferenceEquals(receiverValue56, null))
             {
-                receiverValue56.HandleAim(ctx.ReadValueAsButton());
+                receiverValue56.HandleAim(aimHeld);
             }
         }
     }
 
     /// <summary>OnShoot 的业务处理入口；本方法直接依赖 LeonCombat.CommitAttackInput(double)、LeonInputBridge.CloseWeaponWheel(bool)、LeonInputBridge.ConvertInputTime(double)、object.ReferenceEquals(object, object)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） LeonCombat.CommitAttackInput(double)、LeonInputBridge.CloseWeaponWheel(bool)、LeonInputBridge.ConvertInputTime(double)、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="ctx">中文含义：当前回调上下文。使用位置：作为 LeonInputBridge.ConvertInputTime(double) 的参数。</param>
+    /// <param name="ctx">当前回调上下文。</param>
     void OnShoot(InputAction.CallbackContext ctx)
     {
         if (InventorySceneLoader.Instance != null && InventorySceneLoader.Instance.IsVisible)
@@ -1464,7 +1480,7 @@ global::LeonCombat receiverValue56 = // 长按模式：performed=true, canceled=
         {
             CloseWeaponWheel(false);
         }
-        if (!BufferPickupInput(PickupInput.Shoot) && CanUsePickupInput())
+        if (CanUseGameplayInput())
         {
             DispatchGameplayIntent(GameplayIntentKind.Shoot, ConvertInputTime(ctx.time));
         }
@@ -1472,7 +1488,7 @@ global::LeonCombat receiverValue56 = // 长按模式：performed=true, canceled=
 
     /// <summary>OnShootReleased 的业务处理入口；本方法直接依赖 LeonCombat.CommitAttackReleased(double)、LeonInputBridge.ConvertInputTime(double)、object.ReferenceEquals(object, object)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） LeonCombat.CommitAttackReleased(double)、LeonInputBridge.ConvertInputTime(double)、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="ctx">中文含义：当前回调上下文。使用位置：作为 LeonInputBridge.ConvertInputTime(double) 的参数。</param>
+    /// <param name="ctx">当前回调上下文。</param>
     void OnShootReleased(InputAction.CallbackContext ctx)
     {
         if (weaponWheelOpen)
@@ -1480,7 +1496,7 @@ global::LeonCombat receiverValue56 = // 长按模式：performed=true, canceled=
             return;
         }
 
-        // receiverValue58（判空前缓存的战斗）：从战斗读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonInputBridge.OnShootReleased(InputAction.CallbackContext)。
+        // 判空前缓存的战斗。
 global::LeonCombat receiverValue58 = combat;
         if (!global::System.Object.ReferenceEquals(receiverValue58, null))
         {
@@ -1495,7 +1511,7 @@ global::LeonCombat receiverValue58 = combat;
     {
         if (InventorySceneLoader.Instance != null && InventorySceneLoader.Instance.IsVisible)
         {
-            // receiverValue59（判空前缓存的背包界面的实例）：从背包界面的实例读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonInputBridge.OnReload(InputAction.CallbackContext)。
+            // 判空前缓存的背包界面的实例。
 global::InventoryUI receiverValue59 = InventoryUI.Instance;
             if (!global::System.Object.ReferenceEquals(receiverValue59, null))
             {
@@ -1510,12 +1526,7 @@ global::InventoryUI receiverValue59 = InventoryUI.Instance;
             return;
         }
 
-        if (BufferPickupInput(PickupInput.Reload))
-        {
-            return;
-        }
-
-        if (CanUsePickupInput())
+        if (CanUseGameplayInput())
         {
             DispatchGameplayIntent(GameplayIntentKind.Reload, ConvertInputTime(ctx.time));
         }
@@ -1525,14 +1536,6 @@ global::InventoryUI receiverValue59 = InventoryUI.Instance;
     /// <remarks>静态调用链：未发现可解析的直接上游调用；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     private void CaptureInputClock()
     {
-        var updateType = UnityEngine.InputSystem.LowLevel.InputState.currentUpdateType;
-        if (updateType == InputUpdateType.Dynamic || updateType == InputUpdateType.Fixed ||
-            updateType == InputUpdateType.Manual)
-        {
-            // 重新启用发生在输入回调中时，要等下一批输入完成初始状态检查。
-            movementInputAwaitingUpdate = false;
-        }
-
         // 同一批输入共享时间基准，不让前一个回调的处理耗时改变后一个事件的年龄。
         inputUpdateRealtime = UnityEngine.InputSystem.LowLevel.InputState.currentTime;
         inputUpdateGameTime = Time.timeAsDouble;
@@ -1549,7 +1552,7 @@ global::InventoryUI receiverValue59 = InventoryUI.Instance;
 
     /// <summary>ConvertInputTime 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
     /// <remarks>静态调用链：上游 LeonInputBridge.OnParry(InputAction.CallbackContext)、LeonInputBridge.OnShoot(InputAction.CallbackContext)、LeonInputBridge.OnShootReleased(InputAction.CallbackContext)；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="originalTime">中文含义：原始时间。使用位置：LeonInputBridge.ConvertInputTime(double)。</param>
+    /// <param name="originalTime">原始时间。</param>
     private double ConvertInputTime(double originalTime)
     {
         if (inputClockCaptured)
@@ -1562,9 +1565,9 @@ global::InventoryUI receiverValue59 = InventoryUI.Instance;
 
     /// <summary>OnParry 的业务处理入口；本方法直接依赖 LeonCombat.CommitGuardInput(bool, double)、LeonController.TrySetCrouching(bool)、LeonInputBridge.CloseWeaponWheel(bool)、LeonInputBridge.ConvertInputTime(double)、object.ReferenceEquals(object, object)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） LeonCombat.CommitGuardInput(bool, double)、LeonController.TrySetCrouching(bool)、LeonInputBridge.CloseWeaponWheel(bool)、LeonInputBridge.ConvertInputTime(double)、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="ctx">中文含义：当前回调上下文。使用位置：作为 LeonInputBridge.ConvertInputTime(double) 的参数、LeonInputBridge.OnParry(InputAction.CallbackContext)。</param>
-    internal bool CanReadParryInput => isActiveAndEnabled && parryAction != null && parryAction.enabled && CanUsePickupInput();
-    internal bool IsParryInputHeld => parryAction != null && parryAction.IsPressed();
+    /// <param name="ctx">当前回调上下文。</param>
+    internal bool CanReadParryInput => isActiveAndEnabled && parryAction != null && parryAction.enabled && CanUseGameplayInput();
+    internal bool IsParryInputHeld => parryAction != null && IsEffectiveGuardPressed();
 
     internal string GetParryBindingDisplayName()
     {
@@ -1593,6 +1596,7 @@ global::InventoryUI receiverValue59 = InventoryUI.Instance;
         if (ctx.canceled)
         {
             restoreHeldGuard = false;
+            DiscardGameplayIntent(GameplayIntentKind.Parry);
             if (combat != null)
             {
                 combat.CommitGuardInput(false, ConvertInputTime(ctx.time));
@@ -1604,13 +1608,8 @@ global::InventoryUI receiverValue59 = InventoryUI.Instance;
         {
             CloseWeaponWheel(false);
         }
-        if (!ctx.performed || !CanUsePickupInput())
+        if (!ctx.performed || !CanUseGameplayInput())
         {
-            return;
-        }
-        if (controller != null && controller.IsCrouching && !controller.TrySetCrouching(false))
-        {
-            restoreHeldGuard = true;
             return;
         }
         if (qteCoordinator != null && qteCoordinator.TrySubmitEmergencyDefense())
@@ -1619,15 +1618,12 @@ global::InventoryUI receiverValue59 = InventoryUI.Instance;
         }
 
         restoreHeldGuard = true;
-        if (combat != null)
-        {
-            combat.CommitGuardInput(true, ConvertInputTime(ctx.time));
-        }
+        DispatchGameplayIntent(GameplayIntentKind.Parry, ConvertInputTime(ctx.time));
     }
 
     /// <summary>OnSwitchWeapon 的业务处理入口；本方法直接依赖 Array.IndexOf&lt;WeaponType&gt;(WeaponType[], WeaponType)、Component.GetComponent&lt;LeonWeaponHandler&gt;()、LeonWeaponHandler.HasWeaponInInventory(WeaponType)、LeonWeaponHandler.QuickSelectSwitch(WeaponType)、Mathf.Max(int, int)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） Array.IndexOf&lt;WeaponType&gt;(WeaponType[], WeaponType)、Component.GetComponent&lt;LeonWeaponHandler&gt;()、LeonWeaponHandler.HasWeaponInInventory(WeaponType)、LeonWeaponHandler.QuickSelectSwitch(WeaponType)、Mathf.Max(int, int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="ctx">中文含义：当前回调上下文。使用位置：LeonInputBridge.OnSwitchWeapon(InputAction.CallbackContext)。</param>
+    /// <param name="ctx">当前回调上下文。</param>
     public string GetQuickSlotBindingDisplay(int slotIndex)
     {
         InputAction action = quickSlotActions[slotIndex];
@@ -1653,7 +1649,7 @@ global::InventoryUI receiverValue59 = InventoryUI.Instance;
         }
 
         CloseWeaponWheel(false);
-        if (CanUsePickupInput())
+        if (CanUseGameplayInput())
         {
             DispatchGameplayIntent(GameplayIntentKind.QuickSlot, ConvertInputTime(context.time), slotIndex);
         }
@@ -1683,7 +1679,7 @@ global::InventoryUI receiverValue59 = InventoryUI.Instance;
 
     /// <summary>OnCrouch 的业务处理入口；本方法直接依赖 LeonController.ToggleCrouch()、object.ReferenceEquals(object, object)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） LeonController.ToggleCrouch()、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="ctx">中文含义：当前回调上下文。使用位置：LeonInputBridge.OnCrouch(InputAction.CallbackContext)。</param>
+    /// <param name="ctx">当前回调上下文。</param>
     void OnCrouch(InputAction.CallbackContext ctx)
     {
         if (!ctx.performed || weaponWheelOpen)
@@ -1696,17 +1692,9 @@ global::InventoryUI receiverValue59 = InventoryUI.Instance;
             return;
         }
 
-        // receiverValue64（判空前缓存的里昂玩家控制器）：从控制器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonInputBridge.OnCrouch(InputAction.CallbackContext)。
-global::LeonController receiverValue64 = controller;
-        // optionalValue65（条件访问得到的切换蹲伏的返回结果）：保存条件访问的结果，接收者为空时保持默认空值，非空时才执行原成员访问。使用位置：LeonInputBridge.OnCrouch(InputAction.CallbackContext)。
-bool? optionalValue65;
-        if (!global::System.Object.ReferenceEquals(receiverValue64, null))
+        if (CanUseGameplayInput())
         {
-            optionalValue65 = receiverValue64.ToggleCrouch();
-        }
-        else
-        {
-            optionalValue65 = default;
+            DispatchGameplayIntent(GameplayIntentKind.Crouch, ConvertInputTime(ctx.time));
         }
     }
 
@@ -1728,7 +1716,7 @@ bool? optionalValue65;
     {
         if (!Application.isFocused || FreeViewKeyActualHeld)
         {
-            // receiverValue66（判空前缓存的里昂玩家控制器）：从控制器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonInputBridge.OnFreeLookEnd(InputAction.CallbackContext)。
+            // 判空前缓存的里昂玩家控制器。
 global::LeonController receiverValue66 = controller;
             if (!global::System.Object.ReferenceEquals(receiverValue66, null))
             {
@@ -1770,7 +1758,7 @@ global::LeonController receiverValue66 = controller;
             return;
         }
 
-        // loader（加载器）：使用位置：LeonInputBridge.OnInventoryToggle(InputAction.CallbackContext)。
+        // 加载器。
 var loader = InventorySceneLoader.Instance;
         if (loader == null || loader.IsLoading)
         {
@@ -1791,20 +1779,12 @@ var loader = InventorySceneLoader.Instance;
 
     /// <summary>OnInteract 的业务处理入口；本方法直接依赖 InteractionSystem.InteractNearby(Transform)、LeonQTECoordinator.TryStartNearestBodyTechnique(out int)、LeonQTECoordinator.TryStartNearestPrompt(out int)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） InteractionSystem.InteractNearby(Transform)、LeonQTECoordinator.TryStartNearestBodyTechnique(out int)、LeonQTECoordinator.TryStartNearestPrompt(out int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="ctx">中文含义：当前回调上下文。使用位置：LeonInputBridge.OnInteract(InputAction.CallbackContext)。</param>
+    /// <param name="ctx">当前回调上下文。</param>
     void OnInteract(InputAction.CallbackContext ctx)
     {
-        if (ctx.performed && !BufferPickupInput(PickupInput.Interact) && CanUsePickupInput())
+        if (ctx.performed && CanUseGameplayInput())
         {
             DispatchGameplayIntent(GameplayIntentKind.Interact, ConvertInputTime(ctx.time));
-        }
-    }
-
-    private void TryInteract()
-    {
-        if (CanUsePickupInput())
-        {
-            DispatchGameplayIntent(GameplayIntentKind.Interact, Time.timeAsDouble);
         }
     }
 
@@ -1825,7 +1805,7 @@ var loader = InventorySceneLoader.Instance;
     {
         if (InventorySceneLoader.Instance != null && InventorySceneLoader.Instance.IsVisible && InventoryUI.Instance != null && InventoryUI.Instance.Interactive)
         {
-            // receiverValue67（判空前缓存的背包管理器的实例）：从背包管理器的实例读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonInputBridge.OnSort(InputAction.CallbackContext)。
+            // 判空前缓存的背包管理器的实例。
 global::InventoryManager receiverValue67 = InventoryManager.Instance;
             if (!global::System.Object.ReferenceEquals(receiverValue67, null))
             {
@@ -1836,16 +1816,195 @@ global::InventoryManager receiverValue67 = InventoryManager.Instance;
 
     /// <summary>OnEscapePress 的业务处理入口；本方法直接依赖 LeonQTECoordinator.SubmitEscapePress(int)、object.ReferenceEquals(object, object)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） LeonQTECoordinator.SubmitEscapePress(int)、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="ctx">中文含义：当前回调上下文。使用位置：LeonInputBridge.OnEscapePress(InputAction.CallbackContext)。</param>
+    /// <param name="ctx">当前回调上下文。</param>
     internal bool IsEscapeHeld(int session)
     {
         return session > 0 && session == activeQteSessionId && escapePressAction != null &&
             escapePressAction.enabled && escapePressAction.IsPressed();
     }
 
+    internal bool HasKnifeEscapeBinding => knifeEscapeAction != null && knifeEscapeAction.controls.Count > 0;
+
+    private static bool IsActionControlPressed(InputAction action)
+    {
+        if (action == null)
+        {
+            return false;
+        }
+        foreach (InputControl control in action.controls)
+        {
+            if (control is UnityEngine.InputSystem.Controls.ButtonControl button && button.isPressed)
+            {
+                return true;
+            }
+        }
+        foreach (InputBinding binding in action.bindings)
+        {
+            if (binding.isComposite || string.IsNullOrEmpty(binding.effectivePath))
+            {
+                continue;
+            }
+            InputControl resolved = InputSystem.FindControl(binding.effectivePath);
+            if (resolved is UnityEngine.InputSystem.Controls.ButtonControl resolvedButton && resolvedButton.isPressed)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    internal Vector2 ReadRawMoveInput()
+    {
+        if (moveAction == null)
+        {
+            return Vector2.zero;
+        }
+        Vector2 result = Vector2.zero;
+        bool readAnyControl = false;
+        foreach (InputControl control in moveAction.controls)
+        {
+            readAnyControl = true;
+            if (control is UnityEngine.InputSystem.Controls.StickControl stick)
+            {
+                result += stick.ReadValue();
+            }
+            else if (control is UnityEngine.InputSystem.Controls.Vector2Control vectorControl)
+            {
+                result += vectorControl.ReadValue();
+            }
+            else if (control is UnityEngine.InputSystem.Controls.ButtonControl button && button.isPressed)
+            {
+                InputBinding? matchedBinding = moveAction.GetBindingForControl(control);
+                if (matchedBinding.HasValue)
+                {
+                    result += ReadMovePartDirection(matchedBinding.Value.name);
+                }
+            }
+        }
+        if (!readAnyControl)
+        {
+            foreach (InputBinding binding in moveAction.bindings)
+            {
+                if (binding.isComposite || string.IsNullOrEmpty(binding.effectivePath))
+                {
+                    continue;
+                }
+                InputControl control = InputSystem.FindControl(binding.effectivePath);
+                if (control is UnityEngine.InputSystem.Controls.StickControl stick)
+                {
+                    result += stick.ReadValue();
+                }
+                else if (control is UnityEngine.InputSystem.Controls.Vector2Control vectorControl)
+                {
+                    result += vectorControl.ReadValue();
+                }
+                else if (control is UnityEngine.InputSystem.Controls.ButtonControl button && button.isPressed)
+                {
+                    result += ReadMovePartDirection(binding.name);
+                }
+            }
+        }
+        if (result.sqrMagnitude > 1f)
+        {
+            result.Normalize();
+        }
+        return result;
+    }
+
+    private static Vector2 ReadMovePartDirection(string partName)
+    {
+        if (string.Equals(partName, "up", System.StringComparison.OrdinalIgnoreCase))
+        {
+            return Vector2.up;
+        }
+        if (string.Equals(partName, "down", System.StringComparison.OrdinalIgnoreCase))
+        {
+            return Vector2.down;
+        }
+        if (string.Equals(partName, "right", System.StringComparison.OrdinalIgnoreCase))
+        {
+            return Vector2.right;
+        }
+        if (string.Equals(partName, "left", System.StringComparison.OrdinalIgnoreCase))
+        {
+            return Vector2.left;
+        }
+        return Vector2.zero;
+    }
+
+    internal bool IsRawSprintPressed()
+    {
+        return IsActionControlPressed(sprintAction);
+    }
+
+    internal bool IsRawAimPressed()
+    {
+        return IsActionControlPressed(aimAction);
+    }
+
+    internal void SyncHeldMovementImmediately()
+    {
+        if (!CanUseGameplayMovementSync())
+        {
+            return;
+        }
+
+        Vector2 rawMove = ReadEffectiveMoveInput();
+        bool rawSprint = IsEffectiveSprintPressed();
+        movementInputRefreshPending = false;
+        controller.SetMoveInput(new Vector3(rawMove.x, 0f, rawMove.y));
+        controller.SetSprinting(rawSprint);
+    }
+
+    private void SyncHeldMovementAfterQTE()
+    {
+        RequestMovementInputRefresh();
+        if (controller == null)
+        {
+            return;
+        }
+
+        Vector2 rawMove = ReadEffectiveMoveInput();
+        bool rawSprint = IsEffectiveSprintPressed();
+        if (rawMove.sqrMagnitude > 0.0001f || rawSprint)
+        {
+            movementInputRefreshPending = false;
+            controller.SetMoveInput(new Vector3(rawMove.x, 0f, rawMove.y));
+            controller.SetSprinting(rawSprint);
+        }
+    }
+
+    private bool IsKnifeEscapeControlPressed()
+    {
+        return IsActionControlPressed(knifeEscapeAction);
+    }
+
+    internal void ObserveKnifeEscapeRelease()
+    {
+        if (knifeEscapeAwaitingRelease && !IsKnifeEscapeControlPressed())
+        {
+            knifeEscapeAwaitingRelease = false;
+        }
+    }
+
+    private bool CanSubmitQteInput()
+    {
+        return activeQteSessionId > 0 && qteCoordinator != null && !deathInputLocked
+            && Time.timeScale > 0f && Application.isFocused
+            && (!GameUIManager.HasInstance || !GameUIManager.Instance.HasBlockingModal);
+    }
+
+    private void OnKnifeEscape(InputAction.CallbackContext ctx)
+    {
+        if (ctx.performed && !knifeEscapeAwaitingRelease && CanSubmitQteInput())
+        {
+            qteCoordinator.SubmitFrontGrabKnife(activeQteSessionId);
+        }
+    }
+
     void OnEscapePress(InputAction.CallbackContext ctx)
     {
-        if (ctx.performed && activeQteSessionId > 0 && qteCoordinator != null)
+        if (ctx.performed && CanSubmitQteInput())
         {
             qteCoordinator.SubmitEscapePress(activeQteSessionId, ConvertInputTime(ctx.time));
         }
@@ -1863,7 +2022,7 @@ global::InventoryManager receiverValue67 = InventoryManager.Instance;
 
     /// <summary>CloseWeaponWheel 的业务处理入口；本方法直接依赖 LeonInputBridge.SyncAimAfterWeaponWheel()、object.ReferenceEquals(object, object)、WeaponWheelUI.CancelSelection()、WeaponWheelUI.ConfirmSelection()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonInputBridge.LockForDeath()、LeonInputBridge.OnAim(InputAction.CallbackContext)、LeonInputBridge.OnDisable()、LeonInputBridge.OnParry(InputAction.CallbackContext)、LeonInputBridge.OnShoot(InputAction.CallbackContext) 等共 7 处；下游（含内部回调体） LeonInputBridge.SyncAimAfterWeaponWheel()、object.ReferenceEquals(object, object)、WeaponWheelUI.CancelSelection()、WeaponWheelUI.ConfirmSelection()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="confirm">中文含义：是否确认。使用位置：LeonInputBridge.CloseWeaponWheel(bool)。</param>
+    /// <param name="confirm">是否确认。</param>
     void CloseWeaponWheel(bool confirm, bool restoreAim = true)
     {
         if (!weaponWheelOpen)

@@ -8,133 +8,133 @@ public partial class EnemyAIManager : Singleton<EnemyAIManager>, IManualSingleto
     /// <summary>中文含义：切换场景时是否保留此单例对象。</summary>
     protected override bool Persistent => false;
 
-    /// <summary>中文含义：最大生效距离。使用位置：EnemyAIManager.UpdateEnemyStates()、EnemyAIManager.ValidateSceneConfiguration()。</summary>
+    /// <summary>最大生效距离。</summary>
     [Header("远距离启停")]
     public float maxActiveDistance = 80f;
-    /// <summary>中文含义：更新间隔。使用位置：作为 Mathf.Max(float, float) 的参数、EnemyAIManager.Update()。</summary>
+    /// <summary>更新间隔。</summary>
     public float updateInterval = 0.2f;
-    /// <summary>中文含义：包围距离。使用位置：作为 EnemyAIManager.AssignSurroundSlot(VillagerController, Vector3, float, bool, int) 的参数、作为 EnemyAIManager.DrawSurroundSlots(Vector3, float, Color) 的参数、作为 EnemyAIManager.GetStableSurroundSlot(VillagerController, Vector3, float, bool) 的参数 等共 6 处。</summary>
+    /// <summary>包围距离。</summary>
     [Header("敌群战斗协调")]
     [Min(0.1f)]
     public float surroundDistance = 1.75f;
-    /// <summary>中文含义：包围阵型起始距离。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>包围阵型起始距离。</summary>
     [Min(0.1f)]
     public float surroundFormationStartDistance = 3f;
-    /// <summary>中文含义：最小槽位分离量。使用位置：EnemyAIManager.SelectSurroundSlot(VillagerController, Vector3, float, int, bool, out int)。</summary>
+    /// <summary>最小槽位分离量。</summary>
     [Min(0.1f)]
     public float minimumSlotSeparation = 0.85f;
-    /// <summary>中文含义：攻击恢复延迟。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>攻击恢复延迟。</summary>
     [Min(0f)]
     public float attackRecoveryDelay = 0.8f;
-    /// <summary>中文含义：最大并发攻击者集合。使用位置：作为 Mathf.Clamp(int, int, int) 的参数、作为 Mathf.Min(int, int) 的参数、EnemyAIManager.ValidateSceneConfiguration()。</summary>
+    /// <summary>最大并发攻击者集合。</summary>
     [Range(1, 4)]
     public int maximumConcurrentAttackers = 2;
-    /// <summary>中文含义：最小并发攻击角度。使用位置：作为 Mathf.Clamp(float, float, float) 的参数、EnemyAIManager.ValidateSceneConfiguration()。</summary>
+    /// <summary>最小并发攻击角度。</summary>
     [Range(0f, 180f)]
     public float minimumConcurrentAttackAngle = 75f;
-    /// <summary>中文含义：正面抓取全局冷却。使用位置：EnemyAIManager.CompleteQTEAttempt(VillagerController, QTEKind, bool)。</summary>
+    /// <summary>正面抓取全局冷却。</summary>
     [Min(0f)]
     public float frontGrabGlobalCooldown = 9f;
-    /// <summary>中文含义：腿部撕咬全局冷却。使用位置：EnemyAIManager.CompleteQTEAttempt(VillagerController, QTEKind, bool)。</summary>
+    /// <summary>腿部撕咬全局冷却。</summary>
     [Min(0f)]
     public float legBiteGlobalCooldown = 6f;
-    /// <summary>中文含义：电锯执行全局冷却。使用位置：EnemyAIManager.CompleteQTEAttempt(VillagerController, QTEKind, bool)。</summary>
+    /// <summary>电锯执行全局冷却。</summary>
     [Min(0f)]
     public float chainsawExecutionGlobalCooldown = 8f;
-    /// <summary>中文含义：配对动作优先级预约窗口。近身交互资格成立后，为它短暂封住新的普通攻击名额，避免现有攻击者结束后又被下一名普通攻击者抢占。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>配对动作优先级预约窗口。近身交互资格成立后，为它短暂封住新的普通攻击名额，避免现有攻击者结束后又被下一名普通攻击者抢占。</summary>
     [Tooltip("近身交互资格成立后，为它短暂封住新的普通攻击名额，避免现有攻击者结束后又被下一名普通攻击者抢占。")]
     [Min(0.1f)]
     public float qtePriorityReservationWindow = 1.25f;
-    /// <summary>中文含义：包围槽位数量。使用位置：作为 Mathf.Max(int, int) 的参数、EnemyAIManager.ValidateSceneConfiguration()。</summary>
+    /// <summary>包围槽位数量。</summary>
     [Range(4, 16)]
     public int surroundSlotCount = 16;
-    /// <summary>中文含义：包围槽位保持持续时间。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>包围槽位保持持续时间。</summary>
     [Min(0.25f)]
     public float surroundSlotHoldDuration = 2f;
-    /// <summary>中文含义：包围槽位抵达距离。使用位置：作为 Mathf.Max(float, float) 的参数、EnemyAIManager.ValidateSceneConfiguration()。</summary>
+    /// <summary>包围槽位抵达距离。</summary>
     [Min(0.1f)]
     public float surroundSlotArrivalDistance = 0.65f;
-    /// <summary>中文含义：包围槽位玩家移动阈值。使用位置：作为 Mathf.Max(float, float) 的参数、EnemyAIManager.GetStableSurroundSlot(VillagerController, Vector3, float, bool)。</summary>
+    /// <summary>包围槽位玩家移动阈值。</summary>
     [Min(0.1f)]
     public float surroundSlotPlayerMoveThreshold = 0.75f;
-    /// <summary>中文含义：包围槽位切换惩罚。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>包围槽位切换惩罚。</summary>
     [Min(0f)]
     public float surroundSlotSwitchPenalty = 8f;
-    /// <summary>中文含义：共享战斗警戒半径。使用位置：EnemyAIManager.UpdateSharedCombatAlert()、EnemyAIManager.ValidateSceneConfiguration()。</summary>
+    /// <summary>共享战斗警戒半径。</summary>
     [Header("共享战斗警报")]
     [Min(1f)]
     public float sharedCombatAlertRadius = 24f;
-    /// <summary>中文含义：共享战斗警戒间隔。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>共享战斗警戒间隔。</summary>
     [Min(0.05f)]
     public float sharedCombatAlertInterval = 0.25f;
-    /// <summary>中文含义：共享战斗警戒持续时间。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>共享战斗警戒持续时间。</summary>
     [Min(0.1f)]
     public float sharedCombatAlertDuration = 2.5f;
-    /// <summary>中文含义：移动听觉半径。使用位置：作为 Mathf.Max(float, float) 的参数、EnemyAIManager.ValidateSceneConfiguration()。</summary>
+    /// <summary>移动听觉半径。</summary>
     [Min(1f)]
     public float movementHearingRadius = 7f;
-    /// <summary>中文含义：移动听觉速度阈值。使用位置：作为 Mathf.Max(float, float) 的参数、EnemyAIManager.ValidateSceneConfiguration()。</summary>
+    /// <summary>移动听觉速度阈值。</summary>
     [Min(0.1f)]
     public float movementHearingSpeedThreshold = 3.8f;
-    /// <summary>中文含义：门干扰半径。使用位置：作为 EnemyAIManager.NotifyEnvironmentalDisturbance(Vector3, float) 的参数、EnemyAIManager.ValidateSceneConfiguration()。</summary>
+    /// <summary>门干扰半径。</summary>
     [Min(1f)]
     public float doorDisturbanceRadius = 30f;
-    /// <summary>中文含义：阵型距离迟滞。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>阵型距离迟滞。</summary>
     [Header("追击目标稳定")]
     [Min(0f)]
     public float formationDistanceHysteresis = 0.6f;
-    /// <summary>中文含义：追击目标保持持续时间。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>追击目标保持持续时间。</summary>
     [Min(0.1f)]
     public float pursuitTargetHoldDuration = 0.8f;
-    /// <summary>中文含义：追击目标玩家移动阈值。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>追击目标玩家移动阈值。</summary>
     [Min(0.1f)]
     public float pursuitTargetPlayerMoveThreshold = 0.9f;
-    /// <summary>中文含义：追击目标玩家高度阈值。玩家高度变化超过该值时立即废弃追击缓存，防止跨楼层沿用旧目标。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>追击目标玩家高度阈值。玩家高度变化超过该值时立即废弃追击缓存，防止跨楼层沿用旧目标。</summary>
     [Tooltip("玩家高度变化超过该值时立即废弃追击缓存，防止跨楼层沿用旧目标")]
     [Min(0.1f)]
     public float pursuitTargetPlayerHeightThreshold = 0.5f;
-    /// <summary>中文含义：战术侧翼半径。使用位置：作为 EnemyAIManager.GetStableSurroundSlot(VillagerController, Vector3, float, bool) 的参数、作为 Mathf.Max(float, float) 的参数、EnemyAIManager.ValidateSceneConfiguration()。</summary>
+    /// <summary>战术侧翼半径。</summary>
     [Header("战术包围")]
     [Min(2f)]
     public float tacticalFlankRadius = 6f;
-    /// <summary>中文含义：战术侧翼激活距离。使用位置：作为 Mathf.Max(float, float) 的参数、EnemyAIManager.ValidateSceneConfiguration()。</summary>
+    /// <summary>战术侧翼激活距离。</summary>
     [Min(4f)]
     public float tacticalFlankActivationDistance = 6f;
-    /// <summary>中文含义：最大战术侧翼激活距离。侧翼预备位的启用距离上限。过大的旧场景数值会让敌人过早放弃包围并排成直线。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>最大战术侧翼激活距离。侧翼预备位的启用距离上限。过大的旧场景数值会让敌人过早放弃包围并排成直线。</summary>
     [Tooltip("侧翼预备位的启用距离上限。过大的旧场景数值会让敌人过早放弃包围并排成直线。")]
     [Min(4f)]
     public float maximumTacticalFlankActivationDistance = 12f;
-    /// <summary>中文含义：战术侧翼抵达距离。使用位置：作为 Mathf.Max(float, float) 的参数、EnemyAIManager.ValidateSceneConfiguration()。</summary>
+    /// <summary>战术侧翼抵达距离。</summary>
     [Min(0.1f)]
     public float tacticalFlankArrivalDistance = 1.15f;
-    /// <summary>中文含义：战术侧翼玩家移动阈值。使用位置：作为 Mathf.Max(float, float) 的参数、EnemyAIManager.GetStableSurroundSlot(VillagerController, Vector3, float, bool)。</summary>
+    /// <summary>战术侧翼玩家移动阈值。</summary>
     [Min(0.1f)]
     public float tacticalFlankPlayerMoveThreshold = 2f;
-    /// <summary>中文含义：直接压力敌人数量。使用位置：作为 Mathf.Clamp(int, int, int) 的参数、EnemyAIManager.ValidateSceneConfiguration()。</summary>
+    /// <summary>直接压力敌人数量。</summary>
     [Range(0, 3)]
     public int directPressureEnemyCount = 2;
     /// <summary>中文含义：阵型目标权重。追击目标占零点七八，包围位置最多占零点二二，确保追击玩家始终是主目标。</summary>
     [Tooltip("追击目标占零点七八，包围位置最多占零点二二，确保追击玩家始终是主目标。")]
     [Range(0f, 0.45f)]
     public float formationObjectiveWeight = 0.22f;
-    /// <summary>中文含义：是否需要村庄入口触发器。使用位置：EnemyAIManager.BindingCurrentSession()、EnemyAIManager.ValidateSceneConfiguration()。</summary>
+    /// <summary>是否需要村庄入口触发器。</summary>
     [Header("入村追击触发")]
     public bool requireVillageEntranceTrigger = true;
-    /// <summary>中文含义：是否显示村庄入口触发器辅助线。使用位置：EnemyAIManager.OnDrawGizmosSelected()。</summary>
+    /// <summary>是否显示村庄入口触发器辅助线。</summary>
     public bool showVillageEntranceTriggerGizmo = true;
     /// <summary>中文含义：是否优先使用场景中名为 start 的物体作为追击触发中心。优先使用场景中名为 start 的物体作为追击触发中心。</summary>
     [Tooltip("优先使用场景中名为 start 的物体作为追击触发中心。")]
     public bool useNamedVillageEntranceAnchor = true;
-    /// <summary>中文含义：敌人集合。只读字段，初始化后不由普通写入口替换。使用位置：EnemyAIManager.ActiveEnemyCount.get、EnemyAIManager.EngageAllMissionEnemies(Vector3)、EnemyAIManager.GetNearestEnemy(Vector3) 等共 13 处。</summary>
+    /// <summary>敌人集合。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly List<VillagerController> enemies = new();
-    /// <summary>中文含义：提示候选集合。只读字段，初始化后不由普通写入口替换。使用位置：EnemyAIManager.PromptCandidates.get、EnemyAIManager.RegisterPromptCandidate(VillagerQTEParticipant)、EnemyAIManager.UnregisterPromptCandidate(VillagerQTEParticipant)。</summary>
+    /// <summary>提示候选集合。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly List<VillagerQTEParticipant> promptCandidates = new();
-    /// <summary>中文含义：提示候选集合。使用位置：LeonQTECoordinator.GetPromptCandidates()。</summary>
+    /// <summary>提示候选集合。</summary>
     internal IReadOnlyList<VillagerQTEParticipant> PromptCandidates => promptCandidates;
 
     /// <summary>RegisterPromptCandidate 的业务处理入口；本方法直接依赖 List&lt;VillagerQTEParticipant&gt;.Add(VillagerQTEParticipant)、List&lt;VillagerQTEParticipant&gt;.Contains(VillagerQTEParticipant)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyAIManager.RegisterEnemy(VillagerController)、VillagerQTEParticipant.RegisterPromptCandidate()；下游（含内部回调体） List&lt;VillagerQTEParticipant&gt;.Add(VillagerQTEParticipant)、List&lt;VillagerQTEParticipant&gt;.Contains(VillagerQTEParticipant)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="candidate">中文含义：候选。使用位置：作为 List&lt;VillagerQTEParticipant&gt;.Add(VillagerQTEParticipant) 的参数、作为 List&lt;VillagerQTEParticipant&gt;.Contains(VillagerQTEParticipant) 的参数、EnemyAIManager.RegisterPromptCandidate(VillagerQTEParticipant)。</param>
+    /// <param name="candidate">候选。</param>
     internal void RegisterPromptCandidate(VillagerQTEParticipant candidate)
     {
         if (candidate != null && candidate.isActiveAndEnabled && !promptCandidates.Contains(candidate))
@@ -145,68 +145,90 @@ public partial class EnemyAIManager : Singleton<EnemyAIManager>, IManualSingleto
 
     /// <summary>UnregisterPromptCandidate 的业务处理入口；本方法直接依赖 List&lt;VillagerQTEParticipant&gt;.Remove(VillagerQTEParticipant)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyAIManager.UnregisterEnemy(VillagerController)、VillagerQTEParticipant.OnDisable()；下游（含内部回调体） List&lt;VillagerQTEParticipant&gt;.Remove(VillagerQTEParticipant)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="candidate">中文含义：候选。使用位置：作为 List&lt;VillagerQTEParticipant&gt;.Remove(VillagerQTEParticipant) 的参数。</param>
+    /// <param name="candidate">候选。</param>
     internal void UnregisterPromptCandidate(VillagerQTEParticipant candidate) => promptCandidates.Remove(candidate);
-    /// <summary>中文含义：战斗槽位集合。只读字段，初始化后不由普通写入口替换。使用位置：EnemyAIManager.AssignSurroundSlot(VillagerController, Vector3, float, bool, int)、EnemyAIManager.BuildCombatTimelineSummary(VillagerController)、EnemyAIManager.FillCombatTimelineSnapshot(VillagerController, ref CombatTimelineSnapshot) 等共 12 处。</summary>
+    /// <summary>战斗槽位集合。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly Dictionary<VillagerController, CombatSlotAssignment> combatSlots = new();
-    /// <summary>中文含义：追击目标列表。只读字段，初始化后不由普通写入口替换。使用位置：EnemyAIManager.InvalidatePursuitDestination(VillagerController)、EnemyAIManager.IsDirectPressureEnemy(VillagerController, Vector3)、EnemyAIManager.ResolvePursuitDestination(VillagerController, Vector3) 等共 5 处。</summary>
+    /// <summary>追击目标列表。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly Dictionary<VillagerController, PursuitTargetAssignment> pursuitTargets = new();
-    /// <summary>中文含义：直接追击敌人集合。只读字段，初始化后不由普通写入口替换。使用位置：EnemyAIManager.InvalidatePursuitDestination(VillagerController)、EnemyAIManager.ShouldUseDirectPursuit(VillagerController, float)、EnemyAIManager.UnregisterEnemy(VillagerController) 等共 4 处。</summary>
-    /// <summary>中文含义：直接压力敌人集合。只读字段，初始化后不由普通写入口替换。使用位置：作为 EnemyCombatTimeline.Describe(bool) 的参数、EnemyAIManager.FillCombatTimelineSnapshot(VillagerController, ref CombatTimelineSnapshot)、EnemyAIManager.HasDirectPressureDirectionSpace(VillagerController, Vector3, VillagerController) 等共 7 处。</summary>
+    /// <summary>直接追击敌人集合。只读字段，初始化后不由普通写入口替换。</summary>
+    /// <summary>直接压力敌人集合。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly HashSet<VillagerController> directPressureEnemies = new();
-    /// <summary>中文含义：攻击中敌人集合。只读字段，初始化后不由普通写入口替换。使用位置：EnemyAIManager.BuildCombatTimelineSummary(VillagerController)、EnemyAIManager.CanAcquireAttackReservation(VillagerController)、EnemyAIManager.CanAcquireQTEReservation(VillagerController, QTEKind) 等共 13 处。</summary>
+    /// <summary>攻击中敌人集合。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly HashSet<VillagerController> attackingEnemies = new();
-    /// <summary>中文含义：配对动作已预留敌人。使用位置：作为 EnemyAIManager.IsReservationCandidateValid(VillagerController) 的参数、作为 EnemyCombatTimeline.Number(VillagerController) 的参数、作为 Gizmos.DrawLine(Vector3, Vector3) 的参数 等共 16 处。</summary>
+    /// <summary>配对动作已预留敌人。</summary>
     private VillagerController qteReservedEnemy;
-    /// <summary>中文含义：待处理配对动作敌人。使用位置：作为 EnemyAIManager.IsQTERequestEligible(VillagerController, QTEKind) 的参数、作为 EnemyCombatTimeline.Number(VillagerController) 的参数、EnemyAIManager.BuildCombatTimelineSummary(VillagerController) 等共 11 处。</summary>
+    /// <summary>待处理配对动作敌人。</summary>
     private VillagerController pendingQTEEnemy;
-    /// <summary>中文含义：待处理配对动作种类。使用位置：作为 EnemyAIManager.GetQTERequestPriority(QTEKind) 的参数、作为 EnemyAIManager.IsQTERequestEligible(VillagerController, QTEKind) 的参数、EnemyAIManager.CanAcquireQTEReservation(VillagerController, QTEKind) 等共 6 处。</summary>
+    /// <summary>待处理配对动作种类。</summary>
     private QTEKind pendingQTEKind;
-    /// <summary>中文含义：待处理配对动作到期时间。使用位置：作为 Mathf.Max(float, float) 的参数、EnemyAIManager.BuildCombatTimelineSummary(VillagerController)、EnemyAIManager.ClearPendingQTERequest() 等共 6 处。</summary>
+    /// <summary>待处理配对动作到期时间。</summary>
     private float pendingQTEExpiresAt;
-    /// <summary>中文含义：下一次配对动作优先级允许的时间。使用位置：EnemyAIManager.HasPendingQTERequest()、EnemyAIManager.RegisterPendingQTERequest(VillagerController, QTEKind)。</summary>
+    /// <summary>下一次配对动作优先级允许的时间。</summary>
     private float nextQTEPriorityAllowedTime;
-    /// <summary>中文含义：配对动作预约已取得所在。使用位置：EnemyAIManager.TryAcquireQTEReservation(VillagerController, QTEKind)、EnemyAIManager.ValidateCombatReservations()。</summary>
+    /// <summary>配对动作预约已取得所在。</summary>
     private float qteReservationAcquiredAt;
-    /// <summary>中文含义：直接压力评估帧。使用位置：EnemyAIManager.InvalidatePursuitDestination(VillagerController)、EnemyAIManager.IsDirectPressureEnemy(VillagerController, Vector3)。</summary>
-    /// <summary>中文含义：下一次攻击允许的时间。使用位置：作为 Mathf.Max(float, float) 的参数、EnemyAIManager.BuildCombatTimelineSummary(VillagerController)、EnemyAIManager.CanAcquireAttackReservation(VillagerController) 等共 9 处。</summary>
+    /// <summary>直接压力评估帧。</summary>
+    /// <summary>下一次攻击允许的时间。</summary>
     private float nextAttackAllowedTime;
-    /// <summary>中文含义：下一次正面抓取允许的时间。使用位置：EnemyAIManager.CompleteQTEAttempt(VillagerController, QTEKind, bool)、EnemyAIManager.GetNextQTEAllowedTime(QTEKind)。</summary>
+    /// <summary>下一次正面抓取允许的时间。</summary>
     private float nextFrontGrabAllowedTime;
-    /// <summary>中文含义：下一次腿部撕咬允许的时间。使用位置：EnemyAIManager.CompleteQTEAttempt(VillagerController, QTEKind, bool)、EnemyAIManager.GetNextQTEAllowedTime(QTEKind)。</summary>
+    /// <summary>下一次腿部撕咬允许的时间。</summary>
     private float nextLegBiteAllowedTime;
-    /// <summary>中文含义：下一次电锯执行允许的时间。使用位置：EnemyAIManager.CompleteQTEAttempt(VillagerController, QTEKind, bool)、EnemyAIManager.GetNextQTEAllowedTime(QTEKind)。</summary>
+    /// <summary>下一次电锯执行允许的时间。</summary>
     private float nextChainsawExecutionAllowedTime;
-    /// <summary>中文含义：更新计时器。使用位置：EnemyAIManager.Update()。</summary>
+    /// <summary>更新计时器。</summary>
     private float updateTimer;
-    /// <summary>中文含义：共享战斗警戒是否生效。使用位置：EnemyAIManager.BindingCurrentSession()、EnemyAIManager.HandleWeaponFired(CombatEventDispatcher.WeaponNoiseEvent)、EnemyAIManager.NotifyCombatEngaged(VillagerController) 等共 7 处。</summary>
+    /// <summary>共享战斗警戒是否生效。</summary>
     private bool sharedCombatAlertActive;
-    /// <summary>中文含义：下一次共享战斗警戒时间。使用位置：EnemyAIManager.HandleWeaponFired(CombatEventDispatcher.WeaponNoiseEvent)、EnemyAIManager.NotifyCombatEngaged(VillagerController)、EnemyAIManager.NotifyEnvironmentalDisturbance(Vector3, float) 等共 6 处。</summary>
+    /// <summary>下一次共享战斗警戒时间。</summary>
     private float nextSharedCombatAlertTime;
-    /// <summary>中文含义：共享战斗警戒到期时间。使用位置：EnemyAIManager.HandleWeaponFired(CombatEventDispatcher.WeaponNoiseEvent)、EnemyAIManager.NotifyCombatEngaged(VillagerController)、EnemyAIManager.NotifyEnvironmentalDisturbance(Vector3, float) 等共 6 处。</summary>
+    /// <summary>共享战斗警戒到期时间。</summary>
     private float sharedCombatAlertExpiresAt;
-    /// <summary>中文含义：前一次玩家位置。使用位置：作为 EnemyAIManager.HorizontalDistance(Vector3, Vector3) 的参数、EnemyAIManager.UnlockCombatAtVillageEntrance(LeonController)、EnemyAIManager.UpdateMovementNoiseAwareness()。</summary>
+    /// <summary>前一次玩家位置。</summary>
     private Vector3 previousPlayerPosition;
-    /// <summary>中文含义：是否具有前一次玩家位置。使用位置：EnemyAIManager.UnlockCombatAtVillageEntrance(LeonController)、EnemyAIManager.UpdateMovementNoiseAwareness()。</summary>
+    /// <summary>是否具有前一次玩家位置。</summary>
     private bool hasPreviousPlayerPosition;
-    /// <summary>中文含义：是否已开始。使用位置：EnemyAIManager.BindingCurrentSession()、EnemyAIManager.LateUpdate()、EnemyAIManager.OnEnable() 等共 4 处。</summary>
+    /// <summary>是否已开始。</summary>
     private bool started;
-    /// <summary>中文含义：是否具有玩家追击区域。使用位置：EnemyAIManager.SynchronizePursuitRegionVersion(VillagerController)、EnemyAIManager.TryGetCurrentPlayerPursuitRegion(out int)、EnemyAIManager.UpdatePlayerPursuitRegion()。</summary>
+    /// <summary>是否具有玩家追击区域。</summary>
     private bool hasPlayerPursuitRegion;
-    /// <summary>中文含义：玩家追击区域。使用位置：作为 PursuitNavigationTopology.AreRegionsDirectlyConnected(int, int) 的参数、作为 PursuitNavigationTopology.TryFindCrossedPortal(Vector3, Vector3, int, out int) 的参数、EnemyAIManager.TryGetCurrentPlayerPursuitRegion(out int) 等共 4 处。</summary>
+    /// <summary>玩家追击区域。</summary>
     private int playerPursuitRegion = -1;
-    /// <summary>中文含义：追击区域版本。使用位置：作为 CombatDiagnosticFields.Count(string, double) 的参数、作为 VillagerController.ReceivePursuitRegionChange(int, Vector3) 的参数、EnemyAIManager.PursuitRegionVersion.get 等共 4 处。</summary>
+    /// <summary>追击区域版本。</summary>
     private int pursuitRegionVersion;
-    /// <summary>中文含义：是否具有前一次追击区域玩家位置。使用位置：EnemyAIManager.UpdatePlayerPursuitRegion()。</summary>
+    /// <summary>是否具有前一次追击区域玩家位置。</summary>
     private bool hasPreviousPursuitRegionPlayerPosition;
-    /// <summary>中文含义：前一次追击区域玩家位置。使用位置：作为 PursuitNavigationTopology.TryFindCrossedPortal(Vector3, Vector3, int, out int) 的参数、EnemyAIManager.UpdatePlayerPursuitRegion()。</summary>
+    /// <summary>前一次追击区域玩家位置。</summary>
     private Vector3 previousPursuitRegionPlayerPosition;
-    /// <summary>中文含义：待处理支持的玩家区域。使用位置：EnemyAIManager.UpdatePlayerPursuitRegion()。</summary>
+    /// <summary>待处理支持的玩家区域。</summary>
     private int pendingSupportedPlayerRegion = -1;
-    /// <summary>中文含义：待处理支持的玩家区域自从。使用位置：EnemyAIManager.UpdatePlayerPursuitRegion()。</summary>
+    /// <summary>待处理支持的玩家区域自从。</summary>
     private float pendingSupportedPlayerRegionSince;
-    /// <summary>中文含义：生效敌人数量。使用位置：GameManager.totalEnemiesAlive.get。</summary>
+    /// <summary>生效敌人数量。</summary>
     public int ActiveEnemyCount => enemies.Count;
+
+    /// <summary>中文含义：只读访问当前登记的所有村民敌人实例。</summary>
+    internal IReadOnlyList<VillagerController> ReadEnemies => enemies;
+    private readonly HitQueryBuffer villageHearingHits = new();
+    private LeonController qteCachePlayer;
+    private LeonQTECoordinator playerQteCoordinator;
+
+    internal LeonQTECoordinator PlayerQteCoordinator => ReadPlayerQte(PlayerTarget);
+
+    internal LeonQTECoordinator ReadPlayerQte(LeonController player)
+    {
+        if (!ReferenceEquals(qteCachePlayer, player))
+        {
+            qteCachePlayer = player;
+            playerQteCoordinator = null;
+            if (player != null)
+            {
+                playerQteCoordinator = player.GetComponent<LeonQTECoordinator>();
+            }
+        }
+        return playerQteCoordinator;
+    }
 
     internal bool HasLocalCombatThreat(LeonController player)
     {
@@ -247,7 +269,7 @@ public partial class EnemyAIManager : Singleton<EnemyAIManager>, IManualSingleto
         return false;
     }
 
-    /// <summary>中文含义：玩家目标。使用位置：作为 EnemyAIManager.EngageAllMissionEnemies(Vector3) 的参数、作为 EnemyAIManager.HorizontalDistance(Vector3, Vector3) 的参数、作为 EnemyAIManager.UnlockCombatAtVillageEntrance(LeonController) 的参数 等共 31 处。</summary>
+    /// <summary>玩家目标。</summary>
     public LeonController PlayerTarget
     {
         get
@@ -265,13 +287,13 @@ public partial class EnemyAIManager : Singleton<EnemyAIManager>, IManualSingleto
         private set => chasePlayer = value;
     }
 
-    /// <summary>中文含义：追逐玩家。使用位置：EnemyAIManager.PlayerTarget.get、EnemyAIManager.PlayerTarget.set。</summary>
+    /// <summary>追逐玩家。</summary>
     private LeonController chasePlayer;
     /// <summary>中文含义：攻击中敌人。</summary>
     public VillagerController AttackingEnemy => GetFirstReservedAttacker();
     /// <summary>中文含义：准备中敌人。</summary>
     public VillagerController PreparingEnemy => null;
-    /// <summary>中文含义：是否战斗已解锁。使用位置：ChapterOneMissionManager.CanAdvanceGameplay()、EnemyAIManager.BindingCurrentSession()、EnemyAIManager.BuildCombatTimelineSummary(VillagerController) 等共 18 处。</summary>
+    /// <summary>是否战斗已解锁。</summary>
     public bool IsCombatUnlocked { get; private set; }
     internal bool AwaitsVillageDiscovery => requireVillageDiscovery && !IsCombatUnlocked && !IsBellWithdrawal;
     private bool requireVillageDiscovery;
@@ -284,23 +306,23 @@ public partial class EnemyAIManager : Singleton<EnemyAIManager>, IManualSingleto
 
     /// <summary>TryGetCurrentPlayerPursuitRegion 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
     /// <remarks>静态调用链：上游 EnemyAIManager.IsFormationSlotOnPlayerSide(Vector3, Vector3)、VillagerController.TryResolveCurrentPursuitRegions(Vector3, out int, out int)；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="region">中文含义：区域。输出参数，由本入口写入并交给调用方。使用位置：EnemyAIManager.TryGetCurrentPlayerPursuitRegion(out int)。</param>
+    /// <param name="region">区域。输出参数，由本入口写入并交给调用方。</param>
     public bool TryGetCurrentPlayerPursuitRegion(out int region)
     {
         region = playerPursuitRegion;
         return hasPlayerPursuitRegion && region >= 0;
     }
 
-    /// <summary>中文含义：场景玩家。使用位置：EnemyAIManager.BindingCurrentSession()、EnemyAIManager.PlayerTarget.get、SceneStartupEntry.ConfigurationError()。</summary>
+    /// <summary>场景玩家。</summary>
     [Header("本局玩家与入村触发器")]
     [UnityEngine.Serialization.FormerlySerializedAs("场景玩家")]
     [UnityEngine.InspectorName("场景玩家")]
     public LeonController scenePlayer;
-    /// <summary>中文含义：入村触发器。使用位置：EnemyAIManager.ValidateSceneConfiguration()。</summary>
+    /// <summary>入村触发器。</summary>
     [UnityEngine.Serialization.FormerlySerializedAs("入村触发器")]
     [UnityEngine.InspectorName("入村触发器")]
     public VillageEntranceCombatTrigger enterVillageTrigger;
-    /// <summary>中文含义：精确通路。使用位置：作为 MissionSpawnExecutor.MissionSpawnExecutor(ChapterOneMissionManager, LeonController, HouseThreeTraversalGeometry, EnemyNavigationPreciseLink[], Dictionary&lt;VillagerController, MissionEnemyType&gt;) 的参数、作为 PathAgent.BindingPreciseTraversal(EnemyNavigationPreciseLink[]) 的参数。</summary>
+    /// <summary>精确通路。</summary>
     [UnityEngine.Serialization.FormerlySerializedAs("精确通路")]
     [UnityEngine.InspectorName("精确通路")]
     public EnemyNavigationPreciseLink[] preciseTraversal;
@@ -363,7 +385,7 @@ public partial class EnemyAIManager : Singleton<EnemyAIManager>, IManualSingleto
             return nameof(tacticalFlankRadius);
         }
 
-        // minimumDistance（最小距离）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Max(float, float) 的参数、EnemyAIManager.ValidateSceneConfiguration()。
+        // 最小距离。
 float minimumDistance = Mathf.Max(4f, surroundFormationStartDistance + 1f);
         if (!(tacticalFlankActivationDistance >= minimumDistance && tacticalFlankActivationDistance <= Mathf.Max(minimumDistance, maximumTacticalFlankActivationDistance)))
         {
@@ -382,7 +404,7 @@ float minimumDistance = Mathf.Max(4f, surroundFormationStartDistance + 1f);
                 return nameof(enterVillageTrigger);
             }
 
-            // collision（碰撞）：保存 Component.GetComponent<BoxCollider>() 的返回结果，供当前步骤使用。使用位置：EnemyAIManager.ValidateSceneConfiguration()。
+            // 碰撞。
 var collision = enterVillageTrigger.GetComponent<BoxCollider>();
             if (collision == null || !collision.enabled || !collision.isTrigger || collision.size.x <= 0f || collision.size.y <= 0f || collision.size.z <= 0f)
             {
@@ -393,14 +415,14 @@ var collision = enterVillageTrigger.GetComponent<BoxCollider>();
         return null;
     }
 
-    /// <summary>中文含义：导航查询。使用位置：EnemyAIManager.BindingCurrentSession()、EnemyAIManager.LateUpdate()、EnemyAIManager.OnDestroy() 等共 7 处。</summary>
+    /// <summary>导航查询。</summary>
     internal NavigationQueryService NavigationQuery { get; private set; }
 
     /// <summary>BindingCurrentSession 的业务处理入口；本方法直接依赖 EnemyAIManager.BindEvents()、EnemyAIManager.EngageAllMissionEnemies(Vector3)、NavigationQueryService.Dispose()、NavigationQueryService.NavigationQueryService()、object.ReferenceEquals(object, object)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 SceneStartupEntry.Start()；下游（含内部回调体） EnemyAIManager.BindEvents()、EnemyAIManager.EngageAllMissionEnemies(Vector3)、NavigationQueryService.Dispose()、NavigationQueryService.NavigationQueryService()、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     internal void BindingCurrentSession(bool discoverVillageCombat = false)
     {
-        // receiverValue2（判空前缓存的导航查询）：从导航查询读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、EnemyAIManager.BindingCurrentSession()。
+        // 判空前缓存的导航查询。
 global::NavigationQueryService receiverValue2 = NavigationQuery;
         if (!global::System.Object.ReferenceEquals(receiverValue2, null))
         {
@@ -477,7 +499,7 @@ global::NavigationQueryService receiverValue2 = NavigationQuery;
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） EnemyAIManager.UnbindEvents()、NavigationQueryService.Dispose()、object.ReferenceEquals(object, object)、Singleton&lt;EnemyAIManager&gt;.OnDestroy()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     protected override void OnDestroy()
     {
-        // receiverValue3（判空前缓存的导航查询）：从导航查询读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、EnemyAIManager.OnDestroy()。
+        // 判空前缓存的导航查询。
 global::NavigationQueryService receiverValue3 = NavigationQuery;
         if (!global::System.Object.ReferenceEquals(receiverValue3, null))
         {
@@ -509,7 +531,7 @@ global::NavigationQueryService receiverValue3 = NavigationQuery;
     {
         if (started)
         {
-            // receiverValue4（判空前缓存的导航查询）：从导航查询读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、EnemyAIManager.LateUpdate()。
+            // 判空前缓存的导航查询。
 global::NavigationQueryService receiverValue4 = NavigationQuery;
             if (!global::System.Object.ReferenceEquals(receiverValue4, null))
             {
@@ -527,7 +549,7 @@ global::NavigationQueryService receiverValue4 = NavigationQuery;
             return;
         }
 
-        // receiverValue5（判空前缓存的导航查询）：从导航查询读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、EnemyAIManager.Update()。
+        // 判空前缓存的导航查询。
 global::NavigationQueryService receiverValue5 = NavigationQuery;
         if (!global::System.Object.ReferenceEquals(receiverValue5, null))
         {
@@ -570,7 +592,7 @@ global::NavigationQueryService receiverValue5 = NavigationQuery;
             return;
         }
 
-        // playerPosition（玩家位置）：使用位置：作为 CombatDiagnosticFields.Position(string, Vector3) 的参数、作为 PursuitNavigationTopology.IsSupportedRegionAwayFromPortals(Vector3, int) 的参数、作为 PursuitNavigationTopology.TryFindCrossedPortal(Vector3, Vector3, int, out int) 的参数 等共 6 处。
+        // 玩家位置。
 Vector3 playerPosition = PlayerTarget.transform.position;
         if (!hasPreviousPursuitRegionPlayerPosition)
         {
@@ -591,9 +613,9 @@ Vector3 playerPosition = PlayerTarget.transform.position;
             return;
         }
 
-        // currentRegion（当前区域）：使用位置：作为 CombatDiagnosticFields.Count(string, double) 的参数、EnemyAIManager.UpdatePlayerPursuitRegion()。
+        // 当前区域。
 int currentRegion = playerPursuitRegion;
-        // regionChangeReason（区域变化原因）：使用位置：作为 CombatDiagnosticFields.Text(string, string) 的参数、EnemyAIManager.UpdatePlayerPursuitRegion()。
+        // 区域变化原因。
 string regionChangeReason = "穿过门洞";
         if (PursuitNavigationTopology.TryFindCrossedPortal(previousPursuitRegionPlayerPosition, playerPosition, playerPursuitRegion, out int /* 中文含义：已越过区域。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ crossedRegion))
         {
@@ -642,17 +664,17 @@ string regionChangeReason = "穿过门洞";
             return;
         }
 
-        // previousRegion（前一次区域）：使用位置：作为 CombatDiagnosticFields.Count(string, double) 的参数。
+        // 前一次区域。
 int previousRegion = playerPursuitRegion;
         playerPursuitRegion = currentRegion;
         pursuitRegionVersion++;
         pursuitTargets.Clear();
         combatSlots.Clear();
         directPressureEnemies.Clear();
-        // index（当前元素索引）：使用位置：作为 List<VillagerController>.this[int] 的参数、EnemyAIManager.UpdatePlayerPursuitRegion()。
+        // 当前元素索引。
 for (int index = 0; index < enemies.Count; index++)
         {
-            // enemy（敌人）：使用位置：作为 EnemyAIManager.IsEnemyUsable(VillagerController) 的参数、作为 EnemyCombatTimeline.IsRecord(VillagerController) 的参数、作为 EnemyCombatTimeline.Record(VillagerController, string, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields) 的参数 等共 4 处。
+            // 敌人。
 VillagerController enemy = enemies[index];
             if (!IsEnemyUsable(enemy) || enemy.IsQTEControlled)
             {
@@ -669,7 +691,7 @@ VillagerController enemy = enemies[index];
 
     /// <summary>UnlockCombatAtVillageEntrance 的业务处理入口；本方法直接依赖 EnemyAIManager.EngageAllMissionEnemies(Vector3)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 PerformanceSamplingEntry.Tick()、VillageEntranceCombatTrigger.OnTriggerEnter(Collider)；下游（含内部回调体） EnemyAIManager.EngageAllMissionEnemies(Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="enteringPlayer">中文含义：进入中玩家。使用位置：EnemyAIManager.UnlockCombatAtVillageEntrance(LeonController)。</param>
+    /// <param name="enteringPlayer">进入中玩家。</param>
     public void UnlockCombatAtVillageEntrance(LeonController enteringPlayer)
     {
         UnlockVillageCombat(enteringPlayer, null);
@@ -747,7 +769,7 @@ VillagerController enemy = enemies[index];
 
     /// <summary>RegisterEnemy 的业务处理入口；本方法直接依赖 Component.GetComponent&lt;VillagerQTEParticipant&gt;()、EnemyAIManager.RegisterPromptCandidate(VillagerQTEParticipant)、EnemyAIManager.SynchronizePursuitRegionVersion(VillagerController)、List&lt;VillagerController&gt;.Add(VillagerController)、List&lt;VillagerController&gt;.Contains(VillagerController)、VillagerController.ReceiveVillagePursuitOrder(Vector3)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillagerController.RecoverManagerRegistration()、VillagerController.Start()；下游（含内部回调体） Component.GetComponent&lt;VillagerQTEParticipant&gt;()、EnemyAIManager.RegisterPromptCandidate(VillagerQTEParticipant)、EnemyAIManager.SynchronizePursuitRegionVersion(VillagerController)、List&lt;VillagerController&gt;.Add(VillagerController)、List&lt;VillagerController&gt;.Contains(VillagerController)、VillagerController.ReceiveVillagePursuitOrder(Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="enemy">中文含义：敌人。使用位置：作为 EnemyAIManager.RegisterPromptCandidate(VillagerQTEParticipant) 的参数、作为 EnemyAIManager.SynchronizePursuitRegionVersion(VillagerController) 的参数、作为 List&lt;VillagerController&gt;.Add(VillagerController) 的参数 等共 5 处。</param>
+    /// <param name="enemy">敌人。</param>
     internal bool HasNearbyBellReaction(LeonController player)
     {
         if (player == null || player.playerCamera == null)
@@ -763,7 +785,7 @@ VillagerController enemy = enemies[index];
                 continue;
             }
 
-            if (LeonQTECoordinator.IsPromptVisible(player.playerCamera, actor, actor.transform.position + Vector3.up * 1.6f))
+            if (LeonQTECoordinator.IsPromptVisible(player.playerCamera, actor, actor.transform.position + Vector3.up * 1.6f, player.transform))
             {
                 return true;
             }
@@ -775,7 +797,7 @@ VillagerController enemy = enemies[index];
     {
         if (enemy != null)
         {
-            RegisterPromptCandidate(enemy.GetComponent<VillagerQTEParticipant>());
+            RegisterPromptCandidate(enemy.ArchitectureReadQteParticipant);
         }
 
         if (enemy == null || enemy.assassinationShowcaseIdle || enemies.Contains(enemy))
@@ -784,12 +806,13 @@ VillagerController enemy = enemies[index];
         }
 
         enemies.Add(enemy);
+        enemy.AdvanceCrowdRegistration();
         tactics[enemy] = new EnemyTactics();
     }
 
     /// <summary>UnregisterEnemy 的业务处理入口；本方法直接依赖 Component.GetComponent&lt;VillagerQTEParticipant&gt;()、Dictionary&lt;VillagerController, EnemyAIManager.CombatSlotAssignment&gt;.Remove(VillagerController)、Dictionary&lt;VillagerController, EnemyAIManager.PursuitTargetAssignment&gt;.Remove(VillagerController)、EnemyAIManager.ClearPendingQTERequest()、EnemyAIManager.ReleaseCombatReservation(VillagerController)、EnemyAIManager.UnregisterPromptCandidate(VillagerQTEParticipant)、HashSet&lt;VillagerController&gt;.Remove(VillagerController) 等共 8 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillagerController.OnDestroy()；下游（含内部回调体） Component.GetComponent&lt;VillagerQTEParticipant&gt;()、Dictionary&lt;VillagerController, EnemyAIManager.CombatSlotAssignment&gt;.Remove(VillagerController)、Dictionary&lt;VillagerController, EnemyAIManager.PursuitTargetAssignment&gt;.Remove(VillagerController)、EnemyAIManager.ClearPendingQTERequest()、EnemyAIManager.ReleaseCombatReservation(VillagerController)、EnemyAIManager.UnregisterPromptCandidate(VillagerQTEParticipant)、HashSet&lt;VillagerController&gt;.Remove(VillagerController) 等共 8 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="enemy">中文含义：敌人。使用位置：作为 Dictionary&lt;VillagerController, EnemyAIManager.CombatSlotAssignment&gt;.Remove(VillagerController) 的参数、作为 Dictionary&lt;VillagerController, EnemyAIManager.PursuitTargetAssignment&gt;.Remove(VillagerController) 的参数、作为 EnemyAIManager.ReleaseCombatReservation(VillagerController) 的参数 等共 7 处。</param>
+    /// <param name="enemy">敌人。</param>
     public void UnregisterEnemy(VillagerController enemy)
     {
         if (enemy == null)
@@ -797,7 +820,7 @@ VillagerController enemy = enemies[index];
             return;
         }
 
-        UnregisterPromptCandidate(enemy.GetComponent<VillagerQTEParticipant>());
+        UnregisterPromptCandidate(enemy.ArchitectureReadQteParticipant);
         ReleaseCombatReservation(enemy);
         combatSlots.Remove(enemy);
         pursuitTargets.Remove(enemy);
@@ -851,7 +874,7 @@ VillagerController enemy = enemies[index];
 
     /// <summary>NotifyCombatEngaged 的业务处理入口；本方法直接依赖 EnemyAIManager.IsEnemyUsable(VillagerController)、EnemyAIManager.UpdateSharedCombatAlert()、Mathf.Max(float, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyActionCoordinator.BeginChase(bool)、EnemyPerceptionModule.BecomeFullyAwareOfPlayer()；下游（含内部回调体） EnemyAIManager.IsEnemyUsable(VillagerController)、EnemyAIManager.UpdateSharedCombatAlert()、Mathf.Max(float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="source">中文含义：来源村民敌人控制器。使用位置：作为 EnemyAIManager.IsEnemyUsable(VillagerController) 的参数。</param>
+    /// <param name="source">来源村民敌人控制器。</param>
     public void NotifyCombatEngaged(VillagerController source)
     {
         if (!IsCombatUnlocked || !IsEnemyUsable(source) || PlayerTarget == null)
@@ -867,8 +890,8 @@ VillagerController enemy = enemies[index];
 
     /// <summary>NotifyEnvironmentalDisturbance 的业务处理入口；本方法直接依赖 EnemyAIManager.IsEnemyUsable(VillagerController)、Mathf.Max(float, float)、VillagerController.ReceiveSharedCombatAlert(Vector3)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 DoorController.SetOpen(bool)；下游（含内部回调体） EnemyAIManager.IsEnemyUsable(VillagerController)、Mathf.Max(float, float)、VillagerController.ReceiveSharedCombatAlert(Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="position">中文含义：位置。使用位置：EnemyAIManager.NotifyEnvironmentalDisturbance(Vector3, float)。</param>
-    /// <param name="radius">中文含义：半径。使用位置：作为 Mathf.Max(float, float) 的参数。</param>
+    /// <param name="position">位置。</param>
+    /// <param name="radius">半径。</param>
     public void NotifyEnvironmentalDisturbance(Vector3 position, float radius)
     {
         if (!IsCombatUnlocked)
@@ -881,11 +904,11 @@ VillagerController enemy = enemies[index];
             return;
         }
 
-        // alertedAnyEnemy（是否已警觉任意敌人）：使用位置：EnemyAIManager.NotifyEnvironmentalDisturbance(Vector3, float)。
+        // 是否已警觉任意敌人。
 bool alertedAnyEnemy = false;
-        // radiusSqr（半径平方）：使用位置：EnemyAIManager.NotifyEnvironmentalDisturbance(Vector3, float)。
+        // 半径平方。
 float radiusSqr = Mathf.Max(1f, radius) * Mathf.Max(1f, radius);
-        // playerPosition（玩家位置）：使用位置：作为 VillagerController.ReceiveSharedCombatAlert(Vector3) 的参数。
+        // 玩家位置。
 Vector3 playerPosition = PlayerTarget.transform.position;
         // enemy（敌人）：每轮从敌人集合取得一个元素，仅代表当前这一项。使用位置：作为 EnemyAIManager.IsEnemyUsable(VillagerController) 的参数、EnemyAIManager.NotifyEnvironmentalDisturbance(Vector3, float)。
 foreach (VillagerController enemy in enemies)
@@ -895,7 +918,7 @@ foreach (VillagerController enemy in enemies)
                 continue;
             }
 
-            // offset（偏移量）：使用位置：EnemyAIManager.NotifyEnvironmentalDisturbance(Vector3, float)。
+            // 偏移量。
 Vector3 offset = enemy.transform.position - position;
             offset.y = 0f;
             if (offset.sqrMagnitude > radiusSqr)
@@ -919,7 +942,7 @@ Vector3 offset = enemy.transform.position - position;
 
     /// <summary>TryAcquireFrontGrabReservation 的业务处理入口；本方法直接依赖 EnemyAIManager.TryAcquireQTEReservation(VillagerController, QTEKind)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） EnemyAIManager.TryAcquireQTEReservation(VillagerController, QTEKind)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="enemy">中文含义：敌人。使用位置：作为 EnemyAIManager.TryAcquireQTEReservation(VillagerController, QTEKind) 的参数。</param>
+    /// <param name="enemy">敌人。</param>
     public bool TryAcquireFrontGrabReservation(VillagerController enemy)
     {
         return TryAcquireQTEReservation(enemy, QTEKind.FrontGrab);
@@ -927,7 +950,7 @@ Vector3 offset = enemy.transform.position - position;
 
     /// <summary>CanAcquireFrontGrabReservation 的业务处理入口；本方法直接依赖 EnemyAIManager.CanAcquireQTEReservation(VillagerController, QTEKind)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 CanAttemptFrontGrabQTE.OnUpdate()；下游（含内部回调体） EnemyAIManager.CanAcquireQTEReservation(VillagerController, QTEKind)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="enemy">中文含义：敌人。使用位置：作为 EnemyAIManager.CanAcquireQTEReservation(VillagerController, QTEKind) 的参数。</param>
+    /// <param name="enemy">敌人。</param>
     public bool CanAcquireFrontGrabReservation(VillagerController enemy)
     {
         return CanAcquireQTEReservation(enemy, QTEKind.FrontGrab);
@@ -935,8 +958,8 @@ Vector3 offset = enemy.transform.position - position;
 
     /// <summary>CompleteFrontGrabAttempt 的业务处理入口；本方法直接依赖 EnemyAIManager.CompleteQTEAttempt(VillagerController, QTEKind, bool)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） EnemyAIManager.CompleteQTEAttempt(VillagerController, QTEKind, bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="enemy">中文含义：敌人。使用位置：作为 EnemyAIManager.CompleteQTEAttempt(VillagerController, QTEKind, bool) 的参数。</param>
-    /// <param name="sessionStarted">中文含义：会话是否已开始。使用位置：作为 EnemyAIManager.CompleteQTEAttempt(VillagerController, QTEKind, bool) 的参数。</param>
+    /// <param name="enemy">敌人。</param>
+    /// <param name="sessionStarted">会话是否已开始。</param>
     public void CompleteFrontGrabAttempt(VillagerController enemy, bool sessionStarted)
     {
         CompleteQTEAttempt(enemy, QTEKind.FrontGrab, sessionStarted);
@@ -944,8 +967,8 @@ Vector3 offset = enemy.transform.position - position;
 
     /// <summary>TryAcquireQTEReservation 的业务处理入口；本方法直接依赖 EnemyAIManager.ClearPendingQTERequest()、EnemyAIManager.GetNextQTEAllowedTime(QTEKind)、EnemyAIManager.IsReservationCandidateValid(VillagerController)、EnemyAIManager.RegisterPendingQTERequest(VillagerController, QTEKind)、EnemyAIManager.ValidateCombatReservations()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyAIManager.TryAcquireFrontGrabReservation(VillagerController)、TryStartEnemyQTEBase.OnUpdate()、TryStartFrontGrabQTE.TryStartStandingGrab(LeonQTECoordinator, QTEKind)、VillagerQTEParticipant.TryStartLegBiteFromAI(LeonController)；下游（含内部回调体） EnemyAIManager.ClearPendingQTERequest()、EnemyAIManager.GetNextQTEAllowedTime(QTEKind)、EnemyAIManager.IsReservationCandidateValid(VillagerController)、EnemyAIManager.RegisterPendingQTERequest(VillagerController, QTEKind)、EnemyAIManager.ValidateCombatReservations()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="enemy">中文含义：敌人。使用位置：作为 EnemyAIManager.IsReservationCandidateValid(VillagerController) 的参数、作为 EnemyAIManager.RegisterPendingQTERequest(VillagerController, QTEKind) 的参数、EnemyAIManager.TryAcquireQTEReservation(VillagerController, QTEKind)。</param>
-    /// <param name="kind">中文含义：种类。使用位置：作为 EnemyAIManager.GetNextQTEAllowedTime(QTEKind) 的参数、作为 EnemyAIManager.RegisterPendingQTERequest(VillagerController, QTEKind) 的参数、EnemyAIManager.TryAcquireQTEReservation(VillagerController, QTEKind)。</param>
+    /// <param name="enemy">敌人。</param>
+    /// <param name="kind">种类。</param>
     public bool TryAcquireQTEReservation(VillagerController enemy, QTEKind kind)
     {
         if (kind == QTEKind.LegBite || !IsReservationCandidateValid(enemy) || Time.time < GetNextQTEAllowedTime(kind))
@@ -973,8 +996,8 @@ Vector3 offset = enemy.transform.position - position;
 
     /// <summary>CanAcquireQTEReservation 的业务处理入口；本方法直接依赖 EnemyAIManager.GetNextQTEAllowedTime(QTEKind)、EnemyAIManager.IsReservationCandidateValid(VillagerController)、EnemyAIManager.RegisterPendingQTERequest(VillagerController, QTEKind)、EnemyAIManager.ValidateCombatReservations()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 CanAttemptEnemyQTEBase.OnUpdate()、CanAttemptFrontGrabQTE.OnUpdate()、CanCrawlAttackNow.OnUpdate()、EnemyAIManager.CanAcquireFrontGrabReservation(VillagerController)；下游（含内部回调体） EnemyAIManager.GetNextQTEAllowedTime(QTEKind)、EnemyAIManager.IsReservationCandidateValid(VillagerController)、EnemyAIManager.RegisterPendingQTERequest(VillagerController, QTEKind)、EnemyAIManager.ValidateCombatReservations()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="enemy">中文含义：敌人。使用位置：作为 EnemyAIManager.IsReservationCandidateValid(VillagerController) 的参数、作为 EnemyAIManager.RegisterPendingQTERequest(VillagerController, QTEKind) 的参数、EnemyAIManager.CanAcquireQTEReservation(VillagerController, QTEKind)。</param>
-    /// <param name="kind">中文含义：种类。使用位置：作为 EnemyAIManager.GetNextQTEAllowedTime(QTEKind) 的参数、作为 EnemyAIManager.RegisterPendingQTERequest(VillagerController, QTEKind) 的参数、EnemyAIManager.CanAcquireQTEReservation(VillagerController, QTEKind)。</param>
+    /// <param name="enemy">敌人。</param>
+    /// <param name="kind">种类。</param>
     public bool CanAcquireQTEReservation(VillagerController enemy, QTEKind kind)
     {
         if (kind == QTEKind.LegBite || !IsReservationCandidateValid(enemy))
@@ -999,9 +1022,9 @@ Vector3 offset = enemy.transform.position - position;
 
     /// <summary>CompleteQTEAttempt 的业务处理入口；本方法直接依赖 EnemyAIManager.ReleaseQTEReservation(VillagerController, bool)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyAIManager.CompleteFrontGrabAttempt(VillagerController, bool)、TryStartEnemyQTEBase.OnUpdate()、TryStartFrontGrabQTE.TryStartStandingGrab(LeonQTECoordinator, QTEKind)、VillagerQTEParticipant.TryStartLegBiteFromAI(LeonController)；下游（含内部回调体） EnemyAIManager.ReleaseQTEReservation(VillagerController, bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="enemy">中文含义：敌人。使用位置：作为 EnemyAIManager.ReleaseQTEReservation(VillagerController, bool) 的参数。</param>
-    /// <param name="kind">中文含义：种类。使用位置：EnemyAIManager.CompleteQTEAttempt(VillagerController, QTEKind, bool)。</param>
-    /// <param name="sessionStarted">中文含义：会话是否已开始。使用位置：作为 EnemyAIManager.ReleaseQTEReservation(VillagerController, bool) 的参数、EnemyAIManager.CompleteQTEAttempt(VillagerController, QTEKind, bool)。</param>
+    /// <param name="enemy">敌人。</param>
+    /// <param name="kind">种类。</param>
+    /// <param name="sessionStarted">会话是否已开始。</param>
     public void CompleteQTEAttempt(VillagerController enemy, QTEKind kind, bool sessionStarted)
     {
         if (sessionStarted)
@@ -1029,7 +1052,7 @@ Vector3 offset = enemy.transform.position - position;
 
     /// <summary>GetNextQTEAllowedTime 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
     /// <remarks>静态调用链：上游 EnemyAIManager.CanAcquireQTEReservation(VillagerController, QTEKind)、EnemyAIManager.TryAcquireQTEReservation(VillagerController, QTEKind)；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="kind">中文含义：种类。使用位置：EnemyAIManager.GetNextQTEAllowedTime(QTEKind)。</param>
+    /// <param name="kind">种类。</param>
     private float GetNextQTEAllowedTime(QTEKind kind)
     {
         if (kind == QTEKind.LegBite)
@@ -1047,8 +1070,8 @@ Vector3 offset = enemy.transform.position - position;
 
     /// <summary>ReleaseQTEReservation 的业务处理入口；本方法直接依赖 EnemyAIManager.ClearPendingQTERequest()、Mathf.Max(float, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyAIManager.CompleteQTEAttempt(VillagerController, QTEKind, bool)；下游（含内部回调体） EnemyAIManager.ClearPendingQTERequest()、Mathf.Max(float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="enemy">中文含义：敌人。使用位置：EnemyAIManager.ReleaseQTEReservation(VillagerController, bool)。</param>
-    /// <param name="applyAttackRecovery">中文含义：是否应用攻击恢复。使用位置：EnemyAIManager.ReleaseQTEReservation(VillagerController, bool)。</param>
+    /// <param name="enemy">敌人。</param>
+    /// <param name="applyAttackRecovery">是否应用攻击恢复。</param>
     private void ReleaseQTEReservation(VillagerController enemy, bool applyAttackRecovery)
     {
         if (qteReservedEnemy == enemy)
@@ -1068,7 +1091,7 @@ Vector3 offset = enemy.transform.position - position;
 
     /// <summary>HasAttackReservation 的业务处理入口；本方法直接依赖 EnemyAIManager.ValidateCombatReservations()、HashSet&lt;VillagerController&gt;.Contains(VillagerController)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillagerController.ShouldHoldCombatPosition.get；下游（含内部回调体） EnemyAIManager.ValidateCombatReservations()、HashSet&lt;VillagerController&gt;.Contains(VillagerController)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="enemy">中文含义：敌人。使用位置：作为 HashSet&lt;VillagerController&gt;.Contains(VillagerController) 的参数、EnemyAIManager.HasAttackReservation(VillagerController)。</param>
+    /// <param name="enemy">敌人。</param>
     public bool HasAttackReservation(VillagerController enemy)
     {
         ValidateCombatReservations();
@@ -1108,18 +1131,18 @@ Vector3 offset = enemy.transform.position - position;
 
     /// <summary>FillCombatTimelineSnapshot 的业务处理入口；本方法直接依赖 Dictionary&lt;VillagerController, EnemyAIManager.CombatSlotAssignment&gt;.TryGetValue(VillagerController, out EnemyAIManager.CombatSlotAssignment)、EnemyAIManager.HasConcurrentAttackDirectionSpace(VillagerController)、HashSet&lt;VillagerController&gt;.Contains(VillagerController)、Mathf.Clamp(int, int, int)、Mathf.Max(float, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillagerController.CollectCombatTimelineSnapshot()；下游（含内部回调体） Dictionary&lt;VillagerController, EnemyAIManager.CombatSlotAssignment&gt;.TryGetValue(VillagerController, out EnemyAIManager.CombatSlotAssignment)、EnemyAIManager.HasConcurrentAttackDirectionSpace(VillagerController)、HashSet&lt;VillagerController&gt;.Contains(VillagerController)、Mathf.Clamp(int, int, int)、Mathf.Max(float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="enemy">中文含义：敌人。使用位置：作为 Dictionary&lt;VillagerController, EnemyAIManager.CombatSlotAssignment&gt;.TryGetValue(VillagerController, out EnemyAIManager.CombatSlotAssignment) 的参数、作为 EnemyAIManager.HasConcurrentAttackDirectionSpace(VillagerController) 的参数、作为 HashSet&lt;VillagerController&gt;.Contains(VillagerController) 的参数。</param>
-    /// <param name="snapshot">中文含义：快照。按引用传入，读写会作用于调用方原存储位置。使用位置：EnemyAIManager.FillCombatTimelineSnapshot(VillagerController, ref CombatTimelineSnapshot)。</param>
+    /// <param name="enemy">敌人。</param>
+    /// <param name="snapshot">快照。按引用传入，读写会作用于调用方原存储位置。</param>
     internal void FillCombatTimelineSnapshot(VillagerController enemy, ref CombatTimelineSnapshot snapshot)
     {
         snapshot.permission = DescribeAttackPermission(enemy);
         snapshot.attackCharacterCount = attackingEnemies.Count;
-        // sequence（序号）：使用位置：EnemyAIManager.FillCombatTimelineSnapshot(VillagerController, ref CombatTimelineSnapshot)。
+        // 序号。
 int sequence = 0;
         // attacker（攻击者）：每轮从攻击中敌人集合取得一个元素，仅代表当前这一项。使用位置：EnemyAIManager.FillCombatTimelineSnapshot(VillagerController, ref CombatTimelineSnapshot)。
 foreach (var attacker in attackingEnemies)
         {
-            // id（编号）：使用位置：EnemyAIManager.FillCombatTimelineSnapshot(VillagerController, ref CombatTimelineSnapshot)。
+            // 编号。
 int id;
             if (attacker != null)
             {
@@ -1178,7 +1201,7 @@ int id;
 
     /// <summary>BuildCombatTimelineSummary 的业务处理入口；本方法直接依赖 Dictionary&lt;VillagerController, EnemyAIManager.CombatSlotAssignment&gt;.TryGetValue(VillagerController, out EnemyAIManager.CombatSlotAssignment)、EnemyAIManager.HasConcurrentAttackDirectionSpace(VillagerController)、EnemyCombatTimeline.Describe(bool)、EnemyCombatTimeline.IsRecord(VillagerController)、EnemyCombatTimeline.Number(VillagerController)、float.ToString(string)、HashSet&lt;VillagerController&gt;.Contains(VillagerController) 等共 10 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） Dictionary&lt;VillagerController, EnemyAIManager.CombatSlotAssignment&gt;.TryGetValue(VillagerController, out EnemyAIManager.CombatSlotAssignment)、EnemyAIManager.HasConcurrentAttackDirectionSpace(VillagerController)、EnemyCombatTimeline.Describe(bool)、EnemyCombatTimeline.IsRecord(VillagerController)、EnemyCombatTimeline.Number(VillagerController)、float.ToString(string)、HashSet&lt;VillagerController&gt;.Contains(VillagerController) 等共 10 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="enemy">中文含义：敌人。使用位置：作为 Dictionary&lt;VillagerController, EnemyAIManager.CombatSlotAssignment&gt;.TryGetValue(VillagerController, out EnemyAIManager.CombatSlotAssignment) 的参数、作为 EnemyAIManager.HasConcurrentAttackDirectionSpace(VillagerController) 的参数、作为 EnemyCombatTimeline.IsRecord(VillagerController) 的参数 等共 4 处。</param>
+    /// <param name="enemy">敌人。</param>
     internal string BuildCombatTimelineSummary(VillagerController enemy)
     {
         if (!EnemyCombatTimeline.IsRecord(enemy))
@@ -1188,7 +1211,7 @@ int id;
 
         // 诊断不能验证或清理许可，否则记录器本身会改变待测行为。
         string wait = DescribeAttackPermission(enemy);
-        // result（结果）：使用位置：EnemyAIManager.BuildCombatTimelineSummary(VillagerController)。
+        // 结果。
 string result = "许可情况=" + wait + "，当前攻击人数=" + attackingEnemies.Count + "，攻击者序号=";
         // attacker（攻击者）：每轮从攻击中敌人集合取得一个元素，仅代表当前这一项。使用位置：作为 EnemyCombatTimeline.Number(VillagerController) 的参数。
 foreach (VillagerController attacker in attackingEnemies)
@@ -1259,10 +1282,10 @@ foreach (VillagerController attacker in attackingEnemies)
     /// 里昂反复换边打转。
     /// </summary>
     /// <remarks>静态调用链：上游 VillagerController.HasIncompletePursuitArrival.get；下游（含内部回调体） EnemyAIManager.HorizontalDistance(Vector3, Vector3)、EnemyAIManager.TryGetStableSurroundAssignment(VillagerController, Vector3, out EnemyAIManager.CombatSlotAssignment)、Mathf.Abs(float)、Mathf.Max(float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="enemy">中文含义：敌人。使用位置：作为 EnemyAIManager.TryGetStableSurroundAssignment(VillagerController, Vector3, out EnemyAIManager.CombatSlotAssignment) 的参数。</param>
-    /// <param name="playerPosition">中文含义：玩家位置。使用位置：作为 EnemyAIManager.TryGetStableSurroundAssignment(VillagerController, Vector3, out EnemyAIManager.CombatSlotAssignment) 的参数。</param>
-    /// <param name="navigationDestination">中文含义：导航目的地。使用位置：作为 EnemyAIManager.HorizontalDistance(Vector3, Vector3) 的参数、作为 Mathf.Abs(float) 的参数。</param>
-    /// <param name="destinationTolerance">中文含义：目的地容差。使用位置：作为 Mathf.Max(float, float) 的参数。</param>
+    /// <param name="enemy">敌人。</param>
+    /// <param name="playerPosition">玩家位置。</param>
+    /// <param name="navigationDestination">导航目的地。</param>
+    /// <param name="destinationTolerance">目的地容差。</param>
     public bool IsStableSurroundArrival(VillagerController enemy, Vector3 playerPosition, Vector3 navigationDestination, float destinationTolerance)
     {
         if (!TryGetStableSurroundAssignment(enemy, playerPosition, out CombatSlotAssignment /* 中文含义：赋值。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ assignment))
@@ -1270,7 +1293,7 @@ foreach (VillagerController attacker in attackingEnemies)
             return false;
         }
 
-        // tolerance（容差）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Max(float, float) 的参数、EnemyAIManager.IsStableSurroundArrival(VillagerController, Vector3, Vector3, float)。
+        // 容差。
 float tolerance = Mathf.Max(0.1f, destinationTolerance);
         return HorizontalDistance(assignment.destination, navigationDestination) <= tolerance && Mathf.Abs(assignment.destination.y - navigationDestination.y) <= Mathf.Max(0.35f, tolerance);
     }
@@ -1281,8 +1304,8 @@ float tolerance = Mathf.Max(0.1f, destinationTolerance);
     /// 局部避让并稳定面向里昂等待攻击机会。
     /// </summary>
     /// <remarks>静态调用链：上游 VillagerController.ShouldHoldCombatPosition.get；下游（含内部回调体） EnemyAIManager.HorizontalDistance(Vector3, Vector3)、EnemyAIManager.TryGetStableSurroundAssignment(VillagerController, Vector3, out EnemyAIManager.CombatSlotAssignment)、Mathf.Abs(float)、Mathf.Max(float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="enemy">中文含义：敌人。使用位置：作为 EnemyAIManager.HorizontalDistance(Vector3, Vector3) 的参数、作为 EnemyAIManager.TryGetStableSurroundAssignment(VillagerController, Vector3, out EnemyAIManager.CombatSlotAssignment) 的参数、作为 Mathf.Abs(float) 的参数。</param>
-    /// <param name="playerPosition">中文含义：玩家位置。使用位置：作为 EnemyAIManager.TryGetStableSurroundAssignment(VillagerController, Vector3, out EnemyAIManager.CombatSlotAssignment) 的参数。</param>
+    /// <param name="enemy">敌人。</param>
+    /// <param name="playerPosition">玩家位置。</param>
     public bool IsAtStableSurroundPosition(VillagerController enemy, Vector3 playerPosition)
     {
         if (!TryGetStableSurroundAssignment(enemy, playerPosition, out CombatSlotAssignment /* 中文含义：赋值。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ assignment))
@@ -1290,16 +1313,16 @@ float tolerance = Mathf.Max(0.1f, destinationTolerance);
             return false;
         }
 
-        // arrivalDistance（抵达距离）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Max(float, float) 的参数、EnemyAIManager.IsAtStableSurroundPosition(VillagerController, Vector3)。
+        // 抵达距离。
 float arrivalDistance = Mathf.Max(0.1f, surroundSlotArrivalDistance);
         return HorizontalDistance(enemy.transform.position, assignment.destination) <= arrivalDistance && Mathf.Abs(enemy.transform.position.y - assignment.destination.y) <= Mathf.Max(0.35f, arrivalDistance);
     }
 
     /// <summary>TryGetStableSurroundAssignment 的业务处理入口；本方法直接依赖 Dictionary&lt;VillagerController, EnemyAIManager.CombatSlotAssignment&gt;.Remove(VillagerController)、Dictionary&lt;VillagerController, EnemyAIManager.CombatSlotAssignment&gt;.TryGetValue(VillagerController, out EnemyAIManager.CombatSlotAssignment)、EnemyAIManager.HorizontalDistance(Vector3, Vector3)、EnemyAIManager.IsDirectPressureEnemy(VillagerController, Vector3)、EnemyAIManager.IsFormationSlotOnPlayerSide(Vector3, Vector3)、Mathf.Abs(float)、Mathf.Max(float, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyAIManager.IsAtStableSurroundPosition(VillagerController, Vector3)、EnemyAIManager.IsStableSurroundArrival(VillagerController, Vector3, Vector3, float)；下游（含内部回调体） Dictionary&lt;VillagerController, EnemyAIManager.CombatSlotAssignment&gt;.Remove(VillagerController)、Dictionary&lt;VillagerController, EnemyAIManager.CombatSlotAssignment&gt;.TryGetValue(VillagerController, out EnemyAIManager.CombatSlotAssignment)、EnemyAIManager.HorizontalDistance(Vector3, Vector3)、EnemyAIManager.IsDirectPressureEnemy(VillagerController, Vector3)、EnemyAIManager.IsFormationSlotOnPlayerSide(Vector3, Vector3)、Mathf.Abs(float)、Mathf.Max(float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="enemy">中文含义：敌人。使用位置：作为 Dictionary&lt;VillagerController, EnemyAIManager.CombatSlotAssignment&gt;.Remove(VillagerController) 的参数、作为 Dictionary&lt;VillagerController, EnemyAIManager.CombatSlotAssignment&gt;.TryGetValue(VillagerController, out EnemyAIManager.CombatSlotAssignment) 的参数、作为 EnemyAIManager.IsDirectPressureEnemy(VillagerController, Vector3) 的参数 等共 4 处。</param>
-    /// <param name="playerPosition">中文含义：玩家位置。使用位置：作为 EnemyAIManager.HorizontalDistance(Vector3, Vector3) 的参数、作为 EnemyAIManager.IsDirectPressureEnemy(VillagerController, Vector3) 的参数、作为 EnemyAIManager.IsFormationSlotOnPlayerSide(Vector3, Vector3) 的参数 等共 4 处。</param>
-    /// <param name="assignment">中文含义：赋值。输出参数，由本入口写入并交给调用方。使用位置：作为 Dictionary&lt;VillagerController, EnemyAIManager.CombatSlotAssignment&gt;.TryGetValue(VillagerController, out EnemyAIManager.CombatSlotAssignment) 的参数、作为 EnemyAIManager.HorizontalDistance(Vector3, Vector3) 的参数、作为 EnemyAIManager.IsFormationSlotOnPlayerSide(Vector3, Vector3) 的参数 等共 5 处。</param>
+    /// <param name="enemy">敌人。</param>
+    /// <param name="playerPosition">玩家位置。</param>
+    /// <param name="assignment">赋值。输出参数，由本入口写入并交给调用方。</param>
     private bool TryGetStableSurroundAssignment(VillagerController enemy, Vector3 playerPosition, out CombatSlotAssignment assignment)
     {
         assignment = default;
@@ -1330,11 +1353,11 @@ float arrivalDistance = Mathf.Max(0.1f, surroundSlotArrivalDistance);
 
     /// <summary>ResolvePursuitDestination 的业务处理入口；本方法直接依赖 Dictionary&lt;VillagerController, EnemyAIManager.PursuitTargetAssignment&gt;.Remove(VillagerController)、Dictionary&lt;VillagerController, EnemyAIManager.PursuitTargetAssignment&gt;.TryGetValue(VillagerController, out EnemyAIManager.PursuitTargetAssignment)、EnemyAIManager.HorizontalDistance(Vector3, Vector3)、EnemyAIManager.PursuitTargetAssignment.PursuitTargetAssignment()、Mathf.Abs(float)、Mathf.Max(float, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyAIManager.GetCombatDestination(VillagerController, Vector3)；下游（含内部回调体） Dictionary&lt;VillagerController, EnemyAIManager.PursuitTargetAssignment&gt;.Remove(VillagerController)、Dictionary&lt;VillagerController, EnemyAIManager.PursuitTargetAssignment&gt;.TryGetValue(VillagerController, out EnemyAIManager.PursuitTargetAssignment)、EnemyAIManager.HorizontalDistance(Vector3, Vector3)、EnemyAIManager.PursuitTargetAssignment.PursuitTargetAssignment()、Mathf.Abs(float)、Mathf.Max(float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="enemy">中文含义：敌人。使用位置：作为 Dictionary&lt;VillagerController, EnemyAIManager.PursuitTargetAssignment&gt;.Remove(VillagerController) 的参数、作为 Dictionary&lt;VillagerController, EnemyAIManager.PursuitTargetAssignment&gt;.this[VillagerController] 的参数、作为 Dictionary&lt;VillagerController, EnemyAIManager.PursuitTargetAssignment&gt;.TryGetValue(VillagerController, out EnemyAIManager.PursuitTargetAssignment) 的参数。</param>
-    /// <param name="playerPosition">中文含义：玩家位置。使用位置：作为 EnemyAIManager.HorizontalDistance(Vector3, Vector3) 的参数、作为 Mathf.Abs(float) 的参数、EnemyAIManager.ResolvePursuitDestination(VillagerController, Vector3)。</param>
+    /// <param name="enemy">敌人。</param>
+    /// <param name="playerPosition">玩家位置。</param>
     private Vector3 ResolvePursuitDestination(VillagerController enemy, Vector3 playerPosition)
     {
-        // hasAssignment（是否具有赋值）：保存 Dictionary<VillagerController, EnemyAIManager.PursuitTargetAssignment>.TryGetValue(VillagerController, out EnemyAIManager.PursuitTargetAssignment) 的返回结果，供当前步骤使用。使用位置：EnemyAIManager.ResolvePursuitDestination(VillagerController, Vector3)。
+        // 是否具有赋值。
 bool hasAssignment = pursuitTargets.TryGetValue(enemy, out PursuitTargetAssignment /* 中文含义：赋值。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ assignment);
         if (hasAssignment && Mathf.Abs(assignment.playerAnchor.y - playerPosition.y) >= Mathf.Max(0.1f, pursuitTargetPlayerHeightThreshold))
         {
@@ -1360,12 +1383,12 @@ bool hasAssignment = pursuitTargets.TryGetValue(enemy, out PursuitTargetAssignme
 
     /// <summary>GetNearestEnemy 的业务处理入口；本方法直接依赖 EnemyAIManager.IsEnemyUsable(VillagerController)、object.ReferenceEquals(object, object)、Vector3.Distance(Vector3, Vector3)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） EnemyAIManager.IsEnemyUsable(VillagerController)、object.ReferenceEquals(object, object)、Vector3.Distance(Vector3, Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="position">中文含义：位置。使用位置：作为 Vector3.Distance(Vector3, Vector3) 的参数。</param>
+    /// <param name="position">位置。</param>
     public Transform GetNearestEnemy(Vector3 position)
     {
-        // nearest（最近）：使用位置：EnemyAIManager.GetNearestEnemy(Vector3)。
+        // 最近。
 float nearest = float.MaxValue;
-        // nearestEnemy（最近敌人）：使用位置：EnemyAIManager.GetNearestEnemy(Vector3)。
+        // 最近敌人。
 VillagerController nearestEnemy = null;
         // enemy（敌人）：每轮从敌人集合取得一个元素，仅代表当前这一项。使用位置：作为 EnemyAIManager.IsEnemyUsable(VillagerController) 的参数、作为 Vector3.Distance(Vector3, Vector3) 的参数、EnemyAIManager.GetNearestEnemy(Vector3)。
 foreach (VillagerController enemy in enemies)
@@ -1375,7 +1398,7 @@ foreach (VillagerController enemy in enemies)
                 continue;
             }
 
-            // distance（距离）：保存 Vector3.Distance(Vector3, Vector3) 的返回结果，供当前步骤使用。使用位置：EnemyAIManager.GetNearestEnemy(Vector3)。
+            // 距离。
 float distance = Vector3.Distance(position, enemy.transform.position);
             if (distance < nearest)
             {
@@ -1384,7 +1407,7 @@ float distance = Vector3.Distance(position, enemy.transform.position);
             }
         }
 
-        // receiverValue29（判空前缓存的最近敌人）：从最近敌人读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、EnemyAIManager.GetNearestEnemy(Vector3)。
+        // 判空前缓存的最近敌人。
 global::VillagerController receiverValue29 = nearestEnemy;
         if (!global::System.Object.ReferenceEquals(receiverValue29, null))
         {
@@ -1405,9 +1428,11 @@ global::VillagerController receiverValue29 = nearestEnemy;
         }
 
         Vector3 direction = enemy.transform.position + Vector3.up * 1.4f - origin;
-        foreach (RaycastHit hit in Physics.RaycastAll(origin, direction.normalized, direction.magnitude,
-            Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore))
+        RaycastHit[] hits = villageHearingHits.Raycast(origin, direction.normalized, direction.magnitude,
+            Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore, out int hitCount);
+        for (int index = 0; index < hitCount; index++)
         {
+            RaycastHit hit = hits[index];
             bool onPlayer = PlayerTarget != null && hit.transform.IsChildOf(PlayerTarget.transform);
             if (!hit.transform.IsChildOf(enemy.transform) && !onPlayer
                 && hit.collider.GetComponentInParent<VillagerController>() == null)
@@ -1446,7 +1471,7 @@ global::VillagerController receiverValue29 = nearestEnemy;
 
     /// <summary>HandleWeaponFired 的业务处理入口；本方法直接依赖 EnemyAIManager.IsEnemyUsable(VillagerController)、EnemyAIManager.UpdateSharedCombatAlert()、Mathf.Max(float, float)、VillagerController.ReceiveGunshot(Vector3)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） EnemyAIManager.IsEnemyUsable(VillagerController)、EnemyAIManager.UpdateSharedCombatAlert()、Mathf.Max(float, float)、VillagerController.ReceiveGunshot(Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="noise">中文含义：噪声。使用位置：作为 VillagerController.ReceiveGunshot(Vector3) 的参数、EnemyAIManager.HandleWeaponFired(CombatEventDispatcher.WeaponNoiseEvent)。</param>
+    /// <param name="noise">噪声。</param>
     private void HandleWeaponFired(CombatEventDispatcher.WeaponNoiseEvent noise)
     {
         if (AwaitsVillageDiscovery)
@@ -1481,7 +1506,7 @@ global::VillagerController receiverValue29 = nearestEnemy;
             return;
         }
 
-        // radiusSqr（半径平方）：使用位置：EnemyAIManager.HandleWeaponFired(CombatEventDispatcher.WeaponNoiseEvent)。
+        // 半径平方。
 float radiusSqr = noise.Radius * noise.Radius;
         // enemy（敌人）：每轮从敌人集合取得一个元素，仅代表当前这一项。使用位置：作为 EnemyAIManager.IsEnemyUsable(VillagerController) 的参数、EnemyAIManager.HandleWeaponFired(CombatEventDispatcher.WeaponNoiseEvent)。
 foreach (VillagerController enemy in enemies)
@@ -1491,7 +1516,7 @@ foreach (VillagerController enemy in enemies)
                 continue;
             }
 
-            // offset（偏移量）：使用位置：EnemyAIManager.HandleWeaponFired(CombatEventDispatcher.WeaponNoiseEvent)。
+            // 偏移量。
 Vector3 offset = enemy.transform.position - noise.Position;
             offset.y = 0f;
             if (offset.sqrMagnitude <= radiusSqr)
@@ -1525,9 +1550,9 @@ Vector3 offset = enemy.transform.position - noise.Position;
         }
 
         nextSharedCombatAlertTime = Time.time + Mathf.Max(0.05f, sharedCombatAlertInterval);
-        // playerPosition（玩家位置）：使用位置：作为 VillagerController.ReceiveSharedCombatAlert(Vector3) 的参数、EnemyAIManager.UpdateSharedCombatAlert()。
+        // 玩家位置。
 Vector3 playerPosition = PlayerTarget.transform.position;
-        // radiusSqr（半径平方）：使用位置：EnemyAIManager.UpdateSharedCombatAlert()。
+        // 半径平方。
 float radiusSqr = sharedCombatAlertRadius * sharedCombatAlertRadius;
         // enemy（敌人）：每轮从敌人集合取得一个元素，仅代表当前这一项。使用位置：作为 EnemyAIManager.IsEnemyUsable(VillagerController) 的参数、EnemyAIManager.UpdateSharedCombatAlert()。
 foreach (VillagerController enemy in enemies)
@@ -1537,7 +1562,7 @@ foreach (VillagerController enemy in enemies)
                 continue;
             }
 
-            // offset（偏移量）：使用位置：EnemyAIManager.UpdateSharedCombatAlert()。
+            // 偏移量。
 Vector3 offset = enemy.transform.position - playerPosition;
             offset.y = 0f;
             if (offset.sqrMagnitude <= radiusSqr)
@@ -1556,7 +1581,7 @@ Vector3 offset = enemy.transform.position - playerPosition;
             return;
         }
 
-        // playerPosition（玩家位置）：使用位置：作为 EnemyAIManager.HorizontalDistance(Vector3, Vector3) 的参数、作为 VillagerController.ReceiveSharedCombatAlert(Vector3) 的参数、EnemyAIManager.UpdateMovementNoiseAwareness()。
+        // 玩家位置。
 Vector3 playerPosition = PlayerTarget.transform.position;
         if (!IsCombatUnlocked)
         {
@@ -1573,9 +1598,9 @@ Vector3 playerPosition = PlayerTarget.transform.position;
             return;
         }
 
-        // elapsed（已用）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：EnemyAIManager.UpdateMovementNoiseAwareness()。
+        // 已用。
 float elapsed = Mathf.Max(0.01f, updateInterval);
-        // movementSpeed（移动速度）：使用位置：EnemyAIManager.UpdateMovementNoiseAwareness()。
+        // 移动速度。
 float movementSpeed = HorizontalDistance(previousPlayerPosition, playerPosition) / elapsed;
         previousPlayerPosition = playerPosition;
         if (movementSpeed < Mathf.Max(0.1f, movementHearingSpeedThreshold))
@@ -1583,11 +1608,11 @@ float movementSpeed = HorizontalDistance(previousPlayerPosition, playerPosition)
             return;
         }
 
-        // radius（半径）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：EnemyAIManager.UpdateMovementNoiseAwareness()。
+        // 半径。
 float radius = Mathf.Max(1f, movementHearingRadius);
-        // radiusSqr（半径平方）：使用位置：EnemyAIManager.UpdateMovementNoiseAwareness()。
+        // 半径平方。
 float radiusSqr = radius * radius;
-        // alertedAnyEnemy（是否已警觉任意敌人）：使用位置：EnemyAIManager.UpdateMovementNoiseAwareness()。
+        // 是否已警觉任意敌人。
 bool alertedAnyEnemy = false;
         // enemy（敌人）：每轮从敌人集合取得一个元素，仅代表当前这一项。使用位置：作为 EnemyAIManager.IsEnemyUsable(VillagerController) 的参数、EnemyAIManager.UpdateMovementNoiseAwareness()。
 foreach (VillagerController enemy in enemies)
@@ -1597,7 +1622,7 @@ foreach (VillagerController enemy in enemies)
                 continue;
             }
 
-            // offset（偏移量）：使用位置：EnemyAIManager.UpdateMovementNoiseAwareness()。
+            // 偏移量。
 Vector3 offset = enemy.transform.position - playerPosition;
             offset.y = 0f;
             if (offset.sqrMagnitude > radiusSqr)
@@ -1628,10 +1653,10 @@ Vector3 offset = enemy.transform.position - playerPosition;
             return;
         }
 
-        // i（当前遍历索引）：使用位置：作为 List<VillagerController>.RemoveAt(int) 的参数、作为 List<VillagerController>.this[int] 的参数、EnemyAIManager.UpdateEnemyStates()。
+        // 当前遍历索引。
 for (int i = enemies.Count - 1; i >= 0; i--)
         {
-            // enemy（敌人）：使用位置：作为 EnemyAIManager.SynchronizePursuitRegionVersion(VillagerController) 的参数、作为 Vector3.Distance(Vector3, Vector3) 的参数、EnemyAIManager.UpdateEnemyStates()。
+            // 敌人。
 VillagerController enemy = enemies[i];
             if (enemy == null)
             {
@@ -1653,14 +1678,14 @@ VillagerController enemy = enemies[i];
                 continue;
             }
 
-            // distance（距离）：保存 Vector3.Distance(Vector3, Vector3) 的返回结果，供当前步骤使用。使用位置：EnemyAIManager.UpdateEnemyStates()。
+            // 距离。
 float distance = Vector3.Distance(enemy.transform.position, PlayerTarget.transform.position);
             // 入村战斗开始后，已经接到追击命令的敌人必须持续模拟。
             // 远距离停用会取消路径并清除战斗状态，玩家再次靠近时才恢复，
             // 视觉上就像敌人主动返回出生守位。
-            // shouldRemainActiveForPursuit（是否应当保持生效用于追击）：使用位置：EnemyAIManager.UpdateEnemyStates()。
+            // 是否应当保持生效用于追击。
 bool shouldRemainActiveForPursuit = IsCombatUnlocked && enemy.IsCombatEngaged;
-            // shouldBeActive（是否应当保持生效）：使用位置：作为 VillagerController.SetLODActive(bool) 的参数、EnemyAIManager.UpdateEnemyStates()。
+            // 是否应当保持生效。
 bool shouldBeActive = shouldRemainActiveForPursuit || distance < maxActiveDistance;
             enemy.SetLODActive(shouldBeActive);
             // 区域切换广播可能发生在敌人被快速反应事件接管、暂时停用
@@ -1672,7 +1697,7 @@ bool shouldBeActive = shouldRemainActiveForPursuit || distance < maxActiveDistan
 
     /// <summary>SynchronizePursuitRegionVersion 的业务处理入口；本方法直接依赖 VillagerController.ReceivePursuitRegionChange(int, Vector3)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyAIManager.RegisterEnemy(VillagerController)、EnemyAIManager.UpdateEnemyStates()；下游（含内部回调体） VillagerController.ReceivePursuitRegionChange(int, Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="enemy">中文含义：敌人。使用位置：EnemyAIManager.SynchronizePursuitRegionVersion(VillagerController)。</param>
+    /// <param name="enemy">敌人。</param>
     private void SynchronizePursuitRegionVersion(VillagerController enemy)
     {
         if (!hasPlayerPursuitRegion || PlayerTarget == null || enemy == null || enemy.IsDead || enemy.IsQTEControlled || !enemy.IsCombatEngaged)
@@ -1689,11 +1714,11 @@ bool shouldBeActive = shouldRemainActiveForPursuit || distance < maxActiveDistan
     /// 排除；敌人跨房间的追击由敌人控制器的门洞阶段单独负责。
     /// </summary>
     /// <remarks>静态调用链：上游 EnemyAIManager.AssignSurroundSlot(VillagerController, Vector3, float, bool, int)、EnemyAIManager.GetStableSurroundSlot(VillagerController, Vector3, float, bool)、EnemyAIManager.SelectSurroundSlot(VillagerController, Vector3, float, int, bool, out int)、EnemyAIManager.TryGetStableSurroundAssignment(VillagerController, Vector3, out EnemyAIManager.CombatSlotAssignment)；下游（含内部回调体） DoorController.TryFindPassageTowardDestination(Vector3, Vector3, out DoorController)、EnemyAIManager.HorizontalDistance(Vector3, Vector3)、EnemyAIManager.TryGetCurrentPlayerPursuitRegion(out int)、PursuitNavigationTopology.TryGetRegion(Vector3, out int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="playerPosition">中文含义：玩家位置。使用位置：作为 DoorController.TryFindPassageTowardDestination(Vector3, Vector3, out DoorController) 的参数、作为 EnemyAIManager.HorizontalDistance(Vector3, Vector3) 的参数、作为 PursuitNavigationTopology.TryGetRegion(Vector3, out int) 的参数。</param>
-    /// <param name="candidate">中文含义：候选。使用位置：作为 DoorController.TryFindPassageTowardDestination(Vector3, Vector3, out DoorController) 的参数、作为 PursuitNavigationTopology.TryGetRegion(Vector3, out int) 的参数。</param>
+    /// <param name="playerPosition">玩家位置。</param>
+    /// <param name="candidate">候选。</param>
     private bool IsFormationSlotOnPlayerSide(Vector3 playerPosition, Vector3 candidate)
     {
-        // hasAuthoritativePlayerRegion（是否具有权威玩家区域）：使用位置：EnemyAIManager.IsFormationSlotOnPlayerSide(Vector3, Vector3)。
+        // 是否具有权威玩家区域。
 bool hasAuthoritativePlayerRegion = TryGetCurrentPlayerPursuitRegion(out int /* 中文含义：玩家区域。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ playerRegion) && PlayerTarget != null && HorizontalDistance(PlayerTarget.transform.position, playerPosition) <= 0.1f;
         if (!hasAuthoritativePlayerRegion && !PursuitNavigationTopology.TryGetRegion(playerPosition, out playerRegion))
         {
@@ -1710,8 +1735,8 @@ bool hasAuthoritativePlayerRegion = TryGetCurrentPlayerPursuitRegion(out int /* 
 
     /// <summary>HorizontalDistance 的业务处理入口；本方法直接依赖 Vector3.Distance(Vector3, Vector3)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyAIManager.GetCombatDestination(VillagerController, Vector3)、EnemyAIManager.GetDirectPressureScore(VillagerController, Vector3)、EnemyAIManager.GetStableSurroundSlot(VillagerController, Vector3, float, bool)、EnemyAIManager.IsAtStableSurroundPosition(VillagerController, Vector3)、EnemyAIManager.IsFormationSlotOnPlayerSide(Vector3, Vector3) 等共 10 处；下游（含内部回调体） Vector3.Distance(Vector3, Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="first">中文含义：首个。使用位置：作为 Vector3.Distance(Vector3, Vector3) 的参数、EnemyAIManager.HorizontalDistance(Vector3, Vector3)。</param>
-    /// <param name="second">中文含义：第二。使用位置：作为 Vector3.Distance(Vector3, Vector3) 的参数、EnemyAIManager.HorizontalDistance(Vector3, Vector3)。</param>
+    /// <param name="first">首个。</param>
+    /// <param name="second">第二。</param>
     private static float HorizontalDistance(Vector3 first, Vector3 second)
     {
         first.y = 0f;
@@ -1724,9 +1749,19 @@ bool hasAuthoritativePlayerRegion = TryGetCurrentPlayerPursuitRegion(out int /* 
     {
         ValidateAttackHandles();
         // 交接留出短暂窗口，超过窗口仍未启动会话的孤立许可必须释放。
-        if (!IsReservationCandidateValid(qteReservedEnemy) || (Time.time > qteReservationAcquiredAt + 0.25f && !(qteReservedEnemy.combatModule != null && qteReservedEnemy.combatModule.HasGrabWindup) && (qteReservedEnemy.GetComponent<VillagerQTEParticipant>() == null || qteReservedEnemy.GetComponent<VillagerQTEParticipant>().ActiveSessionId == 0)))
+        if (!IsReservationCandidateValid(qteReservedEnemy))
         {
             qteReservedEnemy = null;
+        }
+        else if (Time.time > qteReservationAcquiredAt + 0.25f)
+        {
+            VillagerQTEParticipant participant = qteReservedEnemy.ArchitectureReadQteParticipant;
+            bool hasGrabWindup = qteReservedEnemy.combatModule != null && qteReservedEnemy.combatModule.HasGrabWindup;
+            bool hasSession = participant != null && participant.ActiveSessionId != 0;
+            if (!hasGrabWindup && !hasSession)
+            {
+                qteReservedEnemy = null;
+            }
         }
 
         HasPendingQTERequest();
@@ -1740,7 +1775,7 @@ bool hasAuthoritativePlayerRegion = TryGetCurrentPlayerPursuitRegion(out int /* 
             return;
         }
 
-        // hasPendingRequest（是否存在待处理的请求）：保存 EnemyAIManager.HasPendingQTERequest() 的返回结果，供当前步骤使用。使用位置：EnemyAIManager.RegisterPendingQTERequest(VillagerController, QTEKind)。
+        // 是否存在待处理的请求。
 bool hasPendingRequest = HasPendingQTERequest();
         if (hasPendingRequest && pendingQTEEnemy == enemy && pendingQTEKind == kind)
         {
@@ -1784,8 +1819,8 @@ bool hasPendingRequest = HasPendingQTERequest();
 
     /// <summary>IsQTERequestEligible 的业务处理入口；本方法直接依赖 Component.GetComponent&lt;LeonQTECoordinator&gt;()、Component.GetComponent&lt;VillagerQTEParticipant&gt;()、EnemyAIManager.IsReservationCandidateValid(VillagerController)、LeonQTECoordinator.CanStart(QTEKind, IEnemyQTEParticipant, out QTECancelReason)、VillagerQTEParticipant.CanAttemptChainsawExecution(LeonController)、VillagerQTEParticipant.CanAttemptFrontGrab(LeonController)、VillagerQTEParticipant.CanAttemptLegBite(LeonController) 等共 8 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyAIManager.HasPendingQTERequest()、EnemyAIManager.RegisterPendingQTERequest(VillagerController, QTEKind)；下游（含内部回调体） Component.GetComponent&lt;LeonQTECoordinator&gt;()、Component.GetComponent&lt;VillagerQTEParticipant&gt;()、EnemyAIManager.IsReservationCandidateValid(VillagerController)、LeonQTECoordinator.CanStart(QTEKind, IEnemyQTEParticipant, out QTECancelReason)、VillagerQTEParticipant.CanAttemptChainsawExecution(LeonController)、VillagerQTEParticipant.CanAttemptFrontGrab(LeonController)、VillagerQTEParticipant.CanAttemptLegBite(LeonController) 等共 8 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="enemy">中文含义：敌人。使用位置：作为 EnemyAIManager.IsReservationCandidateValid(VillagerController) 的参数、EnemyAIManager.IsQTERequestEligible(VillagerController, QTEKind)。</param>
-    /// <param name="kind">中文含义：种类。使用位置：作为 LeonQTECoordinator.CanStart(QTEKind, IEnemyQTEParticipant, out QTECancelReason) 的参数、EnemyAIManager.IsQTERequestEligible(VillagerController, QTEKind)。</param>
+    /// <param name="enemy">敌人。</param>
+    /// <param name="kind">种类。</param>
     private bool IsQTERequestEligible(VillagerController enemy, QTEKind kind)
     {
         if (!IsReservationCandidateValid(enemy) || PlayerTarget == null)
@@ -1793,7 +1828,7 @@ bool hasPendingRequest = HasPendingQTERequest();
             return false;
         }
 
-        // canEvaluate（是否可以评估）：使用位置：EnemyAIManager.IsQTERequestEligible(VillagerController, QTEKind)。
+        // 是否可以评估。
 bool canEvaluate;
         if (kind == QTEKind.LegBite)
         {
@@ -1809,10 +1844,10 @@ bool canEvaluate;
             return false;
         }
 
-        // participant（参与者）：保存 Component.GetComponent<VillagerQTEParticipant>() 的返回结果，供当前步骤使用。使用位置：作为 LeonQTECoordinator.CanStart(QTEKind, IEnemyQTEParticipant, out QTECancelReason) 的参数、EnemyAIManager.IsQTERequestEligible(VillagerController, QTEKind)。
-VillagerQTEParticipant participant = enemy.GetComponent<VillagerQTEParticipant>();
-        // coordinator（当前里昂配对动作协调器）：保存 Component.GetComponent<LeonQTECoordinator>() 的返回结果，供当前步骤使用。使用位置：EnemyAIManager.IsQTERequestEligible(VillagerController, QTEKind)。
-LeonQTECoordinator coordinator = PlayerTarget.GetComponent<LeonQTECoordinator>();
+        // 参与者。
+VillagerQTEParticipant participant = enemy.ArchitectureReadQteParticipant;
+        // 当前里昂配对动作协调器。
+        LeonQTECoordinator coordinator = PlayerQteCoordinator;
         if (participant == null || coordinator == null || coordinator.IsActive)
         {
             return false;
@@ -1850,7 +1885,7 @@ LeonQTECoordinator coordinator = PlayerTarget.GetComponent<LeonQTECoordinator>()
 
     /// <summary>GetQTERequestPriority 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
     /// <remarks>静态调用链：上游 EnemyAIManager.RegisterPendingQTERequest(VillagerController, QTEKind)；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="kind">中文含义：种类。使用位置：EnemyAIManager.GetQTERequestPriority(QTEKind)。</param>
+    /// <param name="kind">种类。</param>
     private static int GetQTERequestPriority(QTEKind kind)
     {
         if (kind == QTEKind.ChainsawExecution)
@@ -1868,7 +1903,7 @@ LeonQTECoordinator coordinator = PlayerTarget.GetComponent<LeonQTECoordinator>()
 
     /// <summary>HasConcurrentAttackDirectionSpace 的业务处理入口；本方法直接依赖 Mathf.Clamp(float, float, float)、Vector3.Angle(Vector3, Vector3)、Vector3.Normalize()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyAIManager.BuildCombatTimelineSummary(VillagerController)、EnemyAIManager.CanAcquireAttackReservation(VillagerController)、EnemyAIManager.FillCombatTimelineSnapshot(VillagerController, ref CombatTimelineSnapshot)、EnemyAIManager.TryAcquireAttackReservation(VillagerController)；下游（含内部回调体） Mathf.Clamp(float, float, float)、Vector3.Angle(Vector3, Vector3)、Vector3.Normalize()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="requester">中文含义：请求方。使用位置：EnemyAIManager.HasConcurrentAttackDirectionSpace(VillagerController)。</param>
+    /// <param name="requester">请求方。</param>
     private bool HasConcurrentAttackDirectionSpace(VillagerController requester)
     {
         if (requester == null || PlayerTarget == null)
@@ -1876,7 +1911,7 @@ LeonQTECoordinator coordinator = PlayerTarget.GetComponent<LeonQTECoordinator>()
             return true;
         }
 
-        // requesterDirection（请求方方向）：使用位置：作为 Vector3.Angle(Vector3, Vector3) 的参数、EnemyAIManager.HasConcurrentAttackDirectionSpace(VillagerController)。
+        // 请求方方向。
 Vector3 requesterDirection = requester.transform.position - PlayerTarget.transform.position;
         requesterDirection.y = 0f;
         if (requesterDirection.sqrMagnitude <= 0.0001f)
@@ -1885,8 +1920,16 @@ Vector3 requesterDirection = requester.transform.position - PlayerTarget.transfo
         }
 
         requesterDirection.Normalize();
-        // minimumAngle（最小角度）：保存 Mathf.Clamp(float, float, float) 的返回结果，供当前步骤使用。使用位置：EnemyAIManager.HasConcurrentAttackDirectionSpace(VillagerController)。
+        // 最小角度。
 float minimumAngle = Mathf.Clamp(minimumConcurrentAttackAngle, 0f, 180f);
+        HouseThreeRegionNavigation region = HouseThreeRegionNavigation.Current;
+        if (region != null &&
+            (region.IsOnSecondFloorOuterPlatform(requester.transform.position) ||
+             region.IsOnSecondFloorOuterPlatform(PlayerTarget.transform.position)))
+        {
+            // 二楼外平台木板桥和屋檐通道较窄，放宽夹角要求，避免并发攻击名额被退化成单人排队。
+            minimumAngle = Mathf.Min(minimumAngle, 35f);
+        }
         // attacker（攻击者）：每轮从攻击中敌人集合取得一个元素，仅代表当前这一项。使用位置：EnemyAIManager.HasConcurrentAttackDirectionSpace(VillagerController)。
 foreach (VillagerController attacker in attackingEnemies)
         {
@@ -1895,7 +1938,7 @@ foreach (VillagerController attacker in attackingEnemies)
                 continue;
             }
 
-            // attackerDirection（攻击者方向）：使用位置：作为 Vector3.Angle(Vector3, Vector3) 的参数、EnemyAIManager.HasConcurrentAttackDirectionSpace(VillagerController)。
+            // 攻击者方向。
 Vector3 attackerDirection = attacker.transform.position - PlayerTarget.transform.position;
             attackerDirection.y = 0f;
             if (attackerDirection.sqrMagnitude <= 0.0001f)
@@ -1936,7 +1979,7 @@ foreach (VillagerController attacker in attackingEnemies)
 
     /// <summary>IsReservationCandidateValid 的业务处理入口；本方法直接依赖 EnemyAIManager.IsEnemyUsable(VillagerController)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyAIManager.CanAcquireAttackReservation(VillagerController)、EnemyAIManager.CanAcquireQTEReservation(VillagerController, QTEKind)、EnemyAIManager.IsDirectPressureEnemy(VillagerController, Vector3)、EnemyAIManager.IsQTERequestEligible(VillagerController, QTEKind)、EnemyAIManager.TryAcquireAttackReservation(VillagerController) 等共 7 处；下游（含内部回调体） EnemyAIManager.IsEnemyUsable(VillagerController)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="enemy">中文含义：敌人。使用位置：作为 EnemyAIManager.IsEnemyUsable(VillagerController) 的参数、EnemyAIManager.IsReservationCandidateValid(VillagerController)。</param>
+    /// <param name="enemy">敌人。</param>
     private bool IsReservationCandidateValid(VillagerController enemy)
     {
         return IsEnemyUsable(enemy) && CanEngage(enemy) && enemy.IsCombatEngaged;
@@ -1944,7 +1987,7 @@ foreach (VillagerController attacker in attackingEnemies)
 
     /// <summary>IsEnemyUsable 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
     /// <remarks>静态调用链：上游 EnemyAIManager.GetNearestEnemy(Vector3)、EnemyAIManager.HandleWeaponFired(CombatEventDispatcher.WeaponNoiseEvent)、EnemyAIManager.IsDirectPressureEnemy(VillagerController, Vector3)、EnemyAIManager.IsReservationCandidateValid(VillagerController)、EnemyAIManager.NotifyCombatEngaged(VillagerController) 等共 10 处；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="enemy">中文含义：敌人。使用位置：EnemyAIManager.IsEnemyUsable(VillagerController)。</param>
+    /// <param name="enemy">敌人。</param>
     private static bool IsEnemyUsable(VillagerController enemy)
     {
         return enemy != null && enemy.isActiveAndEnabled && enemy.gameObject.activeInHierarchy && enemy.IsActive && !enemy.IsDead;
@@ -1953,25 +1996,25 @@ foreach (VillagerController attacker in attackingEnemies)
     /// <summary>敌人行为、动作与通行的结构化数据 CombatSlotAssignment；声明字段保存该步骤需要的值，具体读写由使用方执行。</summary>
     private struct CombatSlotAssignment
     {
-        /// <summary>中文含义：玩家锚点。使用位置：作为 EnemyAIManager.HorizontalDistance(Vector3, Vector3) 的参数、作为 Mathf.Abs(float) 的参数、EnemyAIManager.AssignSurroundSlot(VillagerController, Vector3, float, bool, int)。</summary>
+        /// <summary>玩家锚点。</summary>
         public Vector3 playerAnchor;
-        /// <summary>中文含义：目的地。使用位置：作为 EnemyAIManager.HorizontalDistance(Vector3, Vector3) 的参数、作为 EnemyAIManager.IsFormationSlotOnPlayerSide(Vector3, Vector3) 的参数、作为 Mathf.Abs(float) 的参数 等共 7 处。</summary>
+        /// <summary>目的地。</summary>
         public Vector3 destination;
-        /// <summary>中文含义：槽位索引。使用位置：作为 EnemyAIManager.AssignSurroundSlot(VillagerController, Vector3, float, bool, int) 的参数、EnemyAIManager.AssignSurroundSlot(VillagerController, Vector3, float, bool, int)、EnemyAIManager.BuildCombatTimelineSummary(VillagerController) 等共 7 处。</summary>
+        /// <summary>槽位索引。</summary>
         public int slotIndex;
-        /// <summary>中文含义：是否侧翼等待区。使用位置：EnemyAIManager.AssignSurroundSlot(VillagerController, Vector3, float, bool, int)、EnemyAIManager.GetStableSurroundSlot(VillagerController, Vector3, float, bool)、EnemyAIManager.ShouldUseFlankStaging(VillagerController, float) 等共 4 处。</summary>
+        /// <summary>是否侧翼等待区。</summary>
         public bool isFlankStaging;
-        /// <summary>中文含义：到期时间。使用位置：EnemyAIManager.AssignSurroundSlot(VillagerController, Vector3, float, bool, int)、EnemyAIManager.GetStableSurroundSlot(VillagerController, Vector3, float, bool)。</summary>
+        /// <summary>到期时间。</summary>
     }
 
     /// <summary>敌人行为、动作与通行的结构化数据 PursuitTargetAssignment；声明字段保存该步骤需要的值，具体读写由使用方执行。</summary>
     private struct PursuitTargetAssignment
     {
-        /// <summary>中文含义：玩家锚点。使用位置：作为 EnemyAIManager.HorizontalDistance(Vector3, Vector3) 的参数、作为 Mathf.Abs(float) 的参数、EnemyAIManager.ResolvePursuitDestination(VillagerController, Vector3)。</summary>
+        /// <summary>玩家锚点。</summary>
         public Vector3 playerAnchor;
-        /// <summary>中文含义：目的地。使用位置：EnemyAIManager.ResolvePursuitDestination(VillagerController, Vector3)。</summary>
+        /// <summary>目的地。</summary>
         public Vector3 destination;
-        /// <summary>中文含义：到期时间。使用位置：EnemyAIManager.ResolvePursuitDestination(VillagerController, Vector3)。</summary>
+        /// <summary>到期时间。</summary>
         public float expiresAt;
     }
 
@@ -1994,7 +2037,7 @@ foreach (VillagerController attacker in attackingEnemies)
             Gizmos.matrix = previousMatrix;
         }
 
-        // playerTransform（玩家变换）：使用位置：作为 EnemyAIManager.DrawSurroundSlots(Vector3, float, Color) 的参数、作为 Gizmos.DrawLine(Vector3, Vector3) 的参数、EnemyAIManager.OnDrawGizmosSelected()。
+        // 玩家变换。
 Transform playerTransform;
         if (PlayerTarget != null)
         {
@@ -2002,7 +2045,7 @@ Transform playerTransform;
         }
         else
         {
-            // receiverValue35（判空前缓存的里昂玩家控制器）：按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、EnemyAIManager.OnDrawGizmosSelected()。
+            // 判空前缓存的里昂玩家控制器。
 global::LeonController receiverValue35 = FindFirstObjectByType<LeonController>();
             if (!global::System.Object.ReferenceEquals(receiverValue35, null))
             {
@@ -2041,20 +2084,20 @@ foreach (VillagerController attacker in attackingEnemies)
 
     /// <summary>DrawSurroundSlots 的业务处理入口；本方法直接依赖 Gizmos.DrawWireSphere(Vector3, float)、Mathf.Max(int, int)、Quaternion.Euler(float, float, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyAIManager.OnDrawGizmosSelected()；下游（含内部回调体） Gizmos.DrawWireSphere(Vector3, float)、Mathf.Max(int, int)、Quaternion.Euler(float, float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="center">中文含义：中心。使用位置：EnemyAIManager.DrawSurroundSlots(Vector3, float, Color)。</param>
-    /// <param name="radius">中文含义：半径。使用位置：EnemyAIManager.DrawSurroundSlots(Vector3, float, Color)。</param>
-    /// <param name="color">中文含义：颜色。使用位置：EnemyAIManager.DrawSurroundSlots(Vector3, float, Color)。</param>
+    /// <param name="center">中心。</param>
+    /// <param name="radius">半径。</param>
+    /// <param name="color">颜色。</param>
     private void DrawSurroundSlots(Vector3 center, float radius, Color color)
     {
-        // slotCount（槽位数量）：保存 Mathf.Max(int, int) 的返回结果，供当前步骤使用。使用位置：EnemyAIManager.DrawSurroundSlots(Vector3, float, Color)。
+        // 槽位数量。
 int slotCount = Mathf.Max(4, surroundSlotCount);
         Gizmos.color = color;
-        // index（当前元素索引）：使用位置：EnemyAIManager.DrawSurroundSlots(Vector3, float, Color)。
+        // 当前元素索引。
 for (int index = 0; index < slotCount; index++)
         {
-            // angle（角度）：使用位置：作为 Quaternion.Euler(float, float, float) 的参数。
+            // 角度。
 float angle = 360f * index / slotCount;
-            // point（点）：使用位置：作为 Gizmos.DrawWireSphere(Vector3, float) 的参数。
+            // 点。
 Vector3 point = center + Quaternion.Euler(0f, angle, 0f) * Vector3.forward * radius;
             Gizmos.DrawWireSphere(point, 0.12f);
         }

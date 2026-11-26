@@ -24,8 +24,10 @@ public sealed partial class VillageSiegeSequence
             currentStage.playerRoot != null && cameraController.gameplayDriver != null)
         {
             Vector3 exitPosition = currentStage.playerRoot.position + Vector3.up * PlayerExitHeightOffset;
-            if (cameraController.gameplayDriver.TrySampleVillageShoulder(exitPosition, source.rotation, out var shoulder))
+            bool resetCollisionState = !villageShoulderSampleInitialized;
+            if (cameraController.gameplayDriver.TrySampleVillageShoulder(exitPosition, source.rotation, resetCollisionState, out var shoulder))
             {
+                villageShoulderSampleInitialized = true;
                 // 末镜从切入起就使用玩法镜头的焦距，借原有运镜抵达同一越肩机位。
                 float lastSample = (float)(director.duration - 1d / 60d);
                 float progress = Mathf.InverseLerp((float)HouseShoulderShotStart, lastSample, (float)director.time);

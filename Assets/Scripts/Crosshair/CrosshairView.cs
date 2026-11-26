@@ -17,46 +17,46 @@ using UnityEngine.UI;
 [RequireComponent(typeof(CanvasGroup))]
 public class CrosshairView : MonoBehaviour
 {
-    /// <summary>中文含义：跨越渲染器。使用位置：CrosshairView.SelectRenderer(CrosshairType)、CrosshairView.SwitchRenderer(CrosshairConfig)。</summary>
+    /// <summary>跨越渲染器。</summary>
     [Header("渲染策略引用 (场景中预挂)")]
     [SerializeField]
     private CrossRenderer crossRenderer;
-    /// <summary>中文含义：点积渲染器。使用位置：CrosshairView.SelectRenderer(CrosshairType)。</summary>
+    /// <summary>点积渲染器。</summary>
     [SerializeField]
     private DotRenderer dotRenderer;
-    /// <summary>中文含义：圆形渲染器。使用位置：CrosshairView.SelectRenderer(CrosshairType)。</summary>
+    /// <summary>圆形渲染器。</summary>
     [SerializeField]
     private CircleRenderer circleRenderer;
-    /// <summary>中文含义：空值渲染器。使用位置：CrosshairView.SelectRenderer(CrosshairType)。</summary>
+    /// <summary>空值渲染器。</summary>
     [SerializeField]
     private NullRenderer nullRenderer;
-    /// <summary>中文含义：尺寸平滑速度。使用位置：作为 Color.Lerp(Color, Color, float) 的参数、作为 Mathf.Lerp(float, float, float) 的参数。</summary>
+    /// <summary>尺寸平滑速度。</summary>
     [Header("平滑参数")]
     [SerializeField]
     private float sizeSmoothSpeed = 12f;
-    /// <summary>中文含义：当前渲染器。使用位置：CrosshairView.ApplyModel(CrosshairModel)、CrosshairView.SwitchRenderer(CrosshairConfig)。</summary>
+    /// <summary>当前渲染器。</summary>
     private ICrosshairRenderer _currentRenderer;
-    /// <summary>中文含义：当前类型。使用位置：CrosshairView.SwitchRenderer(CrosshairConfig)。</summary>
+    /// <summary>当前类型。</summary>
     private CrosshairType _currentType = CrosshairType.None;
     // Lerp 当前值
-    /// <summary>中文含义：当前透明度。使用位置：作为 ICrosshairRenderer.ApplyAlpha(float) 的参数、作为 Mathf.Lerp(float, float, float) 的参数、CrosshairView.ApplyModel(CrosshairModel) 等共 5 处。</summary>
+    /// <summary>当前透明度。</summary>
     private float _currentAlpha;
-    /// <summary>中文含义：当前尺寸。使用位置：作为 ICrosshairRenderer.ApplySpread(float, float) 的参数、作为 Mathf.Lerp(float, float, float) 的参数、CrosshairView.ApplyModel(CrosshairModel) 等共 4 处。</summary>
+    /// <summary>当前尺寸。</summary>
     private float _currentSize;
-    /// <summary>中文含义：当前颜色。使用位置：作为 Color.Lerp(Color, Color, float) 的参数、作为 ICrosshairRenderer.ApplyColor(Color, Color, float) 的参数、CrosshairView.ApplyModel(CrosshairModel) 等共 4 处。</summary>
+    /// <summary>当前颜色。</summary>
     private Color _currentColor;
     // Lerp 目标值（由 Model 计算）
-    /// <summary>中文含义：目标透明度。使用位置：作为 Mathf.Lerp(float, float, float) 的参数、CrosshairView.ApplyModel(CrosshairModel)。</summary>
+    /// <summary>目标透明度。</summary>
     private float _targetAlpha;
-    /// <summary>中文含义：目标尺寸。使用位置：作为 Mathf.Lerp(float, float, float) 的参数、CrosshairView.ApplyModel(CrosshairModel)。</summary>
+    /// <summary>目标尺寸。</summary>
     private float _targetSize;
-    /// <summary>中文含义：目标颜色。使用位置：作为 Color.Lerp(Color, Color, float) 的参数、CrosshairView.ApplyModel(CrosshairModel)。</summary>
+    /// <summary>目标颜色。</summary>
     private Color _targetColor;
-    /// <summary>中文含义：目标命中颜色。使用位置：作为 ICrosshairRenderer.ApplyColor(Color, Color, float) 的参数、CrosshairView.ApplyModel(CrosshairModel)。</summary>
+    /// <summary>目标命中颜色。</summary>
     private Color _targetHitColor;
-    /// <summary>中文含义：命中混合。使用位置：作为 ICrosshairRenderer.ApplyColor(Color, Color, float) 的参数、CrosshairView.ApplyModel(CrosshairModel)。</summary>
+    /// <summary>命中混合。</summary>
     private float _hitBlend;
-    /// <summary>中文含义：画布组。使用位置：CrosshairView.ApplyModel(CrosshairModel)、CrosshairView.Awake()、CrosshairView.SetAlphaImmediate(float) 等共 4 处。</summary>
+    /// <summary>画布组。</summary>
     private CanvasGroup _canvasGroup;
     /// <summary>Unity 组件初始化回调；状态处理与资源交接按函数内顺序执行，下游协作见调用链。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） Component.GetComponent&lt;CanvasGroup&gt;()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
@@ -81,7 +81,7 @@ public class CrosshairView : MonoBehaviour
     /// 由 CrosshairPresenter 每帧调用 — 推送最新 Model 数据
     /// </summary>
     /// <remarks>静态调用链：上游 CrosshairPresenter.Update()；下游（含内部回调体） Color.Lerp(Color, Color, float)、CrosshairView.GetFadeSpeed(CrosshairModel)、CrosshairView.GetHitColor(CrosshairModel)、ICrosshairRenderer.ApplyAlpha(float)、ICrosshairRenderer.ApplyColor(Color, Color, float)、ICrosshairRenderer.ApplySpread(float, float)、Mathf.Lerp(float, float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="model">中文含义：模型。使用位置：作为 CrosshairView.GetFadeSpeed(CrosshairModel) 的参数、作为 CrosshairView.GetHitColor(CrosshairModel) 的参数、作为 ICrosshairRenderer.ApplySpread(float, float) 的参数 等共 4 处。</param>
+    /// <param name="model">模型。</param>
     public void ApplyModel(CrosshairModel model)
     {
         if (model == null || model.Config == null)
@@ -111,9 +111,9 @@ public class CrosshairView : MonoBehaviour
         _targetColor = model.Config.baseColor;
         _targetHitColor = GetHitColor(model);
         // --- 执行 Lerp 平滑 ---
-        // fadeSpeed（淡入淡出速度）：保存 CrosshairView.GetFadeSpeed(CrosshairModel) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Lerp(float, float, float) 的参数。
+        // 淡入淡出速度。
 float fadeSpeed = GetFadeSpeed(model);
-        // dt（本次计算的时间步长）：使用位置：作为 Color.Lerp(Color, Color, float) 的参数、作为 Mathf.Lerp(float, float, float) 的参数。
+        // 本次计算的时间步长。
 float dt = Time.deltaTime;
         _currentAlpha = Mathf.Lerp(_currentAlpha, _targetAlpha, dt * fadeSpeed);
         _currentSize = Mathf.Lerp(_currentSize, _targetSize, dt * sizeSmoothSpeed);
@@ -137,7 +137,7 @@ float dt = Time.deltaTime;
     /// 切换渲染策略 — 由 Presenter 在武器切换时调用
     /// </summary>
     /// <remarks>静态调用链：上游 CrosshairPresenter.HandleWeaponSwitched(ICrosshairDataProvider)、CrosshairPresenter.InitializeFromProviders()、CrosshairPresenter.Update()；下游（含内部回调体） CrosshairView.SelectRenderer(CrosshairType)、CrossRenderer.Configure(float, float)、ICrosshairRenderer.OnActivate()、ICrosshairRenderer.OnDeactivate()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="config">中文含义：当前准星配置。使用位置：作为 CrosshairView.SelectRenderer(CrosshairType) 的参数、作为 CrossRenderer.Configure(float, float) 的参数、CrosshairView.SwitchRenderer(CrosshairConfig)。</param>
+    /// <param name="config">当前准星配置。</param>
     public void SwitchRenderer(CrosshairConfig config)
     {
         if (config == null)
@@ -173,7 +173,7 @@ float dt = Time.deltaTime;
 
     /// <summary>强制设置当前 Alpha（跳过 Lerp），用于初始化或瞬间切换</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="alpha">中文含义：透明度。使用位置：CrosshairView.SetAlphaImmediate(float)。</param>
+    /// <param name="alpha">透明度。</param>
     public void SetAlphaImmediate(float alpha)
     {
         _currentAlpha = alpha;
@@ -185,7 +185,7 @@ float dt = Time.deltaTime;
 
     /// <summary>SelectRenderer 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
     /// <remarks>静态调用链：上游 CrosshairView.SwitchRenderer(CrosshairConfig)；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="type">中文含义：当前准星类型。使用位置：CrosshairView.SelectRenderer(CrosshairType)。</param>
+    /// <param name="type">当前准星类型。</param>
     private ICrosshairRenderer SelectRenderer(CrosshairType type)
     {
         switch (type)
@@ -207,7 +207,7 @@ float dt = Time.deltaTime;
 
     /// <summary>GetHitColor 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
     /// <remarks>静态调用链：上游 CrosshairView.ApplyModel(CrosshairModel)；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="model">中文含义：模型。使用位置：CrosshairView.GetHitColor(CrosshairModel)。</param>
+    /// <param name="model">模型。</param>
     private Color GetHitColor(CrosshairModel model)
     {
         if (model.Config == null)
@@ -232,7 +232,7 @@ float dt = Time.deltaTime;
 
     /// <summary>GetFadeSpeed 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
     /// <remarks>静态调用链：上游 CrosshairView.ApplyModel(CrosshairModel)；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="model">中文含义：模型。使用位置：CrosshairView.GetFadeSpeed(CrosshairModel)。</param>
+    /// <param name="model">模型。</param>
     private float GetFadeSpeed(CrosshairModel model)
     {
         if (model.Config == null)

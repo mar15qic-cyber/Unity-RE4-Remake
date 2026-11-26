@@ -56,7 +56,7 @@ public partial class LeonAnimRig
     private float lookPitchOffset;
     private bool lookPitchApplied;
 
-    private void UpdateNativeGunPresentation()
+    internal void RestoreNativePresentationOffsets()
     {
         if (lookPitchApplied && lookPitchNeck != null && lookPitchNeck.localRotation.Equals(lookPitchAfter))
         {
@@ -89,12 +89,17 @@ public partial class LeonAnimRig
             nativeW870Head.localRotation = nativeW870HeadBeforeAim;
         }
         nativeW870HeadAdjusted = false;
+    }
+
+    private void UpdateNativeGunPresentation()
+    {
+        RestoreNativePresentationOffsets();
         if (controller != null && controller.IsHeldByTrap)
         {
             lookPitchOffset = 0f;
             return;
         }
-        if (nativeKnifeAim != null && nativeKnifeAim.IsGuardAiming)
+        if (nativeKnifeAim != null && nativeKnifeAim.ShouldTrackKnifeAimPitch)
         {
             return;
         }
@@ -145,18 +150,37 @@ public partial class LeonAnimRig
 
     internal void ApplyKnifeAimAfterPose()
     {
-        if (!isDead && nativeKnifeAim != null && nativeKnifeAim.IsGuardAiming
+        if (!isDead && nativeKnifeAim != null && nativeKnifeAim.ShouldTrackKnifeAimPitch
             && nativeCqbrAimSpine != null && controller != null && controller.playerCamera != null)
         {
-            float pitch = Mathf.DeltaAngle(0f, controller.playerCamera.transform.eulerAngles.x);
+            float pitch;
             if (controller.IsolateObserveCameraSteering)
             {
                 pitch = 0f;
             }
-            if (nativeKnifeAim.IsHoldingGuardPose && nativeKnifeAim.GuardViewFrame == Time.frameCount)
-                nativeKnifePitch = Mathf.Clamp(nativeKnifeAim.GuardViewPitch, -45f, 50f);
+            else if (nativeKnifeAim.GuardViewFrame == Time.frameCount)
+            {
+                pitch = nativeKnifeAim.GuardViewPitch;
+            }
             else
-                nativeKnifePitch = Mathf.MoveTowards(nativeKnifePitch, Mathf.Clamp(pitch, -45f, 50f), 220f * Time.deltaTime);
+            {
+                pitch = Mathf.DeltaAngle(0f, controller.playerCamera.transform.eulerAngles.x);
+            }
+
+            float targetPitch = Mathf.Clamp(pitch, -45f, 58f);
+            if (nativeKnifeAim.IsHoldingGuardPose || nativeKnifeAim.IsThrustAttack)
+            {
+                nativeKnifePitch = targetPitch;
+            }
+            else if (!nativeKnifeAim.IsGuardAiming)
+            {
+                // 快速前刺中途松开防守后，在收招过渡段平滑回正，避免突兀弹直。
+                nativeKnifePitch = Mathf.MoveTowards(nativeKnifePitch, 0f, 360f * Time.deltaTime);
+            }
+            else
+            {
+                nativeKnifePitch = Mathf.MoveTowards(nativeKnifePitch, targetPitch, 540f * Time.deltaTime);
+            }
             nativeCqbrSpineBeforeAim = nativeCqbrAimSpine.localRotation;
             nativeCqbrAimSpine.rotation = Quaternion.AngleAxis(nativeKnifePitch, controller.transform.right)
                 * nativeCqbrAimSpine.rotation;
@@ -217,11 +241,23 @@ public partial class LeonAnimRig
         {
             return;
         }
-        var aimPoint = cameraTransform.position + cameraTransform.forward * 100f;
+        Vector3 aimForward = cameraTransform.forward;
+        if (controller.CameraController != null && controller.CameraController.gameplayDriver != null)
+        {
+            aimForward = controller.CameraController.gameplayDriver.CurrentAimWorldForward;
+        }
+        var aimPoint = cameraTransform.position + aimForward * 100f;
         var direction = nativeCqbrAimSpine.TransformDirection(forward);
-        var correction = Quaternion.FromToRotation(direction, aimPoint - muzzle.position);
+        Vector3 targetDirection = aimPoint - muzzle.position;
+        Quaternion correction = ComputeAimCorrectionWithoutRoll(
+            direction,
+            targetDirection,
+            controller.transform.right,
+            out Vector3 pitchAxis,
+            out float purePitchAngle);
         correction = Quaternion.RotateTowards(Quaternion.identity, correction, 80f);
         Quaternion appliedCorrection = Quaternion.Slerp(Quaternion.identity, correction, nativeCqbrAimWeight);
+        float appliedPitchAngle = purePitchAngle * nativeCqbrAimWeight;
         bool stabilizeHead = weapon == nativeW870Weapon;
         if (stabilizeHead && driver.NativeW870ShotActive && controller.IsGrounded && !controller.IsCrouching
             && controller.MoveInput.sqrMagnitude <= .0025f)
@@ -233,7 +269,9 @@ public partial class LeonAnimRig
             float drop = Vector3.SignedAngle(Vector3.ProjectOnPlane(heldAxis, right),
                 Vector3.ProjectOnPlane(bore, right), right);
             if (drop > 0f)
+            {
                 appliedCorrection = Quaternion.AngleAxis(-2f * drop * nativeCqbrAimWeight, right) * appliedCorrection;
+            }
         }
         Quaternion animatedHeadRotation = Quaternion.identity;
         Quaternion animatedNeckRotation = Quaternion.identity;
@@ -277,13 +315,12 @@ public partial class LeonAnimRig
         Quaternion animatedSpine = nativeCqbrAimSpine.rotation;
         if (stabilizeHead && nativeW870SpineMiddle != null && nativeW870SpineLower != null)
         {
-            // 深俯角沿胸腰分配，胸骨最终转角仍对准原来的瞄准方向。
+            // 散弹枪本身侧身较深，腰椎保持正直不向左侧折歪，仅由中胸分担少量纯俯仰，避免整身偏左。
             Quaternion animatedMiddle = nativeW870SpineMiddle.rotation;
             nativeW870MiddleBeforeAim = nativeW870SpineMiddle.localRotation;
             nativeW870LowerBeforeAim = nativeW870SpineLower.localRotation;
-            nativeW870SpineLower.rotation = Quaternion.Slerp(Quaternion.identity, appliedCorrection, .23f)
-                * nativeW870SpineLower.rotation;
-            nativeW870SpineMiddle.rotation = Quaternion.Slerp(Quaternion.identity, appliedCorrection, .57f) * animatedMiddle;
+            Quaternion middlePitch = Quaternion.AngleAxis(appliedPitchAngle * 0.22f, pitchAxis);
+            nativeW870SpineMiddle.rotation = middlePitch * animatedMiddle;
             nativeW870LowerAfterAim = nativeW870SpineLower.localRotation;
             nativeW870MiddleAfterAim = nativeW870SpineMiddle.localRotation;
             nativeW870SpineDistributed = true;
@@ -291,8 +328,10 @@ public partial class LeonAnimRig
         nativeCqbrAimSpine.rotation = appliedCorrection * animatedSpine;
         if (stabilizeHead)
         {
-            // 脊柱和手臂负责让枪，头颈只跟随原始观察姿势和小幅瞄准补偿。
-            Quaternion gaze = Quaternion.RotateTowards(Quaternion.identity, appliedCorrection, 12f);
+            // 让头颈随脊柱与视线自然向下俯视，仅在极深俯角下做温和领口防穿模收敛，不再锁死 12 度抬头。
+            float steepRatio = Mathf.InverseLerp(40f, 80f, Mathf.Abs(appliedPitchAngle));
+            float headFollowFraction = Mathf.Lerp(1.0f, 0.88f, steepRatio);
+            Quaternion gaze = Quaternion.Slerp(Quaternion.identity, appliedCorrection, headFollowFraction);
             if (nativeW870Neck != null)
             {
                 nativeW870Neck.rotation = gaze * animatedNeckRotation;
@@ -308,6 +347,55 @@ public partial class LeonAnimRig
         }
         nativeCqbrSpineAfterAim = nativeCqbrAimSpine.localRotation;
         nativeCqbrSpineAdjusted = true;
+    }
+
+    internal static Quaternion ComputeAimCorrectionWithoutRoll(
+        Vector3 currentDirection,
+        Vector3 targetDirection,
+        Vector3 fallbackRight,
+        out Vector3 pitchAxis,
+        out float purePitchAngle)
+    {
+        if (currentDirection.sqrMagnitude <= 0.00001f || targetDirection.sqrMagnitude <= 0.00001f)
+        {
+            pitchAxis = fallbackRight;
+            purePitchAngle = 0f;
+            return Quaternion.identity;
+        }
+
+        Vector3 currentNorm = currentDirection.normalized;
+        Vector3 targetNorm = targetDirection.normalized;
+        Vector3 flatCurrent = Vector3.ProjectOnPlane(currentNorm, Vector3.up);
+        Vector3 flatTarget = Vector3.ProjectOnPlane(targetNorm, Vector3.up);
+
+        Quaternion yawRotation = Quaternion.identity;
+        if (flatCurrent.sqrMagnitude > 0.0001f && flatTarget.sqrMagnitude > 0.0001f)
+        {
+            yawRotation = Quaternion.FromToRotation(flatCurrent.normalized, flatTarget.normalized);
+        }
+
+        Vector3 yawAlignedDir = (yawRotation * currentNorm).normalized;
+        if (flatTarget.sqrMagnitude > 0.0001f)
+        {
+            pitchAxis = Vector3.Cross(Vector3.up, flatTarget.normalized);
+        }
+        else
+        {
+            pitchAxis = Vector3.Cross(Vector3.up, yawAlignedDir);
+        }
+
+        if (pitchAxis.sqrMagnitude <= 0.0001f)
+        {
+            pitchAxis = fallbackRight;
+        }
+        else
+        {
+            pitchAxis.Normalize();
+        }
+
+        purePitchAngle = Vector3.SignedAngle(yawAlignedDir, targetNorm, pitchAxis);
+        Quaternion pitchRotation = Quaternion.AngleAxis(purePitchAngle, pitchAxis);
+        return pitchRotation * yawRotation;
     }
 
     private void SampleNativePistolMechanism()

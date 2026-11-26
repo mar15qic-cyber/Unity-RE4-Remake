@@ -49,7 +49,7 @@ public sealed partial class EnemyCombatModule
             return;
         }
         double remaining = (contactFrame - frame) / 60d;
-        if (remaining > .4d)
+        if (remaining > 0.75d)
         {
             chainsawWarning = default;
             return;

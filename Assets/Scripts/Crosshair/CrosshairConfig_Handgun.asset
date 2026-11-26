@@ -13,10 +13,11 @@ MonoBehaviour:
   m_Name: CrosshairConfig_Handgun
   m_EditorClassIdentifier: 
   crosshairType: 0
-  minSize: 6
-  maxSize: 34
-  thickness: 1
-  lineLength: 9
+  minSize: 2
+  maxSize: 15
+  thickness: 4
+  lineLength: 12
+  lineSprite: {fileID: 21300000, guid: e495d63ad3284942925e31c56880344b, type: 3}
   spreadCurve:
     serializedVersion: 2
     m_Curve:
@@ -56,6 +57,6 @@ MonoBehaviour:
   aimFadeOutSpeed: 6
   weaponSwitchFadeSpeed: 5
   dynamicSpread: 1
-  dynamicSpreadSpeed: 10
+  dynamicSpreadSpeed: 36
   fireBloomAmount: 0.62
   fireBloomRecoverySpeed: 2.2

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: NativeChapterOneCombat
   m_EditorClassIdentifier: 
   revivalProbability: 20
-  revivalWaitBase: 2.5
+  revivalWaitBase: 3
   revivalWaitRandom: 2
   revivalContinuationHealth: 40
   enableRevival: 1

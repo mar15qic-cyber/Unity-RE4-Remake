@@ -9,83 +9,83 @@ using System.Collections.Generic;
 /// </summary>
 public class SettingsPanelManager : MonoBehaviour
 {
-    /// <summary>中文含义：设置面板根节点。使用位置：SettingsPanelManager.FinishHideSettings()、SettingsPanelManager.InitializeSettings()、SettingsPanelManager.ShowSettings()。</summary>
+    /// <summary>设置面板根节点。</summary>
     [Header("面板引用")]
     public GameObject settingsPanelRoot;
-    /// <summary>中文含义：设置画布组。使用位置：SettingsPanelManager.FadeInSettings()、SettingsPanelManager.FadeOutSettings()、SettingsPanelManager.InitializeSettings()。</summary>
+    /// <summary>设置画布组。</summary>
     public CanvasGroup settingsCanvasGroup;
-    /// <summary>中文含义：图像设置面板。使用位置：作为 List&lt;GameObject&gt;.Add(GameObject) 的参数、SettingsPanelManager.InitializeSettings()。</summary>
+    /// <summary>图像设置面板。</summary>
     [Header("子面板")]
     public GameObject imageSettingsPanel;
-    /// <summary>中文含义：音频设置面板。使用位置：作为 List&lt;GameObject&gt;.Add(GameObject) 的参数、SettingsPanelManager.InitializeSettings()。</summary>
+    /// <summary>音频设置面板。</summary>
     public GameObject audioSettingsPanel;
-    /// <summary>中文含义：控制设置面板。使用位置：作为 List&lt;GameObject&gt;.Add(GameObject) 的参数、SettingsPanelManager.InitializeSettings()。</summary>
+    /// <summary>控制设置面板。</summary>
     public GameObject controlSettingsPanel;
-    /// <summary>中文含义：玩法设置面板。使用位置：作为 List&lt;GameObject&gt;.Add(GameObject) 的参数、SettingsPanelManager.InitializeSettings()。</summary>
+    /// <summary>玩法设置面板。</summary>
     public GameObject gameplaySettingsPanel;
-    /// <summary>中文含义：语言设置面板。使用位置：作为 List&lt;GameObject&gt;.Add(GameObject) 的参数、SettingsPanelManager.InitializeSettings()。</summary>
+    /// <summary>语言设置面板。</summary>
     public GameObject languageSettingsPanel;
-    /// <summary>中文含义：战斗显示界面设置面板。使用位置：作为 List&lt;GameObject&gt;.Add(GameObject) 的参数、SettingsPanelManager.InitializeSettings()。</summary>
+    /// <summary>战斗显示界面设置面板。</summary>
     public GameObject hudSettingsPanel;
-    /// <summary>中文含义：图像按钮。使用位置：SettingsPanelManager.SetupEventListeners()。</summary>
+    /// <summary>图像按钮。</summary>
     [Header("导航按钮")]
     public Button imageButton;
-    /// <summary>中文含义：音频按钮。使用位置：SettingsPanelManager.SetupEventListeners()。</summary>
+    /// <summary>音频按钮。</summary>
     public Button audioButton;
-    /// <summary>中文含义：控制按钮。使用位置：SettingsPanelManager.SetupEventListeners()。</summary>
+    /// <summary>控制按钮。</summary>
     public Button controlButton;
-    /// <summary>中文含义：玩法按钮。使用位置：SettingsPanelManager.SetupEventListeners()。</summary>
+    /// <summary>玩法按钮。</summary>
     public Button gameplayButton;
-    /// <summary>中文含义：语言按钮。使用位置：SettingsPanelManager.SetupEventListeners()。</summary>
+    /// <summary>语言按钮。</summary>
     public Button languageButton;
-    /// <summary>中文含义：战斗显示界面按钮。使用位置：SettingsPanelManager.SetupEventListeners()。</summary>
+    /// <summary>战斗显示界面按钮。</summary>
     public Button hudButton;
-    /// <summary>中文含义：重置按钮。使用位置：SettingsPanelManager.SetupEventListeners()。</summary>
+    /// <summary>重置按钮。</summary>
     public Button resetButton;
-    /// <summary>中文含义：后方按钮。使用位置：SettingsPanelManager.SetupEventListeners()。</summary>
+    /// <summary>后方按钮。</summary>
     public Button backButton;
-    /// <summary>中文含义：图像按钮文字。使用位置：作为 List&lt;Text&gt;.Add(Text) 的参数、SettingsPanelManager.InitializeSettings()。</summary>
+    /// <summary>图像按钮文字。</summary>
     [Header("导航按钮文本")]
     public Text imageButtonText;
-    /// <summary>中文含义：音频按钮文字。使用位置：作为 List&lt;Text&gt;.Add(Text) 的参数、SettingsPanelManager.InitializeSettings()。</summary>
+    /// <summary>音频按钮文字。</summary>
     public Text audioButtonText;
-    /// <summary>中文含义：控制按钮文字。使用位置：作为 List&lt;Text&gt;.Add(Text) 的参数、SettingsPanelManager.InitializeSettings()。</summary>
+    /// <summary>控制按钮文字。</summary>
     public Text controlButtonText;
-    /// <summary>中文含义：玩法按钮文字。使用位置：作为 List&lt;Text&gt;.Add(Text) 的参数、SettingsPanelManager.InitializeSettings()。</summary>
+    /// <summary>玩法按钮文字。</summary>
     public Text gameplayButtonText;
-    /// <summary>中文含义：语言按钮文字。使用位置：作为 List&lt;Text&gt;.Add(Text) 的参数、SettingsPanelManager.InitializeSettings()。</summary>
+    /// <summary>语言按钮文字。</summary>
     public Text languageButtonText;
-    /// <summary>中文含义：战斗显示界面按钮文字。使用位置：作为 List&lt;Text&gt;.Add(Text) 的参数、SettingsPanelManager.InitializeSettings()。</summary>
+    /// <summary>战斗显示界面按钮文字。</summary>
     public Text hudButtonText;
-    /// <summary>中文含义：生效按钮颜色。使用位置：SettingsPanelManager.UpdateButtonColors(int)。</summary>
+    /// <summary>生效按钮颜色。</summary>
     [Header("颜色设置")]
     public Color activeButtonColor = new Color(0.85f, 0.1f, 0.1f, 1f);
-    /// <summary>中文含义：非活动按钮颜色。使用位置：SettingsPanelManager.UpdateButtonColors(int)。</summary>
+    /// <summary>非活动按钮颜色。</summary>
     public Color inactiveButtonColor = new Color(1f, 1f, 1f, 0.7f);
-    /// <summary>中文含义：确认对话框。使用位置：SettingsPanelManager.InitializeSettings()、SettingsPanelManager.OnCancelReset()、SettingsPanelManager.OnConfirmReset() 等共 4 处。</summary>
+    /// <summary>确认对话框。</summary>
     [Header("确认对话框")]
     public GameObject confirmDialog;
-    /// <summary>中文含义：确认对话框标题。使用位置：SettingsPanelManager.OnResetClicked()。</summary>
+    /// <summary>确认对话框标题。</summary>
     public Text confirmDialogTitle;
-    /// <summary>中文含义：确认对话框消息。使用位置：SettingsPanelManager.OnResetClicked()。</summary>
+    /// <summary>确认对话框消息。</summary>
     public Text confirmDialogMessage;
-    /// <summary>中文含义：确认对话框确认按钮。使用位置：SettingsPanelManager.SetupEventListeners()。</summary>
+    /// <summary>确认对话框确认按钮。</summary>
     public Button confirmDialogYesButton;
-    /// <summary>中文含义：确认对话框无按钮。使用位置：SettingsPanelManager.SetupEventListeners()。</summary>
+    /// <summary>确认对话框无按钮。</summary>
     public Button confirmDialogNoButton;
     // 私有状态
-    /// <summary>中文含义：当前面板索引。使用位置：作为 SettingsPanelManager.LoadPanelSettings(int) 的参数、SettingsPanelManager.GetCurrentPanelIndex()、SettingsPanelManager.ResetAllSettings() 等共 4 处。</summary>
+    /// <summary>当前面板索引。</summary>
     private int currentPanelIndex = -1;
-    /// <summary>中文含义：全部面板集合。使用位置：SettingsPanelManager.InitializeSettings()、SettingsPanelManager.LoadAllSettings()、SettingsPanelManager.SetPanelEnabled(int, bool) 等共 4 处。</summary>
+    /// <summary>全部面板集合。</summary>
     private List<GameObject> allPanels = new List<GameObject>();
-    /// <summary>中文含义：全部按钮文字集合。使用位置：SettingsPanelManager.InitializeSettings()、SettingsPanelManager.UpdateButtonColors(int)。</summary>
+    /// <summary>全部按钮文字集合。</summary>
     private List<Text> allButtonTexts = new List<Text>();
-    /// <summary>中文含义：音量服务。使用位置：作为 SettingsApplicationAdapter.ResetPreviousPanelSet(IAudioVolumeService) 的参数、SettingsPanelManager.TryBindAudioService()。</summary>
+    /// <summary>音量服务。</summary>
     private IAudioVolumeService volumeService;
     // 事件
-    /// <summary>中文含义：设置已关闭时的通知回调。事件通信成员 OnSettingsClosed，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。使用位置：SettingsPanelManager.FinishHideSettings()。</summary>
+    /// <summary>设置已关闭时的通知回调。事件通信成员 OnSettingsClosed，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。</summary>
     public event Action OnSettingsClosed;
-    /// <summary>中文含义：设置重置时的通知回调。事件通信成员 OnSettingsReset，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。使用位置：SettingsPanelManager.OnConfirmReset()。</summary>
+    /// <summary>设置重置时的通知回调。事件通信成员 OnSettingsReset，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。</summary>
     public event Action OnSettingsReset;
     /// <summary>Unity 首次启用后的启动回调；状态处理与资源交接按函数内顺序执行，下游协作见调用链。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） SettingsPanelManager.HideSettings()、SettingsPanelManager.InitializeSettings()、SettingsPanelManager.SetupEventListeners()、SettingsPanelManager.TryBindAudioService()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
@@ -289,7 +289,7 @@ public class SettingsPanelManager : MonoBehaviour
     /// 显示指定子面板
     /// </summary>
     /// <remarks>静态调用链：上游 SettingsPanelManager.SetupEventListeners()、SettingsPanelManager.ShowSettings()；下游（含内部回调体） GameObject.SetActive(bool)、SettingsPanelManager.LoadPanelSettings(int)、SettingsPanelManager.UpdateButtonColors(int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="panelIndex">中文含义：面板索引。使用位置：作为 GameObject.SetActive(bool) 的参数、作为 SettingsPanelManager.LoadPanelSettings(int) 的参数、作为 SettingsPanelManager.UpdateButtonColors(int) 的参数 等共 4 处。</param>
+    /// <param name="panelIndex">面板索引。</param>
     private void ShowPanel(int panelIndex)
     {
         if (panelIndex < 0 || panelIndex >= allPanels.Count)
@@ -299,7 +299,7 @@ public class SettingsPanelManager : MonoBehaviour
 
         currentPanelIndex = panelIndex;
         // 隐藏所有面板
-        // i（当前遍历索引）：使用位置：作为 GameObject.SetActive(bool) 的参数、作为 List<GameObject>.this[int] 的参数、SettingsPanelManager.ShowPanel(int)。
+        // 当前遍历索引。
 for (int i = 0; i < allPanels.Count; i++)
         {
             if (allPanels[i] != null)
@@ -318,15 +318,15 @@ for (int i = 0; i < allPanels.Count; i++)
     /// 更新按钮颜色
     /// </summary>
     /// <remarks>静态调用链：上游 SettingsPanelManager.ShowPanel(int)；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="activeIndex">中文含义：生效索引。使用位置：SettingsPanelManager.UpdateButtonColors(int)。</param>
+    /// <param name="activeIndex">生效索引。</param>
     private void UpdateButtonColors(int activeIndex)
     {
-        // i（当前遍历索引）：使用位置：作为 List<Text>.this[int] 的参数、SettingsPanelManager.UpdateButtonColors(int)。
+        // 当前遍历索引。
 for (int i = 0; i < allButtonTexts.Count; i++)
         {
             if (allButtonTexts[i] != null)
             {
-                // assignmentReceiver2（赋值前保存的目标全部按钮文字集合）：从全部按钮文字集合读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：SettingsPanelManager.UpdateButtonColors(int)。
+                // 赋值前保存的目标全部按钮文字集合。
 global::UnityEngine.UI.Text assignmentReceiver2 = allButtonTexts[i];
                 if ((i == activeIndex))
                 {
@@ -337,7 +337,7 @@ global::UnityEngine.UI.Text assignmentReceiver2 = allButtonTexts[i];
                     assignmentReceiver2.color = inactiveButtonColor;
                 }
 
-                // assignmentReceiver4（赋值前保存的目标全部按钮文字集合）：从全部按钮文字集合读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：SettingsPanelManager.UpdateButtonColors(int)。
+                // 赋值前保存的目标全部按钮文字集合。
 global::UnityEngine.UI.Text assignmentReceiver4 = allButtonTexts[i];
                 if ((i == activeIndex))
                 {
@@ -355,7 +355,7 @@ global::UnityEngine.UI.Text assignmentReceiver4 = allButtonTexts[i];
     /// 加载指定面板的设置
     /// </summary>
     /// <remarks>静态调用链：上游 SettingsPanelManager.LoadAllSettings()、SettingsPanelManager.ResetAllSettings()、SettingsPanelManager.ShowPanel(int)；下游（含内部回调体） SettingsPanelManager.LoadAudioSettings()、SettingsPanelManager.LoadControlSettings()、SettingsPanelManager.LoadGameplaySettings()、SettingsPanelManager.LoadHudSettings()、SettingsPanelManager.LoadImageSettings()、SettingsPanelManager.LoadLanguageSettings()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="panelIndex">中文含义：面板索引。使用位置：SettingsPanelManager.LoadPanelSettings(int)。</param>
+    /// <param name="panelIndex">面板索引。</param>
     private void LoadPanelSettings(int panelIndex)
     {
         switch (panelIndex)
@@ -387,7 +387,7 @@ global::UnityEngine.UI.Text assignmentReceiver4 = allButtonTexts[i];
     /// <remarks>静态调用链：上游 SettingsPanelManager.ShowSettings()；下游（含内部回调体） SettingsPanelManager.LoadPanelSettings(int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     private void LoadAllSettings()
     {
-        // i（当前遍历索引）：使用位置：作为 SettingsPanelManager.LoadPanelSettings(int) 的参数、SettingsPanelManager.LoadAllSettings()。
+        // 当前遍历索引。
 for (int i = 0; i < allPanels.Count; i++)
         {
             LoadPanelSettings(i);
@@ -479,7 +479,7 @@ for (int i = 0; i < allPanels.Count; i++)
         }
 
         ResetAllSettings();
-        // receiverValue6（判空前缓存的设置重置时的通知回调）：从设置重置时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、SettingsPanelManager.OnConfirmReset()。
+        // 判空前缓存的设置重置时的通知回调。
 global::System.Action receiverValue6 = OnSettingsReset;
         if (!global::System.Object.ReferenceEquals(receiverValue6, null))
         {
@@ -530,14 +530,14 @@ global::System.Action receiverValue6 = OnSettingsReset;
         settingsCanvasGroup.alpha = 0f;
         settingsCanvasGroup.interactable = true;
         settingsCanvasGroup.blocksRaycasts = true;
-        // elapsed（已用）：使用位置：SettingsPanelManager.FadeInSettings()。
+        // 已用。
 float elapsed = 0f;
-        // duration（持续时间）：使用位置：SettingsPanelManager.FadeInSettings()。
+        // 持续时间。
 float duration = 0.3f;
         while (elapsed < duration)
         {
             elapsed += Time.unscaledDeltaTime;
-            // t（当前界面动画的归一化进度）：使用位置：作为 Mathf.Lerp(float, float, float) 的参数、SettingsPanelManager.FadeInSettings()。
+            // 当前界面动画的归一化进度。
 float t = elapsed / duration;
             t = t * t * (3f - 2f * t);
             settingsCanvasGroup.alpha = Mathf.Lerp(0f, 1f, t);
@@ -559,16 +559,16 @@ float t = elapsed / duration;
             yield break;
         }
 
-        // elapsed（已用）：使用位置：SettingsPanelManager.FadeOutSettings()。
+        // 已用。
 float elapsed = 0f;
-        // duration（持续时间）：使用位置：SettingsPanelManager.FadeOutSettings()。
+        // 持续时间。
 float duration = 0.3f;
         settingsCanvasGroup.interactable = false;
         settingsCanvasGroup.blocksRaycasts = false;
         while (elapsed < duration)
         {
             elapsed += Time.unscaledDeltaTime;
-            // t（当前界面动画的归一化进度）：使用位置：作为 Mathf.Lerp(float, float, float) 的参数、SettingsPanelManager.FadeOutSettings()。
+            // 当前界面动画的归一化进度。
 float t = elapsed / duration;
             t = t * t * (3f - 2f * t);
             settingsCanvasGroup.alpha = Mathf.Lerp(1f, 0f, t);
@@ -589,7 +589,7 @@ float t = elapsed / duration;
             settingsPanelRoot.SetActive(false);
         }
 
-        // receiverValue7（判空前缓存的设置已关闭时的通知回调）：从设置已关闭时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、SettingsPanelManager.FinishHideSettings()。
+        // 判空前缓存的设置已关闭时的通知回调。
 global::System.Action receiverValue7 = OnSettingsClosed;
         if (!global::System.Object.ReferenceEquals(receiverValue7, null))
         {
@@ -612,8 +612,8 @@ global::System.Action receiverValue7 = OnSettingsClosed;
     /// 设置面板启用状态
     /// </summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） Debug.Log(object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="panelIndex">中文含义：面板索引。使用位置：作为 Debug.Log(object) 的参数、SettingsPanelManager.SetPanelEnabled(int, bool)。</param>
-    /// <param name="isEnabled">中文含义：是否启用。使用位置：作为 Debug.Log(object) 的参数。</param>
+    /// <param name="panelIndex">面板索引。</param>
+    /// <param name="isEnabled">是否启用。</param>
     public void SetPanelEnabled(int panelIndex, bool isEnabled)
     {
         if (panelIndex < 0 || panelIndex >= allPanels.Count)

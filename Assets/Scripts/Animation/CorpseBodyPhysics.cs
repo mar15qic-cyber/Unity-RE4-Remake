@@ -32,9 +32,32 @@ internal sealed class CorpseBodyPhysics
         return Physics.Raycast(point + Vector3.up * .08f, Vector3.down, .42f, mask, QueryTriggerInteraction.Ignore);
     }
 
+    private static bool TrySampleGroundY(Vector3 point, float maxDistance, out float groundY)
+    {
+        int mask = Physics.DefaultRaycastLayers & ~characterLayers;
+        if (Physics.Raycast(point + Vector3.up * 0.18f, Vector3.down, out RaycastHit hit, maxDistance + 0.18f, mask, QueryTriggerInteraction.Ignore))
+        {
+            groundY = hit.point.y;
+            return true;
+        }
+
+        groundY = 0f;
+        return false;
+    }
+
+    private static bool HasLevelGroundBelow(Vector3 bonePoint, float referenceGroundY, float maxDropBelowReference)
+    {
+        if (!TrySampleGroundY(bonePoint, 1.85f, out float hitY))
+        {
+            return false;
+        }
+
+        return referenceGroundY - hitY <= maxDropBelowReference;
+    }
+
     internal bool TryBegin(Animator animator, Transform root, bool requireOverhang)
     {
-        if (animator == null || Active)
+        if (animator == null || root == null || Active)
         {
             return false;
         }
@@ -64,8 +87,23 @@ internal sealed class CorpseBodyPhysics
         {
             return false;
         }
-        if (requireOverhang && (Mathf.Abs(axis.normalized.y) > .65f ||
-            (HasSupport(hips.position) && HasSupport(chest.position))))
+
+        float referenceGroundY = root.position.y;
+        if (TrySampleGroundY(root.position, 1.2f, out float sampledRootGroundY))
+        {
+            referenceGroundY = sampledRootGroundY;
+        }
+
+        // 平地和普通缓坡上的尸体始终交由贴地拟合处理；只有真正悬空于屋檐或高台边缘时才生成翻落刚体，
+        // 避免平地倒地半途或躺地后因刚体与动画旋转叠加把尸体斜插进地面。
+        bool hipsSupported = HasLevelGroundBelow(hips.position, referenceGroundY, 0.65f);
+        bool chestSupported = HasLevelGroundBelow(chest.position, referenceGroundY, 0.65f);
+        if (hipsSupported && chestSupported)
+        {
+            return false;
+        }
+
+        if (requireOverhang && Mathf.Abs(axis.normalized.y) > .35f)
         {
             return false;
         }

@@ -7,22 +7,22 @@ using GameArchitecture;
 [UnityEngine.Scripting.APIUpdating.MovedFrom(true, "", "Assembly-CSharp", "角色生命模块")]
 public sealed partial class CharacterHealthModule : MonoBehaviour
 {
-    /// <summary>中文含义：当前生命值值。使用位置：作为 Mathf.Max(float, float) 的参数、CharacterHealthModule.CommitCompatibleDamage(float)、CharacterHealthModule.ConfirmDeath() 等共 6 处。</summary>
+    /// <summary>当前生命值值。</summary>
     private float currentHealthValue;
-    /// <summary>中文含义：是否已初始化。使用位置：CharacterHealthModule.CommitCompatibleDamage(float)、CharacterHealthModule.ConfirmDeath()、CharacterHealthModule.HasDeath.get 等共 6 处。</summary>
+    /// <summary>是否已初始化。</summary>
     private bool initialized;
-    /// <summary>中文含义：是否死亡事实。使用位置：CharacterHealthModule.CommitCompatibleDamage(float)、CharacterHealthModule.ConfirmDeath()、CharacterHealthModule.HasDeath.get 等共 5 处。</summary>
+    /// <summary>是否死亡事实。</summary>
     private bool deathFact;
-    /// <summary>中文含义：当前生命值。使用位置：EnemyContext.CurrentHealth.get、VillagerController.currentHealth.get。</summary>
+    /// <summary>当前生命值。</summary>
     public float CurrentHealth => currentHealthValue;
-    /// <summary>中文含义：是否具有死亡。使用位置：VillagerController.IsDead.get。</summary>
+    /// <summary>是否具有死亡。</summary>
     public bool HasDeath => !initialized || deathFact;
     /// <summary>中文含义：是否就绪。</summary>
     public bool Ready => initialized;
 
     /// <summary>由角色启动入口显式调用一次，不依赖组件启动回调的先后顺序。</summary>
     /// <remarks>静态调用链：上游 VillagerController.Start()；下游（含内部回调体） ArgumentException.ArgumentException(string)、float.IsInfinity(float)、float.IsNaN(float)、InvalidOperationException.InvalidOperationException(string)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="initialHealth">中文含义：初始生命。使用位置：作为 float.IsInfinity(float) 的参数、作为 float.IsNaN(float) 的参数、CharacterHealthModule.Initialize(float)。</param>
+    /// <param name="initialHealth">初始生命。</param>
     internal void Initialize(float initialHealth)
     {
         if (initialized)
@@ -46,7 +46,7 @@ public sealed partial class CharacterHealthModule : MonoBehaviour
 
     /// <summary>旧受伤入口的内部适配，保持存活角色原先的扣血与下限规则。</summary>
     /// <remarks>静态调用链：上游 EnemyCombatModule.TakeDamage(float, Vector3, HitboxType, Vector3)；下游（含内部回调体） ArgumentException.ArgumentException(string)、float.IsInfinity(float)、float.IsNaN(float)、InvalidOperationException.InvalidOperationException(string)、Mathf.Max(float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="damage">中文含义：伤害。使用位置：作为 float.IsInfinity(float) 的参数、作为 float.IsNaN(float) 的参数、作为 Mathf.Max(float, float) 的参数。</param>
+    /// <param name="damage">伤害。</param>
     internal float CommitCompatibleDamage(float damage)
     {
         if (!initialized)
@@ -64,7 +64,7 @@ public sealed partial class CharacterHealthModule : MonoBehaviour
             throw new ArgumentException("伤害必须是有限数值");
         }
 
-        // originalHealth（原始生命）：使用位置：CharacterHealthModule.CommitCompatibleDamage(float)。
+        // 原始生命。
 float originalHealth = currentHealthValue;
         currentHealthValue = Mathf.Max(0f, currentHealthValue - damage);
         if (currentHealthValue <= 0f)
@@ -98,7 +98,7 @@ float originalHealth = currentHealthValue;
 
     /// <summary>保留既有性能采样布置能力；诊断不能复活已经死亡的角色。</summary>
     /// <remarks>静态调用链：上游 PerformanceSamplingEntry.Tick()；下游（含内部回调体） ArgumentException.ArgumentException(string)、float.IsInfinity(float)、float.IsNaN(float)、InvalidOperationException.InvalidOperationException(string)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="health">中文含义：生命。使用位置：作为 float.IsInfinity(float) 的参数、作为 float.IsNaN(float) 的参数、CharacterHealthModule.SetAliveCharacterValidateHealth(float)。</param>
+    /// <param name="health">生命。</param>
     internal void SetAliveCharacterValidateHealth(float health)
     {
         if (!initialized || deathFact)

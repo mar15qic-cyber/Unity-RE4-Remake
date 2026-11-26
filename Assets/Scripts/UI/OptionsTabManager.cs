@@ -13,169 +13,169 @@ using UnityEngine.UI;
 /// <remarks>设置分页宿主，改键通过 InputBindingPersistence 保存，镜头设置经 RE4CameraController 提交，其他设置沿当前适配器应用。</remarks>
 public class OptionsTabManager : MonoBehaviour
 {
-    /// <summary>中文含义：界面视觉主题配置。使用位置：作为 MenuThemeApplier.Apply(Transform, UIVisualTheme) 的参数、作为 RefinedMenuStyle.ApplySet(Transform, UIVisualTheme) 的参数、InterfaceReworkBuilder.ConfigurationOtherInterface() 等共 7 处。</summary>
+    /// <summary>界面视觉主题配置。</summary>
     [Header("统一视觉主题")]
     public UIVisualTheme visualTheme;
-    /// <summary>中文含义：面板根节点。使用位置：作为 MenuThemeApplier.Apply(Transform, UIVisualTheme) 的参数、作为 OptionsTabManager.CreatePanel(string, Transform, Color) 的参数、作为 RefinedMenuStyle.ApplySet(Transform, UIVisualTheme) 的参数 等共 12 处。</summary>
+    /// <summary>面板根节点。</summary>
     [Header("基础引用")]
     public GameObject panelRoot;
-    /// <summary>中文含义：画布组。使用位置：OptionsMenu.EnsureEnhancedMenu()、OptionsTabManager.FadeIn()、OptionsTabManager.FadeOut() 等共 4 处。</summary>
+    /// <summary>画布组。</summary>
     public CanvasGroup canvasGroup;
-    /// <summary>中文含义：输入动作资源。使用位置：作为 InputBindingPersistence.Load(InputActionAsset) 的参数、作为 InputBindingPersistence.RestoreDefault(InputActionAsset) 的参数、作为 InputBindingPersistence.SaveValue(InputActionAsset) 的参数 等共 6 处。</summary>
+    /// <summary>输入动作资源。</summary>
     public InputActionAsset inputActionAsset;
-    /// <summary>中文含义：面板精灵图。使用位置：OptionsMenu.EnsureEnhancedMenu()、OptionsTabManager.CreatePanel(string, Transform, Color)、OptionsTabManager.CreateStandardDropdown(string, Transform) 等共 4 处。</summary>
+    /// <summary>面板精灵图。</summary>
     [Header("可替换视觉素材")]
     public Sprite panelSprite;
-    /// <summary>中文含义：行精灵图。使用位置：OptionsMenu.EnsureEnhancedMenu()、OptionsTabManager.CreateButton(string, Transform, string, int)、OptionsTabManager.Initialize()。</summary>
+    /// <summary>行精灵图。</summary>
     public Sprite rowSprite;
-    /// <summary>中文含义：接口字体。使用位置：OptionsTabManager.CreateStandardDropdown(string, Transform)、OptionsTabManager.CreateText(string, Transform, string, int, TextAnchor, Color)、OptionsTabManager.Initialize()。</summary>
+    /// <summary>接口字体。</summary>
     public Font interfaceFont;
-    /// <summary>中文含义：叠加层颜色。使用位置：作为 OptionsTabManager.CreatePanel(string, Transform, Color) 的参数、OptionsTabManager.Initialize()。</summary>
+    /// <summary>叠加层颜色。</summary>
     public Color overlayColor = new Color(0f, 0f, 0f, 0.78f);
-    /// <summary>中文含义：面板颜色。使用位置：作为 OptionsTabManager.CreatePanel(string, Transform, Color) 的参数、OptionsTabManager.Initialize()。</summary>
+    /// <summary>面板颜色。</summary>
     public Color panelColor = new Color(0.035f, 0.035f, 0.035f, 0.9f);
-    /// <summary>中文含义：选定颜色。使用位置：OptionsTabManager.Initialize()。</summary>
+    /// <summary>选定颜色。</summary>
     public Color selectedColor = new Color(0.72f, 0.72f, 0.68f, 0.42f);
-    /// <summary>中文含义：强调色颜色。使用位置：OptionsTabManager.CreateToggle(string, Transform)、OptionsTabManager.Initialize()。</summary>
+    /// <summary>强调色颜色。</summary>
     public Color accentColor = new Color(0.72f, 0.08f, 0.06f, 1f);
-    /// <summary>中文含义：按钮悬停样式图片。使用位置：OptionsMenu.EnsureEnhancedMenu()、OptionsTabManager.CreateButton(string, Transform, string, int)、OptionsTabManager.CreateStandardDropdown(string, Transform) 等共 4 处。</summary>
+    /// <summary>按钮悬停样式图片。</summary>
     [Header("按钮素材")]
     [Tooltip("按钮悬停样式图片")]
     public Sprite buttonSprite;
-    /// <summary>中文含义：勾选框启用状态的图片。勾选框启用图片。使用位置：OptionsMenu.EnsureEnhancedMenu()、OptionsTabManager.CreateStandardDropdown(string, Transform)、OptionsTabManager.CreateToggle(string, Transform)。</summary>
+    /// <summary>勾选框启用状态的图片。勾选框启用图片。</summary>
     [Tooltip("勾选框启用图片")]
     public Sprite tickBoxOnSprite;
-    /// <summary>中文含义：勾选框关闭状态的图片。勾选框关闭图片。使用位置：OptionsMenu.EnsureEnhancedMenu()、OptionsTabManager.CreateToggle(string, Transform)。</summary>
+    /// <summary>勾选框关闭状态的图片。勾选框关闭图片。</summary>
     [Tooltip("勾选框关闭图片")]
     public Sprite tickBoxOffSprite;
-    /// <summary>中文含义：滑块轨道图片。使用位置：OptionsMenu.EnsureEnhancedMenu()、OptionsTabManager.CreateSlider(string, Transform)、OptionsTabManager.Initialize()。</summary>
+    /// <summary>滑块轨道图片。</summary>
     [Header("滑块素材")]
     [Tooltip("滑块轨道图片")]
     public Sprite sliderTrackSprite;
-    /// <summary>中文含义：滑块拖动方块图片。使用位置：OptionsMenu.EnsureEnhancedMenu()、OptionsTabManager.CreateSlider(string, Transform)、OptionsTabManager.Initialize()。</summary>
+    /// <summary>滑块拖动方块图片。</summary>
     [Tooltip("滑块拖动方块图片")]
     public Sprite sliderKnobSprite;
-    /// <summary>中文含义：声音开启状态的图标。音量大于零时显示的图标。使用位置：OptionsMenu.EnsureEnhancedMenu()、OptionsTabManager.UpdateVolumeValue(float)。</summary>
+    /// <summary>声音开启状态的图标。音量大于零时显示的图标。</summary>
     [Header("音量图标")]
     [Tooltip("音量大于零时显示的图标")]
     public Sprite soundOnIcon;
-    /// <summary>中文含义：声音关闭状态的图标。音量为零时显示的图标。使用位置：OptionsMenu.EnsureEnhancedMenu()、OptionsTabManager.UpdateVolumeValue(float)。</summary>
+    /// <summary>声音关闭状态的图标。音量为零时显示的图标。</summary>
     [Tooltip("音量为零时显示的图标")]
     public Sprite soundOffIcon;
-    /// <summary>中文含义：在检视面板中增加或修改按键绑定项。使用位置：OptionsTabManager.BuildBindingRows(Transform)、OptionsTabManager.Initialize()。</summary>
+    /// <summary>在检视面板中增加或修改按键绑定项。</summary>
     [Header("可扩展按键绑定配置")]
     [Tooltip("在检视面板中增加或修改按键绑定项")]
     public List<BindingConfig> bindingConfigs = new List<BindingConfig>();
-    /// <summary>中文含义：背景音乐滑块。使用位置：作为 FixOptionsPanelControls.FixSlider(Slider, string) 的参数、FixOptionsPanelControls.FixSliders()。</summary>
+    /// <summary>背景音乐滑块。</summary>
     [Header("旧版场景兼容引用")]
     [HideInInspector]
     public Slider bgmSlider;
-    /// <summary>中文含义：音效滑块。使用位置：作为 FixOptionsPanelControls.FixSlider(Slider, string) 的参数、FixOptionsPanelControls.FixSliders()。</summary>
+    /// <summary>音效滑块。</summary>
     [HideInInspector]
     public Slider sfxSlider;
-    /// <summary>中文含义：灵敏度滑块横向。使用位置：作为 FixOptionsPanelControls.FixSlider(Slider, string) 的参数、作为 SettingsApplicationAdapter.ModifySensitivity(float, float, float, RE4CameraController) 的参数、FixOptionsPanelControls.FixSliders() 等共 8 处。</summary>
+    /// <summary>灵敏度滑块横向。</summary>
     [HideInInspector]
     public Slider sensitivitySliderX;
-    /// <summary>中文含义：灵敏度滑块纵向。使用位置：作为 FixOptionsPanelControls.FixSlider(Slider, string) 的参数、作为 SettingsApplicationAdapter.ModifySensitivity(float, float, float, RE4CameraController) 的参数、FixOptionsPanelControls.FixSliders() 等共 8 处。</summary>
+    /// <summary>灵敏度滑块纵向。</summary>
     [HideInInspector]
     public Slider sensitivitySliderY;
-    /// <summary>中文含义：瞄准灵敏度滑块。使用位置：作为 FixOptionsPanelControls.FixSlider(Slider, string) 的参数、作为 SettingsApplicationAdapter.ModifySensitivity(float, float, float, RE4CameraController) 的参数、FixOptionsPanelControls.FixSliders() 等共 8 处。</summary>
+    /// <summary>瞄准灵敏度滑块。</summary>
     [HideInInspector]
     public Slider aimSensitivitySlider;
-    /// <summary>中文含义：面板音频。使用位置：作为 FixOptionsPanelControls.FixPanelLayout(GameObject) 的参数、FixOptionsPanelControls.FixLayout()。</summary>
+    /// <summary>面板音频。</summary>
     [HideInInspector]
     public GameObject panelAudio;
-    /// <summary>中文含义：面板显示。使用位置：作为 FixOptionsPanelControls.FixPanelLayout(GameObject) 的参数、FixOptionsPanelControls.FixLayout()。</summary>
+    /// <summary>面板显示。</summary>
     [HideInInspector]
     public GameObject panelDisplay;
-    /// <summary>中文含义：面板玩法。使用位置：作为 FixOptionsPanelControls.FixPanelLayout(GameObject) 的参数、FixOptionsPanelControls.FixLayout()。</summary>
+    /// <summary>面板玩法。</summary>
     [HideInInspector]
     public GameObject panelGameplay;
-    /// <summary>中文含义：已关闭时的通知回调。使用位置：OptionsMenu.EnsureEnhancedMenu()、OptionsTabManager.FadeOut()、TitleScreenManager.Start()。</summary>
+    /// <summary>已关闭时的通知回调。</summary>
     [HideInInspector]
     public Action onClosed;
-    /// <summary>中文含义：分页按钮集合。只读字段，初始化后不由普通写入口替换。使用位置：OptionsTabManager.BuildInterface()、OptionsTabManager.SelectTab(int)、OptionsTabManager.SetInteractable(bool)。</summary>
+    /// <summary>分页按钮集合。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly List<Button> tabButtons = new List<Button>();
-    /// <summary>中文含义：分页文字集合。只读字段，初始化后不由普通写入口替换。使用位置：OptionsTabManager.BuildInterface()、OptionsTabManager.SelectTab(int)。</summary>
+    /// <summary>分页文字集合。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly List<Text> tabTexts = new List<Text>();
-    /// <summary>中文含义：页面集合。只读字段，初始化后不由普通写入口替换。使用位置：作为 Mathf.Clamp(int, int, int) 的参数、作为 OptionsTabManager.SelectTab(int) 的参数、OptionsTabManager.BuildControlsPage(Transform) 等共 6 处。</summary>
+    /// <summary>页面集合。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly List<GameObject> pages = new List<GameObject>();
-    /// <summary>中文含义：绑定行数。只读字段，初始化后不由普通写入口替换。使用位置：OptionsTabManager.BuildBindingRows(Transform)、OptionsTabManager.FindConflict(OptionsTabManager.BindingRow, string)、OptionsTabManager.RefreshBindingLabels() 等共 4 处。</summary>
+    /// <summary>绑定行数。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly List<BindingRow> bindingRows = new List<BindingRow>();
-    /// <summary>中文含义：可用分辨率集合。只读字段，初始化后不由普通写入口替换。使用位置：OptionsTabManager.BuildResolutionOptions()、OptionsTabManager.OnResolutionChanged(int)、OptionsTabManager.RestoreDefaults()。</summary>
+    /// <summary>可用分辨率集合。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly List<Resolution> availableResolutions = new List<Resolution>();
-    /// <summary>中文含义：主控音量滑块。使用位置：作为 OptionsTabManager.SetAnchors(GameObject, Vector2, Vector2, Vector2, Vector2) 的参数、OptionsTabManager.BindEvents()、OptionsTabManager.BuildVolumePage(Transform) 等共 6 处。</summary>
+    /// <summary>主控音量滑块。</summary>
     private Slider masterVolumeSlider;
-    /// <summary>中文含义：主控音量值。使用位置：作为 OptionsTabManager.SetAnchors(GameObject, Vector2, Vector2, Vector2, Vector2) 的参数、OptionsTabManager.BuildVolumePage(Transform)、OptionsTabManager.UpdateVolumeValue(float)。</summary>
+    /// <summary>主控音量值。</summary>
     private Text masterVolumeValue;
-    /// <summary>中文含义：音量图标。使用位置：OptionsTabManager.BuildVolumePage(Transform)、OptionsTabManager.UpdateVolumeValue(float)。</summary>
+    /// <summary>音量图标。</summary>
     private Image volumeIcon;
-    /// <summary>中文含义：灵敏度值横向。使用位置：作为 OptionsTabManager.CreateSensitivityRow(Transform, string, string, float, float, out Text) 的参数、OptionsTabManager.UpdateSensitivityValues()。</summary>
+    /// <summary>灵敏度值横向。</summary>
     private Text sensitivityValueX;
-    /// <summary>中文含义：灵敏度值纵向。使用位置：作为 OptionsTabManager.CreateSensitivityRow(Transform, string, string, float, float, out Text) 的参数、OptionsTabManager.UpdateSensitivityValues()。</summary>
+    /// <summary>灵敏度值纵向。</summary>
     private Text sensitivityValueY;
-    /// <summary>中文含义：瞄准灵敏度值。使用位置：作为 OptionsTabManager.CreateSensitivityRow(Transform, string, string, float, float, out Text) 的参数、OptionsTabManager.UpdateSensitivityValues()。</summary>
+    /// <summary>瞄准灵敏度值。</summary>
     private Text aimSensitivityValue;
-    /// <summary>中文含义：分辨率下拉框。使用位置：作为 OptionsTabManager.SetAnchors(GameObject, Vector2, Vector2, Vector2, Vector2) 的参数、OptionsTabManager.BindEvents()、OptionsTabManager.BuildDisplayPage(Transform) 等共 5 处。</summary>
+    /// <summary>分辨率下拉框。</summary>
     private Dropdown resolutionDropdown;
-    /// <summary>中文含义：质量下拉框。使用位置：作为 OptionsTabManager.SetAnchors(GameObject, Vector2, Vector2, Vector2, Vector2) 的参数、OptionsTabManager.BindEvents()、OptionsTabManager.BuildDisplayPage(Transform) 等共 6 处。</summary>
+    /// <summary>质量下拉框。</summary>
     private Dropdown qualityDropdown;
-    /// <summary>中文含义：帧速率下拉框。使用位置：作为 OptionsTabManager.SetAnchors(GameObject, Vector2, Vector2, Vector2, Vector2) 的参数、OptionsTabManager.BindEvents()、OptionsTabManager.BuildDisplayPage(Transform) 等共 6 处。</summary>
+    /// <summary>帧速率下拉框。</summary>
     private Dropdown frameRateDropdown;
-    /// <summary>中文含义：抗锯齿下拉框。使用位置：作为 OptionsTabManager.SetAnchors(GameObject, Vector2, Vector2, Vector2, Vector2) 的参数、OptionsTabManager.BindEvents()、OptionsTabManager.BuildDisplayPage(Transform) 等共 6 处。</summary>
+    /// <summary>抗锯齿下拉框。</summary>
     private Dropdown antiAliasingDropdown;
-    /// <summary>中文含义：图形接口下拉框。使用位置：作为 OptionsTabManager.SetAnchors(GameObject, Vector2, Vector2, Vector2, Vector2) 的参数、OptionsTabManager.BindEvents()、OptionsTabManager.BuildDisplayPage(Transform) 等共 5 处。</summary>
+    /// <summary>图形接口下拉框。</summary>
     private Dropdown graphicsApiDropdown;
-    /// <summary>中文含义：向量同步切换。使用位置：作为 OptionsTabManager.SetAnchors(GameObject, Vector2, Vector2, Vector2, Vector2) 的参数、OptionsTabManager.BindEvents()、OptionsTabManager.BuildDisplayPage(Transform) 等共 6 处。</summary>
+    /// <summary>向量同步切换。</summary>
     private Toggle vSyncToggle;
-    /// <summary>中文含义：全屏切换。使用位置：作为 FixOptionsPanelControls.FixToggle(Toggle, string) 的参数、作为 OptionsTabManager.SetAnchors(GameObject, Vector2, Vector2, Vector2, Vector2) 的参数、作为 SettingsApplicationAdapter.ModifyResolution(int, int, bool, bool) 的参数 等共 8 处。</summary>
+    /// <summary>全屏切换。</summary>
     [HideInInspector]
     public Toggle fullscreenToggle;
-    /// <summary>中文含义：反转纵向切换。使用位置：作为 FixOptionsPanelControls.FixToggle(Toggle, string) 的参数、作为 OptionsTabManager.SetAnchors(GameObject, Vector2, Vector2, Vector2, Vector2) 的参数、FixOptionsPanelControls.FixToggles() 等共 7 处。</summary>
+    /// <summary>反转纵向切换。</summary>
     [HideInInspector]
     public Toggle invertYToggle;
-    /// <summary>中文含义：瞄准模式保持按钮。使用位置：作为 OptionsTabManager.SetAnchors(GameObject, Vector2, Vector2, Vector2, Vector2) 的参数、OptionsTabManager.BuildControlsPage(Transform)、OptionsTabManager.UpdateAimModeUI(int)。</summary>
+    /// <summary>瞄准模式保持按钮。</summary>
     private Button aimModeHoldButton;
-    /// <summary>中文含义：瞄准模式切换按钮。使用位置：作为 OptionsTabManager.SetAnchors(GameObject, Vector2, Vector2, Vector2, Vector2) 的参数、OptionsTabManager.BuildControlsPage(Transform)、OptionsTabManager.UpdateAimModeUI(int)。</summary>
+    /// <summary>瞄准模式切换按钮。</summary>
     private Button aimModeToggleButton;
-    /// <summary>中文含义：描述标题。使用位置：作为 OptionsTabManager.SetAnchors(GameObject, Vector2, Vector2, Vector2, Vector2) 的参数、OptionsTabManager.BuildInterface()、OptionsTabManager.SetDescription(string, string)。</summary>
+    /// <summary>描述标题。</summary>
     private Text descriptionTitle;
-    /// <summary>中文含义：描述身体。使用位置：作为 OptionsTabManager.SetAnchors(GameObject, Vector2, Vector2, Vector2, Vector2) 的参数、OptionsTabManager.BuildInterface()、OptionsTabManager.SetDescription(string, string)。</summary>
+    /// <summary>描述身体。</summary>
     private Text descriptionBody;
-    /// <summary>中文含义：状态文字。使用位置：作为 InputActionRebindingExtensions.RebindingOperation.OnCancel(Action&lt;InputActionRebindingExtensions.RebindingOperation&gt;) 的参数、作为 InputActionRebindingExtensions.RebindingOperation.OnComplete(Action&lt;InputActionRebindingExtensions.RebindingOperation&gt;) 的参数、作为 OptionsTabManager.SetAnchors(GameObject, Vector2, Vector2, Vector2, Vector2) 的参数 等共 19 处。</summary>
+    /// <summary>状态文字。</summary>
     private Text statusText;
-    /// <summary>中文含义：恢复按钮。使用位置：作为 OptionsTabManager.SetAnchors(GameObject, Vector2, Vector2, Vector2, Vector2) 的参数、OptionsTabManager.BindEvents()、OptionsTabManager.BuildInterface()。</summary>
+    /// <summary>恢复按钮。</summary>
     private Button restoreButton;
-    /// <summary>中文含义：重新绑定操作。使用位置：OptionsTabManager.BeginRebinding(OptionsTabManager.BindingRow)、OptionsTabManager.CancelRebinding()、OptionsTabManager.FinishRebinding(OptionsTabManager.BindingRow, bool) 等共 4 处。</summary>
+    /// <summary>重新绑定操作。</summary>
     private InputActionRebindingExtensions.RebindingOperation rebindOperation;
-    /// <summary>中文含义：当前分页。使用位置：作为 GameObject.SetActive(bool) 的参数、作为 OptionsTabManager.SelectTab(int) 的参数、OptionsTabManager.RestoreDefaults() 等共 4 处。</summary>
+    /// <summary>当前分页。</summary>
     private int currentTab;
-    /// <summary>中文含义：是否已初始化。使用位置：OptionsTabManager.Hide()、OptionsTabManager.Initialize()、OptionsTabManager.Update()。</summary>
+    /// <summary>是否已初始化。</summary>
     private bool initialized;
-    /// <summary>中文含义：是否隐藏中。使用位置：OptionsTabManager.FadeOut()、OptionsTabManager.Hide()、OptionsTabManager.Show() 等共 4 处。</summary>
+    /// <summary>是否隐藏中。</summary>
     private bool hiding;
-    /// <summary>中文含义：显示是否已经申请。使用位置：OptionsTabManager.Hide()、OptionsTabManager.Show()、OptionsTabManager.Start()。</summary>
+    /// <summary>显示是否已经申请。</summary>
     private bool showRequested;
     private bool restoringDefaults;
     private GameObject focusedSettingRow;
-    /// <summary>中文含义：界面淡入淡出的持续时间。使用位置：作为 Mathf.Clamp01(float) 的参数、作为 Mathf.Lerp(float, float, float) 的参数、OptionsTabManager.FadeIn() 等共 4 处。</summary>
+    /// <summary>界面淡入淡出的持续时间。</summary>
     private float fadeDuration = 0.2f;
-    /// <summary>中文含义：摄像机控制器。使用位置：作为 SettingsApplicationAdapter.ApplyHasSaveSensitivity(float, float, float, RE4CameraController) 的参数、作为 SettingsApplicationAdapter.ModifySensitivity(float, float, float, RE4CameraController) 的参数、作为 SettingsApplicationAdapter.ModifyVerticalAxis(bool, RE4CameraController) 的参数 等共 4 处。</summary>
+    /// <summary>摄像机控制器。</summary>
     private RE4CameraController cameraController;
-    /// <summary>中文含义：音量服务。使用位置：作为 object.ReferenceEquals(object, object) 的参数、OptionsTabManager.Hide()、OptionsTabManager.LoadSettings() 等共 6 处。</summary>
+    /// <summary>音量服务。</summary>
     private IAudioVolumeService volumeService;
     /// <summary>界面交互与显示模块 BindingRow；通过方法参数、返回值及声明成员与调用方通信，静态调用索引记录可解析的直接依赖。</summary>
     private sealed class BindingRow
     {
-        /// <summary>中文含义：动作。使用位置：作为 InputActionRebindingExtensions.RebindingOperation.OnComplete(Action&lt;InputActionRebindingExtensions.RebindingOperation&gt;) 的参数、作为 string.Equals(string, string, StringComparison) 的参数、OptionsTabManager.BeginRebinding(OptionsTabManager.BindingRow) 等共 6 处。</summary>
+        /// <summary>动作。</summary>
         public InputAction action;
-        /// <summary>中文含义：绑定索引。使用位置：作为 InputAction.ApplyBindingOverride(int, string) 的参数、作为 InputAction.PerformInteractiveRebinding(int) 的参数、作为 InputAction.RemoveBindingOverride(int) 的参数 等共 5 处。</summary>
+        /// <summary>绑定索引。</summary>
         public int bindingIndex;
-        /// <summary>中文含义：显示名称。使用位置：作为 InputActionRebindingExtensions.RebindingOperation.OnComplete(Action&lt;InputActionRebindingExtensions.RebindingOperation&gt;) 的参数、OptionsTabManager.BeginRebinding(OptionsTabManager.BindingRow)、OptionsTabManager.BuildBindingRows(Transform)。</summary>
+        /// <summary>显示名称。</summary>
         public string displayName;
-        /// <summary>中文含义：按钮。使用位置：OptionsTabManager.BuildBindingRows(Transform)、OptionsTabManager.SetInteractable(bool)。</summary>
+        /// <summary>按钮。</summary>
         public Button button;
-        /// <summary>中文含义：值文字。使用位置：OptionsTabManager.BeginRebinding(OptionsTabManager.BindingRow)、OptionsTabManager.BuildBindingRows(Transform)、OptionsTabManager.RefreshBindingLabels()。</summary>
+        /// <summary>值文字。</summary>
         public Text valueText;
     }
 
@@ -183,13 +183,13 @@ public class OptionsTabManager : MonoBehaviour
     [Serializable]
     public class BindingConfig
     {
-        /// <summary>中文含义：显示名称。使用位置：作为 Debug.LogWarning(object) 的参数、作为 OptionsTabManager.AddHoverDescription(GameObject, string, string) 的参数、作为 OptionsTabManager.CreateButton(string, Transform, string, int) 的参数 等共 6 处。</summary>
+        /// <summary>显示名称。</summary>
         public string displayName = "新按键";
-        /// <summary>中文含义：动作名称。使用位置：作为 Debug.LogWarning(object) 的参数、作为 InputActionMap.FindAction(string, bool) 的参数、作为 string.IsNullOrEmpty(string) 的参数 等共 4 处。</summary>
+        /// <summary>动作名称。</summary>
         public string actionName = "";
-        /// <summary>中文含义：组合部件。使用位置：作为 Debug.LogWarning(object) 的参数、作为 OptionsTabManager.FindBindingIndex(InputAction, string) 的参数、OptionsTabManager.Initialize()。</summary>
+        /// <summary>组合部件。</summary>
         public string compositePart = "";
-        /// <summary>中文含义：描述。使用位置：作为 OptionsTabManager.AddHoverDescription(GameObject, string, string) 的参数。</summary>
+        /// <summary>描述。</summary>
         public string description = "点击当前按键后，再按下新的键即可完成绑定；按退出键可取消。";
         /// <summary>中文含义：是否允许重新绑定。</summary>
         public bool allowRebind = true;
@@ -265,7 +265,7 @@ public class OptionsTabManager : MonoBehaviour
     /// <remarks>静态调用链：上游 OptionsTabManager.LoadSettings()、OptionsTabManager.OnEnable()、OptionsTabManager.OnMasterVolumeChanged(float)、OptionsTabManager.Start()；下游（含内部回调体） object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     private void TryBindAudioService()
     {
-        // nextService（下一次服务）：使用位置：作为 object.ReferenceEquals(object, object) 的参数、OptionsTabManager.TryBindAudioService()。
+        // 下一次服务。
 IAudioVolumeService nextService;
         if (AudioManager.HasInstance)
         {
@@ -297,7 +297,7 @@ IAudioVolumeService nextService;
     /// 外部音量变化时同步滑块显示
     /// </summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） OptionsTabManager.UpdateVolumeValue(float)、Slider.SetValueWithoutNotify(float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="value">中文含义：值。使用位置：作为 OptionsTabManager.UpdateVolumeValue(float) 的参数、作为 Slider.SetValueWithoutNotify(float) 的参数。</param>
+    /// <param name="value">值。</param>
     void OnExternalVolumeChanged(float value)
     {
         if (masterVolumeSlider != null)
@@ -323,7 +323,7 @@ IAudioVolumeService nextService;
         hiding = false;
         panelRoot.SetActive(true);
         panelRoot.transform.SetAsLastSibling();
-        // panelRect（面板矩形）：保存 GameObject.GetComponent<RectTransform>() 的返回结果，供当前步骤使用。使用位置：OptionsTabManager.Show()。
+        // 面板矩形。
 RectTransform panelRect = panelRoot.GetComponent<RectTransform>();
         if (panelRect != null)
         {
@@ -334,11 +334,11 @@ RectTransform panelRect = panelRoot.GetComponent<RectTransform>();
         // toggle（切换）：每轮从取得组件集合内部子对象集合的返回结果取得一个元素，仅代表当前这一项。使用位置：OptionsTabManager.Show()。
 foreach (var toggle in panelRoot.GetComponentsInChildren<Toggle>(true))
         {
-            // label（标签）：保存 Transform.Find(string) 的返回结果，供当前步骤使用。使用位置：OptionsTabManager.Show()。
+            // 标签。
 var label = toggle.transform.Find("开关状态");
             if (label != null)
             {
-                // assignmentReceiver2（赋值前保存的目标取得组件的返回结果）：从取得组件的返回结果读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：OptionsTabManager.Show()。
+                // 赋值前保存的目标取得组件的返回结果。
 global::UnityEngine.UI.Text assignmentReceiver2 = label.GetComponent<Text>();
                 if (toggle.isOn)
                 {
@@ -373,7 +373,7 @@ global::UnityEngine.UI.Text assignmentReceiver2 = label.GetComponent<Text>();
         showRequested = false;
         CancelRebinding();
         AudioManager.PlayInterface(AudioEventNames.UISettingsCancel);
-        // receiverValue4（判空前缓存的音量服务）：从音量服务读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、OptionsTabManager.Hide()。
+        // 判空前缓存的音量服务。
 global::IAudioVolumeService receiverValue4 = volumeService;
         if (!global::System.Object.ReferenceEquals(receiverValue4, null))
         {
@@ -586,16 +586,16 @@ global::IAudioVolumeService receiverValue4 = volumeService;
     /// <remarks>静态调用链：上游 OptionsTabManager.Initialize()；下游（含内部回调体） FieldInfo.GetValue(object)、Object.FindObjectsByType&lt;LeonInputBridge&gt;(FindObjectsInactive, FindObjectsSortMode)、Type.GetFields(BindingFlags)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     void ResolveInputActionAssetFromPlayer()
     {
-        // bridges（桥梁集合）：保存 Object.FindObjectsByType<LeonInputBridge>(FindObjectsInactive, FindObjectsSortMode) 的返回结果，供当前步骤使用。使用位置：作为 FieldInfo.GetValue(object) 的参数、OptionsTabManager.ResolveInputActionAssetFromPlayer()。
+        // 桥梁集合。
 LeonInputBridge[] bridges = FindObjectsByType<LeonInputBridge>(FindObjectsInactive.Include, FindObjectsSortMode.None);
         if (bridges.Length == 0)
         {
             return;
         }
 
-        // fields（字段集合）：保存 Type.GetFields(BindingFlags) 的返回结果，供当前步骤使用。使用位置：OptionsTabManager.ResolveInputActionAssetFromPlayer()。
+        // 字段集合。
 System.Reflection.FieldInfo[] fields = typeof(LeonInputBridge).GetFields(System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic);
-        // i（当前遍历索引）：使用位置：OptionsTabManager.ResolveInputActionAssetFromPlayer()。
+        // 当前遍历索引。
 for (int i = 0; i < fields.Length; i++)
         {
             if (fields[i].FieldType != typeof(InputActionAsset))
@@ -621,7 +621,7 @@ foreach (Transform child in panelRoot.transform)
             child.gameObject.SetActive(false);
         }
 
-        // backdrop（背景板）：保存 GameObject.GetComponent<Image>() 的返回结果，供当前步骤使用。使用位置：OptionsTabManager.BuildInterface()。
+        // 背景板。
 Image backdrop = panelRoot.GetComponent<Image>();
         if (backdrop != null)
         {
@@ -630,38 +630,38 @@ Image backdrop = panelRoot.GetComponent<Image>();
             backdrop.raycastTarget = false;
         }
 
-        // oldRoot（旧根节点）：保存 Transform.Find(string) 的返回结果，供当前步骤使用。使用位置：作为 Object.Destroy(Object) 的参数、OptionsTabManager.BuildInterface()。
+        // 旧根节点。
 Transform oldRoot = panelRoot.transform.Find("现代选项布局");
         if (oldRoot != null)
         {
             Destroy(oldRoot.gameObject);
         }
 
-        // root（根游戏对象）：保存 OptionsTabManager.CreatePanel(string, Transform, Color) 的返回结果，供当前步骤使用。使用位置：作为 OptionsTabManager.CreateButton(string, Transform, string, int) 的参数、作为 OptionsTabManager.CreatePanel(string, Transform, Color) 的参数、作为 OptionsTabManager.Stretch(RectTransform) 的参数。
+        // 根游戏对象。
 GameObject root = CreatePanel("现代选项布局", panelRoot.transform, overlayColor);
         Stretch(root.GetComponent<RectTransform>());
-        // header（标题栏）：保存 OptionsTabManager.CreatePanel(string, Transform, Color) 的返回结果，供当前步骤使用。使用位置：作为 OptionsTabManager.CreateButton(string, Transform, string, int) 的参数、作为 OptionsTabManager.CreateText(string, Transform, string, int, TextAnchor, Color) 的参数、作为 OptionsTabManager.SetAnchors(GameObject, Vector2, Vector2, Vector2, Vector2) 的参数。
+        // 标题栏。
 GameObject header = CreatePanel("顶部栏", root.transform, new Color(0f, 0f, 0f, 0.45f));
         SetAnchors(header, new Vector2(0f, 0.86f), new Vector2(1f, 1f), Vector2.zero, Vector2.zero);
-        // title（标题）：保存 OptionsTabManager.CreateText(string, Transform, string, int, TextAnchor, Color) 的返回结果，供当前步骤使用。使用位置：作为 OptionsTabManager.SetAnchors(GameObject, Vector2, Vector2, Vector2, Vector2) 的参数、OptionsTabManager.BuildInterface()。
+        // 标题。
 Text title = CreateText("标题", header.transform, "选项", 24, TextAnchor.MiddleLeft, Color.white);
         SetAnchors(title.gameObject, new Vector2(0.05f, 0.22f), new Vector2(0.22f, 0.82f), Vector2.zero, Vector2.zero);
         title.fontStyle = FontStyle.Normal;
-        // tabNames（分页名称列表）：使用位置：作为 OptionsTabManager.CreateButton(string, Transform, string, int) 的参数、OptionsTabManager.BuildInterface()。
+        // 分页名称列表。
 string[] tabNames =
         {
             "音量",
             "画面设置",
             "操控选项"
         };
-        // i（当前遍历索引）：使用位置：OptionsTabManager.BuildInterface()。
+        // 当前遍历索引。
 for (int i = 0; i < tabNames.Length; i++)
         {
-            // tabIndex（分页索引）：使用位置：作为 OptionsTabManager.SelectTab(int) 的参数。
+            // 分页索引。
 int tabIndex = i;
-            // tab（分页）：保存 OptionsTabManager.CreateButton(string, Transform, string, int) 的返回结果，供当前步骤使用。使用位置：作为 List<Button>.Add(Button) 的参数、作为 List<Text>.Add(Text) 的参数、作为 OptionsTabManager.SetAnchors(GameObject, Vector2, Vector2, Vector2, Vector2) 的参数 等共 4 处。
+            // 分页。
 Button tab = CreateButton(tabNames[i] + "页签", header.transform, tabNames[i], 20);
-            // tabLeft（分页左侧）：使用位置：作为 Vector2.Vector2(float, float) 的参数。
+            // 分页左侧。
 float tabLeft = 0.29f + i * 0.15f;
             SetAnchors(tab.gameObject, new Vector2(tabLeft, 0.18f), new Vector2(tabLeft + 0.13f, 0.82f), Vector2.zero, Vector2.zero);
             tab.onClick.AddListener(() => SelectTab(tabIndex));
@@ -669,19 +669,19 @@ float tabLeft = 0.29f + i * 0.15f;
             tabTexts.Add(tab.GetComponentInChildren<Text>());
         }
 
-        // shortcut（快捷键）：保存 OptionsTabManager.CreateText(string, Transform, string, int, TextAnchor, Color) 的返回结果，供当前步骤使用。使用位置：作为 OptionsTabManager.SetAnchors(GameObject, Vector2, Vector2, Vector2, Vector2) 的参数。
+        // 快捷键。
 Text shortcut = CreateText("页签提示", header.transform, "Q  上一页    E  下一页", 16, TextAnchor.MiddleRight, new Color(1f, 1f, 1f, 0.55f));
         SetAnchors(shortcut.gameObject, new Vector2(0.72f, 0.02f), new Vector2(0.95f, 0.19f), Vector2.zero, Vector2.zero);
-        // content（内容）：保存 OptionsTabManager.CreatePanel(string, Transform, Color) 的返回结果，供当前步骤使用。使用位置：作为 OptionsTabManager.CreatePanel(string, Transform, Color) 的参数、作为 OptionsTabManager.SetAnchors(GameObject, Vector2, Vector2, Vector2, Vector2) 的参数。
+        // 内容。
 GameObject content = CreatePanel("内容区域", root.transform, panelColor);
         SetAnchors(content, new Vector2(0.075f, 0.13f), new Vector2(0.925f, 0.83f), Vector2.zero, Vector2.zero);
-        // left（左侧）：保存 OptionsTabManager.CreatePanel(string, Transform, Color) 的返回结果，供当前步骤使用。使用位置：作为 OptionsTabManager.BuildControlsPage(Transform) 的参数、作为 OptionsTabManager.BuildDisplayPage(Transform) 的参数、作为 OptionsTabManager.BuildVolumePage(Transform) 的参数 等共 4 处。
+        // 左侧。
 GameObject left = CreatePanel("设置列表", content.transform, new Color(0f, 0f, 0f, 0.2f));
         SetAnchors(left, new Vector2(0f, 0f), new Vector2(0.54f, 1f), Vector2.zero, Vector2.zero);
-        // separator（分隔器）：保存 OptionsTabManager.CreatePanel(string, Transform, Color) 的返回结果，供当前步骤使用。使用位置：作为 OptionsTabManager.SetAnchors(GameObject, Vector2, Vector2, Vector2, Vector2) 的参数。
+        // 分隔器。
 GameObject separator = CreatePanel("分隔线", content.transform, new Color(1f, 1f, 1f, 0.32f));
         SetAnchors(separator, new Vector2(0.54f, 0.02f), new Vector2(0.5407f, 0.96f), Vector2.zero, Vector2.zero);
-        // right（右侧）：保存 OptionsTabManager.CreatePanel(string, Transform, Color) 的返回结果，供当前步骤使用。使用位置：作为 OptionsTabManager.CreateText(string, Transform, string, int, TextAnchor, Color) 的参数、作为 OptionsTabManager.SetAnchors(GameObject, Vector2, Vector2, Vector2, Vector2) 的参数。
+        // 右侧。
 GameObject right = CreatePanel("说明区域", content.transform, new Color(0f, 0f, 0f, 0.12f));
         SetAnchors(right, new Vector2(0.542f, 0f), new Vector2(1f, 1f), Vector2.zero, Vector2.zero);
         descriptionTitle = CreateText("说明标题", right.transform, "全局音量", 22, TextAnchor.UpperLeft, Color.white);
@@ -694,7 +694,7 @@ GameObject right = CreatePanel("说明区域", content.transform, new Color(0f, 
         BuildVolumePage(left.transform);
         BuildDisplayPage(left.transform);
         BuildControlsPage(left.transform);
-        // back（后方）：保存 OptionsTabManager.CreateButton(string, Transform, string, int) 的返回结果，供当前步骤使用。使用位置：作为 OptionsTabManager.SetAnchors(GameObject, Vector2, Vector2, Vector2, Vector2) 的参数、OptionsTabManager.BuildInterface()。
+        // 后方。
 Button back = CreateButton("返回按钮", root.transform, "返回", 18);
         SetAnchors(back.gameObject, new Vector2(0.82f, 0.035f), new Vector2(0.93f, 0.085f), Vector2.zero, Vector2.zero);
         back.onClick.AddListener(Hide);
@@ -704,21 +704,21 @@ Button back = CreateButton("返回按钮", root.transform, "返回", 18);
 
     /// <summary>BuildVolumePage 的业务处理入口；本方法直接依赖 GameObject.GameObject(string, params Type[])、GameObject.GetComponent&lt;Image&gt;()、List&lt;GameObject&gt;.Add(GameObject)、OptionsTabManager.AddHoverDescription(GameObject, string, string)、OptionsTabManager.CreatePage(string, Transform)、OptionsTabManager.CreateSectionTitle(Transform, string)、OptionsTabManager.CreateSettingRow(Transform, string, float, float) 等共 12 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 OptionsTabManager.BuildInterface()；下游（含内部回调体） GameObject.GameObject(string, params Type[])、GameObject.GetComponent&lt;Image&gt;()、List&lt;GameObject&gt;.Add(GameObject)、OptionsTabManager.AddHoverDescription(GameObject, string, string)、OptionsTabManager.CreatePage(string, Transform)、OptionsTabManager.CreateSectionTitle(Transform, string)、OptionsTabManager.CreateSettingRow(Transform, string, float, float) 等共 12 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="parent">中文含义：父级。使用位置：作为 OptionsTabManager.CreatePage(string, Transform) 的参数。</param>
+    /// <param name="parent">父级。</param>
     void BuildVolumePage(Transform parent)
     {
-        // page（页面）：保存 OptionsTabManager.CreatePage(string, Transform) 的返回结果，供当前步骤使用。使用位置：作为 List<GameObject>.Add(GameObject) 的参数、作为 OptionsTabManager.CreateSectionTitle(Transform, string) 的参数、作为 OptionsTabManager.CreateSettingRow(Transform, string, float, float) 的参数。
+        // 页面。
 GameObject page = CreatePage("音量页面", parent);
         pages.Add(page);
         CreateSectionTitle(page.transform, "音量设置");
-        // row（行）：保存 OptionsTabManager.CreateSettingRow(Transform, string, float, float) 的返回结果，供当前步骤使用。使用位置：作为 OptionsTabManager.AddHoverDescription(GameObject, string, string) 的参数、作为 OptionsTabManager.CreateSlider(string, Transform) 的参数、作为 OptionsTabManager.CreateText(string, Transform, string, int, TextAnchor, Color) 的参数 等共 4 处。
+        // 行。
 GameObject row = CreateSettingRow(page.transform, "总音量", 0.75f, 0.85f);
         masterVolumeSlider = CreateSlider("总音量滑块", row.transform);
         SetAnchors(masterVolumeSlider.gameObject, new Vector2(0.42f, 0.24f), new Vector2(0.78f, 0.76f), Vector2.zero, Vector2.zero);
         masterVolumeValue = CreateText("总音量数值", row.transform, "100%", 20, TextAnchor.MiddleRight, Color.white);
         SetAnchors(masterVolumeValue.gameObject, new Vector2(0.80f, 0f), new Vector2(0.90f, 1f), Vector2.zero, Vector2.zero);
         // 音量状态图标
-        // iconGo（图标游戏对象）：使用位置：作为 OptionsTabManager.SetAnchors(GameObject, Vector2, Vector2, Vector2, Vector2) 的参数、OptionsTabManager.BuildVolumePage(Transform)。
+        // 图标游戏对象。
 GameObject iconGo = new GameObject("音量图标", typeof(RectTransform), typeof(Image));
         iconGo.transform.SetParent(row.transform, false);
         volumeIcon = iconGo.GetComponent<Image>();
@@ -730,44 +730,44 @@ GameObject iconGo = new GameObject("音量图标", typeof(RectTransform), typeof
 
     /// <summary>BuildDisplayPage 的业务处理入口；本方法直接依赖 List&lt;GameObject&gt;.Add(GameObject)、OptionsTabManager.AddHoverDescription(GameObject, string, string)、OptionsTabManager.CreatePage(string, Transform)、OptionsTabManager.CreateSectionTitle(Transform, string)、OptionsTabManager.CreateSettingRow(Transform, string, float, float)、OptionsTabManager.CreateStandardDropdown(string, Transform)、OptionsTabManager.CreateToggle(string, Transform) 等共 9 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 OptionsTabManager.BuildInterface()；下游（含内部回调体） List&lt;GameObject&gt;.Add(GameObject)、OptionsTabManager.AddHoverDescription(GameObject, string, string)、OptionsTabManager.CreatePage(string, Transform)、OptionsTabManager.CreateSectionTitle(Transform, string)、OptionsTabManager.CreateSettingRow(Transform, string, float, float)、OptionsTabManager.CreateStandardDropdown(string, Transform)、OptionsTabManager.CreateToggle(string, Transform) 等共 9 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="parent">中文含义：父级。使用位置：作为 OptionsTabManager.CreatePage(string, Transform) 的参数。</param>
+    /// <param name="parent">父级。</param>
     void BuildDisplayPage(Transform parent)
     {
-        // page（页面）：保存 OptionsTabManager.CreatePage(string, Transform) 的返回结果，供当前步骤使用。使用位置：作为 List<GameObject>.Add(GameObject) 的参数、作为 OptionsTabManager.CreateSectionTitle(Transform, string) 的参数、作为 OptionsTabManager.CreateSettingRow(Transform, string, float, float) 的参数。
+        // 页面。
 GameObject page = CreatePage("画面页面", parent);
         pages.Add(page);
         CreateSectionTitle(page.transform, "画面设置");
-        // resolutionRow（分辨率行）：保存 OptionsTabManager.CreateSettingRow(Transform, string, float, float) 的返回结果，供当前步骤使用。使用位置：作为 OptionsTabManager.AddHoverDescription(GameObject, string, string) 的参数、作为 OptionsTabManager.CreateStandardDropdown(string, Transform) 的参数。
+        // 分辨率行。
 GameObject resolutionRow = CreateSettingRow(page.transform, "分辨率", 0.75f, 0.85f);
         resolutionDropdown = CreateStandardDropdown("分辨率下拉框", resolutionRow.transform);
         SetAnchors(resolutionDropdown.gameObject, new Vector2(0.42f, 0.12f), new Vector2(0.96f, 0.88f), Vector2.zero, Vector2.zero);
         AddHoverDescription(resolutionRow, "分辨率", "选择游戏输出画面的宽度和高度。选择后立即生效。");
-        // fullscreenRow（全屏行）：保存 OptionsTabManager.CreateSettingRow(Transform, string, float, float) 的返回结果，供当前步骤使用。使用位置：作为 OptionsTabManager.AddHoverDescription(GameObject, string, string) 的参数、作为 OptionsTabManager.CreateToggle(string, Transform) 的参数。
+        // 全屏行。
 GameObject fullscreenRow = CreateSettingRow(page.transform, "全屏显示", 0.63f, 0.73f);
         fullscreenToggle = CreateToggle("全屏开关", fullscreenRow.transform);
         SetAnchors(fullscreenToggle.gameObject, new Vector2(0.82f, 0.18f), new Vector2(0.94f, 0.82f), Vector2.zero, Vector2.zero);
         AddHoverDescription(fullscreenRow, "全屏显示", "开启后使用全屏模式；关闭后切换为窗口模式。");
-        // qualityRow（质量行）：保存 OptionsTabManager.CreateSettingRow(Transform, string, float, float) 的返回结果，供当前步骤使用。使用位置：作为 OptionsTabManager.AddHoverDescription(GameObject, string, string) 的参数、作为 OptionsTabManager.CreateStandardDropdown(string, Transform) 的参数。
+        // 质量行。
 GameObject qualityRow = CreateSettingRow(page.transform, "画质预设", 0.51f, 0.61f);
         qualityDropdown = CreateStandardDropdown("画质预设下拉框", qualityRow.transform);
         SetAnchors(qualityDropdown.gameObject, new Vector2(0.62f, 0.12f), new Vector2(0.96f, 0.88f), Vector2.zero, Vector2.zero);
-        AddHoverDescription(qualityRow, "画质预设", "低画质优先帧率，中画质平衡表现与性能，高画质启用最远阴影距离和最高细节等级。");
-        // frameRateRow（帧速率行）：保存 OptionsTabManager.CreateSettingRow(Transform, string, float, float) 的返回结果，供当前步骤使用。使用位置：作为 OptionsTabManager.AddHoverDescription(GameObject, string, string) 的参数、作为 OptionsTabManager.CreateStandardDropdown(string, Transform) 的参数。
+        AddHoverDescription(qualityRow, "画质预设", "高画质为默认档。最高画质提供更远的阴影和更高的细节等级。");
+        // 帧速率行。
 GameObject frameRateRow = CreateSettingRow(page.transform, "帧率上限", 0.39f, 0.49f);
         frameRateDropdown = CreateStandardDropdown("帧率上限下拉框", frameRateRow.transform);
         SetAnchors(frameRateDropdown.gameObject, new Vector2(0.62f, 0.12f), new Vector2(0.96f, 0.88f), Vector2.zero, Vector2.zero);
         AddHoverDescription(frameRateRow, "帧率上限", "关闭垂直同步后生效，可限制显卡负载、温度和功耗。");
-        // vSyncRow（向量同步行）：保存 OptionsTabManager.CreateSettingRow(Transform, string, float, float) 的返回结果，供当前步骤使用。使用位置：作为 OptionsTabManager.AddHoverDescription(GameObject, string, string) 的参数、作为 OptionsTabManager.CreateToggle(string, Transform) 的参数。
+        // 向量同步行。
 GameObject vSyncRow = CreateSettingRow(page.transform, "垂直同步", 0.27f, 0.37f);
         vSyncToggle = CreateToggle("垂直同步开关", vSyncRow.transform);
         SetAnchors(vSyncToggle.gameObject, new Vector2(0.82f, 0.18f), new Vector2(0.94f, 0.82f), Vector2.zero, Vector2.zero);
         AddHoverDescription(vSyncRow, "垂直同步", "使画面输出与显示器刷新同步，减少撕裂；启用时帧率上限由显示器刷新率决定。");
-        // antiAliasingRow（抗锯齿行）：保存 OptionsTabManager.CreateSettingRow(Transform, string, float, float) 的返回结果，供当前步骤使用。使用位置：作为 OptionsTabManager.AddHoverDescription(GameObject, string, string) 的参数、作为 OptionsTabManager.CreateStandardDropdown(string, Transform) 的参数。
+        // 抗锯齿行。
 GameObject antiAliasingRow = CreateSettingRow(page.transform, "多重采样抗锯齿", 0.15f, 0.25f);
         antiAliasingDropdown = CreateStandardDropdown("抗锯齿下拉框", antiAliasingRow.transform);
         SetAnchors(antiAliasingDropdown.gameObject, new Vector2(0.62f, 0.12f), new Vector2(0.96f, 0.88f), Vector2.zero, Vector2.zero);
         AddHoverDescription(antiAliasingRow, "多重采样抗锯齿", "减少物体边缘锯齿。采样倍率越高，画面越平滑，显卡负担也越高。");
-        // graphicsApiRow（图形接口行）：保存 OptionsTabManager.CreateSettingRow(Transform, string, float, float) 的返回结果，供当前步骤使用。使用位置：作为 OptionsTabManager.AddHoverDescription(GameObject, string, string) 的参数、作为 OptionsTabManager.CreateStandardDropdown(string, Transform) 的参数。
+        // 图形接口行。
 GameObject graphicsApiRow = CreateSettingRow(page.transform, "图形接口", 0.03f, 0.13f);
         graphicsApiDropdown = CreateStandardDropdown("图形接口下拉框", graphicsApiRow.transform);
         SetAnchors(graphicsApiDropdown.gameObject, new Vector2(0.62f, 0.12f), new Vector2(0.96f, 0.88f), Vector2.zero, Vector2.zero);
@@ -776,24 +776,24 @@ GameObject graphicsApiRow = CreateSettingRow(page.transform, "图形接口", 0.0
 
     /// <summary>BuildControlsPage 的业务处理入口；本方法直接依赖 Canvas.ForceUpdateCanvases()、Color.Color(float, float, float, float)、GameObject.AddComponent&lt;RectMask2D&gt;()、GameObject.AddComponent&lt;ScrollRect&gt;()、GameObject.GameObject(string, params Type[])、GameObject.GetComponent&lt;ContentSizeFitter&gt;()、GameObject.GetComponent&lt;Image&gt;() 等共 29 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 OptionsTabManager.BuildInterface()；下游（含内部回调体） Canvas.ForceUpdateCanvases()、Color.Color(float, float, float, float)、GameObject.AddComponent&lt;RectMask2D&gt;()、GameObject.AddComponent&lt;ScrollRect&gt;()、GameObject.GameObject(string, params Type[])、GameObject.GetComponent&lt;ContentSizeFitter&gt;()、GameObject.GetComponent&lt;Image&gt;() 等共 29 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="parent">中文含义：父级。使用位置：作为 OptionsTabManager.CreatePage(string, Transform) 的参数。</param>
+    /// <param name="parent">父级。</param>
     void BuildControlsPage(Transform parent)
     {
-        // page（页面）：保存 OptionsTabManager.CreatePage(string, Transform) 的返回结果，供当前步骤使用。使用位置：作为 List<GameObject>.Add(GameObject) 的参数、作为 OptionsTabManager.CreatePanel(string, Transform, Color) 的参数、作为 OptionsTabManager.CreateSectionTitle(Transform, string) 的参数 等共 5 处。
+        // 页面。
 GameObject page = CreatePage("操控页面", parent);
         pages.Add(page);
         CreateSectionTitle(page.transform, "操控选项");
         // 固定设置区域：反转纵轴
-        // invertRow（反转行）：保存 OptionsTabManager.CreateSettingRow(Transform, string, float, float) 的返回结果，供当前步骤使用。使用位置：作为 OptionsTabManager.AddHoverDescription(GameObject, string, string) 的参数、作为 OptionsTabManager.CreateToggle(string, Transform) 的参数。
+        // 反转行。
 GameObject invertRow = CreateSettingRow(page.transform, "反转纵轴", 0.78f, 0.88f);
         invertYToggle = CreateToggle("反转纵轴开关", invertRow.transform);
         SetAnchors(invertYToggle.gameObject, new Vector2(0.82f, 0.18f), new Vector2(0.94f, 0.82f), Vector2.zero, Vector2.zero);
         AddHoverDescription(invertRow, "反转纵轴", "开启后，鼠标向上移动会让镜头向下转动。");
         // 固定设置区域：瞄准操作方式（双按钮选择器）
-        // aimRow（瞄准行）：保存 OptionsTabManager.CreatePanel(string, Transform, Color) 的返回结果，供当前步骤使用。使用位置：作为 OptionsTabManager.AddHoverDescription(GameObject, string, string) 的参数、作为 OptionsTabManager.CreateButton(string, Transform, string, int) 的参数、作为 OptionsTabManager.CreateText(string, Transform, string, int, TextAnchor, Color) 的参数 等共 4 处。
+        // 瞄准行。
 GameObject aimRow = CreatePanel("瞄准操作方式行", page.transform, new Color(1f, 1f, 1f, 0.055f));
         SetAnchors(aimRow, new Vector2(0.04f, 0.68f), new Vector2(0.96f, 0.78f), Vector2.zero, Vector2.zero);
-        // aimLabel（瞄准标签）：保存 OptionsTabManager.CreateText(string, Transform, string, int, TextAnchor, Color) 的返回结果，供当前步骤使用。使用位置：作为 OptionsTabManager.SetAnchors(GameObject, Vector2, Vector2, Vector2, Vector2) 的参数。
+        // 瞄准标签。
 Text aimLabel = CreateText("瞄准模式名称", aimRow.transform, "瞄准操作方式", 20, TextAnchor.MiddleLeft, new Color(1f, 1f, 1f, 0.86f));
         SetAnchors(aimLabel.gameObject, new Vector2(0.04f, 0f), new Vector2(0.4f, 1f), Vector2.zero, Vector2.zero);
         aimModeHoldButton = CreateButton("长按按钮", aimRow.transform, "长按", 18);
@@ -804,64 +804,64 @@ Text aimLabel = CreateText("瞄准模式名称", aimRow.transform, "瞄准操作
         aimModeToggleButton.onClick.AddListener(() => SetAimMode(1));
         AddHoverDescription(aimRow, "瞄准操作方式", "长按=按住瞄准键进入瞄准，松开退出。切换=按一次进入瞄准，再按一次退出。");
         // 分隔线
-        // sep（分隔）：保存 OptionsTabManager.CreatePanel(string, Transform, Color) 的返回结果，供当前步骤使用。使用位置：作为 OptionsTabManager.SetAnchors(GameObject, Vector2, Vector2, Vector2, Vector2) 的参数。
+        // 分隔。
 GameObject sep = CreatePanel("分隔线", page.transform, new Color(1f, 1f, 1f, 0.2f));
         SetAnchors(sep, new Vector2(0.04f, 0.665f), new Vector2(0.96f, 0.67f), Vector2.zero, Vector2.zero);
         // 按键绑定滚动区域
-        // viewport（视口）：保存 OptionsTabManager.CreatePanel(string, Transform, Color) 的返回结果，供当前步骤使用。使用位置：作为 OptionsTabManager.SetAnchors(GameObject, Vector2, Vector2, Vector2, Vector2) 的参数、作为 Transform.SetParent(Transform, bool) 的参数、OptionsTabManager.BuildControlsPage(Transform)。
+        // 视口。
 GameObject viewport = CreatePanel("按键滚动视口", page.transform, new Color(0f, 0f, 0f, 0.15f));
         SetAnchors(viewport, new Vector2(0.04f, 0.05f), new Vector2(0.95f, 0.66f), Vector2.zero, Vector2.zero);
         viewport.AddComponent<RectMask2D>();
         // 滚动条
-        // scrollbarGo（滚动条游戏对象）：使用位置：作为 OptionsTabManager.SetAnchors(GameObject, Vector2, Vector2, Vector2, Vector2) 的参数、作为 Transform.SetParent(Transform, bool) 的参数、OptionsTabManager.BuildControlsPage(Transform)。
+        // 滚动条游戏对象。
 GameObject scrollbarGo = new GameObject("滚动条", typeof(RectTransform), typeof(Image), typeof(Scrollbar));
         scrollbarGo.transform.SetParent(page.transform, false);
         // sbRt（文本构建器矩形变换）：保存 GameObject.GetComponent<RectTransform>() 的返回结果，供当前步骤使用。
 var sbRt = scrollbarGo.GetComponent<RectTransform>();
         SetAnchors(scrollbarGo, new Vector2(0.958f, 0.05f), new Vector2(0.972f, 0.66f), Vector2.zero, Vector2.zero);
-        // sbBg（文本构建器背景）：保存 GameObject.GetComponent<Image>() 的返回结果，供当前步骤使用。使用位置：OptionsTabManager.BuildControlsPage(Transform)。
+        // 文本构建器背景。
 var sbBg = scrollbarGo.GetComponent<Image>();
         sbBg.color = new Color(1f, 1f, 1f, 0.1f);
-        // scrollbar（滚动条）：保存 GameObject.GetComponent<Scrollbar>() 的返回结果，供当前步骤使用。使用位置：OptionsTabManager.BuildControlsPage(Transform)。
+        // 滚动条。
 var scrollbar = scrollbarGo.GetComponent<Scrollbar>();
         scrollbar.direction = Scrollbar.Direction.BottomToTop;
         // 滑块
-        // slidingArea（滑移中区域）：使用位置：作为 OptionsTabManager.CreatePanel(string, Transform, Color) 的参数、OptionsTabManager.BuildControlsPage(Transform)。
+        // 滑移中区域。
 GameObject slidingArea = new GameObject("滑动区域", typeof(RectTransform));
         slidingArea.transform.SetParent(scrollbarGo.transform, false);
-        // saRt（滚动区域矩形变换）：保存 GameObject.GetComponent<RectTransform>() 的返回结果，供当前步骤使用。使用位置：OptionsTabManager.BuildControlsPage(Transform)。
+        // 滚动区域矩形变换。
 var saRt = slidingArea.GetComponent<RectTransform>();
         saRt.anchorMin = Vector2.zero;
         saRt.anchorMax = Vector2.one;
         saRt.offsetMin = new Vector2(2, 2);
         saRt.offsetMax = new Vector2(-2, -2);
-        // handle（句柄）：保存 OptionsTabManager.CreatePanel(string, Transform, Color) 的返回结果，供当前步骤使用。使用位置：作为 OptionsTabManager.Stretch(RectTransform) 的参数、OptionsTabManager.BuildControlsPage(Transform)。
+        // 句柄。
 GameObject handle = CreatePanel("滑块", slidingArea.transform, new Color(0.72f, 0.72f, 0.68f, 0.8f));
         Stretch(handle.GetComponent<RectTransform>());
         scrollbar.targetGraphic = handle.GetComponent<Image>();
         scrollbar.handleRect = handle.GetComponent<RectTransform>();
         // 内容列表
-        // list（列表）：使用位置：作为 OptionsTabManager.BuildBindingRows(Transform) 的参数、作为 OptionsTabManager.BuildSensitivityRows(Transform) 的参数、作为 OptionsTabManager.CreateLayoutSectionTitle(Transform, string) 的参数 等共 4 处。
+        // 列表。
 GameObject list = new GameObject("按键列表", typeof(RectTransform), typeof(VerticalLayoutGroup), typeof(ContentSizeFitter));
         list.transform.SetParent(viewport.transform, false);
-        // listRect（列表矩形）：保存 GameObject.GetComponent<RectTransform>() 的返回结果，供当前步骤使用。使用位置：作为 LayoutRebuilder.ForceRebuildLayoutImmediate(RectTransform) 的参数、OptionsTabManager.BuildControlsPage(Transform)。
+        // 列表矩形。
 RectTransform listRect = list.GetComponent<RectTransform>();
         listRect.anchorMin = new Vector2(0f, 1f);
         listRect.anchorMax = new Vector2(1f, 1f);
         listRect.pivot = new Vector2(0.5f, 1f);
         listRect.anchoredPosition = Vector2.zero;
         listRect.sizeDelta = new Vector2(0f, 0f);
-        // layout（布局）：保存 GameObject.GetComponent<VerticalLayoutGroup>() 的返回结果，供当前步骤使用。使用位置：OptionsTabManager.BuildControlsPage(Transform)。
+        // 布局。
 VerticalLayoutGroup layout = list.GetComponent<VerticalLayoutGroup>();
         layout.spacing = 4f;
         layout.childControlHeight = true;
         layout.childControlWidth = true;
         layout.childForceExpandWidth = true;
         layout.childForceExpandHeight = false;
-        // fitter（尺寸适配器）：保存 GameObject.GetComponent<ContentSizeFitter>() 的返回结果，供当前步骤使用。使用位置：OptionsTabManager.BuildControlsPage(Transform)。
+        // 尺寸适配器。
 ContentSizeFitter fitter = list.GetComponent<ContentSizeFitter>();
         fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
-        // scroll（滚动）：保存 GameObject.AddComponent<ScrollRect>() 的返回结果，供当前步骤使用。使用位置：OptionsTabManager.BuildControlsPage(Transform)。
+        // 滚动。
 ScrollRect scroll = viewport.AddComponent<ScrollRect>();
         scroll.viewport = viewport.GetComponent<RectTransform>();
         scroll.content = listRect;
@@ -881,7 +881,7 @@ ScrollRect scroll = viewport.AddComponent<ScrollRect>();
 
     /// <summary>BuildSensitivityRows 的业务处理入口；本方法直接依赖 OptionsTabManager.CreateLayoutSectionTitle(Transform, string)、OptionsTabManager.CreateSensitivityRow(Transform, string, string, float, float, out Text)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 OptionsTabManager.BuildControlsPage(Transform)；下游（含内部回调体） OptionsTabManager.CreateLayoutSectionTitle(Transform, string)、OptionsTabManager.CreateSensitivityRow(Transform, string, string, float, float, out Text)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="parent">中文含义：父级。使用位置：作为 OptionsTabManager.CreateLayoutSectionTitle(Transform, string) 的参数、作为 OptionsTabManager.CreateSensitivityRow(Transform, string, string, float, float, out Text) 的参数。</param>
+    /// <param name="parent">父级。</param>
     void BuildSensitivityRows(Transform parent)
     {
         CreateLayoutSectionTitle(parent, "镜头灵敏度");
@@ -892,24 +892,24 @@ ScrollRect scroll = viewport.AddComponent<ScrollRect>();
 
     /// <summary>CreateSensitivityRow 的业务处理入口；本方法直接依赖 Color.Color(float, float, float, float)、GameObject.AddComponent&lt;LayoutElement&gt;()、OptionsTabManager.AddHoverDescription(GameObject, string, string)、OptionsTabManager.CreatePanel(string, Transform, Color)、OptionsTabManager.CreateSlider(string, Transform)、OptionsTabManager.CreateText(string, Transform, string, int, TextAnchor, Color)、OptionsTabManager.SetAnchors(GameObject, Vector2, Vector2, Vector2, Vector2) 等共 8 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 OptionsTabManager.BuildSensitivityRows(Transform)；下游（含内部回调体） Color.Color(float, float, float, float)、GameObject.AddComponent&lt;LayoutElement&gt;()、OptionsTabManager.AddHoverDescription(GameObject, string, string)、OptionsTabManager.CreatePanel(string, Transform, Color)、OptionsTabManager.CreateSlider(string, Transform)、OptionsTabManager.CreateText(string, Transform, string, int, TextAnchor, Color)、OptionsTabManager.SetAnchors(GameObject, Vector2, Vector2, Vector2, Vector2) 等共 8 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="parent">中文含义：父级。使用位置：作为 OptionsTabManager.CreatePanel(string, Transform, Color) 的参数。</param>
-    /// <param name="label">中文含义：标签。使用位置：作为 OptionsTabManager.AddHoverDescription(GameObject, string, string) 的参数、作为 OptionsTabManager.CreatePanel(string, Transform, Color) 的参数、作为 OptionsTabManager.CreateSlider(string, Transform) 的参数 等共 4 处。</param>
-    /// <param name="description">中文含义：描述。使用位置：作为 OptionsTabManager.AddHoverDescription(GameObject, string, string) 的参数。</param>
-    /// <param name="minimum">中文含义：最小。使用位置：OptionsTabManager.CreateSensitivityRow(Transform, string, string, float, float, out Text)。</param>
-    /// <param name="maximum">中文含义：最大。使用位置：OptionsTabManager.CreateSensitivityRow(Transform, string, string, float, float, out Text)。</param>
-    /// <param name="valueText">中文含义：值文字。输出参数，由本入口写入并交给调用方。使用位置：作为 OptionsTabManager.SetAnchors(GameObject, Vector2, Vector2, Vector2, Vector2) 的参数、OptionsTabManager.CreateSensitivityRow(Transform, string, string, float, float, out Text)。</param>
+    /// <param name="parent">父级。</param>
+    /// <param name="label">标签。</param>
+    /// <param name="description">描述。</param>
+    /// <param name="minimum">最小。</param>
+    /// <param name="maximum">最大。</param>
+    /// <param name="valueText">值文字。输出参数，由本入口写入并交给调用方。</param>
     Slider CreateSensitivityRow(Transform parent, string label, string description, float minimum, float maximum, out Text valueText)
     {
-        // row（行）：保存 OptionsTabManager.CreatePanel(string, Transform, Color) 的返回结果，供当前步骤使用。使用位置：作为 OptionsTabManager.AddHoverDescription(GameObject, string, string) 的参数、作为 OptionsTabManager.CreateSlider(string, Transform) 的参数、作为 OptionsTabManager.CreateText(string, Transform, string, int, TextAnchor, Color) 的参数 等共 4 处。
+        // 行。
 GameObject row = CreatePanel(label + "行", parent, new Color(1f, 1f, 1f, 0.055f));
-        // layoutElement（布局元素）：保存 GameObject.AddComponent<LayoutElement>() 的返回结果，供当前步骤使用。使用位置：OptionsTabManager.CreateSensitivityRow(Transform, string, string, float, float, out Text)。
+        // 布局元素。
 LayoutElement layoutElement = row.AddComponent<LayoutElement>();
         layoutElement.preferredHeight = 54f;
         layoutElement.minHeight = 54f;
-        // labelText（标签文字）：保存 OptionsTabManager.CreateText(string, Transform, string, int, TextAnchor, Color) 的返回结果，供当前步骤使用。使用位置：作为 OptionsTabManager.SetAnchors(GameObject, Vector2, Vector2, Vector2, Vector2) 的参数。
+        // 标签文字。
 Text labelText = CreateText("名称", row.transform, label, 18, TextAnchor.MiddleLeft, new Color(1f, 1f, 1f, 0.86f));
         SetAnchors(labelText.gameObject, new Vector2(0.04f, 0f), new Vector2(0.31f, 1f), Vector2.zero, Vector2.zero);
-        // slider（滑块）：保存 OptionsTabManager.CreateSlider(string, Transform) 的返回结果，供当前步骤使用。使用位置：作为 OptionsTabManager.SetAnchors(GameObject, Vector2, Vector2, Vector2, Vector2) 的参数、OptionsTabManager.CreateSensitivityRow(Transform, string, string, float, float, out Text)。
+        // 滑块。
 Slider slider = CreateSlider(label + "滑块", row.transform);
         slider.minValue = minimum;
         slider.maxValue = maximum;
@@ -922,13 +922,13 @@ Slider slider = CreateSlider(label + "滑块", row.transform);
 
     /// <summary>CreateLayoutSectionTitle 的业务处理入口；本方法直接依赖 Color.Color(float, float, float, float)、GameObject.AddComponent&lt;LayoutElement&gt;()、OptionsTabManager.CreateText(string, Transform, string, int, TextAnchor, Color)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 OptionsTabManager.BuildControlsPage(Transform)、OptionsTabManager.BuildSensitivityRows(Transform)；下游（含内部回调体） Color.Color(float, float, float, float)、GameObject.AddComponent&lt;LayoutElement&gt;()、OptionsTabManager.CreateText(string, Transform, string, int, TextAnchor, Color)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="parent">中文含义：父级。使用位置：作为 OptionsTabManager.CreateText(string, Transform, string, int, TextAnchor, Color) 的参数。</param>
-    /// <param name="title">中文含义：标题。使用位置：作为 OptionsTabManager.CreateText(string, Transform, string, int, TextAnchor, Color) 的参数。</param>
+    /// <param name="parent">父级。</param>
+    /// <param name="title">标题。</param>
     void CreateLayoutSectionTitle(Transform parent, string title)
     {
-        // text（文字）：保存 OptionsTabManager.CreateText(string, Transform, string, int, TextAnchor, Color) 的返回结果，供当前步骤使用。使用位置：OptionsTabManager.CreateLayoutSectionTitle(Transform, string)。
+        // 文字。
 Text text = CreateText(title + "标题", parent, title, 19, TextAnchor.MiddleLeft, new Color(1f, 1f, 1f, 0.62f));
-        // element（元素）：保存 GameObject.AddComponent<LayoutElement>() 的返回结果，供当前步骤使用。使用位置：OptionsTabManager.CreateLayoutSectionTitle(Transform, string)。
+        // 元素。
 LayoutElement element = text.gameObject.AddComponent<LayoutElement>();
         element.preferredHeight = 34f;
         element.minHeight = 34f;
@@ -936,11 +936,11 @@ LayoutElement element = text.gameObject.AddComponent<LayoutElement>();
 
     /// <summary>BuildBindingRows 的业务处理入口；本方法直接依赖 Canvas.ForceUpdateCanvases()、Color.Color(float, float, float, float)、Debug.LogWarning(object)、GameObject.AddComponent&lt;LayoutElement&gt;()、InputActionAsset.FindActionMap(string, bool)、InputActionMap.FindAction(string, bool)、LayoutRebuilder.ForceRebuildLayoutImmediate(RectTransform) 等共 20 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 OptionsTabManager.BuildControlsPage(Transform)；下游（含内部回调体） Canvas.ForceUpdateCanvases()、Color.Color(float, float, float, float)、Debug.LogWarning(object)、GameObject.AddComponent&lt;LayoutElement&gt;()、InputActionAsset.FindActionMap(string, bool)、InputActionMap.FindAction(string, bool)、LayoutRebuilder.ForceRebuildLayoutImmediate(RectTransform) 等共 20 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="parent">中文含义：父级。使用位置：作为 LayoutRebuilder.ForceRebuildLayoutImmediate(RectTransform) 的参数、作为 OptionsTabManager.CreateButton(string, Transform, string, int) 的参数。</param>
+    /// <param name="parent">父级。</param>
     void BuildBindingRows(Transform parent)
     {
         bindingRows.Clear();
-        // playerMap（玩家映射）：使用位置：OptionsTabManager.BuildBindingRows(Transform)。
+        // 玩家映射。
 InputActionMap playerMap;
         if (inputActionAsset != null)
         {
@@ -972,7 +972,7 @@ foreach (BindingConfig config in bindingConfigs)
                 continue;
             }
 
-            // action（动作）：保存 InputActionMap.FindAction(string, bool) 的返回结果，供当前步骤使用。使用位置：作为 OptionsTabManager.FindBindingIndex(InputAction, string) 的参数、OptionsTabManager.BuildBindingRows(Transform)。
+            // 动作。
 InputAction action = playerMap.FindAction(config.actionName);
             if (action == null)
             {
@@ -980,7 +980,7 @@ InputAction action = playerMap.FindAction(config.actionName);
                 continue;
             }
 
-            // bindingIndex（绑定索引）：保存 OptionsTabManager.FindBindingIndex(InputAction, string) 的返回结果，供当前步骤使用。使用位置：OptionsTabManager.BuildBindingRows(Transform)。
+            // 绑定索引。
 int bindingIndex = FindBindingIndex(action, config.compositePart);
             if (bindingIndex < 0)
             {
@@ -988,19 +988,19 @@ int bindingIndex = FindBindingIndex(action, config.compositePart);
                 continue;
             }
 
-            // button（按钮）：保存 OptionsTabManager.CreateButton(string, Transform, string, int) 的返回结果，供当前步骤使用。使用位置：作为 OptionsTabManager.AddHoverDescription(GameObject, string, string) 的参数、作为 OptionsTabManager.CreateText(string, Transform, string, int, TextAnchor, Color) 的参数、OptionsTabManager.BuildBindingRows(Transform)。
+            // 按钮。
 Button button = CreateButton("按键_" + config.displayName, parent, string.Empty, 18);
-            // element（元素）：保存 GameObject.AddComponent<LayoutElement>() 的返回结果，供当前步骤使用。使用位置：OptionsTabManager.BuildBindingRows(Transform)。
+            // 元素。
 LayoutElement element = button.gameObject.AddComponent<LayoutElement>();
             element.preferredHeight = 48f;
             element.minHeight = 48f;
-            // nameText（名称文字）：保存 OptionsTabManager.CreateText(string, Transform, string, int, TextAnchor, Color) 的返回结果，供当前步骤使用。使用位置：作为 OptionsTabManager.SetAnchors(GameObject, Vector2, Vector2, Vector2, Vector2) 的参数。
+            // 名称文字。
 Text nameText = CreateText("功能名称", button.transform, config.displayName, 18, TextAnchor.MiddleLeft, new Color(1f, 1f, 1f, 0.82f));
             SetAnchors(nameText.gameObject, new Vector2(0.04f, 0f), new Vector2(0.58f, 1f), Vector2.zero, Vector2.zero);
-            // valueText（值文字）：保存 OptionsTabManager.CreateText(string, Transform, string, int, TextAnchor, Color) 的返回结果，供当前步骤使用。使用位置：作为 OptionsTabManager.SetAnchors(GameObject, Vector2, Vector2, Vector2, Vector2) 的参数、OptionsTabManager.BuildBindingRows(Transform)。
+            // 值文字。
 Text valueText = CreateText("当前按键", button.transform, string.Empty, 18, TextAnchor.MiddleRight, Color.white);
             SetAnchors(valueText.gameObject, new Vector2(0.6f, 0f), new Vector2(0.94f, 1f), Vector2.zero, Vector2.zero);
-            // row（行）：使用位置：作为 List<OptionsTabManager.BindingRow>.Add(OptionsTabManager.BindingRow) 的参数、作为 OptionsTabManager.BeginRebinding(OptionsTabManager.BindingRow) 的参数。
+            // 行。
 BindingRow row = new BindingRow
             {
                 action = action,
@@ -1022,14 +1022,14 @@ BindingRow row = new BindingRow
 
     /// <summary>FindBindingIndex 的业务处理入口；本方法直接依赖 OptionsTabManager.IsKeyboardOrMouse(string)、string.Equals(string, string, StringComparison)、string.IsNullOrEmpty(string)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 OptionsTabManager.BuildBindingRows(Transform)；下游（含内部回调体） OptionsTabManager.IsKeyboardOrMouse(string)、string.Equals(string, string, StringComparison)、string.IsNullOrEmpty(string)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="action">中文含义：动作。使用位置：OptionsTabManager.FindBindingIndex(InputAction, string)。</param>
-    /// <param name="compositePart">中文含义：组合部件。使用位置：作为 string.Equals(string, string, StringComparison) 的参数、作为 string.IsNullOrEmpty(string) 的参数。</param>
+    /// <param name="action">动作。</param>
+    /// <param name="compositePart">组合部件。</param>
     int FindBindingIndex(InputAction action, string compositePart)
     {
-        // i（当前遍历索引）：使用位置：作为 ReadOnlyArray<InputBinding>.this[int] 的参数、OptionsTabManager.FindBindingIndex(InputAction, string)。
+        // 当前遍历索引。
 for (int i = 0; i < action.bindings.Count; i++)
         {
-            // binding（绑定）：使用位置：作为 OptionsTabManager.IsKeyboardOrMouse(string) 的参数、作为 string.Equals(string, string, StringComparison) 的参数、OptionsTabManager.FindBindingIndex(InputAction, string)。
+            // 绑定。
 InputBinding binding = action.bindings[i];
             if (binding.isComposite)
             {
@@ -1057,7 +1057,7 @@ InputBinding binding = action.bindings[i];
 
     /// <summary>IsKeyboardOrMouse 的业务处理入口；本方法直接依赖 string.IsNullOrEmpty(string)、string.StartsWith(string, StringComparison)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 OptionsTabManager.FindBindingIndex(InputAction, string)；下游（含内部回调体） string.IsNullOrEmpty(string)、string.StartsWith(string, StringComparison)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="path">中文含义：路径。使用位置：作为 string.IsNullOrEmpty(string) 的参数、OptionsTabManager.IsKeyboardOrMouse(string)。</param>
+    /// <param name="path">路径。</param>
     bool IsKeyboardOrMouse(string path)
     {
         return !string.IsNullOrEmpty(path) && (path.StartsWith("<Keyboard>", StringComparison.OrdinalIgnoreCase) || path.StartsWith("<Mouse>", StringComparison.OrdinalIgnoreCase));
@@ -1087,7 +1087,7 @@ InputBinding binding = action.bindings[i];
     void LoadSettings()
     {
         TryBindAudioService();
-        // volume（音量）：使用位置：作为 IAudioVolumeService.SetMasterVolume(float) 的参数、作为 OptionsTabManager.UpdateVolumeValue(float) 的参数、作为 Slider.SetValueWithoutNotify(float) 的参数 等共 4 处。
+        // 音量。
 float volume;
         if (volumeService != null)
         {
@@ -1098,7 +1098,7 @@ float volume;
             volume = 1f;
         }
 
-        // receiverValue8（判空前缓存的音量服务）：从音量服务读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、OptionsTabManager.LoadSettings()。
+        // 判空前缓存的音量服务。
 global::IAudioVolumeService receiverValue8 = volumeService;
         if (!global::System.Object.ReferenceEquals(receiverValue8, null))
         {
@@ -1107,11 +1107,11 @@ global::IAudioVolumeService receiverValue8 = volumeService;
 
         masterVolumeSlider.SetValueWithoutNotify(volume);
         UpdateVolumeValue(volume);
-        // callReceiver11（调用前缓存的全屏切换）：从全屏切换读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：OptionsTabManager.LoadSettings()。
+        // 调用前缓存的全屏切换。
 global::UnityEngine.UI.Toggle callReceiver11 = fullscreenToggle;
-        // argumentValue10（按原顺序缓存的实参文字“Fullscreen”）：从文字“Fullscreen”读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 GameSettingsData.ReadInteger(string, int) 的参数。
+        // 按原顺序缓存的实参文字“Fullscreen”。
 string argumentValue10 = "Fullscreen";
-        // selectedValue9（分支选出的1）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：作为 GameSettingsData.ReadInteger(string, int) 的参数、OptionsTabManager.LoadSettings()。
+        // 分支选出的1。
 int selectedValue9;
         if (Screen.fullScreen)
         {
@@ -1125,11 +1125,11 @@ int selectedValue9;
         callReceiver11.SetIsOnWithoutNotify(GameSettingsData.ReadInteger(argumentValue10, selectedValue9) == 1);
         invertYToggle.SetIsOnWithoutNotify(GameSettingsData.ReadInteger("InvertY", 0) == 1);
         UpdateAimModeUI(GameSettingsData.ReadInteger("AimMode", 0));
-        // horizontalSensitivity（水平灵敏度）：保存 GameSettingsData.ReadSmallCount(string, float) 的返回结果，供当前步骤使用。使用位置：作为 SettingsApplicationAdapter.ApplyHasSaveSensitivity(float, float, float, RE4CameraController) 的参数、作为 Slider.SetValueWithoutNotify(float) 的参数。
+        // 水平灵敏度。
 float horizontalSensitivity = GameSettingsData.ReadSmallCount(RE4RThirdPersonCamera.HorizontalSensitivityPreferenceKey, RE4RThirdPersonCamera.DefaultHorizontalSensitivity);
-        // verticalSensitivity（竖直灵敏度）：保存 GameSettingsData.ReadSmallCount(string, float) 的返回结果，供当前步骤使用。使用位置：作为 SettingsApplicationAdapter.ApplyHasSaveSensitivity(float, float, float, RE4CameraController) 的参数、作为 Slider.SetValueWithoutNotify(float) 的参数。
+        // 竖直灵敏度。
 float verticalSensitivity = GameSettingsData.ReadSmallCount(RE4RThirdPersonCamera.VerticalSensitivityPreferenceKey, RE4RThirdPersonCamera.DefaultVerticalSensitivity);
-        // aimSensitivity（瞄准灵敏度）：保存 GameSettingsData.ReadSmallCount(string, float) 的返回结果，供当前步骤使用。使用位置：作为 SettingsApplicationAdapter.ApplyHasSaveSensitivity(float, float, float, RE4CameraController) 的参数、作为 Slider.SetValueWithoutNotify(float) 的参数。
+        // 瞄准灵敏度。
 float aimSensitivity = GameSettingsData.ReadSmallCount(RE4RThirdPersonCamera.AimSensitivityPreferenceKey, RE4RThirdPersonCamera.DefaultAimSensitivity);
         sensitivitySliderX.SetValueWithoutNotify(horizontalSensitivity);
         sensitivitySliderY.SetValueWithoutNotify(verticalSensitivity);
@@ -1148,7 +1148,7 @@ float aimSensitivity = GameSettingsData.ReadSmallCount(RE4RThirdPersonCamera.Aim
     void BuildGraphicsOptions()
     {
         qualityDropdown.ClearOptions();
-        qualityDropdown.AddOptions(new List<string> { "低", "中", "高" });
+        qualityDropdown.AddOptions(new List<string> { "低", "高", "最高" });
         qualityDropdown.SetValueWithoutNotify(GraphicsSettingsRuntime.GetQualityPreset());
         qualityDropdown.RefreshShownValue();
         frameRateDropdown.ClearOptions();
@@ -1171,10 +1171,10 @@ float aimSensitivity = GameSettingsData.ReadSmallCount(RE4RThirdPersonCamera.Aim
     void BuildResolutionOptions()
     {
         availableResolutions.Clear();
-        // seen（已见）：使用位置：OptionsTabManager.BuildResolutionOptions()。
+        // 已见。
 HashSet<string> seen = new HashSet<string>();
         // 固定基础列表
-        // baseRes（基础资源）：使用位置：OptionsTabManager.BuildResolutionOptions()。
+        // 基础资源。
 int[][] baseRes =
         {
             new[]
@@ -1211,7 +1211,7 @@ int[][] baseRes =
         // r（当前整数数组）：每轮从基础资源取得一个元素，仅代表当前这一项。使用位置：作为 List<Resolution>.Add(Resolution) 的参数、OptionsTabManager.BuildResolutionOptions()。
 foreach (int[] r in baseRes)
         {
-            // key（键）：使用位置：作为 HashSet<string>.Add(string) 的参数。
+            // 键。
 string key = r[0] + "×" + r[1];
             if (seen.Add(key))
             {
@@ -1228,7 +1228,7 @@ foreach (Resolution resolution in Screen.resolutions)
                 continue;
             }
 
-            // key（键）：使用位置：作为 HashSet<string>.Add(string) 的参数。
+            // 键。
 string key = resolution.width + "×" + resolution.height;
             if (seen.Add(key))
             {
@@ -1238,21 +1238,21 @@ string key = resolution.width + "×" + resolution.height;
 
         // 按面积排序
         availableResolutions.Sort(( /* 中文含义：当前分辨率。 */a, /* 中文含义：当前分辨率。 */ b) => (a.width * a.height).CompareTo(b.width * b.height));
-        // labels（标签集合）：使用位置：作为 Dropdown.AddOptions(List<string>) 的参数、OptionsTabManager.BuildResolutionOptions()。
+        // 标签集合。
 List<string> labels = new List<string>();
-        // selected（选定）：使用位置：作为 Dropdown.SetValueWithoutNotify(int) 的参数、OptionsTabManager.BuildResolutionOptions()。
+        // 选定。
 int selected = 0;
-        // savedWidth（已保存宽度）：保存 GameSettingsData.ReadInteger(string, int) 的返回结果，供当前步骤使用。使用位置：OptionsTabManager.BuildResolutionOptions()。
+        // 已保存宽度。
 int savedWidth = GameSettingsData.ReadInteger("ResolutionWidth", 1920);
-        // savedHeight（已保存高度）：保存 GameSettingsData.ReadInteger(string, int) 的返回结果，供当前步骤使用。使用位置：OptionsTabManager.BuildResolutionOptions()。
+        // 已保存高度。
 int savedHeight = GameSettingsData.ReadInteger("ResolutionHeight", 1080);
         // 如果保存的分辨率无效（如编辑器自由窗口尺寸），默认选 1920×1080
-        // foundSaved（是否找到的已保存）：使用位置：OptionsTabManager.BuildResolutionOptions()。
+        // 是否找到的已保存。
 bool foundSaved = false;
-        // i（当前遍历索引）：使用位置：作为 List<Resolution>.this[int] 的参数、OptionsTabManager.BuildResolutionOptions()。
+        // 当前遍历索引。
 for (int i = 0; i < availableResolutions.Count; i++)
         {
-            // resolution（分辨率）：使用位置：作为 List<string>.Add(string) 的参数、OptionsTabManager.BuildResolutionOptions()。
+            // 分辨率。
 Resolution resolution = availableResolutions[i];
             labels.Add(resolution.width + " × " + resolution.height);
             if (resolution.width == savedWidth && resolution.height == savedHeight)
@@ -1265,7 +1265,7 @@ Resolution resolution = availableResolutions[i];
         if (!foundSaved)
         {
             // 尝试找 1920×1080
-            // i（当前遍历索引）：使用位置：作为 List<Resolution>.this[int] 的参数、OptionsTabManager.BuildResolutionOptions()。
+            // 当前遍历索引。
 for (int i = 0; i < availableResolutions.Count; i++)
             {
                 if (availableResolutions[i].width == 1920 && availableResolutions[i].height == 1080)
@@ -1284,11 +1284,11 @@ for (int i = 0; i < availableResolutions.Count; i++)
 
     /// <summary>OnMasterVolumeChanged 的业务处理入口；本方法直接依赖 IAudioVolumeService.SetMasterVolume(float)、object.ReferenceEquals(object, object)、OptionsTabManager.TryBindAudioService()、OptionsTabManager.UpdateVolumeValue(float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） IAudioVolumeService.SetMasterVolume(float)、object.ReferenceEquals(object, object)、OptionsTabManager.TryBindAudioService()、OptionsTabManager.UpdateVolumeValue(float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="value">中文含义：值。使用位置：作为 IAudioVolumeService.SetMasterVolume(float) 的参数、作为 OptionsTabManager.UpdateVolumeValue(float) 的参数。</param>
+    /// <param name="value">值。</param>
     void OnMasterVolumeChanged(float value)
     {
         TryBindAudioService();
-        // receiverValue12（判空前缓存的音量服务）：从音量服务读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、OptionsTabManager.OnMasterVolumeChanged(float)。
+        // 判空前缓存的音量服务。
 global::IAudioVolumeService receiverValue12 = volumeService;
         if (!global::System.Object.ReferenceEquals(receiverValue12, null))
         {
@@ -1301,7 +1301,7 @@ global::IAudioVolumeService receiverValue12 = volumeService;
 
     /// <summary>UpdateVolumeValue 的业务处理入口；本方法直接依赖 Color.Color(float, float, float, float)、Mathf.RoundToInt(float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 OptionsTabManager.LoadSettings()、OptionsTabManager.OnExternalVolumeChanged(float)、OptionsTabManager.OnMasterVolumeChanged(float)；下游（含内部回调体） Color.Color(float, float, float, float)、Mathf.RoundToInt(float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="value">中文含义：值。使用位置：作为 Mathf.RoundToInt(float) 的参数、OptionsTabManager.UpdateVolumeValue(float)。</param>
+    /// <param name="value">值。</param>
     void UpdateVolumeValue(float value)
     {
         masterVolumeValue.text = Mathf.RoundToInt(value * 100f) + "%";
@@ -1322,7 +1322,7 @@ global::IAudioVolumeService receiverValue12 = volumeService;
 
     /// <summary>OnResolutionChanged 的业务处理入口；本方法直接依赖 SettingsApplicationAdapter.ModifyResolution(int, int, bool, bool)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） SettingsApplicationAdapter.ModifyResolution(int, int, bool, bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="index">中文含义：索引。使用位置：作为 List&lt;Resolution&gt;.this[int] 的参数、OptionsTabManager.OnResolutionChanged(int)。</param>
+    /// <param name="index">索引。</param>
     void OnResolutionChanged(int index)
     {
         if (index < 0 || index >= availableResolutions.Count)
@@ -1339,12 +1339,12 @@ Resolution resolution = availableResolutions[index];
 
     /// <summary>OnFullscreenChanged 的业务处理入口；本方法直接依赖 SettingsApplicationAdapter.ModifyFullScreen(bool)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） SettingsApplicationAdapter.ModifyFullScreen(bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="fullscreen">中文含义：是否全屏。使用位置：作为 SettingsApplicationAdapter.ModifyFullScreen(bool) 的参数、OptionsTabManager.OnFullscreenChanged(bool)。</param>
+    /// <param name="fullscreen">是否全屏。</param>
     void OnFullscreenChanged(bool fullscreen)
     {
         PlaySettingAdjustment();
         SettingsApplicationAdapter.ModifyFullScreen(fullscreen);
-        // assignmentReceiver13（赋值前保存的目标状态文字）：从状态文字读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：OptionsTabManager.OnFullscreenChanged(bool)。
+        // 赋值前保存的目标状态文字。
 global::UnityEngine.UI.Text assignmentReceiver13 = statusText;
         if (fullscreen)
         {
@@ -1358,7 +1358,7 @@ global::UnityEngine.UI.Text assignmentReceiver13 = statusText;
 
     /// <summary>OnQualityChanged 的业务处理入口；本方法直接依赖 GraphicsSettingsRuntime.SetQualityPreset(int)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） GraphicsSettingsRuntime.SetQualityPreset(int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="index">中文含义：索引。使用位置：作为 GraphicsSettingsRuntime.SetQualityPreset(int) 的参数、作为 List&lt;Dropdown.OptionData&gt;.this[int] 的参数。</param>
+    /// <param name="index">索引。</param>
     void OnQualityChanged(int index)
     {
         PlaySettingAdjustment();
@@ -1368,12 +1368,12 @@ global::UnityEngine.UI.Text assignmentReceiver13 = statusText;
 
     /// <summary>OnFrameRateChanged 的业务处理入口；本方法直接依赖 GraphicsSettingsRuntime.SetFrameRateIndex(int)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） GraphicsSettingsRuntime.SetFrameRateIndex(int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="index">中文含义：索引。使用位置：作为 GraphicsSettingsRuntime.SetFrameRateIndex(int) 的参数、作为 List&lt;Dropdown.OptionData&gt;.this[int] 的参数。</param>
+    /// <param name="index">索引。</param>
     void OnFrameRateChanged(int index)
     {
         PlaySettingAdjustment();
         GraphicsSettingsRuntime.SetFrameRateIndex(index);
-        // assignmentReceiver15（赋值前保存的目标状态文字）：从状态文字读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：OptionsTabManager.OnFrameRateChanged(int)。
+        // 赋值前保存的目标状态文字。
 global::UnityEngine.UI.Text assignmentReceiver15 = statusText;
         if (vSyncToggle.isOn)
         {
@@ -1387,12 +1387,12 @@ global::UnityEngine.UI.Text assignmentReceiver15 = statusText;
 
     /// <summary>OnVSyncChanged 的业务处理入口；本方法直接依赖 GraphicsSettingsRuntime.SetVSync(bool)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） GraphicsSettingsRuntime.SetVSync(bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="enabled">中文含义：是否启用。使用位置：作为 GraphicsSettingsRuntime.SetVSync(bool) 的参数、OptionsTabManager.OnVSyncChanged(bool)。</param>
+    /// <param name="enabled">是否启用。</param>
     void OnVSyncChanged(bool enabled)
     {
         PlaySettingAdjustment();
         GraphicsSettingsRuntime.SetVSync(enabled);
-        // assignmentReceiver17（赋值前保存的目标状态文字）：从状态文字读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：OptionsTabManager.OnVSyncChanged(bool)。
+        // 赋值前保存的目标状态文字。
 global::UnityEngine.UI.Text assignmentReceiver17 = statusText;
         if (enabled)
         {
@@ -1406,7 +1406,7 @@ global::UnityEngine.UI.Text assignmentReceiver17 = statusText;
 
     /// <summary>OnAntiAliasingChanged 的业务处理入口；本方法直接依赖 GraphicsSettingsRuntime.SetAntiAliasingIndex(int)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） GraphicsSettingsRuntime.SetAntiAliasingIndex(int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="index">中文含义：索引。使用位置：作为 GraphicsSettingsRuntime.SetAntiAliasingIndex(int) 的参数、作为 List&lt;Dropdown.OptionData&gt;.this[int] 的参数。</param>
+    /// <param name="index">索引。</param>
     void OnAntiAliasingChanged(int index)
     {
         PlaySettingAdjustment();
@@ -1416,12 +1416,12 @@ global::UnityEngine.UI.Text assignmentReceiver17 = statusText;
 
     /// <summary>OnGraphicsApiChanged 的业务处理入口；本方法直接依赖 GraphicsSettingsRuntime.IsPreferredGraphicsApiActive()、GraphicsSettingsRuntime.SetGraphicsApiPreference(int)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） GraphicsSettingsRuntime.IsPreferredGraphicsApiActive()、GraphicsSettingsRuntime.SetGraphicsApiPreference(int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="index">中文含义：索引。使用位置：作为 GraphicsSettingsRuntime.SetGraphicsApiPreference(int) 的参数。</param>
+    /// <param name="index">索引。</param>
     void OnGraphicsApiChanged(int index)
     {
         PlaySettingAdjustment();
         GraphicsSettingsRuntime.SetGraphicsApiPreference(index);
-        // assignmentReceiver19（赋值前保存的目标状态文字）：从状态文字读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：OptionsTabManager.OnGraphicsApiChanged(int)。
+        // 赋值前保存的目标状态文字。
 global::UnityEngine.UI.Text assignmentReceiver19 = statusText;
         if (GraphicsSettingsRuntime.IsPreferredGraphicsApiActive())
         {
@@ -1435,13 +1435,13 @@ global::UnityEngine.UI.Text assignmentReceiver19 = statusText;
 
     /// <summary>OnInvertYChanged 的业务处理入口；本方法直接依赖 OptionsTabManager.ResolveCameraController()、SettingsApplicationAdapter.ModifyVerticalAxis(bool, RE4CameraController)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） OptionsTabManager.ResolveCameraController()、SettingsApplicationAdapter.ModifyVerticalAxis(bool, RE4CameraController)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="inverted">中文含义：是否反转后的。使用位置：作为 SettingsApplicationAdapter.ModifyVerticalAxis(bool, RE4CameraController) 的参数、OptionsTabManager.OnInvertYChanged(bool)。</param>
+    /// <param name="inverted">是否反转后的。</param>
     void OnInvertYChanged(bool inverted)
     {
         PlaySettingAdjustment();
         ResolveCameraController();
         SettingsApplicationAdapter.ModifyVerticalAxis(inverted, cameraController);
-        // assignmentReceiver21（赋值前保存的目标状态文字）：从状态文字读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：OptionsTabManager.OnInvertYChanged(bool)。
+        // 赋值前保存的目标状态文字。
 global::UnityEngine.UI.Text assignmentReceiver21 = statusText;
         if (inverted)
         {
@@ -1499,13 +1499,13 @@ global::UnityEngine.UI.Text assignmentReceiver21 = statusText;
 
     /// <summary>SetAimMode 的业务处理入口；本方法直接依赖 OptionsTabManager.UpdateAimModeUI(int)、SettingsApplicationAdapter.ModifyAimMode(int)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 OptionsTabManager.BuildControlsPage(Transform)、OptionsTabManager.RestoreDefaults()；下游（含内部回调体） OptionsTabManager.UpdateAimModeUI(int)、SettingsApplicationAdapter.ModifyAimMode(int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="mode">中文含义：模式。使用位置：作为 OptionsTabManager.UpdateAimModeUI(int) 的参数、作为 SettingsApplicationAdapter.ModifyAimMode(int) 的参数、OptionsTabManager.SetAimMode(int)。</param>
+    /// <param name="mode">模式。</param>
     void SetAimMode(int mode)
     {
         PlaySettingAdjustment();
         SettingsApplicationAdapter.ModifyAimMode(mode);
         UpdateAimModeUI(mode);
-        // assignmentReceiver23（赋值前保存的目标状态文字）：从状态文字读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：OptionsTabManager.SetAimMode(int)。
+        // 赋值前保存的目标状态文字。
 global::UnityEngine.UI.Text assignmentReceiver23 = statusText;
         if (mode == 1)
         {
@@ -1519,14 +1519,14 @@ global::UnityEngine.UI.Text assignmentReceiver23 = statusText;
 
     /// <summary>UpdateAimModeUI 的业务处理入口；本方法直接依赖 Color.Color(float, float, float, float)、Component.GetComponentInChildren&lt;Text&gt;()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 OptionsTabManager.LoadSettings()、OptionsTabManager.SetAimMode(int)；下游（含内部回调体） Color.Color(float, float, float, float)、Component.GetComponentInChildren&lt;Text&gt;()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="mode">中文含义：模式。使用位置：OptionsTabManager.UpdateAimModeUI(int)。</param>
+    /// <param name="mode">模式。</param>
     void UpdateAimModeUI(int mode)
     {
         if (aimModeHoldButton != null)
         {
-            // holdImg（保持图像）：使用位置：OptionsTabManager.UpdateAimModeUI(int)。
+            // 保持图像。
 var holdImg = aimModeHoldButton.image;
-            // assignmentReceiver25（赋值前保存的目标保持图像）：从保持图像读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：OptionsTabManager.UpdateAimModeUI(int)。
+            // 赋值前保存的目标保持图像。
 global::UnityEngine.UI.Image assignmentReceiver25 = holdImg;
             if (mode == 0)
             {
@@ -1537,11 +1537,11 @@ global::UnityEngine.UI.Image assignmentReceiver25 = holdImg;
                 assignmentReceiver25.color = new Color(1f, 1f, 1f, .035f);
             }
 
-            // label（标签）：保存 Component.GetComponentInChildren<Text>() 的返回结果，供当前步骤使用。使用位置：OptionsTabManager.UpdateAimModeUI(int)。
+            // 标签。
 var label = aimModeHoldButton.GetComponentInChildren<Text>();
             if (label != null)
             {
-                // assignmentReceiver27（赋值前保存的目标标签）：从标签读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：OptionsTabManager.UpdateAimModeUI(int)。
+                // 赋值前保存的目标标签。
 global::UnityEngine.UI.Text assignmentReceiver27 = label;
                 if (mode == 0)
                 {
@@ -1556,9 +1556,9 @@ global::UnityEngine.UI.Text assignmentReceiver27 = label;
 
         if (aimModeToggleButton != null)
         {
-            // toggleImg（切换图像）：使用位置：OptionsTabManager.UpdateAimModeUI(int)。
+            // 切换图像。
 var toggleImg = aimModeToggleButton.image;
-            // assignmentReceiver29（赋值前保存的目标切换图像）：从切换图像读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：OptionsTabManager.UpdateAimModeUI(int)。
+            // 赋值前保存的目标切换图像。
 global::UnityEngine.UI.Image assignmentReceiver29 = toggleImg;
             if (mode == 1)
             {
@@ -1569,11 +1569,11 @@ global::UnityEngine.UI.Image assignmentReceiver29 = toggleImg;
                 assignmentReceiver29.color = new Color(1f, 1f, 1f, .035f);
             }
 
-            // label（标签）：保存 Component.GetComponentInChildren<Text>() 的返回结果，供当前步骤使用。使用位置：OptionsTabManager.UpdateAimModeUI(int)。
+            // 标签。
 var label = aimModeToggleButton.GetComponentInChildren<Text>();
             if (label != null)
             {
-                // assignmentReceiver31（赋值前保存的目标标签）：从标签读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：OptionsTabManager.UpdateAimModeUI(int)。
+                // 赋值前保存的目标标签。
 global::UnityEngine.UI.Text assignmentReceiver31 = label;
                 if (mode == 1)
                 {
@@ -1589,7 +1589,7 @@ global::UnityEngine.UI.Text assignmentReceiver31 = label;
 
     /// <summary>BeginRebinding 的业务处理入口；本方法直接依赖 InputAction.ApplyBindingOverride(int, string)、InputAction.Disable()、InputAction.PerformInteractiveRebinding(int)、InputAction.RemoveBindingOverride(int)、InputActionRebindingExtensions.RebindingOperation.OnCancel(Action&lt;InputActionRebindingExtensions.RebindingOperation&gt;)、InputActionRebindingExtensions.RebindingOperation.OnComplete(Action&lt;InputActionRebindingExtensions.RebindingOperation&gt;)、InputActionRebindingExtensions.RebindingOperation.Start() 等共 14 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 OptionsTabManager.BuildBindingRows(Transform)；下游（含内部回调体） InputAction.ApplyBindingOverride(int, string)、InputAction.Disable()、InputAction.PerformInteractiveRebinding(int)、InputAction.RemoveBindingOverride(int)、InputActionRebindingExtensions.RebindingOperation.OnCancel(Action&lt;InputActionRebindingExtensions.RebindingOperation&gt;)、InputActionRebindingExtensions.RebindingOperation.OnComplete(Action&lt;InputActionRebindingExtensions.RebindingOperation&gt;)、InputActionRebindingExtensions.RebindingOperation.Start() 等共 14 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="row">中文含义：行。使用位置：作为 InputAction.ApplyBindingOverride(int, string) 的参数、作为 InputAction.PerformInteractiveRebinding(int) 的参数、作为 InputAction.RemoveBindingOverride(int) 的参数 等共 8 处。</param>
+    /// <param name="row">行。</param>
     void BeginRebinding(BindingRow row)
     {
         if (row == null || row.action == null || rebindOperation != null)
@@ -1599,11 +1599,11 @@ global::UnityEngine.UI.Text assignmentReceiver31 = label;
 
         // 禁用所有页签按钮和其他绑定行
         SetInteractable(false);
-        // oldBinding（旧绑定）：使用位置：OptionsTabManager.BeginRebinding(OptionsTabManager.BindingRow)。
+        // 旧绑定。
 InputBinding oldBinding = row.action.bindings[row.bindingIndex];
-        // oldOverridePath（旧覆盖路径）：使用位置：作为 InputAction.ApplyBindingOverride(int, string) 的参数、作为 string.IsNullOrEmpty(string) 的参数。
+        // 旧覆盖路径。
 string oldOverridePath = oldBinding.overridePath;
-        // actionWasEnabled（动作之前是否启用）：使用位置：作为 OptionsTabManager.FinishRebinding(OptionsTabManager.BindingRow, bool) 的参数、OptionsTabManager.BeginRebinding(OptionsTabManager.BindingRow)。
+        // 动作之前是否启用。
 bool actionWasEnabled = row.action.enabled;
         if (actionWasEnabled)
         {
@@ -1623,9 +1623,9 @@ bool actionWasEnabled = row.action.enabled;
             }
         }).OnComplete( /* 中文含义：操作。 */operation =>
         {
-            // newPath（新路径）：使用位置：作为 OptionsTabManager.FindConflict(OptionsTabManager.BindingRow, string) 的参数。
+            // 新路径。
 string newPath = row.action.bindings[row.bindingIndex].effectivePath;
-            // conflict（冲突）：保存 OptionsTabManager.FindConflict(OptionsTabManager.BindingRow, string) 的返回结果，供当前步骤使用。使用位置：作为 InputActionRebindingExtensions.RebindingOperation.OnComplete(Action<InputActionRebindingExtensions.RebindingOperation>) 的参数。
+            // 冲突。
 BindingRow conflict = FindConflict(row, newPath);
             if (conflict != null)
             {
@@ -1655,7 +1655,7 @@ BindingRow conflict = FindConflict(row, newPath);
 
     /// <summary>SetInteractable 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
     /// <remarks>静态调用链：上游 OptionsTabManager.BeginRebinding(OptionsTabManager.BindingRow)、OptionsTabManager.FinishRebinding(OptionsTabManager.BindingRow, bool)；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="interactable">中文含义：是否可交互。使用位置：OptionsTabManager.SetInteractable(bool)。</param>
+    /// <param name="interactable">是否可交互。</param>
     void SetInteractable(bool interactable)
     {
         // tab（分页）：每轮从分页按钮集合取得一个元素，仅代表当前这一项。使用位置：OptionsTabManager.SetInteractable(bool)。
@@ -1679,8 +1679,8 @@ foreach (var row in bindingRows)
 
     /// <summary>FindConflict 的业务处理入口；本方法直接依赖 string.Equals(string, string, StringComparison)、string.IsNullOrEmpty(string)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 OptionsTabManager.BeginRebinding(OptionsTabManager.BindingRow)；下游（含内部回调体） string.Equals(string, string, StringComparison)、string.IsNullOrEmpty(string)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="source">中文含义：来源绑定行。使用位置：OptionsTabManager.FindConflict(OptionsTabManager.BindingRow, string)。</param>
-    /// <param name="path">中文含义：路径。使用位置：作为 string.Equals(string, string, StringComparison) 的参数、作为 string.IsNullOrEmpty(string) 的参数。</param>
+    /// <param name="source">来源绑定行。</param>
+    /// <param name="path">路径。</param>
     BindingRow FindConflict(BindingRow source, string path)
     {
         if (string.IsNullOrEmpty(path))
@@ -1707,11 +1707,11 @@ foreach (BindingRow row in bindingRows)
 
     /// <summary>FinishRebinding 的业务处理入口；本方法直接依赖 InputAction.Enable()、InputActionRebindingExtensions.RebindingOperation.Dispose()、object.ReferenceEquals(object, object)、OptionsTabManager.RefreshBindingLabels()、OptionsTabManager.SetInteractable(bool)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 OptionsTabManager.BeginRebinding(OptionsTabManager.BindingRow)；下游（含内部回调体） InputAction.Enable()、InputActionRebindingExtensions.RebindingOperation.Dispose()、object.ReferenceEquals(object, object)、OptionsTabManager.RefreshBindingLabels()、OptionsTabManager.SetInteractable(bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="row">中文含义：行。使用位置：OptionsTabManager.FinishRebinding(OptionsTabManager.BindingRow, bool)。</param>
-    /// <param name="actionWasEnabled">中文含义：动作之前是否启用。使用位置：OptionsTabManager.FinishRebinding(OptionsTabManager.BindingRow, bool)。</param>
+    /// <param name="row">行。</param>
+    /// <param name="actionWasEnabled">动作之前是否启用。</param>
     void FinishRebinding(BindingRow row, bool actionWasEnabled)
     {
-        // receiverValue33（判空前缓存的重新绑定操作）：从重新绑定操作读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、OptionsTabManager.FinishRebinding(OptionsTabManager.BindingRow, bool)。
+        // 判空前缓存的重新绑定操作。
 global::UnityEngine.InputSystem.InputActionRebindingExtensions.RebindingOperation receiverValue33 = rebindOperation;
         if (!global::System.Object.ReferenceEquals(receiverValue33, null))
         {
@@ -1747,11 +1747,11 @@ global::UnityEngine.InputSystem.InputActionRebindingExtensions.RebindingOperatio
         // row（行）：每轮从绑定行数取得一个元素，仅代表当前这一项。使用位置：作为 ReadOnlyArray<InputBinding>.this[int] 的参数、OptionsTabManager.RefreshBindingLabels()。
 foreach (BindingRow row in bindingRows)
         {
-            // path（路径）：使用位置：作为 InputControlPath.ToHumanReadableString(string, InputControlPath.HumanReadableStringOptions, InputControl) 的参数。
+            // 路径。
 string path = row.action.bindings[row.bindingIndex].effectivePath;
-            // label（标签）：保存 InputControlPath.ToHumanReadableString(string, InputControlPath.HumanReadableStringOptions, InputControl) 的返回结果，供当前步骤使用。使用位置：作为 string.IsNullOrEmpty(string) 的参数、OptionsTabManager.RefreshBindingLabels()。
+            // 标签。
 string label = InputControlPath.ToHumanReadableString(path, InputControlPath.HumanReadableStringOptions.OmitDevice);
-            // assignmentReceiver34（赋值前保存的目标行的值文字）：从行的值文字读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：OptionsTabManager.RefreshBindingLabels()。
+            // 赋值前保存的目标行的值文字。
 global::UnityEngine.UI.Text assignmentReceiver34 = row.valueText;
             if (string.IsNullOrEmpty(label))
             {
@@ -1791,14 +1791,14 @@ global::UnityEngine.UI.Text assignmentReceiver34 = row.valueText;
         else if (currentTab == 1)
         {
             fullscreenToggle.isOn = true;
-            qualityDropdown.value = 2;
+            qualityDropdown.value = 1;
             frameRateDropdown.value = 2;
             vSyncToggle.isOn = true;
             antiAliasingDropdown.value = 1;
             graphicsApiDropdown.value = 0;
             BuildResolutionOptions();
             // 选择 1920×1080
-            // i（当前遍历索引）：使用位置：作为 List<Resolution>.this[int] 的参数、OptionsTabManager.RestoreDefaults()。
+            // 当前遍历索引。
 for (int i = 0; i < availableResolutions.Count; i++)
             {
                 if (availableResolutions[i].width == 1920 && availableResolutions[i].height == 1080)
@@ -1825,7 +1825,7 @@ for (int i = 0; i < availableResolutions.Count; i++)
 
     /// <summary>SelectTab 的业务处理入口；本方法直接依赖 Color.Color(float, float, float, float)、Component.GetComponent&lt;Image&gt;()、GameObject.SetActive(bool)、Mathf.Clamp(int, int, int)、OptionsTabManager.SetDescription(string, string)、Transform.Find(string)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 OptionsTabManager.BuildInterface()、OptionsTabManager.Show()、OptionsTabManager.Update()；下游（含内部回调体） Color.Color(float, float, float, float)、Component.GetComponent&lt;Image&gt;()、GameObject.SetActive(bool)、Mathf.Clamp(int, int, int)、OptionsTabManager.SetDescription(string, string)、Transform.Find(string)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="index">中文含义：索引。使用位置：作为 Mathf.Clamp(int, int, int) 的参数。</param>
+    /// <param name="index">索引。</param>
     void SelectTab(int index)
     {
         if (pages.Count == 0)
@@ -1842,11 +1842,11 @@ for (int i = 0; i < availableResolutions.Count; i++)
 
         currentTab = nextTab;
         statusText.text = string.Empty;
-        // i（当前遍历索引）：使用位置：作为 GameObject.SetActive(bool) 的参数、作为 List<Button>.this[int] 的参数、作为 List<GameObject>.this[int] 的参数 等共 5 处。
+        // 当前遍历索引。
 for (int i = 0; i < pages.Count; i++)
         {
             pages[i].SetActive(i == currentTab);
-            // assignmentReceiver36（赋值前保存的目标分页文字集合）：从分页文字集合读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：OptionsTabManager.SelectTab(int)。
+            // 赋值前保存的目标分页文字集合。
 global::UnityEngine.UI.Text assignmentReceiver36 = tabTexts[i];
             if (i == currentTab)
             {
@@ -1857,7 +1857,7 @@ global::UnityEngine.UI.Text assignmentReceiver36 = tabTexts[i];
                 assignmentReceiver36.color = new Color(1f, 1f, 1f, 0.52f);
             }
 
-            // assignmentReceiver38（赋值前保存的目标分页文字集合）：从分页文字集合读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：OptionsTabManager.SelectTab(int)。
+            // 赋值前保存的目标分页文字集合。
 global::UnityEngine.UI.Text assignmentReceiver38 = tabTexts[i];
             if (i == currentTab)
             {
@@ -1869,11 +1869,11 @@ global::UnityEngine.UI.Text assignmentReceiver38 = tabTexts[i];
             }
 
             tabButtons[i].image.color = Color.clear;
-            // underline（下划线）：保存 Transform.Find(string) 的返回结果，供当前步骤使用。使用位置：OptionsTabManager.SelectTab(int)。
+            // 下划线。
 Transform underline = tabButtons[i].transform.Find("行分隔");
             if (underline != null)
             {
-                // assignmentReceiver40（赋值前保存的目标取得组件的返回结果）：从取得组件的返回结果读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：OptionsTabManager.SelectTab(int)。
+                // 赋值前保存的目标取得组件的返回结果。
 global::UnityEngine.UI.Image assignmentReceiver40 = underline.GetComponent<Image>();
                 if (i == currentTab)
                 {
@@ -1902,8 +1902,8 @@ global::UnityEngine.UI.Image assignmentReceiver40 = underline.GetComponent<Image
 
     /// <summary>SetDescription 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
     /// <remarks>静态调用链：上游 OptionsTabManager.AddHoverDescription(GameObject, string, string)、OptionsTabManager.SelectTab(int)；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="title">中文含义：标题。使用位置：OptionsTabManager.SetDescription(string, string)。</param>
-    /// <param name="body">中文含义：身体。使用位置：OptionsTabManager.SetDescription(string, string)。</param>
+    /// <param name="title">标题。</param>
+    /// <param name="body">身体。</param>
     void SetDescription(string title, string body)
     {
         descriptionTitle.text = title;
@@ -1912,9 +1912,9 @@ global::UnityEngine.UI.Image assignmentReceiver40 = underline.GetComponent<Image
 
     /// <summary>AddHoverDescription 的业务处理入口；本方法直接依赖 Component.GetComponent&lt;EventTrigger&gt;()、Component.GetComponent&lt;MenuRowFeedback&gt;()、EventTrigger.Entry.Entry()、GameObject.AddComponent&lt;EventTrigger&gt;()、GameObject.AddComponent&lt;MenuRowFeedback&gt;()、GameObject.GetComponent&lt;EventTrigger&gt;()、GameObject.GetComponentsInChildren&lt;Selectable&gt;(bool) 等共 12 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 OptionsTabManager.BuildBindingRows(Transform)、OptionsTabManager.BuildControlsPage(Transform)、OptionsTabManager.BuildDisplayPage(Transform)、OptionsTabManager.BuildVolumePage(Transform)、OptionsTabManager.CreateSensitivityRow(Transform, string, string, float, float, out Text)；下游（含内部回调体） Component.GetComponent&lt;EventTrigger&gt;()、Component.GetComponent&lt;MenuRowFeedback&gt;()、EventTrigger.Entry.Entry()、GameObject.AddComponent&lt;EventTrigger&gt;()、GameObject.AddComponent&lt;MenuRowFeedback&gt;()、GameObject.GetComponent&lt;EventTrigger&gt;()、GameObject.GetComponentsInChildren&lt;Selectable&gt;(bool) 等共 12 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="target">中文含义：目标游戏对象。使用位置：OptionsTabManager.AddHoverDescription(GameObject, string, string)。</param>
-    /// <param name="title">中文含义：标题。使用位置：作为 OptionsTabManager.SetDescription(string, string) 的参数。</param>
-    /// <param name="body">中文含义：身体。使用位置：作为 OptionsTabManager.SetDescription(string, string) 的参数。</param>
+    /// <param name="target">目标游戏对象。</param>
+    /// <param name="title">标题。</param>
+    /// <param name="body">身体。</param>
     private void FocusSettingRow(GameObject row, string title, string body)
     {
         SetDescription(title, body);
@@ -1935,14 +1935,14 @@ global::UnityEngine.UI.Image assignmentReceiver40 = underline.GetComponent<Image
 
     void AddHoverDescription(GameObject target, string title, string body)
     {
-        // trigger（触发器）：保存 GameObject.GetComponent<EventTrigger>() 的返回结果，供当前步骤使用。使用位置：OptionsTabManager.AddHoverDescription(GameObject, string, string)。
+        // 触发器。
 EventTrigger trigger = target.GetComponent<EventTrigger>();
         if (trigger == null)
         {
             trigger = target.AddComponent<EventTrigger>();
         }
 
-        // entry（当前入口）：使用位置：作为 List<EventTrigger.Entry>.Add(EventTrigger.Entry) 的参数、OptionsTabManager.AddHoverDescription(GameObject, string, string)。
+        // 当前入口。
 EventTrigger.Entry entry = new EventTrigger.Entry
         {
             eventID = EventTriggerType.PointerEnter
@@ -1952,30 +1952,30 @@ EventTrigger.Entry entry = new EventTrigger.Entry
         // control（控制）：每轮从取得组件集合内部子对象集合的返回结果取得一个元素，仅代表当前这一项。使用位置：OptionsTabManager.AddHoverDescription(GameObject, string, string)。
 foreach (Selectable control in target.GetComponentsInChildren<Selectable>(true))
         {
-            // navigationTrigger（导航触发器）：保存 Component.GetComponent<EventTrigger>() 的返回结果，供当前步骤使用。使用位置：OptionsTabManager.AddHoverDescription(GameObject, string, string)。
+            // 导航触发器。
 EventTrigger navigationTrigger = control.GetComponent<EventTrigger>();
             if (navigationTrigger == null)
             {
                 navigationTrigger = control.gameObject.AddComponent<EventTrigger>();
             }
 
-            // selected（选定）：使用位置：作为 List<EventTrigger.Entry>.Add(EventTrigger.Entry) 的参数、OptionsTabManager.AddHoverDescription(GameObject, string, string)。
+            // 选定。
 var selected = new EventTrigger.Entry
             {
                 eventID = EventTriggerType.Select
             };
             selected.callback.AddListener(_ => FocusSettingRow(target, title, body));
             navigationTrigger.triggers.Add(selected);
-            // hover（悬停）：使用位置：作为 List<EventTrigger.Entry>.Add(EventTrigger.Entry) 的参数、OptionsTabManager.AddHoverDescription(GameObject, string, string)。
+            // 悬停。
 var hover = new EventTrigger.Entry
             {
                 eventID = EventTriggerType.PointerEnter
             };
             hover.callback.AddListener(_ => FocusSettingRow(target, title, body));
             navigationTrigger.triggers.Add(hover);
-            // availableValue42（空值判断前缓存的取得组件的返回结果）：从取得组件的返回结果读取一次后保存，供后续分支使用。保存空值判断之前的值，只读取一次，非空时不执行回退分支。使用位置：作为 object.ReferenceEquals(object, object) 的参数、OptionsTabManager.AddHoverDescription(GameObject, string, string)。
+            // 空值判断前缓存的取得组件的返回结果。
 global::MenuRowFeedback availableValue42 = control.GetComponent<MenuRowFeedback>();
-            // feedback（反馈）：使用位置：作为 UnityEvent<BaseEventData>.AddListener(UnityAction<BaseEventData>) 的参数、OptionsTabManager.AddHoverDescription(GameObject, string, string)。
+            // 反馈。
 global::MenuRowFeedback feedback;
             if (!global::System.Object.ReferenceEquals(availableValue42, null))
             {
@@ -1996,7 +1996,7 @@ global::MenuRowFeedback feedback;
     {
         canvasGroup.interactable = true;
         canvasGroup.blocksRaycasts = true;
-        // elapsed（已用）：使用位置：作为 Mathf.Clamp01(float) 的参数、OptionsTabManager.FadeIn()。
+        // 已用。
 float elapsed = 0f;
         while (elapsed < fadeDuration)
         {
@@ -2012,11 +2012,11 @@ float elapsed = 0f;
     /// <remarks>静态调用链：上游 OptionsTabManager.Hide()；下游（含内部回调体） Action.Invoke()、GameObject.SetActive(bool)、Mathf.Lerp(float, float, float)、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     IEnumerator FadeOut()
     {
-        // elapsed（已用）：使用位置：作为 Mathf.Lerp(float, float, float) 的参数、OptionsTabManager.FadeOut()。
+        // 已用。
 float elapsed = 0f;
         canvasGroup.interactable = false;
         canvasGroup.blocksRaycasts = false;
-        // startAlpha（起始透明度）：使用位置：作为 Mathf.Lerp(float, float, float) 的参数。
+        // 起始透明度。
 float startAlpha = canvasGroup.alpha;
         while (elapsed < fadeDuration)
         {
@@ -2027,7 +2027,7 @@ float startAlpha = canvasGroup.alpha;
 
         canvasGroup.alpha = 1f;
         hiding = false;
-        // receiverValue44（判空前缓存的已关闭时的通知回调）：从已关闭时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、OptionsTabManager.FadeOut()。
+        // 判空前缓存的已关闭时的通知回调。
 global::System.Action receiverValue44 = onClosed;
         if (!global::System.Object.ReferenceEquals(receiverValue44, null))
         {
@@ -2039,11 +2039,11 @@ global::System.Action receiverValue44 = onClosed;
 
     /// <summary>CreatePage 的业务处理入口；本方法直接依赖 GameObject.GameObject(string, params Type[])、GameObject.GetComponent&lt;RectTransform&gt;()、OptionsTabManager.Stretch(RectTransform)、Transform.SetParent(Transform, bool)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 OptionsTabManager.BuildControlsPage(Transform)、OptionsTabManager.BuildDisplayPage(Transform)、OptionsTabManager.BuildVolumePage(Transform)；下游（含内部回调体） GameObject.GameObject(string, params Type[])、GameObject.GetComponent&lt;RectTransform&gt;()、OptionsTabManager.Stretch(RectTransform)、Transform.SetParent(Transform, bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="name">中文含义：名称。使用位置：作为 GameObject.GameObject(string, params Type[]) 的参数。</param>
-    /// <param name="parent">中文含义：父级。使用位置：作为 Transform.SetParent(Transform, bool) 的参数。</param>
+    /// <param name="name">名称。</param>
+    /// <param name="parent">父级。</param>
     GameObject CreatePage(string name, Transform parent)
     {
-        // page（页面）：使用位置：作为 OptionsTabManager.Stretch(RectTransform) 的参数、OptionsTabManager.CreatePage(string, Transform)。
+        // 页面。
 GameObject page = new GameObject(name, typeof(RectTransform));
         page.transform.SetParent(parent, false);
         Stretch(page.GetComponent<RectTransform>());
@@ -2052,27 +2052,27 @@ GameObject page = new GameObject(name, typeof(RectTransform));
 
     /// <summary>CreateSectionTitle 的业务处理入口；本方法直接依赖 Color.Color(float, float, float, float)、OptionsTabManager.CreateText(string, Transform, string, int, TextAnchor, Color)、OptionsTabManager.SetAnchors(GameObject, Vector2, Vector2, Vector2, Vector2)、Vector2.Vector2(float, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 OptionsTabManager.BuildControlsPage(Transform)、OptionsTabManager.BuildDisplayPage(Transform)、OptionsTabManager.BuildVolumePage(Transform)；下游（含内部回调体） Color.Color(float, float, float, float)、OptionsTabManager.CreateText(string, Transform, string, int, TextAnchor, Color)、OptionsTabManager.SetAnchors(GameObject, Vector2, Vector2, Vector2, Vector2)、Vector2.Vector2(float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="parent">中文含义：父级。使用位置：作为 OptionsTabManager.CreateText(string, Transform, string, int, TextAnchor, Color) 的参数。</param>
-    /// <param name="title">中文含义：标题。使用位置：作为 OptionsTabManager.CreateText(string, Transform, string, int, TextAnchor, Color) 的参数。</param>
+    /// <param name="parent">父级。</param>
+    /// <param name="title">标题。</param>
     void CreateSectionTitle(Transform parent, string title)
     {
-        // text（文字）：保存 OptionsTabManager.CreateText(string, Transform, string, int, TextAnchor, Color) 的返回结果，供当前步骤使用。使用位置：作为 OptionsTabManager.SetAnchors(GameObject, Vector2, Vector2, Vector2, Vector2) 的参数。
+        // 文字。
 Text text = CreateText("分组标题", parent, title, 24, TextAnchor.MiddleLeft, new Color(1f, 1f, 1f, 0.62f));
         SetAnchors(text.gameObject, new Vector2(0.05f, 0.86f), new Vector2(0.95f, 0.96f), Vector2.zero, Vector2.zero);
     }
 
     /// <summary>CreateSettingRow 的业务处理入口；本方法直接依赖 Color.Color(float, float, float, float)、OptionsTabManager.CreatePanel(string, Transform, Color)、OptionsTabManager.CreateText(string, Transform, string, int, TextAnchor, Color)、OptionsTabManager.SetAnchors(GameObject, Vector2, Vector2, Vector2, Vector2)、Vector2.Vector2(float, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 OptionsTabManager.BuildControlsPage(Transform)、OptionsTabManager.BuildDisplayPage(Transform)、OptionsTabManager.BuildVolumePage(Transform)；下游（含内部回调体） Color.Color(float, float, float, float)、OptionsTabManager.CreatePanel(string, Transform, Color)、OptionsTabManager.CreateText(string, Transform, string, int, TextAnchor, Color)、OptionsTabManager.SetAnchors(GameObject, Vector2, Vector2, Vector2, Vector2)、Vector2.Vector2(float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="parent">中文含义：父级。使用位置：作为 OptionsTabManager.CreatePanel(string, Transform, Color) 的参数。</param>
-    /// <param name="label">中文含义：标签。使用位置：作为 OptionsTabManager.CreatePanel(string, Transform, Color) 的参数、作为 OptionsTabManager.CreateText(string, Transform, string, int, TextAnchor, Color) 的参数。</param>
-    /// <param name="bottom">中文含义：底部。使用位置：作为 Vector2.Vector2(float, float) 的参数。</param>
-    /// <param name="top">中文含义：顶部。使用位置：作为 Vector2.Vector2(float, float) 的参数。</param>
+    /// <param name="parent">父级。</param>
+    /// <param name="label">标签。</param>
+    /// <param name="bottom">底部。</param>
+    /// <param name="top">顶部。</param>
     GameObject CreateSettingRow(Transform parent, string label, float bottom, float top)
     {
-        // row（行）：保存 OptionsTabManager.CreatePanel(string, Transform, Color) 的返回结果，供当前步骤使用。使用位置：作为 OptionsTabManager.CreateText(string, Transform, string, int, TextAnchor, Color) 的参数、作为 OptionsTabManager.SetAnchors(GameObject, Vector2, Vector2, Vector2, Vector2) 的参数、OptionsTabManager.CreateSettingRow(Transform, string, float, float)。
+        // 行。
 GameObject row = CreatePanel(label + "行", parent, new Color(1f, 1f, 1f, 0.055f));
         SetAnchors(row, new Vector2(0.04f, bottom), new Vector2(0.96f, top), Vector2.zero, Vector2.zero);
-        // text（文字）：保存 OptionsTabManager.CreateText(string, Transform, string, int, TextAnchor, Color) 的返回结果，供当前步骤使用。使用位置：作为 OptionsTabManager.SetAnchors(GameObject, Vector2, Vector2, Vector2, Vector2) 的参数。
+        // 文字。
 Text text = CreateText("名称", row.transform, label, 20, TextAnchor.MiddleLeft, new Color(1f, 1f, 1f, 0.86f));
         SetAnchors(text.gameObject, new Vector2(0.04f, 0f), new Vector2(0.4f, 1f), Vector2.zero, Vector2.zero);
         return row;
@@ -2080,18 +2080,18 @@ Text text = CreateText("名称", row.transform, label, 20, TextAnchor.MiddleLeft
 
     /// <summary>CreatePanel 的业务处理入口；本方法直接依赖 GameObject.GameObject(string, params Type[])、GameObject.GetComponent&lt;Image&gt;()、Transform.SetParent(Transform, bool)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 OptionsTabManager.BuildControlsPage(Transform)、OptionsTabManager.BuildInterface()、OptionsTabManager.CreateSensitivityRow(Transform, string, string, float, float, out Text)、OptionsTabManager.CreateSettingRow(Transform, string, float, float)、OptionsTabManager.CreateSlider(string, Transform) 等共 6 处；下游（含内部回调体） GameObject.GameObject(string, params Type[])、GameObject.GetComponent&lt;Image&gt;()、Transform.SetParent(Transform, bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="name">中文含义：名称。使用位置：作为 GameObject.GameObject(string, params Type[]) 的参数。</param>
-    /// <param name="parent">中文含义：父级。使用位置：作为 Transform.SetParent(Transform, bool) 的参数。</param>
-    /// <param name="color">中文含义：颜色。使用位置：OptionsTabManager.CreatePanel(string, Transform, Color)。</param>
+    /// <param name="name">名称。</param>
+    /// <param name="parent">父级。</param>
+    /// <param name="color">颜色。</param>
     GameObject CreatePanel(string name, Transform parent, Color color)
     {
-        // panel（面板）：使用位置：OptionsTabManager.CreatePanel(string, Transform, Color)。
+        // 面板。
 GameObject panel = new GameObject(name, typeof(RectTransform), typeof(Image));
         panel.transform.SetParent(parent, false);
-        // image（图像）：保存 GameObject.GetComponent<Image>() 的返回结果，供当前步骤使用。使用位置：OptionsTabManager.CreatePanel(string, Transform, Color)。
+        // 图像。
 Image image = panel.GetComponent<Image>();
         image.sprite = panelSprite;
-        // assignmentReceiver45（赋值前保存的目标图像）：从图像读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：OptionsTabManager.CreatePanel(string, Transform, Color)。
+        // 赋值前保存的目标图像。
 global::UnityEngine.UI.Image assignmentReceiver45 = image;
         if (panelSprite != null)
         {
@@ -2109,18 +2109,18 @@ global::UnityEngine.UI.Image assignmentReceiver45 = image;
 
     /// <summary>CreateText 的业务处理入口；本方法直接依赖 GameObject.GameObject(string, params Type[])、GameObject.GetComponent&lt;Text&gt;()、Mathf.Max(int, int)、Transform.SetParent(Transform, bool)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 OptionsTabManager.BuildBindingRows(Transform)、OptionsTabManager.BuildControlsPage(Transform)、OptionsTabManager.BuildInterface()、OptionsTabManager.BuildVolumePage(Transform)、OptionsTabManager.CreateButton(string, Transform, string, int) 等共 9 处；下游（含内部回调体） GameObject.GameObject(string, params Type[])、GameObject.GetComponent&lt;Text&gt;()、Mathf.Max(int, int)、Transform.SetParent(Transform, bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="name">中文含义：名称。使用位置：作为 GameObject.GameObject(string, params Type[]) 的参数。</param>
-    /// <param name="parent">中文含义：父级。使用位置：作为 Transform.SetParent(Transform, bool) 的参数。</param>
-    /// <param name="value">中文含义：值。使用位置：OptionsTabManager.CreateText(string, Transform, string, int, TextAnchor, Color)。</param>
-    /// <param name="size">中文含义：尺寸。使用位置：作为 Mathf.Max(int, int) 的参数、OptionsTabManager.CreateText(string, Transform, string, int, TextAnchor, Color)。</param>
-    /// <param name="alignment">中文含义：对齐状态。使用位置：OptionsTabManager.CreateText(string, Transform, string, int, TextAnchor, Color)。</param>
-    /// <param name="color">中文含义：颜色。使用位置：OptionsTabManager.CreateText(string, Transform, string, int, TextAnchor, Color)。</param>
+    /// <param name="name">名称。</param>
+    /// <param name="parent">父级。</param>
+    /// <param name="value">值。</param>
+    /// <param name="size">尺寸。</param>
+    /// <param name="alignment">对齐状态。</param>
+    /// <param name="color">颜色。</param>
     Text CreateText(string name, Transform parent, string value, int size, TextAnchor alignment, Color color)
     {
-        // go（当前游戏对象）：使用位置：OptionsTabManager.CreateText(string, Transform, string, int, TextAnchor, Color)。
+        // 当前游戏对象。
 GameObject go = new GameObject(name, typeof(RectTransform), typeof(Text));
         go.transform.SetParent(parent, false);
-        // text（文字）：保存 GameObject.GetComponent<Text>() 的返回结果，供当前步骤使用。使用位置：OptionsTabManager.CreateText(string, Transform, string, int, TextAnchor, Color)。
+        // 文字。
 Text text = go.GetComponent<Text>();
         text.font = interfaceFont;
         text.text = value;
@@ -2136,18 +2136,18 @@ Text text = go.GetComponent<Text>();
 
     /// <summary>CreateButton 的业务处理入口；本方法直接依赖 Color.Color(float, float, float, float)、GameObject.GameObject(string, params Type[])、GameObject.GetComponent&lt;Button&gt;()、GameObject.GetComponent&lt;Image&gt;()、OptionsTabManager.CreateText(string, Transform, string, int, TextAnchor, Color)、OptionsTabManager.Stretch(RectTransform)、string.IsNullOrEmpty(string) 等共 8 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 OptionsTabManager.BuildBindingRows(Transform)、OptionsTabManager.BuildControlsPage(Transform)、OptionsTabManager.BuildInterface()；下游（含内部回调体） Color.Color(float, float, float, float)、GameObject.GameObject(string, params Type[])、GameObject.GetComponent&lt;Button&gt;()、GameObject.GetComponent&lt;Image&gt;()、OptionsTabManager.CreateText(string, Transform, string, int, TextAnchor, Color)、OptionsTabManager.Stretch(RectTransform)、string.IsNullOrEmpty(string) 等共 8 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="name">中文含义：名称。使用位置：作为 GameObject.GameObject(string, params Type[]) 的参数。</param>
-    /// <param name="parent">中文含义：父级。使用位置：作为 Transform.SetParent(Transform, bool) 的参数。</param>
-    /// <param name="label">中文含义：标签。使用位置：作为 OptionsTabManager.CreateText(string, Transform, string, int, TextAnchor, Color) 的参数、作为 string.IsNullOrEmpty(string) 的参数。</param>
-    /// <param name="size">中文含义：尺寸。使用位置：作为 OptionsTabManager.CreateText(string, Transform, string, int, TextAnchor, Color) 的参数。</param>
+    /// <param name="name">名称。</param>
+    /// <param name="parent">父级。</param>
+    /// <param name="label">标签。</param>
+    /// <param name="size">尺寸。</param>
     Button CreateButton(string name, Transform parent, string label, int size)
     {
-        // go（当前游戏对象）：使用位置：作为 OptionsTabManager.CreateText(string, Transform, string, int, TextAnchor, Color) 的参数、OptionsTabManager.CreateButton(string, Transform, string, int)。
+        // 当前游戏对象。
 GameObject go = new GameObject(name, typeof(RectTransform), typeof(Image), typeof(Button));
         go.transform.SetParent(parent, false);
-        // image（图像）：保存 GameObject.GetComponent<Image>() 的返回结果，供当前步骤使用。使用位置：OptionsTabManager.CreateButton(string, Transform, string, int)。
+        // 图像。
 Image image = go.GetComponent<Image>();
-        // assignmentReceiver47（赋值前保存的目标图像）：从图像读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：OptionsTabManager.CreateButton(string, Transform, string, int)。
+        // 赋值前保存的目标图像。
 global::UnityEngine.UI.Image assignmentReceiver47 = image;
         if (buttonSprite != null)
         {
@@ -2158,7 +2158,7 @@ global::UnityEngine.UI.Image assignmentReceiver47 = image;
             assignmentReceiver47.sprite = rowSprite;
         }
 
-        // assignmentReceiver49（赋值前保存的目标图像）：从图像读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：OptionsTabManager.CreateButton(string, Transform, string, int)。
+        // 赋值前保存的目标图像。
 global::UnityEngine.UI.Image assignmentReceiver49 = image;
         if (image.sprite != null)
         {
@@ -2169,7 +2169,7 @@ global::UnityEngine.UI.Image assignmentReceiver49 = image;
             assignmentReceiver49.type = Image.Type.Simple;
         }
 
-        // assignmentReceiver51（赋值前保存的目标图像）：从图像读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：OptionsTabManager.CreateButton(string, Transform, string, int)。
+        // 赋值前保存的目标图像。
 global::UnityEngine.UI.Image assignmentReceiver51 = image;
         if (image.sprite != null)
         {
@@ -2180,9 +2180,9 @@ global::UnityEngine.UI.Image assignmentReceiver51 = image;
             assignmentReceiver51.color = new Color(1f, 1f, 1f, 0.07f);
         }
 
-        // button（按钮）：保存 GameObject.GetComponent<Button>() 的返回结果，供当前步骤使用。使用位置：OptionsTabManager.CreateButton(string, Transform, string, int)。
+        // 按钮。
 Button button = go.GetComponent<Button>();
-        // colors（颜色集合）：使用位置：OptionsTabManager.CreateButton(string, Transform, string, int)。
+        // 颜色集合。
 ColorBlock colors = button.colors;
         colors.normalColor = Color.white;
         colors.highlightedColor = new Color(1f, 0.88f, 0.78f, 1f);
@@ -2194,7 +2194,7 @@ ColorBlock colors = button.colors;
         button.colors = colors;
         if (!string.IsNullOrEmpty(label))
         {
-            // text（文字）：保存 OptionsTabManager.CreateText(string, Transform, string, int, TextAnchor, Color) 的返回结果，供当前步骤使用。使用位置：作为 OptionsTabManager.Stretch(RectTransform) 的参数。
+            // 文字。
 Text text = CreateText("文字", go.transform, label, size, TextAnchor.MiddleCenter, Color.white);
             Stretch(text.rectTransform);
         }
@@ -2204,21 +2204,21 @@ Text text = CreateText("文字", go.transform, label, size, TextAnchor.MiddleCen
 
     /// <summary>CreateSlider 的业务处理入口；本方法直接依赖 Color.Color(float, float, float, float)、GameObject.GameObject(string, params Type[])、GameObject.GetComponent&lt;Image&gt;()、GameObject.GetComponent&lt;RectTransform&gt;()、GameObject.GetComponent&lt;Slider&gt;()、OptionsTabManager.CreatePanel(string, Transform, Color)、OptionsTabManager.SetAnchors(GameObject, Vector2, Vector2, Vector2, Vector2) 等共 10 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 OptionsTabManager.BuildVolumePage(Transform)、OptionsTabManager.CreateSensitivityRow(Transform, string, string, float, float, out Text)；下游（含内部回调体） Color.Color(float, float, float, float)、GameObject.GameObject(string, params Type[])、GameObject.GetComponent&lt;Image&gt;()、GameObject.GetComponent&lt;RectTransform&gt;()、GameObject.GetComponent&lt;Slider&gt;()、OptionsTabManager.CreatePanel(string, Transform, Color)、OptionsTabManager.SetAnchors(GameObject, Vector2, Vector2, Vector2, Vector2) 等共 10 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="name">中文含义：名称。使用位置：作为 GameObject.GameObject(string, params Type[]) 的参数。</param>
-    /// <param name="parent">中文含义：父级。使用位置：作为 Transform.SetParent(Transform, bool) 的参数。</param>
+    /// <param name="name">名称。</param>
+    /// <param name="parent">父级。</param>
     Slider CreateSlider(string name, Transform parent)
     {
-        // go（当前游戏对象）：使用位置：作为 OptionsTabManager.CreatePanel(string, Transform, Color) 的参数、作为 Transform.SetParent(Transform, bool) 的参数、OptionsTabManager.CreateSlider(string, Transform)。
+        // 当前游戏对象。
 GameObject go = new GameObject(name, typeof(RectTransform), typeof(Slider));
         go.transform.SetParent(parent, false);
-        // slider（滑块）：保存 GameObject.GetComponent<Slider>() 的返回结果，供当前步骤使用。使用位置：OptionsTabManager.CreateSlider(string, Transform)。
+        // 滑块。
 Slider slider = go.GetComponent<Slider>();
         slider.minValue = 0f;
         slider.maxValue = 1f;
-        // background（背景）：保存 OptionsTabManager.CreatePanel(string, Transform, Color) 的返回结果，供当前步骤使用。使用位置：作为 OptionsTabManager.SetAnchors(GameObject, Vector2, Vector2, Vector2, Vector2) 的参数、OptionsTabManager.CreateSlider(string, Transform)。
+        // 背景。
 GameObject background = CreatePanel("轨道", go.transform, new Color(1f, 1f, 1f, 0.22f));
         SetAnchors(background, new Vector2(0f, 0.47f), new Vector2(1f, 0.53f), Vector2.zero, Vector2.zero);
-        // bgImg（背景图像）：保存 GameObject.GetComponent<Image>() 的返回结果，供当前步骤使用。使用位置：OptionsTabManager.CreateSlider(string, Transform)。
+        // 背景图像。
 var bgImg = background.GetComponent<Image>();
         if (sliderTrackSprite != null)
         {
@@ -2227,23 +2227,23 @@ var bgImg = background.GetComponent<Image>();
             bgImg.color = Color.white;
         }
 
-        // fillArea（填充区域）：使用位置：作为 OptionsTabManager.CreatePanel(string, Transform, Color) 的参数、作为 OptionsTabManager.SetAnchors(GameObject, Vector2, Vector2, Vector2, Vector2) 的参数、OptionsTabManager.CreateSlider(string, Transform)。
+        // 填充区域。
 GameObject fillArea = new GameObject("填充区域", typeof(RectTransform));
         fillArea.transform.SetParent(go.transform, false);
         SetAnchors(fillArea, new Vector2(0f, 0.46f), new Vector2(1f, 0.54f), Vector2.zero, Vector2.zero);
-        // fill（填充）：保存 OptionsTabManager.CreatePanel(string, Transform, Color) 的返回结果，供当前步骤使用。使用位置：作为 OptionsTabManager.Stretch(RectTransform) 的参数、OptionsTabManager.CreateSlider(string, Transform)。
+        // 填充。
 GameObject fill = CreatePanel("填充", fillArea.transform, new Color(0.82f, 0.82f, 0.78f, 1f));
         Stretch(fill.GetComponent<RectTransform>());
-        // handleArea（句柄区域）：使用位置：作为 OptionsTabManager.CreatePanel(string, Transform, Color) 的参数、作为 OptionsTabManager.Stretch(RectTransform) 的参数、OptionsTabManager.CreateSlider(string, Transform)。
+        // 句柄区域。
 GameObject handleArea = new GameObject("滑块区域", typeof(RectTransform));
         handleArea.transform.SetParent(go.transform, false);
         Stretch(handleArea.GetComponent<RectTransform>());
-        // handle（句柄）：保存 OptionsTabManager.CreatePanel(string, Transform, Color) 的返回结果，供当前步骤使用。使用位置：OptionsTabManager.CreateSlider(string, Transform)。
+        // 句柄。
 GameObject handle = CreatePanel("滑块", handleArea.transform, Color.white);
-        // handleRect（句柄矩形）：保存 GameObject.GetComponent<RectTransform>() 的返回结果，供当前步骤使用。使用位置：OptionsTabManager.CreateSlider(string, Transform)。
+        // 句柄矩形。
 RectTransform handleRect = handle.GetComponent<RectTransform>();
         handleRect.sizeDelta = new Vector2(7f, 22f);
-        // handleImg（句柄图像）：保存 GameObject.GetComponent<Image>() 的返回结果，供当前步骤使用。使用位置：OptionsTabManager.CreateSlider(string, Transform)。
+        // 句柄图像。
 var handleImg = handle.GetComponent<Image>();
         if (sliderKnobSprite != null)
         {
@@ -2262,19 +2262,19 @@ var handleImg = handle.GetComponent<Image>();
 
     /// <summary>CreateToggle 的业务处理入口；本方法直接依赖 Color.Color(float, float, float, float)、GameObject.GameObject(string, params Type[])、GameObject.GetComponent&lt;Image&gt;()、GameObject.GetComponent&lt;RectTransform&gt;()、GameObject.GetComponent&lt;Toggle&gt;()、OptionsTabManager.CreatePanel(string, Transform, Color)、OptionsTabManager.SetAnchors(GameObject, Vector2, Vector2, Vector2, Vector2) 等共 10 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 OptionsTabManager.BuildControlsPage(Transform)、OptionsTabManager.BuildDisplayPage(Transform)；下游（含内部回调体） Color.Color(float, float, float, float)、GameObject.GameObject(string, params Type[])、GameObject.GetComponent&lt;Image&gt;()、GameObject.GetComponent&lt;RectTransform&gt;()、GameObject.GetComponent&lt;Toggle&gt;()、OptionsTabManager.CreatePanel(string, Transform, Color)、OptionsTabManager.SetAnchors(GameObject, Vector2, Vector2, Vector2, Vector2) 等共 10 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="name">中文含义：名称。使用位置：作为 GameObject.GameObject(string, params Type[]) 的参数。</param>
-    /// <param name="parent">中文含义：父级。使用位置：作为 Transform.SetParent(Transform, bool) 的参数。</param>
+    /// <param name="name">名称。</param>
+    /// <param name="parent">父级。</param>
     Toggle CreateToggle(string name, Transform parent)
     {
-        // go（当前游戏对象）：使用位置：作为 OptionsTabManager.CreatePanel(string, Transform, Color) 的参数、OptionsTabManager.CreateToggle(string, Transform)。
+        // 当前游戏对象。
 GameObject go = new GameObject(name, typeof(RectTransform), typeof(Toggle));
         go.transform.SetParent(parent, false);
-        // toggle（切换）：保存 GameObject.GetComponent<Toggle>() 的返回结果，供当前步骤使用。使用位置：OptionsTabManager.CreateToggle(string, Transform)。
+        // 切换。
 Toggle toggle = go.GetComponent<Toggle>();
-        // background（背景）：保存 OptionsTabManager.CreatePanel(string, Transform, Color) 的返回结果，供当前步骤使用。使用位置：作为 OptionsTabManager.CreatePanel(string, Transform, Color) 的参数、作为 OptionsTabManager.Stretch(RectTransform) 的参数、OptionsTabManager.CreateToggle(string, Transform)。
+        // 背景。
 GameObject background = CreatePanel("边框", go.transform, new Color(1f, 1f, 1f, 0.24f));
         Stretch(background.GetComponent<RectTransform>());
-        // bgImg（背景图像）：保存 GameObject.GetComponent<Image>() 的返回结果，供当前步骤使用。使用位置：OptionsTabManager.CreateToggle(string, Transform)。
+        // 背景图像。
 var bgImg = background.GetComponent<Image>();
         if (tickBoxOffSprite != null)
         {
@@ -2284,10 +2284,10 @@ var bgImg = background.GetComponent<Image>();
             bgImg.preserveAspect = true;
         }
 
-        // checkmark（勾选标记）：保存 OptionsTabManager.CreatePanel(string, Transform, Color) 的返回结果，供当前步骤使用。使用位置：作为 OptionsTabManager.SetAnchors(GameObject, Vector2, Vector2, Vector2, Vector2) 的参数、OptionsTabManager.CreateToggle(string, Transform)。
+        // 勾选标记。
 GameObject checkmark = CreatePanel("选中标记", background.transform, Color.white);
         SetAnchors(checkmark, new Vector2(0f, 0f), new Vector2(1f, 1f), Vector2.zero, Vector2.zero);
-        // checkImg（检查图像）：保存 GameObject.GetComponent<Image>() 的返回结果，供当前步骤使用。使用位置：OptionsTabManager.CreateToggle(string, Transform)。
+        // 检查图像。
 var checkImg = checkmark.GetComponent<Image>();
         if (tickBoxOnSprite != null)
         {
@@ -2311,12 +2311,12 @@ var checkImg = checkmark.GetComponent<Image>();
     /// 然后替换视觉素材。确保 Template/Viewport/Content/Item 结构正确。
     /// </summary>
     /// <remarks>静态调用链：上游 OptionsTabManager.BuildDisplayPage(Transform)；下游（含内部回调体） Color.Color(float, float, float, float)、Component.GetComponent&lt;ContentSizeFitter&gt;()、Component.GetComponent&lt;Image&gt;()、Component.GetComponent&lt;Mask&gt;()、Component.GetComponent&lt;RectTransform&gt;()、Component.GetComponent&lt;Scrollbar&gt;()、Component.GetComponent&lt;ScrollRect&gt;() 等共 21 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="name">中文含义：名称。使用位置：OptionsTabManager.CreateStandardDropdown(string, Transform)。</param>
-    /// <param name="parent">中文含义：父级。使用位置：作为 Transform.SetParent(Transform, bool) 的参数。</param>
+    /// <param name="name">名称。</param>
+    /// <param name="parent">父级。</param>
     Dropdown CreateStandardDropdown(string name, Transform parent)
     {
         // 使用引擎默认下拉框结构
-        // defaultResources（默认资源集合）：使用位置：作为 DefaultControls.CreateDropdown(DefaultControls.Resources) 的参数、OptionsTabManager.CreateStandardDropdown(string, Transform)。
+        // 默认资源集合。
 var defaultResources = new DefaultControls.Resources();
         // 留空 sprite 让默认结构先创建，之后替换
         if (buttonSprite != null)
@@ -2352,20 +2352,20 @@ var defaultResources = new DefaultControls.Resources();
 
         defaultResources.dropdown = defaultResources.standard;
         defaultResources.mask = null;
-        // go（当前游戏对象）：保存 DefaultControls.CreateDropdown(DefaultControls.Resources) 的返回结果，供当前步骤使用。使用位置：OptionsTabManager.CreateStandardDropdown(string, Transform)。
+        // 当前游戏对象。
 GameObject go = DefaultControls.CreateDropdown(defaultResources);
         go.name = name;
         go.transform.SetParent(parent, false);
-        // dropdown（下拉框）：保存 GameObject.GetComponent<Dropdown>() 的返回结果，供当前步骤使用。使用位置：OptionsTabManager.CreateStandardDropdown(string, Transform)。
+        // 下拉框。
 Dropdown dropdown = go.GetComponent<Dropdown>();
-        // dropdownRt（下拉框矩形变换）：保存 GameObject.GetComponent<RectTransform>() 的返回结果，供当前步骤使用。使用位置：作为 OptionsTabManager.Stretch(RectTransform) 的参数、OptionsTabManager.CreateStandardDropdown(string, Transform)。
+        // 下拉框矩形变换。
 RectTransform dropdownRt = go.GetComponent<RectTransform>();
         Stretch(dropdownRt);
         // 设置主框 Image
-        // mainImg（主要图像）：保存 GameObject.GetComponent<Image>() 的返回结果，供当前步骤使用。使用位置：OptionsTabManager.CreateStandardDropdown(string, Transform)。
+        // 主要图像。
 var mainImg = go.GetComponent<Image>();
         mainImg.sprite = buttonSprite;
-        // assignmentReceiver56（赋值前保存的目标主要图像）：从主要图像读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：OptionsTabManager.CreateStandardDropdown(string, Transform)。
+        // 赋值前保存的目标主要图像。
 global::UnityEngine.UI.Image assignmentReceiver56 = mainImg;
         if (buttonSprite != null)
         {
@@ -2378,9 +2378,9 @@ global::UnityEngine.UI.Image assignmentReceiver56 = mainImg;
 
         mainImg.color = new Color(1f, 1f, 1f, 0.15f);
         // 设置 Caption Text
-        // receiverValue58（判空前缓存的查找的返回结果）：从查找的返回结果读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、OptionsTabManager.CreateStandardDropdown(string, Transform)。
+        // 判空前缓存的查找的返回结果。
 global::UnityEngine.Transform receiverValue58 = dropdownRt.Find("Label");
-        // captionText（说明文字文字）：使用位置：OptionsTabManager.CreateStandardDropdown(string, Transform)。
+        // 说明文字文字。
 global::UnityEngine.UI.Text captionText;
         if (!global::System.Object.ReferenceEquals(receiverValue58, null))
         {
@@ -2402,9 +2402,9 @@ global::UnityEngine.UI.Text captionText;
 
         dropdown.captionText = captionText;
         // 设置箭头
-        // receiverValue60（判空前缓存的查找的返回结果）：从查找的返回结果读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、OptionsTabManager.CreateStandardDropdown(string, Transform)。
+        // 判空前缓存的查找的返回结果。
 global::UnityEngine.Transform receiverValue60 = dropdownRt.Find("Arrow");
-        // arrow（箭头）：使用位置：OptionsTabManager.CreateStandardDropdown(string, Transform)。
+        // 箭头。
 global::UnityEngine.UI.Image arrow;
         if (!global::System.Object.ReferenceEquals(receiverValue60, null))
         {
@@ -2421,7 +2421,7 @@ global::UnityEngine.UI.Image arrow;
         }
 
         // 设置 Template
-        // template（模板）：使用位置：OptionsTabManager.CreateStandardDropdown(string, Transform)。
+        // 模板。
 var template = dropdownRt.Find("Template") as RectTransform;
         if (template != null)
         {
@@ -2431,27 +2431,27 @@ var template = dropdownRt.Find("Template") as RectTransform;
             template.anchoredPosition = new Vector2(0f, 5f);
             template.sizeDelta = new Vector2(0f, 220f);
             // Template 背景
-            // templateImg（模板图像）：保存 Component.GetComponent<Image>() 的返回结果，供当前步骤使用。使用位置：OptionsTabManager.CreateStandardDropdown(string, Transform)。
+            // 模板图像。
 var templateImg = template.GetComponent<Image>();
             templateImg.color = new Color(0.06f, 0.06f, 0.06f, 0.98f);
             templateImg.raycastTarget = true;
             // ScrollRect
-            // scroll（滚动）：保存 Component.GetComponent<ScrollRect>() 的返回结果，供当前步骤使用。使用位置：OptionsTabManager.CreateStandardDropdown(string, Transform)。
+            // 滚动。
 var scroll = template.GetComponent<ScrollRect>();
             scroll.movementType = ScrollRect.MovementType.Clamped;
             scroll.horizontal = false;
             scroll.vertical = true;
             // Viewport
-            // viewport（视口）：使用位置：OptionsTabManager.CreateStandardDropdown(string, Transform)。
+            // 视口。
 var viewport = template.Find("Viewport") as RectTransform;
             if (viewport != null)
             {
-                // vpImg（视口图像）：保存 Component.GetComponent<Image>() 的返回结果，供当前步骤使用。使用位置：OptionsTabManager.CreateStandardDropdown(string, Transform)。
+                // 视口图像。
 var vpImg = viewport.GetComponent<Image>();
                 // 遮罩必须写入模板缓冲；隐藏遮罩图形由遮罩组件负责。
                 vpImg.color = Color.white;
                 vpImg.raycastTarget = true;
-                // mask（遮罩）：保存 Component.GetComponent<Mask>() 的返回结果，供当前步骤使用。使用位置：OptionsTabManager.CreateStandardDropdown(string, Transform)。
+                // 遮罩。
 var mask = viewport.GetComponent<Mask>();
                 if (mask != null)
                 {
@@ -2459,11 +2459,11 @@ var mask = viewport.GetComponent<Mask>();
                 }
 
                 // Content
-                // content（内容）：使用位置：OptionsTabManager.CreateStandardDropdown(string, Transform)。
+                // 内容。
 var content = viewport.Find("Content") as RectTransform;
                 if (content != null)
                 {
-                    // contentLayout（内容布局）：保存 Component.GetComponent<VerticalLayoutGroup>() 的返回结果，供当前步骤使用。使用位置：OptionsTabManager.CreateStandardDropdown(string, Transform)。
+                    // 内容布局。
 var contentLayout = content.GetComponent<VerticalLayoutGroup>();
                     if (contentLayout != null)
                     {
@@ -2473,7 +2473,7 @@ var contentLayout = content.GetComponent<VerticalLayoutGroup>();
                         contentLayout.childForceExpandHeight = false;
                     }
 
-                    // contentFitter（内容尺寸适配器）：保存 Component.GetComponent<ContentSizeFitter>() 的返回结果，供当前步骤使用。使用位置：OptionsTabManager.CreateStandardDropdown(string, Transform)。
+                    // 内容尺寸适配器。
 var contentFitter = content.GetComponent<ContentSizeFitter>();
                     if (contentFitter != null)
                     {
@@ -2481,21 +2481,21 @@ var contentFitter = content.GetComponent<ContentSizeFitter>();
                     }
 
                     // Item
-                    // item（当前变换节点）：保存 Transform.Find(string) 的返回结果，供当前步骤使用。使用位置：OptionsTabManager.CreateStandardDropdown(string, Transform)。
+                    // 当前变换节点。
 var item = content.Find("Item");
                     if (item != null)
                     {
-                        // itemRt（物品矩形变换）：保存 Component.GetComponent<RectTransform>() 的返回结果，供当前步骤使用。使用位置：OptionsTabManager.CreateStandardDropdown(string, Transform)。
+                        // 物品矩形变换。
 var itemRt = item.GetComponent<RectTransform>();
                         itemRt.sizeDelta = new Vector2(0f, 36f);
-                        // itemToggle（物品切换）：保存 Component.GetComponent<Toggle>() 的返回结果，供当前步骤使用。使用位置：OptionsTabManager.CreateStandardDropdown(string, Transform)。
+                        // 物品切换。
 var itemToggle = item.GetComponent<Toggle>();
                         if (itemToggle != null)
                         {
                             // Item Background
-                            // receiverValue62（判空前缓存的查找的返回结果）：从查找的返回结果读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、OptionsTabManager.CreateStandardDropdown(string, Transform)。
+                            // 判空前缓存的查找的返回结果。
 global::UnityEngine.Transform receiverValue62 = item.transform.Find("Item Background");
-                            // itemBg（物品背景）：使用位置：OptionsTabManager.CreateStandardDropdown(string, Transform)。
+                            // 物品背景。
 global::UnityEngine.UI.Image itemBg;
                             if (!global::System.Object.ReferenceEquals(receiverValue62, null))
                             {
@@ -2512,9 +2512,9 @@ global::UnityEngine.UI.Image itemBg;
                             }
 
                             // Item Checkmark
-                            // receiverValue64（判空前缓存的查找的返回结果）：从查找的返回结果读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、OptionsTabManager.CreateStandardDropdown(string, Transform)。
+                            // 判空前缓存的查找的返回结果。
 global::UnityEngine.Transform receiverValue64 = item.transform.Find("Item Checkmark");
-                            // checkmark（勾选标记）：使用位置：OptionsTabManager.CreateStandardDropdown(string, Transform)。
+                            // 勾选标记。
 global::UnityEngine.UI.Image checkmark;
                             if (!global::System.Object.ReferenceEquals(receiverValue64, null))
                             {
@@ -2538,9 +2538,9 @@ global::UnityEngine.UI.Image checkmark;
                             }
 
                             // Item Label
-                            // receiverValue66（判空前缓存的查找的返回结果）：从查找的返回结果读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、OptionsTabManager.CreateStandardDropdown(string, Transform)。
+                            // 判空前缓存的查找的返回结果。
 global::UnityEngine.Transform receiverValue66 = item.transform.Find("Item Label");
-                            // itemLabel（物品标签）：使用位置：OptionsTabManager.CreateStandardDropdown(string, Transform)。
+                            // 物品标签。
 global::UnityEngine.UI.Text itemLabel;
                             if (!global::System.Object.ReferenceEquals(receiverValue66, null))
                             {
@@ -2567,24 +2567,24 @@ global::UnityEngine.UI.Text itemLabel;
             }
 
             // Scrollbar
-            // scrollbar（滚动条）：使用位置：OptionsTabManager.CreateStandardDropdown(string, Transform)。
+            // 滚动条。
 var scrollbar = template.Find("Scrollbar") as RectTransform;
             if (scrollbar != null)
             {
-                // sbImg（文本构建器图像）：保存 Component.GetComponent<Image>() 的返回结果，供当前步骤使用。使用位置：OptionsTabManager.CreateStandardDropdown(string, Transform)。
+                // 文本构建器图像。
 var sbImg = scrollbar.GetComponent<Image>();
                 sbImg.color = new Color(0.1f, 0.1f, 0.1f, 0.8f);
-                // sb（文本构建器）：保存 Component.GetComponent<Scrollbar>() 的返回结果，供当前步骤使用。使用位置：OptionsTabManager.CreateStandardDropdown(string, Transform)。
+                // 文本构建器。
 var sb = scrollbar.GetComponent<Scrollbar>();
                 if (sb != null)
                 {
-                    // slidingArea（滑移中区域）：使用位置：OptionsTabManager.CreateStandardDropdown(string, Transform)。
+                    // 滑移中区域。
 var slidingArea = scrollbar.Find("Sliding Area") as RectTransform;
                     if (slidingArea != null)
                     {
-                        // receiverValue68（判空前缓存的查找的返回结果）：从查找的返回结果读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、OptionsTabManager.CreateStandardDropdown(string, Transform)。
+                        // 判空前缓存的查找的返回结果。
 global::UnityEngine.Transform receiverValue68 = slidingArea.Find("Handle");
-                        // handle（句柄）：使用位置：OptionsTabManager.CreateStandardDropdown(string, Transform)。
+                        // 句柄。
 global::UnityEngine.UI.Image handle;
                         if (!global::System.Object.ReferenceEquals(receiverValue68, null))
                         {
@@ -2614,14 +2614,14 @@ global::UnityEngine.UI.Image handle;
 
     /// <summary>SetAnchors 的业务处理入口；本方法直接依赖 GameObject.GetComponent&lt;RectTransform&gt;()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 OptionsTabManager.BuildBindingRows(Transform)、OptionsTabManager.BuildControlsPage(Transform)、OptionsTabManager.BuildDisplayPage(Transform)、OptionsTabManager.BuildInterface()、OptionsTabManager.BuildVolumePage(Transform) 等共 10 处；下游（含内部回调体） GameObject.GetComponent&lt;RectTransform&gt;()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="go">中文含义：当前游戏对象。使用位置：OptionsTabManager.SetAnchors(GameObject, Vector2, Vector2, Vector2, Vector2)。</param>
-    /// <param name="min">中文含义：最小。使用位置：OptionsTabManager.SetAnchors(GameObject, Vector2, Vector2, Vector2, Vector2)。</param>
-    /// <param name="max">中文含义：最大。使用位置：OptionsTabManager.SetAnchors(GameObject, Vector2, Vector2, Vector2, Vector2)。</param>
-    /// <param name="offsetMin">中文含义：偏移量最小。使用位置：OptionsTabManager.SetAnchors(GameObject, Vector2, Vector2, Vector2, Vector2)。</param>
-    /// <param name="offsetMax">中文含义：偏移量最大。使用位置：OptionsTabManager.SetAnchors(GameObject, Vector2, Vector2, Vector2, Vector2)。</param>
+    /// <param name="go">当前游戏对象。</param>
+    /// <param name="min">最小。</param>
+    /// <param name="max">最大。</param>
+    /// <param name="offsetMin">偏移量最小。</param>
+    /// <param name="offsetMax">偏移量最大。</param>
     void SetAnchors(GameObject go, Vector2 min, Vector2 max, Vector2 offsetMin, Vector2 offsetMax)
     {
-        // rect（矩形）：保存 GameObject.GetComponent<RectTransform>() 的返回结果，供当前步骤使用。使用位置：OptionsTabManager.SetAnchors(GameObject, Vector2, Vector2, Vector2, Vector2)。
+        // 矩形。
 RectTransform rect = go.GetComponent<RectTransform>();
         rect.anchorMin = min;
         rect.anchorMax = max;
@@ -2631,7 +2631,7 @@ RectTransform rect = go.GetComponent<RectTransform>();
 
     /// <summary>Stretch 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
     /// <remarks>静态调用链：上游 OptionsTabManager.BuildControlsPage(Transform)、OptionsTabManager.BuildInterface()、OptionsTabManager.CreateButton(string, Transform, string, int)、OptionsTabManager.CreatePage(string, Transform)、OptionsTabManager.CreateSlider(string, Transform) 等共 7 处；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="rect">中文含义：矩形。使用位置：OptionsTabManager.Stretch(RectTransform)。</param>
+    /// <param name="rect">矩形。</param>
     void Stretch(RectTransform rect)
     {
         rect.anchorMin = Vector2.zero;

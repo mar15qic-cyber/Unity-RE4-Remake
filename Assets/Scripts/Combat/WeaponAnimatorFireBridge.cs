@@ -6,38 +6,38 @@ using UnityEngine;
 [DisallowMultipleComponent]
 public class WeaponAnimatorFireBridge : MonoBehaviour, IWeaponFireAnimation, IWeaponFireCadenceProvider
 {
-    /// <summary>中文含义：枪械动画控制器。使用位置：WeaponAnimatorFireBridge.ResolveClipsFromAnimator()、WeaponAnimatorFireBridge.Start()、WeaponAnimatorFireBridge.TriggerFireAnimation()。</summary>
+    /// <summary>枪械动画控制器。</summary>
     [Header("枪模动画器")]
     public Animator gunAnimator;
-    /// <summary>中文含义：开火触发器名称。使用位置：作为 Animator.StringToHash(string) 的参数、作为 string.IsNullOrEmpty(string) 的参数。</summary>
+    /// <summary>开火触发器名称。</summary>
     [Header("开火触发")]
     public string fireTriggerName = "Fire";
-    /// <summary>中文含义：是否重置触发器之前集合。使用位置：WeaponAnimatorFireBridge.TriggerFireAnimation()。</summary>
+    /// <summary>是否重置触发器之前集合。</summary>
     public bool resetTriggerBeforeSet = true;
-    /// <summary>中文含义：是否自动解算动画片段集合。使用位置：WeaponAnimatorFireBridge.Start()。</summary>
+    /// <summary>是否自动解算动画片段集合。</summary>
     [Header("动画片段")]
     public bool autoResolveClips = true;
-    /// <summary>中文含义：开火动画片段名称。使用位置：WeaponAnimatorFireBridge.ResolveClipsFromAnimator()。</summary>
+    /// <summary>开火动画片段名称。</summary>
     public string fireClipName = "Mossberg@Fire";
-    /// <summary>中文含义：拉动动画片段名称。使用位置：WeaponAnimatorFireBridge.ResolveClipsFromAnimator()。</summary>
+    /// <summary>拉动动画片段名称。</summary>
     public string pumpClipName = "Mossberg@LoadNext";
-    /// <summary>中文含义：开火动画片段。使用位置：WeaponAnimatorFireBridge.ResolveClipsFromAnimator()、WeaponAnimatorFireBridge.ResolveFireInterval()。</summary>
+    /// <summary>开火动画片段。</summary>
     public AnimationClip fireClip;
-    /// <summary>中文含义：拉动动画片段。使用位置：WeaponAnimatorFireBridge.ResolveClipsFromAnimator()、WeaponAnimatorFireBridge.ResolveFireInterval()。</summary>
+    /// <summary>拉动动画片段。</summary>
     public AnimationClip pumpClip;
-    /// <summary>中文含义：手动开火间隔。使用位置：WeaponAnimatorFireBridge.ResolveFireInterval()。</summary>
+    /// <summary>手动开火间隔。</summary>
     [Header("射击节奏")]
     [Min(0f)]
     public float manualFireInterval = 0f;
-    /// <summary>中文含义：额外锁定时间。使用位置：WeaponAnimatorFireBridge.ResolveFireInterval()。</summary>
+    /// <summary>额外锁定时间。</summary>
     [Min(0f)]
     public float extraLockTime = 0.05f;
-    /// <summary>中文含义：后备开火间隔。使用位置：WeaponAnimatorFireBridge.ResolveFireInterval()。</summary>
+    /// <summary>后备开火间隔。</summary>
     [Min(0.01f)]
     public float fallbackFireInterval = 0.8f;
-    /// <summary>中文含义：开火触发器哈希编号。使用位置：作为 Animator.ResetTrigger(int) 的参数、作为 Animator.SetTrigger(int) 的参数、WeaponAnimatorFireBridge.Start() 等共 4 处。</summary>
+    /// <summary>开火触发器哈希编号。</summary>
     private int fireTriggerHash;
-    /// <summary>中文含义：缓存开火间隔。使用位置：WeaponAnimatorFireBridge.FireInterval.get、WeaponAnimatorFireBridge.Start()。</summary>
+    /// <summary>缓存开火间隔。</summary>
     private float cachedFireInterval;
     /// <summary>中文含义：开火间隔。</summary>
     public float FireInterval
@@ -112,12 +112,12 @@ public class WeaponAnimatorFireBridge : MonoBehaviour, IWeaponFireAnimation, IWe
             return;
         }
 
-        // clips（动画片段集合）：使用位置：WeaponAnimatorFireBridge.ResolveClipsFromAnimator()。
+        // 动画片段集合。
 AnimationClip[] clips = gunAnimator.runtimeAnimatorController.animationClips;
-        // i（当前遍历索引）：使用位置：WeaponAnimatorFireBridge.ResolveClipsFromAnimator()。
+        // 当前遍历索引。
 for (int i = 0; i < clips.Length; i++)
         {
-            // clip（动画片段）：使用位置：WeaponAnimatorFireBridge.ResolveClipsFromAnimator()。
+            // 动画片段。
 AnimationClip clip = clips[i];
             if (clip == null)
             {
@@ -145,7 +145,7 @@ AnimationClip clip = clips[i];
             return manualFireInterval;
         }
 
-        // interval（间隔）：使用位置：WeaponAnimatorFireBridge.ResolveFireInterval()。
+        // 间隔。
 float interval = 0f;
         if (fireClip != null)
         {

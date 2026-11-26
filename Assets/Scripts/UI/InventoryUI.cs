@@ -11,148 +11,148 @@ public partial class InventoryUI : MonoBehaviour
 {
     public static InventoryUI Instance { get; private set; }
 
-    /// <summary>中文含义：公文包与物品的三维展示组件。使用位置：InterfaceReworkBuilder.ConfigurationInventory()、InventorySceneLoader.HideInventoryScene()、InventorySceneLoader.LoadInventoryScene() 等共 11 处。</summary>
+    /// <summary>公文包与物品的三维展示组件。</summary>
     [Header("三维公文包")]
     [UnityEngine.Serialization.FormerlySerializedAs("三维展示")]
     [UnityEngine.InspectorName("三维展示")]
     public AttacheCasePresentationController threeDimensionalPresentation;
-    /// <summary>中文含义：当前展示是否允许交互。使用位置：InventoryUI.HandleContextDiscardButtonClicked()、InventoryUI.HandleContextStoreButtonClicked()、InventoryUI.OnItemClicked(GridItem, PointerEventData.InputButton, Vector2) 等共 7 处。</summary>
+    /// <summary>当前展示是否允许交互。</summary>
     public bool Interactive => isVisible && inventoryPanel != null && inventoryPanel.interactable
         && (threeDimensionalPresentation == null || threeDimensionalPresentation.Interactive);
 
-    /// <summary>中文含义：主摄像机。使用位置：InventorySceneLoader.LoadInventoryScene()、InventoryUI.Start()。</summary>
+    /// <summary>主摄像机。</summary>
     [Header("相机")]
     public Camera mainCamera;
-    /// <summary>中文含义：背包摄像机。使用位置：InventorySceneLoader.HideInventoryScene()、InventorySceneLoader.LoadInventoryScene()、InventoryUI.OnSceneLoaded()。</summary>
+    /// <summary>背包摄像机。</summary>
     public Camera inventoryCamera;
-    /// <summary>中文含义：背包皮革外壳图片。使用位置：InventoryUI.ApplySkinTextures()。</summary>
+    /// <summary>背包皮革外壳图片。</summary>
     [Header("分层贴图素材")]
     public Sprite skinShell;
-    /// <summary>中文含义：背包泡棉网格图片。使用位置：InventoryUI.ApplySkinTextures()。</summary>
+    /// <summary>背包泡棉网格图片。</summary>
     public Sprite foamGrid;
-    /// <summary>中文含义：背包金属边框图片。使用位置：InventoryUI.ApplySkinTextures()。</summary>
+    /// <summary>背包金属边框图片。</summary>
     public Sprite metalFrame;
-    /// <summary>中文含义：背包格子的高亮图片。使用位置：InventoryUI.ApplySkinTextures()。</summary>
+    /// <summary>背包格子的高亮图片。</summary>
     public Sprite cellHighlight;
-    /// <summary>中文含义：背包分页页签图片。使用位置：InventoryUI.ApplySkinTextures()。</summary>
+    /// <summary>背包分页页签图片。</summary>
     public Sprite tabPage;
-    /// <summary>中文含义：显示背包皮革外壳的图像组件。使用位置：InterfaceReworkBuilder.ConfigurationInventory()、InventoryUI.ApplySkinTextures()。</summary>
+    /// <summary>显示背包皮革外壳的图像组件。</summary>
     [Header("贴图引用")]
     public Image skinShellImage;
-    /// <summary>中文含义：显示背包泡棉网格的图像组件。使用位置：InterfaceReworkBuilder.ConfigurationInventory()、InventoryUI.ApplySkinTextures()。</summary>
+    /// <summary>显示背包泡棉网格的图像组件。</summary>
     public Image foamGridImage;
-    /// <summary>中文含义：显示背包金属边框的图像组件。使用位置：InterfaceReworkBuilder.ConfigurationInventory()、InventoryUI.ApplySkinTextures()。</summary>
+    /// <summary>显示背包金属边框的图像组件。</summary>
     public Image metalFrameImage;
-    /// <summary>中文含义：显示背包格子高亮的图像组件。使用位置：InventoryUI.ApplySkinTextures()。</summary>
+    /// <summary>显示背包格子高亮的图像组件。</summary>
     public Image cellHighlightImage;
-    /// <summary>中文含义：显示背包分页页签的图像组件。使用位置：InventoryUI.ApplySkinTextures()。</summary>
+    /// <summary>显示背包分页页签的图像组件。</summary>
     public Image tabPageImage;
-    /// <summary>中文含义：背包面板的画布组。使用位置：InventorySceneLoader.LoadInventoryScene()、InventoryUI.FadeIn()、InventoryUI.FadeOut() 等共 6 处。</summary>
+    /// <summary>背包面板的画布组。</summary>
     [Header("面板引用")]
     public CanvasGroup inventoryPanel;
-    /// <summary>中文含义：背包网格视图组件。使用位置：作为 InventoryGridView.GetItemRect(GridItem, float, out Vector2, out Vector2) 的参数、InterfaceReworkBuilder.ConfigurationInventory()、InventoryUI.ClearDragState() 等共 17 处。</summary>
+    /// <summary>背包网格视图组件。</summary>
     [Header("共享网格视图")]
     [Tooltip("背包网格视图组件")]
     public InventoryGridView gridView;
-    /// <summary>中文含义：物品合成分页组件。使用位置：InventoryUI.OnSceneLoaded()、InventoryUI.RefreshGridInternal()、InventoryUI.Start()。</summary>
+    /// <summary>物品合成分页组件。</summary>
     [Header("合成分页")]
     public InventoryCraftingPanel craftingPanel;
-    /// <summary>中文含义：物品说明面板。使用位置：作为 InterfaceReworkBuilder.Locate(RectTransform, Vector2, Vector2) 的参数、InterfaceReworkBuilder.ConfigurationInventory()、InventoryUI.ShowDescription(GridItem) 等共 4 处。</summary>
+    /// <summary>物品说明面板。</summary>
     [Header("描述面板")]
     public RectTransform descriptionPanel;
-    /// <summary>中文含义：物品说明面板中的物品图标。使用位置：InventoryUI.ShowDescription(GridItem)、InventoryUI.ShowEmptyDescription()。</summary>
+    /// <summary>物品说明面板中的物品图标。</summary>
     public Image descIcon;
-    /// <summary>中文含义：物品说明面板中的名称文字。使用位置：InventoryUI.ShowDescription(GridItem)、InventoryUI.ShowEmptyDescription()。</summary>
+    /// <summary>物品说明面板中的名称文字。</summary>
     public Text descName;
-    /// <summary>中文含义：物品说明面板中的详细描述文字。使用位置：InventoryUI.ShowDescription(GridItem)、InventoryUI.ShowEmptyDescription()。</summary>
+    /// <summary>物品说明面板中的详细描述文字。</summary>
     public Text descDescription;
-    /// <summary>中文含义：物品说明面板中的数量文字。使用位置：InventoryUI.ShowDescription(GridItem)、InventoryUI.ShowEmptyDescription()。</summary>
+    /// <summary>物品说明面板中的数量文字。</summary>
     public Text descCount;
-    /// <summary>中文含义：使用物品按钮。使用位置：作为 InventoryUI.ApplyActionButtonStyle(Button) 的参数、作为 InventoryUI.SetButtonText(Button, string) 的参数、InventoryUI.ConfigureActionButtons() 等共 5 处。</summary>
+    /// <summary>使用物品按钮。</summary>
     public Button useButton;
-    /// <summary>中文含义：未选中物品时的提示文字。未选中时的提示文本。使用位置：InventoryUI.ShowDescription(GridItem)、InventoryUI.ShowEmptyDescription()、InventoryUI.Start()。</summary>
+    /// <summary>未选中物品时的提示文字。未选中时的提示文本。</summary>
     [Tooltip("未选中时的提示文本")]
     public Text emptyHintText;
-    /// <summary>中文含义：操作提示栏文字。使用位置：InventoryUI.Start()。</summary>
+    /// <summary>操作提示栏文字。</summary>
     [Header("提示栏")]
     public Text hintText;
-    /// <summary>中文含义：物品上下文菜单。使用位置：作为 RectTransformUtility.ScreenPointToLocalPointInRectangle(RectTransform, Vector2, Camera, out Vector2) 的参数、InventoryUI.HideContextMenu()、InventoryUI.ShowContextMenu(GridItem, Vector2) 等共 4 处。</summary>
+    /// <summary>物品上下文菜单。</summary>
     [Header("右键上下文菜单")]
     public RectTransform contextMenu;
-    /// <summary>中文含义：上下文菜单中的使用按钮。使用位置：作为 InventoryUI.ApplyActionButtonStyle(Button) 的参数、InventoryUI.ConfigureActionButtons()、InventoryUI.ShowContextMenu(GridItem, Vector2)。</summary>
+    /// <summary>上下文菜单中的使用按钮。</summary>
     public Button ctxUseButton;
-    /// <summary>中文含义：上下文菜单中的丢弃按钮。使用位置：InventoryUI.ConfigureActionButtons()、InventoryUI.ShowContextMenu(GridItem, Vector2)。</summary>
+    /// <summary>上下文菜单中的丢弃按钮。</summary>
     public Button ctxDiscardButton;
-    /// <summary>中文含义：上下文菜单中的寄存按钮。使用位置：InventoryUI.ConfigureActionButtons()、InventoryUI.ShowContextMenu(GridItem, Vector2)。</summary>
+    /// <summary>上下文菜单中的寄存按钮。</summary>
     public Button ctxStoreButton;
-    /// <summary>中文含义：上下文菜单使用按钮上的文字。使用位置：InventoryUI.ShowContextMenu(GridItem, Vector2)。</summary>
+    /// <summary>上下文菜单使用按钮上的文字。</summary>
     public Text ctxUseButtonText;
-    /// <summary>中文含义：自定义光标图片。使用位置：InventoryUI.UpdateCursor()。</summary>
+    /// <summary>自定义光标图片。</summary>
     [Header("自定义光标")]
     public Sprite cursorSprite;
-    /// <summary>中文含义：自定义光标的图像组件。使用位置：InventoryUI.ConfigureCursorImage()、InventoryUI.UpdateCursor()。</summary>
+    /// <summary>自定义光标的图像组件。</summary>
     public Image cursorImage;
-    /// <summary>中文含义：界面视觉主题配置。可选。赋值后，两个使用按钮会读取主题中的按钮图片状态。使用位置：作为 MenuThemeApplier.Apply(Transform, UIVisualTheme) 的参数、InterfaceReworkBuilder.ConfigurationInventory()、InventoryUI.ApplyActionButtonStyle(Button)。</summary>
+    /// <summary>界面视觉主题配置。可选。赋值后，两个使用按钮会读取主题中的按钮图片状态。</summary>
     [Header("界面主题")]
     [Tooltip("可选。赋值后，两个使用按钮会读取主题中的按钮图片状态")]
     public UIVisualTheme visualTheme;
-    /// <summary>中文含义：使用按钮未悬停时显示的美术素材。使用位置：InterfaceReworkBuilder.ConfigurationInventory()、InventoryUI.ApplyActionButtonStyle(Button)。</summary>
+    /// <summary>使用按钮未悬停时显示的美术素材。</summary>
     [Header("使用按钮样式")]
     [Tooltip("使用按钮未悬停时显示的美术素材")]
     public Sprite actionButtonNormalSprite;
-    /// <summary>中文含义：使用按钮悬停时显示的美术素材。使用位置：InterfaceReworkBuilder.ConfigurationInventory()、InventoryUI.ApplyActionButtonStyle(Button)。</summary>
+    /// <summary>使用按钮悬停时显示的美术素材。</summary>
     [Tooltip("使用按钮悬停时显示的美术素材")]
     public Sprite actionButtonHoverSprite;
-    /// <summary>中文含义：动作普通状态颜色。使用位置：InterfaceReworkBuilder.ConfigurationInventory()、InventoryUI.ApplyActionButtonStyle(Button)。</summary>
+    /// <summary>动作普通状态颜色。</summary>
     public Color actionNormalColor = new Color(0.15f, 0.4f, 0.15f, 1f);
-    /// <summary>中文含义：动作高亮状态颜色。使用位置：InterfaceReworkBuilder.ConfigurationInventory()、InventoryUI.ApplyActionButtonStyle(Button)。</summary>
+    /// <summary>动作高亮状态颜色。</summary>
     public Color actionHighlightedColor = new Color(0.28f, 0.65f, 0.24f, 1f);
-    /// <summary>中文含义：动作按下状态颜色。使用位置：InventoryUI.ApplyActionButtonStyle(Button)。</summary>
+    /// <summary>动作按下状态颜色。</summary>
     public Color actionPressedColor = new Color(0.07f, 0.2f, 0.07f, 1f);
-    /// <summary>中文含义：动作禁用状态颜色。使用位置：InventoryUI.ApplyActionButtonStyle(Button)。</summary>
+    /// <summary>动作禁用状态颜色。</summary>
     public Color actionDisabledColor = new Color(0.35f, 0.35f, 0.35f, 0.65f);
-    /// <summary>中文含义：拾取通知文字。使用位置：InventoryUI.ClearToast()、InventoryUI.ShowPickupToast(string)、InventoryUI.Start() 等共 4 处。</summary>
+    /// <summary>拾取通知文字。</summary>
     [Header("拾取通知")]
     public Text toastText;
-    /// <summary>中文含义：拾取通知的显示时长。使用位置：InventoryUI.ToastRoutine(string)。</summary>
+    /// <summary>拾取通知的显示时长。</summary>
     public float toastDuration = 2f;
-    /// <summary>中文含义：界面淡入淡出的持续时间。使用位置：InventorySceneLoader.HideInventoryScene()、InventoryUI.FadeIn()、InventoryUI.FadeOut()。</summary>
+    /// <summary>界面淡入淡出的持续时间。</summary>
     [Header("动画")]
     public float fadeDuration = 0.25f;
-    /// <summary>中文含义：高亮颜色。使用位置：InterfaceReworkBuilder.ConfigurationInventory()。</summary>
+    /// <summary>高亮颜色。</summary>
     [Header("选中高亮颜色（传给 gridView）")]
     public Color highlightColor = new Color(0.15f, 1f, 0.35f, 0.85f);
     /// <summary>中文含义：选中高亮边缘的外扩留白。</summary>
     public float highlightPadding = 2f;
-    /// <summary>中文含义：是否可见。使用位置：InventoryUI.FadeIn()、InventoryUI.Interactive.get、InventoryUI.IsVisible.get 等共 7 处。</summary>
+    /// <summary>是否可见。</summary>
     private bool isVisible;
     /// <summary>中文含义：是否可见。</summary>
     public bool IsVisible => isVisible;
 
-    /// <summary>中文含义：选定背包网格物品。使用位置：作为 InventoryManager.GetItemAt(int, int) 的参数、作为 InventoryManager.RotateItem(GridItem) 的参数、作为 InventoryUI.UseItem(GridItem) 的参数 等共 13 处。</summary>
+    /// <summary>选定背包网格物品。</summary>
     private GridItem selectedGridItem;
-    /// <summary>中文含义：被悬停的背包网格物品。使用位置：InventoryUI.OnItemHoverEnter(GridItem)、InventoryUI.OnItemHoverExit()。</summary>
+    /// <summary>被悬停的背包网格物品。</summary>
     private GridItem hoveredGridItem;
-    /// <summary>中文含义：淡入淡出协程。使用位置：作为 MonoBehaviour.StopCoroutine(Coroutine) 的参数、InventoryUI.OnSceneLoaded()、InventoryUI.PlayExitAnimation(Action)。</summary>
+    /// <summary>淡入淡出协程。</summary>
     private Coroutine fadeRoutine;
-    /// <summary>中文含义：短时通知协程。使用位置：作为 MonoBehaviour.StopCoroutine(Coroutine) 的参数、InventoryUI.ClearToast()、InventoryUI.ShowPickupToast(string) 等共 4 处。</summary>
+    /// <summary>短时通知协程。</summary>
     private Coroutine toastRoutine;
-    /// <summary>中文含义：是否网格警告已显示。使用位置：InventoryUI.ResolveGridView()。</summary>
+    /// <summary>是否网格警告已显示。</summary>
     private bool gridWarningShown;
     // 拖拽状态
-    /// <summary>中文含义：拖拽中物品。使用位置：InventoryUI.ClearDragState()、InventoryUI.OnItemDrag(GridItem, Vector2)、InventoryUI.OnItemPointerDown(GridItem, Vector2) 等共 5 处。</summary>
+    /// <summary>拖拽中物品。</summary>
     private GridItem draggingItem;
-    /// <summary>中文含义：拖拽偏移量。使用位置：作为 AttacheCasePresentationController.PreviewLandPoint(GridItem, Vector2, Vector2) 的参数、作为 InventoryGridView.SetItemWidgetPosition(GridItem, Vector2) 的参数、作为 InventoryGridView.TryGetDropGrid(GridItem, Vector2, Vector2, out int, out int) 的参数 等共 5 处。</summary>
+    /// <summary>拖拽偏移量。</summary>
     private Vector2 dragOffset;
-    /// <summary>中文含义：拖拽是否已完成。使用位置：InventoryUI.ClearDragState()、InventoryUI.OnItemClicked(GridItem, PointerEventData.InputButton, Vector2)、InventoryUI.OnItemDrag(GridItem, Vector2) 等共 6 处。</summary>
+    /// <summary>拖拽是否已完成。</summary>
     private bool dragCompleted;
     private bool dragMoved;
     // 隐藏期间只记录脏标记，同一帧的多次事件合并一次。
-    /// <summary>中文含义：刷新是否仍待处理。使用位置：InventoryUI.LateUpdate()、InventoryUI.OnSceneLoaded()、InventoryUI.RefreshGrid() 等共 4 处。</summary>
+    /// <summary>刷新是否仍待处理。</summary>
     private bool refreshPending;
-    /// <summary>中文含义：上一次网格区域。使用位置：InventoryUI.LateUpdate()。</summary>
+    /// <summary>上一次网格区域。</summary>
     private Vector2 lastMeshRegion;
-    /// <summary>中文含义：上下文菜单物品。使用位置：作为 InventoryManager.DiscardItemAt(int, int) 的参数、作为 InventoryUI.UseItem(GridItem) 的参数、作为 StorageBoxManager.TransferToStorage(GridItem) 的参数 等共 7 处。</summary>
+    /// <summary>上下文菜单物品。</summary>
     private GridItem contextMenuItem;
     /// <summary>Unity 首次启用后的启动回调；状态处理与资源交接按函数内顺序执行，下游协作见调用链。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） Component.GetComponentInChildren&lt;InventoryCraftingPanel&gt;(bool)、GameObject.SetActive(bool)、InventoryCraftingPanel.Initialize(InventoryUI)、InventoryUI.ApplyActionButtonStyle()、InventoryUI.ApplySkinTextures()、InventoryUI.ConfigureActionButtons()、InventoryUI.ConfigureCursorImage() 等共 10 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
@@ -200,7 +200,7 @@ public partial class InventoryUI : MonoBehaviour
             craftingPanel = GetComponentInChildren<InventoryCraftingPanel>(true);
         }
 
-        // receiverValue1（判空前缓存的物品合成分页组件）：从物品合成分页组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、InventoryUI.Start()。
+        // 判空前缓存的物品合成分页组件。
 global::InventoryCraftingPanel receiverValue1 = craftingPanel;
         if (!global::System.Object.ReferenceEquals(receiverValue1, null))
         {
@@ -285,7 +285,7 @@ global::InventoryCraftingPanel receiverValue1 = craftingPanel;
                 cellHighlightImage.color = Color.white;
             }
 
-            // receiverValue2（判空前缓存的显示背包格子高亮的图像组件）：从显示背包格子高亮的图像组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、InventoryUI.ApplySkinTextures()。
+            // 判空前缓存的显示背包格子高亮的图像组件。
 global::UnityEngine.UI.Image receiverValue2 = cellHighlightImage;
             if (!global::System.Object.ReferenceEquals(receiverValue2, null))
             {
@@ -360,7 +360,7 @@ global::UnityEngine.UI.Image receiverValue2 = cellHighlightImage;
 
         // 光标图层只负责显示，不能挡住按钮和网格的射线检测。
         cursorImage.raycastTarget = false;
-        // mousePos（鼠标位置）：使用位置：作为 RectTransformUtility.ScreenPointToLocalPointInRectangle(RectTransform, Vector2, Camera, out Vector2) 的参数、InventoryUI.UpdateCursor()。
+        // 鼠标位置。
 Vector2 mousePos;
         if (UnityEngine.InputSystem.Mouse.current != null)
         {
@@ -372,11 +372,11 @@ Vector2 mousePos;
         }
 
         cursorImage.gameObject.SetActive(true);
-        // rt（界面矩形变换）：使用位置：InventoryUI.UpdateCursor()。
+        // 界面矩形变换。
 var rt = (RectTransform)cursorImage.transform;
-        // parentRt（父级矩形变换）：使用位置：作为 RectTransformUtility.ScreenPointToLocalPointInRectangle(RectTransform, Vector2, Camera, out Vector2) 的参数。
+        // 父级矩形变换。
 var parentRt = rt.parent as RectTransform;
-        // localPos（局部位置）：使用位置：作为 RectTransformUtility.ScreenPointToLocalPointInRectangle(RectTransform, Vector2, Camera, out Vector2) 的参数、InventoryUI.UpdateCursor()。
+        // 局部位置。
 Vector2 localPos;
         RectTransformUtility.ScreenPointToLocalPointInRectangle(parentRt, mousePos, null, out localPos);
         rt.anchoredPosition = localPos;
@@ -399,21 +399,21 @@ Vector2 localPos;
         ConfigureActionButtons();
         ApplyActionButtonStyle();
         ConfigureCursorImage();
-        // receiverValue3（判空前缓存的物品合成分页组件）：从物品合成分页组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、InventoryUI.OnSceneLoaded()。
+        // 判空前缓存的物品合成分页组件。
 global::InventoryCraftingPanel receiverValue3 = craftingPanel;
         if (!global::System.Object.ReferenceEquals(receiverValue3, null))
         {
             receiverValue3.ShowItemsPage();
         }
 
-        // receiverValue4（判空前缓存的物品合成分页组件）：从物品合成分页组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、InventoryUI.OnSceneLoaded()。
+        // 判空前缓存的物品合成分页组件。
 global::InventoryCraftingPanel receiverValue4 = craftingPanel;
         if (!global::System.Object.ReferenceEquals(receiverValue4, null))
         {
             receiverValue4.Refresh();
         }
 
-        // receiverValue5（判空前缓存的界面光标管理器的实例）：从界面光标管理器的实例读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、InventoryUI.OnSceneLoaded()。
+        // 判空前缓存的界面光标管理器的实例。
 global::UICursorManager receiverValue5 = UICursorManager.Instance;
         if (!global::System.Object.ReferenceEquals(receiverValue5, null))
         {
@@ -433,9 +433,10 @@ global::UICursorManager receiverValue5 = UICursorManager.Instance;
             inventoryPanel.gameObject.SetActive(true);
         }
 
-        MenuThemeApplier.Apply(transform.root, visualTheme);
+        // 物品操作菜单自行设置各行的底色、选中和禁用状态。
+        MenuThemeApplier.Apply(transform.root, visualTheme, contextMenu);
         BuildControlHints();
-        // receiverValue6（判空前缓存的公文包与物品的三维展示组件）：从公文包与物品的三维展示组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、InventoryUI.OnSceneLoaded()。
+        // 判空前缓存的公文包与物品的三维展示组件。
 global::AttacheCasePresentationController receiverValue6 = threeDimensionalPresentation;
         if (!global::System.Object.ReferenceEquals(receiverValue6, null))
         {
@@ -509,12 +510,12 @@ global::AttacheCasePresentationController receiverValue6 = threeDimensionalPrese
 
     /// <summary>FindRectTransform 的业务处理入口；本方法直接依赖 Component.GetComponentsInChildren&lt;RectTransform&gt;(bool)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 InventoryUI.ResolveGridView()；下游（含内部回调体） Component.GetComponentsInChildren&lt;RectTransform&gt;(bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="objectName">中文含义：对象名称。使用位置：InventoryUI.FindRectTransform(string)。</param>
+    /// <param name="objectName">对象名称。</param>
     RectTransform FindRectTransform(string objectName)
     {
-        // rects（矩形集合）：保存 Component.GetComponentsInChildren<RectTransform>(bool) 的返回结果，供当前步骤使用。使用位置：InventoryUI.FindRectTransform(string)。
+        // 矩形集合。
 RectTransform[] rects = GetComponentsInChildren<RectTransform>(true);
-        // i（当前遍历索引）：使用位置：InventoryUI.FindRectTransform(string)。
+        // 当前遍历索引。
 for (int i = 0; i < rects.Length; i++)
         {
             if (rects[i].name == objectName)
@@ -528,7 +529,7 @@ for (int i = 0; i < rects.Length; i++)
 
     /// <summary>PlayExitAnimation 的业务处理入口；本方法直接依赖 AttacheCasePresentationController.EndDrag()、InventoryGridView.HideHover()、InventoryGridView.HideSelected()、InventoryUI.ClearDragState()、InventoryUI.ClearToast()、InventoryUI.FadeOutAndCallback(Action)、InventoryUI.HideContextMenu() 等共 12 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 InventorySceneLoader.HideInventoryScene()；下游（含内部回调体） AttacheCasePresentationController.EndDrag()、InventoryGridView.HideHover()、InventoryGridView.HideSelected()、InventoryUI.ClearDragState()、InventoryUI.ClearToast()、InventoryUI.FadeOutAndCallback(Action)、InventoryUI.HideContextMenu() 等共 12 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="onComplete">中文含义：完成回调。使用位置：作为 InventoryUI.FadeOutAndCallback(Action) 的参数。</param>
+    /// <param name="onComplete">完成回调。</param>
     public void PlayExitAnimation(System.Action onComplete)
     {
         isVisible = false;
@@ -546,7 +547,7 @@ for (int i = 0; i < rects.Length; i++)
 
         ClearDragState();
         hoveredGridItem = null;
-        // receiverValue7（判空前缓存的公文包与物品的三维展示组件）：从公文包与物品的三维展示组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、InventoryUI.PlayExitAnimation(Action)。
+        // 判空前缓存的公文包与物品的三维展示组件。
 global::AttacheCasePresentationController receiverValue7 = threeDimensionalPresentation;
         if (!global::System.Object.ReferenceEquals(receiverValue7, null))
         {
@@ -557,21 +558,21 @@ global::AttacheCasePresentationController receiverValue7 = threeDimensionalPrese
         ClearToast();
         selectedGridItem = null;
         HideContextMenu();
-        // receiverValue8（判空前缓存的背包网格视图组件）：从背包网格视图组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、InventoryUI.PlayExitAnimation(Action)。
+        // 判空前缓存的背包网格视图组件。
 global::InventoryGridView receiverValue8 = gridView;
         if (!global::System.Object.ReferenceEquals(receiverValue8, null))
         {
             receiverValue8.HideSelected();
         }
 
-        // receiverValue9（判空前缓存的背包网格视图组件）：从背包网格视图组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、InventoryUI.PlayExitAnimation(Action)。
+        // 判空前缓存的背包网格视图组件。
 global::InventoryGridView receiverValue9 = gridView;
         if (!global::System.Object.ReferenceEquals(receiverValue9, null))
         {
             receiverValue9.HideHover();
         }
 
-        // receiverValue10（判空前缓存的界面光标管理器的实例）：从界面光标管理器的实例读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、InventoryUI.PlayExitAnimation(Action)。
+        // 判空前缓存的界面光标管理器的实例。
 global::UICursorManager receiverValue10 = UICursorManager.Instance;
         if (!global::System.Object.ReferenceEquals(receiverValue10, null))
         {
@@ -583,7 +584,7 @@ global::UICursorManager receiverValue10 = UICursorManager.Instance;
 
     /// <summary>FadeOutAndCallback 的业务处理入口；本方法直接依赖 Action.Invoke()、AttacheCasePresentationController.CloseLid()、GameObject.SetActive(bool)、InventoryUI.FadeOut()、MonoBehaviour.StartCoroutine(IEnumerator)、object.ReferenceEquals(object, object)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 InventoryUI.PlayExitAnimation(Action)；下游（含内部回调体） Action.Invoke()、AttacheCasePresentationController.CloseLid()、GameObject.SetActive(bool)、InventoryUI.FadeOut()、MonoBehaviour.StartCoroutine(IEnumerator)、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="onComplete">中文含义：完成回调。使用位置：InventoryUI.FadeOutAndCallback(Action)。</param>
+    /// <param name="onComplete">完成回调。</param>
     IEnumerator FadeOutAndCallback(System.Action onComplete)
     {
         if (threeDimensionalPresentation != null)
@@ -592,7 +593,7 @@ global::UICursorManager receiverValue10 = UICursorManager.Instance;
         }
 
         yield return StartCoroutine(FadeOut());
-        // receiverValue11（判空前缓存的完成回调）：从完成回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、InventoryUI.FadeOutAndCallback(Action)。
+        // 判空前缓存的完成回调。
 global::System.Action receiverValue11 = onComplete;
         if (!global::System.Object.ReferenceEquals(receiverValue11, null))
         {
@@ -615,13 +616,13 @@ global::System.Action receiverValue11 = onComplete;
             yield break;
         }
 
-        // elapsed（已用）：使用位置：InventoryUI.FadeIn()。
+        // 已用。
 float elapsed = 0f;
         while (elapsed < fadeDuration)
         {
-            // t（当前界面动画的归一化进度）：使用位置：InventoryUI.FadeIn()。
+            // 当前界面动画的归一化进度。
 float t = elapsed / fadeDuration;
-            // eased（缓动后的）：使用位置：InventoryUI.FadeIn()。
+            // 缓动后的。
 float eased = 1f - (1f - t) * (1f - t) * (1f - t);
             inventoryPanel.alpha = eased;
             elapsed += Time.unscaledDeltaTime;
@@ -647,15 +648,15 @@ float eased = 1f - (1f - t) * (1f - t) * (1f - t);
             yield break;
         }
 
-        // elapsed（已用）：使用位置：InventoryUI.FadeOut()。
+        // 已用。
 float elapsed = 0f;
-        // startAlpha（起始透明度）：使用位置：InventoryUI.FadeOut()。
+        // 起始透明度。
 float startAlpha = inventoryPanel.alpha;
         while (elapsed < fadeDuration)
         {
-            // t（当前界面动画的归一化进度）：使用位置：InventoryUI.FadeOut()。
+            // 当前界面动画的归一化进度。
 float t = elapsed / fadeDuration;
-            // eased（缓动后的）：使用位置：InventoryUI.FadeOut()。
+            // 缓动后的。
 float eased = 1f - t * t * t;
             inventoryPanel.alpha = startAlpha * eased;
             elapsed += Time.unscaledDeltaTime;
@@ -679,22 +680,22 @@ float eased = 1f - t * t * t;
     /// <remarks>静态调用链：上游 InventoryUI.LateUpdate()、InventoryUI.OnSceneLoaded()、InventoryUI.PlayExitAnimation(Action)；下游（含内部回调体） InventoryCraftingPanel.Refresh()、InventoryGridView.GetItemWidget(GridItem)、InventoryGridView.HideSelected()、InventoryGridView.Rebuild(int, int, IReadOnlyList&lt;GridItem&gt;)、InventoryGridView.SetItemDragAlpha(GridItem, bool)、InventoryGridView.SetItemWidgetPosition(GridItem, Vector2)、InventoryGridView.ShowSelected(GridItem) 等共 13 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     void RefreshGridInternal()
     {
-        // mgr（当前背包管理器）：使用位置：作为 InventoryGridView.Rebuild(int, int, IReadOnlyList<GridItem>) 的参数、InventoryUI.RefreshGridInternal()。
+        // 当前背包管理器。
 var mgr = InventoryManager.Instance;
         if (mgr == null || gridView == null)
         {
             return;
         }
 
-        // activeDragItem（生效拖拽物品）：使用位置：作为 InventoryGridView.GetItemWidget(GridItem) 的参数、作为 InventoryGridView.SetItemDragAlpha(GridItem, bool) 的参数、作为 InventoryGridView.SetItemWidgetPosition(GridItem, Vector2) 的参数 等共 4 处。
+        // 生效拖拽物品。
 GridItem activeDragItem = draggingItem;
-        // dragVisualPosition（拖拽视觉表现位置）：使用位置：作为 InventoryGridView.SetItemWidgetPosition(GridItem, Vector2) 的参数、InventoryUI.RefreshGridInternal()。
+        // 拖拽视觉表现位置。
 Vector2 dragVisualPosition = Vector2.zero;
-        // hadDragVisual（是否此前具有拖拽视觉表现）：使用位置：InventoryUI.RefreshGridInternal()。
+        // 是否此前具有拖拽视觉表现。
 bool hadDragVisual = false;
         if (activeDragItem != null)
         {
-            // dragWidget（拖拽界面控件）：保存 InventoryGridView.GetItemWidget(GridItem) 的返回结果，供当前步骤使用。使用位置：InventoryUI.RefreshGridInternal()。
+            // 拖拽界面控件。
 RectTransform dragWidget = gridView.GetItemWidget(activeDragItem);
             if (dragWidget != null)
             {
@@ -704,7 +705,7 @@ RectTransform dragWidget = gridView.GetItemWidget(activeDragItem);
         }
 
         gridView.Rebuild(mgr.CaseWidth, mgr.CaseHeight, mgr.GetItems());
-        // receiverValue12（判空前缓存的物品合成分页组件）：从物品合成分页组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、InventoryUI.RefreshGridInternal()。
+        // 判空前缓存的物品合成分页组件。
 global::InventoryCraftingPanel receiverValue12 = craftingPanel;
         if (!global::System.Object.ReferenceEquals(receiverValue12, null))
         {
@@ -713,7 +714,7 @@ global::InventoryCraftingPanel receiverValue12 = craftingPanel;
 
         if (activeDragItem != null)
         {
-            // refreshedDragWidget（刷新后的拖拽界面控件）：保存 InventoryGridView.GetItemWidget(GridItem) 的返回结果，供当前步骤使用。使用位置：InventoryUI.RefreshGridInternal()。
+            // 刷新后的拖拽界面控件。
 RectTransform refreshedDragWidget = gridView.GetItemWidget(activeDragItem);
             if (refreshedDragWidget == null)
             {
@@ -730,7 +731,7 @@ RectTransform refreshedDragWidget = gridView.GetItemWidget(activeDragItem);
         if (selectedGridItem != null)
         {
             // 使用或整理后，原网格对象可能已经被移除，必须重新取得当前格子对象。
-            // currentItem（当前物品）：保存 InventoryManager.GetItemAt(int, int) 的返回结果，供当前步骤使用。使用位置：作为 InventoryGridView.ShowSelected(GridItem) 的参数、作为 InventoryUI.ShowDescription(GridItem) 的参数、InventoryUI.RefreshGridInternal()。
+            // 当前物品。
 GridItem currentItem = mgr.GetItemAt(selectedGridItem.gridX, selectedGridItem.gridY);
             if (currentItem != null)
             {
@@ -754,8 +755,8 @@ GridItem currentItem = mgr.GetItemAt(selectedGridItem.gridX, selectedGridItem.gr
     // ========================== 拖拽 ==========================
     /// <summary>OnItemPointerDown 的业务处理入口；本方法直接依赖 AttacheCasePresentationController.BeginDrag(GridItem)、InventoryGridView.GetItemRect(GridItem, float, out Vector2, out Vector2)、InventoryGridView.SetItemDragAlpha(GridItem, bool)、InventoryGridView.ShowSelected(GridItem)、InventoryGridView.TryScreenPointToLocal(Vector2, out Vector2)、InventoryUI.HideContextMenu()、InventoryUI.ShowDescription(GridItem) 等共 8 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） AttacheCasePresentationController.BeginDrag(GridItem)、InventoryGridView.GetItemRect(GridItem, float, out Vector2, out Vector2)、InventoryGridView.SetItemDragAlpha(GridItem, bool)、InventoryGridView.ShowSelected(GridItem)、InventoryGridView.TryScreenPointToLocal(Vector2, out Vector2)、InventoryUI.HideContextMenu()、InventoryUI.ShowDescription(GridItem) 等共 8 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="gi">中文含义：背包网格物品。使用位置：作为 AttacheCasePresentationController.BeginDrag(GridItem) 的参数、作为 InventoryGridView.GetItemRect(GridItem, float, out Vector2, out Vector2) 的参数、作为 InventoryGridView.SetItemDragAlpha(GridItem, bool) 的参数 等共 6 处。</param>
-    /// <param name="screenPos">中文含义：屏幕位置。使用位置：作为 InventoryGridView.TryScreenPointToLocal(Vector2, out Vector2) 的参数。</param>
+    /// <param name="gi">背包网格物品。</param>
+    /// <param name="screenPos">屏幕位置。</param>
     void OnItemPointerDown(GridItem gi, Vector2 screenPos)
     {
         if (!keyboardItemMove)
@@ -771,7 +772,7 @@ GridItem currentItem = mgr.GetItemAt(selectedGridItem.gridX, selectedGridItem.gr
             return;
         }
 
-        // receiverValue13（判空前缓存的公文包与物品的三维展示组件）：从公文包与物品的三维展示组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、InventoryUI.OnItemPointerDown(GridItem, Vector2)。
+        // 判空前缓存的公文包与物品的三维展示组件。
 global::AttacheCasePresentationController receiverValue13 = threeDimensionalPresentation;
         if (!global::System.Object.ReferenceEquals(receiverValue13, null))
         {
@@ -793,7 +794,7 @@ global::AttacheCasePresentationController receiverValue13 = threeDimensionalPres
         // 记录拖拽偏移
         if (gridView.TryScreenPointToLocal(screenPos, out Vector2 /* 中文含义：指针局部。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ pointerLocal))
         {
-            // itemPos（物品位置）：使用位置：作为 InventoryGridView.GetItemRect(GridItem, float, out Vector2, out Vector2) 的参数、InventoryUI.OnItemPointerDown(GridItem, Vector2)。
+            // 物品位置。
 Vector2 itemPos;
             gridView.GetItemRect(gi, gridView.CurrentCell, out itemPos, out _);
             dragOffset = pointerLocal - itemPos;
@@ -804,8 +805,8 @@ Vector2 itemPos;
 
     /// <summary>OnItemDrag 的业务处理入口；本方法直接依赖 AttacheCasePresentationController.PreviewLandPoint(GridItem, Vector2, Vector2)、InventoryGridView.SetItemWidgetPosition(GridItem, Vector2)、InventoryGridView.TryScreenPointToLocal(Vector2, out Vector2)、object.ReferenceEquals(object, object)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） AttacheCasePresentationController.PreviewLandPoint(GridItem, Vector2, Vector2)、InventoryGridView.SetItemWidgetPosition(GridItem, Vector2)、InventoryGridView.TryScreenPointToLocal(Vector2, out Vector2)、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="gi">中文含义：背包网格物品。使用位置：作为 AttacheCasePresentationController.PreviewLandPoint(GridItem, Vector2, Vector2) 的参数、作为 InventoryGridView.SetItemWidgetPosition(GridItem, Vector2) 的参数。</param>
-    /// <param name="screenPos">中文含义：屏幕位置。使用位置：作为 AttacheCasePresentationController.PreviewLandPoint(GridItem, Vector2, Vector2) 的参数、作为 InventoryGridView.TryScreenPointToLocal(Vector2, out Vector2) 的参数。</param>
+    /// <param name="gi">背包网格物品。</param>
+    /// <param name="screenPos">屏幕位置。</param>
     void OnItemDrag(GridItem gi, Vector2 screenPos)
     {
         if (!keyboardItemMove)
@@ -826,7 +827,7 @@ Vector2 itemPos;
         {
             dragMoved = true;
             gridView.SetItemWidgetPosition(gi, localPoint - dragOffset);
-            // receiverValue14（判空前缓存的公文包与物品的三维展示组件）：从公文包与物品的三维展示组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、InventoryUI.OnItemDrag(GridItem, Vector2)。
+            // 判空前缓存的公文包与物品的三维展示组件。
 global::AttacheCasePresentationController receiverValue14 = threeDimensionalPresentation;
             if (!global::System.Object.ReferenceEquals(receiverValue14, null))
             {
@@ -837,8 +838,8 @@ global::AttacheCasePresentationController receiverValue14 = threeDimensionalPres
 
     /// <summary>OnItemPointerUp 的业务处理入口；本方法直接依赖 AttacheCasePresentationController.EndDrag()、InventoryGridView.SetItemDragAlpha(GridItem, bool)、InventoryGridView.TryGetDropGrid(GridItem, Vector2, Vector2, out int, out int)、InventoryManager.GetItemAt(int, int)、InventoryManager.MoveItemNear(GridItem, int, int, int)、InventoryManager.TryCombine(GridItem, GridItem, out ItemData)、InventoryUI.RefreshGrid() 等共 9 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） AttacheCasePresentationController.EndDrag()、InventoryGridView.SetItemDragAlpha(GridItem, bool)、InventoryGridView.TryGetDropGrid(GridItem, Vector2, Vector2, out int, out int)、InventoryManager.GetItemAt(int, int)、InventoryManager.MoveItemNear(GridItem, int, int, int)、InventoryManager.TryCombine(GridItem, GridItem, out ItemData)、InventoryUI.RefreshGrid() 等共 9 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="gi">中文含义：背包网格物品。使用位置：作为 InventoryGridView.SetItemDragAlpha(GridItem, bool) 的参数、作为 InventoryGridView.TryGetDropGrid(GridItem, Vector2, Vector2, out int, out int) 的参数、作为 InventoryManager.MoveItemNear(GridItem, int, int, int) 的参数 等共 4 处。</param>
-    /// <param name="screenPos">中文含义：屏幕位置。使用位置：作为 InventoryGridView.TryGetDropGrid(GridItem, Vector2, Vector2, out int, out int) 的参数。</param>
+    /// <param name="gi">背包网格物品。</param>
+    /// <param name="screenPos">屏幕位置。</param>
     void OnItemPointerUp(GridItem gi, Vector2 screenPos)
     {
         if (!keyboardItemMove)
@@ -855,7 +856,7 @@ global::AttacheCasePresentationController receiverValue14 = threeDimensionalPres
         }
 
         dragCompleted = true;
-        // receiverValue15（判空前缓存的公文包与物品的三维展示组件）：从公文包与物品的三维展示组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、InventoryUI.OnItemPointerUp(GridItem, Vector2)。
+        // 判空前缓存的公文包与物品的三维展示组件。
 global::AttacheCasePresentationController receiverValue15 = threeDimensionalPresentation;
         if (!global::System.Object.ReferenceEquals(receiverValue15, null))
         {
@@ -873,11 +874,11 @@ global::AttacheCasePresentationController receiverValue15 = threeDimensionalPres
         // 计算落点格子
         if (gridView.TryGetDropGrid(gi, screenPos, dragOffset, out int /* 中文含义：目标横向。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ targetX, out int /* 中文含义：目标纵向。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ targetY))
         {
-            // mgr（当前背包管理器）：使用位置：InventoryUI.OnItemPointerUp(GridItem, Vector2)。
+            // 当前背包管理器。
 var mgr = InventoryManager.Instance;
             if (mgr != null)
             {
-                // targetItem（目标物品）：保存 InventoryManager.GetItemAt(int, int) 的返回结果，供当前步骤使用。使用位置：作为 InventoryManager.TryCombine(GridItem, GridItem, out ItemData) 的参数、InventoryUI.OnItemPointerUp(GridItem, Vector2)。
+                // 目标物品。
 GridItem targetItem = mgr.GetItemAt(targetX, targetY);
                 if (targetItem != null && mgr.TryCombine(gi, targetItem, out ItemData /* 中文含义：当前物品数据配置。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ result))
                 {
@@ -923,9 +924,9 @@ GridItem targetItem = mgr.GetItemAt(targetX, targetY);
     // ========================== 点击/悬停 ==========================
     /// <summary>OnItemClicked 的业务处理入口；本方法直接依赖 InventoryGridView.ShowSelected(GridItem)、InventoryUI.HideContextMenu()、InventoryUI.ShowContextMenu(GridItem, Vector2)、InventoryUI.ShowDescription(GridItem)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） InventoryGridView.ShowSelected(GridItem)、InventoryUI.HideContextMenu()、InventoryUI.ShowContextMenu(GridItem, Vector2)、InventoryUI.ShowDescription(GridItem)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="gi">中文含义：背包网格物品。使用位置：作为 InventoryGridView.ShowSelected(GridItem) 的参数、作为 InventoryUI.ShowContextMenu(GridItem, Vector2) 的参数、作为 InventoryUI.ShowDescription(GridItem) 的参数 等共 4 处。</param>
-    /// <param name="button">中文含义：按钮。使用位置：InventoryUI.OnItemClicked(GridItem, PointerEventData.InputButton, Vector2)。</param>
-    /// <param name="screenPos">中文含义：屏幕位置。使用位置：作为 InventoryUI.ShowContextMenu(GridItem, Vector2) 的参数。</param>
+    /// <param name="gi">背包网格物品。</param>
+    /// <param name="button">按钮。</param>
+    /// <param name="screenPos">屏幕位置。</param>
     void OnItemClicked(GridItem gi, PointerEventData.InputButton button, Vector2 screenPos)
     {
         if (!Interactive || keyboardItemMove)
@@ -960,8 +961,8 @@ GridItem targetItem = mgr.GetItemAt(targetX, targetY);
 
     /// <summary>OnCellClicked 的业务处理入口；本方法直接依赖 InventoryGridView.HideSelected()、InventoryManager.GetItemAt(int, int)、InventoryUI.HideContextMenu()、InventoryUI.ShowEmptyDescription()、object.ReferenceEquals(object, object)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） InventoryGridView.HideSelected()、InventoryManager.GetItemAt(int, int)、InventoryUI.HideContextMenu()、InventoryUI.ShowEmptyDescription()、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="x">中文含义：横向。使用位置：作为 InventoryManager.GetItemAt(int, int) 的参数。</param>
-    /// <param name="y">中文含义：纵向。使用位置：作为 InventoryManager.GetItemAt(int, int) 的参数。</param>
+    /// <param name="x">横向。</param>
+    /// <param name="y">纵向。</param>
     void OnCellClicked(int x, int y)
     {
         if (keyboardItemMove)
@@ -969,9 +970,9 @@ GridItem targetItem = mgr.GetItemAt(targetX, targetY);
             return;
         }
 
-        // receiverValue16（判空前缓存的背包管理器的实例）：从背包管理器的实例读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、InventoryUI.OnCellClicked(int, int)。
+        // 判空前缓存的背包管理器的实例。
 global::InventoryManager receiverValue16 = InventoryManager.Instance;
-        // gi（背包网格物品）：使用位置：InventoryUI.OnCellClicked(int, int)。
+        // 背包网格物品。
 global::GridItem gi;
         if (!global::System.Object.ReferenceEquals(receiverValue16, null))
         {
@@ -999,7 +1000,7 @@ global::GridItem gi;
 
     /// <summary>OnItemHoverEnter 的业务处理入口；本方法直接依赖 InventoryGridView.ShowHover(GridItem)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） InventoryGridView.ShowHover(GridItem)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="gi">中文含义：背包网格物品。使用位置：作为 InventoryGridView.ShowHover(GridItem) 的参数、InventoryUI.OnItemHoverEnter(GridItem)。</param>
+    /// <param name="gi">背包网格物品。</param>
     void OnItemHoverEnter(GridItem gi)
     {
         if (Interactive && gi != null && hoveredGridItem != gi && draggingItem == null)
@@ -1042,7 +1043,7 @@ global::GridItem gi;
     // ========================== 描述面板 ==========================
     /// <summary>ShowDescription 的业务处理入口；本方法直接依赖 Color.Color(float, float, float, float)、GameObject.SetActive(bool)、InventoryManager.CanUseItem(ItemData)、InventoryManager.GetCraftingHint(ItemData)、InventoryUI.ResolveUseText(ItemData)、InventoryUI.SetButtonText(Button, string)、object.ReferenceEquals(object, object) 等共 8 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 InventoryUI.OnItemClicked(GridItem, PointerEventData.InputButton, Vector2)、InventoryUI.OnItemPointerDown(GridItem, Vector2)、InventoryUI.RefreshGridInternal()；下游（含内部回调体） Color.Color(float, float, float, float)、GameObject.SetActive(bool)、InventoryManager.CanUseItem(ItemData)、InventoryManager.GetCraftingHint(ItemData)、InventoryUI.ResolveUseText(ItemData)、InventoryUI.SetButtonText(Button, string)、object.ReferenceEquals(object, object) 等共 8 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="gi">中文含义：背包网格物品。使用位置：作为 InventoryManager.CanUseItem(ItemData) 的参数、作为 InventoryManager.GetCraftingHint(ItemData) 的参数、作为 InventoryUI.ResolveUseText(ItemData) 的参数 等共 4 处。</param>
+    /// <param name="gi">背包网格物品。</param>
     void ShowDescription(GridItem gi)
     {
         if (descriptionPanel != null && !descriptionPanel.gameObject.activeSelf)
@@ -1058,7 +1059,7 @@ global::GridItem gi;
         if (descIcon != null)
         {
             descIcon.sprite = gi.item.icon;
-            // assignmentReceiver20（赋值前保存的目标物品说明面板中的物品图标）：从物品说明面板中的物品图标读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：InventoryUI.ShowDescription(GridItem)。
+            // 赋值前保存的目标物品说明面板中的物品图标。
 global::UnityEngine.UI.Image assignmentReceiver20 = descIcon;
             if (gi.item.icon != null)
             {
@@ -1077,9 +1078,9 @@ global::UnityEngine.UI.Image assignmentReceiver20 = descIcon;
 
         if (descDescription != null)
         {
-            // receiverValue22（判空前缓存的背包管理器的实例）：从背包管理器的实例读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、InventoryUI.ShowDescription(GridItem)。
+            // 判空前缓存的背包管理器的实例。
 global::InventoryManager receiverValue22 = InventoryManager.Instance;
-            // craftingHint（合成提示）：使用位置：作为 string.IsNullOrEmpty(string) 的参数、InventoryUI.ShowDescription(GridItem)。
+            // 合成提示。
 string craftingHint;
             if (!global::System.Object.ReferenceEquals(receiverValue22, null))
             {
@@ -1090,7 +1091,7 @@ string craftingHint;
                 craftingHint = default;
             }
 
-            // assignmentReceiver24（赋值前保存的目标物品说明面板中的详细描述文字）：从物品说明面板中的详细描述文字读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：InventoryUI.ShowDescription(GridItem)。
+            // 赋值前保存的目标物品说明面板中的详细描述文字。
 global::UnityEngine.UI.Text assignmentReceiver24 = descDescription;
             if (string.IsNullOrEmpty(craftingHint))
             {
@@ -1109,7 +1110,7 @@ global::UnityEngine.UI.Text assignmentReceiver24 = descDescription;
 
         if (useButton != null)
         {
-            // canUse（是否可以使用）：使用位置：作为 GameObject.SetActive(bool) 的参数。
+            // 是否可以使用。
 bool canUse = InventoryManager.Instance != null && InventoryManager.Instance.CanUseItem(gi.item) && !(gi.item.itemType == ItemType.Weapon && gi.item.weaponType == WeaponType.Knife);
             useButton.gameObject.SetActive(canUse);
             SetButtonText(useButton, ResolveUseText(gi.item));
@@ -1159,8 +1160,8 @@ bool canUse = InventoryManager.Instance != null && InventoryManager.Instance.Can
     // ========================== 右键上下文菜单 ==========================
     /// <summary>ShowContextMenu 的业务处理入口；本方法直接依赖 GameObject.SetActive(bool)、InventoryManager.CanUseItem(ItemData)、InventoryUI.ResolveUseText(ItemData)、RectTransformUtility.ScreenPointToLocalPointInRectangle(RectTransform, Vector2, Camera, out Vector2)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 InventoryUI.OnItemClicked(GridItem, PointerEventData.InputButton, Vector2)；下游（含内部回调体） GameObject.SetActive(bool)、InventoryManager.CanUseItem(ItemData)、InventoryUI.ResolveUseText(ItemData)、RectTransformUtility.ScreenPointToLocalPointInRectangle(RectTransform, Vector2, Camera, out Vector2)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="gi">中文含义：背包网格物品。使用位置：作为 InventoryManager.CanUseItem(ItemData) 的参数、作为 InventoryUI.ResolveUseText(ItemData) 的参数、InventoryUI.ShowContextMenu(GridItem, Vector2)。</param>
-    /// <param name="screenPos">中文含义：屏幕位置。使用位置：作为 RectTransformUtility.ScreenPointToLocalPointInRectangle(RectTransform, Vector2, Camera, out Vector2) 的参数。</param>
+    /// <param name="gi">背包网格物品。</param>
+    /// <param name="screenPos">屏幕位置。</param>
     void ShowContextMenu(GridItem gi, Vector2 screenPos)
     {
         if (contextMenu == null)
@@ -1265,7 +1266,7 @@ bool canUse = InventoryManager.Instance != null && InventoryManager.Instance.Can
             return;
         }
 
-        // receiverValue26（判空前缓存的背包管理器的实例）：从背包管理器的实例读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、InventoryUI.HandleContextDiscardButtonClicked()。
+        // 判空前缓存的背包管理器的实例。
 global::InventoryManager receiverValue26 = InventoryManager.Instance;
         if (!global::System.Object.ReferenceEquals(receiverValue26, null))
         {
@@ -1288,9 +1289,9 @@ global::InventoryManager receiverValue26 = InventoryManager.Instance;
             return;
         }
 
-        // receiverValue27（判空前缓存的仓库箱体管理器的实例）：从仓库箱体管理器的实例读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、InventoryUI.HandleContextStoreButtonClicked()。
+        // 判空前缓存的仓库箱体管理器的实例。
 global::StorageBoxManager receiverValue27 = StorageBoxManager.Instance;
-        // optionalValue28（条件访问得到的转移目标仓库的返回结果）：保存条件访问的结果，接收者为空时保持默认空值，非空时才执行原成员访问。使用位置：InventoryUI.HandleContextStoreButtonClicked()。
+        // 条件访问得到的转移目标仓库的返回结果。
 bool? optionalValue28;
         if (!global::System.Object.ReferenceEquals(receiverValue27, null))
         {
@@ -1313,7 +1314,7 @@ bool? optionalValue28;
 
     /// <summary>UseItem 的业务处理入口；本方法直接依赖 InventoryManager.UseItemAt(int, int)、InventoryUI.RegisterWeaponToWheel(GridItem)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 InventoryUI.HandleContextUseButtonClicked()、InventoryUI.HandleUseButtonClicked()；下游（含内部回调体） InventoryManager.UseItemAt(int, int)、InventoryUI.RegisterWeaponToWheel(GridItem)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="item">中文含义：当前背包网格物品。使用位置：作为 InventoryManager.UseItemAt(int, int) 的参数、作为 InventoryUI.RegisterWeaponToWheel(GridItem) 的参数、InventoryUI.UseItem(GridItem)。</param>
+    /// <param name="item">当前背包网格物品。</param>
     void UseItem(GridItem item)
     {
         if (!Interactive || item == null || InventoryManager.Instance == null)
@@ -1332,10 +1333,10 @@ bool? optionalValue28;
 
     /// <summary>RegisterWeaponToWheel 的业务处理入口；本方法直接依赖 Component.GetComponent&lt;WeaponWheelUI&gt;()、InventoryUI.ShowPickupToast(string)、Object.FindObjectOfType&lt;WeaponWheelUI&gt;(bool)、WeaponWheelUI.RegisterWeaponFromInventory(ItemData)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 InventoryUI.UseItem(GridItem)；下游（含内部回调体） Component.GetComponent&lt;WeaponWheelUI&gt;()、InventoryUI.ShowPickupToast(string)、Object.FindObjectOfType&lt;WeaponWheelUI&gt;(bool)、WeaponWheelUI.RegisterWeaponFromInventory(ItemData)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="item">中文含义：当前背包网格物品。使用位置：作为 InventoryUI.ShowPickupToast(string) 的参数、作为 WeaponWheelUI.RegisterWeaponFromInventory(ItemData) 的参数。</param>
+    /// <param name="item">当前背包网格物品。</param>
     void RegisterWeaponToWheel(GridItem item)
     {
-        // wheel（轮盘）：使用位置：InventoryUI.RegisterWeaponToWheel(GridItem)。
+        // 轮盘。
 WeaponWheelUI wheel = null;
         if (LeonController.Instance != null)
         {
@@ -1347,7 +1348,7 @@ WeaponWheelUI wheel = null;
             wheel = Object.FindObjectOfType<WeaponWheelUI>(true);
         }
 
-        // registered（是否已登记）：使用位置：InventoryUI.RegisterWeaponToWheel(GridItem)。
+        // 是否已登记。
 bool registered = wheel != null && wheel.RegisterWeaponFromInventory(item.item);
         if (registered)
         {
@@ -1363,7 +1364,7 @@ bool registered = wheel != null && wheel.RegisterWeaponFromInventory(item.item);
 
     /// <summary>ResolveUseText 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
     /// <remarks>静态调用链：上游 InventoryUI.ShowContextMenu(GridItem, Vector2)、InventoryUI.ShowDescription(GridItem)；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="item">中文含义：当前物品数据配置。使用位置：InventoryUI.ResolveUseText(ItemData)。</param>
+    /// <param name="item">当前物品数据配置。</param>
     string ResolveUseText(ItemData item)
     {
         if (item == null)
@@ -1386,8 +1387,8 @@ bool registered = wheel != null && wheel.RegisterWeaponFromInventory(item.item);
 
     /// <summary>SetButtonText 的业务处理入口；本方法直接依赖 Component.GetComponentInChildren&lt;Text&gt;(bool)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 InventoryUI.ShowDescription(GridItem)；下游（含内部回调体） Component.GetComponentInChildren&lt;Text&gt;(bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="button">中文含义：按钮。使用位置：InventoryUI.SetButtonText(Button, string)。</param>
-    /// <param name="text">中文含义：文字。使用位置：InventoryUI.SetButtonText(Button, string)。</param>
+    /// <param name="button">按钮。</param>
+    /// <param name="text">文字。</param>
     void SetButtonText(Button button, string text)
     {
         if (button == null)
@@ -1395,7 +1396,7 @@ bool registered = wheel != null && wheel.RegisterWeaponFromInventory(item.item);
             return;
         }
 
-        // label（标签）：保存 Component.GetComponentInChildren<Text>(bool) 的返回结果，供当前步骤使用。使用位置：InventoryUI.SetButtonText(Button, string)。
+        // 标签。
 Text label = button.GetComponentInChildren<Text>(true);
         if (label != null)
         {
@@ -1425,7 +1426,7 @@ Text label = button.GetComponentInChildren<Text>(true);
 
     /// <summary>ApplyActionButtonStyle 的业务处理入口；本方法直接依赖 Component.GetComponent&lt;Image&gt;()、Component.GetComponentInChildren&lt;Text&gt;(bool)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 InventoryUI.ApplyActionButtonStyle()；下游（含内部回调体） Component.GetComponent&lt;Image&gt;()、Component.GetComponentInChildren&lt;Text&gt;(bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="button">中文含义：按钮。使用位置：InventoryUI.ApplyActionButtonStyle(Button)。</param>
+    /// <param name="button">按钮。</param>
     void ApplyActionButtonStyle(Button button)
     {
         if (button == null)
@@ -1433,7 +1434,7 @@ Text label = button.GetComponentInChildren<Text>(true);
             return;
         }
 
-        // image（图像）：使用位置：InventoryUI.ApplyActionButtonStyle(Button)。
+        // 图像。
 Image image = button.targetGraphic as Image;
         if (image == null)
         {
@@ -1447,7 +1448,7 @@ Image image = button.targetGraphic as Image;
             {
                 image.sprite = visualTheme.buttonNormal;
                 image.color = Color.white;
-                // spriteState（精灵图状态）：使用位置：InventoryUI.ApplyActionButtonStyle(Button)。
+                // 精灵图状态。
 SpriteState spriteState = button.spriteState;
                 if (actionButtonHoverSprite != null)
                 {
@@ -1484,7 +1485,7 @@ SpriteState spriteState = button.spriteState;
             {
                 image.sprite = actionButtonNormalSprite;
                 image.color = Color.white;
-                // spriteState（精灵图状态）：使用位置：InventoryUI.ApplyActionButtonStyle(Button)。
+                // 精灵图状态。
 SpriteState spriteState = button.spriteState;
                 spriteState.highlightedSprite = actionButtonHoverSprite;
                 spriteState.pressedSprite = actionButtonHoverSprite;
@@ -1495,7 +1496,7 @@ SpriteState spriteState = button.spriteState;
             else
             {
                 image.sprite = null;
-                // colors（颜色集合）：使用位置：InventoryUI.ApplyActionButtonStyle(Button)。
+                // 颜色集合。
 ColorBlock colors = button.colors;
                 colors.normalColor = actionNormalColor;
                 colors.highlightedColor = actionHighlightedColor;
@@ -1509,7 +1510,7 @@ ColorBlock colors = button.colors;
             }
         }
 
-        // label（标签）：保存 Component.GetComponentInChildren<Text>(bool) 的返回结果，供当前步骤使用。使用位置：InventoryUI.ApplyActionButtonStyle(Button)。
+        // 标签。
 Text label = button.GetComponentInChildren<Text>(true);
         if (label != null)
         {
@@ -1541,7 +1542,7 @@ Text label = button.GetComponentInChildren<Text>(true);
 
     /// <summary>ShowPickupToast 的业务处理入口；本方法直接依赖 InventoryUI.ClearToast()、InventoryUI.ToastRoutine(string)、MonoBehaviour.StartCoroutine(IEnumerator)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 InventoryCraftingPanel.CraftSelectedRecipe()、InventoryUI.OnItemPointerUp(GridItem, Vector2)、InventoryUI.RegisterWeaponToWheel(GridItem)；下游（含内部回调体） InventoryUI.ClearToast()、InventoryUI.ToastRoutine(string)、MonoBehaviour.StartCoroutine(IEnumerator)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="text">中文含义：文字。使用位置：作为 InventoryUI.ToastRoutine(string) 的参数。</param>
+    /// <param name="text">文字。</param>
     public void ShowPickupToast(string text)
     {
         if (toastText == null)
@@ -1555,18 +1556,18 @@ Text label = button.GetComponentInChildren<Text>(true);
 
     /// <summary>ToastRoutine 的业务处理入口；本方法直接依赖 Color.Color(float, float, float, float)、GameObject.SetActive(bool)、InventoryUI.ClearToast()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 InventoryUI.ShowPickupToast(string)；下游（含内部回调体） Color.Color(float, float, float, float)、GameObject.SetActive(bool)、InventoryUI.ClearToast()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="text">中文含义：文字。使用位置：InventoryUI.ToastRoutine(string)。</param>
+    /// <param name="text">文字。</param>
     IEnumerator ToastRoutine(string text)
     {
         toastText.gameObject.SetActive(true);
         toastText.text = text;
-        // elapsed（已用）：使用位置：InventoryUI.ToastRoutine(string)。
+        // 已用。
 float elapsed = 0f;
         while (elapsed < toastDuration)
         {
-            // t（当前界面动画的归一化进度）：使用位置：InventoryUI.ToastRoutine(string)。
+            // 当前界面动画的归一化进度。
 float t = elapsed / toastDuration;
-            // alpha（透明度）：使用位置：作为 Color.Color(float, float, float, float) 的参数、InventoryUI.ToastRoutine(string)。
+            // 透明度。
 float alpha;
             if (t < 0.1f)
             {
@@ -1574,7 +1575,7 @@ float alpha;
             }
             else
             {
-                // selectedValue32（分支选出的1f）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：InventoryUI.ToastRoutine(string)。
+                // 分支选出的1f。
 float selectedValue32;
                 if (t > 0.7f)
                 {
@@ -1615,7 +1616,7 @@ float selectedValue32;
         dragMoved = false;
         selectedGridItem = null;
         ShowEmptyDescription();
-        // receiverValue34（判空前缓存的背包网格视图组件）：从背包网格视图组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、InventoryUI.ClearDragState()。
+        // 判空前缓存的背包网格视图组件。
 global::InventoryGridView receiverValue34 = gridView;
         if (!global::System.Object.ReferenceEquals(receiverValue34, null))
         {

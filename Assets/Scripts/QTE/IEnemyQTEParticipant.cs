@@ -21,19 +21,19 @@ public enum EnemyQTEAction
 /// </summary>
 public interface IEnemyQTEParticipant
 {
-    /// <summary>中文含义：根节点。使用位置：作为 LeonQTECoordinator.GetSafeSeparationDistance(Vector3, Vector3, float, IEnemyQTEParticipant) 的参数、作为 LeonQTECoordinator.SetParticipantWorldPosition(Transform, Vector3) 的参数、作为 QTESessionContext.QTESessionContext(int, QTEKind, Transform, Animator, Transform, Animator) 的参数 等共 21 处。</summary>
+    /// <summary>根节点。</summary>
     Transform Root { get; }
 
-    /// <summary>中文含义：动画控制器。使用位置：作为 QTESessionContext.QTESessionContext(int, QTEKind, Transform, Animator, Transform, Animator) 的参数、LeonQTECoordinator.ApplyResultMotion()。</summary>
+    /// <summary>动画控制器。</summary>
     Animator Animator { get; }
 
-    /// <summary>中文含义：碰撞体集合。使用位置：作为 LeonQTECoordinator.ContainsCollider(Collider[], Collider) 的参数、LeonQTECoordinator.IgnorePairCollisions(IEnemyQTEParticipant)。</summary>
+    /// <summary>碰撞体集合。</summary>
     Collider[] Colliders { get; }
 
-    /// <summary>中文含义：是否可用。使用位置：LeonQTECoordinator.CanStart(QTEKind, IEnemyQTEParticipant, out QTECancelReason)。</summary>
+    /// <summary>是否可用。</summary>
     bool IsAvailable { get; }
 
-    /// <summary>中文含义：是否存活。使用位置：LeonQTECoordinator.Update()。</summary>
+    /// <summary>是否存活。</summary>
     bool IsAlive { get; }
 
     /// <summary>中文含义：活动会话编号。</summary>
@@ -41,15 +41,15 @@ public interface IEnemyQTEParticipant
 
     /// <summary>中文含义：动作进入。事件通信成员 ActionEntered，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。</summary>
     event Action<int, EnemyQTEAction, int> ActionEntered;
-    /// <summary>中文含义：动作完成。事件通信成员 ActionCompleted，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。使用位置：LeonQTECoordinator.SubscribeParticipant(IEnemyQTEParticipant)、LeonQTECoordinator.UnsubscribeParticipant(IEnemyQTEParticipant)。</summary>
+    /// <summary>动作完成。事件通信成员 ActionCompleted，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。</summary>
     event Action<int, EnemyQTEAction, int> ActionCompleted;
-    /// <summary>中文含义：动作退出。事件通信成员 ActionExited，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。使用位置：LeonQTECoordinator.SubscribeParticipant(IEnemyQTEParticipant)、LeonQTECoordinator.UnsubscribeParticipant(IEnemyQTEParticipant)。</summary>
+    /// <summary>动作退出。事件通信成员 ActionExited，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。</summary>
     event Action<int, EnemyQTEAction, int, bool> ActionExited;
-    /// <summary>中文含义：撕咬接触。事件通信成员 BiteContact，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。使用位置：LeonQTECoordinator.SubscribeParticipant(IEnemyQTEParticipant)、LeonQTECoordinator.UnsubscribeParticipant(IEnemyQTEParticipant)。</summary>
+    /// <summary>撕咬接触。事件通信成员 BiteContact，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。</summary>
     event Action<int> BiteContact;
-    /// <summary>中文含义：暗杀接触。事件通信成员 AssassinationContact，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。使用位置：LeonQTECoordinator.SubscribeParticipant(IEnemyQTEParticipant)、LeonQTECoordinator.UnsubscribeParticipant(IEnemyQTEParticipant)。</summary>
+    /// <summary>暗杀接触。事件通信成员 AssassinationContact，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。</summary>
     event Action<int> AssassinationContact;
-    /// <summary>中文含义：已失效。事件通信成员 Invalidated，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。使用位置：LeonQTECoordinator.SubscribeParticipant(IEnemyQTEParticipant)、LeonQTECoordinator.UnsubscribeParticipant(IEnemyQTEParticipant)。</summary>
+    /// <summary>已失效。事件通信成员 Invalidated，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。</summary>
     event Action<int, QTECancelReason> Invalidated;
     /// <summary>CanStart 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
     /// <remarks>静态调用链：上游 LeonQTECoordinator.CanStart(QTEKind, IEnemyQTEParticipant, out QTECancelReason)；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>

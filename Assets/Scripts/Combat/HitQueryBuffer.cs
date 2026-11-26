@@ -4,16 +4,15 @@ using UnityEngine;
 [UnityEngine.Scripting.APIUpdating.MovedFrom(true, "", "Assembly-CSharp", "命中查询缓冲")]
 internal sealed class HitQueryBuffer
 {
-    /// <summary>中文含义：缓冲区。使用位置：作为 Array.Resize&lt;RaycastHit&gt;(ref RaycastHit[], int) 的参数、作为 Physics.RaycastNonAlloc(Vector3, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 的参数、作为 Physics.SphereCastNonAlloc(Vector3, float, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 的参数 等共 5 处。</summary>
+    /// <summary>缓冲区。</summary>
     private RaycastHit[] buffer = new RaycastHit[64];
-    /// <summary>Raycast 的业务处理入口；本方法直接依赖 Array.Resize&lt;RaycastHit&gt;(ref RaycastHit[], int)、Physics.RaycastAll(Vector3, Vector3, float, int, QueryTriggerInteraction)、Physics.RaycastNonAlloc(Vector3, Vector3, RaycastHit[], float, int, QueryTriggerInteraction)，调用方通过参数与返回结果交接本次处理。</summary>
-    /// <remarks>静态调用链：上游 EnemyAIManager.HasDirectSpaceFromPlayer(Vector3, Vector3)、EnemyPerceptionModule.HasClearLineToPlayer(bool, float)、PursuitNavigationTopology.IsSupportedRegionAwayFromPortals(Vector3, int)、WeaponBase.TryResolveRayHit(Vector3, Vector3, float, int, out RaycastHit)；下游（含内部回调体） Array.Resize&lt;RaycastHit&gt;(ref RaycastHit[], int)、Physics.RaycastAll(Vector3, Vector3, float, int, QueryTriggerInteraction)、Physics.RaycastNonAlloc(Vector3, Vector3, RaycastHit[], float, int, QueryTriggerInteraction)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="origin">中文含义：原点。使用位置：作为 Physics.RaycastAll(Vector3, Vector3, float, int, QueryTriggerInteraction) 的参数、作为 Physics.RaycastNonAlloc(Vector3, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 的参数。</param>
-    /// <param name="direction">中文含义：方向。使用位置：作为 Physics.RaycastAll(Vector3, Vector3, float, int, QueryTriggerInteraction) 的参数、作为 Physics.RaycastNonAlloc(Vector3, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 的参数。</param>
-    /// <param name="distance">中文含义：距离。使用位置：作为 Physics.RaycastAll(Vector3, Vector3, float, int, QueryTriggerInteraction) 的参数、作为 Physics.RaycastNonAlloc(Vector3, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 的参数。</param>
-    /// <param name="mask">中文含义：遮罩。使用位置：作为 Physics.RaycastAll(Vector3, Vector3, float, int, QueryTriggerInteraction) 的参数、作为 Physics.RaycastNonAlloc(Vector3, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 的参数。</param>
-    /// <param name="triggers">中文含义：触发器集合。使用位置：作为 Physics.RaycastAll(Vector3, Vector3, float, int, QueryTriggerInteraction) 的参数、作为 Physics.RaycastNonAlloc(Vector3, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 的参数。</param>
-    /// <param name="count">中文含义：数量。输出参数，由本入口写入并交给调用方。使用位置：HitQueryBuffer.Raycast(Vector3, Vector3, float, int, QueryTriggerInteraction, out int)。</param>
+    /// <summary>由武器、敌人感知与导航等调用；执行射线查询，缓冲饱和时扩容，达到上限后使用完整查询返回全部命中。</summary>
+    /// <param name="origin">原点。</param>
+    /// <param name="direction">方向。</param>
+    /// <param name="distance">距离。</param>
+    /// <param name="mask">遮罩。</param>
+    /// <param name="triggers">触发器碰撞查询策略。</param>
+    /// <param name="count">数量。输出参数，由本入口写入并交给调用方。</param>
     internal RaycastHit[] Raycast(Vector3 origin, Vector3 direction, float distance, int mask, QueryTriggerInteraction triggers, out int count)
     {
         while (true)
@@ -26,7 +25,7 @@ internal sealed class HitQueryBuffer
 
             if (buffer.Length >= 1024)
             {
-                // complete（完成）：保存 Physics.RaycastAll(Vector3, Vector3, float, int, QueryTriggerInteraction) 的返回结果，供当前步骤使用。使用位置：HitQueryBuffer.Raycast(Vector3, Vector3, float, int, QueryTriggerInteraction, out int)。
+                // 缓冲达到上限，改用完整查询避免遗漏命中。
 RaycastHit[] complete = Physics.RaycastAll(origin, direction, distance, mask, triggers);
                 count = complete.Length;
                 return complete;
@@ -36,15 +35,14 @@ RaycastHit[] complete = Physics.RaycastAll(origin, direction, distance, mask, tr
         }
     }
 
-    /// <summary>SphereCast 的业务处理入口；本方法直接依赖 Array.Resize&lt;RaycastHit&gt;(ref RaycastHit[], int)、Physics.SphereCastAll(Vector3, float, Vector3, float, int, QueryTriggerInteraction)、Physics.SphereCastNonAlloc(Vector3, float, Vector3, RaycastHit[], float, int, QueryTriggerInteraction)，调用方通过参数与返回结果交接本次处理。</summary>
-    /// <remarks>静态调用链：上游 WeaponBase.TryResolveSphereHit(Vector3, float, Vector3, float, int, out RaycastHit)；下游（含内部回调体） Array.Resize&lt;RaycastHit&gt;(ref RaycastHit[], int)、Physics.SphereCastAll(Vector3, float, Vector3, float, int, QueryTriggerInteraction)、Physics.SphereCastNonAlloc(Vector3, float, Vector3, RaycastHit[], float, int, QueryTriggerInteraction)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="origin">中文含义：原点。使用位置：作为 Physics.SphereCastAll(Vector3, float, Vector3, float, int, QueryTriggerInteraction) 的参数、作为 Physics.SphereCastNonAlloc(Vector3, float, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 的参数。</param>
-    /// <param name="radius">中文含义：半径。使用位置：作为 Physics.SphereCastAll(Vector3, float, Vector3, float, int, QueryTriggerInteraction) 的参数、作为 Physics.SphereCastNonAlloc(Vector3, float, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 的参数。</param>
-    /// <param name="direction">中文含义：方向。使用位置：作为 Physics.SphereCastAll(Vector3, float, Vector3, float, int, QueryTriggerInteraction) 的参数、作为 Physics.SphereCastNonAlloc(Vector3, float, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 的参数。</param>
-    /// <param name="distance">中文含义：距离。使用位置：作为 Physics.SphereCastAll(Vector3, float, Vector3, float, int, QueryTriggerInteraction) 的参数、作为 Physics.SphereCastNonAlloc(Vector3, float, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 的参数。</param>
-    /// <param name="mask">中文含义：遮罩。使用位置：作为 Physics.SphereCastAll(Vector3, float, Vector3, float, int, QueryTriggerInteraction) 的参数、作为 Physics.SphereCastNonAlloc(Vector3, float, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 的参数。</param>
-    /// <param name="triggers">中文含义：触发器集合。使用位置：作为 Physics.SphereCastAll(Vector3, float, Vector3, float, int, QueryTriggerInteraction) 的参数、作为 Physics.SphereCastNonAlloc(Vector3, float, Vector3, RaycastHit[], float, int, QueryTriggerInteraction) 的参数。</param>
-    /// <param name="count">中文含义：数量。输出参数，由本入口写入并交给调用方。使用位置：HitQueryBuffer.SphereCast(Vector3, float, Vector3, float, int, QueryTriggerInteraction, out int)。</param>
+    /// <summary>由武器及敌人窗口通行等调用；执行球体投射，缓冲饱和时扩容，达到上限后使用完整查询返回全部命中。</summary>
+    /// <param name="origin">原点。</param>
+    /// <param name="radius">半径。</param>
+    /// <param name="direction">方向。</param>
+    /// <param name="distance">距离。</param>
+    /// <param name="mask">遮罩。</param>
+    /// <param name="triggers">触发器碰撞查询策略。</param>
+    /// <param name="count">数量。输出参数，由本入口写入并交给调用方。</param>
     internal RaycastHit[] SphereCast(Vector3 origin, float radius, Vector3 direction, float distance, int mask, QueryTriggerInteraction triggers, out int count)
     {
         while (true)
@@ -57,8 +55,30 @@ RaycastHit[] complete = Physics.RaycastAll(origin, direction, distance, mask, tr
 
             if (buffer.Length >= 1024)
             {
-                // complete（完成）：保存 Physics.SphereCastAll(Vector3, float, Vector3, float, int, QueryTriggerInteraction) 的返回结果，供当前步骤使用。使用位置：HitQueryBuffer.SphereCast(Vector3, float, Vector3, float, int, QueryTriggerInteraction, out int)。
+                // 缓冲达到上限，改用完整查询避免遗漏命中。
 RaycastHit[] complete = Physics.SphereCastAll(origin, radius, direction, distance, mask, triggers);
+                count = complete.Length;
+                return complete;
+            }
+
+            System.Array.Resize(ref buffer, buffer.Length * 2);
+        }
+    }
+
+    /// <summary>由敌人窗口通行调用；执行胶囊体投射，缓冲饱和时扩容，达到上限后使用完整查询返回全部命中。</summary>
+    internal RaycastHit[] CapsuleCast(Vector3 bottom, Vector3 top, float radius, Vector3 direction, float distance, int mask, QueryTriggerInteraction triggers, out int count)
+    {
+        while (true)
+        {
+            count = Physics.CapsuleCastNonAlloc(bottom, top, radius, direction, buffer, distance, mask, triggers);
+            if (count < buffer.Length)
+            {
+                return buffer;
+            }
+
+            if (buffer.Length >= 1024)
+            {
+                RaycastHit[] complete = Physics.CapsuleCastAll(bottom, top, radius, direction, distance, mask, triggers);
                 count = complete.Length;
                 return complete;
             }

@@ -13,15 +13,15 @@ public static class PursuitNavigationTopology
     /// <summary>敌人行为、动作与通行模块 PortalLink；通过方法参数、返回值及声明成员与调用方通信，静态调用索引记录可解析的直接依赖。</summary>
     private sealed class PortalLink
     {
-        /// <summary>中文含义：门。使用位置：PursuitNavigationTopology.AreRegionsDirectlyConnected(int, int)、PursuitNavigationTopology.BuildPortalLinks()、PursuitNavigationTopology.IsSupportedRegionAwayFromPortals(Vector3, int) 等共 6 处。</summary>
+        /// <summary>门。</summary>
         public DoorController door;
-        /// <summary>中文含义：正向区域。使用位置：PursuitNavigationTopology.BuildPortalLinks()、PursuitNavigationTopology.PortalLink.GetOtherRegion(int)、PursuitNavigationTopology.PortalLink.GetSideForRegion(int) 等共 6 处。</summary>
+        /// <summary>正向区域。</summary>
         public int positiveRegion;
-        /// <summary>中文含义：负值区域。使用位置：PursuitNavigationTopology.BuildPortalLinks()、PursuitNavigationTopology.PortalLink.GetOtherRegion(int)、PursuitNavigationTopology.PortalLink.GetSideForRegion(int) 等共 6 处。</summary>
+        /// <summary>负值区域。</summary>
         public int negativeRegion;
         /// <summary>GetOtherRegion 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
         /// <remarks>静态调用链：上游 PursuitNavigationTopology.AreRegionsDirectlyConnected(int, int)、PursuitNavigationTopology.TryFindCrossedPortal(Vector3, Vector3, int, out int)、PursuitNavigationTopology.TryFindFirstPortal(int, int, out DoorController, out int)；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-        /// <param name="region">中文含义：区域。使用位置：PursuitNavigationTopology.PortalLink.GetOtherRegion(int)。</param>
+        /// <param name="region">区域。</param>
         public int GetOtherRegion(int region)
         {
             if (region == positiveRegion)
@@ -39,7 +39,7 @@ public static class PursuitNavigationTopology
 
         /// <summary>GetSideForRegion 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
         /// <remarks>静态调用链：上游 PursuitNavigationTopology.TryFindCrossedPortal(Vector3, Vector3, int, out int)、PursuitNavigationTopology.TryFindFirstPortal(int, int, out DoorController, out int)；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-        /// <param name="region">中文含义：区域。使用位置：PursuitNavigationTopology.PortalLink.GetSideForRegion(int)。</param>
+        /// <param name="region">区域。</param>
         public int GetSideForRegion(int region)
         {
             if (region == positiveRegion)
@@ -56,39 +56,39 @@ public static class PursuitNavigationTopology
         }
     }
 
-    /// <summary>中文含义：节点集合。只读字段，初始化后不由普通写入口替换。使用位置：作为 NavGraph.GetNodes(Action&lt;GraphNode&gt;) 的参数、PursuitNavigationTopology.BuildRegions()、PursuitNavigationTopology.FindDoorSideRegion(DoorController, int) 等共 6 处。</summary>
+    /// <summary>节点集合。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly List<GraphNode> nodes = new();
-    /// <summary>中文含义：门集合。只读字段，初始化后不由普通写入口替换。使用位置：作为 DoorController.CopyActiveSceneDoors(List&lt;DoorController&gt;) 的参数、PursuitNavigationTopology.BuildPortalLinks()、PursuitNavigationTopology.Invalidate() 等共 4 处。</summary>
+    /// <summary>门集合。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly List<DoorController> doors = new();
-    /// <summary>中文含义：通行口节点集合。只读字段，初始化后不由普通写入口替换。使用位置：作为 GraphNode.GetConnections(Action&lt;GraphNode&gt;, int) 的参数、PursuitNavigationTopology.BuildRegions()、PursuitNavigationTopology.Invalidate() 等共 4 处。</summary>
+    /// <summary>通行口节点集合。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly HashSet<GraphNode> gateNodes = new();
-    /// <summary>中文含义：通行口节点拥有者集合。只读字段，初始化后不由普通写入口替换。使用位置：PursuitNavigationTopology.Invalidate()、PursuitNavigationTopology.MarkGateNodes()、PursuitNavigationTopology.TryGetRegion(Vector3, out int)。</summary>
+    /// <summary>通行口节点拥有者集合。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly Dictionary<GraphNode, DoorController> gateNodeOwners = new();
-    /// <summary>中文含义：节点区域集合。只读字段，初始化后不由普通写入口替换。使用位置：作为 GraphNode.GetConnections(Action&lt;GraphNode&gt;, int) 的参数、PursuitNavigationTopology.BuildRegions()、PursuitNavigationTopology.FindDoorSideRegion(DoorController, int) 等共 7 处。</summary>
+    /// <summary>节点区域集合。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly Dictionary<GraphNode, int> nodeRegions = new();
-    /// <summary>中文含义：区域连接集合。只读字段，初始化后不由普通写入口替换。使用位置：PursuitNavigationTopology.AddRegionLink(int, PursuitNavigationTopology.PortalLink)、PursuitNavigationTopology.AreRegionsDirectlyConnected(int, int)、PursuitNavigationTopology.Invalidate() 等共 7 处。</summary>
+    /// <summary>区域连接集合。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly Dictionary<int, List<PortalLink>> regionLinks = new();
-    /// <summary>中文含义：门连接集合。只读字段，初始化后不由普通写入口替换。使用位置：PursuitNavigationTopology.BuildPortalLinks()、PursuitNavigationTopology.Invalidate()、PursuitNavigationTopology.TryGetDoorRegions(DoorController, out int, out int) 等共 4 处。</summary>
+    /// <summary>门连接集合。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly Dictionary<DoorController, PortalLink> doorLinks = new();
-    /// <summary>中文含义：节点队列。只读字段，初始化后不由普通写入口替换。使用位置：作为 GraphNode.GetConnections(Action&lt;GraphNode&gt;, int) 的参数、PursuitNavigationTopology.BuildRegions()。</summary>
+    /// <summary>节点队列。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly Queue<GraphNode> nodeQueue = new();
-    /// <summary>中文含义：区域队列。只读字段，初始化后不由普通写入口替换。使用位置：PursuitNavigationTopology.TryFindFirstPortal(int, int, out DoorController, out int)。</summary>
+    /// <summary>区域队列。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly Queue<int> regionQueue = new();
-    /// <summary>中文含义：已访问区域集合。只读字段，初始化后不由普通写入口替换。使用位置：PursuitNavigationTopology.TryFindFirstPortal(int, int, out DoorController, out int)。</summary>
+    /// <summary>已访问区域集合。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly HashSet<int> visitedRegions = new();
-    /// <summary>中文含义：前一次区域集合。只读字段，初始化后不由普通写入口替换。使用位置：PursuitNavigationTopology.TryFindFirstPortal(int, int, out DoorController, out int)。</summary>
+    /// <summary>前一次区域集合。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly Dictionary<int, int> previousRegions = new();
-    /// <summary>中文含义：前一次连接集合。只读字段，初始化后不由普通写入口替换。使用位置：PursuitNavigationTopology.TryFindFirstPortal(int, int, out DoorController, out int)。</summary>
+    /// <summary>前一次连接集合。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly Dictionary<int, PortalLink> previousLinks = new();
-    /// <summary>中文含义：区域支撑查询集合。只读字段，初始化后不由普通写入口替换。使用位置：PursuitNavigationTopology.IsSupportedRegionAwayFromPortals(Vector3, int)。</summary>
+    /// <summary>区域支撑查询集合。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly HitQueryBuffer regionSupportQueries = new();
-    /// <summary>中文含义：已构建星形寻路。使用位置：PursuitNavigationTopology.Build(AstarPath)、PursuitNavigationTopology.EnsureBuilt()、PursuitNavigationTopology.Invalidate()。</summary>
+    /// <summary>已构建星形寻路。</summary>
     private static AstarPath builtAstar;
-    /// <summary>中文含义：拓扑是否就绪。使用位置：PursuitNavigationTopology.Build(AstarPath)、PursuitNavigationTopology.EnsureBuilt()、PursuitNavigationTopology.Invalidate() 等共 4 处。</summary>
+    /// <summary>拓扑是否就绪。</summary>
     private static bool topologyReady;
-    /// <summary>中文含义：是否建筑拓扑。使用位置：PursuitNavigationTopology.EnsureBuilt()。</summary>
+    /// <summary>是否建筑拓扑。</summary>
     private static bool buildingTopology;
-    /// <summary>中文含义：区域数量。使用位置：PursuitNavigationTopology.Build(AstarPath)、PursuitNavigationTopology.BuildRegions()、PursuitNavigationTopology.Invalidate() 等共 4 处。</summary>
+    /// <summary>区域数量。</summary>
     private static int regionCount;
     /// <summary>中文含义：是否就绪。</summary>
     public static bool IsReady
@@ -128,8 +128,8 @@ public static class PursuitNavigationTopology
 
     /// <summary>TryGetRegion 的业务处理入口；本方法直接依赖 AstarPath.GetNearest(Vector3, NearestNodeConstraint)、Dictionary&lt;DoorController, PursuitNavigationTopology.PortalLink&gt;.TryGetValue(DoorController, out PursuitNavigationTopology.PortalLink)、Dictionary&lt;GraphNode, DoorController&gt;.TryGetValue(GraphNode, out DoorController)、Dictionary&lt;GraphNode, int&gt;.TryGetValue(GraphNode, out int)、Mathf.Abs(float)、PursuitNavigationTopology.EnsureBuilt()、PursuitNavigationTopology.TryCorrectRegionByNearbyPortal(Vector3, int, out int) 等共 9 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyAIManager.IsFormationSlotOnPlayerSide(Vector3, Vector3)、EnemyAIManager.UpdatePlayerPursuitRegion()、PursuitNavigationTopology.TryResolveRegions(Vector3, Vector3, out int, out int)、VillagerController.TryResolveCurrentPursuitRegions(Vector3, out int, out int)；下游（含内部回调体） AstarPath.GetNearest(Vector3, NearestNodeConstraint)、Dictionary&lt;DoorController, PursuitNavigationTopology.PortalLink&gt;.TryGetValue(DoorController, out PursuitNavigationTopology.PortalLink)、Dictionary&lt;GraphNode, DoorController&gt;.TryGetValue(GraphNode, out DoorController)、Dictionary&lt;GraphNode, int&gt;.TryGetValue(GraphNode, out int)、Mathf.Abs(float)、PursuitNavigationTopology.EnsureBuilt()、PursuitNavigationTopology.TryCorrectRegionByNearbyPortal(Vector3, int, out int) 等共 9 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="point">中文含义：点。使用位置：作为 AstarPath.GetNearest(Vector3, NearestNodeConstraint) 的参数、作为 PursuitNavigationTopology.TryCorrectRegionByNearbyPortal(Vector3, int, out int) 的参数、作为 PursuitNavigationTopology.TryFindNearestRegion(Vector3, out int) 的参数 等共 4 处。</param>
-    /// <param name="region">中文含义：区域。输出参数，由本入口写入并交给调用方。使用位置：作为 Dictionary&lt;GraphNode, int&gt;.TryGetValue(GraphNode, out int) 的参数、作为 PursuitNavigationTopology.TryCorrectRegionByNearbyPortal(Vector3, int, out int) 的参数、作为 PursuitNavigationTopology.TryFindNearestRegion(Vector3, out int) 的参数 等共 4 处。</param>
+    /// <param name="point">点。</param>
+    /// <param name="region">区域。输出参数，由本入口写入并交给调用方。</param>
     public static bool TryGetRegion(Vector3 point, out int region)
     {
         region = -1;
@@ -138,7 +138,7 @@ public static class PursuitNavigationTopology
             return false;
         }
 
-        // nearest（最近）：保存 AstarPath.GetNearest(Vector3, NearestNodeConstraint) 的返回结果，供当前步骤使用。使用位置：作为 Dictionary<GraphNode, DoorController>.TryGetValue(GraphNode, out DoorController) 的参数、作为 Dictionary<GraphNode, int>.TryGetValue(GraphNode, out int) 的参数、PursuitNavigationTopology.TryGetRegion(Vector3, out int)。
+        // 最近。
 NNInfo nearest = AstarPath.active.GetNearest(point, NearestNodeConstraint.Walkable);
         if (nearest.node == null)
         {
@@ -147,7 +147,7 @@ NNInfo nearest = AstarPath.active.GetNearest(point, NearestNodeConstraint.Walkab
 
         if (!nodeRegions.TryGetValue(nearest.node, out region) && gateNodeOwners.TryGetValue(nearest.node, out DoorController /* 中文含义：通行口门。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ gateDoor) && doorLinks.TryGetValue(gateDoor, out PortalLink /* 中文含义：通行口连接。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ gateLink))
         {
-            // side（侧边）：保存 Vector3.Dot(Vector3, Vector3) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Abs(float) 的参数、PursuitNavigationTopology.TryGetRegion(Vector3, out int)。
+            // 侧边。
 float side = Vector3.Dot(point - gateDoor.PassageCenter, gateDoor.PassageNormal);
             if (Mathf.Abs(side) > 0.03f)
             {
@@ -181,10 +181,10 @@ float side = Vector3.Dot(point - gateDoor.PassageCenter, gateDoor.PassageNormal)
 
     /// <summary>TryResolveRegions 的业务处理入口；本方法直接依赖 PursuitNavigationTopology.TryGetRegion(Vector3, out int)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 DoorController.TryFindPassageTowardDestination(Vector3, Vector3, out DoorController, out int)、PursuitNavigationTopology.TryFindFirstPortal(Vector3, Vector3, out DoorController, out int)；下游（含内部回调体） PursuitNavigationTopology.TryGetRegion(Vector3, out int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="source">中文含义：来源。使用位置：作为 PursuitNavigationTopology.TryGetRegion(Vector3, out int) 的参数。</param>
-    /// <param name="destination">中文含义：目的地。使用位置：作为 PursuitNavigationTopology.TryGetRegion(Vector3, out int) 的参数。</param>
-    /// <param name="sourceRegion">中文含义：来源区域。输出参数，由本入口写入并交给调用方。使用位置：作为 PursuitNavigationTopology.TryGetRegion(Vector3, out int) 的参数、PursuitNavigationTopology.TryResolveRegions(Vector3, Vector3, out int, out int)。</param>
-    /// <param name="destinationRegion">中文含义：目的地区域。输出参数，由本入口写入并交给调用方。使用位置：作为 PursuitNavigationTopology.TryGetRegion(Vector3, out int) 的参数、PursuitNavigationTopology.TryResolveRegions(Vector3, Vector3, out int, out int)。</param>
+    /// <param name="source">来源。</param>
+    /// <param name="destination">目的地。</param>
+    /// <param name="sourceRegion">来源区域。输出参数，由本入口写入并交给调用方。</param>
+    /// <param name="destinationRegion">目的地区域。输出参数，由本入口写入并交给调用方。</param>
     public static bool TryResolveRegions(Vector3 source, Vector3 destination, out int sourceRegion, out int destinationRegion)
     {
         sourceRegion = -1;
@@ -194,10 +194,10 @@ float side = Vector3.Dot(point - gateDoor.PassageCenter, gateDoor.PassageNormal)
 
     /// <summary>TryFindFirstPortal 的业务处理入口；本方法直接依赖 PursuitNavigationTopology.TryFindFirstPortal(int, int, out DoorController, out int)、PursuitNavigationTopology.TryResolveRegions(Vector3, Vector3, out int, out int)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 DoorController.TryFindPassageTowardDestination(Vector3, Vector3, out DoorController, out int)；下游（含内部回调体） PursuitNavigationTopology.TryFindFirstPortal(int, int, out DoorController, out int)、PursuitNavigationTopology.TryResolveRegions(Vector3, Vector3, out int, out int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="source">中文含义：来源。使用位置：作为 PursuitNavigationTopology.TryResolveRegions(Vector3, Vector3, out int, out int) 的参数。</param>
-    /// <param name="destination">中文含义：目的地。使用位置：作为 PursuitNavigationTopology.TryResolveRegions(Vector3, Vector3, out int, out int) 的参数。</param>
-    /// <param name="passageDoor">中文含义：通道门。输出参数，由本入口写入并交给调用方。使用位置：作为 PursuitNavigationTopology.TryFindFirstPortal(int, int, out DoorController, out int) 的参数、PursuitNavigationTopology.TryFindFirstPortal(Vector3, Vector3, out DoorController, out int)。</param>
-    /// <param name="sourceSide">中文含义：来源侧边。输出参数，由本入口写入并交给调用方。使用位置：作为 PursuitNavigationTopology.TryFindFirstPortal(int, int, out DoorController, out int) 的参数、PursuitNavigationTopology.TryFindFirstPortal(Vector3, Vector3, out DoorController, out int)。</param>
+    /// <param name="source">来源。</param>
+    /// <param name="destination">目的地。</param>
+    /// <param name="passageDoor">通道门。输出参数，由本入口写入并交给调用方。</param>
+    /// <param name="sourceSide">来源侧边。输出参数，由本入口写入并交给调用方。</param>
     public static bool TryFindFirstPortal(Vector3 source, Vector3 destination, out DoorController passageDoor, out int sourceSide)
     {
         passageDoor = null;
@@ -212,10 +212,10 @@ float side = Vector3.Dot(point - gateDoor.PassageCenter, gateDoor.PassageNormal)
 
     /// <summary>TryFindFirstPortal 的业务处理入口；本方法直接依赖 Dictionary&lt;int, int&gt;.Clear()、Dictionary&lt;int, int&gt;.TryGetValue(int, out int)、Dictionary&lt;int, List&lt;PursuitNavigationTopology.PortalLink&gt; &gt;.TryGetValue(int, out List&lt;PursuitNavigationTopology.PortalLink&gt;)、Dictionary&lt;int, PursuitNavigationTopology.PortalLink&gt;.Clear()、HashSet&lt;int&gt;.Add(int)、HashSet&lt;int&gt;.Clear()、PursuitNavigationTopology.EnsureBuilt() 等共 12 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 PursuitNavigationTopology.TryFindFirstPortal(Vector3, Vector3, out DoorController, out int)、VillagerController.TryGetSameLevelPursuitIngressDestination(Vector3, out Vector3)；下游（含内部回调体） Dictionary&lt;int, int&gt;.Clear()、Dictionary&lt;int, int&gt;.TryGetValue(int, out int)、Dictionary&lt;int, List&lt;PursuitNavigationTopology.PortalLink&gt; &gt;.TryGetValue(int, out List&lt;PursuitNavigationTopology.PortalLink&gt;)、Dictionary&lt;int, PursuitNavigationTopology.PortalLink&gt;.Clear()、HashSet&lt;int&gt;.Add(int)、HashSet&lt;int&gt;.Clear()、PursuitNavigationTopology.EnsureBuilt() 等共 12 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="sourceRegion">中文含义：来源区域。使用位置：作为 HashSet&lt;int&gt;.Add(int) 的参数、作为 PursuitNavigationTopology.PortalLink.GetSideForRegion(int) 的参数、作为 Queue&lt;int&gt;.Enqueue(int) 的参数 等共 4 处。</param>
-    /// <param name="destinationRegion">中文含义：目的地区域。使用位置：PursuitNavigationTopology.TryFindFirstPortal(int, int, out DoorController, out int)。</param>
-    /// <param name="passageDoor">中文含义：通道门。输出参数，由本入口写入并交给调用方。使用位置：PursuitNavigationTopology.TryFindFirstPortal(int, int, out DoorController, out int)。</param>
-    /// <param name="sourceSide">中文含义：来源侧边。输出参数，由本入口写入并交给调用方。使用位置：PursuitNavigationTopology.TryFindFirstPortal(int, int, out DoorController, out int)。</param>
+    /// <param name="sourceRegion">来源区域。</param>
+    /// <param name="destinationRegion">目的地区域。</param>
+    /// <param name="passageDoor">通道门。输出参数，由本入口写入并交给调用方。</param>
+    /// <param name="sourceSide">来源侧边。输出参数，由本入口写入并交给调用方。</param>
     public static bool TryFindFirstPortal(int sourceRegion, int destinationRegion, out DoorController passageDoor, out int sourceSide)
     {
         passageDoor = null;
@@ -233,24 +233,24 @@ float side = Vector3.Dot(point - gateDoor.PassageCenter, gateDoor.PassageNormal)
         visitedRegions.Add(sourceRegion);
         while (regionQueue.Count > 0)
         {
-            // currentRegion（当前区域）：保存 Queue<int>.Dequeue() 的返回结果，供当前步骤使用。使用位置：作为 Dictionary<int, List<PursuitNavigationTopology.PortalLink>>.TryGetValue(int, out List<PursuitNavigationTopology.PortalLink>) 的参数、作为 PursuitNavigationTopology.PortalLink.GetOtherRegion(int) 的参数、PursuitNavigationTopology.TryFindFirstPortal(int, int, out DoorController, out int)。
+            // 当前区域。
 int currentRegion = regionQueue.Dequeue();
             if (!regionLinks.TryGetValue(currentRegion, out List<PortalLink> /* 中文含义：连接集合。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ links))
             {
                 continue;
             }
 
-            // index（当前元素索引）：使用位置：作为 List<PursuitNavigationTopology.PortalLink>.this[int] 的参数、PursuitNavigationTopology.TryFindFirstPortal(int, int, out DoorController, out int)。
+            // 当前元素索引。
 for (int index = 0; index < links.Count; index++)
             {
-                // link（连接）：使用位置：PursuitNavigationTopology.TryFindFirstPortal(int, int, out DoorController, out int)。
+                // 连接。
 PortalLink link = links[index];
                 if (link == null || link.door == null || !link.door.isActiveAndEnabled)
                 {
                     continue;
                 }
 
-                // nextRegion（下一次区域）：保存 PursuitNavigationTopology.PortalLink.GetOtherRegion(int) 的返回结果，供当前步骤使用。使用位置：作为 Dictionary<int, int>.this[int] 的参数、作为 Dictionary<int, PursuitNavigationTopology.PortalLink>.this[int] 的参数、作为 HashSet<int>.Add(int) 的参数 等共 5 处。
+                // 下一次区域。
 int nextRegion = link.GetOtherRegion(currentRegion);
                 if (nextRegion < 0 || !visitedRegions.Add(nextRegion))
                 {
@@ -261,9 +261,9 @@ int nextRegion = link.GetOtherRegion(currentRegion);
                 previousLinks[nextRegion] = link;
                 if (nextRegion == destinationRegion)
                 {
-                    // routeRegion（路线区域）：使用位置：作为 Dictionary<int, int>.TryGetValue(int, out int) 的参数、PursuitNavigationTopology.TryFindFirstPortal(int, int, out DoorController, out int)。
+                    // 路线区域。
 int routeRegion = destinationRegion;
-                    // firstLink（首个连接）：使用位置：PursuitNavigationTopology.TryFindFirstPortal(int, int, out DoorController, out int)。
+                    // 首个连接。
 PortalLink firstLink = link;
                     while (previousRegions.TryGetValue(routeRegion, out int /* 中文含义：前一次区域。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ previousRegion) && previousRegion != sourceRegion)
                     {
@@ -285,8 +285,8 @@ PortalLink firstLink = link;
 
     /// <summary>AreRegionsDirectlyConnected 的业务处理入口；本方法直接依赖 Dictionary&lt;int, List&lt;PursuitNavigationTopology.PortalLink&gt; &gt;.TryGetValue(int, out List&lt;PursuitNavigationTopology.PortalLink&gt;)、PursuitNavigationTopology.EnsureBuilt()、PursuitNavigationTopology.PortalLink.GetOtherRegion(int)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyAIManager.UpdatePlayerPursuitRegion()；下游（含内部回调体） Dictionary&lt;int, List&lt;PursuitNavigationTopology.PortalLink&gt; &gt;.TryGetValue(int, out List&lt;PursuitNavigationTopology.PortalLink&gt;)、PursuitNavigationTopology.EnsureBuilt()、PursuitNavigationTopology.PortalLink.GetOtherRegion(int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="firstRegion">中文含义：首个区域。使用位置：作为 Dictionary&lt;int, List&lt;PursuitNavigationTopology.PortalLink&gt; &gt;.TryGetValue(int, out List&lt;PursuitNavigationTopology.PortalLink&gt;) 的参数、作为 PursuitNavigationTopology.PortalLink.GetOtherRegion(int) 的参数、PursuitNavigationTopology.AreRegionsDirectlyConnected(int, int)。</param>
-    /// <param name="secondRegion">中文含义：第二区域。使用位置：PursuitNavigationTopology.AreRegionsDirectlyConnected(int, int)。</param>
+    /// <param name="firstRegion">首个区域。</param>
+    /// <param name="secondRegion">第二区域。</param>
     public static bool AreRegionsDirectlyConnected(int firstRegion, int secondRegion)
     {
         if (!EnsureBuilt() || firstRegion < 0 || secondRegion < 0 || !regionLinks.TryGetValue(firstRegion, out List<PortalLink> /* 中文含义：连接集合。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ links))
@@ -294,10 +294,10 @@ PortalLink firstLink = link;
             return false;
         }
 
-        // index（当前元素索引）：使用位置：作为 List<PursuitNavigationTopology.PortalLink>.this[int] 的参数、PursuitNavigationTopology.AreRegionsDirectlyConnected(int, int)。
+        // 当前元素索引。
 for (int index = 0; index < links.Count; index++)
         {
-            // link（连接）：使用位置：PursuitNavigationTopology.AreRegionsDirectlyConnected(int, int)。
+            // 连接。
 PortalLink link = links[index];
             if (link != null && link.door != null && link.GetOtherRegion(firstRegion) == secondRegion)
             {
@@ -313,8 +313,8 @@ PortalLink link = links[index];
     /// 门附近、悬空、跨墙投影和跨层投影不能作为绕过穿门判定的证据。
     /// </summary>
     /// <remarks>静态调用链：上游 EnemyAIManager.UpdatePlayerPursuitRegion()；下游（含内部回调体） AstarPath.GetNearest(Vector3, NearestNodeConstraint)、Dictionary&lt;GraphNode, int&gt;.TryGetValue(GraphNode, out int)、Dictionary&lt;int, List&lt;PursuitNavigationTopology.PortalLink&gt; &gt;.TryGetValue(int, out List&lt;PursuitNavigationTopology.PortalLink&gt;)、HitQueryBuffer.Raycast(Vector3, Vector3, float, int, QueryTriggerInteraction, out int)、Mathf.Abs(float)、Mathf.Max(float, float)、object.ReferenceEquals(object, object) 等共 10 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="point">中文含义：点。使用位置：作为 AstarPath.GetNearest(Vector3, NearestNodeConstraint) 的参数、作为 HitQueryBuffer.Raycast(Vector3, Vector3, float, int, QueryTriggerInteraction, out int) 的参数、作为 Mathf.Abs(float) 的参数 等共 4 处。</param>
-    /// <param name="region">中文含义：区域。使用位置：作为 Dictionary&lt;int, List&lt;PursuitNavigationTopology.PortalLink&gt; &gt;.TryGetValue(int, out List&lt;PursuitNavigationTopology.PortalLink&gt;) 的参数、PursuitNavigationTopology.IsSupportedRegionAwayFromPortals(Vector3, int)。</param>
+    /// <param name="point">点。</param>
+    /// <param name="region">区域。</param>
     public static bool IsSupportedRegionAwayFromPortals(Vector3 point, int region)
     {
         if (!EnsureBuilt() || AstarPath.active == null || region < 0)
@@ -327,9 +327,9 @@ PortalLink link = links[index];
             // link（连接）：每轮从连接集合取得一个元素，仅代表当前这一项。使用位置：PursuitNavigationTopology.IsSupportedRegionAwayFromPortals(Vector3, int)。
 foreach (PortalLink link in links)
             {
-                // receiverValue2（判空前缓存的连接）：从连接读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、PursuitNavigationTopology.IsSupportedRegionAwayFromPortals(Vector3, int)。
+                // 判空前缓存的连接。
 global::PursuitNavigationTopology.PortalLink receiverValue2 = link;
-                // door（门）：使用位置：作为 Mathf.Max(float, float) 的参数、作为 Vector3.Dot(Vector3, Vector3) 的参数、PursuitNavigationTopology.IsSupportedRegionAwayFromPortals(Vector3, int)。
+                // 门。
 DoorController door;
                 if (!global::System.Object.ReferenceEquals(receiverValue2, null))
                 {
@@ -345,7 +345,7 @@ DoorController door;
                     continue;
                 }
 
-                // offset（偏移量）：使用位置：作为 Mathf.Abs(float) 的参数、作为 Vector3.Dot(Vector3, Vector3) 的参数、PursuitNavigationTopology.IsSupportedRegionAwayFromPortals(Vector3, int)。
+                // 偏移量。
 Vector3 offset = point - door.PassageCenter;
                 if (Mathf.Abs(offset.y) > Mathf.Max(1.5f, door.TopologyVerticalTolerance))
                 {
@@ -360,16 +360,16 @@ Vector3 offset = point - door.PassageCenter;
             }
         }
 
-        // nearest（最近）：保存 AstarPath.GetNearest(Vector3, NearestNodeConstraint) 的返回结果，供当前步骤使用。使用位置：作为 Dictionary<GraphNode, int>.TryGetValue(GraphNode, out int) 的参数、PursuitNavigationTopology.IsSupportedRegionAwayFromPortals(Vector3, int)。
+        // 最近。
 NNInfo nearest = AstarPath.active.GetNearest(point, NearestNodeConstraint.Walkable);
         if (nearest.node == null || !nodeRegions.TryGetValue(nearest.node, out int /* 中文含义：节点区域。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ nodeRegion) || nodeRegion != region)
         {
             return false;
         }
 
-        // projected（投影后的）：使用位置：作为 Mathf.Abs(float) 的参数、PursuitNavigationTopology.IsSupportedRegionAwayFromPortals(Vector3, int)。
+        // 投影后的。
 Vector3 projected = nearest.position;
-        // horizontal（水平）：使用位置：作为 HitQueryBuffer.Raycast(Vector3, Vector3, float, int, QueryTriggerInteraction, out int) 的参数、PursuitNavigationTopology.IsSupportedRegionAwayFromPortals(Vector3, int)。
+        // 水平。
 Vector3 horizontal = projected - point;
         horizontal.y = 0f;
         if (horizontal.sqrMagnitude > 0.75f * 0.75f || Mathf.Abs(projected.y - point.y) > 0.35f)
@@ -377,14 +377,14 @@ Vector3 horizontal = projected - point;
             return false;
         }
 
-        // hits（命中结果）：保存 HitQueryBuffer.Raycast(Vector3, Vector3, float, int, QueryTriggerInteraction, out int) 的返回结果，供当前步骤使用。使用位置：作为 PursuitNavigationTopology.IsActorCollider(Collider) 的参数、PursuitNavigationTopology.IsSupportedRegionAwayFromPortals(Vector3, int)。
+        // 命中结果。
 RaycastHit[] hits = regionSupportQueries.Raycast(point + Vector3.up * 0.4f, Vector3.down, 0.75f, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore, out int /* 中文含义：命中数量。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ hitCount);
-        // supported（是否支持的）：使用位置：PursuitNavigationTopology.IsSupportedRegionAwayFromPortals(Vector3, int)。
+        // 是否支持的。
 bool supported = false;
-        // index（当前元素索引）：使用位置：PursuitNavigationTopology.IsSupportedRegionAwayFromPortals(Vector3, int)。
+        // 当前元素索引。
 for (int index = 0; index < hitCount; index++)
         {
-            // hit（命中）：使用位置：作为 Mathf.Abs(float) 的参数、作为 PursuitNavigationTopology.IsActorCollider(Collider) 的参数、PursuitNavigationTopology.IsSupportedRegionAwayFromPortals(Vector3, int)。
+            // 命中。
 RaycastHit hit = hits[index];
             if (IsActorCollider(hit.collider))
             {
@@ -402,7 +402,7 @@ RaycastHit hit = hits[index];
             return false;
         }
 
-        // horizontalDistance（水平距离）：使用位置：作为 HitQueryBuffer.Raycast(Vector3, Vector3, float, int, QueryTriggerInteraction, out int) 的参数、PursuitNavigationTopology.IsSupportedRegionAwayFromPortals(Vector3, int)。
+        // 水平距离。
 float horizontalDistance = horizontal.magnitude;
         if (horizontalDistance <= 0.01f)
         {
@@ -410,7 +410,7 @@ float horizontalDistance = horizontal.magnitude;
         }
 
         hits = regionSupportQueries.Raycast(point + Vector3.up * 0.65f, horizontal / horizontalDistance, horizontalDistance, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore, out hitCount);
-        // index（当前元素索引）：使用位置：PursuitNavigationTopology.IsSupportedRegionAwayFromPortals(Vector3, int)。
+        // 当前元素索引。
 for (int index = 0; index < hitCount; index++)
         {
             if (!IsActorCollider(hits[index].collider))
@@ -424,7 +424,7 @@ for (int index = 0; index < hitCount; index++)
 
     /// <summary>IsActorCollider 的业务处理入口；本方法直接依赖 Component.GetComponentInParent&lt;LeonController&gt;()、Component.GetComponentInParent&lt;VillagerController&gt;()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 PursuitNavigationTopology.IsSupportedRegionAwayFromPortals(Vector3, int)；下游（含内部回调体） Component.GetComponentInParent&lt;LeonController&gt;()、Component.GetComponentInParent&lt;VillagerController&gt;()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="collider">中文含义：碰撞体。使用位置：PursuitNavigationTopology.IsActorCollider(Collider)。</param>
+    /// <param name="collider">碰撞体。</param>
     private static bool IsActorCollider(Collider collider)
     {
         return collider == null || collider.GetComponentInParent<LeonController>() != null || collider.GetComponentInParent<VillagerController>() != null;
@@ -436,10 +436,10 @@ for (int index = 0; index < hitCount; index++)
     /// 区域转换的权威证据。
     /// </summary>
     /// <remarks>静态调用链：上游 EnemyAIManager.UpdatePlayerPursuitRegion()；下游（含内部回调体） Dictionary&lt;int, List&lt;PursuitNavigationTopology.PortalLink&gt; &gt;.TryGetValue(int, out List&lt;PursuitNavigationTopology.PortalLink&gt;)、Mathf.Abs(float)、Mathf.Clamp01(float)、Mathf.Max(float, float)、object.ReferenceEquals(object, object)、PursuitNavigationTopology.EnsureBuilt()、PursuitNavigationTopology.PortalLink.GetOtherRegion(int) 等共 10 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="source">中文含义：来源。使用位置：作为 Vector3.Dot(Vector3, Vector3) 的参数、作为 Vector3.Lerp(Vector3, Vector3, float) 的参数。</param>
-    /// <param name="destination">中文含义：目的地。使用位置：作为 Vector3.Dot(Vector3, Vector3) 的参数、作为 Vector3.Lerp(Vector3, Vector3, float) 的参数。</param>
-    /// <param name="sourceRegion">中文含义：来源区域。使用位置：作为 Dictionary&lt;int, List&lt;PursuitNavigationTopology.PortalLink&gt; &gt;.TryGetValue(int, out List&lt;PursuitNavigationTopology.PortalLink&gt;) 的参数、作为 PursuitNavigationTopology.PortalLink.GetOtherRegion(int) 的参数、作为 PursuitNavigationTopology.PortalLink.GetSideForRegion(int) 的参数 等共 4 处。</param>
-    /// <param name="destinationRegion">中文含义：目的地区域。输出参数，由本入口写入并交给调用方。使用位置：PursuitNavigationTopology.TryFindCrossedPortal(Vector3, Vector3, int, out int)。</param>
+    /// <param name="source">来源。</param>
+    /// <param name="destination">目的地。</param>
+    /// <param name="sourceRegion">来源区域。</param>
+    /// <param name="destinationRegion">目的地区域。输出参数，由本入口写入并交给调用方。</param>
     public static bool TryFindCrossedPortal(Vector3 source, Vector3 destination, int sourceRegion, out int destinationRegion)
     {
         destinationRegion = sourceRegion;
@@ -448,18 +448,18 @@ for (int index = 0; index < hitCount; index++)
             return false;
         }
 
-        // earliestCrossing（最早跨越）：使用位置：PursuitNavigationTopology.TryFindCrossedPortal(Vector3, Vector3, int, out int)。
+        // 最早跨越。
 float earliestCrossing = float.PositiveInfinity;
-        // selectedRegion（选定区域）：使用位置：PursuitNavigationTopology.TryFindCrossedPortal(Vector3, Vector3, int, out int)。
+        // 选定区域。
 int selectedRegion = sourceRegion;
-        // index（当前元素索引）：使用位置：作为 List<PursuitNavigationTopology.PortalLink>.this[int] 的参数、PursuitNavigationTopology.TryFindCrossedPortal(Vector3, Vector3, int, out int)。
+        // 当前元素索引。
 for (int index = 0; index < links.Count; index++)
         {
-            // link（连接）：使用位置：PursuitNavigationTopology.TryFindCrossedPortal(Vector3, Vector3, int, out int)。
+            // 连接。
 PortalLink link = links[index];
-            // receiverValue4（判空前缓存的连接）：从连接读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、PursuitNavigationTopology.TryFindCrossedPortal(Vector3, Vector3, int, out int)。
+            // 判空前缓存的连接。
 global::PursuitNavigationTopology.PortalLink receiverValue4 = link;
-            // door（门）：使用位置：作为 Mathf.Max(float, float) 的参数、作为 Vector3.Dot(Vector3, Vector3) 的参数、PursuitNavigationTopology.TryFindCrossedPortal(Vector3, Vector3, int, out int)。
+            // 门。
 DoorController door;
             if (!global::System.Object.ReferenceEquals(receiverValue4, null))
             {
@@ -475,41 +475,41 @@ DoorController door;
                 continue;
             }
 
-            // sourceSide（来源侧边）：保存 PursuitNavigationTopology.PortalLink.GetSideForRegion(int) 的返回结果，供当前步骤使用。使用位置：PursuitNavigationTopology.TryFindCrossedPortal(Vector3, Vector3, int, out int)。
+            // 来源侧边。
 int sourceSide = link.GetSideForRegion(sourceRegion);
-            // otherRegion（另一个区域）：保存 PursuitNavigationTopology.PortalLink.GetOtherRegion(int) 的返回结果，供当前步骤使用。使用位置：PursuitNavigationTopology.TryFindCrossedPortal(Vector3, Vector3, int, out int)。
+            // 另一个区域。
 int otherRegion = link.GetOtherRegion(sourceRegion);
             if (sourceSide == 0 || otherRegion < 0)
             {
                 continue;
             }
 
-            // sourceDepth（来源深度）：保存 Vector3.Dot(Vector3, Vector3) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Clamp01(float) 的参数、PursuitNavigationTopology.TryFindCrossedPortal(Vector3, Vector3, int, out int)。
+            // 来源深度。
 float sourceDepth = Vector3.Dot(source - door.PassageCenter, door.PassageNormal);
-            // destinationDepth（目的地深度）：保存 Vector3.Dot(Vector3, Vector3) 的返回结果，供当前步骤使用。使用位置：PursuitNavigationTopology.TryFindCrossedPortal(Vector3, Vector3, int, out int)。
+            // 目的地深度。
 float destinationDepth = Vector3.Dot(destination - door.PassageCenter, door.PassageNormal);
             if (sourceDepth * sourceSide < -0.05f || destinationDepth * sourceSide >= -0.05f)
             {
                 continue;
             }
 
-            // depthDelta（深度增量）：使用位置：作为 Mathf.Abs(float) 的参数、作为 Mathf.Clamp01(float) 的参数。
+            // 深度增量。
 float depthDelta = sourceDepth - destinationDepth;
             if (Mathf.Abs(depthDelta) <= 0.0001f)
             {
                 continue;
             }
 
-            // crossingRatio（跨越比例）：保存 Mathf.Clamp01(float) 的返回结果，供当前步骤使用。使用位置：作为 Vector3.Lerp(Vector3, Vector3, float) 的参数、PursuitNavigationTopology.TryFindCrossedPortal(Vector3, Vector3, int, out int)。
+            // 跨越比例。
 float crossingRatio = Mathf.Clamp01(sourceDepth / depthDelta);
-            // crossingPoint（跨越点）：保存 Vector3.Lerp(Vector3, Vector3, float) 的返回结果，供当前步骤使用。使用位置：PursuitNavigationTopology.TryFindCrossedPortal(Vector3, Vector3, int, out int)。
+            // 跨越点。
 Vector3 crossingPoint = Vector3.Lerp(source, destination, crossingRatio);
-            // crossingOffset（跨越偏移量）：使用位置：作为 Mathf.Abs(float) 的参数、作为 Vector3.Dot(Vector3, Vector3) 的参数、PursuitNavigationTopology.TryFindCrossedPortal(Vector3, Vector3, int, out int)。
+            // 跨越偏移量。
 Vector3 crossingOffset = crossingPoint - door.PassageCenter;
-            // height（高度）：保存 Mathf.Abs(float) 的返回结果，供当前步骤使用。使用位置：PursuitNavigationTopology.TryFindCrossedPortal(Vector3, Vector3, int, out int)。
+            // 高度。
 float height = Mathf.Abs(crossingOffset.y);
             crossingOffset.y = 0f;
-            // lateral（侧向）：保存 Mathf.Abs(float) 的返回结果，供当前步骤使用。使用位置：PursuitNavigationTopology.TryFindCrossedPortal(Vector3, Vector3, int, out int)。
+            // 侧向。
 float lateral = Mathf.Abs(Vector3.Dot(crossingOffset, door.PassageTangent));
             if (height > Mathf.Max(1.5f, door.TopologyVerticalTolerance) || lateral > door.PassageHalfWidth + Mathf.Max(0.45f, door.TopologyCutPadding))
             {
@@ -536,9 +536,9 @@ float lateral = Mathf.Abs(Vector3.Dot(crossingOffset, door.PassageTangent));
 
     /// <summary>TryGetDoorRegions 的业务处理入口；本方法直接依赖 Dictionary&lt;DoorController, PursuitNavigationTopology.PortalLink&gt;.TryGetValue(DoorController, out PursuitNavigationTopology.PortalLink)、PursuitNavigationTopology.EnsureBuilt()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillagerController.TryGetSameLevelPursuitIngressDestination(Vector3, out Vector3)；下游（含内部回调体） Dictionary&lt;DoorController, PursuitNavigationTopology.PortalLink&gt;.TryGetValue(DoorController, out PursuitNavigationTopology.PortalLink)、PursuitNavigationTopology.EnsureBuilt()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="door">中文含义：门。使用位置：作为 Dictionary&lt;DoorController, PursuitNavigationTopology.PortalLink&gt;.TryGetValue(DoorController, out PursuitNavigationTopology.PortalLink) 的参数、PursuitNavigationTopology.TryGetDoorRegions(DoorController, out int, out int)。</param>
-    /// <param name="positiveRegion">中文含义：正向区域。输出参数，由本入口写入并交给调用方。使用位置：PursuitNavigationTopology.TryGetDoorRegions(DoorController, out int, out int)。</param>
-    /// <param name="negativeRegion">中文含义：负值区域。输出参数，由本入口写入并交给调用方。使用位置：PursuitNavigationTopology.TryGetDoorRegions(DoorController, out int, out int)。</param>
+    /// <param name="door">门。</param>
+    /// <param name="positiveRegion">正向区域。输出参数，由本入口写入并交给调用方。</param>
+    /// <param name="negativeRegion">负值区域。输出参数，由本入口写入并交给调用方。</param>
     public static bool TryGetDoorRegions(DoorController door, out int positiveRegion, out int negativeRegion)
     {
         positiveRegion = -1;
@@ -557,7 +557,7 @@ float lateral = Mathf.Abs(Vector3.Dot(crossingOffset, door.PassageTangent));
     /// <remarks>静态调用链：上游 PursuitNavigationTopology.AreRegionsDirectlyConnected(int, int)、PursuitNavigationTopology.IsReady.get、PursuitNavigationTopology.IsSupportedRegionAwayFromPortals(Vector3, int)、PursuitNavigationTopology.RegionCount.get、PursuitNavigationTopology.TryFindCrossedPortal(Vector3, Vector3, int, out int) 等共 8 处；下游（含内部回调体） PursuitNavigationTopology.Build(AstarPath)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     private static bool EnsureBuilt()
     {
-        // activeAstar（生效星形寻路）：使用位置：作为 PursuitNavigationTopology.Build(AstarPath) 的参数、PursuitNavigationTopology.EnsureBuilt()。
+        // 生效星形寻路。
 AstarPath activeAstar = AstarPath.active;
         if (topologyReady && builtAstar == activeAstar)
         {
@@ -584,16 +584,16 @@ AstarPath activeAstar = AstarPath.active;
 
     /// <summary>Build 的业务处理入口；本方法直接依赖 DoorController.CopyActiveSceneDoors(List&lt;DoorController&gt;)、List&lt;GraphNode&gt;.Add(GraphNode)、NavGraph.GetNodes(Action&lt;GraphNode&gt;)、PursuitNavigationTopology.BuildPortalLinks()、PursuitNavigationTopology.BuildRegions()、PursuitNavigationTopology.Invalidate()、PursuitNavigationTopology.MarkGateNodes()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 PursuitNavigationTopology.EnsureBuilt()；下游（含内部回调体） DoorController.CopyActiveSceneDoors(List&lt;DoorController&gt;)、List&lt;GraphNode&gt;.Add(GraphNode)、NavGraph.GetNodes(Action&lt;GraphNode&gt;)、PursuitNavigationTopology.BuildPortalLinks()、PursuitNavigationTopology.BuildRegions()、PursuitNavigationTopology.Invalidate()、PursuitNavigationTopology.MarkGateNodes()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="activeAstar">中文含义：生效星形寻路。使用位置：PursuitNavigationTopology.Build(AstarPath)。</param>
+    /// <param name="activeAstar">生效星形寻路。</param>
     private static void Build(AstarPath activeAstar)
     {
         Invalidate();
         builtAstar = activeAstar;
         DoorController.CopyActiveSceneDoors(doors);
-        // graphIndex（导航图索引）：使用位置：PursuitNavigationTopology.Build(AstarPath)。
+        // 导航图索引。
 for (int graphIndex = 0; graphIndex < activeAstar.graphs.Length; graphIndex++)
         {
-            // graph（导航图）：使用位置：PursuitNavigationTopology.Build(AstarPath)。
+            // 导航图。
 NavGraph graph = activeAstar.graphs[graphIndex];
             if (graph == null)
             {
@@ -619,21 +619,21 @@ NavGraph graph = activeAstar.graphs[graphIndex];
     /// <remarks>静态调用链：上游 PursuitNavigationTopology.Build(AstarPath)；下游（含内部回调体） HashSet&lt;GraphNode&gt;.Add(GraphNode)、PursuitNavigationTopology.IsNodeInsideDoorCut(Vector3, DoorController, out float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     private static void MarkGateNodes()
     {
-        // nodeIndex（节点索引）：使用位置：作为 List<GraphNode>.this[int] 的参数、PursuitNavigationTopology.MarkGateNodes()。
+        // 节点索引。
 for (int nodeIndex = 0; nodeIndex < nodes.Count; nodeIndex++)
         {
-            // node（节点）：使用位置：作为 Dictionary<GraphNode, DoorController>.this[GraphNode] 的参数、作为 HashSet<GraphNode>.Add(GraphNode) 的参数、PursuitNavigationTopology.MarkGateNodes()。
+            // 节点。
 GraphNode node = nodes[nodeIndex];
-            // point（点）：使用位置：作为 PursuitNavigationTopology.IsNodeInsideDoorCut(Vector3, DoorController, out float) 的参数。
+            // 点。
 Vector3 point = (Vector3)node.position;
-            // bestDoor（最佳门）：使用位置：PursuitNavigationTopology.MarkGateNodes()。
+            // 最佳门。
 DoorController bestDoor = null;
-            // bestScore（最佳分值）：使用位置：PursuitNavigationTopology.MarkGateNodes()。
+            // 最佳分值。
 float bestScore = float.PositiveInfinity;
-            // doorIndex（门索引）：使用位置：作为 List<DoorController>.this[int] 的参数、PursuitNavigationTopology.MarkGateNodes()。
+            // 门索引。
 for (int doorIndex = 0; doorIndex < doors.Count; doorIndex++)
             {
-                // door（门）：使用位置：作为 PursuitNavigationTopology.IsNodeInsideDoorCut(Vector3, DoorController, out float) 的参数、PursuitNavigationTopology.MarkGateNodes()。
+                // 门。
 DoorController door = doors[doorIndex];
                 if (!IsNodeInsideDoorCut(point, door, out float /* 中文含义：分值。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ score) || score >= bestScore)
                 {
@@ -656,9 +656,9 @@ DoorController door = doors[doorIndex];
 
     /// <summary>IsNodeInsideDoorCut 的业务处理入口；本方法直接依赖 Mathf.Abs(float)、Mathf.Max(float, float)、Vector3.Dot(Vector3, Vector3)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 PursuitNavigationTopology.MarkGateNodes()；下游（含内部回调体） Mathf.Abs(float)、Mathf.Max(float, float)、Vector3.Dot(Vector3, Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="point">中文含义：点。使用位置：PursuitNavigationTopology.IsNodeInsideDoorCut(Vector3, DoorController, out float)。</param>
-    /// <param name="door">中文含义：门。使用位置：作为 Mathf.Max(float, float) 的参数、作为 Vector3.Dot(Vector3, Vector3) 的参数、PursuitNavigationTopology.IsNodeInsideDoorCut(Vector3, DoorController, out float)。</param>
-    /// <param name="score">中文含义：分值。输出参数，由本入口写入并交给调用方。使用位置：PursuitNavigationTopology.IsNodeInsideDoorCut(Vector3, DoorController, out float)。</param>
+    /// <param name="point">点。</param>
+    /// <param name="door">门。</param>
+    /// <param name="score">分值。输出参数，由本入口写入并交给调用方。</param>
     private static bool IsNodeInsideDoorCut(Vector3 point, DoorController door, out float score)
     {
         score = float.PositiveInfinity;
@@ -667,18 +667,18 @@ DoorController door = doors[doorIndex];
             return false;
         }
 
-        // offset（偏移量）：使用位置：作为 Mathf.Abs(float) 的参数、作为 Vector3.Dot(Vector3, Vector3) 的参数、PursuitNavigationTopology.IsNodeInsideDoorCut(Vector3, DoorController, out float)。
+        // 偏移量。
 Vector3 offset = point - door.PassageCenter;
-        // height（高度）：保存 Mathf.Abs(float) 的返回结果，供当前步骤使用。使用位置：PursuitNavigationTopology.IsNodeInsideDoorCut(Vector3, DoorController, out float)。
+        // 高度。
 float height = Mathf.Abs(offset.y);
         offset.y = 0f;
-        // depth（深度）：保存 Mathf.Abs(float) 的返回结果，供当前步骤使用。使用位置：PursuitNavigationTopology.IsNodeInsideDoorCut(Vector3, DoorController, out float)。
+        // 深度。
 float depth = Mathf.Abs(Vector3.Dot(offset, door.PassageNormal));
-        // lateral（侧向）：保存 Mathf.Abs(float) 的返回结果，供当前步骤使用。使用位置：PursuitNavigationTopology.IsNodeInsideDoorCut(Vector3, DoorController, out float)。
+        // 侧向。
 float lateral = Mathf.Abs(Vector3.Dot(offset, door.PassageTangent));
-        // cutDepth（切口深度）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：PursuitNavigationTopology.IsNodeInsideDoorCut(Vector3, DoorController, out float)。
+        // 切口深度。
 float cutDepth = Mathf.Max(0.55f, door.TopologyCutDepth);
-        // cutHalfWidth（切口一半宽度）：使用位置：PursuitNavigationTopology.IsNodeInsideDoorCut(Vector3, DoorController, out float)。
+        // 切口一半宽度。
 float cutHalfWidth = door.PassageHalfWidth + Mathf.Max(0.25f, door.TopologyCutPadding);
         if (height > Mathf.Max(1.5f, door.TopologyVerticalTolerance) || depth > cutDepth || lateral > cutHalfWidth)
         {
@@ -695,23 +695,23 @@ float cutHalfWidth = door.PassageHalfWidth + Mathf.Max(0.25f, door.TopologyCutPa
     {
         regionCount = 0;
         nodeQueue.Clear();
-        // nodeIndex（节点索引）：使用位置：作为 List<GraphNode>.this[int] 的参数、PursuitNavigationTopology.BuildRegions()。
+        // 节点索引。
 for (int nodeIndex = 0; nodeIndex < nodes.Count; nodeIndex++)
         {
-            // seed（种子）：使用位置：作为 Dictionary<GraphNode, int>.ContainsKey(GraphNode) 的参数、作为 Dictionary<GraphNode, int>.this[GraphNode] 的参数、作为 HashSet<GraphNode>.Contains(GraphNode) 的参数 等共 4 处。
+            // 种子。
 GraphNode seed = nodes[nodeIndex];
             if (gateNodes.Contains(seed) || nodeRegions.ContainsKey(seed))
             {
                 continue;
             }
 
-            // region（区域）：使用位置：作为 GraphNode.GetConnections(Action<GraphNode>, int) 的参数、PursuitNavigationTopology.BuildRegions()。
+            // 区域。
 int region = regionCount++;
             nodeRegions[seed] = region;
             nodeQueue.Enqueue(seed);
             while (nodeQueue.Count > 0)
             {
-                // current（当前导航图节点）：保存 Queue<GraphNode>.Dequeue() 的返回结果，供当前步骤使用。使用位置：PursuitNavigationTopology.BuildRegions()。
+                // 当前导航图节点。
 GraphNode current = nodeQueue.Dequeue();
                 current.GetConnections( /* 中文含义：已连接。 */connected =>
                 {
@@ -731,26 +731,26 @@ GraphNode current = nodeQueue.Dequeue();
     /// <remarks>静态调用链：上游 PursuitNavigationTopology.Build(AstarPath)；下游（含内部回调体） PursuitNavigationTopology.AddRegionLink(int, PursuitNavigationTopology.PortalLink)、PursuitNavigationTopology.FindDoorSideRegion(DoorController, int)、PursuitNavigationTopology.PortalLink.PortalLink()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     private static void BuildPortalLinks()
     {
-        // doorIndex（门索引）：使用位置：作为 List<DoorController>.this[int] 的参数、PursuitNavigationTopology.BuildPortalLinks()。
+        // 门索引。
 for (int doorIndex = 0; doorIndex < doors.Count; doorIndex++)
         {
-            // door（门）：使用位置：作为 Dictionary<DoorController, PursuitNavigationTopology.PortalLink>.this[DoorController] 的参数、作为 PursuitNavigationTopology.FindDoorSideRegion(DoorController, int) 的参数、PursuitNavigationTopology.BuildPortalLinks()。
+            // 门。
 DoorController door = doors[doorIndex];
             if (door == null || !door.isActiveAndEnabled)
             {
                 continue;
             }
 
-            // positiveRegion（正向区域）：保存 PursuitNavigationTopology.FindDoorSideRegion(DoorController, int) 的返回结果，供当前步骤使用。使用位置：作为 PursuitNavigationTopology.AddRegionLink(int, PursuitNavigationTopology.PortalLink) 的参数、PursuitNavigationTopology.BuildPortalLinks()。
+            // 正向区域。
 int positiveRegion = FindDoorSideRegion(door, 1);
-            // negativeRegion（负值区域）：保存 PursuitNavigationTopology.FindDoorSideRegion(DoorController, int) 的返回结果，供当前步骤使用。使用位置：作为 PursuitNavigationTopology.AddRegionLink(int, PursuitNavigationTopology.PortalLink) 的参数、PursuitNavigationTopology.BuildPortalLinks()。
+            // 负值区域。
 int negativeRegion = FindDoorSideRegion(door, -1);
             if (positiveRegion < 0 || negativeRegion < 0 || positiveRegion == negativeRegion)
             {
                 continue;
             }
 
-            // link（连接）：使用位置：作为 PursuitNavigationTopology.AddRegionLink(int, PursuitNavigationTopology.PortalLink) 的参数、PursuitNavigationTopology.BuildPortalLinks()。
+            // 连接。
 PortalLink link = new PortalLink
             {
                 door = door,
@@ -765,31 +765,31 @@ PortalLink link = new PortalLink
 
     /// <summary>FindDoorSideRegion 的业务处理入口；本方法直接依赖 Dictionary&lt;GraphNode, int&gt;.TryGetValue(GraphNode, out int)、Mathf.Abs(float)、Mathf.Max(float, float)、Vector3.Dot(Vector3, Vector3)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 PursuitNavigationTopology.BuildPortalLinks()；下游（含内部回调体） Dictionary&lt;GraphNode, int&gt;.TryGetValue(GraphNode, out int)、Mathf.Abs(float)、Mathf.Max(float, float)、Vector3.Dot(Vector3, Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="door">中文含义：门。使用位置：作为 Mathf.Max(float, float) 的参数、作为 Vector3.Dot(Vector3, Vector3) 的参数、PursuitNavigationTopology.FindDoorSideRegion(DoorController, int)。</param>
-    /// <param name="side">中文含义：侧边。使用位置：PursuitNavigationTopology.FindDoorSideRegion(DoorController, int)。</param>
+    /// <param name="door">门。</param>
+    /// <param name="side">侧边。</param>
     private static int FindDoorSideRegion(DoorController door, int side)
     {
-        // bestScore（最佳分值）：使用位置：PursuitNavigationTopology.FindDoorSideRegion(DoorController, int)。
+        // 最佳分值。
 float bestScore = float.PositiveInfinity;
-        // bestRegion（最佳区域）：使用位置：PursuitNavigationTopology.FindDoorSideRegion(DoorController, int)。
+        // 最佳区域。
 int bestRegion = -1;
-        // cutDepth（切口深度）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：PursuitNavigationTopology.FindDoorSideRegion(DoorController, int)。
+        // 切口深度。
 float cutDepth = Mathf.Max(0.55f, door.TopologyCutDepth);
-        // probe（探测）：使用位置：PursuitNavigationTopology.FindDoorSideRegion(DoorController, int)。
+        // 探测。
 Vector3 probe = door.PassageCenter + door.PassageNormal * side * (cutDepth + 0.45f);
-        // nodeIndex（节点索引）：使用位置：作为 List<GraphNode>.this[int] 的参数、PursuitNavigationTopology.FindDoorSideRegion(DoorController, int)。
+        // 节点索引。
 for (int nodeIndex = 0; nodeIndex < nodes.Count; nodeIndex++)
         {
-            // node（节点）：使用位置：作为 Dictionary<GraphNode, int>.TryGetValue(GraphNode, out int) 的参数、PursuitNavigationTopology.FindDoorSideRegion(DoorController, int)。
+            // 节点。
 GraphNode node = nodes[nodeIndex];
             if (!nodeRegions.TryGetValue(node, out int /* 中文含义：区域。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ region))
             {
                 continue;
             }
 
-            // point（点）：使用位置：PursuitNavigationTopology.FindDoorSideRegion(DoorController, int)。
+            // 点。
 Vector3 point = (Vector3)node.position;
-            // offset（偏移量）：使用位置：作为 Mathf.Abs(float) 的参数、作为 Vector3.Dot(Vector3, Vector3) 的参数、PursuitNavigationTopology.FindDoorSideRegion(DoorController, int)。
+            // 偏移量。
 Vector3 offset = point - door.PassageCenter;
             if (Mathf.Abs(offset.y) > Mathf.Max(1.5f, door.TopologyVerticalTolerance))
             {
@@ -797,21 +797,21 @@ Vector3 offset = point - door.PassageCenter;
             }
 
             offset.y = 0f;
-            // signedDepth（有符号深度）：保存 Vector3.Dot(Vector3, Vector3) 的返回结果，供当前步骤使用。使用位置：PursuitNavigationTopology.FindDoorSideRegion(DoorController, int)。
+            // 有符号深度。
 float signedDepth = Vector3.Dot(offset, door.PassageNormal);
             if (signedDepth * side <= cutDepth * 0.4f)
             {
                 continue;
             }
 
-            // lateral（侧向）：保存 Mathf.Abs(float) 的返回结果，供当前步骤使用。使用位置：PursuitNavigationTopology.FindDoorSideRegion(DoorController, int)。
+            // 侧向。
 float lateral = Mathf.Abs(Vector3.Dot(offset, door.PassageTangent));
             if (lateral > door.PassageHalfWidth + 2f)
             {
                 continue;
             }
 
-            // score（分值）：使用位置：PursuitNavigationTopology.FindDoorSideRegion(DoorController, int)。
+            // 分值。
 float score = (point - probe).sqrMagnitude;
             if (score >= bestScore)
             {
@@ -827,8 +827,8 @@ float score = (point - probe).sqrMagnitude;
 
     /// <summary>AddRegionLink 的业务处理入口；本方法直接依赖 Dictionary&lt;int, List&lt;PursuitNavigationTopology.PortalLink&gt; &gt;.Add(int, List&lt;PursuitNavigationTopology.PortalLink&gt;)、Dictionary&lt;int, List&lt;PursuitNavigationTopology.PortalLink&gt; &gt;.TryGetValue(int, out List&lt;PursuitNavigationTopology.PortalLink&gt;)、List&lt;PursuitNavigationTopology.PortalLink&gt;.Add(PursuitNavigationTopology.PortalLink)、List&lt;PursuitNavigationTopology.PortalLink&gt;.List()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 PursuitNavigationTopology.BuildPortalLinks()；下游（含内部回调体） Dictionary&lt;int, List&lt;PursuitNavigationTopology.PortalLink&gt; &gt;.Add(int, List&lt;PursuitNavigationTopology.PortalLink&gt;)、Dictionary&lt;int, List&lt;PursuitNavigationTopology.PortalLink&gt; &gt;.TryGetValue(int, out List&lt;PursuitNavigationTopology.PortalLink&gt;)、List&lt;PursuitNavigationTopology.PortalLink&gt;.Add(PursuitNavigationTopology.PortalLink)、List&lt;PursuitNavigationTopology.PortalLink&gt;.List()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="region">中文含义：区域。使用位置：作为 Dictionary&lt;int, List&lt;PursuitNavigationTopology.PortalLink&gt; &gt;.Add(int, List&lt;PursuitNavigationTopology.PortalLink&gt;) 的参数、作为 Dictionary&lt;int, List&lt;PursuitNavigationTopology.PortalLink&gt; &gt;.TryGetValue(int, out List&lt;PursuitNavigationTopology.PortalLink&gt;) 的参数。</param>
-    /// <param name="link">中文含义：连接。使用位置：作为 List&lt;PursuitNavigationTopology.PortalLink&gt;.Add(PursuitNavigationTopology.PortalLink) 的参数。</param>
+    /// <param name="region">区域。</param>
+    /// <param name="link">连接。</param>
     private static void AddRegionLink(int region, PortalLink link)
     {
         if (!regionLinks.TryGetValue(region, out List<PortalLink> /* 中文含义：连接集合。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ links))
@@ -842,9 +842,9 @@ float score = (point - probe).sqrMagnitude;
 
     /// <summary>TryCorrectRegionByNearbyPortal 的业务处理入口；本方法直接依赖 Dictionary&lt;int, List&lt;PursuitNavigationTopology.PortalLink&gt; &gt;.TryGetValue(int, out List&lt;PursuitNavigationTopology.PortalLink&gt;)、Mathf.Abs(float)、Mathf.Max(float, float)、object.ReferenceEquals(object, object)、Vector3.Dot(Vector3, Vector3)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 PursuitNavigationTopology.TryGetRegion(Vector3, out int)；下游（含内部回调体） Dictionary&lt;int, List&lt;PursuitNavigationTopology.PortalLink&gt; &gt;.TryGetValue(int, out List&lt;PursuitNavigationTopology.PortalLink&gt;)、Mathf.Abs(float)、Mathf.Max(float, float)、object.ReferenceEquals(object, object)、Vector3.Dot(Vector3, Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="point">中文含义：点。使用位置：PursuitNavigationTopology.TryCorrectRegionByNearbyPortal(Vector3, int, out int)。</param>
-    /// <param name="sampledRegion">中文含义：采样到的区域。使用位置：作为 Dictionary&lt;int, List&lt;PursuitNavigationTopology.PortalLink&gt; &gt;.TryGetValue(int, out List&lt;PursuitNavigationTopology.PortalLink&gt;) 的参数、PursuitNavigationTopology.TryCorrectRegionByNearbyPortal(Vector3, int, out int)。</param>
-    /// <param name="correctedRegion">中文含义：校正后的区域。输出参数，由本入口写入并交给调用方。使用位置：PursuitNavigationTopology.TryCorrectRegionByNearbyPortal(Vector3, int, out int)。</param>
+    /// <param name="point">点。</param>
+    /// <param name="sampledRegion">采样到的区域。</param>
+    /// <param name="correctedRegion">校正后的区域。输出参数，由本入口写入并交给调用方。</param>
     private static bool TryCorrectRegionByNearbyPortal(Vector3 point, int sampledRegion, out int correctedRegion)
     {
         correctedRegion = sampledRegion;
@@ -853,18 +853,18 @@ float score = (point - probe).sqrMagnitude;
             return false;
         }
 
-        // bestScore（最佳分值）：使用位置：PursuitNavigationTopology.TryCorrectRegionByNearbyPortal(Vector3, int, out int)。
+        // 最佳分值。
 float bestScore = float.PositiveInfinity;
-        // bestRegion（最佳区域）：使用位置：PursuitNavigationTopology.TryCorrectRegionByNearbyPortal(Vector3, int, out int)。
+        // 最佳区域。
 int bestRegion = sampledRegion;
-        // index（当前元素索引）：使用位置：作为 List<PursuitNavigationTopology.PortalLink>.this[int] 的参数、PursuitNavigationTopology.TryCorrectRegionByNearbyPortal(Vector3, int, out int)。
+        // 当前元素索引。
 for (int index = 0; index < links.Count; index++)
         {
-            // link（连接）：使用位置：PursuitNavigationTopology.TryCorrectRegionByNearbyPortal(Vector3, int, out int)。
+            // 连接。
 PortalLink link = links[index];
-            // receiverValue6（判空前缓存的连接）：从连接读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、PursuitNavigationTopology.TryCorrectRegionByNearbyPortal(Vector3, int, out int)。
+            // 判空前缓存的连接。
 global::PursuitNavigationTopology.PortalLink receiverValue6 = link;
-            // door（门）：使用位置：作为 Mathf.Max(float, float) 的参数、作为 Vector3.Dot(Vector3, Vector3) 的参数、PursuitNavigationTopology.TryCorrectRegionByNearbyPortal(Vector3, int, out int)。
+            // 门。
 DoorController door;
             if (!global::System.Object.ReferenceEquals(receiverValue6, null))
             {
@@ -880,27 +880,27 @@ DoorController door;
                 continue;
             }
 
-            // offset（偏移量）：使用位置：作为 Mathf.Abs(float) 的参数、作为 Vector3.Dot(Vector3, Vector3) 的参数、PursuitNavigationTopology.TryCorrectRegionByNearbyPortal(Vector3, int, out int)。
+            // 偏移量。
 Vector3 offset = point - door.PassageCenter;
-            // height（高度）：保存 Mathf.Abs(float) 的返回结果，供当前步骤使用。使用位置：PursuitNavigationTopology.TryCorrectRegionByNearbyPortal(Vector3, int, out int)。
+            // 高度。
 float height = Mathf.Abs(offset.y);
             offset.y = 0f;
-            // signedDepth（有符号深度）：保存 Vector3.Dot(Vector3, Vector3) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Abs(float) 的参数、PursuitNavigationTopology.TryCorrectRegionByNearbyPortal(Vector3, int, out int)。
+            // 有符号深度。
 float signedDepth = Vector3.Dot(offset, door.PassageNormal);
-            // depth（深度）：保存 Mathf.Abs(float) 的返回结果，供当前步骤使用。使用位置：PursuitNavigationTopology.TryCorrectRegionByNearbyPortal(Vector3, int, out int)。
+            // 深度。
 float depth = Mathf.Abs(signedDepth);
-            // lateral（侧向）：保存 Mathf.Abs(float) 的返回结果，供当前步骤使用。使用位置：PursuitNavigationTopology.TryCorrectRegionByNearbyPortal(Vector3, int, out int)。
+            // 侧向。
 float lateral = Mathf.Abs(Vector3.Dot(offset, door.PassageTangent));
-            // depthLimit（深度限制）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Max(float, float) 的参数、PursuitNavigationTopology.TryCorrectRegionByNearbyPortal(Vector3, int, out int)。
+            // 深度限制。
 float depthLimit = Mathf.Max(3.5f, door.TopologyCutDepth + 2.4f);
-            // lateralLimit（侧向限制）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Max(float, float) 的参数、PursuitNavigationTopology.TryCorrectRegionByNearbyPortal(Vector3, int, out int)。
+            // 侧向限制。
 float lateralLimit = Mathf.Max(2.5f, door.PassageHalfWidth + 1.5f);
             if (height > Mathf.Max(1.5f, door.TopologyVerticalTolerance) || depth > depthLimit || lateral > lateralLimit || Mathf.Abs(signedDepth) <= 0.06f)
             {
                 continue;
             }
 
-            // sideRegion（侧边区域）：使用位置：PursuitNavigationTopology.TryCorrectRegionByNearbyPortal(Vector3, int, out int)。
+            // 侧边区域。
 int sideRegion;
             if (signedDepth >= 0f)
             {
@@ -916,7 +916,7 @@ int sideRegion;
                 continue;
             }
 
-            // score（分值）：使用位置：PursuitNavigationTopology.TryCorrectRegionByNearbyPortal(Vector3, int, out int)。
+            // 分值。
 float score = depth * depth / Mathf.Max(0.01f, depthLimit * depthLimit) + lateral * lateral / Mathf.Max(0.01f, lateralLimit * lateralLimit);
             if (score >= bestScore)
             {
@@ -938,33 +938,33 @@ float score = depth * depth / Mathf.Max(0.01f, depthLimit * depthLimit) + latera
 
     /// <summary>TryFindNearestRegion 的业务处理入口；本方法直接依赖 Dictionary&lt;GraphNode, int&gt;.TryGetValue(GraphNode, out int)、Mathf.Abs(float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 PursuitNavigationTopology.TryGetRegion(Vector3, out int)；下游（含内部回调体） Dictionary&lt;GraphNode, int&gt;.TryGetValue(GraphNode, out int)、Mathf.Abs(float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="point">中文含义：点。使用位置：作为 Mathf.Abs(float) 的参数、PursuitNavigationTopology.TryFindNearestRegion(Vector3, out int)。</param>
-    /// <param name="region">中文含义：区域。输出参数，由本入口写入并交给调用方。使用位置：PursuitNavigationTopology.TryFindNearestRegion(Vector3, out int)。</param>
+    /// <param name="point">点。</param>
+    /// <param name="region">区域。输出参数，由本入口写入并交给调用方。</param>
     private static bool TryFindNearestRegion(Vector3 point, out int region)
     {
         region = -1;
-        // bestDistanceSqr（最佳距离平方）：使用位置：PursuitNavigationTopology.TryFindNearestRegion(Vector3, out int)。
+        // 最佳距离平方。
 float bestDistanceSqr = float.PositiveInfinity;
-        // nodeIndex（节点索引）：使用位置：作为 List<GraphNode>.this[int] 的参数、PursuitNavigationTopology.TryFindNearestRegion(Vector3, out int)。
+        // 节点索引。
 for (int nodeIndex = 0; nodeIndex < nodes.Count; nodeIndex++)
         {
-            // node（节点）：使用位置：作为 Dictionary<GraphNode, int>.TryGetValue(GraphNode, out int) 的参数、PursuitNavigationTopology.TryFindNearestRegion(Vector3, out int)。
+            // 节点。
 GraphNode node = nodes[nodeIndex];
             if (!nodeRegions.TryGetValue(node, out int /* 中文含义：候选区域。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ candidateRegion))
             {
                 continue;
             }
 
-            // nodePoint（节点点）：使用位置：作为 Mathf.Abs(float) 的参数、PursuitNavigationTopology.TryFindNearestRegion(Vector3, out int)。
+            // 节点点。
 Vector3 nodePoint = (Vector3)node.position;
-            // height（高度）：保存 Mathf.Abs(float) 的返回结果，供当前步骤使用。使用位置：PursuitNavigationTopology.TryFindNearestRegion(Vector3, out int)。
+            // 高度。
 float height = Mathf.Abs(nodePoint.y - point.y);
             if (height > 2.5f)
             {
                 continue;
             }
 
-            // distanceSqr（距离平方）：使用位置：PursuitNavigationTopology.TryFindNearestRegion(Vector3, out int)。
+            // 距离平方。
 float distanceSqr = (nodePoint - point).sqrMagnitude;
             if (distanceSqr >= bestDistanceSqr)
             {

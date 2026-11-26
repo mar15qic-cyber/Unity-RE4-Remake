@@ -16,13 +16,13 @@ public class PooledObject : MonoBehaviour
     /// <summary>中文含义：对象池。所属预制体池</summary>
     [System.NonSerialized]
     public PrefabPool Pool;
-    /// <summary>中文含义：租用版本。使用位置：PooledObject.MarkRented()、PooledObject.RentalVersion.get。</summary>
+    /// <summary>租用版本。</summary>
     private int rentalVersion;
-    /// <summary>中文含义：是否生效。使用位置：PooledObject.IsActive.get、PooledObject.MarkRented()、PooledObject.MarkReturned()。</summary>
+    /// <summary>是否生效。</summary>
     private bool isActive;
-    /// <summary>中文含义：可池化对象集合。只读字段，初始化后不由普通写入口替换。使用位置：作为 Component.GetComponents&lt;IPoolable&gt;(List&lt;IPoolable&gt;) 的参数、PooledObject.GetPoolables()、PooledObject.RebuildPoolableCache()。</summary>
+    /// <summary>可池化对象集合。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly System.Collections.Generic.List<IPoolable> poolables = new System.Collections.Generic.List<IPoolable>(4);
-    /// <summary>中文含义：poolableCacheReady 表示“可池化对象缓存是否就绪”；started 表示“是否已开始”。使用位置：PooledObject.GetPoolables()、PooledObject.InvalidatePoolableCache()、PooledObject.RebuildPoolableCache()。；使用位置：PooledObject.RebuildPoolableCache()、PooledObject.Start()。</summary>
+    /// <summary>poolableCacheReady 表示“可池化对象缓存是否就绪”；started 表示“是否已开始”。</summary>
     private bool poolableCacheReady, started;
     /// <summary>Unity 首次启用后的启动回调；状态处理与资源交接按函数内顺序执行，下游协作见调用链。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） PooledObject.RebuildPoolableCache()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>

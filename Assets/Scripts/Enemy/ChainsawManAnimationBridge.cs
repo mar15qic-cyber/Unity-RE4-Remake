@@ -9,15 +9,16 @@ using UnityEngine;
 [DisallowMultipleComponent]
 public class ChainsawManAnimationBridge : MonoBehaviour
 {
-    /// <summary>中文含义：电锯起始的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。使用位置：作为 EnemyAnimationAdapter.ClearTrigger(int) 的参数、作为 EnemyAnimationAdapter.TriggerPresentation(int) 的参数。</summary>
+    /// <summary>电锯起始的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly int HashChainsawStart = Animator.StringToHash("ChainsawStart");
-    /// <summary>中文含义：挑衅触发器的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。使用位置：作为 EnemyAnimationAdapter.ClearTrigger(int) 的参数、作为 EnemyAnimationAdapter.TriggerPresentation(int) 的参数。</summary>
+    /// <summary>挑衅触发器的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly int HashTauntTrigger = Animator.StringToHash("TauntTrigger");
-    /// <summary>中文含义：挑衅状态的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。使用位置：ChainsawManAnimationBridge.InPlaceIntimidationMiddle.get、ChainsawManAnimationBridge.UpdateIntroTaunt()。</summary>
+    /// <summary>挑衅状态的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly int HashTauntState = Animator.StringToHash("Base Layer.Taunt_Stomp");
-    /// <summary>中文含义：挣脱状态（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。使用位置：ChainsawManAnimationBridge.InPlaceIntimidationMiddle.get。</summary>
+    /// <summary>挣脱状态（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly int struggleState = Animator.StringToHash("Base Layer.PullStart");
-    /// <summary>中文含义：是否原地威吓中间。使用位置：EnemyFootAction.LateUpdate()、VillagerController.UpdateChaseProgressRecovery()、VillagerController.UpdateCodeDrivenMovement()。</summary>
+    /// <summary>是否原地威吓中间。</summary>
+    private float chainsawStartedTime;
     internal bool InPlaceIntimidationMiddle
     {
         get
@@ -27,15 +28,15 @@ public class ChainsawManAnimationBridge : MonoBehaviour
                 return false;
             }
 
-            // 正式原版步态在启动与入战威慑之间保持待机，等行为树交还追击。
-            if (!anim.isHuman && HasStartedChainsaw && !HasResolvedIntroTaunt)
+            // 正式原版步态在启动与入战威慑之间保持待机，等行为树交还追击；超过安全时间窗则自动解除避免永久停步。
+            if (!anim.isHuman && HasStartedChainsaw && !HasResolvedIntroTaunt && Time.time - chainsawStartedTime <= 3.0f)
             {
                 return true;
             }
 
-            // current（当前）：使用位置：ChainsawManAnimationBridge.InPlaceIntimidationMiddle.get。
+            // 当前。
 var current = anim.GetCurrentAnimatorStateInfo(0).fullPathHash;
-            // successor（后续动作）：使用位置：ChainsawManAnimationBridge.InPlaceIntimidationMiddle.get。
+            // 后续动作。
 int successor;
             if (anim.IsInTransition(0))
             {
@@ -50,89 +51,89 @@ int successor;
         }
     }
 
-    /// <summary>中文含义：攻击索引的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。使用位置：作为 Animator.GetInteger(int) 的参数。</summary>
+    /// <summary>攻击索引的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly int HashAttackIndex = Animator.StringToHash("AttackIndex");
-    /// <summary>中文含义：最小介绍挑衅距离。使用位置：ChainsawManAnimationBridge.BeginIntroTaunt(float)。</summary>
+    /// <summary>最小介绍挑衅距离。</summary>
     [Header("入战威慑")]
     [Min(0f)]
     public float minimumIntroTauntDistance = 3.5f;
-    /// <summary>中文含义：挑衅完成归一化时间。使用位置：ChainsawManAnimationBridge.UpdateIntroTaunt()。</summary>
+    /// <summary>挑衅完成归一化时间。</summary>
     [Range(0.5f, 0.99f)]
     public float tauntCompleteNormalizedTime = 0.9f;
-    /// <summary>中文含义：远端追逐移动速度。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>远端追逐移动速度。</summary>
     [Header("追猎节奏")]
     [Range(0.5f, 1.5f)]
     public float farChaseMoveSpeed = 1.25f;
-    /// <summary>中文含义：远端追逐距离。使用位置：ChainsawManAnimationBridge.ResolveChaseMoveSpeed(float, float, float)。</summary>
+    /// <summary>远端追逐距离。</summary>
     [Min(0f)]
     public float farChaseDistance = 7f;
-    /// <summary>中文含义：狂暴生命比例。使用位置：ChainsawManAnimationBridge.ResolveChaseMoveSpeed(float, float, float)。</summary>
+    /// <summary>狂暴生命比例。</summary>
     [Range(0f, 1f)]
     public float enragedHealthRatio = 0.45f;
-    /// <summary>中文含义：狂暴移动速度额外加成。使用位置：ChainsawManAnimationBridge.ResolveChaseMoveSpeed(float, float, float)。</summary>
+    /// <summary>狂暴移动速度额外加成。</summary>
     [Range(0f, 0.5f)]
     public float enragedMoveSpeedBonus = 0.1f;
-    /// <summary>中文含义：关闭攻击距离。使用位置：ChainsawManAnimationBridge.SelectAttackIndex(float, int)。</summary>
+    /// <summary>关闭攻击距离。</summary>
     [Header("攻击选择")]
     [Min(0f)]
     public float closeAttackDistance = 1f;
-    /// <summary>中文含义：关闭完整旋转概率。使用位置：ChainsawManAnimationBridge.SelectAttackIndex(float, int)。</summary>
+    /// <summary>关闭完整旋转概率。</summary>
     [Range(0f, 1f)]
     public float closeFullSpinChance = 0.45f;
-    /// <summary>中文含义：双重挥击概率。使用位置：ChainsawManAnimationBridge.SelectAttackIndex(float, int)。</summary>
+    /// <summary>双重挥击概率。</summary>
     [Range(0f, 1f)]
     public float doubleSwingChance = 0.35f;
-    /// <summary>中文含义：双重挥击伤害倍率。使用位置：ChainsawManAnimationBridge.ResolveAttackDamage(float)。</summary>
+    /// <summary>双重挥击伤害倍率。</summary>
     [Header("攻击伤害")]
     [Min(0f)]
     public float doubleSwingDamageMultiplier = 0.55f;
-    /// <summary>中文含义：完整旋转伤害倍率。使用位置：ChainsawManAnimationBridge.ResolveAttackDamage(float)。</summary>
+    /// <summary>完整旋转伤害倍率。</summary>
     [Min(0f)]
     public float fullSpinDamageMultiplier = 1.15f;
-    /// <summary>中文含义：电锯起始事件。使用位置：作为 ChainsawManAnimationBridge.PlayOneShot(AudioEventData, string) 的参数。</summary>
+    /// <summary>电锯起始事件。</summary>
     [Header("电锯音效")]
     public AudioEventData chainsawStartEvent;
-    /// <summary>中文含义：电锯待机循环事件。使用位置：作为 ChainsawManAnimationBridge.ResolveAudioEvent(AudioEventData, string) 的参数。</summary>
+    /// <summary>电锯待机循环事件。</summary>
     public AudioEventData chainsawIdleLoopEvent;
-    /// <summary>中文含义：电锯反向事件。使用位置：作为 ChainsawManAnimationBridge.PlayTemporaryChainsawAudio(AudioEventData, string) 的参数。</summary>
+    /// <summary>电锯反向事件。</summary>
     public AudioEventData chainsawRevEvent;
-    /// <summary>中文含义：电锯攻击事件。使用位置：作为 ChainsawManAnimationBridge.PlayTemporaryChainsawAudio(AudioEventData, string) 的参数。</summary>
+    /// <summary>电锯攻击事件。</summary>
     public AudioEventData chainsawAttackEvent;
-    /// <summary>中文含义：电锯命中事件。使用位置：作为 ChainsawManAnimationBridge.PlayOneShot(AudioEventData, string) 的参数、作为 ChainsawManAnimationBridge.PlayTemporaryChainsawAudio(AudioEventData, string) 的参数。</summary>
+    /// <summary>电锯命中事件。</summary>
     public AudioEventData chainsawHitEvent;
     [Tooltip("锯齿接触的原版音效，与武器受击分开")]
     public AudioEventData chainsawContactEvent;
-    /// <summary>中文含义：电锯停止事件。使用位置：作为 ChainsawManAnimationBridge.PlayOneShot(AudioEventData, string) 的参数。</summary>
+    /// <summary>电锯停止事件。</summary>
     public AudioEventData chainsawStopEvent;
-    /// <summary>中文含义：电锯伤害原点。使用位置：ChainsawManAnimationBridge.GetChainsawDamageForward()、ChainsawManAnimationBridge.GetChainsawDamageOrigin()、ChainsawManAnimationBridge.ResolveChainsawDamageOrigin()。</summary>
+    /// <summary>电锯伤害原点。</summary>
     [Header("电锯伤害原点")]
     public Transform chainsawDamageOrigin;
-    /// <summary>中文含义：后备伤害原点偏移量。使用位置：ChainsawManAnimationBridge.GetChainsawDamageOrigin()。</summary>
+    /// <summary>后备伤害原点偏移量。</summary>
     public Vector3 fallbackDamageOriginOffset = new Vector3(0f, 1f, 0f);
-    /// <summary>中文含义：动画表现。使用位置：ChainsawManAnimationBridge.BeginChainsawStart()、ChainsawManAnimationBridge.BeginIntroTaunt(float)、ChainsawManAnimationBridge.CancelChainsawStart() 等共 7 处。</summary>
+    /// <summary>动画表现。</summary>
     [Header("动画表现引用")]
     [UnityEngine.Serialization.FormerlySerializedAs("动画表现")]
     [UnityEngine.InspectorName("动画表现")]
     public EnemyAnimationAdapter animationPresenter;
-    /// <summary>中文含义：动画控制器。使用位置：ChainsawManAnimationBridge.BeginChainsawStart()、ChainsawManAnimationBridge.BeginIntroTaunt(float)、ChainsawManAnimationBridge.CancelChainsawStart() 等共 9 处。</summary>
+    /// <summary>动画控制器。</summary>
     private Animator anim;
-    /// <summary>中文含义：是否挑衅状态已进入。使用位置：ChainsawManAnimationBridge.BeginIntroTaunt(float)、ChainsawManAnimationBridge.CancelIntroTaunt()、ChainsawManAnimationBridge.ResetRuntimeState() 等共 4 处。</summary>
+    /// <summary>是否挑衅状态已进入。</summary>
     private bool tauntStateEntered;
-    /// <summary>中文含义：上一次攻击索引。使用位置：ChainsawManAnimationBridge.ResetRuntimeState()、ChainsawManAnimationBridge.SelectAttackIndex(float, int)。</summary>
+    /// <summary>上一次攻击索引。</summary>
     private int lastAttackIndex = -1;
-    /// <summary>中文含义：电锯循环来源。使用位置：作为 AudioManager.RegisterExternalSource(AudioSource) 的参数、作为 AudioManager.UnregisterExternalSource(AudioSource) 的参数、ChainsawManAnimationBridge.EnsureChainsawLoopSource() 等共 7 处。</summary>
+    /// <summary>电锯循环来源。</summary>
     private AudioSource chainsawLoopSource;
-    /// <summary>中文含义：电锯状态来源。使用位置：作为 AudioManager.RegisterExternalSource(AudioSource) 的参数、作为 AudioManager.UnregisterExternalSource(AudioSource) 的参数、ChainsawManAnimationBridge.EnsureChainsawStateSource() 等共 8 处。</summary>
+    /// <summary>电锯状态来源。</summary>
     private AudioSource chainsawStateSource;
-    /// <summary>中文含义：电锯循环句柄。使用位置：作为 AudioManager.Stop(AudioPlayHandle) 的参数、ChainsawManAnimationBridge.StartIdleLoop(bool)、ChainsawManAnimationBridge.StopIdleLoop(bool, bool) 等共 4 处。</summary>
+    /// <summary>电锯循环句柄。</summary>
     private AudioPlayHandle chainsawLoopHandle;
-    /// <summary>中文含义：电锯状态句柄。使用位置：作为 AudioManager.Stop(AudioPlayHandle) 的参数、ChainsawManAnimationBridge.PlayTemporaryChainsawAudio(AudioEventData, string)、ChainsawManAnimationBridge.StopTemporaryChainsawAudio(bool) 等共 5 处。</summary>
+    /// <summary>电锯状态句柄。</summary>
     private AudioPlayHandle chainsawStateHandle;
-    /// <summary>中文含义：死亡关闭协程。使用位置：作为 MonoBehaviour.StopCoroutine(Coroutine) 的参数、ChainsawManAnimationBridge.BeginDeathShutdown(float)、ChainsawManAnimationBridge.DeathShutdownRoutine(float) 等共 4 处。</summary>
+    /// <summary>死亡关闭协程。</summary>
     private Coroutine deathShutdownRoutine;
-    /// <summary>中文含义：是否电锯已停止。使用位置：ChainsawManAnimationBridge.BeginChainsawStart()、ChainsawManAnimationBridge.BeginDeathShutdown(float)、ChainsawManAnimationBridge.OnChainsawStartComplete() 等共 7 处。</summary>
+    /// <summary>是否电锯已停止。</summary>
     private bool chainsawStopped = true;
-    /// <summary>中文含义：临时电锯音频是否生效。使用位置：ChainsawManAnimationBridge.PlayTemporaryChainsawAudio(AudioEventData, string)、ChainsawManAnimationBridge.StartIdleLoop(bool)、ChainsawManAnimationBridge.StopTemporaryChainsawAudio(bool) 等共 4 处。</summary>
+    /// <summary>临时电锯音频是否生效。</summary>
     private bool temporaryChainsawAudioActive;
     /// <summary>中文含义：是否具有已开始电锯。电锯是否已经启动完成。</summary>
     public bool HasStartedChainsaw { get; private set; }
@@ -181,7 +182,7 @@ int successor;
         StopIdleLoop(false, true);
         if (chainsawLoopSource != null)
         {
-            // receiverValue2（判空前缓存的音频管理器的实例）：从音频管理器的实例读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、ChainsawManAnimationBridge.OnDisable()。
+            // 判空前缓存的音频管理器的实例。
 global::AudioManager receiverValue2 = AudioManager.Instance;
             if (!global::System.Object.ReferenceEquals(receiverValue2, null))
             {
@@ -191,7 +192,7 @@ global::AudioManager receiverValue2 = AudioManager.Instance;
 
         if (chainsawStateSource != null)
         {
-            // receiverValue3（判空前缓存的音频管理器的实例）：从音频管理器的实例读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、ChainsawManAnimationBridge.OnDisable()。
+            // 判空前缓存的音频管理器的实例。
 global::AudioManager receiverValue3 = AudioManager.Instance;
             if (!global::System.Object.ReferenceEquals(receiverValue3, null))
             {
@@ -272,6 +273,7 @@ global::AudioManager receiverValue3 = AudioManager.Instance;
 
         StartActionFinished = true;
         HasStartedChainsaw = true;
+        chainsawStartedTime = Time.time;
         chainsawStopped = false;
         StartIdleLoop();
     }
@@ -301,7 +303,7 @@ global::AudioManager receiverValue3 = AudioManager.Instance;
     /// 开始一次入战威慑。距离过近时直接标记为已处理，避免敌人在玩家脸前白送输出窗口。
     /// </summary>
     /// <remarks>静态调用链：上游 ExecuteChainsawIntroTaunt.OnStart()；下游（含内部回调体） ChainsawManAnimationBridge.CompleteIntroTaunt()、ChainsawManAnimationBridge.PlayTemporaryChainsawAudio(AudioEventData, string)、EnemyAnimationAdapter.ClearTrigger(int)、EnemyAnimationAdapter.TriggerPresentation(int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="playerDistance">中文含义：玩家距离。使用位置：ChainsawManAnimationBridge.BeginIntroTaunt(float)。</param>
+    /// <param name="playerDistance">玩家距离。</param>
     public void BeginIntroTaunt(float playerDistance)
     {
         TauntActionFinished = false;
@@ -326,9 +328,9 @@ global::AudioManager receiverValue3 = AudioManager.Instance;
             return true;
         }
 
-        // stateInfo（当前动画状态信息）：保存 Animator.GetCurrentAnimatorStateInfo(int) 的返回结果，供当前步骤使用。使用位置：ChainsawManAnimationBridge.UpdateIntroTaunt()。
+        // 当前动画状态信息。
 AnimatorStateInfo stateInfo = anim.GetCurrentAnimatorStateInfo(0);
-        // isInTaunt（是否内部挑衅）：使用位置：ChainsawManAnimationBridge.UpdateIntroTaunt()。
+        // 是否内部挑衅。
 bool isInTaunt = stateInfo.fullPathHash == HashTauntState;
         if (isInTaunt)
         {
@@ -364,6 +366,23 @@ bool isInTaunt = stateInfo.fullPathHash == HashTauntState;
         ResumeIdleLoop();
     }
 
+    internal void MarkIntroTauntResolvedAfterTraversal()
+    {
+        if (anim == null || anim.isHuman || !HasStartedChainsaw || HasResolvedIntroTaunt)
+        {
+            return;
+        }
+
+        if (animationPresenter != null)
+        {
+            animationPresenter.ClearTrigger(HashTauntTrigger);
+        }
+
+        TauntActionFinished = true;
+        HasResolvedIntroTaunt = true;
+        ResumeIdleLoop();
+    }
+
     /// <summary>CancelIntroTaunt 的业务处理入口；本方法直接依赖 ChainsawManAnimationBridge.ResumeIdleLoop()、EnemyAnimationAdapter.ClearTrigger(int)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 ExecuteChainsawIntroTaunt.OnEnd()；下游（含内部回调体） ChainsawManAnimationBridge.ResumeIdleLoop()、EnemyAnimationAdapter.ClearTrigger(int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     public void CancelIntroTaunt()
@@ -380,22 +399,22 @@ bool isInTaunt = stateInfo.fullPathHash == HashTauntState;
 
     /// <summary>根据距离挑选四种电锯招式，并尽量避免连续重复。</summary>
     /// <remarks>静态调用链：上游 EnemyCombatModule.BeginAttack()；下游（含内部回调体） Mathf.Max(int, int)、Random.Range(int, int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="playerDistance">中文含义：玩家距离。使用位置：ChainsawManAnimationBridge.SelectAttackIndex(float, int)。</param>
-    /// <param name="attackCount">中文含义：攻击数量。使用位置：作为 Mathf.Max(int, int) 的参数。</param>
+    /// <param name="playerDistance">玩家距离。</param>
+    /// <param name="attackCount">攻击数量。</param>
     public int SelectAttackIndex(float playerDistance, int attackCount)
     {
-        // safeCount（安全数量）：保存 Mathf.Max(int, int) 的返回结果，供当前步骤使用。使用位置：作为 Random.Range(int, int) 的参数、ChainsawManAnimationBridge.SelectAttackIndex(float, int)。
+        // 安全数量。
 int safeCount = Mathf.Max(1, attackCount);
         if (safeCount == 1)
         {
             return 0;
         }
 
-        // selectedIndex（选定索引）：使用位置：ChainsawManAnimationBridge.SelectAttackIndex(float, int)。
+        // 选定索引。
 int selectedIndex;
         if (safeCount >= 4)
         {
-            // randomValue（随机值）：使用位置：ChainsawManAnimationBridge.SelectAttackIndex(float, int)。
+            // 随机值。
 float randomValue = Random.value;
             if (playerDistance <= closeAttackDistance)
             {
@@ -437,7 +456,7 @@ float randomValue = Random.value;
 
     /// <summary>双挥采用两次较轻伤害，回旋挥击采用一次重伤害。</summary>
     /// <remarks>静态调用链：上游 EnemyCombatModule.TryApplyAttackHit(int)；下游（含内部回调体） Animator.GetInteger(int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="baseDamage">中文含义：基础伤害。使用位置：ChainsawManAnimationBridge.ResolveAttackDamage(float)。</param>
+    /// <param name="baseDamage">基础伤害。</param>
     public float ResolveAttackDamage(float baseDamage)
     {
         if (anim == null)
@@ -445,7 +464,7 @@ float randomValue = Random.value;
             return baseDamage;
         }
 
-        // attackIndex（攻击索引）：保存 Animator.GetInteger(int) 的返回结果，供当前步骤使用。使用位置：ChainsawManAnimationBridge.ResolveAttackDamage(float)。
+        // 攻击索引。
 int attackIndex = anim.GetInteger(HashAttackIndex);
         if (attackIndex == 2)
         {
@@ -462,12 +481,12 @@ int attackIndex = anim.GetInteger(HashAttackIndex);
 
     /// <summary>远距离加速追猎，低生命阶段进一步提高压迫速度。</summary>
     /// <remarks>静态调用链：上游 VillagerController.GetTargetMoveSpeed()；下游（含内部回调体） Mathf.Clamp(float, float, float)、Mathf.Max(float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="baseMoveSpeed">中文含义：基础移动速度。使用位置：作为 Mathf.Max(float, float) 的参数、ChainsawManAnimationBridge.ResolveChaseMoveSpeed(float, float, float)。</param>
-    /// <param name="playerDistance">中文含义：玩家距离。使用位置：ChainsawManAnimationBridge.ResolveChaseMoveSpeed(float, float, float)。</param>
-    /// <param name="healthRatio">中文含义：生命比例。使用位置：ChainsawManAnimationBridge.ResolveChaseMoveSpeed(float, float, float)。</param>
+    /// <param name="baseMoveSpeed">基础移动速度。</param>
+    /// <param name="playerDistance">玩家距离。</param>
+    /// <param name="healthRatio">生命比例。</param>
     public float ResolveChaseMoveSpeed(float baseMoveSpeed, float playerDistance, float healthRatio)
     {
-        // resolvedSpeed（解算后的速度）：使用位置：作为 Mathf.Clamp(float, float, float) 的参数、ChainsawManAnimationBridge.ResolveChaseMoveSpeed(float, float, float)。
+        // 解算后的速度。
 float resolvedSpeed;
         if (playerDistance >= farChaseDistance)
         {
@@ -521,7 +540,7 @@ float resolvedSpeed;
 
     /// <summary>StopChainsawLoop 的业务处理入口；本方法直接依赖 ChainsawManAnimationBridge.StopIdleLoop(bool, bool)、ChainsawManAnimationBridge.StopTemporaryChainsawAudio(bool)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyActionCoordinator.BeginDeath()；下游（含内部回调体） ChainsawManAnimationBridge.StopIdleLoop(bool, bool)、ChainsawManAnimationBridge.StopTemporaryChainsawAudio(bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="playStop">中文含义：是否播放停止。使用位置：作为 ChainsawManAnimationBridge.StopIdleLoop(bool, bool) 的参数。</param>
+    /// <param name="playStop">是否播放停止。</param>
     public void StopChainsawLoop(bool playStop)
     {
         StopTemporaryChainsawAudio(false);
@@ -531,7 +550,7 @@ float resolvedSpeed;
 
     /// <summary>BeginDeathShutdown 的业务处理入口；本方法直接依赖 ChainsawManAnimationBridge.DeathShutdownRoutine(float)、ChainsawManAnimationBridge.StartIdleLoop(bool)、ChainsawManAnimationBridge.StopTemporaryChainsawAudio(bool)、MonoBehaviour.StartCoroutine(IEnumerator)、MonoBehaviour.StopCoroutine(Coroutine)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyActionCoordinator.BeginDeath()；下游（含内部回调体） ChainsawManAnimationBridge.DeathShutdownRoutine(float)、ChainsawManAnimationBridge.StartIdleLoop(bool)、ChainsawManAnimationBridge.StopTemporaryChainsawAudio(bool)、MonoBehaviour.StartCoroutine(IEnumerator)、MonoBehaviour.StopCoroutine(Coroutine)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="duration">中文含义：持续时间。使用位置：作为 ChainsawManAnimationBridge.DeathShutdownRoutine(float) 的参数。</param>
+    /// <param name="duration">持续时间。</param>
     public void BeginDeathShutdown(float duration)
     {
         if (deathShutdownRoutine != null)
@@ -578,7 +597,7 @@ float resolvedSpeed;
             ResolveChainsawDamageOrigin();
         }
 
-        // forward（前向）：使用位置：ChainsawManAnimationBridge.GetChainsawDamageForward()。
+        // 前向。
 Vector3 forward;
         if (chainsawDamageOrigin != null)
         {
@@ -608,8 +627,8 @@ Vector3 forward;
 
     /// <summary>PlayOneShot 的业务处理入口；本方法直接依赖 AudioManager.Play3D(AudioEventData, Vector3)、ChainsawManAnimationBridge.GetChainsawDamageOrigin()、ChainsawManAnimationBridge.ResolveAudioEvent(AudioEventData, string)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 ChainsawManAnimationBridge.BeginChainsawStart()、ChainsawManAnimationBridge.PlayChainsawHit()、ChainsawManAnimationBridge.StopIdleLoop(bool, bool)；下游（含内部回调体） AudioManager.Play3D(AudioEventData, Vector3)、ChainsawManAnimationBridge.GetChainsawDamageOrigin()、ChainsawManAnimationBridge.ResolveAudioEvent(AudioEventData, string)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="eventData">中文含义：事件配置。使用位置：作为 AudioManager.Play3D(AudioEventData, Vector3) 的参数、作为 ChainsawManAnimationBridge.ResolveAudioEvent(AudioEventData, string) 的参数、ChainsawManAnimationBridge.PlayOneShot(AudioEventData, string)。</param>
-    /// <param name="eventName">中文含义：事件名称。使用位置：作为 ChainsawManAnimationBridge.ResolveAudioEvent(AudioEventData, string) 的参数。</param>
+    /// <param name="eventData">事件配置。</param>
+    /// <param name="eventName">事件名称。</param>
     private void PlayOneShot(AudioEventData eventData, string eventName)
     {
         eventData = ResolveAudioEvent(eventData, eventName);
@@ -623,7 +642,7 @@ Vector3 forward;
 
     /// <summary>StartIdleLoop 的业务处理入口；本方法直接依赖 AudioEventData.GetPitch()、AudioEventData.GetVolume()、AudioEventData.SelectClip()、AudioManager.Play3D(AudioEventData, Vector3)、AudioSource.Play()、ChainsawManAnimationBridge.EnsureChainsawLoopSource()、ChainsawManAnimationBridge.GetChainsawDamageOrigin() 等共 8 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 ChainsawManAnimationBridge.BeginChainsawStart()、ChainsawManAnimationBridge.BeginDeathShutdown(float)、ChainsawManAnimationBridge.OnChainsawStartComplete()、ChainsawManAnimationBridge.ResumeIdleLoop()；下游（含内部回调体） AudioEventData.GetPitch()、AudioEventData.GetVolume()、AudioEventData.SelectClip()、AudioManager.Play3D(AudioEventData, Vector3)、AudioSource.Play()、ChainsawManAnimationBridge.EnsureChainsawLoopSource()、ChainsawManAnimationBridge.GetChainsawDamageOrigin() 等共 8 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="force">中文含义：是否力度。使用位置：ChainsawManAnimationBridge.StartIdleLoop(bool)。</param>
+    /// <param name="force">是否力度。</param>
     private void StartIdleLoop(bool force = false)
     {
         if (!force && (!HasStartedChainsaw || chainsawStopped || temporaryChainsawAudioActive))
@@ -632,7 +651,7 @@ Vector3 forward;
         }
 
         EnsureChainsawLoopSource();
-        // eventData（事件配置）：保存 ChainsawManAnimationBridge.ResolveAudioEvent(AudioEventData, string) 的返回结果，供当前步骤使用。使用位置：作为 AudioManager.Play3D(AudioEventData, Vector3) 的参数、ChainsawManAnimationBridge.StartIdleLoop(bool)。
+        // 事件配置。
 AudioEventData eventData = ResolveAudioEvent(chainsawIdleLoopEvent, AudioEventNames.ChainsawIdleLoop);
         if (eventData == null || chainsawLoopHandle.IsValid || (chainsawLoopSource != null && chainsawLoopSource.isPlaying))
         {
@@ -658,7 +677,7 @@ AudioEventData eventData = ResolveAudioEvent(chainsawIdleLoopEvent, AudioEventNa
             return;
         }
 
-        // clip（音频片段）：保存 AudioEventData.SelectClip() 的返回结果，供当前步骤使用。使用位置：ChainsawManAnimationBridge.StartIdleLoop(bool)。
+        // 音频片段。
 AudioClip clip = eventData.SelectClip();
         if (clip == null)
         {
@@ -680,8 +699,8 @@ AudioClip clip = eventData.SelectClip();
 
     /// <summary>StopIdleLoop 的业务处理入口；本方法直接依赖 AudioManager.Stop(AudioPlayHandle)、AudioSource.Stop()、ChainsawManAnimationBridge.PlayOneShot(AudioEventData, string)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 ChainsawManAnimationBridge.DeathShutdownRoutine(float)、ChainsawManAnimationBridge.OnDisable()、ChainsawManAnimationBridge.PlayTemporaryChainsawAudio(AudioEventData, string)、ChainsawManAnimationBridge.ResetRuntimeState()、ChainsawManAnimationBridge.StopChainsawLoop(bool)；下游（含内部回调体） AudioManager.Stop(AudioPlayHandle)、AudioSource.Stop()、ChainsawManAnimationBridge.PlayOneShot(AudioEventData, string)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="playStop">中文含义：是否播放停止。使用位置：ChainsawManAnimationBridge.StopIdleLoop(bool, bool)。</param>
-    /// <param name="markStopped">中文含义：是否标记已停止。使用位置：ChainsawManAnimationBridge.StopIdleLoop(bool, bool)。</param>
+    /// <param name="playStop">是否播放停止。</param>
+    /// <param name="markStopped">是否标记已停止。</param>
     private void StopIdleLoop(bool playStop, bool markStopped = false)
     {
         if (chainsawLoopHandle.IsValid && AudioManager.Instance != null)
@@ -690,7 +709,7 @@ AudioClip clip = eventData.SelectClip();
         }
 
         chainsawLoopHandle = default;
-        if (chainsawLoopSource != null && chainsawLoopSource.isPlaying)
+        if (chainsawLoopSource != null)
         {
             chainsawLoopSource.Stop();
         }
@@ -708,8 +727,8 @@ AudioClip clip = eventData.SelectClip();
 
     /// <summary>PlayTemporaryChainsawAudio 的业务处理入口；本方法直接依赖 AudioEventData.GetPitch()、AudioEventData.GetVolume()、AudioEventData.SelectClip()、AudioManager.Play3D(AudioEventData, Vector3)、AudioSource.Play()、ChainsawManAnimationBridge.EnsureChainsawStateSource()、ChainsawManAnimationBridge.GetChainsawDamageOrigin() 等共 11 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 ChainsawManAnimationBridge.BeginIntroTaunt(float)、ChainsawManAnimationBridge.OnChainsawAttackAudioEnter()、ChainsawManAnimationBridge.OnChainsawHitAudioEnter()；下游（含内部回调体） AudioEventData.GetPitch()、AudioEventData.GetVolume()、AudioEventData.SelectClip()、AudioManager.Play3D(AudioEventData, Vector3)、AudioSource.Play()、ChainsawManAnimationBridge.EnsureChainsawStateSource()、ChainsawManAnimationBridge.GetChainsawDamageOrigin() 等共 11 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="eventData">中文含义：事件配置。使用位置：作为 AudioManager.Play3D(AudioEventData, Vector3) 的参数、作为 ChainsawManAnimationBridge.ResolveAudioEvent(AudioEventData, string) 的参数、ChainsawManAnimationBridge.PlayTemporaryChainsawAudio(AudioEventData, string)。</param>
-    /// <param name="eventName">中文含义：事件名称。使用位置：作为 ChainsawManAnimationBridge.ResolveAudioEvent(AudioEventData, string) 的参数。</param>
+    /// <param name="eventData">事件配置。</param>
+    /// <param name="eventName">事件名称。</param>
     private void PlayTemporaryChainsawAudio(AudioEventData eventData, string eventName)
     {
         if (!HasStartedChainsaw || chainsawStopped)
@@ -746,7 +765,7 @@ AudioClip clip = eventData.SelectClip();
         }
 
         EnsureChainsawStateSource();
-        // clip（音频片段）：保存 AudioEventData.SelectClip() 的返回结果，供当前步骤使用。使用位置：ChainsawManAnimationBridge.PlayTemporaryChainsawAudio(AudioEventData, string)。
+        // 音频片段。
 AudioClip clip = eventData.SelectClip();
         if (clip == null)
         {
@@ -770,7 +789,7 @@ AudioClip clip = eventData.SelectClip();
 
     /// <summary>StopTemporaryChainsawAudio 的业务处理入口；本方法直接依赖 AudioManager.Stop(AudioPlayHandle)、AudioSource.Stop()、ChainsawManAnimationBridge.ResumeIdleLoop()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 ChainsawManAnimationBridge.BeginChainsawStart()、ChainsawManAnimationBridge.BeginDeathShutdown(float)、ChainsawManAnimationBridge.OnDisable()、ChainsawManAnimationBridge.PlayTemporaryChainsawAudio(AudioEventData, string)、ChainsawManAnimationBridge.ResetRuntimeState() 等共 7 处；下游（含内部回调体） AudioManager.Stop(AudioPlayHandle)、AudioSource.Stop()、ChainsawManAnimationBridge.ResumeIdleLoop()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="resumeIdle">中文含义：是否恢复执行待机。使用位置：ChainsawManAnimationBridge.StopTemporaryChainsawAudio(bool)。</param>
+    /// <param name="resumeIdle">是否恢复执行待机。</param>
     private void StopTemporaryChainsawAudio(bool resumeIdle)
     {
         if (chainsawStateHandle.IsValid && AudioManager.Instance != null)
@@ -779,7 +798,7 @@ AudioClip clip = eventData.SelectClip();
         }
 
         chainsawStateHandle = default;
-        if (chainsawStateSource != null && chainsawStateSource.isPlaying)
+        if (chainsawStateSource != null)
         {
             chainsawStateSource.Stop();
         }
@@ -819,7 +838,7 @@ AudioClip clip = eventData.SelectClip();
         chainsawStateSource.loop = false;
         chainsawStateSource.spatialBlend = 1f;
         chainsawStateSource.dopplerLevel = 0f;
-        // receiverValue8（判空前缓存的音频管理器的实例）：从音频管理器的实例读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、ChainsawManAnimationBridge.EnsureChainsawStateSource()。
+        // 判空前缓存的音频管理器的实例。
 global::AudioManager receiverValue8 = AudioManager.Instance;
         if (!global::System.Object.ReferenceEquals(receiverValue8, null))
         {
@@ -845,7 +864,7 @@ global::AudioManager receiverValue8 = AudioManager.Instance;
         chainsawLoopSource.loop = true;
         chainsawLoopSource.spatialBlend = 1f;
         chainsawLoopSource.dopplerLevel = 0f;
-        // receiverValue9（判空前缓存的音频管理器的实例）：从音频管理器的实例读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、ChainsawManAnimationBridge.EnsureChainsawLoopSource()。
+        // 判空前缓存的音频管理器的实例。
 global::AudioManager receiverValue9 = AudioManager.Instance;
         if (!global::System.Object.ReferenceEquals(receiverValue9, null))
         {
@@ -883,9 +902,9 @@ global::AudioManager receiverValue9 = AudioManager.Instance;
             return;
         }
 
-        // stateHandlePlaying（是否状态句柄播放中）：使用位置：ChainsawManAnimationBridge.UpdateTemporaryChainsawAudio()。
+        // 是否状态句柄播放中。
 bool stateHandlePlaying = chainsawStateHandle.IsValid;
-        // stateSourcePlaying（是否状态来源播放中）：使用位置：ChainsawManAnimationBridge.UpdateTemporaryChainsawAudio()。
+        // 是否状态来源播放中。
 bool stateSourcePlaying = chainsawStateSource != null && chainsawStateSource.isPlaying;
         if (stateHandlePlaying || stateSourcePlaying)
         {
@@ -898,8 +917,8 @@ bool stateSourcePlaying = chainsawStateSource != null && chainsawStateSource.isP
 
     /// <summary>ResolveAudioEvent 的业务处理入口；本方法直接依赖 AudioLibrary.GetEvent(string)、string.IsNullOrEmpty(string)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 ChainsawManAnimationBridge.PlayOneShot(AudioEventData, string)、ChainsawManAnimationBridge.PlayTemporaryChainsawAudio(AudioEventData, string)、ChainsawManAnimationBridge.StartIdleLoop(bool)；下游（含内部回调体） AudioLibrary.GetEvent(string)、string.IsNullOrEmpty(string)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="eventData">中文含义：事件配置。使用位置：ChainsawManAnimationBridge.ResolveAudioEvent(AudioEventData, string)。</param>
-    /// <param name="eventName">中文含义：事件名称。使用位置：作为 AudioLibrary.GetEvent(string) 的参数、作为 string.IsNullOrEmpty(string) 的参数。</param>
+    /// <param name="eventData">事件配置。</param>
+    /// <param name="eventName">事件名称。</param>
     private AudioEventData ResolveAudioEvent(AudioEventData eventData, string eventName)
     {
         if (eventData != null)
@@ -924,19 +943,19 @@ bool stateSourcePlaying = chainsawStateSource != null && chainsawStateSource.isP
             return;
         }
 
-        // children（子对象集合）：保存 Component.GetComponentsInChildren<Transform>(bool) 的返回结果，供当前步骤使用。使用位置：ChainsawManAnimationBridge.ResolveChainsawDamageOrigin()。
+        // 子对象集合。
 Transform[] children = GetComponentsInChildren<Transform>(true);
-        // i（当前遍历索引）：使用位置：ChainsawManAnimationBridge.ResolveChainsawDamageOrigin()。
+        // 当前遍历索引。
 for (int i = 0; i < children.Length; i++)
         {
-            // child（子级）：使用位置：ChainsawManAnimationBridge.ResolveChainsawDamageOrigin()。
+            // 子级。
 Transform child = children[i];
             if (child == null)
             {
                 continue;
             }
 
-            // childName（子级名称）：保存 string.ToLowerInvariant() 的返回结果，供当前步骤使用。使用位置：ChainsawManAnimationBridge.ResolveChainsawDamageOrigin()。
+            // 子级名称。
 string childName = child.name.ToLowerInvariant();
             if (childName.Contains("chainsaw") || childName.Contains("saw") || childName.Contains("电锯"))
             {
@@ -948,10 +967,10 @@ string childName = child.name.ToLowerInvariant();
 
     /// <summary>DeathShutdownRoutine 的业务处理入口；本方法直接依赖 ChainsawManAnimationBridge.StopIdleLoop(bool, bool)、Mathf.Max(float, float)、WaitForSeconds.WaitForSeconds(float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 ChainsawManAnimationBridge.BeginDeathShutdown(float)；下游（含内部回调体） ChainsawManAnimationBridge.StopIdleLoop(bool, bool)、Mathf.Max(float, float)、WaitForSeconds.WaitForSeconds(float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="duration">中文含义：持续时间。使用位置：作为 Mathf.Max(float, float) 的参数。</param>
+    /// <param name="duration">持续时间。</param>
     private System.Collections.IEnumerator DeathShutdownRoutine(float duration)
     {
-        // waitTime（等待时间）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：作为 WaitForSeconds.WaitForSeconds(float) 的参数、ChainsawManAnimationBridge.DeathShutdownRoutine(float)。
+        // 等待时间。
 float waitTime = Mathf.Max(0f, duration);
         if (waitTime > 0f)
         {

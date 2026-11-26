@@ -14,9 +14,9 @@ using GameArchitecture;
 /// <summary>只读原动画，为普通敌人的实际挥击采样手部轨迹。</summary>
 public static class KnifeContactProfileBuilder
 {
-    /// <summary>中文含义：报告目录。编译期常量，保持既有值与消费者映射。使用位置：作为 Directory.CreateDirectory(string) 的参数、作为 File.WriteAllText(string, string) 的参数。</summary>
+    /// <summary>报告目录。编译期常量，保持既有值与消费者映射。</summary>
     public const string ReportDirectory = "战斗日志/弹反重整";
-    /// <summary>中文含义：预制件集合。只读字段，初始化后不由普通写入口替换。使用位置：KnifeContactProfileBuilder.Build()。</summary>
+    /// <summary>预制件集合。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly string[] Prefabs =
     {
         "Assets/Prefab/Enemies/FemaleGanardEnemy.prefab",
@@ -31,29 +31,29 @@ public static class KnifeContactProfileBuilder
             throw new InvalidOperationException("请在编辑模式标定。");
         }
 
-        // original（原始）：保存 SceneManager.GetActiveScene() 的返回结果，供当前步骤使用。使用位置：KnifeContactProfileBuilder.Build()。
+        // 原始。
 Scene original = SceneManager.GetActiveScene();
         if (original.isDirty)
         {
             throw new InvalidOperationException("当前场景存在未保存改动，未修改任何资源。");
         }
 
-        // originalPath（原始路径）：使用位置：作为 EditorSceneManager.OpenScene(string) 的参数。
+        // 原始路径。
 string originalPath = original.path;
         Directory.CreateDirectory(ReportDirectory);
-        // report（报告）：使用位置：作为 JsonConvert.SerializeObject(object?, Formatting) 的参数、作为 KnifeContactProfileBuilder.Bake(GameObject, List<object>) 的参数。
+        // 报告。
 List<object> report = new List<object>();
-        // profiles（配置档集合）：使用位置：KnifeContactProfileBuilder.Build()。
+        // 配置档集合。
 Dictionary<string, KnifeEnemyAttackProfile[]> profiles = new Dictionary<string, KnifeEnemyAttackProfile[]>();
         // path（路径）：每轮从预制件集合取得一个元素，仅代表当前这一项。使用位置：作为 AssetDatabase.LoadAssetAtPath<GameObject>(string) 的参数、作为 Dictionary<string, KnifeEnemyAttackProfile[]>.this[string] 的参数、作为 PrefabUtility.LoadPrefabContents(string) 的参数 等共 4 处。
 foreach (string path in Prefabs)
         {
-            // asset（资源）：保存 AssetDatabase.LoadAssetAtPath<GameObject>(string) 的返回结果，供当前步骤使用。使用位置：作为 KnifeContactProfileBuilder.Bake(GameObject, List<object>) 的参数。
+            // 资源。
 GameObject asset = AssetDatabase.LoadAssetAtPath<GameObject>(path);
-            // baked（已烘焙）：保存 KnifeContactProfileBuilder.Bake(GameObject, List<object>) 的返回结果，供当前步骤使用。使用位置：作为 EnemyCombatModule.ConfigureKnifeAttackProfiles(KnifeEnemyAttackProfile[]) 的参数、KnifeContactProfileBuilder.Build()。
+            // 已烘焙。
 KnifeEnemyAttackProfile[] baked = Bake(asset, report);
             profiles[path] = baked;
-            // content（内容）：保存 PrefabUtility.LoadPrefabContents(string) 的返回结果，供当前步骤使用。使用位置：作为 PrefabUtility.SaveAsPrefabAsset(GameObject, string) 的参数、作为 PrefabUtility.UnloadPrefabContents(GameObject) 的参数、KnifeContactProfileBuilder.Build()。
+            // 内容。
 GameObject content = PrefabUtility.LoadPrefabContents(path);
             try
             {
@@ -77,14 +77,14 @@ foreach (string path in new[]
 
             )
             {
-                // scene（场景）：保存 EditorSceneManager.OpenScene(string) 的返回结果，供当前步骤使用。使用位置：作为 EditorSceneManager.MarkSceneDirty(Scene) 的参数、作为 EditorSceneManager.SaveScene(Scene) 的参数。
+                // 场景。
 Scene scene = EditorSceneManager.OpenScene(path);
-                // changed（是否发生变化）：使用位置：KnifeContactProfileBuilder.Build()。
+                // 是否发生变化。
 bool changed = false;
                 // enemy（敌人）：每轮从查找对象集合依据类型的返回结果取得一个元素，仅代表当前这一项。使用位置：作为 EditorUtility.SetDirty(Object) 的参数、作为 PrefabUtility.GetPrefabAssetPathOfNearestInstanceRoot(Object) 的参数、作为 PrefabUtility.RecordPrefabInstancePropertyModifications(Object) 的参数 等共 4 处。
 foreach (EnemyCombatModule enemy in UnityEngine.Object.FindObjectsByType<EnemyCombatModule>(FindObjectsInactive.Include, FindObjectsSortMode.None))
                 {
-                    // prefabPath（预制件路径）：保存 PrefabUtility.GetPrefabAssetPathOfNearestInstanceRoot(Object) 的返回结果，供当前步骤使用。使用位置：作为 Dictionary<string, KnifeEnemyAttackProfile[]>.TryGetValue(string, out KnifeEnemyAttackProfile[]) 的参数。
+                    // 预制件路径。
 string prefabPath = PrefabUtility.GetPrefabAssetPathOfNearestInstanceRoot(enemy.gameObject);
                     if (profiles.TryGetValue(prefabPath, out KnifeEnemyAttackProfile[] /* baked：由模式匹配、解构或输出参数绑定的当前结果，按原作用域供后续分支使用。使用位置：作为 EnemyCombatModule.ConfigureKnifeAttackProfiles(KnifeEnemyAttackProfile[]) 的参数。 */ /* baked：由模式匹配、解构或输出参数绑定的当前结果，按原作用域供后续分支使用。使用位置：KnifeContactProfileBuilder.Build()。 */ /* baked：由模式匹配、解构或输出参数绑定的当前结果，按原作用域供后续分支使用。使用位置：作为 EnemyCombatModule.ConfigureKnifeAttackProfiles(KnifeEnemyAttackProfile[]) 的参数。 */ /* 中文含义：已烘焙。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ baked))
                     {
@@ -114,8 +114,8 @@ string prefabPath = PrefabUtility.GetPrefabAssetPathOfNearestInstanceRoot(enemy.
 
     /// <summary>Bake 的业务处理入口；本方法直接依赖 AnimationClip.SampleAnimation(GameObject, float)、Animator.GetBoneTransform(HumanBodyBones)、EditorSceneManager.ClosePreviewScene(Scene)、EditorSceneManager.NewPreviewScene()、Enum.ToString()、GameObject.GetComponent&lt;Animator&gt;()、IEnumerable&lt; &lt;anonymous type: string hand, float begin, float end, float radius, int samples&gt; &gt;.ToArray&lt; &lt;anonymous type: string hand, float begin, float end, float radius, int samples&gt; &gt;() 等共 21 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 KnifeContactProfileBuilder.Build()；下游（含内部回调体） AnimationClip.SampleAnimation(GameObject, float)、Animator.GetBoneTransform(HumanBodyBones)、EditorSceneManager.ClosePreviewScene(Scene)、EditorSceneManager.NewPreviewScene()、Enum.ToString()、GameObject.GetComponent&lt;Animator&gt;()、IEnumerable&lt; &lt;anonymous type: string hand, float begin, float end, float radius, int samples&gt; &gt;.ToArray&lt; &lt;anonymous type: string hand, float begin, float end, float radius, int samples&gt; &gt;() 等共 21 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="asset">中文含义：资源。使用位置：作为 List&lt;object&gt;.Add(object) 的参数、作为 Object.Instantiate&lt;GameObject&gt;(GameObject) 的参数。</param>
-    /// <param name="report">中文含义：报告。使用位置：KnifeContactProfileBuilder.Bake(GameObject, List&lt;object&gt;)。</param>
+    /// <param name="asset">资源。</param>
+    /// <param name="report">报告。</param>
     public static string CalibrateExistingProfiles(LeonController player)
     {
         if (EditorApplication.isPlayingOrWillChangePlaymode || player == null
@@ -604,25 +604,25 @@ string prefabPath = PrefabUtility.GetPrefabAssetPathOfNearestInstanceRoot(enemy.
 
     private static KnifeEnemyAttackProfile[] Bake(GameObject asset, List<object> report)
     {
-        // preview（预览）：保存 EditorSceneManager.NewPreviewScene() 的返回结果，供当前步骤使用。使用位置：作为 EditorSceneManager.ClosePreviewScene(Scene) 的参数、作为 SceneManager.MoveGameObjectToScene(GameObject, Scene) 的参数。
+        // 预览。
 Scene preview = EditorSceneManager.NewPreviewScene();
-        // model（模型）：保存 Object.Instantiate<GameObject>(GameObject) 的返回结果，供当前步骤使用。使用位置：作为 AnimationClip.SampleAnimation(GameObject, float) 的参数、作为 SceneManager.MoveGameObjectToScene(GameObject, Scene) 的参数、KnifeContactProfileBuilder.Bake(GameObject, List<object>)。
+        // 模型。
 GameObject model = UnityEngine.Object.Instantiate(asset);
         SceneManager.MoveGameObjectToScene(model, preview);
         try
         {
-            // animator（动画控制器）：保存 GameObject.GetComponent<Animator>() 的返回结果，供当前步骤使用。使用位置：作为 Transform.InverseTransformPoint(Vector3) 的参数、KnifeContactProfileBuilder.Bake(GameObject, List<object>)。
+            // 动画控制器。
 Animator animator = model.GetComponent<Animator>();
-            // clips（动画片段集合）：使用位置：KnifeContactProfileBuilder.Bake(GameObject, List<object>)。
+            // 动画片段集合。
 AnimationClip[] clips = animator.runtimeAnimatorController.animationClips;
-            // result（当前小刀敌人攻击配置档数组）：使用位置：KnifeContactProfileBuilder.Bake(GameObject, List<object>)。
+            // 当前小刀敌人攻击配置档数组。
 KnifeEnemyAttackProfile[] result = new KnifeEnemyAttackProfile[3];
-            // move（移动）：使用位置：作为 IEnumerable<AnimationClip>.First<AnimationClip>(Func<AnimationClip, bool>) 的参数、KnifeContactProfileBuilder.Bake(GameObject, List<object>)。
+            // 移动。
 for (int move = 0; move < 3; move++)
             {
-                // clip（动画片段）：保存 IEnumerable<AnimationClip>.First<AnimationClip>(Func<AnimationClip, bool>) 的返回结果，供当前步骤使用。使用位置：作为 List<object>.Add(object) 的参数、KnifeContactProfileBuilder.Bake(GameObject, List<object>)。
+                // 动画片段。
 AnimationClip clip = clips.First( /* 中文含义：当前动画片段。 */c => c.name == "Zombie_Attack0" + (move + 1));
-                // segments（线段集合）：使用位置：作为 List<object>.Add(object) 的参数、KnifeContactProfileBuilder.Bake(GameObject, List<object>)。
+                // 线段集合。
 List<KnifeEnemyAttackSegment> segments = new List<KnifeEnemyAttackSegment>();
                 if (move == 0)
                 {
@@ -642,13 +642,13 @@ List<KnifeEnemyAttackSegment> segments = new List<KnifeEnemyAttackSegment>();
                 // segment（线段）：每轮从线段集合取得一个元素，仅代表当前这一项。使用位置：作为 Animator.GetBoneTransform(HumanBodyBones) 的参数、作为 Mathf.CeilToInt(float) 的参数、作为 Mathf.Lerp(float, float, float) 的参数 等共 4 处。
 foreach (KnifeEnemyAttackSegment segment in segments)
                 {
-                    // count（数量）：使用位置：作为 Mathf.Lerp(float, float, float) 的参数、KnifeContactProfileBuilder.Bake(GameObject, List<object>)。
+                    // 数量。
 int count = Mathf.CeilToInt((segment.end - segment.begin) * 120f) + 1;
                     segment.localPoints = new Vector3[count];
-                    // index（当前元素索引）：使用位置：作为 Mathf.Lerp(float, float, float) 的参数、KnifeContactProfileBuilder.Bake(GameObject, List<object>)。
+                    // 当前元素索引。
 for (int index = 0; index < count; index++)
                     {
-                        // time（时间）：保存 Mathf.Lerp(float, float, float) 的返回结果，供当前步骤使用。使用位置：作为 AnimationClip.SampleAnimation(GameObject, float) 的参数。
+                        // 时间。
 float time = Mathf.Lerp(segment.begin, segment.end, index / (float)(count - 1));
                         clip.SampleAnimation(model, time);
                         model.transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
@@ -694,9 +694,9 @@ float time = Mathf.Lerp(segment.begin, segment.end, index / (float)(count - 1));
 
     /// <summary>CreateSegment 的业务处理入口；本方法直接依赖 KnifeEnemyAttackSegment.KnifeEnemyAttackSegment()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 KnifeContactProfileBuilder.Bake(GameObject, List&lt;object&gt;)；下游（含内部回调体） KnifeEnemyAttackSegment.KnifeEnemyAttackSegment()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="hand">中文含义：手部。使用位置：KnifeContactProfileBuilder.CreateSegment(HumanBodyBones, float, float)。</param>
-    /// <param name="begin">中文含义：开始。使用位置：KnifeContactProfileBuilder.CreateSegment(HumanBodyBones, float, float)。</param>
-    /// <param name="end">中文含义：结束。使用位置：KnifeContactProfileBuilder.CreateSegment(HumanBodyBones, float, float)。</param>
+    /// <param name="hand">手部。</param>
+    /// <param name="begin">开始。</param>
+    /// <param name="end">结束。</param>
     private static KnifeEnemyAttackSegment CreateSegment(HumanBodyBones hand, float begin, float end)
     {
         return new KnifeEnemyAttackSegment

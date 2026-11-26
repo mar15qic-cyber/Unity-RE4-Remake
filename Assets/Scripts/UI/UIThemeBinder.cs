@@ -12,14 +12,14 @@ public class UIThemeBinder : MonoBehaviour
     [Serializable]
     public sealed class ImageBinding
     {
-        /// <summary>中文含义：目标图像组件。使用位置：UIThemeBinder.ApplyImages()。</summary>
+        /// <summary>目标图像组件。</summary>
         public Image target;
-        /// <summary>中文含义：角色职责。使用位置：作为 UIVisualTheme.GetSprite(UIVisualRole) 的参数。</summary>
+        /// <summary>角色职责。</summary>
         public UIVisualRole role;
-        /// <summary>中文含义：是否应用图片后将图片组件颜色重置为白色。应用图片后将图片组件颜色重置为白色。使用位置：UIThemeBinder.ApplyImages()。</summary>
+        /// <summary>是否应用图片后将图片组件颜色重置为白色。应用图片后将图片组件颜色重置为白色。</summary>
         [Tooltip("应用图片后将图片组件颜色重置为白色")]
         public bool resetColor = true;
-        /// <summary>中文含义：是否应用图片后使用图片原始尺寸。应用图片后使用图片原始尺寸。使用位置：UIThemeBinder.ApplyImages()。</summary>
+        /// <summary>是否应用图片后使用图片原始尺寸。应用图片后使用图片原始尺寸。</summary>
         [Tooltip("应用图片后使用图片原始尺寸")]
         public bool useNativeSize;
     }
@@ -28,31 +28,31 @@ public class UIThemeBinder : MonoBehaviour
     [Serializable]
     public sealed class SelectableBinding
     {
-        /// <summary>中文含义：目标可选择控件。使用位置：UIThemeBinder.ApplySelectables()。</summary>
+        /// <summary>目标可选择控件。</summary>
         public Selectable target;
-        /// <summary>中文含义：普通状态值。使用位置：作为 UIVisualTheme.GetSprite(UIVisualRole) 的参数。</summary>
+        /// <summary>普通状态值。</summary>
         public UIVisualRole normal = UIVisualRole.ButtonNormal;
-        /// <summary>中文含义：已高亮。使用位置：作为 UIVisualTheme.GetSprite(UIVisualRole) 的参数。</summary>
+        /// <summary>已高亮。</summary>
         public UIVisualRole highlighted = UIVisualRole.ButtonHighlighted;
-        /// <summary>中文含义：已按下。使用位置：作为 UIVisualTheme.GetSprite(UIVisualRole) 的参数。</summary>
+        /// <summary>已按下。</summary>
         public UIVisualRole pressed = UIVisualRole.ButtonPressed;
-        /// <summary>中文含义：停用。使用位置：作为 UIVisualTheme.GetSprite(UIVisualRole) 的参数。</summary>
+        /// <summary>停用。</summary>
         public UIVisualRole disabled = UIVisualRole.ButtonDisabled;
     }
 
-    /// <summary>中文含义：主题。使用位置：OptionsMenu.EnsureEnhancedMenu()、UIThemeBinder.ApplyCursor()、UIThemeBinder.ApplyImages() 等共 5 处。</summary>
+    /// <summary>主题。</summary>
     [Header("主题")]
     public UIVisualTheme theme;
-    /// <summary>中文含义：是否组件启用时自动应用主题。组件启用时自动应用主题。使用位置：UIThemeBinder.OnEnable()。</summary>
+    /// <summary>是否组件启用时自动应用主题。组件启用时自动应用主题。</summary>
     [Tooltip("组件启用时自动应用主题")]
     public bool applyOnEnable = true;
-    /// <summary>中文含义：图像集合。使用位置：UIThemeBinder.ApplyImages()。</summary>
+    /// <summary>图像集合。</summary>
     [Header("图片绑定")]
     public ImageBinding[] images;
-    /// <summary>中文含义：可选择控件集合。使用位置：UIThemeBinder.ApplySelectables()。</summary>
+    /// <summary>可选择控件集合。</summary>
     [Header("可交互控件绑定")]
     public SelectableBinding[] selectables;
-    /// <summary>中文含义：光标管理器。使用位置：UIThemeBinder.ApplyCursor()。</summary>
+    /// <summary>光标管理器。</summary>
     [Header("可选光标管理器")]
     public UICursorManager cursorManager;
     /// <summary>Unity 组件启用回调；状态处理与资源交接按函数内顺序执行，下游协作见调用链。</summary>
@@ -89,17 +89,17 @@ public class UIThemeBinder : MonoBehaviour
             return;
         }
 
-        // i（当前遍历索引）：使用位置：UIThemeBinder.ApplyImages()。
+        // 当前遍历索引。
 for (int i = 0; i < images.Length; i++)
         {
-            // binding（绑定）：使用位置：作为 UIVisualTheme.GetSprite(UIVisualRole) 的参数、UIThemeBinder.ApplyImages()。
+            // 绑定。
 ImageBinding binding = images[i];
             if (binding == null || binding.target == null)
             {
                 continue;
             }
 
-            // sprite（精灵图）：保存 UIVisualTheme.GetSprite(UIVisualRole) 的返回结果，供当前步骤使用。使用位置：UIThemeBinder.ApplyImages()。
+            // 精灵图。
 Sprite sprite = theme.GetSprite(binding.role);
             if (sprite == null)
             {
@@ -128,26 +128,26 @@ Sprite sprite = theme.GetSprite(binding.role);
             return;
         }
 
-        // i（当前遍历索引）：使用位置：UIThemeBinder.ApplySelectables()。
+        // 当前遍历索引。
 for (int i = 0; i < selectables.Length; i++)
         {
-            // binding（绑定）：使用位置：作为 UIVisualTheme.GetSprite(UIVisualRole) 的参数、UIThemeBinder.ApplySelectables()。
+            // 绑定。
 SelectableBinding binding = selectables[i];
             if (binding == null || binding.target == null)
             {
                 continue;
             }
 
-            // image（图像）：使用位置：UIThemeBinder.ApplySelectables()。
+            // 图像。
 Image image = binding.target.targetGraphic as Image;
-            // normal（普通状态值）：保存 UIVisualTheme.GetSprite(UIVisualRole) 的返回结果，供当前步骤使用。使用位置：UIThemeBinder.ApplySelectables()。
+            // 普通状态值。
 Sprite normal = theme.GetSprite(binding.normal);
             if (image != null && normal != null)
             {
                 image.sprite = normal;
             }
 
-            // state（当前精灵图状态）：使用位置：UIThemeBinder.ApplySelectables()。
+            // 当前精灵图状态。
 SpriteState state = binding.target.spriteState;
             state.highlightedSprite = theme.GetSprite(binding.highlighted);
             state.pressedSprite = theme.GetSprite(binding.pressed);

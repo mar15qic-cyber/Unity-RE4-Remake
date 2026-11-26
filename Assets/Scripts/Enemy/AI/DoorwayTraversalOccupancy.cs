@@ -6,21 +6,21 @@ using UnityEngine;
 [UnityEngine.Scripting.APIUpdating.MovedFrom(true, "", "Assembly-CSharp", "门洞通行占用")]
 internal sealed class DoorwayTraversalOccupancy
 {
-    /// <summary>中文含义：门。只读字段，初始化后不由普通写入口替换。使用位置：作为 DoorwayTraversalOccupancy.HorizontalDistance(Vector3, Vector3) 的参数、作为 TraversalTokenRegistry.OpenRelease(int) 的参数、作为 Vector3.Dot(Vector3, Vector3) 的参数 等共 8 处。</summary>
+    /// <summary>门。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly DoorController door;
-    /// <summary>中文含义：正向方向。只读字段，初始化后不由普通写入口替换。使用位置：作为 DoorwayTraversalOccupancy.ReleaseLease(VillagerController) 的参数、作为 DoorwayTraversalOccupancy.Valid(VillagerController, int) 的参数、DoorwayTraversalOccupancy.CleanupInvalidate() 等共 7 处。</summary>
+    /// <summary>正向方向。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly List<VillagerController> positiveDirection = new();
-    /// <summary>中文含义：反向。只读字段，初始化后不由普通写入口替换。使用位置：作为 DoorwayTraversalOccupancy.ReleaseLease(VillagerController) 的参数、作为 DoorwayTraversalOccupancy.Valid(VillagerController, int) 的参数、DoorwayTraversalOccupancy.CleanupInvalidate() 等共 7 处。</summary>
+    /// <summary>反向。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly List<VillagerController> reverse = new();
-    /// <summary>中文含义：正向方向视图。只读字段，初始化后不由普通写入口替换。使用位置：DoorwayTraversalOccupancy.DoorwayTraversalOccupancy(DoorController)、DoorwayTraversalOccupancy.ReadQueue(int)。</summary>
+    /// <summary>正向方向视图。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly ReadOnlyCollection<VillagerController> positiveDirectionView;
-    /// <summary>中文含义：反向视图。只读字段，初始化后不由普通写入口替换。使用位置：DoorwayTraversalOccupancy.DoorwayTraversalOccupancy(DoorController)、DoorwayTraversalOccupancy.ReadQueue(int)。</summary>
+    /// <summary>反向视图。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly ReadOnlyCollection<VillagerController> reverseView;
-    /// <summary>中文含义：占用方向。使用位置：作为 DoorwayTraversalOccupancy.Queue(int) 的参数、作为 DoorwayTraversalOccupancy.Valid(VillagerController, int) 的参数、DoorwayTraversalOccupancy.CleanupDirection() 等共 6 处。</summary>
+    /// <summary>占用方向。</summary>
     private int occupancyDirection;
-    /// <summary>中文含义：租用。只读字段，初始化后不由普通写入口替换。使用位置：DoorwayTraversalOccupancy.ClearValue()、DoorwayTraversalOccupancy.OpenRelease()、DoorwayTraversalOccupancy.ReleaseLease(VillagerController) 等共 8 处。</summary>
+    /// <summary>租用。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly GameArchitecture.TraversalTokenRegistry lease = new GameArchitecture.TraversalTokenRegistry();
-    /// <summary>中文含义：成员凭证。只读字段，初始化后不由普通写入口替换。使用位置：DoorwayTraversalOccupancy.ClearValue()、DoorwayTraversalOccupancy.QueryToken(VillagerController)、DoorwayTraversalOccupancy.ReleaseLease(VillagerController) 等共 5 处。</summary>
+    /// <summary>成员凭证。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly Dictionary<VillagerController, GameArchitecture.TraversalToken> memberToken = new();
     /// <summary>OpenRelease 的业务处理入口；本方法直接依赖 DoorwayTraversalOccupancy.ClearValue()、Object.GetInstanceID()、TraversalTokenRegistry.OpenRelease(int)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 DoorController.OnEnable()；下游（含内部回调体） DoorwayTraversalOccupancy.ClearValue()、Object.GetInstanceID()、TraversalTokenRegistry.OpenRelease(int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
@@ -32,7 +32,7 @@ internal sealed class DoorwayTraversalOccupancy
 
     /// <summary>QueryToken 的业务处理入口；本方法直接依赖 Dictionary&lt;VillagerController, TraversalToken&gt;.TryGetValue(VillagerController, out TraversalToken)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 DoorwayTraversalOccupancy.RequestTraversal(VillagerController, int, RequestContext)、VillagerController.UnregisterPursuitIngressWaiter()；下游（含内部回调体） Dictionary&lt;VillagerController, TraversalToken&gt;.TryGetValue(VillagerController, out TraversalToken)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="character">中文含义：角色。使用位置：作为 Dictionary&lt;VillagerController, TraversalToken&gt;.TryGetValue(VillagerController, out TraversalToken) 的参数。</param>
+    /// <param name="character">角色。</param>
     internal GameArchitecture.TraversalToken QueryToken(VillagerController character)
     {
         if (memberToken.TryGetValue(character, out var /* 中文含义：凭证。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ token))
@@ -47,11 +47,11 @@ internal sealed class DoorwayTraversalOccupancy
 
     /// <summary>TraversalValid 的业务处理入口；本方法直接依赖 TraversalTokenRegistry.Valid(TraversalToken)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 DoorController.TraversalValid(TraversalToken)；下游（含内部回调体） TraversalTokenRegistry.Valid(TraversalToken)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="token">中文含义：凭证。使用位置：作为 TraversalTokenRegistry.Valid(TraversalToken) 的参数。</param>
+    /// <param name="token">凭证。</param>
     internal bool TraversalValid(GameArchitecture.TraversalToken token) => lease.Valid(token);
     /// <summary>ReleaseTraversal 的业务处理入口；本方法直接依赖 DoorwayTraversalOccupancy.Release(VillagerController)、object.ReferenceEquals(object, object)、TraversalTokenRegistry.Valid(TraversalToken)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 DoorController.ReleaseTraversal(TraversalToken, ReleaseReason)；下游（含内部回调体） DoorwayTraversalOccupancy.Release(VillagerController)、object.ReferenceEquals(object, object)、TraversalTokenRegistry.Valid(TraversalToken)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="token">中文含义：凭证。使用位置：作为 TraversalTokenRegistry.Valid(TraversalToken) 的参数、DoorwayTraversalOccupancy.ReleaseTraversal(TraversalToken, ReleaseReason)。</param>
+    /// <param name="token">凭证。</param>
     /// <param name="reason">中文含义：原因。</param>
     internal bool ReleaseTraversal(GameArchitecture.TraversalToken token, GameArchitecture.ReleaseReason reason)
     {
@@ -60,7 +60,7 @@ internal sealed class DoorwayTraversalOccupancy
             return false;
         }
 
-        // target（目标村民敌人控制器）：使用位置：作为 DoorwayTraversalOccupancy.Release(VillagerController) 的参数、作为 object.ReferenceEquals(object, object) 的参数、DoorwayTraversalOccupancy.ReleaseTraversal(TraversalToken, ReleaseReason)。
+        // 目标村民敌人控制器。
 VillagerController target = null;
         // item（当前键值配对）：每轮从成员凭证取得一个元素，仅代表当前这一项。使用位置：DoorwayTraversalOccupancy.ReleaseTraversal(TraversalToken, ReleaseReason)。
 foreach (var item in memberToken)
@@ -83,7 +83,7 @@ foreach (var item in memberToken)
 
     /// <summary>ReleaseLease 的业务处理入口；本方法直接依赖 Dictionary&lt;VillagerController, TraversalToken&gt;.Remove(VillagerController)、Dictionary&lt;VillagerController, TraversalToken&gt;.TryGetValue(VillagerController, out TraversalToken)、TraversalTokenRegistry.Release(TraversalToken, ReleaseReason)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 DoorwayTraversalOccupancy.CleanupInvalidate()、DoorwayTraversalOccupancy.Release(VillagerController)；下游（含内部回调体） Dictionary&lt;VillagerController, TraversalToken&gt;.Remove(VillagerController)、Dictionary&lt;VillagerController, TraversalToken&gt;.TryGetValue(VillagerController, out TraversalToken)、TraversalTokenRegistry.Release(TraversalToken, ReleaseReason)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="character">中文含义：角色。使用位置：作为 Dictionary&lt;VillagerController, TraversalToken&gt;.Remove(VillagerController) 的参数、作为 Dictionary&lt;VillagerController, TraversalToken&gt;.TryGetValue(VillagerController, out TraversalToken) 的参数。</param>
+    /// <param name="character">角色。</param>
     private void ReleaseLease(VillagerController character)
     {
         if (memberToken.TryGetValue(character, out var /* 中文含义：凭证。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ token))
@@ -96,7 +96,7 @@ foreach (var item in memberToken)
 
     /// <summary>构造并初始化 DoorwayTraversalOccupancy 的声明状态；具体外部协作见静态调用链。</summary>
     /// <remarks>静态调用链：上游 DoorController.OnEnable()；下游（含内部回调体） List&lt;VillagerController&gt;.AsReadOnly()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="door">中文含义：门。使用位置：DoorwayTraversalOccupancy.DoorwayTraversalOccupancy(DoorController)。</param>
+    /// <param name="door">门。</param>
     internal DoorwayTraversalOccupancy(DoorController door)
     {
         this.door = door;
@@ -106,7 +106,7 @@ foreach (var item in memberToken)
 
     /// <summary>ReadQueue 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
     /// <remarks>静态调用链：上游 DoorwayTraversalOccupancy.Register(VillagerController, int)、VillagerController.IsPursuitIngressQueueHead()、VillagerController.TryResolveDoor03IngressFinalSteering(out Vector3)；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="direction">中文含义：方向。使用位置：DoorwayTraversalOccupancy.ReadQueue(int)。</param>
+    /// <param name="direction">方向。</param>
     internal ReadOnlyCollection<VillagerController> ReadQueue(int direction)
     {
         if (direction >= 0)
@@ -121,7 +121,7 @@ foreach (var item in memberToken)
 
     /// <summary>Queue 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
     /// <remarks>静态调用链：上游 DoorwayTraversalOccupancy.CleanupDirection()、DoorwayTraversalOccupancy.QueueFirstYieldRow(VillagerController, int)、DoorwayTraversalOccupancy.Register(VillagerController, int)、DoorwayTraversalOccupancy.TryOccupancyCore(VillagerController, int)、DoorwayTraversalOccupancy.TryPromoteForwardBlocker(VillagerController, VillagerController, int)；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="direction">中文含义：方向。使用位置：DoorwayTraversalOccupancy.Queue(int)。</param>
+    /// <param name="direction">方向。</param>
     private List<VillagerController> Queue(int direction)
     {
         if (direction >= 0)
@@ -136,20 +136,20 @@ foreach (var item in memberToken)
 
     /// <summary>Register 的业务处理入口；本方法直接依赖 DoorwayTraversalOccupancy.CleanupInvalidate()、DoorwayTraversalOccupancy.HorizontalDistance(Vector3, Vector3)、DoorwayTraversalOccupancy.Queue(int)、DoorwayTraversalOccupancy.ReadQueue(int)、List&lt;VillagerController&gt;.Contains(VillagerController)、List&lt;VillagerController&gt;.Insert(int, VillagerController)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillagerController.RegisterPursuitIngressWaiter(DoorController)；下游（含内部回调体） DoorwayTraversalOccupancy.CleanupInvalidate()、DoorwayTraversalOccupancy.HorizontalDistance(Vector3, Vector3)、DoorwayTraversalOccupancy.Queue(int)、DoorwayTraversalOccupancy.ReadQueue(int)、List&lt;VillagerController&gt;.Contains(VillagerController)、List&lt;VillagerController&gt;.Insert(int, VillagerController)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="character">中文含义：角色。使用位置：作为 DoorwayTraversalOccupancy.HorizontalDistance(Vector3, Vector3) 的参数、作为 List&lt;VillagerController&gt;.Contains(VillagerController) 的参数、作为 List&lt;VillagerController&gt;.Insert(int, VillagerController) 的参数。</param>
-    /// <param name="direction">中文含义：方向。使用位置：作为 DoorwayTraversalOccupancy.Queue(int) 的参数、作为 DoorwayTraversalOccupancy.ReadQueue(int) 的参数。</param>
+    /// <param name="character">角色。</param>
+    /// <param name="direction">方向。</param>
     internal ReadOnlyCollection<VillagerController> Register(VillagerController character, int direction)
     {
         CleanupInvalidate();
-        // wait（等待）：保存 DoorwayTraversalOccupancy.Queue(int) 的返回结果，供当前步骤使用。使用位置：作为 DoorwayTraversalOccupancy.HorizontalDistance(Vector3, Vector3) 的参数、DoorwayTraversalOccupancy.Register(VillagerController, int)。
+        // 等待。
 var wait = Queue(direction);
         if (!wait.Contains(character))
         {
-            // distance（距离）：保存 DoorwayTraversalOccupancy.HorizontalDistance(Vector3, Vector3) 的返回结果，供当前步骤使用。使用位置：DoorwayTraversalOccupancy.Register(VillagerController, int)。
+            // 距离。
 float distance = HorizontalDistance(character.transform.position, door.PassageCenter);
-            // positionValue（位置值）：使用位置：作为 List<VillagerController>.Insert(int, VillagerController) 的参数、DoorwayTraversalOccupancy.Register(VillagerController, int)。
+            // 位置值。
 int positionValue = wait.Count;
-            // i（当前遍历索引）：使用位置：作为 List<VillagerController>.this[int] 的参数、DoorwayTraversalOccupancy.Register(VillagerController, int)。
+            // 当前遍历索引。
 for (int i = 0; i < wait.Count; i++)
             {
                 if (wait[i] != null && distance < HorizontalDistance(wait[i].transform.position, door.PassageCenter))
@@ -167,21 +167,21 @@ for (int i = 0; i < wait.Count; i++)
 
     /// <summary>TryPromoteForwardBlocker 的业务处理入口；本方法直接依赖 DoorwayTraversalOccupancy.Queue(int)、List&lt;VillagerController&gt;.Contains(VillagerController)、List&lt;VillagerController&gt;.Insert(int, VillagerController)、List&lt;VillagerController&gt;.Remove(VillagerController)、Vector3.Dot(Vector3, Vector3)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillagerController.TryPromoteBlockingPursuitIngressWaiter(ReadOnlyCollection&lt;VillagerController&gt;)；下游（含内部回调体） DoorwayTraversalOccupancy.Queue(int)、List&lt;VillagerController&gt;.Contains(VillagerController)、List&lt;VillagerController&gt;.Insert(int, VillagerController)、List&lt;VillagerController&gt;.Remove(VillagerController)、Vector3.Dot(Vector3, Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="character">中文含义：角色。使用位置：作为 Vector3.Dot(Vector3, Vector3) 的参数、DoorwayTraversalOccupancy.TryPromoteForwardBlocker(VillagerController, VillagerController, int)。</param>
-    /// <param name="blocker">中文含义：阻挡者。使用位置：作为 List&lt;VillagerController&gt;.Contains(VillagerController) 的参数、作为 List&lt;VillagerController&gt;.Insert(int, VillagerController) 的参数、作为 List&lt;VillagerController&gt;.Remove(VillagerController) 的参数 等共 5 处。</param>
-    /// <param name="direction">中文含义：方向。使用位置：作为 DoorwayTraversalOccupancy.Queue(int) 的参数、DoorwayTraversalOccupancy.TryPromoteForwardBlocker(VillagerController, VillagerController, int)。</param>
+    /// <param name="character">角色。</param>
+    /// <param name="blocker">阻挡者。</param>
+    /// <param name="direction">方向。</param>
     internal bool TryPromoteForwardBlocker(VillagerController character, VillagerController blocker, int direction)
     {
-        // wait（等待）：保存 DoorwayTraversalOccupancy.Queue(int) 的返回结果，供当前步骤使用。使用位置：DoorwayTraversalOccupancy.TryPromoteForwardBlocker(VillagerController, VillagerController, int)。
+        // 等待。
 var wait = Queue(direction);
         if (wait.Count < 2 || wait[0] != character || blocker == null || blocker == character || !wait.Contains(blocker) || blocker.DoorwayTraverseMiddle || blocker.CurrentDoorway != door || blocker.DoorwaySourceSide != direction)
         {
             return false;
         }
 
-        // selfDepth（自身深度）：使用位置：DoorwayTraversalOccupancy.TryPromoteForwardBlocker(VillagerController, VillagerController, int)。
+        // 自身深度。
 float selfDepth = Vector3.Dot(character.transform.position - door.PassageCenter, door.PassageNormal) * direction;
-        // blockerDepth（阻挡者深度）：使用位置：DoorwayTraversalOccupancy.TryPromoteForwardBlocker(VillagerController, VillagerController, int)。
+        // 阻挡者深度。
 float blockerDepth = Vector3.Dot(blocker.transform.position - door.PassageCenter, door.PassageNormal) * direction;
         if (blockerDepth < -0.08f || blockerDepth + 0.1f >= selfDepth)
         {
@@ -195,12 +195,12 @@ float blockerDepth = Vector3.Dot(blocker.transform.position - door.PassageCenter
 
     /// <summary>QueueFirstYieldRow 的业务处理入口；本方法直接依赖 DoorwayTraversalOccupancy.CleanupInvalidate()、DoorwayTraversalOccupancy.Queue(int)、List&lt;VillagerController&gt;.Add(VillagerController)、List&lt;VillagerController&gt;.RemoveAt(int)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillagerController.YieldPursuitIngressQueueHead(DoorController)；下游（含内部回调体） DoorwayTraversalOccupancy.CleanupInvalidate()、DoorwayTraversalOccupancy.Queue(int)、List&lt;VillagerController&gt;.Add(VillagerController)、List&lt;VillagerController&gt;.RemoveAt(int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="character">中文含义：角色。使用位置：作为 List&lt;VillagerController&gt;.Add(VillagerController) 的参数、DoorwayTraversalOccupancy.QueueFirstYieldRow(VillagerController, int)。</param>
-    /// <param name="direction">中文含义：方向。使用位置：作为 DoorwayTraversalOccupancy.Queue(int) 的参数。</param>
+    /// <param name="character">角色。</param>
+    /// <param name="direction">方向。</param>
     internal void QueueFirstYieldRow(VillagerController character, int direction)
     {
         CleanupInvalidate();
-        // wait（等待）：保存 DoorwayTraversalOccupancy.Queue(int) 的返回结果，供当前步骤使用。使用位置：DoorwayTraversalOccupancy.QueueFirstYieldRow(VillagerController, int)。
+        // 等待。
 var wait = Queue(direction);
         if (wait.Count <= 1 || wait[0] != character)
         {
@@ -213,21 +213,21 @@ var wait = Queue(direction);
 
     /// <summary>DirectionAvailable 的业务处理入口；本方法直接依赖 DoorwayTraversalOccupancy.CleanupDirection()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 DoorwayTraversalOccupancy.TryOccupancyCore(VillagerController, int)、VillagerController.IsPursuitIngressDirectionAvailable(DoorController, int)；下游（含内部回调体） DoorwayTraversalOccupancy.CleanupDirection()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="direction">中文含义：方向。使用位置：DoorwayTraversalOccupancy.DirectionAvailable(int)。</param>
+    /// <param name="direction">方向。</param>
     internal bool DirectionAvailable(int direction)
     {
         CleanupDirection();
         return door != null && (occupancyDirection == 0 || occupancyDirection == direction);
     }
 
-    /// <summary>中文含义：通行身份标识。使用位置：作为 RequestContext.RequestContext(string, ObjectIdentity, ObjectIdentity, long) 的参数。</summary>
+    /// <summary>通行身份标识。</summary>
     internal GameArchitecture.ObjectIdentity TraversalIdentity => lease.Identity;
 
     /// <summary>RequestTraversal 的业务处理入口；本方法直接依赖 DoorwayTraversalOccupancy.QueryToken(VillagerController)、DoorwayTraversalOccupancy.TryOccupancyCore(VillagerController, int)、TraversalRequestResult.Accept(TraversalToken)、TraversalRequestResult.Reject(RejectionReason)、TraversalTokenRegistry.ValidateRequest(RequestContext, ActionHandle)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 DoorwayTraversalOccupancy.TryOccupancy(VillagerController, int)、VillagerController.TryGetPursuitIngressDestination(Vector3, out Vector3)；下游（含内部回调体） DoorwayTraversalOccupancy.QueryToken(VillagerController)、DoorwayTraversalOccupancy.TryOccupancyCore(VillagerController, int)、TraversalRequestResult.Accept(TraversalToken)、TraversalRequestResult.Reject(RejectionReason)、TraversalTokenRegistry.ValidateRequest(RequestContext, ActionHandle)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="character">中文含义：角色。使用位置：作为 DoorwayTraversalOccupancy.QueryToken(VillagerController) 的参数、作为 DoorwayTraversalOccupancy.TryOccupancyCore(VillagerController, int) 的参数、作为 TraversalTokenRegistry.ValidateRequest(RequestContext, ActionHandle) 的参数 等共 4 处。</param>
-    /// <param name="direction">中文含义：方向。使用位置：作为 DoorwayTraversalOccupancy.TryOccupancyCore(VillagerController, int) 的参数。</param>
-    /// <param name="request">中文含义：请求。使用位置：作为 TraversalTokenRegistry.ValidateRequest(RequestContext, ActionHandle) 的参数。</param>
+    /// <param name="character">角色。</param>
+    /// <param name="direction">方向。</param>
+    /// <param name="request">请求。</param>
     internal GameArchitecture.TraversalRequestResult RequestTraversal(VillagerController character, int direction, GameArchitecture.RequestContext request)
     {
         if (character == null || character.actionCoordinator == null || door == null || !door.isActiveAndEnabled)
@@ -240,7 +240,7 @@ var wait = Queue(direction);
             return GameArchitecture.TraversalRequestResult.Reject(GameArchitecture.RejectionReason.HasDeath);
         }
 
-        // reason（原因）：保存 TraversalTokenRegistry.ValidateRequest(RequestContext, ActionHandle) 的返回结果，供当前步骤使用。使用位置：作为 TraversalRequestResult.Reject(RejectionReason) 的参数、DoorwayTraversalOccupancy.RequestTraversal(VillagerController, int, RequestContext)。
+        // 原因。
 var reason = lease.ValidateRequest(request, character.actionCoordinator.CurrentHandle);
         if (reason != GameArchitecture.RejectionReason.None)
         {
@@ -259,11 +259,11 @@ var reason = lease.ValidateRequest(request, character.actionCoordinator.CurrentH
 
     /// <summary>TryOccupancy 的业务处理入口；本方法直接依赖 DoorwayTraversalOccupancy.RequestTraversal(VillagerController, int, RequestContext)、RequestContext.RequestContext(string, ObjectIdentity, ObjectIdentity, long)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） DoorwayTraversalOccupancy.RequestTraversal(VillagerController, int, RequestContext)、RequestContext.RequestContext(string, ObjectIdentity, ObjectIdentity, long)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="character">中文含义：角色。使用位置：作为 DoorwayTraversalOccupancy.RequestTraversal(VillagerController, int, RequestContext) 的参数、DoorwayTraversalOccupancy.TryOccupancy(VillagerController, int)。</param>
-    /// <param name="direction">中文含义：方向。使用位置：作为 DoorwayTraversalOccupancy.RequestTraversal(VillagerController, int, RequestContext) 的参数。</param>
+    /// <param name="character">角色。</param>
+    /// <param name="direction">方向。</param>
     internal bool TryOccupancy(VillagerController character, int direction)
     {
-        // action（动作）：使用位置：作为 RequestContext.RequestContext(string, ObjectIdentity, ObjectIdentity, long) 的参数、DoorwayTraversalOccupancy.TryOccupancy(VillagerController, int)。
+        // 动作。
 global::GameArchitecture.ActionHandle action;
         if (character != null && character.actionCoordinator != null)
         {
@@ -279,8 +279,8 @@ global::GameArchitecture.ActionHandle action;
 
     /// <summary>TryOccupancyCore 的业务处理入口；本方法直接依赖 DoorwayTraversalOccupancy.DirectionAvailable(int)、DoorwayTraversalOccupancy.Queue(int)、TraversalTokenRegistry.Register(ActionHandle)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 DoorwayTraversalOccupancy.RequestTraversal(VillagerController, int, RequestContext)；下游（含内部回调体） DoorwayTraversalOccupancy.DirectionAvailable(int)、DoorwayTraversalOccupancy.Queue(int)、TraversalTokenRegistry.Register(ActionHandle)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="character">中文含义：角色。使用位置：作为 Dictionary&lt;VillagerController, TraversalToken&gt;.this[VillagerController] 的参数、作为 TraversalTokenRegistry.Register(ActionHandle) 的参数、DoorwayTraversalOccupancy.TryOccupancyCore(VillagerController, int)。</param>
-    /// <param name="direction">中文含义：方向。使用位置：作为 DoorwayTraversalOccupancy.DirectionAvailable(int) 的参数、作为 DoorwayTraversalOccupancy.Queue(int) 的参数、DoorwayTraversalOccupancy.TryOccupancyCore(VillagerController, int)。</param>
+    /// <param name="character">角色。</param>
+    /// <param name="direction">方向。</param>
     private bool TryOccupancyCore(VillagerController character, int direction)
     {
         if (!DirectionAvailable(direction))
@@ -288,7 +288,7 @@ global::GameArchitecture.ActionHandle action;
             return false;
         }
 
-        // wait（等待）：保存 DoorwayTraversalOccupancy.Queue(int) 的返回结果，供当前步骤使用。使用位置：DoorwayTraversalOccupancy.TryOccupancyCore(VillagerController, int)。
+        // 等待。
 var wait = Queue(direction);
         if (wait.Count == 0 || wait[0] != character)
         {
@@ -300,7 +300,7 @@ var wait = Queue(direction);
             return false;
         }
 
-        // token（凭证）：保存 TraversalTokenRegistry.Register(ActionHandle) 的返回结果，供当前步骤使用。使用位置：DoorwayTraversalOccupancy.TryOccupancyCore(VillagerController, int)。
+        // 凭证。
 var token = lease.Register(character.actionCoordinator.CurrentHandle);
         if (!token.Valid)
         {
@@ -314,7 +314,7 @@ var token = lease.Register(character.actionCoordinator.CurrentHandle);
 
     /// <summary>Release 的业务处理入口；本方法直接依赖 DoorwayTraversalOccupancy.CleanupDirection()、DoorwayTraversalOccupancy.ReleaseLease(VillagerController)、List&lt;VillagerController&gt;.Remove(VillagerController)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 DoorwayTraversalOccupancy.ReleaseTraversal(TraversalToken, ReleaseReason)、VillagerController.UnregisterPursuitIngressWaiter()；下游（含内部回调体） DoorwayTraversalOccupancy.CleanupDirection()、DoorwayTraversalOccupancy.ReleaseLease(VillagerController)、List&lt;VillagerController&gt;.Remove(VillagerController)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="character">中文含义：角色。使用位置：作为 DoorwayTraversalOccupancy.ReleaseLease(VillagerController) 的参数、作为 List&lt;VillagerController&gt;.Remove(VillagerController) 的参数。</param>
+    /// <param name="character">角色。</param>
     internal void Release(VillagerController character)
     {
         positiveDirection.Remove(character);
@@ -327,7 +327,7 @@ var token = lease.Register(character.actionCoordinator.CurrentHandle);
     /// <remarks>静态调用链：上游 DoorwayTraversalOccupancy.QueueFirstYieldRow(VillagerController, int)、DoorwayTraversalOccupancy.Register(VillagerController, int)、VillagerController.CleanupPursuitIngressWaiters()；下游（含内部回调体） DoorwayTraversalOccupancy.CleanupDirection()、DoorwayTraversalOccupancy.ReleaseLease(VillagerController)、DoorwayTraversalOccupancy.Valid(VillagerController, int)、List&lt;VillagerController&gt;.RemoveAt(int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     internal void CleanupInvalidate()
     {
-        // i（当前遍历索引）：使用位置：作为 List<VillagerController>.RemoveAt(int) 的参数、作为 List<VillagerController>.this[int] 的参数、DoorwayTraversalOccupancy.CleanupInvalidate()。
+        // 当前遍历索引。
 for (int i = positiveDirection.Count - 1; i >= 0; i--)
         {
             if (!Valid(positiveDirection[i], 1))
@@ -337,7 +337,7 @@ for (int i = positiveDirection.Count - 1; i >= 0; i--)
             }
         }
 
-        // i（当前遍历索引）：使用位置：作为 List<VillagerController>.RemoveAt(int) 的参数、作为 List<VillagerController>.this[int] 的参数、DoorwayTraversalOccupancy.CleanupInvalidate()。
+        // 当前遍历索引。
 for (int i = reverse.Count - 1; i >= 0; i--)
         {
             if (!Valid(reverse[i], -1))
@@ -373,8 +373,8 @@ foreach (var character in Queue(occupancyDirection))
 
     /// <summary>Valid 的业务处理入口；本方法直接依赖 HouseThreeTraversalGeometry.IsOnInteriorSide(Vector3, float)、Vector3.Dot(Vector3, Vector3)、VillagerController.ResolveDoor03ExteriorSourceSide(HouseThreeTraversalGeometry)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 DoorwayTraversalOccupancy.CleanupDirection()、DoorwayTraversalOccupancy.CleanupInvalidate()；下游（含内部回调体） HouseThreeTraversalGeometry.IsOnInteriorSide(Vector3, float)、Vector3.Dot(Vector3, Vector3)、VillagerController.ResolveDoor03ExteriorSourceSide(HouseThreeTraversalGeometry)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="character">中文含义：角色。使用位置：作为 HouseThreeTraversalGeometry.IsOnInteriorSide(Vector3, float) 的参数、DoorwayTraversalOccupancy.Valid(VillagerController, int)。</param>
-    /// <param name="direction">中文含义：方向。使用位置：DoorwayTraversalOccupancy.Valid(VillagerController, int)。</param>
+    /// <param name="character">角色。</param>
+    /// <param name="direction">方向。</param>
     private bool Valid(VillagerController character, int direction)
     {
         if (door == null || character == null || !character.isActiveAndEnabled || !character.IsActive || character.IsDead || character.CurrentDoorway != door || character.DoorwaySourceSide != direction)
@@ -382,7 +382,7 @@ foreach (var character in Queue(occupancyDirection))
             return false;
         }
 
-        // route（路线）：使用位置：作为 VillagerController.ResolveDoor03ExteriorSourceSide(HouseThreeTraversalGeometry) 的参数、DoorwayTraversalOccupancy.Valid(VillagerController, int)。
+        // 路线。
 var route = character.CurrentStairTraversal;
         if (route != null && route.IsReady && route.entranceDoor == door && direction == VillagerController.ResolveDoor03ExteriorSourceSide(route) && route.IsOnInteriorSide(character.transform.position, 0.16f))
         {
@@ -394,7 +394,7 @@ var route = character.CurrentStairTraversal;
             return true;
         }
 
-        // offset（偏移量）：使用位置：作为 Vector3.Dot(Vector3, Vector3) 的参数、DoorwayTraversalOccupancy.Valid(VillagerController, int)。
+        // 偏移量。
 Vector3 offset = character.transform.position - door.PassageCenter;
         offset.y = 0f;
         return Vector3.Dot(offset, door.PassageNormal) * direction >= -0.2f;
@@ -413,8 +413,8 @@ Vector3 offset = character.transform.position - door.PassageCenter;
 
     /// <summary>HorizontalDistance 的业务处理入口；本方法直接依赖 Vector3.Distance(Vector3, Vector3)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 DoorwayTraversalOccupancy.Register(VillagerController, int)；下游（含内部回调体） Vector3.Distance(Vector3, Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="first">中文含义：首个。使用位置：作为 Vector3.Distance(Vector3, Vector3) 的参数、DoorwayTraversalOccupancy.HorizontalDistance(Vector3, Vector3)。</param>
-    /// <param name="second">中文含义：第二。使用位置：作为 Vector3.Distance(Vector3, Vector3) 的参数、DoorwayTraversalOccupancy.HorizontalDistance(Vector3, Vector3)。</param>
+    /// <param name="first">首个。</param>
+    /// <param name="second">第二。</param>
     private static float HorizontalDistance(Vector3 first, Vector3 second)
     {
         first.y = second.y;

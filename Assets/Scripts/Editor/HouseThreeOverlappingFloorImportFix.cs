@@ -10,7 +10,7 @@ public sealed class HouseThreeOverlappingFloorImportFix : AssetPostprocessor
 {
     /// <summary>OnPostprocessModel 的业务处理入口；本方法直接依赖 GameObject.GetComponentsInChildren&lt;MeshFilter&gt;(bool)、HashSet&lt;int&gt;.Add(int)、HashSet&lt;int&gt;.Contains(int)、HashSet&lt;int&gt;.HashSet()、InvalidOperationException.InvalidOperationException(string)、Mathf.Abs(float)、Mesh.GetTriangles(int) 等共 10 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） GameObject.GetComponentsInChildren&lt;MeshFilter&gt;(bool)、HashSet&lt;int&gt;.Add(int)、HashSet&lt;int&gt;.Contains(int)、HashSet&lt;int&gt;.HashSet()、InvalidOperationException.InvalidOperationException(string)、Mathf.Abs(float)、Mesh.GetTriangles(int) 等共 10 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="root">中文含义：根游戏对象。使用位置：HouseThreeOverlappingFloorImportFix.OnPostprocessModel(GameObject)。</param>
+    /// <param name="root">根游戏对象。</param>
     private void OnPostprocessModel(GameObject root)
     {
         if (assetPath != "Assets/Models/环境/村庄/VillageDemo.fbx")
@@ -18,36 +18,36 @@ public sealed class HouseThreeOverlappingFloorImportFix : AssetPostprocessor
             return;
         }
 
-        // fixFrontCount（修正前方数量）：使用位置：HouseThreeOverlappingFloorImportFix.OnPostprocessModel(GameObject)。
+        // 修正前方数量。
 int fixFrontCount = 0;
         // filter（筛选器）：每轮从取得组件集合内部子对象集合的返回结果取得一个元素，仅代表当前这一项。使用位置：HouseThreeOverlappingFloorImportFix.OnPostprocessModel(GameObject)。
 foreach (var filter in root.GetComponentsInChildren<MeshFilter>(true))
         {
-            // mesh（网格）：使用位置：HouseThreeOverlappingFloorImportFix.OnPostprocessModel(GameObject)。
+            // 网格。
 var mesh = filter.sharedMesh;
             if (!mesh || mesh.subMeshCount <= 73)
             {
                 continue;
             }
 
-            // vertex（顶点）：使用位置：作为 Transform.TransformPoint(Vector3) 的参数、HouseThreeOverlappingFloorImportFix.OnPostprocessModel(GameObject)。
+            // 顶点。
 var vertex = mesh.vertices;
-            // index（当前元素索引）：保存 Mesh.GetTriangles(int) 的返回结果，供当前步骤使用。使用位置：作为 HashSet<int>.Add(int) 的参数、HouseThreeOverlappingFloorImportFix.OnPostprocessModel(GameObject)。
+            // 当前元素索引。
 var index = mesh.GetTriangles(73);
-            // selectedVertex（选定顶点）：使用位置：HouseThreeOverlappingFloorImportFix.OnPostprocessModel(GameObject)。
+            // 选定顶点。
 var selectedVertex = new HashSet<int>();
-            // selectedThreeAngle（选定第三角度）：使用位置：HouseThreeOverlappingFloorImportFix.OnPostprocessModel(GameObject)。
+            // 选定第三角度。
 var selectedThreeAngle = new HashSet<int>();
-            // i（当前遍历索引）：使用位置：作为 HashSet<int>.Add(int) 的参数、HouseThreeOverlappingFloorImportFix.OnPostprocessModel(GameObject)。
+            // 当前遍历索引。
 for (int i = 0; i < index.Length; i += 3)
             {
-                // first（首个）：保存 Transform.TransformPoint(Vector3) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Abs(float) 的参数、HouseThreeOverlappingFloorImportFix.OnPostprocessModel(GameObject)。
+                // 首个。
 var first = filter.transform.TransformPoint(vertex[index[i]]);
-                // second（第二）：保存 Transform.TransformPoint(Vector3) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Abs(float) 的参数、HouseThreeOverlappingFloorImportFix.OnPostprocessModel(GameObject)。
+                // 第二。
 var second = filter.transform.TransformPoint(vertex[index[i + 1]]);
-                // third（第三）：保存 Transform.TransformPoint(Vector3) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Abs(float) 的参数、HouseThreeOverlappingFloorImportFix.OnPostprocessModel(GameObject)。
+                // 第三。
 var third = filter.transform.TransformPoint(vertex[index[i + 2]]);
-                // center（中心）：使用位置：HouseThreeOverlappingFloorImportFix.OnPostprocessModel(GameObject)。
+                // 中心。
 var center = (first + second + third) / 3f;
                 if (center.x <= -12f || center.x >= 0f || center.z <= -22f || center.z >= -8f || Mathf.Abs(first.y + .031101f) > .0001f || Mathf.Abs(second.y + .031101f) > .0001f || Mathf.Abs(third.y + .031101f) > .0001f)
                 {
@@ -55,7 +55,7 @@ var center = (first + second + third) / 3f;
                 }
 
                 selectedThreeAngle.Add(i);
-                // j（内层遍历索引）：使用位置：HouseThreeOverlappingFloorImportFix.OnPostprocessModel(GameObject)。
+                // 内层遍历索引。
 for (int j = 0; j < 3; j++)
                 {
                     selectedVertex.Add(index[i + j]);
@@ -73,12 +73,12 @@ for (int j = 0; j < 3; j++)
             }
 
             // 不移动与其它地表共用的顶点，模型更新后必须重新核实局部范围。
-            // childMesh（子级网格）：使用位置：作为 Mesh.GetTriangles(int) 的参数、HouseThreeOverlappingFloorImportFix.OnPostprocessModel(GameObject)。
+            // 子级网格。
 for (int childMesh = 0; childMesh < mesh.subMeshCount; childMesh++)
             {
-                // otherIndex（另一个索引）：保存 Mesh.GetTriangles(int) 的返回结果，供当前步骤使用。使用位置：作为 HashSet<int>.Contains(int) 的参数、HouseThreeOverlappingFloorImportFix.OnPostprocessModel(GameObject)。
+                // 另一个索引。
 var otherIndex = mesh.GetTriangles(childMesh);
-                // i（当前遍历索引）：使用位置：作为 HashSet<int>.Contains(int) 的参数、HouseThreeOverlappingFloorImportFix.OnPostprocessModel(GameObject)。
+                // 当前遍历索引。
 for (int i = 0; i < otherIndex.Length; i += 3)
                 {
                     if (childMesh == 73 && selectedThreeAngle.Contains(i))
@@ -86,7 +86,7 @@ for (int i = 0; i < otherIndex.Length; i += 3)
                         continue;
                     }
 
-                    // j（内层遍历索引）：使用位置：HouseThreeOverlappingFloorImportFix.OnPostprocessModel(GameObject)。
+                    // 内层遍历索引。
 for (int j = 0; j < 3; j++)
                     {
                         if (selectedVertex.Contains(otherIndex[i + j]))
@@ -97,7 +97,7 @@ for (int j = 0; j < 3; j++)
                 }
             }
 
-            // offset（偏移量）：保存 Transform.InverseTransformVector(Vector3) 的返回结果，供当前步骤使用。使用位置：HouseThreeOverlappingFloorImportFix.OnPostprocessModel(GameObject)。
+            // 偏移量。
 var offset = filter.transform.InverseTransformVector(Vector3.down * .03f);
             // vertexIndex（顶点索引）：每轮从选定顶点取得一个元素，仅代表当前这一项。使用位置：HouseThreeOverlappingFloorImportFix.OnPostprocessModel(GameObject)。
 foreach (int vertexIndex in selectedVertex)

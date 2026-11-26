@@ -7,22 +7,22 @@ using UnityEngine.Playables;
 /// <summary>按已验收预览的流程求值完整姿态，由正式动画驱动器提交到角色。</summary>
 public sealed class KnifePoseSampler : IDisposable
 {
-    /// <summary>中文含义：模型。只读字段，初始化后不由普通写入口替换。使用位置：作为 AnimationClip.SampleAnimation(GameObject, float) 的参数、作为 KnifePoseSampler.GetPath(Transform, Transform) 的参数、作为 Object.Destroy(Object) 的参数 等共 8 处。</summary>
+    /// <summary>模型。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly GameObject model;
-    /// <summary>中文含义：动画控制器。只读字段，初始化后不由普通写入口替换。使用位置：作为 AnimationPlayableOutput.Create(PlayableGraph, string, Animator) 的参数、KnifePoseSampler.Animator.get、KnifePoseSampler.KnifePoseSampler(KnifeCombatConfiguration, Animator) 等共 4 处。</summary>
+    /// <summary>动画控制器。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly Animator animator;
-    /// <summary>中文含义：配置。只读字段，初始化后不由普通写入口替换。使用位置：作为 Dictionary&lt;string, Transform&gt;.TryGetValue(string, out Transform) 的参数、作为 KnifePoseSampler.CreateClip(AnimationClip) 的参数、KnifePoseSampler.KnifePoseSampler(KnifeCombatConfiguration, Animator) 等共 4 处。</summary>
+    /// <summary>配置。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly KnifeCombatConfiguration configuration;
-    /// <summary>中文含义：骨骼集合。只读字段，初始化后不由普通写入口替换。使用位置：作为 KnifePoseSampler.GetPath(Transform, Transform) 的参数、作为 Quaternion.Slerp(Quaternion, Quaternion, float) 的参数、作为 Vector3.Lerp(Vector3, Vector3, float) 的参数 等共 4 处。</summary>
+    /// <summary>骨骼集合。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly Transform[] bones;
-    /// <summary>中文含义：目标列表。只读字段，初始化后不由普通写入口替换。使用位置：作为 Quaternion.Slerp(Quaternion, Quaternion, float) 的参数、作为 Vector3.Lerp(Vector3, Vector3, float) 的参数、KnifePoseSampler.Apply(float) 等共 9 处。</summary>
+    /// <summary>目标列表。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly Transform[] targets;
-    /// <summary>中文含义：上部骨骼集合。只读字段，初始化后不由普通写入口替换。使用位置：KnifePoseSampler.KnifePoseSampler(KnifeCombatConfiguration, Animator)、KnifePoseSampler.Sample(AnimationClip, float, int, float, float, bool)。</summary>
+    /// <summary>上部骨骼集合。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly Transform[] upperBones;
     private readonly bool[] lowerBody;
     private readonly bool[] rightArm;
     private readonly bool[] guardStance;
-    /// <summary>中文含义：脊柱。只读字段，初始化后不由普通写入口替换。使用位置：KnifePoseSampler.KnifePoseSampler(KnifeCombatConfiguration, Animator)、KnifePoseSampler.Sample(AnimationClip, float, int, float, float, bool)。</summary>
+    /// <summary>脊柱。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly Transform spine;
     private readonly Transform motionRoot;
     private readonly Transform leftFoot;
@@ -35,51 +35,51 @@ public sealed class KnifePoseSampler : IDisposable
     private Pose guardTurnRightPose;
     private bool guardTurnLeftFirst;
     private float guardTurnSettleTime = GuardTurnSettleDuration;
-    /// <summary>中文含义：上部位置集合。只读字段，初始化后不由普通写入口替换。使用位置：KnifePoseSampler.KnifePoseSampler(KnifeCombatConfiguration, Animator)、KnifePoseSampler.Sample(AnimationClip, float, int, float, float, bool)。</summary>
+    /// <summary>上部位置集合。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly Vector3[] upperPositions;
-    /// <summary>中文含义：上部旋转集合。只读字段，初始化后不由普通写入口替换。使用位置：KnifePoseSampler.KnifePoseSampler(KnifeCombatConfiguration, Animator)、KnifePoseSampler.Sample(AnimationClip, float, int, float, float, bool)。</summary>
+    /// <summary>上部旋转集合。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly Quaternion[] upperRotations;
-    /// <summary>中文含义：混合位置集合。只读字段，初始化后不由普通写入口替换。使用位置：作为 Vector3.Lerp(Vector3, Vector3, float) 的参数、KnifePoseSampler.BeginBlend(float, float)、KnifePoseSampler.KnifePoseSampler(KnifeCombatConfiguration, Animator)。</summary>
+    /// <summary>混合位置集合。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly Vector3[] blendPositions;
-    /// <summary>中文含义：混合旋转集合。只读字段，初始化后不由普通写入口替换。使用位置：作为 Quaternion.Slerp(Quaternion, Quaternion, float) 的参数、KnifePoseSampler.BeginBlend(float, float)、KnifePoseSampler.KnifePoseSampler(KnifeCombatConfiguration, Animator)。</summary>
+    /// <summary>混合旋转集合。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly Quaternion[] blendRotations;
-    /// <summary>中文含义：已显示位置集合。只读字段，初始化后不由普通写入口替换。使用位置：KnifePoseSampler.BeginBlend(float, float)、KnifePoseSampler.CapturePresentedPose()、KnifePoseSampler.KnifePoseSampler(KnifeCombatConfiguration, Animator)。</summary>
+    /// <summary>已显示位置集合。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly Vector3[] presentedPositions;
-    /// <summary>中文含义：已显示旋转集合。只读字段，初始化后不由普通写入口替换。使用位置：KnifePoseSampler.BeginBlend(float, float)、KnifePoseSampler.CapturePresentedPose()、KnifePoseSampler.KnifePoseSampler(KnifeCombatConfiguration, Animator)。</summary>
+    /// <summary>已显示旋转集合。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly Quaternion[] presentedRotations;
-    /// <summary>中文含义：底层位置集合。只读字段，初始化后不由普通写入口替换。使用位置：KnifePoseSampler.CaptureUnderlyingPose()、KnifePoseSampler.KnifePoseSampler(KnifeCombatConfiguration, Animator)、KnifePoseSampler.RestoreUnderlyingPose()。</summary>
+    /// <summary>底层位置集合。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly Vector3[] underlyingPositions;
-    /// <summary>中文含义：底层旋转集合。只读字段，初始化后不由普通写入口替换。使用位置：KnifePoseSampler.CaptureUnderlyingPose()、KnifePoseSampler.KnifePoseSampler(KnifeCombatConfiguration, Animator)、KnifePoseSampler.RestoreUnderlyingPose()。</summary>
+    /// <summary>底层旋转集合。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly Quaternion[] underlyingRotations;
-    /// <summary>中文含义：手指骨骼集合。只读字段，初始化后不由普通写入口替换。使用位置：KnifePoseSampler.KnifePoseSampler(KnifeCombatConfiguration, Animator)、KnifePoseSampler.Sample(AnimationClip, float, int, float, float, bool)。</summary>
+    /// <summary>手指骨骼集合。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly Dictionary<string, Transform> fingerBones = new Dictionary<string, Transform>();
-    /// <summary>中文含义：导航图。使用位置：作为 AnimationClipPlayable.Create(PlayableGraph, AnimationClip) 的参数、作为 AnimationLayerMixerPlayable.Create(PlayableGraph, int) 的参数、作为 AnimationMixerPlayable.Create(PlayableGraph, int) 的参数 等共 7 处。</summary>
+    /// <summary>导航图。</summary>
     private PlayableGraph graph;
-    /// <summary>中文含义：图层集合。使用位置：作为 AnimationPlayableOutput.SetSourcePlayable&lt;AnimationPlayableOutput, AnimationLayerMixerPlayable&gt;(AnimationLayerMixerPlayable) 的参数、作为 PlayableGraph.Connect&lt;AnimationClipPlayable, AnimationLayerMixerPlayable&gt;(AnimationClipPlayable, int, AnimationLayerMixerPlayable, int) 的参数、作为 PlayableGraph.Connect&lt;AnimationMixerPlayable, AnimationLayerMixerPlayable&gt;(AnimationMixerPlayable, int, AnimationLayerMixerPlayable, int) 的参数 等共 6 处。</summary>
+    /// <summary>图层集合。</summary>
     private AnimationLayerMixerPlayable layers;
-    /// <summary>中文含义：主要可播放。使用位置：作为 PlayableGraph.Connect&lt;AnimationClipPlayable, AnimationLayerMixerPlayable&gt;(AnimationClipPlayable, int, AnimationLayerMixerPlayable, int) 的参数、作为 PlayableGraph.DestroyPlayable&lt;AnimationClipPlayable&gt;(AnimationClipPlayable) 的参数、KnifePoseSampler.Sample(AnimationClip, float, int, float, float, bool)。</summary>
+    /// <summary>主要可播放。</summary>
     private AnimationClipPlayable mainPlayable;
-    /// <summary>中文含义：行走可播放。使用位置：作为 PlayableGraph.Connect&lt;AnimationClipPlayable, AnimationMixerPlayable&gt;(AnimationClipPlayable, int, AnimationMixerPlayable, int) 的参数、KnifePoseSampler.Sample(AnimationClip, float, int, float, float, bool)。</summary>
+    /// <summary>行走可播放。</summary>
     private AnimationClipPlayable walkPlayable;
-    /// <summary>中文含义：待机可播放。使用位置：作为 PlayableGraph.Connect&lt;AnimationClipPlayable, AnimationMixerPlayable&gt;(AnimationClipPlayable, int, AnimationMixerPlayable, int) 的参数、KnifePoseSampler.Sample(AnimationClip, float, int, float, float, bool)。</summary>
+    /// <summary>待机可播放。</summary>
     private AnimationClipPlayable idlePlayable;
-    /// <summary>中文含义：移动行为混音器。使用位置：作为 PlayableGraph.Connect&lt;AnimationClipPlayable, AnimationMixerPlayable&gt;(AnimationClipPlayable, int, AnimationMixerPlayable, int) 的参数、作为 PlayableGraph.Connect&lt;AnimationMixerPlayable, AnimationLayerMixerPlayable&gt;(AnimationMixerPlayable, int, AnimationLayerMixerPlayable, int) 的参数、作为 PlayableGraph.DestroySubgraph&lt;AnimationMixerPlayable&gt;(AnimationMixerPlayable) 的参数 等共 4 处。</summary>
+    /// <summary>移动行为混音器。</summary>
     private AnimationMixerPlayable locomotionMixer;
-    /// <summary>中文含义：当前动画片段。使用位置：KnifePoseSampler.Sample(AnimationClip, float, int, float, float, bool)。</summary>
+    /// <summary>当前动画片段。</summary>
     private AnimationClip currentClip;
-    /// <summary>中文含义：当前行走。使用位置：KnifePoseSampler.Sample(AnimationClip, float, int, float, float, bool)。</summary>
+    /// <summary>当前行走。</summary>
     private AnimationClip currentWalk;
-    /// <summary>中文含义：混合时长。使用位置：作为 Mathf.Clamp01(float) 的参数、KnifePoseSampler.BeginBlend(float, float)。</summary>
+    /// <summary>混合时长。</summary>
     private float blendDuration;
-    /// <summary>中文含义：混合已用。使用位置：作为 Mathf.Clamp01(float) 的参数、KnifePoseSampler.AdvanceBlend(float)、KnifePoseSampler.BeginBlend(float, float)。</summary>
+    /// <summary>混合已用。</summary>
     private float blendElapsed;
-    /// <summary>中文含义：上一次混合时间。使用位置：作为 Mathf.Max(float, float) 的参数、KnifePoseSampler.AdvanceBlend(float)、KnifePoseSampler.BeginBlend(float, float)。</summary>
+    /// <summary>上一次混合时间。</summary>
     private double lastBlendTime;
-    /// <summary>中文含义：是否具有混合。使用位置：KnifePoseSampler.Apply(float)、KnifePoseSampler.BeginBlend(float, float)、KnifePoseSampler.ReleasePresentation()。</summary>
+    /// <summary>是否具有混合。</summary>
     private bool hasBlend;
-    /// <summary>中文含义：是否具有已显示姿态。使用位置：KnifePoseSampler.BeginBlend(float, float)、KnifePoseSampler.CapturePresentedPose()、KnifePoseSampler.ReleasePresentation()。</summary>
+    /// <summary>是否具有已显示姿态。</summary>
     private bool hasPresentedPose;
-    /// <summary>中文含义：是否具有底层姿态。使用位置：KnifePoseSampler.CaptureUnderlyingPose()、KnifePoseSampler.ReleasePresentation()、KnifePoseSampler.RestoreUnderlyingPose()。</summary>
+    /// <summary>是否具有底层姿态。</summary>
     private bool hasUnderlyingPose;
     /// <summary>中文含义：模型。</summary>
     public GameObject Model
@@ -101,8 +101,8 @@ public sealed class KnifePoseSampler : IDisposable
 
     /// <summary>构造并初始化 KnifePoseSampler 的声明状态；具体外部协作见静态调用链。</summary>
     /// <remarks>静态调用链：上游 KnifePreviewReferenceValidator.CompareSourcePreview(bool)、LeonAnimatorDriver.PlayIndependentKnifeClip(KnifeActionConfiguration, float, float)；下游（含内部回调体） AnimationLayerMixerPlayable.Create(PlayableGraph, int)、AnimationLayerMixerPlayable.SetInputWeight&lt;AnimationLayerMixerPlayable&gt;(int, float)、AnimationPlayableOutput.Create(PlayableGraph, string, Animator)、AnimationPlayableOutput.SetSourcePlayable&lt;AnimationPlayableOutput, AnimationLayerMixerPlayable&gt;(AnimationLayerMixerPlayable)、Animator.GetBoneTransform(HumanBodyBones)、Component.GetComponentsInChildren&lt;Transform&gt;(bool)、GameObject.GetComponent&lt;Animator&gt;() 等共 15 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="configuration">中文含义：配置。使用位置：作为 Object.Instantiate&lt;GameObject&gt;(GameObject) 的参数、KnifePoseSampler.KnifePoseSampler(KnifeCombatConfiguration, Animator)。</param>
-    /// <param name="target">中文含义：目标动画控制器。使用位置：KnifePoseSampler.KnifePoseSampler(KnifeCombatConfiguration, Animator)。</param>
+    /// <param name="configuration">配置。</param>
+    /// <param name="target">目标动画控制器。</param>
     public KnifePoseSampler(KnifeCombatConfiguration configuration, Animator target)
     {
         this.configuration = configuration;
@@ -121,7 +121,7 @@ public sealed class KnifePoseSampler : IDisposable
         animator.applyRootMotion = false;
         animator.fireEvents = false;
         animator.cullingMode = AnimatorCullingMode.AlwaysAnimate;
-        // hips（髋部）：保存 Animator.GetBoneTransform(HumanBodyBones) 的返回结果，供当前步骤使用。使用位置：KnifePoseSampler.KnifePoseSampler(KnifeCombatConfiguration, Animator)。
+        // 髋部。
 Transform hips = RequireBone(HumanBodyBones.Hips);
         bones = hips.GetComponentsInChildren<Transform>(true);
         targets = new Transform[bones.Length];
@@ -131,10 +131,10 @@ Transform hips = RequireBone(HumanBodyBones.Hips);
         presentedRotations = new Quaternion[bones.Length];
         underlyingPositions = new Vector3[bones.Length];
         underlyingRotations = new Quaternion[bones.Length];
-        // index（当前元素索引）：使用位置：KnifePoseSampler.KnifePoseSampler(KnifeCombatConfiguration, Animator)。
+        // 当前元素索引。
 for (int index = 0; index < bones.Length; index++)
         {
-            // path（路径）：保存 KnifePoseSampler.GetPath(Transform, Transform) 的返回结果，供当前步骤使用。使用位置：作为 InvalidOperationException.InvalidOperationException(string) 的参数、作为 Transform.Find(string) 的参数。
+            // 路径。
 string path = GetPath(bones[index], model.transform);
             targets[index] = target.transform.Find(path);
             if (targets[index] == null)
@@ -181,7 +181,7 @@ foreach (Transform bone in RequireBone(HumanBodyBones.RightHand).GetComponentsIn
         layers = AnimationLayerMixerPlayable.Create(graph, 2);
         layers.SetInputWeight(0, 1f);
         layers.SetInputWeight(1, 0f);
-        // output（输出）：保存 AnimationPlayableOutput.Create(PlayableGraph, string, Animator) 的返回结果，供当前步骤使用。使用位置：KnifePoseSampler.KnifePoseSampler(KnifeCombatConfiguration, Animator)。
+        // 输出。
 AnimationPlayableOutput output = AnimationPlayableOutput.Create(graph, "小刀采样骨架", animator);
         output.SetSourcePlayable(layers);
         graph.Play();
@@ -199,13 +199,13 @@ AnimationPlayableOutput output = AnimationPlayableOutput.Create(graph, "小刀�
 
     /// <summary>GetPath 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
     /// <remarks>静态调用链：上游 KnifePoseSampler.KnifePoseSampler(KnifeCombatConfiguration, Animator)；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="bone">中文含义：骨骼。使用位置：KnifePoseSampler.GetPath(Transform, Transform)。</param>
-    /// <param name="root">中文含义：根变换节点。使用位置：KnifePoseSampler.GetPath(Transform, Transform)。</param>
+    /// <param name="bone">骨骼。</param>
+    /// <param name="root">根变换节点。</param>
     private static string GetPath(Transform bone, Transform root)
     {
-        // path（路径）：使用位置：KnifePoseSampler.GetPath(Transform, Transform)。
+        // 路径。
 string path = bone.name;
-        // parent（父级）：使用位置：KnifePoseSampler.GetPath(Transform, Transform)。
+        // 父级。
 Transform parent = bone.parent;
         while (parent != null && parent != root)
         {
@@ -218,10 +218,10 @@ Transform parent = bone.parent;
 
     /// <summary>CreateClip 的业务处理入口；本方法直接依赖 AnimationClipPlayable.Create(PlayableGraph, AnimationClip)、AnimationClipPlayable.SetApplyFootIK(bool)、AnimationClipPlayable.SetApplyPlayableIK(bool)、AnimationClipPlayable.SetSpeed&lt;AnimationClipPlayable&gt;(double)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 KnifePoseSampler.Sample(AnimationClip, float, int, float, float, bool)；下游（含内部回调体） AnimationClipPlayable.Create(PlayableGraph, AnimationClip)、AnimationClipPlayable.SetApplyFootIK(bool)、AnimationClipPlayable.SetApplyPlayableIK(bool)、AnimationClipPlayable.SetSpeed&lt;AnimationClipPlayable&gt;(double)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="clip">中文含义：动画片段。使用位置：作为 AnimationClipPlayable.Create(PlayableGraph, AnimationClip) 的参数。</param>
+    /// <param name="clip">动画片段。</param>
     private AnimationClipPlayable CreateClip(AnimationClip clip)
     {
-        // playable（可播放）：保存 AnimationClipPlayable.Create(PlayableGraph, AnimationClip) 的返回结果，供当前步骤使用。使用位置：KnifePoseSampler.CreateClip(AnimationClip)。
+        // 可播放。
 AnimationClipPlayable playable = AnimationClipPlayable.Create(graph, clip);
         playable.SetApplyFootIK(false);
         playable.SetApplyPlayableIK(false);
@@ -231,16 +231,16 @@ AnimationClipPlayable playable = AnimationClipPlayable.Create(graph, clip);
 
     /// <summary>Sample 的业务处理入口；本方法直接依赖 AnimationClip.SampleAnimation(GameObject, float)、AnimationClipPlayable.IsValid&lt;AnimationClipPlayable&gt;()、AnimationClipPlayable.SetTime&lt;AnimationClipPlayable&gt;(double)、AnimationLayerMixerPlayable.SetInputWeight&lt;AnimationLayerMixerPlayable&gt;(int, float)、AnimationMixerPlayable.Create(PlayableGraph, int)、AnimationMixerPlayable.IsValid&lt;AnimationMixerPlayable&gt;()、AnimationMixerPlayable.SetInputWeight&lt;AnimationMixerPlayable&gt;(int, float) 等共 23 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 KnifePreviewReferenceValidator.CompareSourcePreview(bool)、LeonAnimatorDriver.LateUpdate()；下游（含内部回调体） AnimationClip.SampleAnimation(GameObject, float)、AnimationClipPlayable.IsValid&lt;AnimationClipPlayable&gt;()、AnimationClipPlayable.SetTime&lt;AnimationClipPlayable&gt;(double)、AnimationLayerMixerPlayable.SetInputWeight&lt;AnimationLayerMixerPlayable&gt;(int, float)、AnimationMixerPlayable.Create(PlayableGraph, int)、AnimationMixerPlayable.IsValid&lt;AnimationMixerPlayable&gt;()、AnimationMixerPlayable.SetInputWeight&lt;AnimationMixerPlayable&gt;(int, float) 等共 23 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="clip">中文含义：动画片段。使用位置：作为 KnifePoseSampler.CreateClip(AnimationClip) 的参数、作为 Mathf.Clamp(float, float, float) 的参数、KnifePoseSampler.Sample(AnimationClip, float, int, float, float, bool)。</param>
-    /// <param name="actionTime">中文含义：动作时间。使用位置：作为 Mathf.Clamp(float, float, float) 的参数。</param>
-    /// <param name="movementMode">中文含义：移动模式。使用位置：KnifePoseSampler.Sample(AnimationClip, float, int, float, float, bool)。</param>
-    /// <param name="locomotionTime">中文含义：移动行为时间。使用位置：作为 Mathf.Repeat(float, float) 的参数。</param>
-    /// <param name="movementWeight">中文含义：移动权重。使用位置：作为 Mathf.Clamp01(float) 的参数。</param>
-    /// <param name="originalGrip">中文含义：是否原始握持。使用位置：KnifePoseSampler.Sample(AnimationClip, float, int, float, float, bool)。</param>
+    /// <param name="clip">动画片段。</param>
+    /// <param name="actionTime">动作时间。</param>
+    /// <param name="movementMode">移动模式。</param>
+    /// <param name="locomotionTime">移动行为时间。</param>
+    /// <param name="movementWeight">移动权重。</param>
+    /// <param name="originalGrip">是否原始握持。</param>
     public void Sample(AnimationClip clip, float actionTime, int movementMode, float locomotionTime,
         float movementWeight = 1f, bool originalGrip = false, AnimationClip guardTurn = null, float guardTorsoLead = 0f)
     {
-        // walk（行走）：使用位置：作为 KnifePoseSampler.CreateClip(AnimationClip) 的参数、作为 Mathf.Repeat(float, float) 的参数、KnifePoseSampler.Sample(AnimationClip, float, int, float, float, bool)。
+        // 行走。
  AnimationClip walk = guardTurn;
         if (walk == null && movementMode > 0 && movementMode <= configuration.previewLocomotion.Length)
         {
@@ -251,7 +251,7 @@ AnimationClipPlayable playable = AnimationClipPlayable.Create(graph, clip);
         {
             if (mainPlayable.IsValid())
             {
-                // input（输入数据）：使用位置：作为 PlayableGraph.Disconnect<AnimationLayerMixerPlayable>(AnimationLayerMixerPlayable, int) 的参数、KnifePoseSampler.Sample(AnimationClip, float, int, float, float, bool)。
+                // 输入数据。
 int input = 0;
                 if (currentWalk != null)
                 {
@@ -297,11 +297,11 @@ int input = 0;
         {
             walkPlayable.SetTime(Mathf.Repeat(locomotionTime, walk.length));
             idlePlayable.SetTime(0f);
-            // weight（权重）：保存 Mathf.Clamp01(float) 的返回结果，供当前步骤使用。使用位置：作为 AnimationMixerPlayable.SetInputWeight<AnimationMixerPlayable>(int, float) 的参数、KnifePoseSampler.Sample(AnimationClip, float, int, float, float, bool)。
+            // 权重。
 float weight = Mathf.Clamp01(movementWeight);
             if (movementMode == 5)
             {
-                // phase（阶段）：保存 Mathf.Repeat(float, float) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Clamp01(float) 的参数。
+                // 阶段。
 float phase = Mathf.Repeat(locomotionTime, 3f);
                 weight *= Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(phase / .35f));
                 weight *= 1f - Mathf.SmoothStep(0f, 1f, Mathf.Clamp01((phase - 1.8f) / .35f));
@@ -315,9 +315,9 @@ float phase = Mathf.Repeat(locomotionTime, 3f);
 
             Vector3 guardRootPosition = motionRoot.localPosition;
             Quaternion guardRootRotation = motionRoot.localRotation;
-            // spineRotation（脊柱旋转）：使用位置：KnifePoseSampler.Sample(AnimationClip, float, int, float, float, bool)。
+            // 脊柱旋转。
 Quaternion spineRotation = spine.rotation;
-            // index（当前元素索引）：使用位置：KnifePoseSampler.Sample(AnimationClip, float, int, float, float, bool)。
+            // 当前元素索引。
 for (int index = 0; index < upperBones.Length; index++)
             {
                 upperPositions[index] = upperBones[index].localPosition;
@@ -332,7 +332,7 @@ for (int index = 0; index < upperBones.Length; index++)
                 // 刚体已跟随镜头转向。保持采样根骨中立，避免转身片段再转一次。
                 motionRoot.SetLocalPositionAndRotation(guardRootPosition, guardRootRotation);
             }
-            // index（当前元素索引）：使用位置：KnifePoseSampler.Sample(AnimationClip, float, int, float, float, bool)。
+            // 当前元素索引。
 for (int index = 0; index < upperBones.Length; index++)
             {
                 upperBones[index].localPosition = upperPositions[index];
@@ -342,15 +342,15 @@ for (int index = 0; index < upperBones.Length; index++)
             spine.rotation = Quaternion.AngleAxis(guardTorsoLead, Vector3.up) * spineRotation;
             if (clip == configuration.previewIdle && clip.humanMotion)
             {
-                // leftFoot（左脚）：保存 Animator.GetBoneTransform(HumanBodyBones) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Clamp(float, float, float) 的参数。
+                // 左脚。
 Transform leftFoot = RequireBone(HumanBodyBones.LeftFoot);
-                // rightFoot（右脚）：保存 Animator.GetBoneTransform(HumanBodyBones) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Clamp(float, float, float) 的参数。
+                // 右脚。
 Transform rightFoot = RequireBone(HumanBodyBones.RightFoot);
-                // stride（步幅）：使用位置：作为 Quaternion.AngleAxis(float, Vector3) 的参数。
+                // 步幅。
 float stride = Mathf.Clamp((leftFoot.position.z - rightFoot.position.z) / .65f, -1f, 1f) * weight;
-                // leftArm（左侧手臂）：保存 Animator.GetBoneTransform(HumanBodyBones) 的返回结果，供当前步骤使用。使用位置：KnifePoseSampler.Sample(AnimationClip, float, int, float, float, bool)。
+                // 左侧手臂。
 Transform leftArm = RequireBone(HumanBodyBones.LeftUpperArm);
-                // rightArm（右侧手臂）：保存 Animator.GetBoneTransform(HumanBodyBones) 的返回结果，供当前步骤使用。使用位置：KnifePoseSampler.Sample(AnimationClip, float, int, float, float, bool)。
+                // 右侧手臂。
 Transform rightArm = RequireBone(HumanBodyBones.RightUpperArm);
                 leftArm.rotation = Quaternion.AngleAxis(stride * 7f, Vector3.right) * leftArm.rotation;
                 rightArm.rotation = Quaternion.AngleAxis(-stride * 4f, Vector3.right) * rightArm.rotation;
@@ -365,10 +365,10 @@ Transform rightArm = RequireBone(HumanBodyBones.RightUpperArm);
         model.transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
         if (!originalGrip)
         {
-            // index（当前元素索引）：使用位置：KnifePoseSampler.Sample(AnimationClip, float, int, float, float, bool)。
+            // 当前元素索引。
 for (int index = 0; index < configuration.fingerBoneName.Length; index++)
             {
-                // finger（手指）：使用位置：作为 Dictionary<string, Transform>.TryGetValue(string, out Transform) 的参数、KnifePoseSampler.Sample(AnimationClip, float, int, float, float, bool)。
+                // 手指。
 Transform finger;
                 if (fingerBones.TryGetValue(configuration.fingerBoneName[index], out finger))
                 {
@@ -380,8 +380,8 @@ Transform finger;
 
     /// <summary>BeginBlend 的业务处理入口；本方法直接依赖 Mathf.Max(float, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonAnimatorDriver.BeginKnifePoseExit()、LeonAnimatorDriver.LateUpdate()、LeonAnimatorDriver.PlayIndependentKnifeClip(KnifeActionConfiguration, float, float)；下游（含内部回调体） Mathf.Max(float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="duration">中文含义：持续时间。使用位置：作为 Mathf.Max(float, float) 的参数。</param>
-    /// <param name="elapsed">中文含义：已用。使用位置：作为 Mathf.Max(float, float) 的参数。</param>
+    /// <param name="duration">持续时间。</param>
+    /// <param name="elapsed">已用。</param>
     internal AnimationClip LocomotionClip => currentWalk;
 
     internal float ReadLeftFootHeightDifference()
@@ -391,7 +391,7 @@ Transform finger;
 
     public void BeginBlend(float duration, float elapsed)
     {
-        // index（当前元素索引）：使用位置：KnifePoseSampler.BeginBlend(float, float)。
+        // 当前元素索引。
 for (int index = 0; index < targets.Length; index++)
         {
             // 起点必须是上一帧真正显示的姿态，不能读取本帧已被动画器覆盖的骨架。
@@ -415,12 +415,12 @@ for (int index = 0; index < targets.Length; index++)
 
     /// <summary>Apply 的业务处理入口；本方法直接依赖 KnifePoseSampler.AdvanceBlend(float)、KnifePoseSampler.CapturePresentedPose()、KnifePoseSampler.CaptureUnderlyingPose()、Mathf.Clamp01(float)、Mathf.SmoothStep(float, float, float)、Quaternion.Slerp(Quaternion, Quaternion, float)、Vector3.Lerp(Vector3, Vector3, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 KnifePreviewReferenceValidator.CompareSourcePreview(bool)、LeonAnimatorDriver.LateUpdate()；下游（含内部回调体） KnifePoseSampler.AdvanceBlend(float)、KnifePoseSampler.CapturePresentedPose()、KnifePoseSampler.CaptureUnderlyingPose()、Mathf.Clamp01(float)、Mathf.SmoothStep(float, float, float)、Quaternion.Slerp(Quaternion, Quaternion, float)、Vector3.Lerp(Vector3, Vector3, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="deltaTime">中文含义：本帧时间间隔。使用位置：作为 KnifePoseSampler.AdvanceBlend(float) 的参数。</param>
+    /// <param name="deltaTime">本帧时间间隔。</param>
     public void Apply(float deltaTime, float lowerBodySettle = 0f, float poseWeight = 1f, bool rightArmOnly = false,
         float standingGuardRelease = -1f, bool guardTurning = false, bool guardStanding = false)
     {
         CaptureUnderlyingPose();
-        // weight（权重）：使用位置：作为 Quaternion.Slerp(Quaternion, Quaternion, float) 的参数、作为 Vector3.Lerp(Vector3, Vector3, float) 的参数、KnifePoseSampler.Apply(float)。
+        // 权重。
 float weight = 1f;
         if (hasBlend)
         {
@@ -432,7 +432,7 @@ float weight = 1f;
             }
         }
 
-        // index（当前元素索引）：使用位置：KnifePoseSampler.Apply(float)。
+        // 当前元素索引。
 for (int index = 0; index < targets.Length; index++)
         {
             if (rightArmOnly && !rightArm[index])
@@ -522,14 +522,14 @@ for (int index = 0; index < targets.Length; index++)
 
     /// <summary>ApplyExit 的业务处理入口；本方法直接依赖 KnifePoseSampler.AdvanceBlend(float)、KnifePoseSampler.CapturePresentedPose()、KnifePoseSampler.CaptureUnderlyingPose()、KnifePoseSampler.ReleasePresentation()、Mathf.Clamp01(float)、Mathf.SmoothStep(float, float, float)、Quaternion.Slerp(Quaternion, Quaternion, float) 等共 8 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonAnimatorDriver.LateUpdate()；下游（含内部回调体） KnifePoseSampler.AdvanceBlend(float)、KnifePoseSampler.CapturePresentedPose()、KnifePoseSampler.CaptureUnderlyingPose()、KnifePoseSampler.ReleasePresentation()、Mathf.Clamp01(float)、Mathf.SmoothStep(float, float, float)、Quaternion.Slerp(Quaternion, Quaternion, float) 等共 8 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="deltaTime">中文含义：本帧时间间隔。使用位置：作为 KnifePoseSampler.AdvanceBlend(float) 的参数。</param>
+    /// <param name="deltaTime">本帧时间间隔。</param>
     public bool ApplyExit(float deltaTime)
     {
         CaptureUnderlyingPose();
         AdvanceBlend(deltaTime);
-        // weight（权重）：保存 Mathf.SmoothStep(float, float, float) 的返回结果，供当前步骤使用。使用位置：作为 Quaternion.Slerp(Quaternion, Quaternion, float) 的参数、作为 Vector3.Lerp(Vector3, Vector3, float) 的参数、KnifePoseSampler.ApplyExit(float)。
+        // 权重。
 float weight = Mathf.SmoothStep(0, 1, Mathf.Clamp01(blendElapsed / blendDuration));
-        // index（当前元素索引）：使用位置：KnifePoseSampler.ApplyExit(float)。
+        // 当前元素索引。
 for (int index = 0; index < targets.Length; index++)
         {
             targets[index].localPosition = Vector3.Lerp(blendPositions[index], targets[index].localPosition, weight);
@@ -549,7 +549,7 @@ for (int index = 0; index < targets.Length; index++)
     /// <remarks>静态调用链：上游 KnifePoseSampler.Apply(float)、KnifePoseSampler.ApplyExit(float)；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     private void CaptureUnderlyingPose()
     {
-        // index（当前元素索引）：使用位置：KnifePoseSampler.CaptureUnderlyingPose()。
+        // 当前元素索引。
 for (int index = 0; index < targets.Length; index++)
         {
             underlyingPositions[index] = targets[index].localPosition;
@@ -563,7 +563,7 @@ for (int index = 0; index < targets.Length; index++)
     /// <remarks>静态调用链：上游 KnifePoseSampler.Apply(float)、KnifePoseSampler.ApplyExit(float)；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     private void CapturePresentedPose()
     {
-        // index（当前元素索引）：使用位置：KnifePoseSampler.CapturePresentedPose()。
+        // 当前元素索引。
 for (int index = 0; index < targets.Length; index++)
         {
             presentedPositions[index] = targets[index].localPosition;
@@ -583,7 +583,7 @@ for (int index = 0; index < targets.Length; index++)
         }
 
         // 在下一次动画求值之前撤回直接写骨，防止没有曲线的骨骼留下小刀姿态。
-        // index（当前元素索引）：使用位置：KnifePoseSampler.RestoreUnderlyingPose()。
+        // 当前元素索引。
 for (int index = 0; index < targets.Length; index++)
         {
             if (targets[index] != null)
@@ -614,10 +614,10 @@ for (int index = 0; index < targets.Length; index++)
 
     /// <summary>AdvanceBlend 的业务处理入口；本方法直接依赖 Mathf.Max(float, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 KnifePoseSampler.Apply(float)、KnifePoseSampler.ApplyExit(float)；下游（含内部回调体） Mathf.Max(float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="deltaTime">中文含义：本帧时间间隔。使用位置：KnifePoseSampler.AdvanceBlend(float)。</param>
+    /// <param name="deltaTime">本帧时间间隔。</param>
     private void AdvanceBlend(float deltaTime)
     {
-        // time（时间）：使用位置：作为 Mathf.Max(float, float) 的参数、KnifePoseSampler.AdvanceBlend(float)。
+        // 时间。
 double time = Time.timeAsDouble;
         if (deltaTime > 0)
         {

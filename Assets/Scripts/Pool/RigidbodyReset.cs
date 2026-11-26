@@ -8,7 +8,7 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody))]
 public class RigidbodyReset : MonoBehaviour, IPoolable
 {
-    /// <summary>中文含义：运动刚体。使用位置：RigidbodyReset.Awake()、RigidbodyReset.OnPoolGet()、RigidbodyReset.OnPoolReturn()。</summary>
+    /// <summary>运动刚体。</summary>
     private Rigidbody rb;
     /// <summary>Unity 组件初始化回调；状态处理与资源交接按函数内顺序执行，下游协作见调用链。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） Component.GetComponent&lt;Rigidbody&gt;()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>

@@ -8,36 +8,36 @@ public class TutorialManager : Singleton<TutorialManager>, IManualSingleton
     /// <summary>中文含义：切换场景时是否保留此单例对象。</summary>
     protected override bool Persistent => false;
 
-    /// <summary>中文含义：提示界面。使用位置：SceneStartupEntry.ConfigurationError()、TutorialManager.AutoWireMissingReferences()、TutorialManager.CompleteMoveTutorial() 等共 6 处。</summary>
+    /// <summary>提示界面。</summary>
     [Header("界面引用")]
     public TutorialPromptUI promptUI;
-    /// <summary>中文含义：输入桥接。使用位置：SceneStartupEntry.ConfigurationError()、TutorialManager.AutoWireMissingReferences()、TutorialManager.BindEvents()。</summary>
+    /// <summary>输入桥接。</summary>
     [Header("玩家引用")]
     public LeonInputBridge inputBridge;
-    /// <summary>中文含义：管理当前装备与武器切换的组件。使用位置：SceneStartupEntry.ConfigurationError()、TutorialManager.AutoWireMissingReferences()、TutorialManager.BindEvents()。</summary>
+    /// <summary>管理当前装备与武器切换的组件。</summary>
     public LeonWeaponHandler weaponHandler;
-    /// <summary>中文含义：移动完成可见秒。使用位置：作为 TutorialPromptUI.HideAfter(float) 的参数。</summary>
+    /// <summary>移动完成可见秒。</summary>
     [Header("显示时长")]
     [Min(0.1f)]
     public float moveCompleteVisibleSeconds = 1.5f;
-    /// <summary>中文含义：瞄准射击可见秒。使用位置：作为 TutorialPromptUI.ShowPrompt(string[], string, float, bool) 的参数。</summary>
+    /// <summary>瞄准射击可见秒。</summary>
     [Min(0.1f)]
     public float aimShootVisibleSeconds = 4f;
-    /// <summary>中文含义：换弹可见秒。使用位置：作为 TutorialPromptUI.ShowPrompt(string[], string, float, bool) 的参数。</summary>
+    /// <summary>换弹可见秒。</summary>
     [Min(0.1f)]
     public float reloadVisibleSeconds = 3.5f;
-    /// <summary>中文含义：是否重置进度事件起始。使用位置：TutorialManager.ConnectTutorial()。</summary>
+    /// <summary>是否重置进度事件起始。</summary>
     [Header("调试")]
     public bool resetProgressOnStart;
-    /// <summary>中文含义：移动教学键。编译期常量，保持既有值与消费者映射。使用位置：作为 PlayerPrefs.DeleteKey(string) 的参数、作为 TutorialManager.IsCompleted(string) 的参数、作为 TutorialManager.MarkCompleted(string) 的参数。</summary>
+    /// <summary>移动教学键。编译期常量，保持既有值与消费者映射。</summary>
     private const string MoveTutorialKey = "教学_移动_完成";
-    /// <summary>中文含义：瞄准射击教学键。编译期常量，保持既有值与消费者映射。使用位置：作为 PlayerPrefs.DeleteKey(string) 的参数、作为 TutorialManager.IsCompleted(string) 的参数、作为 TutorialManager.MarkCompleted(string) 的参数。</summary>
+    /// <summary>瞄准射击教学键。编译期常量，保持既有值与消费者映射。</summary>
     private const string AimShootTutorialKey = "教学_举枪射击_完成";
-    /// <summary>中文含义：换弹教学键。编译期常量，保持既有值与消费者映射。使用位置：作为 PlayerPrefs.DeleteKey(string) 的参数、作为 TutorialManager.IsCompleted(string) 的参数、作为 TutorialManager.MarkCompleted(string) 的参数。</summary>
+    /// <summary>换弹教学键。编译期常量，保持既有值与消费者映射。</summary>
     private const string ReloadTutorialKey = "教学_换弹_完成";
-    /// <summary>中文含义：已绑定输入桥接。使用位置：TutorialManager.BindEvents()、TutorialManager.UnbindEvents()。</summary>
+    /// <summary>已绑定输入桥接。</summary>
     private LeonInputBridge boundInputBridge;
-    /// <summary>中文含义：已绑定装备切换组件。使用位置：TutorialManager.BindEvents()、TutorialManager.UnbindEvents()。</summary>
+    /// <summary>已绑定装备切换组件。</summary>
     private LeonWeaponHandler boundWeaponHandler;
     /// <summary>AutoWireMissingReferences 的业务处理入口；本方法直接依赖 Component.GetComponent&lt;LeonWeaponHandler&gt;()、SceneStartupEntry.QueryHasHasReference&lt;LeonInputBridge&gt;(Component)、SceneStartupEntry.QueryHasHasReference&lt;TutorialPromptUI&gt;(Component)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） Component.GetComponent&lt;LeonWeaponHandler&gt;()、SceneStartupEntry.QueryHasHasReference&lt;LeonInputBridge&gt;(Component)、SceneStartupEntry.QueryHasHasReference&lt;TutorialPromptUI&gt;(Component)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
@@ -252,7 +252,7 @@ public class TutorialManager : Singleton<TutorialManager>, IManualSingleton
 
     /// <summary>HandleCurrentWeaponLowAmmo 的业务处理入口；本方法直接依赖 TutorialManager.TryShowReloadTutorial()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） TutorialManager.TryShowReloadTutorial()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="weaponType">中文含义：武器类型。使用位置：TutorialManager.HandleCurrentWeaponLowAmmo(WeaponType, int, int)。</param>
+    /// <param name="weaponType">武器类型。</param>
     /// <param name="currentAmmo">中文含义：当前弹匣弹量。</param>
     /// <param name="magazineSize">中文含义：弹匣尺寸。</param>
     private void HandleCurrentWeaponLowAmmo(WeaponType weaponType, int currentAmmo, int magazineSize)
@@ -267,7 +267,7 @@ public class TutorialManager : Singleton<TutorialManager>, IManualSingleton
 
     /// <summary>IsCompleted 的业务处理入口；本方法直接依赖 PlayerPrefs.GetInt(string, int)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 TutorialManager.CompleteMoveTutorial()、TutorialManager.HasCompletedAimShootTutorial()、TutorialManager.HasCompletedMoveTutorial()、TutorialManager.HasCompletedReloadTutorial()、TutorialManager.TryShowAimShootTutorial() 等共 7 处；下游（含内部回调体） PlayerPrefs.GetInt(string, int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="key">中文含义：键。使用位置：作为 PlayerPrefs.GetInt(string, int) 的参数。</param>
+    /// <param name="key">键。</param>
     private static bool IsCompleted(string key)
     {
         return PlayerPrefs.GetInt(key, 0) == 1;
@@ -275,7 +275,7 @@ public class TutorialManager : Singleton<TutorialManager>, IManualSingleton
 
     /// <summary>MarkCompleted 的业务处理入口；本方法直接依赖 PlayerPrefs.Save()、PlayerPrefs.SetInt(string, int)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 TutorialManager.CompleteMoveTutorial()、TutorialManager.TryShowAimShootTutorial()、TutorialManager.TryShowReloadTutorial()；下游（含内部回调体） PlayerPrefs.Save()、PlayerPrefs.SetInt(string, int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="key">中文含义：键。使用位置：作为 PlayerPrefs.SetInt(string, int) 的参数。</param>
+    /// <param name="key">键。</param>
     private static void MarkCompleted(string key)
     {
         PlayerPrefs.SetInt(key, 1);

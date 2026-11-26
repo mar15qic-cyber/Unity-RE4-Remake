@@ -10,69 +10,69 @@ using System.Collections.Generic;
 /// </summary>
 public class MultiLevelMenuManager : MonoBehaviour
 {
-    /// <summary>中文含义：主要菜单容器。使用位置：作为 Object.Instantiate&lt;GameObject&gt;(GameObject, Transform) 的参数、MultiLevelMenuManager.GeneratePrimaryMenuItems()。</summary>
+    /// <summary>主要菜单容器。</summary>
     [Header("一级菜单")]
     public Transform primaryMenuContainer;
-    /// <summary>中文含义：主要菜单物品预制件。使用位置：作为 Object.Instantiate&lt;GameObject&gt;(GameObject, Transform) 的参数、MultiLevelMenuManager.GeneratePrimaryMenuItems()。</summary>
+    /// <summary>主要菜单物品预制件。</summary>
     public GameObject primaryMenuItemPrefab;
-    /// <summary>中文含义：主要选定颜色。使用位置：MultiLevelMenuManager.UpdatePrimaryItemColor(int, bool)、MultiLevelMenuManager.UpdateSecondaryItemColor(int, bool)。</summary>
+    /// <summary>主要选定颜色。</summary>
     public Color primarySelectedColor = new Color(0.85f, 0.1f, 0.1f, 1f);
-    /// <summary>中文含义：主要普通状态颜色。使用位置：MultiLevelMenuManager.UpdatePrimaryItemColor(int, bool)、MultiLevelMenuManager.UpdateSecondaryItemColor(int, bool)。</summary>
+    /// <summary>主要普通状态颜色。</summary>
     public Color primaryNormalColor = new Color(1f, 1f, 1f, 0.7f);
-    /// <summary>中文含义：主要禁用状态颜色。使用位置：MultiLevelMenuManager.UpdatePrimaryItemColor(int, bool)、MultiLevelMenuManager.UpdateSecondaryItemColor(int, bool)。</summary>
+    /// <summary>主要禁用状态颜色。</summary>
     public Color primaryDisabledColor = new Color(0.4f, 0.4f, 0.4f, 0.5f);
-    /// <summary>中文含义：次要面板容器。使用位置：作为 Transform.SetParent(Transform, bool) 的参数、MultiLevelMenuManager.InitializeMenu()、MultiLevelMenuManager.ShowPrimaryMenu()。</summary>
+    /// <summary>次要面板容器。</summary>
     [Header("二级子面板")]
     public Transform secondaryPanelContainer;
-    /// <summary>中文含义：次要面板预制件。使用位置：作为 Object.Instantiate&lt;GameObject&gt;(GameObject, Transform) 的参数。</summary>
+    /// <summary>次要面板预制件。</summary>
     public GameObject secondaryPanelPrefab;
-    /// <summary>中文含义：次要滑移偏移量。使用位置：作为 Mathf.Lerp(float, float, float) 的参数、作为 Vector2.Vector2(float, float) 的参数。</summary>
+    /// <summary>次要滑移偏移量。</summary>
     public float secondarySlideOffset = 800f;
-    /// <summary>中文含义：次要滑移持续时间。使用位置：MultiLevelMenuManager.SlideInSecondaryPanel(RectTransform, CanvasGroup)、MultiLevelMenuManager.SlideOutSecondaryPanels()。</summary>
+    /// <summary>次要滑移持续时间。</summary>
     public float secondarySlideDuration = 0.3f;
-    /// <summary>中文含义：遮暗层图像。使用位置：MultiLevelMenuManager.FadeDimmer(bool)、MultiLevelMenuManager.InitializeMenu()。</summary>
+    /// <summary>遮暗层图像。</summary>
     [Header("背景变暗")]
     public Image dimmerImage;
-    /// <summary>中文含义：遮暗层淡入淡出时长。使用位置：MultiLevelMenuManager.FadeDimmer(bool)。</summary>
+    /// <summary>遮暗层淡入淡出时长。</summary>
     public float dimmerFadeDuration = 0.25f;
-    /// <summary>中文含义：遮暗层透明度。使用位置：MultiLevelMenuManager.FadeDimmer(bool)。</summary>
+    /// <summary>遮暗层透明度。</summary>
     public float dimmerAlpha = 0.6f;
-    /// <summary>中文含义：主要菜单分组。使用位置：MultiLevelMenuManager.FadeInPrimaryMenu()、MultiLevelMenuManager.InitializeMenu()。</summary>
+    /// <summary>主要菜单分组。</summary>
     [Header("菜单层级")]
     public CanvasGroup primaryMenuGroup;
-    /// <summary>中文含义：次要面板分组。使用位置：MultiLevelMenuManager.InitializeMenu()。</summary>
+    /// <summary>次要面板分组。</summary>
     public CanvasGroup secondaryPanelGroup;
-    /// <summary>中文含义：主要菜单物品列表。使用位置：MultiLevelMenuManager.AddPrimaryMenuItem(string, Sprite, bool)、MultiLevelMenuManager.AddSecondaryMenuItem(int, string, Sprite, bool)、MultiLevelMenuManager.ClearAllMenuItems() 等共 11 处。</summary>
+    /// <summary>主要菜单物品列表。</summary>
     [Header("菜单项定义")]
     public List<PrimaryMenuItem> primaryMenuItems = new List<PrimaryMenuItem>();
-    /// <summary>中文含义：悬停声音。使用位置：作为 MultiLevelMenuManager.PlaySound(string) 的参数。</summary>
+    /// <summary>悬停声音。</summary>
     [Header("声音效果")]
     public string hoverSound = "ui_hover";
-    /// <summary>中文含义：确认声音。使用位置：作为 MultiLevelMenuManager.PlaySound(string) 的参数。</summary>
+    /// <summary>确认声音。</summary>
     public string confirmSound = "ui_confirm";
-    /// <summary>中文含义：取消声音。使用位置：作为 MultiLevelMenuManager.PlaySound(string) 的参数。</summary>
+    /// <summary>取消声音。</summary>
     public string cancelSound = "ui_cancel";
     // 私有状态
-    /// <summary>中文含义：当前主要索引。使用位置：作为 List&lt;MultiLevelMenuManager.PrimaryMenuItem&gt;.this[int] 的参数、作为 MultiLevelMenuManager.OnPrimaryMenuItemClicked(int) 的参数、作为 MultiLevelMenuManager.OnSecondaryMenuItemClicked(int, int) 的参数 等共 10 处。</summary>
+    /// <summary>当前主要索引。</summary>
     private int currentPrimaryIndex = -1;
-    /// <summary>中文含义：当前次要索引。使用位置：作为 MultiLevelMenuManager.OnSecondaryMenuItemClicked(int, int) 的参数、MultiLevelMenuManager.CloseSecondaryPanelCoroutine()、MultiLevelMenuManager.HandleSecondaryKeyboardNavigation() 等共 7 处。</summary>
+    /// <summary>当前次要索引。</summary>
     private int currentSecondaryIndex = -1;
-    /// <summary>中文含义：是否次要面板打开。使用位置：MultiLevelMenuManager.CloseSecondaryPanel()、MultiLevelMenuManager.CloseSecondaryPanelCoroutine()、MultiLevelMenuManager.OpenSecondaryPanel(int) 等共 5 处。</summary>
+    /// <summary>是否次要面板打开。</summary>
     private bool isSecondaryPanelOpen = false;
-    /// <summary>中文含义：是否动画播放。使用位置：MultiLevelMenuManager.CloseSecondaryPanel()、MultiLevelMenuManager.CloseSecondaryPanelCoroutine()、MultiLevelMenuManager.OnPrimaryMenuItemClicked(int) 等共 7 处。</summary>
+    /// <summary>是否动画播放。</summary>
     private bool isAnimating = false;
-    /// <summary>中文含义：实例化的主要物品列表。使用位置：MultiLevelMenuManager.GeneratePrimaryMenuItems()、MultiLevelMenuManager.UpdatePrimaryItemColor(int, bool)、MultiLevelMenuManager.UpdatePrimaryMenuSelection()。</summary>
+    /// <summary>实例化的主要物品列表。</summary>
     private List<GameObject> instantiatedPrimaryItems = new List<GameObject>();
-    /// <summary>中文含义：实例化的次要面板集合。使用位置：MultiLevelMenuManager.ClearSecondaryPanels()、MultiLevelMenuManager.OpenSecondaryPanel(int)、MultiLevelMenuManager.SlideOutSecondaryPanels() 等共 5 处。</summary>
+    /// <summary>实例化的次要面板集合。</summary>
     private List<GameObject> instantiatedSecondaryPanels = new List<GameObject>();
-    /// <summary>中文含义：当前主要菜单物品。使用位置：MultiLevelMenuManager.OnPrimaryMenuItemClicked(int)、MultiLevelMenuManager.UpdateSecondaryItemColor(int, bool)。</summary>
+    /// <summary>当前主要菜单物品。</summary>
     private PrimaryMenuItem currentPrimaryMenuItem;
     // 事件
-    /// <summary>中文含义：主要菜单选定时的通知回调。事件通信成员 OnPrimaryMenuSelected，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。使用位置：MultiLevelMenuManager.OnPrimaryMenuItemClicked(int)。</summary>
+    /// <summary>主要菜单选定时的通知回调。事件通信成员 OnPrimaryMenuSelected，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。</summary>
     public event Action<int> OnPrimaryMenuSelected;
-    /// <summary>中文含义：次要菜单选定时的通知回调。事件通信成员 OnSecondaryMenuSelected，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。使用位置：MultiLevelMenuManager.OnSecondaryMenuItemClicked(int, int)。</summary>
+    /// <summary>次要菜单选定时的通知回调。事件通信成员 OnSecondaryMenuSelected，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。</summary>
     public event Action<int, int> OnSecondaryMenuSelected;
-    /// <summary>中文含义：菜单已关闭时的通知回调。事件通信成员 OnMenuClosed，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。使用位置：MultiLevelMenuManager.CloseSecondaryPanelCoroutine()。</summary>
+    /// <summary>菜单已关闭时的通知回调。事件通信成员 OnMenuClosed，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。</summary>
     public event Action OnMenuClosed;
     /// <summary>
     /// 一级菜单项数据结构
@@ -80,13 +80,13 @@ public class MultiLevelMenuManager : MonoBehaviour
     [Serializable]
     public class PrimaryMenuItem
     {
-        /// <summary>中文含义：显示名称。使用位置：作为 GameObject.GameObject(string) 的参数、MultiLevelMenuManager.AddPrimaryMenuItem(string, Sprite, bool)、MultiLevelMenuManager.ExecuteSecondaryMenuAction(int, int) 等共 4 处。</summary>
+        /// <summary>显示名称。</summary>
         public string displayName;
-        /// <summary>中文含义：图标。使用位置：MultiLevelMenuManager.AddPrimaryMenuItem(string, Sprite, bool)、MultiLevelMenuManager.GeneratePrimaryMenuItems()。</summary>
+        /// <summary>图标。</summary>
         public Sprite icon;
-        /// <summary>中文含义：是否启用。使用位置：MultiLevelMenuManager.AddPrimaryMenuItem(string, Sprite, bool)、MultiLevelMenuManager.GeneratePrimaryMenuItems()、MultiLevelMenuManager.NavigatePrimaryMenu(int) 等共 6 处。</summary>
+        /// <summary>是否启用。</summary>
         public bool isEnabled = true;
-        /// <summary>中文含义：次要物品列表。使用位置：MultiLevelMenuManager.AddSecondaryMenuItem(int, string, Sprite, bool)、MultiLevelMenuManager.ExecuteSecondaryMenuAction(int, int)、MultiLevelMenuManager.NavigateSecondaryMenu(int) 等共 6 处。</summary>
+        /// <summary>次要物品列表。</summary>
         public List<SecondaryMenuItem> secondaryItems = new List<SecondaryMenuItem>();
         /// <summary>中文含义：选定时的通知回调。</summary>
         public Action<int> onSelected;
@@ -98,15 +98,15 @@ public class MultiLevelMenuManager : MonoBehaviour
     [Serializable]
     public class SecondaryMenuItem
     {
-        /// <summary>中文含义：显示名称。使用位置：MultiLevelMenuManager.AddSecondaryMenuItem(int, string, Sprite, bool)、MultiLevelMenuManager.OpenSecondaryPanel(int)。</summary>
+        /// <summary>显示名称。</summary>
         public string displayName;
-        /// <summary>中文含义：图标。使用位置：MultiLevelMenuManager.AddSecondaryMenuItem(int, string, Sprite, bool)、MultiLevelMenuManager.OpenSecondaryPanel(int)。</summary>
+        /// <summary>图标。</summary>
         public Sprite icon;
-        /// <summary>中文含义：是否启用。使用位置：MultiLevelMenuManager.AddSecondaryMenuItem(int, string, Sprite, bool)、MultiLevelMenuManager.NavigateSecondaryMenu(int)、MultiLevelMenuManager.OpenSecondaryPanel(int) 等共 5 处。</summary>
+        /// <summary>是否启用。</summary>
         public bool isEnabled = true;
         /// <summary>中文含义：自定义面板。</summary>
         public GameObject customPanel; // 可选的自定义面板
-        /// <summary>中文含义：选定时的通知回调。使用位置：MultiLevelMenuManager.ExecuteSecondaryMenuAction(int, int)。</summary>
+        /// <summary>选定时的通知回调。</summary>
         public Action<int, int> onSelected;
     }
 
@@ -202,16 +202,16 @@ foreach (var item in instantiatedPrimaryItems)
             return;
         }
 
-        // i（当前遍历索引）：使用位置：作为 List<MultiLevelMenuManager.PrimaryMenuItem>.this[int] 的参数、作为 MultiLevelMenuManager.UpdatePrimaryItemColor(int, bool) 的参数、MultiLevelMenuManager.GeneratePrimaryMenuItems()。
+        // 当前遍历索引。
 for (int i = 0; i < primaryMenuItems.Count; i++)
         {
-            // menuItem（菜单物品）：使用位置：MultiLevelMenuManager.GeneratePrimaryMenuItems()。
+            // 菜单物品。
 var menuItem = primaryMenuItems[i];
-            // itemObj（物品对象）：保存 Object.Instantiate<GameObject>(GameObject, Transform) 的返回结果，供当前步骤使用。使用位置：作为 List<GameObject>.Add(GameObject) 的参数、MultiLevelMenuManager.GeneratePrimaryMenuItems()。
+            // 物品对象。
 GameObject itemObj = Instantiate(primaryMenuItemPrefab, primaryMenuContainer);
             itemObj.name = $"PrimaryItem_{i}_{menuItem.displayName}";
             // 设置显示文本
-            // textComponent（文字组件）：保存 GameObject.GetComponentInChildren<Text>() 的返回结果，供当前步骤使用。使用位置：MultiLevelMenuManager.GeneratePrimaryMenuItems()。
+            // 文字组件。
 Text textComponent = itemObj.GetComponentInChildren<Text>();
             if (textComponent != null)
             {
@@ -219,9 +219,9 @@ Text textComponent = itemObj.GetComponentInChildren<Text>();
             }
 
             // 设置图标
-            // receiverValue1（判空前缓存的查找的返回结果）：从查找的返回结果读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、MultiLevelMenuManager.GeneratePrimaryMenuItems()。
+            // 判空前缓存的查找的返回结果。
 global::UnityEngine.Transform receiverValue1 = itemObj.transform.Find("Icon");
-            // iconComponent（图标组件）：使用位置：MultiLevelMenuManager.GeneratePrimaryMenuItems()。
+            // 图标组件。
 Image iconComponent;
             if (!global::System.Object.ReferenceEquals(receiverValue1, null))
             {
@@ -238,11 +238,11 @@ Image iconComponent;
             }
 
             // 设置按钮交互
-            // button（按钮）：保存 GameObject.GetComponent<Button>() 的返回结果，供当前步骤使用。使用位置：MultiLevelMenuManager.GeneratePrimaryMenuItems()。
+            // 按钮。
 Button button = itemObj.GetComponent<Button>();
             if (button != null)
             {
-                // index（当前元素索引）：使用位置：作为 MultiLevelMenuManager.OnPrimaryMenuItemClicked(int) 的参数。
+                // 当前元素索引。
 int index = i;
                 button.onClick.AddListener(() => OnPrimaryMenuItemClicked(index));
                 button.interactable = menuItem.isEnabled;
@@ -285,7 +285,7 @@ int index = i;
     /// 一级菜单项点击事件
     /// </summary>
     /// <remarks>静态调用链：上游 MultiLevelMenuManager.GeneratePrimaryMenuItems()、MultiLevelMenuManager.HandlePrimaryKeyboardNavigation()；下游（含内部回调体） Action&lt;int&gt;.Invoke(int)、MultiLevelMenuManager.OpenSecondaryPanel(int)、MultiLevelMenuManager.PlaySound(string)、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="index">中文含义：索引。使用位置：作为 Action&lt;int&gt;.Invoke(int) 的参数、作为 List&lt;MultiLevelMenuManager.PrimaryMenuItem&gt;.this[int] 的参数、作为 MultiLevelMenuManager.OpenSecondaryPanel(int) 的参数 等共 4 处。</param>
+    /// <param name="index">索引。</param>
     private void OnPrimaryMenuItemClicked(int index)
     {
         if (isAnimating)
@@ -306,7 +306,7 @@ int index = i;
         currentPrimaryIndex = index;
         currentPrimaryMenuItem = primaryMenuItems[index];
         PlaySound(confirmSound);
-        // receiverValue3（判空前缓存的主要菜单选定时的通知回调）：从主要菜单选定时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、MultiLevelMenuManager.OnPrimaryMenuItemClicked(int)。
+        // 判空前缓存的主要菜单选定时的通知回调。
 global::System.Action<int> receiverValue3 = OnPrimaryMenuSelected;
         if (!global::System.Object.ReferenceEquals(receiverValue3, null))
         {
@@ -321,7 +321,7 @@ global::System.Action<int> receiverValue3 = OnPrimaryMenuSelected;
     /// 打开二级面板
     /// </summary>
     /// <remarks>静态调用链：上游 MultiLevelMenuManager.OnPrimaryMenuItemClicked(int)；下游（含内部回调体） Component.GetComponent&lt;Image&gt;()、GameObject.AddComponent&lt;CanvasGroup&gt;()、GameObject.AddComponent&lt;RectTransform&gt;()、GameObject.GameObject(string)、GameObject.GetComponent&lt;Button&gt;()、GameObject.GetComponentInChildren&lt;Text&gt;()、List&lt;GameObject&gt;.Add(GameObject) 等共 18 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="primaryIndex">中文含义：主要索引。使用位置：作为 List&lt;MultiLevelMenuManager.PrimaryMenuItem&gt;.this[int] 的参数、MultiLevelMenuManager.OpenSecondaryPanel(int)。</param>
+    /// <param name="primaryIndex">主要索引。</param>
     private void OpenSecondaryPanel(int primaryIndex)
     {
         if (isAnimating)
@@ -335,12 +335,12 @@ global::System.Action<int> receiverValue3 = OnPrimaryMenuSelected;
         // 生成新的二级面板
         if (primaryIndex >= 0 && primaryIndex < primaryMenuItems.Count)
         {
-            // primaryItem（主要物品）：使用位置：作为 GameObject.GameObject(string) 的参数、MultiLevelMenuManager.OpenSecondaryPanel(int)。
+            // 主要物品。
 var primaryItem = primaryMenuItems[primaryIndex];
             // 创建二级面板容器
-            // panelContainer（面板容器）：使用位置：MultiLevelMenuManager.OpenSecondaryPanel(int)。
+            // 面板容器。
 GameObject panelContainer = new GameObject($"SecondaryPanel_{primaryItem.displayName}");
-            // containerRect（容器矩形）：保存 GameObject.AddComponent<RectTransform>() 的返回结果，供当前步骤使用。使用位置：作为 MultiLevelMenuManager.SlideInSecondaryPanel(RectTransform, CanvasGroup) 的参数、作为 Object.Instantiate<GameObject>(GameObject, Transform) 的参数、MultiLevelMenuManager.OpenSecondaryPanel(int)。
+            // 容器矩形。
 RectTransform containerRect = panelContainer.AddComponent<RectTransform>();
             containerRect.SetParent(secondaryPanelContainer, false);
             // 设置容器位置（从右侧滑入）
@@ -350,19 +350,19 @@ RectTransform containerRect = panelContainer.AddComponent<RectTransform>();
             containerRect.sizeDelta = new Vector2(secondarySlideOffset, 0);
             containerRect.anchoredPosition = new Vector2(secondarySlideOffset, 0);
             // 添加CanvasGroup用于动画
-            // containerGroup（容器分组）：保存 GameObject.AddComponent<CanvasGroup>() 的返回结果，供当前步骤使用。使用位置：作为 MultiLevelMenuManager.SlideInSecondaryPanel(RectTransform, CanvasGroup) 的参数。
+            // 容器分组。
 CanvasGroup containerGroup = panelContainer.AddComponent<CanvasGroup>();
             // 生成二级菜单项
-            // i（当前遍历索引）：使用位置：作为 List<MultiLevelMenuManager.SecondaryMenuItem>.this[int] 的参数、MultiLevelMenuManager.OpenSecondaryPanel(int)。
+            // 当前遍历索引。
 for (int i = 0; i < primaryItem.secondaryItems.Count; i++)
             {
-                // secondaryItem（次要物品）：使用位置：MultiLevelMenuManager.OpenSecondaryPanel(int)。
+                // 次要物品。
 var secondaryItem = primaryItem.secondaryItems[i];
-                // itemObj（物品对象）：保存 Object.Instantiate<GameObject>(GameObject, Transform) 的返回结果，供当前步骤使用。使用位置：作为 List<GameObject>.Add(GameObject) 的参数、MultiLevelMenuManager.OpenSecondaryPanel(int)。
+                // 物品对象。
 GameObject itemObj = Instantiate(secondaryPanelPrefab, containerRect);
                 itemObj.name = $"SecondaryItem_{i}_{secondaryItem.displayName}";
                 // 设置显示文本
-                // textComponent（文字组件）：保存 GameObject.GetComponentInChildren<Text>() 的返回结果，供当前步骤使用。使用位置：MultiLevelMenuManager.OpenSecondaryPanel(int)。
+                // 文字组件。
 Text textComponent = itemObj.GetComponentInChildren<Text>();
                 if (textComponent != null)
                 {
@@ -370,9 +370,9 @@ Text textComponent = itemObj.GetComponentInChildren<Text>();
                 }
 
                 // 设置图标
-                // receiverValue4（判空前缓存的查找的返回结果）：从查找的返回结果读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、MultiLevelMenuManager.OpenSecondaryPanel(int)。
+                // 判空前缓存的查找的返回结果。
 global::UnityEngine.Transform receiverValue4 = itemObj.transform.Find("Icon");
-                // iconComponent（图标组件）：使用位置：MultiLevelMenuManager.OpenSecondaryPanel(int)。
+                // 图标组件。
 Image iconComponent;
                 if (!global::System.Object.ReferenceEquals(receiverValue4, null))
                 {
@@ -389,13 +389,13 @@ Image iconComponent;
                 }
 
                 // 设置按钮交互
-                // button（按钮）：保存 GameObject.GetComponent<Button>() 的返回结果，供当前步骤使用。使用位置：MultiLevelMenuManager.OpenSecondaryPanel(int)。
+                // 按钮。
 Button button = itemObj.GetComponent<Button>();
                 if (button != null)
                 {
-                    // primaryIdx（主要索引）：使用位置：作为 MultiLevelMenuManager.OnSecondaryMenuItemClicked(int, int) 的参数。
+                    // 主要索引。
 int primaryIdx = primaryIndex;
-                    // secondaryIdx（次要索引）：使用位置：作为 MultiLevelMenuManager.OnSecondaryMenuItemClicked(int, int) 的参数。
+                    // 次要索引。
 int secondaryIdx = i;
                     button.onClick.AddListener(() => OnSecondaryMenuItemClicked(primaryIdx, secondaryIdx));
                     button.interactable = secondaryItem.isEnabled;
@@ -416,8 +416,8 @@ int secondaryIdx = i;
     /// 二级菜单项点击事件
     /// </summary>
     /// <remarks>静态调用链：上游 MultiLevelMenuManager.HandleSecondaryKeyboardNavigation()、MultiLevelMenuManager.OpenSecondaryPanel(int)；下游（含内部回调体） Action&lt;int, int&gt;.Invoke(int, int)、MultiLevelMenuManager.ExecuteSecondaryMenuAction(int, int)、MultiLevelMenuManager.PlaySound(string)、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="primaryIndex">中文含义：主要索引。使用位置：作为 Action&lt;int, int&gt;.Invoke(int, int) 的参数、作为 MultiLevelMenuManager.ExecuteSecondaryMenuAction(int, int) 的参数。</param>
-    /// <param name="secondaryIndex">中文含义：次要索引。使用位置：作为 Action&lt;int, int&gt;.Invoke(int, int) 的参数、作为 MultiLevelMenuManager.ExecuteSecondaryMenuAction(int, int) 的参数、MultiLevelMenuManager.OnSecondaryMenuItemClicked(int, int)。</param>
+    /// <param name="primaryIndex">主要索引。</param>
+    /// <param name="secondaryIndex">次要索引。</param>
     private void OnSecondaryMenuItemClicked(int primaryIndex, int secondaryIndex)
     {
         if (isAnimating)
@@ -427,7 +427,7 @@ int secondaryIdx = i;
 
         currentSecondaryIndex = secondaryIndex;
         PlaySound(confirmSound);
-        // receiverValue6（判空前缓存的次要菜单选定时的通知回调）：从次要菜单选定时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、MultiLevelMenuManager.OnSecondaryMenuItemClicked(int, int)。
+        // 判空前缓存的次要菜单选定时的通知回调。
 global::System.Action<int, int> receiverValue6 = OnSecondaryMenuSelected;
         if (!global::System.Object.ReferenceEquals(receiverValue6, null))
         {
@@ -442,8 +442,8 @@ global::System.Action<int, int> receiverValue6 = OnSecondaryMenuSelected;
     /// 执行二级菜单动作
     /// </summary>
     /// <remarks>静态调用链：上游 MultiLevelMenuManager.OnSecondaryMenuItemClicked(int, int)；下游（含内部回调体） Action&lt;int, int&gt;.Invoke(int, int)、MultiLevelMenuManager.HandleExitGame()、MultiLevelMenuManager.HandleSettingsSecondaryMenu(int)、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="primaryIndex">中文含义：主要索引。使用位置：作为 Action&lt;int, int&gt;.Invoke(int, int) 的参数、作为 List&lt;MultiLevelMenuManager.PrimaryMenuItem&gt;.this[int] 的参数、MultiLevelMenuManager.ExecuteSecondaryMenuAction(int, int)。</param>
-    /// <param name="secondaryIndex">中文含义：次要索引。使用位置：作为 Action&lt;int, int&gt;.Invoke(int, int) 的参数、作为 List&lt;MultiLevelMenuManager.SecondaryMenuItem&gt;.this[int] 的参数、作为 MultiLevelMenuManager.HandleSettingsSecondaryMenu(int) 的参数 等共 4 处。</param>
+    /// <param name="primaryIndex">主要索引。</param>
+    /// <param name="secondaryIndex">次要索引。</param>
     private void ExecuteSecondaryMenuAction(int primaryIndex, int secondaryIndex)
     {
         if (primaryIndex < 0 || primaryIndex >= primaryMenuItems.Count)
@@ -451,17 +451,17 @@ global::System.Action<int, int> receiverValue6 = OnSecondaryMenuSelected;
             return;
         }
 
-        // primaryItem（主要物品）：使用位置：MultiLevelMenuManager.ExecuteSecondaryMenuAction(int, int)。
+        // 主要物品。
 var primaryItem = primaryMenuItems[primaryIndex];
         if (secondaryIndex < 0 || secondaryIndex >= primaryItem.secondaryItems.Count)
         {
             return;
         }
 
-        // secondaryItem（次要物品）：使用位置：MultiLevelMenuManager.ExecuteSecondaryMenuAction(int, int)。
+        // 次要物品。
 var secondaryItem = primaryItem.secondaryItems[secondaryIndex];
         // 执行自定义动作
-        // receiverValue7（判空前缓存的次要物品的选定时的通知回调）：从次要物品的选定时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、MultiLevelMenuManager.ExecuteSecondaryMenuAction(int, int)。
+        // 判空前缓存的次要物品的选定时的通知回调。
 global::System.Action<int, int> receiverValue7 = // 执行自定义动作
  secondaryItem.onSelected;
         if (!global::System.Object.ReferenceEquals(receiverValue7, null))
@@ -486,7 +486,7 @@ global::System.Action<int, int> receiverValue7 = // 执行自定义动作
     /// 处理设置选项的二级菜单
     /// </summary>
     /// <remarks>静态调用链：上游 MultiLevelMenuManager.ExecuteSecondaryMenuAction(int, int)；下游（含内部回调体） Debug.Log(object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="secondaryIndex">中文含义：次要索引。使用位置：作为 Debug.Log(object) 的参数。</param>
+    /// <param name="secondaryIndex">次要索引。</param>
     private void HandleSettingsSecondaryMenu(int secondaryIndex)
     {
         // 这里可以打开具体的设置面板
@@ -540,7 +540,7 @@ global::System.Action<int, int> receiverValue7 = // 执行自定义动作
         isSecondaryPanelOpen = false;
         currentSecondaryIndex = -1;
         isAnimating = false;
-        // receiverValue8（判空前缓存的菜单已关闭时的通知回调）：从菜单已关闭时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、MultiLevelMenuManager.CloseSecondaryPanelCoroutine()。
+        // 判空前缓存的菜单已关闭时的通知回调。
 global::System.Action receiverValue8 = OnMenuClosed;
         if (!global::System.Object.ReferenceEquals(receiverValue8, null))
         {
@@ -581,14 +581,14 @@ foreach (var panel in instantiatedSecondaryPanels)
         primaryMenuGroup.alpha = 0f;
         primaryMenuGroup.interactable = true;
         primaryMenuGroup.blocksRaycasts = true;
-        // elapsed（已用）：使用位置：MultiLevelMenuManager.FadeInPrimaryMenu()。
+        // 已用。
 float elapsed = 0f;
-        // duration（持续时间）：使用位置：MultiLevelMenuManager.FadeInPrimaryMenu()。
+        // 持续时间。
 float duration = 0.3f;
         while (elapsed < duration)
         {
             elapsed += Time.unscaledDeltaTime;
-            // t（当前界面动画的归一化进度）：使用位置：作为 Mathf.Lerp(float, float, float) 的参数、MultiLevelMenuManager.FadeInPrimaryMenu()。
+            // 当前界面动画的归一化进度。
 float t = elapsed / duration;
             t = t * t * (3f - 2f * t); // 平滑步进
             primaryMenuGroup.alpha = Mathf.Lerp(0f, 1f, t);
@@ -602,8 +602,8 @@ float t = elapsed / duration;
     /// 滑入二级面板
     /// </summary>
     /// <remarks>静态调用链：上游 MultiLevelMenuManager.OpenSecondaryPanel(int)；下游（含内部回调体） Mathf.Lerp(float, float, float)、Vector2.Lerp(Vector2, Vector2, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="panelRect">中文含义：面板矩形。使用位置：MultiLevelMenuManager.SlideInSecondaryPanel(RectTransform, CanvasGroup)。</param>
-    /// <param name="panelGroup">中文含义：面板分组。使用位置：MultiLevelMenuManager.SlideInSecondaryPanel(RectTransform, CanvasGroup)。</param>
+    /// <param name="panelRect">面板矩形。</param>
+    /// <param name="panelGroup">面板分组。</param>
     private IEnumerator SlideInSecondaryPanel(RectTransform panelRect, CanvasGroup panelGroup)
     {
         if (panelRect == null)
@@ -612,16 +612,16 @@ float t = elapsed / duration;
         }
 
         isAnimating = true;
-        // startPos（起始位置）：使用位置：作为 Vector2.Lerp(Vector2, Vector2, float) 的参数。
+        // 起始位置。
 Vector2 startPos = panelRect.anchoredPosition;
-        // endPos（结束位置）：使用位置：作为 Vector2.Lerp(Vector2, Vector2, float) 的参数、MultiLevelMenuManager.SlideInSecondaryPanel(RectTransform, CanvasGroup)。
+        // 结束位置。
 Vector2 endPos = Vector2.zero;
-        // elapsed（已用）：使用位置：MultiLevelMenuManager.SlideInSecondaryPanel(RectTransform, CanvasGroup)。
+        // 已用。
 float elapsed = 0f;
         while (elapsed < secondarySlideDuration)
         {
             elapsed += Time.unscaledDeltaTime;
-            // t（当前界面动画的归一化进度）：使用位置：作为 Mathf.Lerp(float, float, float) 的参数、作为 Vector2.Lerp(Vector2, Vector2, float) 的参数、MultiLevelMenuManager.SlideInSecondaryPanel(RectTransform, CanvasGroup)。
+            // 当前界面动画的归一化进度。
 float t = elapsed / secondarySlideDuration;
             t = t * t * (3f - 2f * t); // 平滑步进
             panelRect.anchoredPosition = Vector2.Lerp(startPos, endPos, t);
@@ -648,12 +648,12 @@ float t = elapsed / secondarySlideDuration;
     /// <remarks>静态调用链：上游 MultiLevelMenuManager.CloseSecondaryPanelCoroutine()；下游（含内部回调体） GameObject.GetComponent&lt;CanvasGroup&gt;()、GameObject.GetComponent&lt;RectTransform&gt;()、Mathf.Lerp(float, float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     private IEnumerator SlideOutSecondaryPanels()
     {
-        // elapsed（已用）：使用位置：MultiLevelMenuManager.SlideOutSecondaryPanels()。
+        // 已用。
 float elapsed = 0f;
         while (elapsed < secondarySlideDuration)
         {
             elapsed += Time.unscaledDeltaTime;
-            // t（当前界面动画的归一化进度）：使用位置：作为 Mathf.Lerp(float, float, float) 的参数、MultiLevelMenuManager.SlideOutSecondaryPanels()。
+            // 当前界面动画的归一化进度。
 float t = elapsed / secondarySlideDuration;
             t = t * t * (3f - 2f * t);
             // panel（面板）：每轮从实例化的次要面板集合取得一个元素，仅代表当前这一项。使用位置：MultiLevelMenuManager.SlideOutSecondaryPanels()。
@@ -661,17 +661,17 @@ foreach (var panel in instantiatedSecondaryPanels)
             {
                 if (panel != null)
                 {
-                    // rect（矩形）：保存 GameObject.GetComponent<RectTransform>() 的返回结果，供当前步骤使用。使用位置：MultiLevelMenuManager.SlideOutSecondaryPanels()。
+                    // 矩形。
 RectTransform rect = panel.GetComponent<RectTransform>();
                     if (rect != null)
                     {
-                        // pos（位置）：使用位置：MultiLevelMenuManager.SlideOutSecondaryPanels()。
+                        // 位置。
 Vector2 pos = rect.anchoredPosition;
                         pos.x = Mathf.Lerp(0, secondarySlideOffset, t);
                         rect.anchoredPosition = pos;
                     }
 
-                    // group（分组）：保存 GameObject.GetComponent<CanvasGroup>() 的返回结果，供当前步骤使用。使用位置：MultiLevelMenuManager.SlideOutSecondaryPanels()。
+                    // 分组。
 CanvasGroup group = panel.GetComponent<CanvasGroup>();
                     if (group != null)
                     {
@@ -688,7 +688,7 @@ CanvasGroup group = panel.GetComponent<CanvasGroup>();
     /// 背景变暗/恢复
     /// </summary>
     /// <remarks>静态调用链：上游 MultiLevelMenuManager.CloseSecondaryPanelCoroutine()、MultiLevelMenuManager.OpenSecondaryPanel(int)；下游（含内部回调体） Color.Color(float, float, float, float)、Mathf.Lerp(float, float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="fadeIn">中文含义：是否淡入。使用位置：MultiLevelMenuManager.FadeDimmer(bool)。</param>
+    /// <param name="fadeIn">是否淡入。</param>
     private IEnumerator FadeDimmer(bool fadeIn)
     {
         if (dimmerImage == null)
@@ -697,11 +697,11 @@ CanvasGroup group = panel.GetComponent<CanvasGroup>();
         }
 
         dimmerImage.raycastTarget = fadeIn;
-        // elapsed（已用）：使用位置：MultiLevelMenuManager.FadeDimmer(bool)。
+        // 已用。
 float elapsed = 0f;
-        // startAlpha（起始透明度）：使用位置：作为 Mathf.Lerp(float, float, float) 的参数。
+        // 起始透明度。
 float startAlpha = dimmerImage.color.a;
-        // endAlpha（结束透明度）：使用位置：作为 Color.Color(float, float, float, float) 的参数、作为 Mathf.Lerp(float, float, float) 的参数、MultiLevelMenuManager.FadeDimmer(bool)。
+        // 结束透明度。
 float endAlpha;
         if (fadeIn)
         {
@@ -715,10 +715,10 @@ float endAlpha;
         while (elapsed < dimmerFadeDuration)
         {
             elapsed += Time.unscaledDeltaTime;
-            // t（当前界面动画的归一化进度）：使用位置：作为 Mathf.Lerp(float, float, float) 的参数、MultiLevelMenuManager.FadeDimmer(bool)。
+            // 当前界面动画的归一化进度。
 float t = elapsed / dimmerFadeDuration;
             t = t * t * (3f - 2f * t);
-            // currentAlpha（当前透明度）：保存 Mathf.Lerp(float, float, float) 的返回结果，供当前步骤使用。使用位置：作为 Color.Color(float, float, float, float) 的参数。
+            // 当前透明度。
 float currentAlpha = Mathf.Lerp(startAlpha, endAlpha, t);
             dimmerImage.color = new Color(0, 0, 0, currentAlpha);
             yield return null;
@@ -779,7 +779,7 @@ float currentAlpha = Mathf.Lerp(startAlpha, endAlpha, t);
     /// 导航一级菜单
     /// </summary>
     /// <remarks>静态调用链：上游 MultiLevelMenuManager.HandlePrimaryKeyboardNavigation()；下游（含内部回调体） MultiLevelMenuManager.PlaySound(string)、MultiLevelMenuManager.UpdatePrimaryMenuSelection()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="direction">中文含义：方向。使用位置：MultiLevelMenuManager.NavigatePrimaryMenu(int)。</param>
+    /// <param name="direction">方向。</param>
     private void NavigatePrimaryMenu(int direction)
     {
         if (primaryMenuItems.Count == 0)
@@ -787,9 +787,9 @@ float currentAlpha = Mathf.Lerp(startAlpha, endAlpha, t);
             return;
         }
 
-        // oldIndex（旧索引）：使用位置：MultiLevelMenuManager.NavigatePrimaryMenu(int)。
+        // 旧索引。
 int oldIndex = currentPrimaryIndex;
-        // newIndex（新索引）：使用位置：作为 List<MultiLevelMenuManager.PrimaryMenuItem>.this[int] 的参数、MultiLevelMenuManager.NavigatePrimaryMenu(int)。
+        // 新索引。
 int newIndex = oldIndex + direction;
         // 循环导航
         if (newIndex < 0)
@@ -803,7 +803,7 @@ int newIndex = oldIndex + direction;
         }
 
         // 跳过禁用项
-        // attempts（尝试次数）：使用位置：MultiLevelMenuManager.NavigatePrimaryMenu(int)。
+        // 尝试次数。
 int attempts = 0;
         while (!primaryMenuItems[newIndex].isEnabled && attempts < primaryMenuItems.Count)
         {
@@ -823,7 +823,7 @@ int attempts = 0;
     /// 导航二级菜单
     /// </summary>
     /// <remarks>静态调用链：上游 MultiLevelMenuManager.HandleSecondaryKeyboardNavigation()；下游（含内部回调体） MultiLevelMenuManager.PlaySound(string)、MultiLevelMenuManager.UpdateSecondaryMenuSelection()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="direction">中文含义：方向。使用位置：MultiLevelMenuManager.NavigateSecondaryMenu(int)。</param>
+    /// <param name="direction">方向。</param>
     private void NavigateSecondaryMenu(int direction)
     {
         if (currentPrimaryIndex < 0 || currentPrimaryIndex >= primaryMenuItems.Count)
@@ -831,16 +831,16 @@ int attempts = 0;
             return;
         }
 
-        // primaryItem（主要物品）：使用位置：MultiLevelMenuManager.NavigateSecondaryMenu(int)。
+        // 主要物品。
 var primaryItem = primaryMenuItems[currentPrimaryIndex];
         if (primaryItem.secondaryItems.Count == 0)
         {
             return;
         }
 
-        // oldIndex（旧索引）：使用位置：MultiLevelMenuManager.NavigateSecondaryMenu(int)。
+        // 旧索引。
 int oldIndex = currentSecondaryIndex;
-        // newIndex（新索引）：使用位置：作为 List<MultiLevelMenuManager.SecondaryMenuItem>.this[int] 的参数、MultiLevelMenuManager.NavigateSecondaryMenu(int)。
+        // 新索引。
 int newIndex = oldIndex + direction;
         // 循环导航
         if (newIndex < 0)
@@ -854,7 +854,7 @@ int newIndex = oldIndex + direction;
         }
 
         // 跳过禁用项
-        // attempts（尝试次数）：使用位置：MultiLevelMenuManager.NavigateSecondaryMenu(int)。
+        // 尝试次数。
 int attempts = 0;
         while (!primaryItem.secondaryItems[newIndex].isEnabled && attempts < primaryItem.secondaryItems.Count)
         {
@@ -876,10 +876,10 @@ int attempts = 0;
     /// <remarks>静态调用链：上游 MultiLevelMenuManager.NavigatePrimaryMenu(int)；下游（含内部回调体） MultiLevelMenuManager.UpdatePrimaryItemColor(int, bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     private void UpdatePrimaryMenuSelection()
     {
-        // i（当前遍历索引）：使用位置：作为 MultiLevelMenuManager.UpdatePrimaryItemColor(int, bool) 的参数、MultiLevelMenuManager.UpdatePrimaryMenuSelection()。
+        // 当前遍历索引。
 for (int i = 0; i < instantiatedPrimaryItems.Count; i++)
         {
-            // isSelected（是否选定）：使用位置：作为 MultiLevelMenuManager.UpdatePrimaryItemColor(int, bool) 的参数。
+            // 是否选定。
 bool isSelected = (i == currentPrimaryIndex);
             UpdatePrimaryItemColor(i, isSelected);
         }
@@ -891,10 +891,10 @@ bool isSelected = (i == currentPrimaryIndex);
     /// <remarks>静态调用链：上游 MultiLevelMenuManager.NavigateSecondaryMenu(int)；下游（含内部回调体） MultiLevelMenuManager.UpdateSecondaryItemColor(int, bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     private void UpdateSecondaryMenuSelection()
     {
-        // i（当前遍历索引）：使用位置：作为 MultiLevelMenuManager.UpdateSecondaryItemColor(int, bool) 的参数、MultiLevelMenuManager.UpdateSecondaryMenuSelection()。
+        // 当前遍历索引。
 for (int i = 0; i < instantiatedSecondaryPanels.Count; i++)
         {
-            // isSelected（是否选定）：使用位置：作为 MultiLevelMenuManager.UpdateSecondaryItemColor(int, bool) 的参数。
+            // 是否选定。
 bool isSelected = (i == currentSecondaryIndex);
             UpdateSecondaryItemColor(i, isSelected);
         }
@@ -904,8 +904,8 @@ bool isSelected = (i == currentSecondaryIndex);
     /// 更新一级菜单项颜色
     /// </summary>
     /// <remarks>静态调用链：上游 MultiLevelMenuManager.GeneratePrimaryMenuItems()、MultiLevelMenuManager.UpdatePrimaryMenuSelection()；下游（含内部回调体） GameObject.GetComponentInChildren&lt;Text&gt;()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="index">中文含义：索引。使用位置：作为 List&lt;GameObject&gt;.this[int] 的参数、作为 List&lt;MultiLevelMenuManager.PrimaryMenuItem&gt;.this[int] 的参数、MultiLevelMenuManager.UpdatePrimaryItemColor(int, bool)。</param>
-    /// <param name="isSelected">中文含义：是否选定。使用位置：MultiLevelMenuManager.UpdatePrimaryItemColor(int, bool)。</param>
+    /// <param name="index">索引。</param>
+    /// <param name="isSelected">是否选定。</param>
     private void UpdatePrimaryItemColor(int index, bool isSelected)
     {
         if (index < 0 || index >= instantiatedPrimaryItems.Count)
@@ -913,20 +913,20 @@ bool isSelected = (i == currentSecondaryIndex);
             return;
         }
 
-        // item（当前游戏对象）：使用位置：MultiLevelMenuManager.UpdatePrimaryItemColor(int, bool)。
+        // 当前游戏对象。
 GameObject item = instantiatedPrimaryItems[index];
         if (item == null)
         {
             return;
         }
 
-        // textComponent（文字组件）：保存 GameObject.GetComponentInChildren<Text>() 的返回结果，供当前步骤使用。使用位置：MultiLevelMenuManager.UpdatePrimaryItemColor(int, bool)。
+        // 文字组件。
 Text textComponent = item.GetComponentInChildren<Text>();
         if (textComponent != null)
         {
             if (primaryMenuItems[index].isEnabled)
             {
-                // assignmentReceiver10（赋值前保存的目标文字组件）：从文字组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：MultiLevelMenuManager.UpdatePrimaryItemColor(int, bool)。
+                // 赋值前保存的目标文字组件。
 global::UnityEngine.UI.Text assignmentReceiver10 = textComponent;
                 if (isSelected)
                 {
@@ -937,7 +937,7 @@ global::UnityEngine.UI.Text assignmentReceiver10 = textComponent;
                     assignmentReceiver10.color = primaryNormalColor;
                 }
 
-                // assignmentReceiver12（赋值前保存的目标文字组件）：从文字组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：MultiLevelMenuManager.UpdatePrimaryItemColor(int, bool)。
+                // 赋值前保存的目标文字组件。
 global::UnityEngine.UI.Text assignmentReceiver12 = textComponent;
                 if (isSelected)
                 {
@@ -960,8 +960,8 @@ global::UnityEngine.UI.Text assignmentReceiver12 = textComponent;
     /// 更新二级菜单项颜色
     /// </summary>
     /// <remarks>静态调用链：上游 MultiLevelMenuManager.UpdateSecondaryMenuSelection()；下游（含内部回调体） GameObject.GetComponentInChildren&lt;Text&gt;()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="index">中文含义：索引。使用位置：作为 List&lt;GameObject&gt;.this[int] 的参数、作为 List&lt;MultiLevelMenuManager.SecondaryMenuItem&gt;.this[int] 的参数、MultiLevelMenuManager.UpdateSecondaryItemColor(int, bool)。</param>
-    /// <param name="isSelected">中文含义：是否选定。使用位置：MultiLevelMenuManager.UpdateSecondaryItemColor(int, bool)。</param>
+    /// <param name="index">索引。</param>
+    /// <param name="isSelected">是否选定。</param>
     private void UpdateSecondaryItemColor(int index, bool isSelected)
     {
         if (index < 0 || index >= instantiatedSecondaryPanels.Count)
@@ -969,24 +969,24 @@ global::UnityEngine.UI.Text assignmentReceiver12 = textComponent;
             return;
         }
 
-        // item（当前游戏对象）：使用位置：MultiLevelMenuManager.UpdateSecondaryItemColor(int, bool)。
+        // 当前游戏对象。
 GameObject item = instantiatedSecondaryPanels[index];
         if (item == null)
         {
             return;
         }
 
-        // textComponent（文字组件）：保存 GameObject.GetComponentInChildren<Text>() 的返回结果，供当前步骤使用。使用位置：MultiLevelMenuManager.UpdateSecondaryItemColor(int, bool)。
+        // 文字组件。
 Text textComponent = item.GetComponentInChildren<Text>();
         if (textComponent != null)
         {
             if (currentPrimaryMenuItem != null && index < currentPrimaryMenuItem.secondaryItems.Count)
             {
-                // secondaryItem（次要物品）：使用位置：MultiLevelMenuManager.UpdateSecondaryItemColor(int, bool)。
+                // 次要物品。
 var secondaryItem = currentPrimaryMenuItem.secondaryItems[index];
                 if (secondaryItem.isEnabled)
                 {
-                    // assignmentReceiver14（赋值前保存的目标文字组件）：从文字组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：MultiLevelMenuManager.UpdateSecondaryItemColor(int, bool)。
+                    // 赋值前保存的目标文字组件。
 global::UnityEngine.UI.Text assignmentReceiver14 = textComponent;
                     if (isSelected)
                     {
@@ -997,7 +997,7 @@ global::UnityEngine.UI.Text assignmentReceiver14 = textComponent;
                         assignmentReceiver14.color = primaryNormalColor;
                     }
 
-                    // assignmentReceiver16（赋值前保存的目标文字组件）：从文字组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：MultiLevelMenuManager.UpdateSecondaryItemColor(int, bool)。
+                    // 赋值前保存的目标文字组件。
 global::UnityEngine.UI.Text assignmentReceiver16 = textComponent;
                     if (isSelected)
                     {
@@ -1023,7 +1023,7 @@ global::UnityEngine.UI.Text assignmentReceiver16 = textComponent;
     /// 播放音效
     /// </summary>
     /// <remarks>静态调用链：上游 MultiLevelMenuManager.CloseSecondaryPanel()、MultiLevelMenuManager.NavigatePrimaryMenu(int)、MultiLevelMenuManager.NavigateSecondaryMenu(int)、MultiLevelMenuManager.OnPrimaryMenuItemClicked(int)、MultiLevelMenuManager.OnSecondaryMenuItemClicked(int, int)；下游（含内部回调体） AudioManager.PlaySfx(string)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="soundName">中文含义：声音名称。使用位置：作为 AudioManager.PlaySfx(string) 的参数。</param>
+    /// <param name="soundName">声音名称。</param>
     private void PlaySound(string soundName)
     {
         if (AudioManager.Instance != null)
@@ -1038,12 +1038,12 @@ global::UnityEngine.UI.Text assignmentReceiver16 = textComponent;
     /// 添加一级菜单项
     /// </summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） List&lt;MultiLevelMenuManager.PrimaryMenuItem&gt;.Add(MultiLevelMenuManager.PrimaryMenuItem)、MultiLevelMenuManager.GeneratePrimaryMenuItems()、MultiLevelMenuManager.PrimaryMenuItem.PrimaryMenuItem()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="displayName">中文含义：显示名称。使用位置：MultiLevelMenuManager.AddPrimaryMenuItem(string, Sprite, bool)。</param>
-    /// <param name="icon">中文含义：图标。使用位置：MultiLevelMenuManager.AddPrimaryMenuItem(string, Sprite, bool)。</param>
-    /// <param name="isEnabled">中文含义：是否启用。使用位置：MultiLevelMenuManager.AddPrimaryMenuItem(string, Sprite, bool)。</param>
+    /// <param name="displayName">显示名称。</param>
+    /// <param name="icon">图标。</param>
+    /// <param name="isEnabled">是否启用。</param>
     public void AddPrimaryMenuItem(string displayName, Sprite icon = null, bool isEnabled = true)
     {
-        // newItem（新物品）：使用位置：作为 List<MultiLevelMenuManager.PrimaryMenuItem>.Add(MultiLevelMenuManager.PrimaryMenuItem) 的参数。
+        // 新物品。
 PrimaryMenuItem newItem = new PrimaryMenuItem
         {
             displayName = displayName,
@@ -1058,10 +1058,10 @@ PrimaryMenuItem newItem = new PrimaryMenuItem
     /// 添加二级菜单项
     /// </summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） List&lt;MultiLevelMenuManager.SecondaryMenuItem&gt;.Add(MultiLevelMenuManager.SecondaryMenuItem)、MultiLevelMenuManager.SecondaryMenuItem.SecondaryMenuItem()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="primaryIndex">中文含义：主要索引。使用位置：作为 List&lt;MultiLevelMenuManager.PrimaryMenuItem&gt;.this[int] 的参数、MultiLevelMenuManager.AddSecondaryMenuItem(int, string, Sprite, bool)。</param>
-    /// <param name="displayName">中文含义：显示名称。使用位置：MultiLevelMenuManager.AddSecondaryMenuItem(int, string, Sprite, bool)。</param>
-    /// <param name="icon">中文含义：图标。使用位置：MultiLevelMenuManager.AddSecondaryMenuItem(int, string, Sprite, bool)。</param>
-    /// <param name="isEnabled">中文含义：是否启用。使用位置：MultiLevelMenuManager.AddSecondaryMenuItem(int, string, Sprite, bool)。</param>
+    /// <param name="primaryIndex">主要索引。</param>
+    /// <param name="displayName">显示名称。</param>
+    /// <param name="icon">图标。</param>
+    /// <param name="isEnabled">是否启用。</param>
     public void AddSecondaryMenuItem(int primaryIndex, string displayName, Sprite icon = null, bool isEnabled = true)
     {
         if (primaryIndex < 0 || primaryIndex >= primaryMenuItems.Count)
@@ -1069,7 +1069,7 @@ PrimaryMenuItem newItem = new PrimaryMenuItem
             return;
         }
 
-        // newItem（新物品）：使用位置：作为 List<MultiLevelMenuManager.SecondaryMenuItem>.Add(MultiLevelMenuManager.SecondaryMenuItem) 的参数。
+        // 新物品。
 SecondaryMenuItem newItem = new SecondaryMenuItem
         {
             displayName = displayName,
@@ -1083,9 +1083,9 @@ SecondaryMenuItem newItem = new SecondaryMenuItem
     /// 设置菜单项启用状态
     /// </summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） MultiLevelMenuManager.GeneratePrimaryMenuItems()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="primaryIndex">中文含义：主要索引。使用位置：作为 List&lt;MultiLevelMenuManager.PrimaryMenuItem&gt;.this[int] 的参数、MultiLevelMenuManager.SetMenuItemEnabled(int, int, bool)。</param>
-    /// <param name="secondaryIndex">中文含义：次要索引。使用位置：作为 List&lt;MultiLevelMenuManager.SecondaryMenuItem&gt;.this[int] 的参数、MultiLevelMenuManager.SetMenuItemEnabled(int, int, bool)。</param>
-    /// <param name="isEnabled">中文含义：是否启用。使用位置：MultiLevelMenuManager.SetMenuItemEnabled(int, int, bool)。</param>
+    /// <param name="primaryIndex">主要索引。</param>
+    /// <param name="secondaryIndex">次要索引。</param>
+    /// <param name="isEnabled">是否启用。</param>
     public void SetMenuItemEnabled(int primaryIndex, int secondaryIndex, bool isEnabled)
     {
         if (primaryIndex < 0 || primaryIndex >= primaryMenuItems.Count)

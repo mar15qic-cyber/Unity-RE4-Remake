@@ -10,12 +10,12 @@ public static class EnemyModuleBoundaryValidator
 {
     /// <summary>ValidateCode 的业务处理入口；本方法直接依赖 ArchitectureBoundaryValidator.Scan()、ArchitectureBoundaryValidator.ValidateStateExclusiveWrite(IEnumerable&lt;ArchitectureBoundaryValidator.BoundaryRecord&gt;, Type, IEnumerable&lt;string&gt;, List&lt;string&gt;)、Assembly.GetType(string, bool)、IEnumerable&lt;FieldInfo&gt;.Select&lt;FieldInfo, string&gt;(Func&lt;FieldInfo, string&gt;)、IEnumerable&lt;Type&gt;.Any&lt;Type&gt;(Func&lt;Type, bool&gt;)、IEnumerable&lt;Type&gt;.Take&lt;Type&gt;(int)、List&lt;string&gt;.Add(string) 等共 11 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyAIIntegrationContractValidator.Validate()；下游（含内部回调体） ArchitectureBoundaryValidator.Scan()、ArchitectureBoundaryValidator.ValidateStateExclusiveWrite(IEnumerable&lt;ArchitectureBoundaryValidator.BoundaryRecord&gt;, Type, IEnumerable&lt;string&gt;, List&lt;string&gt;)、Assembly.GetType(string, bool)、IEnumerable&lt;FieldInfo&gt;.Select&lt;FieldInfo, string&gt;(Func&lt;FieldInfo, string&gt;)、IEnumerable&lt;Type&gt;.Any&lt;Type&gt;(Func&lt;Type, bool&gt;)、IEnumerable&lt;Type&gt;.Take&lt;Type&gt;(int)、List&lt;string&gt;.Add(string) 等共 11 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="failure">中文含义：失败。使用位置：作为 ArchitectureBoundaryValidator.ValidateStateExclusiveWrite(IEnumerable&lt;ArchitectureBoundaryValidator.BoundaryRecord&gt;, Type, IEnumerable&lt;string&gt;, List&lt;string&gt;) 的参数、EnemyModuleBoundaryValidator.ValidateCode(List&lt;string&gt;)。</param>
+    /// <param name="failure">失败。</param>
     public static void ValidateCode(List<string> failure)
     {
-        // record（当前边界记录集合）：保存 ArchitectureBoundaryValidator.Scan() 的返回结果，供当前步骤使用。使用位置：作为 ArchitectureBoundaryValidator.ValidateStateExclusiveWrite(IEnumerable<ArchitectureBoundaryValidator.BoundaryRecord>, Type, IEnumerable<string>, List<string>) 的参数、EnemyModuleBoundaryValidator.ValidateCode(List<string>)。
+        // 当前边界记录集合。
 var record = ArchitectureBoundaryValidator.Scan();
-        // owner（拥有者）：使用位置：EnemyModuleBoundaryValidator.ValidateCode(List<string>)。
+        // 拥有者。
 Type[] owner =
         {
             typeof(EnemyCombatModule),
@@ -30,7 +30,7 @@ foreach (var type in owner)
             ArchitectureBoundaryValidator.ValidateStateExclusiveWrite(record, type, type.GetFields(BindingFlags.Instance | BindingFlags.NonPublic).Select( /* 中文含义：字段。 */field => field.Name), failure);
         }
 
-        // traversalAssembly（通行程序集）：使用位置：EnemyModuleBoundaryValidator.ValidateCode(List<string>)。
+        // 通行程序集。
 var traversalAssembly = typeof(HouseThreeTraversalGeometry).Assembly;
         // type（反射操作使用的类型信息）：每轮从取得类型的返回结果取得一个元素，仅代表当前这一项。使用位置：作为 ArchitectureBoundaryValidator.ValidateStateExclusiveWrite(IEnumerable<ArchitectureBoundaryValidator.BoundaryRecord>, Type, IEnumerable<string>, List<string>) 的参数。
 foreach (var type in new[]
@@ -81,9 +81,9 @@ foreach (var field in type.GetFields(BindingFlags.Public | BindingFlags.Instance
             }
         }
 
-        // receiverValue1（判空前缓存的取得属性的返回结果）：从取得属性的返回结果读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、EnemyModuleBoundaryValidator.ValidateCode(List<string>)。
+        // 判空前缓存的取得属性的返回结果。
 global::System.Reflection.PropertyInfo receiverValue1 = typeof(EnemyContext).GetProperty("IsCrawl");
-        // optionalValue2（条件访问得到的接收者值1的是否可以写入）：保存条件访问的结果，接收者为空时保持默认空值，非空时才执行原成员访问。使用位置：EnemyModuleBoundaryValidator.ValidateCode(List<string>)。
+        // 条件访问得到的接收者值1的是否可以写入。
 bool? optionalValue2;
         if (!global::System.Object.ReferenceEquals(receiverValue1, null))
         {
@@ -102,9 +102,9 @@ bool? optionalValue2;
 
     /// <summary>ValidateReference 的业务处理入口；本方法直接依赖 Component.GetComponent&lt;ChainsawManAnimationBridge&gt;()、List&lt;string&gt;.Add(string)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyAIIntegrationContractValidator.Validate()；下游（含内部回调体） Component.GetComponent&lt;ChainsawManAnimationBridge&gt;()、List&lt;string&gt;.Add(string)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="character">中文含义：角色。使用位置：作为 List&lt;string&gt;.Add(string) 的参数、EnemyModuleBoundaryValidator.ValidateReference(VillagerController, string, List&lt;string&gt;)。</param>
-    /// <param name="path">中文含义：路径。使用位置：作为 List&lt;string&gt;.Add(string) 的参数。</param>
-    /// <param name="failure">中文含义：失败。使用位置：EnemyModuleBoundaryValidator.ValidateReference(VillagerController, string, List&lt;string&gt;)。</param>
+    /// <param name="character">角色。</param>
+    /// <param name="path">路径。</param>
+    /// <param name="failure">失败。</param>
     public static void ValidateReference(VillagerController character, string path, List<string> failure)
     {
         if (character.combatModule == null || character.combatModule.gameObject != character.gameObject || character.combatModule.host != character)
@@ -132,7 +132,7 @@ bool? optionalValue2;
             failure.Add(path + "：" + character.name + ".运动执行");
         }
 
-        // chainsaw（电锯）：保存 Component.GetComponent<ChainsawManAnimationBridge>() 的返回结果，供当前步骤使用。使用位置：EnemyModuleBoundaryValidator.ValidateReference(VillagerController, string, List<string>)。
+        // 电锯。
 var chainsaw = character.GetComponent<ChainsawManAnimationBridge>();
         if (chainsaw != null && chainsaw.animationPresenter != character.animationPresenter)
         {

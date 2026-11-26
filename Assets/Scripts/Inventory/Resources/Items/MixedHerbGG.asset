@@ -14,10 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: mixed_herb_gg
   displayName: "\u6DF7\u5408\u8349\u836F\uFF08\u7EFF+\u7EFF\uFF09"
-  icon: {fileID: -1725677898, guid: 0c8e69aa4d809904a8253611974cfe28, type: 3}
+  icon: {fileID: 21300000, guid: 6f058ac7abf4b184b9b07c9f4b3cc153, type: 3}
   itemType: 0
   gridWidth: 1
-  gridHeight: 1
+  gridHeight: 2
   maxStack: 1
   healAmount: 60
   maxHealthBonus: 0
@@ -27,11 +27,11 @@ MonoBehaviour:
   usesDurability: 0
   maxDurability: 100
   brokenReplacementItemId: 
-  worldModelPrefab: {fileID: 4128364196825141963, guid: 167f1855c48f5b4489aec4ab24179a17, type: 3}
+  worldModelPrefab: {fileID: 8590792350495084069, guid: 3a0b64a242f554b4c9ccc696758ae26b, type: 3}
   modelScale: {x: 1, y: 1, z: 1}
   modelOffset: {x: -0.0000000018626451, y: 0.04207103, z: -0}
   modelRotation: {x: 0, y: 0, z: 0}
-  inspectionModelPrefab: {fileID: 4128364196825141963, guid: 167f1855c48f5b4489aec4ab24179a17, type: 3}
+  inspectionModelPrefab: {fileID: 8590792350495084069, guid: 3a0b64a242f554b4c9ccc696758ae26b, type: 3}
   inspectionModelRotation: {x: 0, y: -12, z: 0}
   inspectionModelOffset: {x: 0, y: 0, z: 0}
   inspectionViewScale: 1

@@ -35,32 +35,32 @@ public class FootstepSurfaceProfile : ScriptableObject
     [System.Serializable]
     public class SurfaceEntry
     {
-        /// <summary>中文含义：地表类型。使用位置：作为 Dictionary&lt;SurfaceType, FootstepSurfaceProfile.SurfaceEntry&gt;.ContainsKey(SurfaceType) 的参数、作为 Dictionary&lt;SurfaceType, FootstepSurfaceProfile.SurfaceEntry&gt;.this[SurfaceType] 的参数。</summary>
+        /// <summary>地表类型。</summary>
         [Tooltip("地表类型")]
         public SurfaceType surfaceType;
-        /// <summary>中文含义：走路音效事件。使用位置：FootstepSurfaceProfile.GetWalkEvent(SurfaceType)。</summary>
+        /// <summary>走路音效事件。</summary>
         [Tooltip("走路音效事件")]
         public AudioEventData walkEvent;
-        /// <summary>中文含义：跑步音效事件。使用位置：FootstepSurfaceProfile.GetRunEvent(SurfaceType)。</summary>
+        /// <summary>跑步音效事件。</summary>
         [Tooltip("跑步音效事件")]
         public AudioEventData runEvent;
         [Tooltip("蹲行音效事件，空时使用该地表的走路声")]
         public AudioEventData crouchEvent;
     }
 
-    /// <summary>中文含义：按地表类型配置的脚步音效事件。使用位置：FootstepSurfaceProfile.Initialize()。</summary>
+    /// <summary>按地表类型配置的脚步音效事件。</summary>
     [Header("地表音效列表")]
     [Tooltip("按地表类型配置的脚步音效事件")]
     public List<SurfaceEntry> surfaces = new List<SurfaceEntry>();
-    /// <summary>中文含义：未匹配到特定地表时使用的走路音效。使用位置：FootstepSurfaceProfile.GetWalkEvent(SurfaceType)。</summary>
+    /// <summary>未匹配到特定地表时使用的走路音效。</summary>
     [Header("默认音效")]
     [Tooltip("未匹配到特定地表时使用的走路音效")]
     public AudioEventData defaultWalkEvent;
-    /// <summary>中文含义：未匹配到特定地表时使用的跑步音效。使用位置：FootstepSurfaceProfile.GetRunEvent(SurfaceType)。</summary>
+    /// <summary>未匹配到特定地表时使用的跑步音效。</summary>
     [Tooltip("未匹配到特定地表时使用的跑步音效")]
     public AudioEventData defaultRunEvent;
     // 运行时查找字典
-    /// <summary>中文含义：查找表。使用位置：FootstepSurfaceProfile.GetRunEvent(SurfaceType)、FootstepSurfaceProfile.GetWalkEvent(SurfaceType)、FootstepSurfaceProfile.Initialize()。</summary>
+    /// <summary>查找表。</summary>
     private Dictionary<SurfaceType, SurfaceEntry> lookup;
     /// <summary>
     /// 初始化查找字典
@@ -74,10 +74,10 @@ public class FootstepSurfaceProfile : ScriptableObject
             return;
         }
 
-        // i（当前遍历索引）：使用位置：作为 List<FootstepSurfaceProfile.SurfaceEntry>.this[int] 的参数、FootstepSurfaceProfile.Initialize()。
+        // 当前遍历索引。
 for (int i = 0; i < surfaces.Count; i++)
         {
-            // entry（当前表面入口）：使用位置：作为 Dictionary<SurfaceType, FootstepSurfaceProfile.SurfaceEntry>.ContainsKey(SurfaceType) 的参数、作为 Dictionary<SurfaceType, FootstepSurfaceProfile.SurfaceEntry>.this[SurfaceType] 的参数、FootstepSurfaceProfile.Initialize()。
+            // 当前表面入口。
 var entry = surfaces[i];
             if (entry == null)
             {
@@ -95,7 +95,7 @@ var entry = surfaces[i];
     /// 获取走路音效事件
     /// </summary>
     /// <remarks>静态调用链：上游 FootstepController.PlayFootstep()；下游（含内部回调体） Dictionary&lt;SurfaceType, FootstepSurfaceProfile.SurfaceEntry&gt;.TryGetValue(SurfaceType, out FootstepSurfaceProfile.SurfaceEntry)、FootstepSurfaceProfile.Initialize()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="surfaceType">中文含义：表面类型。使用位置：作为 Dictionary&lt;SurfaceType, FootstepSurfaceProfile.SurfaceEntry&gt;.TryGetValue(SurfaceType, out FootstepSurfaceProfile.SurfaceEntry) 的参数。</param>
+    /// <param name="surfaceType">表面类型。</param>
     public AudioEventData GetWalkEvent(SurfaceType surfaceType)
     {
         if (lookup == null)
@@ -115,7 +115,7 @@ var entry = surfaces[i];
     /// 获取跑步音效事件
     /// </summary>
     /// <remarks>静态调用链：上游 FootstepController.PlayFootstep()；下游（含内部回调体） Dictionary&lt;SurfaceType, FootstepSurfaceProfile.SurfaceEntry&gt;.TryGetValue(SurfaceType, out FootstepSurfaceProfile.SurfaceEntry)、FootstepSurfaceProfile.Initialize()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="surfaceType">中文含义：表面类型。使用位置：作为 Dictionary&lt;SurfaceType, FootstepSurfaceProfile.SurfaceEntry&gt;.TryGetValue(SurfaceType, out FootstepSurfaceProfile.SurfaceEntry) 的参数。</param>
+    /// <param name="surfaceType">表面类型。</param>
     public AudioEventData GetCrouchEvent(SurfaceType surfaceType)
     {
         if (lookup == null)

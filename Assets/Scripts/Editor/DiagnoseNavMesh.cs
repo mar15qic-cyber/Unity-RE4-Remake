@@ -12,9 +12,9 @@ public class DiagnoseNavMesh : EditorWindow
     [MenuItem("Tools/Enemy/诊断 NavMesh")]
     static void Diagnose()
     {
-        // sb（文本构建器）：使用位置：作为 Debug.Log(object) 的参数、DiagnoseNavMesh.Diagnose()。
+        // 文本构建器。
 var sb = new StringBuilder();
-        // ground（地面）：保存 GameObject.Find(string) 的返回结果，供当前步骤使用。使用位置：DiagnoseNavMesh.Diagnose()。
+        // 地面。
 var ground = GameObject.Find("TestGround");
         if (ground == null)
         {
@@ -22,7 +22,7 @@ var ground = GameObject.Find("TestGround");
             return;
         }
 
-        // surface（表面）：保存 GameObject.GetComponent(string) 的返回结果，供当前步骤使用。使用位置：作为 FieldInfo.GetValue(object) 的参数、DiagnoseNavMesh.Diagnose()。
+        // 表面。
 var surface = ground.GetComponent("NavMeshSurface");
         if (surface == null)
         {
@@ -31,7 +31,7 @@ var surface = ground.GetComponent("NavMeshSurface");
         }
 
         sb.AppendLine("=== NavMeshSurface ===");
-        // type（反射操作使用的类型信息）：保存 object.GetType() 的返回结果，供当前步骤使用。使用位置：DiagnoseNavMesh.Diagnose()。
+        // 反射操作使用的类型信息。
 var type = surface.GetType();
         // f（当前反射字段信息）：每轮从取得字段集合的返回结果取得一个元素，仅代表当前这一项。使用位置：作为 StringBuilder.AppendLine(string) 的参数。
 foreach (var f in type.GetFields(BindingFlags.Public | BindingFlags.Instance))
@@ -40,7 +40,7 @@ foreach (var f in type.GetFields(BindingFlags.Public | BindingFlags.Instance))
         }
 
         sb.AppendLine($"\n=== NavMesh Triangulation ===");
-        // tri（三角形）：保存 NavMesh.CalculateTriangulation() 的返回结果，供当前步骤使用。使用位置：作为 StringBuilder.AppendLine(string) 的参数、DiagnoseNavMesh.Diagnose()。
+        // 三角形。
 var tri = NavMesh.CalculateTriangulation();
         sb.AppendLine($"  vertices: {tri.vertices.Length}");
         if (tri.vertices.Length > 0)
@@ -48,7 +48,7 @@ var tri = NavMesh.CalculateTriangulation();
 
             // 中文含义：minY 为“最小纵向”。；maxY 为“最大纵向”。
 float minY = float.MaxValue, maxY = float.MinValue;
-            // i（当前遍历索引）：使用位置：DiagnoseNavMesh.Diagnose()。
+            // 当前遍历索引。
 for (int i = 0; i < tri.vertices.Length; i++)
             {
                 if (tri.vertices[i].y < minY)
@@ -70,12 +70,12 @@ for (int i = 0; i < tri.vertices.Length; i++)
         }
 
         sb.AppendLine($"\nNavMesh.GetSettingsCount: {NavMesh.GetSettingsCount()}");
-        // enemies（敌人集合）：保存 Object.FindObjectsByType<VillagerController>(FindObjectsSortMode) 的返回结果，供当前步骤使用。使用位置：DiagnoseNavMesh.Diagnose()。
+        // 敌人集合。
 var enemies = Object.FindObjectsByType<VillagerController>(FindObjectsSortMode.None);
         // vc（虚拟摄像机）：每轮从敌人集合取得一个元素，仅代表当前这一项。使用位置：作为 NavMesh.SamplePosition(Vector3, out NavMeshHit, float, int) 的参数、作为 StringBuilder.AppendLine(string) 的参数、DiagnoseNavMesh.Diagnose()。
 foreach (var vc in enemies)
         {
-            // agent（寻路代理）：保存 Component.GetComponent<NavMeshAgent>() 的返回结果，供当前步骤使用。使用位置：作为 StringBuilder.AppendLine(string) 的参数、DiagnoseNavMesh.Diagnose()。
+            // 寻路代理。
 var agent = vc.GetComponent<NavMeshAgent>();
             sb.AppendLine($"\n=== {vc.gameObject.name} ===");
             sb.AppendLine($"  agentTypeID: {agent.agentTypeID}");
@@ -89,7 +89,7 @@ var agent = vc.GetComponent<NavMeshAgent>();
                 agent.enabled = false;
                 vc.transform.position = hit.position;
                 agent.enabled = true;
-                // warped（是否扭曲后的）：保存 NavMeshAgent.Warp(Vector3) 的返回结果，供当前步骤使用。使用位置：作为 StringBuilder.AppendLine(string) 的参数。
+                // 是否扭曲后的。
 bool warped = agent.Warp(hit.position);
                 sb.AppendLine($"  Warp: ok={warped} isOnNavMesh={agent.isOnNavMesh}");
             }

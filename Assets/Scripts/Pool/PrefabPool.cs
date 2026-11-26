@@ -10,32 +10,33 @@ using UnityEngine;
 public class PrefabPool
 {
     // ═══════════════════ 配置 ═══════════════════
-    /// <summary>中文含义：预制件。只读字段，初始化后不由普通写入口替换。使用位置：作为 Debug.LogWarning(object) 的参数、作为 Object.Instantiate&lt;GameObject&gt;(GameObject, Transform, bool) 的参数、PrefabPool.CreateInstance() 等共 5 处。</summary>
+    /// <summary>预制件。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly GameObject prefab;
-    /// <summary>中文含义：对象池根节点。只读字段，初始化后不由普通写入口替换。使用位置：作为 Object.Instantiate&lt;GameObject&gt;(GameObject, Transform, bool) 的参数、作为 Transform.SetParent(Transform, bool) 的参数、PrefabPool.PrefabPool(GameObject, Transform, GameObjectPoolManager, int, int, bool)。</summary>
+    /// <summary>对象池根节点。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly Transform poolRoot;
-    /// <summary>中文含义：最大尺寸。只读字段，初始化后不由普通写入口替换。使用位置：作为 Debug.LogWarning(object) 的参数、作为 Mathf.Clamp(int, int, int) 的参数、PrefabPool.Get(Vector3, Quaternion, Transform) 等共 4 处。</summary>
+    /// <summary>最大尺寸。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly int maxSize;
-    /// <summary>中文含义：是否可扩容。只读字段，初始化后不由普通写入口替换。使用位置：PrefabPool.Get(Vector3, Quaternion, Transform)、PrefabPool.PrefabPool(GameObject, Transform, GameObjectPoolManager, int, int, bool)、PrefabPool.Prewarm(int)。</summary>
+    /// <summary>是否可扩容。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly bool expandable;
-    /// <summary>中文含义：当前游戏对象对象池管理器。只读字段，初始化后不由普通写入口替换。使用位置：PrefabPool.CreateInstance()、PrefabPool.PrefabPool(GameObject, Transform, GameObjectPoolManager, int, int, bool)、PrefabPool.ReturnInstance(GameObject)。</summary>
+    /// <summary>当前游戏对象对象池管理器。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly GameObjectPoolManager manager;
     // ═══════════════════ 实例集合 ═══════════════════
-    /// <summary>中文含义：自由。只读字段，初始化后不由普通写入口替换。使用位置：作为 Debug.LogWarning(object) 的参数、作为 List&lt;GameObject&gt;.RemoveAt(int) 的参数、作为 List&lt;GameObject&gt;.this[int] 的参数 等共 10 处。</summary>
+    /// <summary>自由。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly List<GameObject> free = new List<GameObject>();
-    /// <summary>中文含义：生效。只读字段，初始化后不由普通写入口替换。使用位置：作为 Debug.LogWarning(object) 的参数、PrefabPool.ActiveCount.get、PrefabPool.CleanupNullReferences() 等共 8 处。</summary>
+    /// <summary>生效。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly List<GameObject> active = new List<GameObject>();
+    private readonly Dictionary<int, int> activeIndices = new();
     // ═══════════════════ 统计 ═══════════════════
-    /// <summary>中文含义：总计已创建。使用位置：PrefabPool.CreateInstance()、PrefabPool.GetStats()、PrefabPool.TotalCreated.get。</summary>
+    /// <summary>总计已创建。</summary>
     private readonly bool affectsNavigation;
     private int totalCreated;
-    /// <summary>中文含义：峰值生效。使用位置：PrefabPool.Get(Vector3, Quaternion, Transform)、PrefabPool.GetStats()、PrefabPool.PeakActive.get。</summary>
+    /// <summary>峰值生效。</summary>
     private int peakActive;
-    /// <summary>中文含义：展开数量。使用位置：PrefabPool.ExpandCount.get、PrefabPool.Get(Vector3, Quaternion, Transform)、PrefabPool.GetStats()。</summary>
+    /// <summary>展开数量。</summary>
     private int expandCount;
-    /// <summary>中文含义：被拒绝的取得数量。使用位置：PrefabPool.Get(Vector3, Quaternion, Transform)、PrefabPool.GetStats()、PrefabPool.RejectedGetCount.get。</summary>
+    /// <summary>被拒绝的取得数量。</summary>
     private int rejectedGetCount;
-    /// <summary>中文含义：非法返回数量。使用位置：PrefabPool.GetStats()、PrefabPool.IllegalReturnCount.get、PrefabPool.ReturnInstance(GameObject)。</summary>
+    /// <summary>非法返回数量。</summary>
     private int illegalReturnCount;
     // ═══════════════════ 属性 ═══════════════════
     /// <summary>中文含义：预制件。</summary>
@@ -58,12 +59,12 @@ public class PrefabPool
     // ═══════════════════ 构造 ═══════════════════
     /// <summary>构造并初始化 PrefabPool 的声明状态；具体外部协作见静态调用链。</summary>
     /// <remarks>静态调用链：上游 GameObjectPoolManager.GetOrCreatePool(GameObject)、GameObjectPoolManager.Start()；下游（含内部回调体） List&lt;GameObject&gt;.Add(GameObject)、Mathf.Clamp(int, int, int)、Mathf.Max(int, int)、PrefabPool.CreateInstance()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="prefab">中文含义：预制件。使用位置：PrefabPool.PrefabPool(GameObject, Transform, GameObjectPoolManager, int, int, bool)。</param>
-    /// <param name="poolRoot">中文含义：对象池根节点。使用位置：PrefabPool.PrefabPool(GameObject, Transform, GameObjectPoolManager, int, int, bool)。</param>
-    /// <param name="manager">中文含义：当前游戏对象对象池管理器。使用位置：PrefabPool.PrefabPool(GameObject, Transform, GameObjectPoolManager, int, int, bool)。</param>
-    /// <param name="initialSize">中文含义：初始尺寸。使用位置：作为 Mathf.Clamp(int, int, int) 的参数、作为 Mathf.Max(int, int) 的参数。</param>
-    /// <param name="maxSize">中文含义：最大尺寸。使用位置：作为 Mathf.Max(int, int) 的参数。</param>
-    /// <param name="expandable">中文含义：是否可扩容。使用位置：PrefabPool.PrefabPool(GameObject, Transform, GameObjectPoolManager, int, int, bool)。</param>
+    /// <param name="prefab">预制件。</param>
+    /// <param name="poolRoot">对象池根节点。</param>
+    /// <param name="manager">当前游戏对象对象池管理器。</param>
+    /// <param name="initialSize">初始尺寸。</param>
+    /// <param name="maxSize">最大尺寸。</param>
+    /// <param name="expandable">是否可扩容。</param>
     public PrefabPool(GameObject prefab, Transform poolRoot, GameObjectPoolManager manager, int initialSize, int maxSize, bool expandable, bool affectsNavigation = true)
     {
         this.prefab = prefab;
@@ -72,7 +73,7 @@ public class PrefabPool
         this.maxSize = Mathf.Max(1, maxSize);
         this.expandable = expandable;
         this.affectsNavigation = affectsNavigation;
-        // initialCount（初始数量）：使用位置：PrefabPool.PrefabPool(GameObject, Transform, GameObjectPoolManager, int, int, bool)。
+        // 初始数量。
 int initialCount;
         if (expandable)
         {
@@ -83,7 +84,7 @@ int initialCount;
             initialCount = Mathf.Clamp(initialSize, 0, this.maxSize);
         }
 
-        // i（当前遍历索引）：使用位置：PrefabPool.PrefabPool(GameObject, Transform, GameObjectPoolManager, int, int, bool)。
+        // 当前遍历索引。
 for (int i = 0; i < initialCount; i++)
         {
             free.Add(CreateInstance());
@@ -93,12 +94,12 @@ for (int i = 0; i < initialCount; i++)
     // ═══════════════════ 获取 ═══════════════════
     /// <summary>Get 的业务处理入口；本方法直接依赖 Debug.LogWarning(object)、GameObject.GetComponent&lt;PooledObject&gt;()、GameObject.SetActive(bool)、IPoolable.OnPoolGet()、List&lt;GameObject&gt;.Add(GameObject)、List&lt;GameObject&gt;.RemoveAt(int)、NavigationCollisionCache.InvalidateHierarchy(Transform) 等共 11 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 GameObjectPoolManager.Get(GameObject, Vector3, Quaternion, Transform)；下游（含内部回调体） Debug.LogWarning(object)、GameObject.GetComponent&lt;PooledObject&gt;()、GameObject.SetActive(bool)、IPoolable.OnPoolGet()、List&lt;GameObject&gt;.Add(GameObject)、List&lt;GameObject&gt;.RemoveAt(int)、NavigationCollisionCache.InvalidateHierarchy(Transform) 等共 11 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="position">中文含义：位置。使用位置：PrefabPool.Get(Vector3, Quaternion, Transform)。</param>
-    /// <param name="rotation">中文含义：旋转。使用位置：PrefabPool.Get(Vector3, Quaternion, Transform)。</param>
-    /// <param name="parent">中文含义：父级。使用位置：作为 Transform.SetParent(Transform, bool) 的参数、PrefabPool.Get(Vector3, Quaternion, Transform)。</param>
+    /// <param name="position">位置。</param>
+    /// <param name="rotation">旋转。</param>
+    /// <param name="parent">父级。</param>
     public GameObject Get(Vector3 position, Quaternion rotation, Transform parent)
     {
-        // instance（实例）：使用位置：作为 List<GameObject>.Add(GameObject) 的参数、作为 NavigationCollisionCache.InvalidateHierarchy(Transform) 的参数、PrefabPool.Get(Vector3, Quaternion, Transform)。
+        // 实例。
 GameObject instance = null;
         // 优先复用空闲对象
         while (free.Count > 0)
@@ -108,6 +109,7 @@ GameObject instance = null;
             // 安全清理已被外部 Destroy 的空引用
             if (instance == null)
             {
+                manager.ForgetInstance(instance.GetInstanceID());
                 instance = null;
                 continue;
             }
@@ -118,9 +120,9 @@ GameObject instance = null;
         // 空闲池为空，尝试扩容
         if (instance == null)
         {
-            // currentTotal（当前总计）：使用位置：PrefabPool.Get(Vector3, Quaternion, Transform)。
+            // 当前总计。
 int currentTotal = active.Count + free.Count;
-            // canExpand（是否可以展开）：使用位置：PrefabPool.Get(Vector3, Quaternion, Transform)。
+            // 是否可以展开。
 bool canExpand = expandable || currentTotal < maxSize;
             if (canExpand)
             {
@@ -136,8 +138,8 @@ bool canExpand = expandable || currentTotal < maxSize;
         }
 
         // 标记为租用
-        // pooled（池化的）：保存 GameObject.GetComponent<PooledObject>() 的返回结果，供当前步骤使用。使用位置：PrefabPool.Get(Vector3, Quaternion, Transform)。
-var pooled = instance.GetComponent<PooledObject>();
+        // 池化的。
+        PooledObject pooled = manager.ReadInstance(instance);
         pooled.MarkRented();
         // 设置父节点
         if (parent != null)
@@ -159,14 +161,15 @@ var pooled = instance.GetComponent<PooledObject>();
         }
         instance.SetActive(true);
         // 调用所有 IPoolable.OnPoolGet()
-        // poolables（可池化对象集合）：保存 PooledObject.GetPoolables() 的返回结果，供当前步骤使用。使用位置：PrefabPool.Get(Vector3, Quaternion, Transform)。
+        // 可池化对象集合。
 var poolables = pooled.GetPoolables();
-        // i（当前遍历索引）：使用位置：作为 List<IPoolable>.this[int] 的参数、PrefabPool.Get(Vector3, Quaternion, Transform)。
+        // 当前遍历索引。
 for (int i = 0; i < poolables.Count; i++)
         {
             poolables[i].OnPoolGet();
         }
 
+        activeIndices.Add(instance.GetInstanceID(), active.Count);
         active.Add(instance);
         if (active.Count > peakActive)
         {
@@ -179,7 +182,7 @@ for (int i = 0; i < poolables.Count; i++)
     // ═══════════════════ 回收 ═══════════════════
     /// <summary>ReturnInstance 的业务处理入口；本方法直接依赖 GameObject.GetComponent&lt;PooledObject&gt;()、GameObject.SetActive(bool)、IPoolable.OnPoolReturn()、List&lt;GameObject&gt;.Add(GameObject)、List&lt;GameObject&gt;.Contains(GameObject)、List&lt;GameObject&gt;.Remove(GameObject)、NavigationCollisionCache.InvalidateHierarchy(Transform) 等共 10 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 GameObjectPoolManager.Return(GameObject)、PrefabPool.ReturnAll()；下游（含内部回调体） GameObject.GetComponent&lt;PooledObject&gt;()、GameObject.SetActive(bool)、IPoolable.OnPoolReturn()、List&lt;GameObject&gt;.Add(GameObject)、List&lt;GameObject&gt;.Contains(GameObject)、List&lt;GameObject&gt;.Remove(GameObject)、NavigationCollisionCache.InvalidateHierarchy(Transform) 等共 10 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="instance">中文含义：实例。使用位置：作为 List&lt;GameObject&gt;.Add(GameObject) 的参数、作为 List&lt;GameObject&gt;.Contains(GameObject) 的参数、作为 List&lt;GameObject&gt;.Remove(GameObject) 的参数 等共 5 处。</param>
+    /// <param name="instance">实例。</param>
     public bool ReturnInstance(GameObject instance)
     {
         if (instance == null)
@@ -187,9 +190,10 @@ for (int i = 0; i < poolables.Count; i++)
             return false;
         }
 
-        // pooled（池化的）：保存 GameObject.GetComponent<PooledObject>() 的返回结果，供当前步骤使用。使用位置：PrefabPool.ReturnInstance(GameObject)。
-var pooled = instance.GetComponent<PooledObject>();
-        if (pooled == null || pooled.Pool != this || pooled.Manager != manager || !pooled.IsActive || !active.Contains(instance))
+        // 池化的。
+        PooledObject pooled = manager.ReadInstance(instance);
+        if (pooled == null || pooled.Pool != this || pooled.Manager != manager || !pooled.IsActive
+            || !activeIndices.ContainsKey(instance.GetInstanceID()))
         {
             illegalReturnCount++;
             return false;
@@ -198,9 +202,9 @@ var pooled = instance.GetComponent<PooledObject>();
         // 标记为已回收
         pooled.MarkReturned();
         // 调用所有 IPoolable.OnPoolReturn()
-        // poolables（可池化对象集合）：保存 PooledObject.GetPoolables() 的返回结果，供当前步骤使用。使用位置：PrefabPool.ReturnInstance(GameObject)。
+        // 可池化对象集合。
 var poolables = pooled.GetPoolables();
-        // i（当前遍历索引）：使用位置：作为 List<IPoolable>.this[int] 的参数、PrefabPool.ReturnInstance(GameObject)。
+        // 当前遍历索引。
 for (int i = 0; i < poolables.Count; i++)
         {
             poolables[i].OnPoolReturn();
@@ -217,7 +221,7 @@ for (int i = 0; i < poolables.Count; i++)
         instance.transform.localPosition = Vector3.zero;
         instance.transform.localRotation = Quaternion.identity;
         // 从活跃列表移除，加入空闲列表
-        active.Remove(instance);
+        RemoveActiveAt(activeIndices[instance.GetInstanceID()]);
         free.Add(instance);
         return true;
     }
@@ -225,10 +229,10 @@ for (int i = 0; i < poolables.Count; i++)
     // ═══════════════════ 预热 ═══════════════════
     /// <summary>Prewarm 的业务处理入口；本方法直接依赖 List&lt;GameObject&gt;.Add(GameObject)、Mathf.Clamp(int, int, int)、Mathf.Max(int, int)、PrefabPool.CreateInstance()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 GameObjectPoolManager.Prewarm(GameObject, int)、GameObjectPoolManager.Start()；下游（含内部回调体） List&lt;GameObject&gt;.Add(GameObject)、Mathf.Clamp(int, int, int)、Mathf.Max(int, int)、PrefabPool.CreateInstance()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="count">中文含义：数量。使用位置：作为 Mathf.Clamp(int, int, int) 的参数、作为 Mathf.Max(int, int) 的参数。</param>
+    /// <param name="count">数量。</param>
     public void Prewarm(int count)
     {
-        // target（目标）：使用位置：PrefabPool.Prewarm(int)。
+        // 目标。
 int target;
         if (expandable)
         {
@@ -239,9 +243,9 @@ int target;
             target = Mathf.Clamp(count, 0, maxSize);
         }
 
-        // toCreate（目标创建）：使用位置：PrefabPool.Prewarm(int)。
+        // 目标创建。
 int toCreate = target - (free.Count + active.Count);
-        // i（当前遍历索引）：使用位置：PrefabPool.Prewarm(int)。
+        // 当前遍历索引。
 for (int i = 0; i < toCreate; i++)
         {
             free.Add(CreateInstance());
@@ -253,14 +257,15 @@ for (int i = 0; i < toCreate; i++)
     /// <remarks>静态调用链：上游 GameObjectPoolManager.OnDestroy()；下游（含内部回调体） List&lt;GameObject&gt;.RemoveAt(int)、PrefabPool.ReturnInstance(GameObject)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     public void ReturnAll()
     {
-        // i（当前遍历索引）：使用位置：作为 List<GameObject>.RemoveAt(int) 的参数、作为 List<GameObject>.this[int] 的参数、PrefabPool.ReturnAll()。
+        // 当前遍历索引。
 for (int i = active.Count - 1; i >= 0; i--)
         {
-            // instance（实例）：使用位置：作为 PrefabPool.ReturnInstance(GameObject) 的参数、PrefabPool.ReturnAll()。
+            // 实例。
 var instance = active[i];
             if (instance == null)
             {
-                active.RemoveAt(i);
+                manager.ForgetInstance(active[i].GetInstanceID());
+                RemoveActiveAt(i);
                 continue;
             }
 
@@ -292,7 +297,7 @@ var instance = active[i];
     /// <remarks>静态调用链：上游 PrefabPool.Get(Vector3, Quaternion, Transform)、PrefabPool.PrefabPool(GameObject, Transform, GameObjectPoolManager, int, int, bool)、PrefabPool.Prewarm(int)；下游（含内部回调体） GameObject.AddComponent&lt;ParticleSystemReset&gt;()、GameObject.AddComponent&lt;PooledObject&gt;()、GameObject.AddComponent&lt;RigidbodyReset&gt;()、GameObject.GetComponent&lt;ParticleSystem&gt;()、GameObject.GetComponent&lt;Rigidbody&gt;()、GameObject.GetComponentInChildren&lt;ParticleSystem&gt;(bool)、GameObject.SetActive(bool) 等共 9 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     private GameObject CreateInstance()
     {
-        // instance（实例）：保存 Object.Instantiate<GameObject>(GameObject, Transform, bool) 的返回结果，供当前步骤使用。使用位置：作为 NavigationCollisionCache.InvalidateHierarchy(Transform) 的参数、PrefabPool.CreateInstance()。
+        // 实例。
 var instance = Object.Instantiate(prefab, poolRoot, false);
         instance.transform.localPosition = Vector3.zero;
         instance.transform.localRotation = Quaternion.identity;
@@ -303,11 +308,12 @@ var instance = Object.Instantiate(prefab, poolRoot, false);
         }
         instance.SetActive(false);
         // 添加身份组件
-        // pooled（池化的）：保存 GameObject.AddComponent<PooledObject>() 的返回结果，供当前步骤使用。使用位置：PrefabPool.CreateInstance()。
+        // 池化的。
 var pooled = instance.AddComponent<PooledObject>();
         pooled.SourcePrefab = prefab;
         pooled.Manager = manager;
         pooled.Pool = this;
+        manager.RegisterInstance(instance, pooled);
         // 自动检测并添加重置组件
         if (instance.GetComponent<Rigidbody>() != null)
         {
@@ -325,23 +331,38 @@ var pooled = instance.AddComponent<PooledObject>();
 
     /// <summary>CleanupNullReferences 的业务处理入口；本方法直接依赖 List&lt;GameObject&gt;.RemoveAt(int)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 PrefabPool.GetStats()；下游（含内部回调体） List&lt;GameObject&gt;.RemoveAt(int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
+    private void RemoveActiveAt(int index)
+    {
+        activeIndices.Remove(active[index].GetInstanceID());
+        int lastIndex = active.Count - 1;
+        if (index < lastIndex)
+        {
+            GameObject moved = active[lastIndex];
+            active[index] = moved;
+            activeIndices[moved.GetInstanceID()] = index;
+        }
+        active.RemoveAt(lastIndex);
+    }
+
     private void CleanupNullReferences()
     {
-        // i（当前遍历索引）：使用位置：作为 List<GameObject>.RemoveAt(int) 的参数、作为 List<GameObject>.this[int] 的参数、PrefabPool.CleanupNullReferences()。
+        // 当前遍历索引。
 for (int i = free.Count - 1; i >= 0; i--)
         {
             if (free[i] == null)
             {
+                manager.ForgetInstance(free[i].GetInstanceID());
                 free.RemoveAt(i);
             }
         }
 
-        // i（当前遍历索引）：使用位置：作为 List<GameObject>.RemoveAt(int) 的参数、作为 List<GameObject>.this[int] 的参数、PrefabPool.CleanupNullReferences()。
+        // 当前遍历索引。
 for (int i = active.Count - 1; i >= 0; i--)
         {
             if (active[i] == null)
             {
-                active.RemoveAt(i);
+                manager.ForgetInstance(active[i].GetInstanceID());
+                RemoveActiveAt(i);
             }
         }
     }
@@ -352,18 +373,18 @@ for (int i = active.Count - 1; i >= 0; i--)
 /// </summary>
 public struct PoolStats
 {
-    /// <summary>中文含义：总计已创建。使用位置：PrefabPool.GetStats()。</summary>
+    /// <summary>总计已创建。</summary>
     public int totalCreated;
-    /// <summary>中文含义：生效数量。使用位置：PrefabPool.GetStats()。</summary>
+    /// <summary>生效数量。</summary>
     public int activeCount;
-    /// <summary>中文含义：自由数量。使用位置：PrefabPool.GetStats()。</summary>
+    /// <summary>自由数量。</summary>
     public int freeCount;
-    /// <summary>中文含义：峰值生效。使用位置：PrefabPool.GetStats()。</summary>
+    /// <summary>峰值生效。</summary>
     public int peakActive;
-    /// <summary>中文含义：展开数量。使用位置：PrefabPool.GetStats()。</summary>
+    /// <summary>展开数量。</summary>
     public int expandCount;
-    /// <summary>中文含义：被拒绝的取得数量。使用位置：PrefabPool.GetStats()。</summary>
+    /// <summary>被拒绝的取得数量。</summary>
     public int rejectedGetCount;
-    /// <summary>中文含义：非法返回数量。使用位置：PrefabPool.GetStats()。</summary>
+    /// <summary>非法返回数量。</summary>
     public int illegalReturnCount;
 }

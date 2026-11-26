@@ -25,7 +25,8 @@ internal static class LeonDropContact
         foreach (RaycastHit hit in hits)
         {
             if (hit.collider == null || hit.collider.transform.IsChildOf(player) || hit.normal.y < 0.65f ||
-                (motion != null && motion.IsWalkThroughDetail(hit.collider)))
+                (motion != null && motion.IsWalkThroughDetail(hit.collider)) ||
+                NavigationCollisionCache.Enemy(hit.collider) != null)
             {
                 continue;
             }
@@ -139,73 +140,73 @@ internal static class LeonDropContact
 [RequireComponent(typeof(LeonController))]
 public class LeonHighDropLanding : MonoBehaviour
 {
-    /// <summary>中文含义：里昂玩家控制器。使用位置：LeonHighDropLanding.BeginDrop()、LeonHighDropLanding.CacheComponents()、LeonHighDropLanding.CanBeginDrop() 等共 4 处。</summary>
+    /// <summary>里昂玩家控制器。</summary>
     [Header("组件引用")]
     public LeonController controller;
-    /// <summary>中文含义：当前玩家动画动作协调器。使用位置：LeonHighDropLanding.BeginDrop()、LeonHighDropLanding.BindEvents()、LeonHighDropLanding.CacheComponents() 等共 8 处。</summary>
+    /// <summary>当前玩家动画动作协调器。</summary>
     public LeonAnimationActionCoordinator coordinator;
-    /// <summary>中文含义：武器视觉表现控制器。使用位置：LeonHighDropLanding.BeginDrop()、LeonHighDropLanding.CacheComponents()、LeonHighDropLanding.FinishDrop()。</summary>
+    /// <summary>武器视觉表现控制器。</summary>
     public LeonWeaponVisualController weaponVisualController;
-    /// <summary>中文含义：翻窗通行。使用位置：LeonHighDropLanding.CacheComponents()、LeonHighDropLanding.HandleFixedUpdate()。</summary>
+    /// <summary>翻窗通行。</summary>
     public LeonWindowTraversal windowTraversal;
-    /// <summary>中文含义：掉落摄像机。使用位置：LeonHighDropLanding.BeginDrop()、LeonHighDropLanding.CacheComponents()、LeonHighDropLanding.FinishDrop() 等共 5 处。</summary>
+    /// <summary>掉落摄像机。</summary>
     public RE4RThirdPersonCamera dropCamera;
-    /// <summary>中文含义：身体。使用位置：作为 Mathf.Max(float, float) 的参数、作为 Mathf.Min(float, float) 的参数、LeonHighDropLanding.BeginDrop() 等共 6 处。</summary>
+    /// <summary>身体。</summary>
     public Rigidbody body;
-    /// <summary>中文含义：角色运动执行器。使用位置：LeonHighDropLanding.BeginDrop()、LeonHighDropLanding.CacheComponents()、LeonHighDropLanding.FinishDrop() 等共 4 处。</summary>
+    /// <summary>角色运动执行器。</summary>
     [UnityEngine.Serialization.FormerlySerializedAs("运动执行")]
     [UnityEngine.InspectorName("运动执行")]
     public LeonActionMotionDriver motionExecutor;
-    /// <summary>中文含义：通行运动。使用位置：作为 LeonActionMotionDriver.CommitSpeed(MotionControlToken, Vector3) 的参数、作为 LeonActionMotionDriver.ReleaseMotion(MotionControlToken) 的参数、LeonHighDropLanding.BeginDrop() 等共 4 处。</summary>
+    /// <summary>通行运动。</summary>
     private GameArchitecture.MotionControlToken traversalMotion;
-    /// <summary>中文含义：身体碰撞体。使用位置：LeonHighDropLanding.CacheComponents()、LeonHighDropLanding.GetCapsuleRadius()、LeonHighDropLanding.TryGetGroundDistance(out float)。</summary>
+    /// <summary>身体碰撞体。</summary>
     public CapsuleCollider bodyCollider;
-    /// <summary>中文含义：最小掉落高度。使用位置：LeonHighDropLanding.HandleFixedUpdate()。</summary>
+    /// <summary>最小掉落高度。</summary>
     [Header("高落差识别")]
     [Min(1f)]
     public float minimumDropHeight = 2f;
-    /// <summary>中文含义：最大地面探测距离。使用位置：作为 Physics.SphereCastAll(Vector3, float, Vector3, float, int, QueryTriggerInteraction) 的参数。</summary>
+    /// <summary>最大地面探测距离。</summary>
     [Min(2f)]
     public float maximumGroundProbeDistance = 7.5f;
-    /// <summary>中文含义：腾空确认时间。使用位置：LeonHighDropLanding.HandleFixedUpdate()。</summary>
+    /// <summary>腾空确认时间。</summary>
     [Range(0.02f, 0.2f)]
     public float airborneConfirmationTime = 0.06f;
-    /// <summary>中文含义：地面遮罩。使用位置：作为 Physics.RaycastAll(Vector3, Vector3, float, int, QueryTriggerInteraction) 的参数、作为 Physics.SphereCastAll(Vector3, float, Vector3, float, int, QueryTriggerInteraction) 的参数。</summary>
+    /// <summary>地面遮罩。</summary>
     public LayerMask groundMask = ~0;
-    /// <summary>中文含义：过渡时长。使用位置：作为 LeonAnimationActionCoordinator.AdvanceTraversalAction(FullBodyActionType, float, float) 的参数。</summary>
+    /// <summary>过渡时长。</summary>
     [Header("动作衔接")]
     [Range(0.05f, 0.25f)]
     public float transitionDuration = 0.09f;
-    /// <summary>中文含义：落地预测提前量时间。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>落地预测提前量时间。</summary>
     [Range(0.1f, 0.5f)]
     public float landingPredictionLeadTime = 0.28f;
-    /// <summary>中文含义：落地接触距离。使用位置：作为 Mathf.Max(float, float) 的参数、LeonHighDropLanding.UpdateActiveDrop()。</summary>
+    /// <summary>落地接触距离。</summary>
     [Min(0.02f)]
     public float landingContactDistance = 0.12f;
-    /// <summary>中文含义：落地速度阻尼。使用位置：作为 Vector3.MoveTowards(Vector3, Vector3, float) 的参数。</summary>
+    /// <summary>落地速度阻尼。</summary>
     [Min(0.1f)]
     public float landingVelocityDamping = 12f;
-    /// <summary>中文含义：动作超时。使用位置：LeonHighDropLanding.Update()。</summary>
+    /// <summary>动作超时。</summary>
     [Min(0.5f)]
     public float actionTimeout = 4f;
-    /// <summary>中文含义：是否生效掉落。使用位置：LeonHighDropLanding.BeginDrop()、LeonHighDropLanding.FinishDrop()、LeonHighDropLanding.HandleFixedUpdate() 等共 9 处。</summary>
+    /// <summary>是否生效掉落。</summary>
     private bool activeDrop;
-    /// <summary>中文含义：是否已经申请本次落地动作。使用位置：LeonHighDropLanding.BeginDrop()、LeonHighDropLanding.FinishDrop()、LeonHighDropLanding.UpdateActiveDrop()。</summary>
+    /// <summary>是否已经申请本次落地动作。</summary>
     private bool landingActionRequested;
-    /// <summary>中文含义：是否落地已提交。使用位置：LeonHighDropLanding.BeginDrop()、LeonHighDropLanding.FinishDrop()、LeonHighDropLanding.UpdateActiveDrop()。</summary>
+    /// <summary>是否落地已提交。</summary>
     private bool landingCommitted;
-    /// <summary>中文含义：是否已绑定事件。使用位置：LeonHighDropLanding.BindEvents()、LeonHighDropLanding.UnbindEvents()。</summary>
+    /// <summary>是否已绑定事件。</summary>
     private bool eventsBound;
-    /// <summary>中文含义：事务编号。使用位置：作为 LeonActionMotionDriver.AuthorizeMotion(MotionSource, int) 的参数、LeonHighDropLanding.BeginDrop()、LeonHighDropLanding.FinishDrop() 等共 6 处。</summary>
+    /// <summary>事务编号。</summary>
     private int transactionId;
-    /// <summary>中文含义：腾空已用。使用位置：LeonHighDropLanding.BeginDrop()、LeonHighDropLanding.FinishDrop()、LeonHighDropLanding.HandleFixedUpdate()。</summary>
+    /// <summary>腾空已用。</summary>
     private float airborneElapsed;
-    /// <summary>中文含义：动作开始时间。使用位置：LeonHighDropLanding.BeginDrop()、LeonHighDropLanding.Update()。</summary>
+    /// <summary>动作开始时间。</summary>
     private float actionStartedTime;
-    /// <summary>中文含义：最快向下速度。使用位置：作为 Mathf.Abs(float) 的参数、作为 Mathf.Min(float, float) 的参数、LeonHighDropLanding.BeginDrop() 等共 5 处。</summary>
+    /// <summary>最快向下速度。</summary>
     private float fastestDownwardVelocity;
     private float landingRollElapsed;
-    /// <summary>中文含义：是否生效。使用位置：LeonFootAction.AllowGroundContact.get。</summary>
+    /// <summary>是否生效。</summary>
     public bool IsActive => activeDrop;
 
     /// <summary>Unity 首次启用后的启动回调；状态处理与资源交接按函数内顺序执行，下游协作见调用链。</summary>
@@ -251,9 +252,9 @@ public class LeonHighDropLanding : MonoBehaviour
             return;
         }
 
-        // receiverValue1（判空前缓存的当前玩家动画动作协调器）：从动作协调组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonHighDropLanding.Update()。
+        // 判空前缓存的当前玩家动画动作协调器。
 global::LeonAnimationActionCoordinator receiverValue1 = coordinator;
-        // optionalValue2（条件访问得到的取消通行的返回结果）：保存条件访问的结果，接收者为空时保持默认空值，非空时才执行原成员访问。使用位置：LeonHighDropLanding.Update()。
+        // 条件访问得到的取消通行的返回结果。
 bool? optionalValue2;
         if (!global::System.Object.ReferenceEquals(receiverValue1, null))
         {
@@ -296,14 +297,16 @@ bool? optionalValue2;
             return false;
         }
 
-        if (!TryGetGroundDistance(out float /* 中文含义：距离。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ distance) || (airborneElapsed <= 0f && distance < minimumDropHeight))
+        float effectiveMinimumDropHeight = Mathf.Min(minimumDropHeight, 1.35f);
+        if (!TryGetGroundDistance(out float /* 中文含义：距离。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ distance) || (airborneElapsed <= 0f && distance < effectiveMinimumDropHeight))
         {
             airborneElapsed = 0f;
             return false;
         }
 
         airborneElapsed += Time.fixedDeltaTime;
-        if (airborneElapsed < airborneConfirmationTime)
+        float effectiveConfirmTime = Mathf.Min(airborneConfirmationTime, 0.03f);
+        if (airborneElapsed < effectiveConfirmTime)
         {
             return false;
         }
@@ -355,14 +358,14 @@ bool? optionalValue2;
         fastestDownwardVelocity = body.linearVelocity.y;
         controller.SetSprinting(false);
         controller.ChangeState(LeonState.Traversing);
-        // receiverValue4（判空前缓存的武器视觉表现控制器）：从武器视觉表现控制器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonHighDropLanding.BeginDrop()。
+        // 判空前缓存的武器视觉表现控制器。
 global::LeonWeaponVisualController receiverValue4 = weaponVisualController;
         if (!global::System.Object.ReferenceEquals(receiverValue4, null))
         {
             receiverValue4.SetTraversalWeaponVisible(false);
         }
 
-        // receiverValue5（判空前缓存的掉落摄像机）：从掉落摄像机读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonHighDropLanding.BeginDrop()。
+        // 判空前缓存的掉落摄像机。
 global::RE4RThirdPersonCamera receiverValue5 = dropCamera;
         if (!global::System.Object.ReferenceEquals(receiverValue5, null))
         {
@@ -421,7 +424,7 @@ global::RE4RThirdPersonCamera receiverValue5 = dropCamera;
 
     /// <summary>TryGetGroundDistance 的业务处理入口；本方法直接依赖 LeonHighDropLanding.GetCapsuleRadius()、Mathf.Max(float, float)、Mathf.Min(float, float)、Physics.SphereCastAll(Vector3, float, Vector3, float, int, QueryTriggerInteraction)、Transform.IsChildOf(Transform)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonHighDropLanding.HandleFixedUpdate()、LeonHighDropLanding.UpdateActiveDrop()；下游（含内部回调体） LeonHighDropLanding.GetCapsuleRadius()、Mathf.Max(float, float)、Mathf.Min(float, float)、Physics.SphereCastAll(Vector3, float, Vector3, float, int, QueryTriggerInteraction)、Transform.IsChildOf(Transform)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="distance">中文含义：距离。输出参数，由本入口写入并交给调用方。使用位置：作为 Mathf.Min(float, float) 的参数、LeonHighDropLanding.TryGetGroundDistance(out float)。</param>
+    /// <param name="distance">距离。输出参数，由本入口写入并交给调用方。</param>
     private bool TryGetGroundDistance(out float distance)
     {
         return LeonDropContact.TryReadSupport(bodyCollider, transform, null, groundMask, maximumGroundProbeDistance, out distance);
@@ -431,12 +434,12 @@ global::RE4RThirdPersonCamera receiverValue5 = dropCamera;
     /// <remarks>静态调用链：上游 LeonHighDropLanding.HandleFixedUpdate()；下游（含内部回调体） Physics.RaycastAll(Vector3, Vector3, float, int, QueryTriggerInteraction)、Transform.IsChildOf(Transform)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     private bool HasImmediateGroundSupport()
     {
-        return LeonDropContact.TryReadSupport(bodyCollider, transform, null, groundMask, 0.35f, out _);
+        return LeonDropContact.TryReadSupport(bodyCollider, transform, null, groundMask, 0.20f, out _);
     }
 
     /// <summary>HandleTraversalCompleted 的业务处理入口；本方法直接依赖 object.ReferenceEquals(object, object)、RE4RThirdPersonCamera.EndDropCamera()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） object.ReferenceEquals(object, object)、RE4RThirdPersonCamera.EndDropCamera()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="transaction">中文含义：事务。使用位置：LeonHighDropLanding.HandleTraversalCompleted(AnimationActionTransaction)。</param>
+    /// <param name="transaction">事务。</param>
     private void HandleTraversalCompleted(AnimationActionTransaction transaction)
     {
         if (!activeDrop || transaction.transactionId != transactionId || transaction.fullBodyActionType != FullBodyActionType.WindowDropLand)
@@ -444,7 +447,7 @@ global::RE4RThirdPersonCamera receiverValue5 = dropCamera;
             return;
         }
 
-        // receiverValue11（判空前缓存的掉落摄像机）：从掉落摄像机读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonHighDropLanding.HandleTraversalCompleted(AnimationActionTransaction)。
+        // 判空前缓存的掉落摄像机。
 global::RE4RThirdPersonCamera receiverValue11 = dropCamera;
         if (!global::System.Object.ReferenceEquals(receiverValue11, null))
         {
@@ -454,7 +457,7 @@ global::RE4RThirdPersonCamera receiverValue11 = dropCamera;
 
     /// <summary>HandleTraversalExited 的业务处理入口；本方法直接依赖 LeonHighDropLanding.FinishDrop()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） LeonHighDropLanding.FinishDrop()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="transaction">中文含义：事务。使用位置：LeonHighDropLanding.HandleTraversalExited(AnimationActionTransaction)。</param>
+    /// <param name="transaction">事务。</param>
     private void HandleTraversalExited(AnimationActionTransaction transaction)
     {
         if (!activeDrop || transaction.transactionId != transactionId)
@@ -467,7 +470,7 @@ global::RE4RThirdPersonCamera receiverValue11 = dropCamera;
 
     /// <summary>HandleTraversalInterrupted 的业务处理入口；本方法直接依赖 LeonHighDropLanding.FinishDrop()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） LeonHighDropLanding.FinishDrop()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="transaction">中文含义：事务。使用位置：LeonHighDropLanding.HandleTraversalInterrupted(AnimationActionTransaction)。</param>
+    /// <param name="transaction">事务。</param>
     private void HandleTraversalInterrupted(AnimationActionTransaction transaction)
     {
         if (!activeDrop || transaction.transactionId != transactionId)
@@ -482,7 +485,7 @@ global::RE4RThirdPersonCamera receiverValue11 = dropCamera;
     /// <remarks>静态调用链：上游 LeonHighDropLanding.HandleTraversalExited(AnimationActionTransaction)、LeonHighDropLanding.HandleTraversalInterrupted(AnimationActionTransaction)、LeonHighDropLanding.OnDisable()、LeonHighDropLanding.Update()；下游（含内部回调体） LeonActionMotionDriver.ReleaseMotion(MotionControlToken)、LeonController.ChangeState(LeonState)、LeonWeaponVisualController.SetTraversalWeaponVisible(bool)、object.ReferenceEquals(object, object)、RE4RThirdPersonCamera.EndDropCamera()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     private void FinishDrop()
     {
-        // receiverValue12（判空前缓存的角色运动执行器）：从角色运动执行器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonHighDropLanding.FinishDrop()。
+        // 判空前缓存的角色运动执行器。
 global::LeonActionMotionDriver receiverValue12 = motionExecutor;
         if (!global::System.Object.ReferenceEquals(receiverValue12, null))
         {
@@ -490,7 +493,7 @@ global::LeonActionMotionDriver receiverValue12 = motionExecutor;
         }
 
         traversalMotion = default;
-        // wasActive（之前是否生效）：使用位置：LeonHighDropLanding.FinishDrop()。
+        // 之前是否生效。
 bool wasActive = activeDrop;
         activeDrop = false;
         landingActionRequested = false;
@@ -498,14 +501,14 @@ bool wasActive = activeDrop;
         transactionId = 0;
         airborneElapsed = 0f;
         fastestDownwardVelocity = 0f;
-        // receiverValue13（判空前缓存的掉落摄像机）：从掉落摄像机读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonHighDropLanding.FinishDrop()。
+        // 判空前缓存的掉落摄像机。
 global::RE4RThirdPersonCamera receiverValue13 = dropCamera;
         if (!global::System.Object.ReferenceEquals(receiverValue13, null))
         {
             receiverValue13.EndDropCamera();
         }
 
-        // receiverValue14（判空前缓存的武器视觉表现控制器）：从武器视觉表现控制器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonHighDropLanding.FinishDrop()。
+        // 判空前缓存的武器视觉表现控制器。
 global::LeonWeaponVisualController receiverValue14 = weaponVisualController;
         if (!global::System.Object.ReferenceEquals(receiverValue14, null))
         {

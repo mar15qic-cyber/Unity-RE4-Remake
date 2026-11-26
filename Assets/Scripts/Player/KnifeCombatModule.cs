@@ -14,64 +14,64 @@ internal enum KnifeParryPromptKind
 [UnityEngine.Scripting.APIUpdating.MovedFrom(true, "", "Assembly-CSharp", "小刀来袭上下文")]
 public sealed class KnifeIncomingAttackContext
 {
-    /// <summary>中文含义：攻击者。使用位置：作为 Dictionary&lt;int, KnifeIncomingAttackContext&gt;.this[int] 的参数、作为 int.CompareTo(int) 的参数、作为 KnifeCombatModule.Record(string, string) 的参数 等共 10 处。</summary>
+    /// <summary>攻击者。</summary>
     [UnityEngine.Serialization.FormerlySerializedAs("攻击者")]
     [UnityEngine.InspectorName("攻击者")]
     public VillagerController attacker;
-    /// <summary>中文含义：攻击编号。使用位置：作为 KnifeCombatModule.Record(string, string) 的参数、EnemyCombatModule.CreateKnifeIncomingAttack(int, float, Vector3, Vector3)、KnifeCombatModule.ResolveIncomingAttack(KnifeIncomingAttackContext) 等共 4 处。</summary>
+    /// <summary>攻击编号。</summary>
     [UnityEngine.Serialization.FormerlySerializedAs("攻击编号")]
     [UnityEngine.InspectorName("攻击编号")]
     public long attackId;
-    /// <summary>中文含义：攻击段。使用位置：作为 int.CompareTo(int) 的参数、作为 KnifeCombatModule.Record(string, string) 的参数、作为 List&lt;KnifeIncomingAttackContext&gt;.Sort(Comparison&lt;KnifeIncomingAttackContext&gt;) 的参数 等共 5 处。</summary>
+    /// <summary>攻击段。</summary>
     [UnityEngine.Serialization.FormerlySerializedAs("攻击段")]
     [UnityEngine.InspectorName("攻击段")]
     public int attackSegment;
-    /// <summary>中文含义：接触时间。使用位置：作为 double.CompareTo(double) 的参数、作为 KnifeCombatModule.Record(string, string) 的参数、作为 KnifeCombatRules.ResolutionParry(double, bool, bool) 的参数 等共 6 处。</summary>
+    /// <summary>接触时间。</summary>
     [UnityEngine.Serialization.FormerlySerializedAs("接触时间")]
     [UnityEngine.InspectorName("接触时间")]
     public double contactTime;
-    /// <summary>中文含义：预计接触时间。使用位置：EnemyCombatModule.HandleOnParryWindowOpen()、EnemyCombatModule.LateUpdate()、KnifeCombatModule.CurrentPromptIncomingAttack.get。</summary>
+    /// <summary>预计接触时间。</summary>
     [UnityEngine.Serialization.FormerlySerializedAs("预计接触时间")]
     [UnityEngine.InspectorName("预计接触时间")]
     public double expectedContactTime;
-    /// <summary>中文含义：接触位置。使用位置：作为 LeonController.TakeDamageFrom(float, Vector3, Vector3) 的参数、EnemyCombatModule.CreateKnifeIncomingAttack(int, float, Vector3, Vector3)、KnifeCombatModule.ResolveIncomingAttack(KnifeIncomingAttackContext)。</summary>
+    /// <summary>接触位置。</summary>
     [UnityEngine.Serialization.FormerlySerializedAs("接触位置")]
     [UnityEngine.InspectorName("接触位置")]
     public Vector3 contactPosition;
-    /// <summary>中文含义：方向。使用位置：作为 LeonCombat.PresentKnifeSparks(Vector3, Vector3, bool) 的参数、EnemyCombatModule.CreateKnifeIncomingAttack(int, float, Vector3, Vector3)、KnifeCombatModule.IsFront(KnifeIncomingAttackContext)。</summary>
+    /// <summary>方向。</summary>
     [UnityEngine.Serialization.FormerlySerializedAs("方向")]
     [UnityEngine.InspectorName("方向")]
     public Vector3 direction;
-    /// <summary>中文含义：伤害。使用位置：作为 LeonController.TakeDamageFrom(float, Vector3, Vector3) 的参数、EnemyCombatModule.CreateKnifeIncomingAttack(int, float, Vector3, Vector3)。</summary>
+    /// <summary>伤害。</summary>
     [UnityEngine.Serialization.FormerlySerializedAs("伤害")]
     [UnityEngine.InspectorName("伤害")]
     public float damage;
-    /// <summary>中文含义：是否可招架。使用位置：作为 KnifeCombatRules.ResolutionParry(double, bool, bool) 的参数、EnemyCombatModule.CreateKnifeIncomingAttack(int, float, Vector3, Vector3)、KnifeCombatModule.CurrentPromptIncomingAttack.get。</summary>
+    /// <summary>是否可招架。</summary>
     [UnityEngine.Serialization.FormerlySerializedAs("可招架")]
     [UnityEngine.InspectorName("可招架")]
     public bool canParry;
-    /// <summary>中文含义：类别。使用位置：作为 KnifeCombatRules.ParryReaction(KnifeParryOutcome, KnifeIncomingAttackCategory) 的参数、EnemyCombatModule.CreateKnifeIncomingAttack(int, float, Vector3, Vector3)。</summary>
+    /// <summary>类别。</summary>
     [UnityEngine.Serialization.FormerlySerializedAs("类别")]
     [UnityEngine.InspectorName("类别")]
     public KnifeIncomingAttackCategory category;
-    /// <summary>中文含义：攻击原点。使用位置：EnemyCombatModule.LateUpdate()、KnifeCombatModule.IsFront(KnifeIncomingAttackContext)。</summary>
+    /// <summary>攻击原点。</summary>
     public Vector3 attackOrigin;
-    /// <summary>中文含义：是否具有攻击原点。使用位置：EnemyCombatModule.LateUpdate()、KnifeCombatModule.IsFront(KnifeIncomingAttackContext)。</summary>
+    /// <summary>是否具有攻击原点。</summary>
     public bool hasAttackOrigin;
-    /// <summary>中文含义：玩家位置所在接触。使用位置：EnemyCombatModule.LateUpdate()、KnifeCombatModule.IsFront(KnifeIncomingAttackContext)。</summary>
+    /// <summary>玩家位置所在接触。</summary>
     public Vector3 playerPositionAtContact;
-    /// <summary>中文含义：是否具有玩家位置所在接触。使用位置：EnemyCombatModule.LateUpdate()、KnifeCombatModule.IsFront(KnifeIncomingAttackContext)。</summary>
+    /// <summary>是否具有玩家位置所在接触。</summary>
     public bool hasPlayerPositionAtContact;
-    /// <summary>中文含义：玩家前向所在接触。使用位置：EnemyCombatModule.LateUpdate()、KnifeCombatModule.IsFront(KnifeIncomingAttackContext)。</summary>
+    /// <summary>玩家前向所在接触。</summary>
     public Vector3 playerForwardAtContact;
-    /// <summary>中文含义：是否具有玩家朝向所在接触。使用位置：EnemyCombatModule.LateUpdate()、KnifeCombatModule.IsFront(KnifeIncomingAttackContext)。</summary>
+    /// <summary>是否具有玩家朝向所在接触。</summary>
     public bool hasPlayerFacingAtContact;
-    /// <summary>中文含义：segmentBegin 表示“线段开始”；segmentEnd 表示“线段结束”；animationTime 表示“动画时间”。使用位置：EnemyCombatModule.LateUpdate()。；使用位置：EnemyCombatModule.LateUpdate()。；使用位置：作为 KnifeCombatModule.Record(string, string) 的参数、EnemyCombatModule.LateUpdate()。</summary>
+    /// <summary>segmentBegin 表示“线段开始”；segmentEnd 表示“线段结束”；animationTime 表示“动画时间”。</summary>
     public float segmentBegin, segmentEnd, animationTime;
-    /// <summary>中文含义：接触判定证据。使用位置：作为 KnifeCombatModule.Record(string, string) 的参数、EnemyCombatModule.LateUpdate()。</summary>
+    /// <summary>接触判定证据。</summary>
     public string contactEvidence;
     internal EnemyCombatModule.StandingImpact standingImpact;
-    /// <summary>中文含义：是否有效。使用位置：KnifeCombatModule.CurrentPromptIncomingAttack.get、KnifeCombatModule.ResolveIncomingAttack(KnifeIncomingAttackContext)。</summary>
+    /// <summary>是否有效。</summary>
     public bool Valid => attacker != null && attacker.gameObject.activeInHierarchy && !attacker.IsDead
         && attacker.combatModule != null && attacker.combatModule.isActiveAndEnabled
         && attacker.combatModule.KnifeIncomingAttackId == attackId && !attacker.combatModule.ReadAttackFinished
@@ -82,22 +82,22 @@ public sealed class KnifeIncomingAttackContext
 [UnityEngine.Scripting.APIUpdating.MovedFrom(true, "", "Assembly-CSharp", "小刀近战命中通知")]
 public readonly struct KnifeMeleeHitNotification
 {
-    /// <summary>中文含义：动作实例。只读字段，初始化后不由普通写入口替换。使用位置：KnifeMeleeHitNotification.KnifeMeleeHitNotification(long, VillagerController, HitboxType, Vector3)。</summary>
+    /// <summary>动作实例。只读字段，初始化后不由普通写入口替换。</summary>
     public readonly long actionInstance;
-    /// <summary>中文含义：攻击线段。只读字段，初始化后不由普通写入口替换。使用位置：KnifeMeleeHitNotification.KnifeMeleeHitNotification(long, VillagerController, HitboxType, Vector3)。</summary>
+    /// <summary>攻击线段。只读字段，初始化后不由普通写入口替换。</summary>
     public readonly int attackSegment;
-    /// <summary>中文含义：目标村民敌人控制器。只读字段，初始化后不由普通写入口替换。使用位置：KnifeMeleeHitNotification.KnifeMeleeHitNotification(long, VillagerController, HitboxType, Vector3)。</summary>
+    /// <summary>目标村民敌人控制器。只读字段，初始化后不由普通写入口替换。</summary>
     public readonly VillagerController target;
-    /// <summary>中文含义：身体部位。只读字段，初始化后不由普通写入口替换。使用位置：KnifeMeleeHitNotification.KnifeMeleeHitNotification(long, VillagerController, HitboxType, Vector3)。</summary>
+    /// <summary>身体部位。只读字段，初始化后不由普通写入口替换。</summary>
     public readonly HitboxType bodyPart;
-    /// <summary>中文含义：位置。只读字段，初始化后不由普通写入口替换。使用位置：KnifeMeleeHitNotification.KnifeMeleeHitNotification(long, VillagerController, HitboxType, Vector3)。</summary>
+    /// <summary>位置。只读字段，初始化后不由普通写入口替换。</summary>
     public readonly Vector3 position;
     /// <summary>构造并初始化 KnifeMeleeHitNotification 的声明状态；具体外部协作见静态调用链。</summary>
     /// <remarks>静态调用链：上游 KnifeCombatModule.DetectBlade(KnifeTraversedInterval)；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="instance">中文含义：实例。使用位置：KnifeMeleeHitNotification.KnifeMeleeHitNotification(long, VillagerController, HitboxType, Vector3)。</param>
-    /// <param name="target">中文含义：目标村民敌人控制器。使用位置：KnifeMeleeHitNotification.KnifeMeleeHitNotification(long, VillagerController, HitboxType, Vector3)。</param>
-    /// <param name="bodyPart">中文含义：身体部位。使用位置：KnifeMeleeHitNotification.KnifeMeleeHitNotification(long, VillagerController, HitboxType, Vector3)。</param>
-    /// <param name="position">中文含义：位置。使用位置：KnifeMeleeHitNotification.KnifeMeleeHitNotification(long, VillagerController, HitboxType, Vector3)。</param>
+    /// <param name="instance">实例。</param>
+    /// <param name="target">目标村民敌人控制器。</param>
+    /// <param name="bodyPart">身体部位。</param>
+    /// <param name="position">位置。</param>
     public KnifeMeleeHitNotification(long instance, VillagerController target, HitboxType bodyPart, Vector3 position)
     {
         actionInstance = instance;
@@ -114,82 +114,87 @@ public readonly struct KnifeMeleeHitNotification
 [UnityEngine.Scripting.APIUpdating.MovedFrom(true, "", "Assembly-CSharp", "小刀战斗模块")]
 public sealed partial class KnifeCombatModule : MonoBehaviour
 {
-    /// <summary>中文含义：玩家。使用位置：作为 LeonController.TakeDamageFrom(float, Vector3, Vector3) 的参数、KnifeCombatBuilder.BindingPlayer(LeonController, KnifeCombatConfiguration, AnimatorController)、KnifeCombatModule.ActionSwitch(KnifeAction, long, double) 等共 8 处。</summary>
+    private Collider[] bladeOverlaps = new Collider[32];
+    private Collider[] assistOverlaps = new Collider[32];
+    private readonly HitQueryBuffer knifeOcclusionHits = new();
+
+    /// <summary>玩家。</summary>
     [Header("组件引用")]
     [UnityEngine.Serialization.FormerlySerializedAs("玩家")]
     [UnityEngine.InspectorName("玩家")]
     public LeonController player;
-    /// <summary>中文含义：战斗。使用位置：作为 EditorUtility.SetDirty(Object) 的参数、作为 PrefabUtility.RecordPrefabInstancePropertyModifications(Object) 的参数、KnifeCombatBuilder.BindingPlayer(LeonController, KnifeCombatConfiguration, AnimatorController) 等共 8 处。</summary>
+    /// <summary>战斗。</summary>
     [UnityEngine.Serialization.FormerlySerializedAs("战斗")]
     [UnityEngine.InspectorName("战斗")]
     public LeonCombat combat;
-    /// <summary>中文含义：当前玩家动画动作协调器。使用位置：KnifeCombatBuilder.BindingPlayer(LeonController, KnifeCombatConfiguration, AnimatorController)、KnifeCombatModule.BindingEvent()、KnifeCombatModule.CommitCurrentAnimation() 等共 10 处。</summary>
+    /// <summary>当前玩家动画动作协调器。</summary>
     [UnityEngine.Serialization.FormerlySerializedAs("协调器")]
     [UnityEngine.InspectorName("协调器")]
     public LeonAnimationActionCoordinator coordinator;
-    /// <summary>中文含义：动画驱动。使用位置：KnifeCombatBuilder.BindingPlayer(LeonController, KnifeCombatConfiguration, AnimatorController)、KnifeCombatModule.Interrupt(bool)、KnifeCombatModule.ResolveIncomingAttack(KnifeIncomingAttackContext) 等共 5 处。</summary>
+    /// <summary>动画驱动。</summary>
     [UnityEngine.Serialization.FormerlySerializedAs("动画驱动")]
     [UnityEngine.InspectorName("动画驱动")]
     public LeonAnimatorDriver animationDrive;
-    /// <summary>中文含义：武器。使用位置：作为 DamageResolutionModule.CommitEnemyHit(VillagerController, HitboxType, float, Vector3, Vector3) 的参数、作为 DestructibleWoodenBox.TakeDamage(float, Vector3) 的参数、作为 EditorUtility.SetDirty(Object) 的参数 等共 7 处。</summary>
+    /// <summary>武器。</summary>
     [UnityEngine.Serialization.FormerlySerializedAs("武器")]
     [UnityEngine.InspectorName("武器")]
     public LeonWeaponHandler weapon;
-    /// <summary>中文含义：武器视觉。使用位置：KnifeCombatBuilder.BindingPlayer(LeonController, KnifeCombatConfiguration, AnimatorController)、KnifeCombatModule.CommitCurrentAnimation()、KnifeCombatModule.EndTransaction(bool) 等共 5 处。</summary>
+    /// <summary>武器视觉。</summary>
     [UnityEngine.Serialization.FormerlySerializedAs("武器视觉")]
     [UnityEngine.InspectorName("武器视觉")]
     public LeonWeaponVisualController weaponVisual;
-    /// <summary>中文含义：手部约束。使用位置：KnifeCombatBuilder.BindingPlayer(LeonController, KnifeCombatConfiguration, AnimatorController)、KnifeCombatModule.PrepareTransaction(bool)、KnifeCombatModule.Start()。</summary>
+    /// <summary>手部约束。</summary>
     [UnityEngine.Serialization.FormerlySerializedAs("手部约束")]
     [UnityEngine.InspectorName("手部约束")]
     public LeonAnimRig handConstraint;
-    /// <summary>中文含义：背包。使用位置：KnifeCombatModule.DeductDurability(int)、KnifeCombatModule.Start()、KnifeCombatModule.ValidKnife.get。</summary>
+    /// <summary>背包。</summary>
     [UnityEngine.Serialization.FormerlySerializedAs("背包")]
     [UnityEngine.InspectorName("背包")]
     public InventoryManager inventory;
-    /// <summary>中文含义：刀具。使用位置：KnifeCombatBuilder.BindingPlayer(LeonController, KnifeCombatConfiguration, AnimatorController)、KnifeCombatModule.DetectBlade(KnifeTraversedInterval)、KnifeCombatModule.ResolveContactsAfterPose() 等共 4 处。</summary>
+    /// <summary>刀具。</summary>
     [UnityEngine.Serialization.FormerlySerializedAs("刀具")]
     [UnityEngine.InspectorName("刀具")]
     public Transform knifeVisual;
-    /// <summary>中文含义：配置。使用位置：作为 KnifeCombatModule.DeductDurability(int) 的参数、作为 KnifeCombatModule.PlaySound(AudioClip, Vector3) 的参数、作为 KnifePoseSampler.KnifePoseSampler(KnifeCombatConfiguration, Animator) 的参数 等共 23 处。</summary>
+    /// <summary>配置。</summary>
     [Header("战斗配置")]
     [UnityEngine.Serialization.FormerlySerializedAs("配置")]
     [UnityEngine.InspectorName("配置")]
     public KnifeCombatConfiguration configuration;
-    /// <summary>中文含义：是否记录诊断。使用位置：KnifeCombatModule.Record(string, string)。</summary>
+    /// <summary>是否记录诊断。</summary>
     [UnityEngine.Serialization.FormerlySerializedAs("记录诊断")]
     [UnityEngine.InspectorName("记录诊断")]
     public bool recordDiagnostics = true;
-    /// <summary>中文含义：规则。使用位置：作为 KnifeCombatModule.Record(string, string) 的参数、KnifeCombatModule.Active.get、KnifeCombatModule.AdvanceTo(double) 等共 19 处。</summary>
+    /// <summary>规则。</summary>
     private KnifeCombatRules rules;
-    /// <summary>中文含义：事务编号值。使用位置：作为 LeonAnimationActionCoordinator.AdvanceIndependentKnifeTransaction(int, KnifeActionConfiguration, float, float) 的参数、KnifeCombatModule.ActionInterrupted(AnimationActionTransaction)、KnifeCombatModule.EndTransaction(bool) 等共 5 处。</summary>
+    /// <summary>事务编号值。</summary>
     private int transactionIdValue = -1;
     private GridItem transactionKnife;
-    /// <summary>中文含义：isEnd 表示“是否结束”；bound 表示“是否已绑定”；attackKeyHold 表示“是否攻击键保持”。使用位置：KnifeCombatModule.Interrupt(bool)。；使用位置：KnifeCombatModule.BindingEvent()、KnifeCombatModule.OnDisable()。；使用位置：KnifeCombatModule.Interrupt(bool)、KnifeCombatModule.Update()。</summary>
+    /// <summary>isEnd 表示“是否结束”；bound 表示“是否已绑定”；attackKeyHold 表示“是否攻击键保持”。</summary>
     private bool isEnd, bound, attackKeyHold;
-    /// <summary>中文含义：是否等待中提交动画。使用位置：KnifeCombatModule.ActionSwitch(KnifeAction, long, double)、KnifeCombatModule.CommitCurrentAnimation()。</summary>
+    /// <summary>是否等待中提交动画。</summary>
     private bool waitingCommitAnimation;
     private bool lastKnifeAttackWasThrust;
-    /// <summary>中文含义：advancedTime 表示“推进后的时间”；hitStopBegin 表示“命中顿帧开始”；hitStopEnd 表示“命中顿帧结束”。使用位置：作为 Math.Max(double, double) 的参数、KnifeCombatModule.AdvanceTo(double)、KnifeCombatModule.OnEnable() 等共 5 处。；使用位置：作为 Math.Max(double, double) 的参数、KnifeCombatModule.ResolveIncomingAttack(KnifeIncomingAttackContext)。；使用位置：作为 Math.Max(double, double) 的参数、作为 Math.Min(double, double) 的参数、KnifeCombatModule.Interrupt(bool) 等共 5 处。</summary>
+    /// <summary>advancedTime 表示“推进后的时间”；hitStopBegin 表示“命中顿帧开始”；hitStopEnd 表示“命中顿帧结束”。</summary>
     private double advancedTime, hitStopBegin, hitStopEnd;
-    /// <summary>中文含义：latestChargeInstance 表示“最新蓄力实例”；latestWhiffInstance 表示“最新挥空实例”。使用位置：KnifeCombatModule.DetectBlade(KnifeTraversedInterval)。；使用位置：KnifeCombatModule.ActionSwitch(KnifeAction, long, double)。</summary>
+    /// <summary>latestChargeInstance 表示“最新蓄力实例”；latestWhiffInstance 表示“最新挥空实例”。</summary>
     private long latestChargeInstance = -1, latestWhiffInstance = -1;
     private bool pendingSwingSound;
-    /// <summary>中文含义：结束突刺。只读字段，初始化后不由普通写入口替换。使用位置：KnifeCombatModule.ActionSwitch(KnifeAction, long, double)、KnifeCombatModule.DetectBlade(KnifeTraversedInterval)。</summary>
+    /// <summary>结束突刺。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly HashSet<long> finishedThrust = new HashSet<long>();
-    /// <summary>中文含义：前一次帧小刀实例。使用位置：KnifeCombatModule.DetectBlade(KnifeTraversedInterval)、KnifeCombatModule.OnDisable()、KnifeCombatModule.ResolveContactsAfterPose()。</summary>
+    /// <summary>前一次帧小刀实例。</summary>
     private long previousFrameKnifeInstance;
-    /// <summary>中文含义：前一次帧小刀时间。使用位置：作为 Mathf.Clamp01(float) 的参数、KnifeCombatModule.DetectBlade(KnifeTraversedInterval)、KnifeCombatModule.ResolveContactsAfterPose()。</summary>
+    /// <summary>前一次帧小刀时间。</summary>
     private double previousFrameKnifeTime;
-    /// <summary>中文含义：previousFrameBladeBase 表示“前一次帧刀刃基础”；previousFrameBladeTip 表示“前一次帧刀刃尖端”。使用位置：作为 Vector3.Lerp(Vector3, Vector3, float) 的参数、KnifeCombatModule.ResolveContactsAfterPose()。；使用位置：作为 Vector3.Lerp(Vector3, Vector3, float) 的参数、KnifeCombatModule.ResolveContactsAfterPose()。</summary>
+    /// <summary>previousFrameBladeBase 表示“前一次帧刀刃基础”；previousFrameBladeTip 表示“前一次帧刀刃尖端”。</summary>
     private Vector3 previousFrameBladeBase, previousFrameBladeTip;
-    /// <summary>中文含义：startupOrientation 表示“启动朝向”；assistTargetOrientation 表示“辅助目标朝向”。使用位置：作为 Quaternion.RotateTowards(Quaternion, Quaternion, float) 的参数、KnifeCombatModule.SelectAssistTarget()。；使用位置：作为 Quaternion.RotateTowards(Quaternion, Quaternion, float) 的参数、KnifeCombatModule.SelectAssistTarget()。</summary>
+    /// <summary>startupOrientation 表示“启动朝向”；assistTargetOrientation 表示“辅助目标朝向”。</summary>
     private Quaternion startupOrientation, assistTargetOrientation;
-    /// <summary>中文含义：是否具有校正量角度。使用位置：作为 Mathf.Min(float, float) 的参数、KnifeCombatModule.SelectAssistTarget()、KnifeCombatModule.UpdateWeakSteering()。</summary>
+    /// <summary>是否具有校正量角度。</summary>
     private float hasCorrectionAngle;
-    /// <summary>中文含义：输入队列。只读字段，初始化后不由普通写入口替换。使用位置：KnifeCombatModule.EnqueueValue(int, bool, double)、KnifeCombatModule.Interrupt(bool)、KnifeCombatModule.Update()。</summary>
-    private readonly List<InputRecord> inputQueue = new List<InputRecord>();
-    /// <summary>中文含义：命中间隔。只读字段，初始化后不由普通写入口替换。使用位置：KnifeCombatModule.Interrupt(bool)、KnifeCombatModule.ResolveContactsAfterPose()、KnifeCombatModule.Start()。</summary>
+    /// <summary>输入队列。只读字段，初始化后不由普通写入口替换。</summary>
+    private List<InputRecord> inputQueue = new List<InputRecord>();
+    private List<InputRecord> inputBatch = new List<InputRecord>();
+    /// <summary>命中间隔。只读字段，初始化后不由普通写入口替换。</summary>
     private struct RootSlice
     {
         public Vector3 velocity;
@@ -199,37 +204,39 @@ public sealed partial class KnifeCombatModule : MonoBehaviour
     private readonly Queue<RootSlice> rootSlices = new();
     private RootSlice currentRootSlice;
 
-    private readonly List<KnifeTraversedInterval> hitInterval = new List<KnifeTraversedInterval>();
-    /// <summary>中文含义：传入攻击队列。只读字段，初始化后不由普通写入口替换。使用位置：KnifeCombatModule.CommitIncomingAttack(KnifeIncomingAttackContext)、KnifeCombatModule.OnDisable()、KnifeCombatModule.ResolveIncomingContacts()。</summary>
-    private readonly List<KnifeIncomingAttackContext> incomingAttackQueue = new List<KnifeIncomingAttackContext>();
-    /// <summary>中文含义：提示候选。只读字段，初始化后不由普通写入口替换。使用位置：KnifeCombatModule.CloseIncomingAttackPrompt(VillagerController)、KnifeCombatModule.CurrentPromptIncomingAttack.get、KnifeCombatModule.OnDisable() 等共 4 处。</summary>
+    private List<KnifeTraversedInterval> hitInterval = new List<KnifeTraversedInterval>();
+    private List<KnifeTraversedInterval> hitIntervalBatch = new List<KnifeTraversedInterval>();
+    /// <summary>传入攻击队列。只读字段，初始化后不由普通写入口替换。</summary>
+    private List<KnifeIncomingAttackContext> incomingAttackQueue = new List<KnifeIncomingAttackContext>();
+    private List<KnifeIncomingAttackContext> incomingAttackBatch = new List<KnifeIncomingAttackContext>();
+    /// <summary>提示候选。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly Dictionary<int, KnifeIncomingAttackContext> promptCandidate = new Dictionary<int, KnifeIncomingAttackContext>();
     private (KnifeParryPromptKind kind, int enemyId, long attackId, int segment) lastParryPrompt;
-    /// <summary>中文含义：命中目标列表。只读字段，初始化后不由普通写入口替换。使用位置：KnifeCombatModule.ActionSwitch(KnifeAction, long, double)、KnifeCombatModule.DetectBlade(KnifeTraversedInterval)。</summary>
+    /// <summary>命中目标列表。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly HashSet<(long, int)> hitTargets = new HashSet<(long, int)>();
-    /// <summary>中文含义：解算后的传入攻击。只读字段，初始化后不由普通写入口替换。使用位置：KnifeCombatModule.OnDisable()、KnifeCombatModule.ResolveIncomingAttack(KnifeIncomingAttackContext)。</summary>
+    /// <summary>解算后的传入攻击。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly HashSet<(int, long, int)> resolvedIncomingAttack = new HashSet<(int, long, int)>();
-    /// <summary>中文含义：日志。只读字段，初始化后不由普通写入口替换。使用位置：KnifeCombatModule.ReadDiagnostics()、KnifeCombatModule.ReadDiagnosticsAfter(long)、KnifeCombatModule.Record(string, string)。</summary>
+    /// <summary>日志。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly Queue<string> log = new Queue<string>();
-    /// <summary>中文含义：接触列表。只读字段，初始化后不由普通写入口替换。使用位置：KnifeCombatModule.DetectBlade(KnifeTraversedInterval)。</summary>
+    /// <summary>接触列表。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly List<ContactCandidate> contactList = new List<ContactCandidate>();
     /// <summary>玩家控制、动作与运动的结构化数据 InputRecord；声明字段保存该步骤需要的值，具体读写由使用方执行。</summary>
     [UnityEngine.Scripting.APIUpdating.MovedFrom(true, "", "Assembly-CSharp", "小刀战斗模块+输入记录")]
     private struct InputRecord
     {
-        /// <summary>中文含义：种类。使用位置：作为 List&lt;KnifeCombatModule.InputRecord&gt;.Add(KnifeCombatModule.InputRecord) 的参数、作为 List&lt;KnifeCombatModule.InputRecord&gt;.Sort(Comparison&lt;KnifeCombatModule.InputRecord&gt;) 的参数、KnifeCombatModule.Update()。</summary>
+        /// <summary>种类。</summary>
         [UnityEngine.Serialization.FormerlySerializedAs("种类")]
         [UnityEngine.InspectorName("种类")]
         public int kind;
-        /// <summary>中文含义：是否按住。使用位置：作为 KnifeCombatRules.GuardInput(bool, double, long) 的参数、作为 List&lt;KnifeCombatModule.InputRecord&gt;.Add(KnifeCombatModule.InputRecord) 的参数、KnifeCombatModule.Update()。</summary>
+        /// <summary>是否按住。</summary>
         [UnityEngine.Serialization.FormerlySerializedAs("按住")]
         [UnityEngine.InspectorName("按住")]
         public bool held;
-        /// <summary>中文含义：时间。使用位置：作为 double.CompareTo(double) 的参数、作为 KnifeCombatModule.Record(string, string) 的参数、作为 KnifeCombatRules.GuardInput(bool, double, long) 的参数 等共 7 处。</summary>
+        /// <summary>时间。</summary>
         [UnityEngine.Serialization.FormerlySerializedAs("时间")]
         [UnityEngine.InspectorName("时间")]
         public double time;
-        /// <summary>中文含义：序号。使用位置：作为 KnifeCombatModule.Record(string, string) 的参数、作为 KnifeCombatRules.GuardInput(bool, double, long) 的参数、作为 List&lt;KnifeCombatModule.InputRecord&gt;.Add(KnifeCombatModule.InputRecord) 的参数 等共 5 处。</summary>
+        /// <summary>序号。</summary>
         [UnityEngine.Serialization.FormerlySerializedAs("序号")]
         [UnityEngine.InspectorName("序号")]
         public long sequence;
@@ -239,35 +246,35 @@ public sealed partial class KnifeCombatModule : MonoBehaviour
     [UnityEngine.Scripting.APIUpdating.MovedFrom(true, "", "Assembly-CSharp", "小刀战斗模块+接触候选")]
     private struct ContactCandidate
     {
-        /// <summary>中文含义：碰撞体。使用位置：作为 List&lt;KnifeCombatModule.ContactCandidate&gt;.Add(KnifeCombatModule.ContactCandidate) 的参数、KnifeCombatModule.DetectBlade(KnifeTraversedInterval)。</summary>
+        /// <summary>碰撞体。</summary>
         [UnityEngine.Serialization.FormerlySerializedAs("碰撞体")]
         [UnityEngine.InspectorName("碰撞体")]
         public Collider collider;
-        /// <summary>中文含义：位置。使用位置：作为 DamageResolutionModule.CommitEnemyHit(VillagerController, HitboxType, float, Vector3, Vector3) 的参数、作为 DestructibleWoodenBox.TakeDamage(float, Vector3) 的参数、作为 KnifeCombatModule.NoneOcclusion(Vector3, Transform) 的参数 等共 7 处。</summary>
+        /// <summary>位置。</summary>
         [UnityEngine.Serialization.FormerlySerializedAs("位置")]
         [UnityEngine.InspectorName("位置")]
         public Vector3 position;
-        /// <summary>中文含义：距离。使用位置：作为 float.CompareTo(float) 的参数、作为 List&lt;KnifeCombatModule.ContactCandidate&gt;.Add(KnifeCombatModule.ContactCandidate) 的参数、作为 List&lt;KnifeCombatModule.ContactCandidate&gt;.Sort(Comparison&lt;KnifeCombatModule.ContactCandidate&gt;) 的参数。</summary>
+        /// <summary>距离。</summary>
         [UnityEngine.Serialization.FormerlySerializedAs("距离")]
         [UnityEngine.InspectorName("距离")]
         public float distance;
-        /// <summary>中文含义：时间。使用位置：作为 double.CompareTo(double) 的参数、作为 List&lt;KnifeCombatModule.ContactCandidate&gt;.Add(KnifeCombatModule.ContactCandidate) 的参数、作为 List&lt;KnifeCombatModule.ContactCandidate&gt;.Sort(Comparison&lt;KnifeCombatModule.ContactCandidate&gt;) 的参数。</summary>
+        /// <summary>时间。</summary>
         [UnityEngine.Serialization.FormerlySerializedAs("时间")]
         [UnityEngine.InspectorName("时间")]
         public double time;
     }
 
-    /// <summary>中文含义：输入序号。使用位置：作为 List&lt;KnifeCombatModule.InputRecord&gt;.Add(KnifeCombatModule.InputRecord) 的参数。</summary>
+    /// <summary>输入序号。</summary>
     private long inputSequence;
-    /// <summary>中文含义：诊断序号。使用位置：作为 Math.Max(long, long) 的参数、KnifeCombatModule.DiagnosticSequence.get、KnifeCombatModule.Record(string, string)。</summary>
+    /// <summary>诊断序号。</summary>
     private long diagnosticSequence;
-    /// <summary>中文含义：是否就绪。使用位置：EnemyCombatModule.HandleOnParryWindowOpen()、EnemyCombatModule.LateUpdate()、EnemyCombatModule.TryApplyAttackHit(int) 等共 13 处。</summary>
+    /// <summary>是否就绪。</summary>
     public bool Ready => rules != null && configuration != null && coordinator != null && player != null;
-    /// <summary>中文含义：是否生效。使用位置：KnifeCombatModule.CanConnectMeleeFinisher.get、KnifeCombatModule.CommitCurrentAnimation()、KnifeCombatModule.IsAttack.get 等共 14 处。</summary>
+    /// <summary>是否生效。</summary>
     public bool Active => Ready && rules.Active;
-    /// <summary>中文含义：是否攻击。使用位置：KnifeCombatModule.MovementRatio.get、KnifeCombatModule.ResolveContactsAfterPose()、KnifeCombatModule.UpdateWeakSteering() 等共 6 处。</summary>
+    /// <summary>是否攻击。</summary>
     public bool IsAttack => Active && rules.IsAttack;
-    /// <summary>中文含义：是否命中顿帧。使用位置：作为 LeonAnimatorDriver.SetKnifeLocalHitStop(bool) 的参数、KnifeCombatModule.MovementRatio.get、KnifeCombatModule.UpdateWeakSteering() 等共 5 处。</summary>
+    /// <summary>是否命中顿帧。</summary>
     public bool IsHitStop => Time.timeAsDouble < hitStopEnd;
     /// <summary>中文含义：是否防守保持。</summary>
     public bool GuardHold => Ready && rules.GuardHeld;
@@ -280,6 +287,7 @@ public sealed partial class KnifeCombatModule : MonoBehaviour
     private bool hasCameraHeading;
     private bool guardEntryTurning;
     private const float GuardEntryTurnSpeed = 480f;
+    private readonly RaycastHit[] viewFallbackHits = new RaycastHit[8];
     private bool IsReleasedThrust => lastKnifeAttackWasThrust && !GuardHold && CurrentAction == KnifeAction.LowerGuard;
     internal bool IsFinishingThrust => Active && lastKnifeAttackWasThrust
         && (KnifeCombatRules.IsThrust(CurrentAction) || CurrentAction == KnifeAction.ThrustRecovery || IsReleasedThrust);
@@ -287,8 +295,35 @@ public sealed partial class KnifeCombatModule : MonoBehaviour
         && (CurrentAction == KnifeAction.EnterGuard || CurrentAction == KnifeAction.HoldGuard
             || CurrentAction == KnifeAction.ThrustOne || CurrentAction == KnifeAction.ThrustTwo
             || CurrentAction == KnifeAction.ThrustRecovery);
+    internal bool IsThrustAttack
+    {
+        get
+        {
+            return Active && CanExecute && KnifeCombatRules.IsThrust(CurrentAction);
+        }
+    }
 
-    /// <summary>中文含义：是否可以招架当前时刻。使用位置：LeonCombat.IsParrying.get。</summary>
+    internal bool ShouldTrackKnifeAimPitch
+    {
+        get
+        {
+            if (!Active || !CanExecute)
+            {
+                return false;
+            }
+
+            if (IsGuardAiming)
+            {
+                return true;
+            }
+
+            return KnifeCombatRules.IsThrust(CurrentAction)
+                || CurrentAction == KnifeAction.ThrustRecovery
+                || IsReleasedThrust;
+        }
+    }
+
+    /// <summary>是否可以招架当前时刻。</summary>
     public bool CanParryNow
     {
         get
@@ -297,10 +332,10 @@ public sealed partial class KnifeCombatModule : MonoBehaviour
         }
     }
 
-    /// <summary>中文含义：是否可以连接近战终结技。使用位置：LeonQTECoordinator.CanQueryBodyTechniquePrompt()。</summary>
+    /// <summary>是否可以连接近战终结技。</summary>
     public bool CanConnectMeleeFinisher => Active && rules.CanHandoff;
 
-    /// <summary>中文含义：当前动作。使用位置：作为 KnifeCombatConfiguration.Find(KnifeAction) 的参数、作为 KnifeCombatRules.Query(KnifeAction) 的参数、KnifeCombatModule.CommitCurrentAnimation()。</summary>
+    /// <summary>当前动作。</summary>
     public KnifeAction CurrentAction
     {
         get
@@ -316,7 +351,7 @@ public sealed partial class KnifeCombatModule : MonoBehaviour
         }
     }
 
-    /// <summary>中文含义：当前实例。使用位置：KnifeCombatModule.DetectBlade(KnifeTraversedInterval)、KnifeCombatModule.ResolveContactsAfterPose()。</summary>
+    /// <summary>当前实例。</summary>
     public long CurrentInstance
     {
         get
@@ -332,7 +367,7 @@ public sealed partial class KnifeCombatModule : MonoBehaviour
         }
     }
 
-    /// <summary>中文含义：当前动作时间。使用位置：作为 KnifePoseSampler.Sample(AnimationClip, float, int, float, float, bool) 的参数、作为 LeonAnimationActionCoordinator.AdvanceIndependentKnifeTransaction(int, KnifeActionConfiguration, float, float) 的参数、作为 Mathf.Clamp01(float) 的参数 等共 8 处。</summary>
+    /// <summary>当前动作时间。</summary>
     public double CurrentActionTime
     {
         get
@@ -348,7 +383,7 @@ public sealed partial class KnifeCombatModule : MonoBehaviour
         }
     }
 
-    /// <summary>中文含义：移动比例。使用位置：LeonLocomotion.HandleMovement()。</summary>
+    /// <summary>移动比例。</summary>
     public float MovementRatio
     {
         get
@@ -393,22 +428,22 @@ public sealed partial class KnifeCombatModule : MonoBehaviour
 
     /// <summary>ReadDiagnosticsAfter 的业务处理入口；本方法直接依赖 Array.Copy(Array, int, Array, int, int)、Math.Max(long, long)、Math.Min(long, long)、Queue&lt;string&gt;.ToArray()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） Array.Copy(Array, int, Array, int, int)、Math.Max(long, long)、Math.Min(long, long)、Queue&lt;string&gt;.ToArray()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="sequence">中文含义：序号。使用位置：作为 Math.Max(long, long) 的参数。</param>
+    /// <param name="sequence">序号。</param>
     public string[] ReadDiagnosticsAfter(long sequence)
     {
-        // snapshot（快照）：保存 Queue<string>.ToArray() 的返回结果，供当前步骤使用。使用位置：作为 Array.Copy(Array, int, Array, int, int) 的参数、作为 Math.Max(long, long) 的参数、作为 Math.Min(long, long) 的参数 等共 4 处。
+        // 快照。
 string[] snapshot = log.ToArray();
-        // skip（跳过）：使用位置：作为 Array.Copy(Array, int, Array, int, int) 的参数、KnifeCombatModule.ReadDiagnosticsAfter(long)。
+        // 跳过。
 int skip = (int)Math.Min(snapshot.Length, Math.Max(0L, sequence - diagnosticSequence + snapshot.Length));
-        // result（当前文本数组）：使用位置：作为 Array.Copy(Array, int, Array, int, int) 的参数、KnifeCombatModule.ReadDiagnosticsAfter(long)。
+        // 当前文本数组。
 string[] result = new string[snapshot.Length - skip];
         Array.Copy(snapshot, skip, result, 0, result.Length);
         return result;
     }
 
-    /// <summary>中文含义：已提交命中。事件通信成员 CommittedHit，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。使用位置：KnifeCombatModule.DetectBlade(KnifeTraversedInterval)。</summary>
+    /// <summary>已提交命中。事件通信成员 CommittedHit，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。</summary>
     public event Action<KnifeMeleeHitNotification> CommittedHit;
-    /// <summary>中文含义：招架解算后的。事件通信成员 ParryResolved，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。使用位置：KnifeCombatModule.ResolveIncomingAttack(KnifeIncomingAttackContext)。</summary>
+    /// <summary>招架解算后的。事件通信成员 ParryResolved，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。</summary>
     public event Action<KnifeIncomingAttackContext, KnifeParryOutcome, KnifeParryFailure, KnifeParryAttemptSnapshot> ParryResolved;
     /// <summary>中文含义：招架尝试。</summary>
     public KnifeParryAttemptSnapshot ParryAttempt
@@ -424,7 +459,7 @@ string[] result = new string[snapshot.Length - skip];
         }
     }
 
-    /// <summary>中文含义：是否有效小刀。使用位置：KnifeCombatModule.CanParryNow.get、KnifeCombatModule.CurrentPromptIncomingAttack.get、KnifeCombatModule.ResolveContactsAfterPose() 等共 5 处。</summary>
+    /// <summary>是否有效小刀。</summary>
     public bool ValidKnife
     {
         get
@@ -552,7 +587,7 @@ string[] result = new string[snapshot.Length - skip];
 
     /// <summary>ActionInterrupted 的业务处理入口；本方法直接依赖 KnifeCombatModule.Interrupt(bool)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） KnifeCombatModule.Interrupt(bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="action">中文含义：动作。使用位置：KnifeCombatModule.ActionInterrupted(AnimationActionTransaction)。</param>
+    /// <param name="action">动作。</param>
     private void ActionInterrupted(AnimationActionTransaction action)
     {
         if (action.transactionId == transactionIdValue)
@@ -566,8 +601,8 @@ string[] result = new string[snapshot.Length - skip];
     private void DeathInterrupt() => Interrupt(false);
     /// <summary>CommitGuard 的业务处理入口；本方法直接依赖 KnifeCombatModule.EnqueueValue(int, bool, double)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 KnifePreviewReferenceValidator.CaptureRuntime(KnifeCombatModule)、LeonCombat.CommitGuardInput(bool, double)；下游（含内部回调体） KnifeCombatModule.EnqueueValue(int, bool, double)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="held">中文含义：是否保持按住。使用位置：作为 KnifeCombatModule.EnqueueValue(int, bool, double) 的参数。</param>
-    /// <param name="time">中文含义：时间。使用位置：作为 KnifeCombatModule.EnqueueValue(int, bool, double) 的参数。</param>
+    /// <param name="held">是否保持按住。</param>
+    /// <param name="time">时间。</param>
     public void CommitGuard(bool held, double time) => EnqueueValue(0, held, time);
 
     internal bool CanResumeHeldGuard => Ready && CanExecute && ValidKnife && !GuardHold
@@ -576,17 +611,17 @@ string[] result = new string[snapshot.Length - skip];
     internal void CommitHeldGuard(double time) => EnqueueValue(3, true, time);
     /// <summary>CommitAttack 的业务处理入口；本方法直接依赖 KnifeCombatModule.EnqueueValue(int, bool, double)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 KnifePreviewReferenceValidator.CaptureRuntime(KnifeCombatModule)、LeonCombat.CommitAttackInput(double)；下游（含内部回调体） KnifeCombatModule.EnqueueValue(int, bool, double)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="time">中文含义：时间。使用位置：作为 KnifeCombatModule.EnqueueValue(int, bool, double) 的参数。</param>
+    /// <param name="time">时间。</param>
     public void CommitAttack(double time) => EnqueueValue(1, true, time);
     /// <summary>CommitAttackReleased 的业务处理入口；本方法直接依赖 KnifeCombatModule.EnqueueValue(int, bool, double)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 KnifePreviewReferenceValidator.CaptureRuntime(KnifeCombatModule)、LeonCombat.CommitAttackReleased(double)；下游（含内部回调体） KnifeCombatModule.EnqueueValue(int, bool, double)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="time">中文含义：时间。使用位置：作为 KnifeCombatModule.EnqueueValue(int, bool, double) 的参数。</param>
+    /// <param name="time">时间。</param>
     public void CommitAttackReleased(double time) => EnqueueValue(2, false, time);
     /// <summary>EnqueueValue 的业务处理入口；本方法直接依赖 KnifeCombatModule.InputRecord.InputRecord()、List&lt;KnifeCombatModule.InputRecord&gt;.Add(KnifeCombatModule.InputRecord)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 KnifeCombatModule.CommitAttack(double)、KnifeCombatModule.CommitAttackReleased(double)、KnifeCombatModule.CommitGuard(bool, double)；下游（含内部回调体） KnifeCombatModule.InputRecord.InputRecord()、List&lt;KnifeCombatModule.InputRecord&gt;.Add(KnifeCombatModule.InputRecord)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="kind">中文含义：种类。使用位置：作为 List&lt;KnifeCombatModule.InputRecord&gt;.Add(KnifeCombatModule.InputRecord) 的参数、KnifeCombatModule.EnqueueValue(int, bool, double)。</param>
-    /// <param name="held">中文含义：是否保持按住。使用位置：作为 List&lt;KnifeCombatModule.InputRecord&gt;.Add(KnifeCombatModule.InputRecord) 的参数、KnifeCombatModule.EnqueueValue(int, bool, double)。</param>
-    /// <param name="time">中文含义：时间。使用位置：作为 List&lt;KnifeCombatModule.InputRecord&gt;.Add(KnifeCombatModule.InputRecord) 的参数。</param>
+    /// <param name="kind">种类。</param>
+    /// <param name="held">是否保持按住。</param>
+    /// <param name="time">时间。</param>
     private void EnqueueValue(int kind, bool held, double time)
     {
         if (!Ready || !isActiveAndEnabled || Time.timeScale <= 0 && (kind == 1 || held))
@@ -597,7 +632,7 @@ string[] result = new string[snapshot.Length - skip];
         inputQueue.Add(new InputRecord { kind = kind, held = held, time = time, sequence = ++inputSequence });
     }
 
-    /// <summary>中文含义：是否可以执行。使用位置：作为 LeonCombat.EndTemporaryKnife(bool) 的参数、KnifeCombatModule.CanParryNow.get、KnifeCombatModule.CurrentPromptIncomingAttack.get 等共 7 处。</summary>
+    /// <summary>是否可以执行。</summary>
     private bool CanExecute => player != null && player.NewPipelineValid && player.currentState != LeonState.Dead && player.currentState != LeonState.Staggered && player.currentState != LeonState.QTE && player.currentState != LeonState.Traversing;
 
     /// <summary>Unity 每帧更新回调；状态处理与资源交接按函数内顺序执行，下游协作见调用链。</summary>
@@ -631,7 +666,7 @@ string[] result = new string[snapshot.Length - skip];
         // 先按真实时间排序，仅完全同刻时防守优先，避免稍晚输入倒置历史接触。
         inputQueue.Sort(( /* 中文含义：第一个输入记录。 */first, /* 中文含义：第二个输入记录。 */ second) =>
         {
-            // order（顺序）：保存 double.CompareTo(double) 的返回结果，供当前步骤使用。使用位置：作为 List<KnifeCombatModule.InputRecord>.Sort(Comparison<KnifeCombatModule.InputRecord>) 的参数。
+            // 顺序。
 int order = first.time.CompareTo(second.time);
             if (order != 0)
             {
@@ -650,32 +685,37 @@ int order = first.time.CompareTo(second.time);
 
             return first.sequence.CompareTo(second.sequence);
         });
-        // inputSnapshot（输入快照）：保存 List<KnifeCombatModule.InputRecord>.ToArray() 的返回结果，供当前步骤使用。使用位置：KnifeCombatModule.Update()。
-var inputSnapshot = inputQueue.ToArray();
-        inputQueue.Clear();
-        // input（输入数据）：每轮从输入快照取得一个元素，仅代表当前这一项。使用位置：作为 KnifeCombatModule.Record(string, string) 的参数、作为 KnifeCombatRules.GuardInput(bool, double, long) 的参数、作为 KnifeCombatRules.HasGuardEligibility(double) 的参数 等共 5 处。
-foreach (var input in inputSnapshot)
+        List<InputRecord> inputSnapshot = inputQueue;
+        inputQueue = inputBatch;
+        inputBatch = inputSnapshot;
+        foreach (var input in inputSnapshot)
         {
-            // timestamp（时间戳）：保存 Math.Min(double, double) 的返回结果，供当前步骤使用。使用位置：作为 KnifeCombatModule.AdvanceTo(double) 的参数。
+            // 时间戳。
 double timestamp = Math.Min(Time.timeAsDouble, Math.Max(advancedTime, input.time));
             AdvanceTo(timestamp);
             if (input.kind == 0)
             {
                 if (input.held && (!ValidKnife || !PrepareTransaction(true)))
                 {
-                    Record("防守拒绝", "无可用刀或动作事务不允许；序号=" + input.sequence + "；输入时刻=" + input.time.ToString("F6"));
+                    if (recordDiagnostics)
+                    {
+                        Record("防守拒绝", "无可用刀或动作事务不允许；序号=" + input.sequence + "；输入时刻=" + input.time.ToString("F6"));
+                    }
                     continue;
                 }
 
                 rules.GuardInput(input.held, input.time, input.sequence);
-                // edge（边缘）：使用位置：作为 KnifeCombatModule.Record(string, string) 的参数、KnifeCombatModule.Update()。
+                // 边缘。
 string edge = "松开";
                 if (input.held)
                 {
                     edge = "按下";
                 }
 
-                Record("防守输入", edge + "；序号=" + input.sequence + "；输入时刻=" + input.time.ToString("F6") + "；到期=" + rules.CurrentAttempt.expiresAt.ToString("F6") + "；阶段=" + rules.CurrentAction + "；此刻资格=" + rules.HasGuardEligibility(input.time));
+                if (recordDiagnostics)
+                {
+                    Record("防守输入", edge + "；序号=" + input.sequence + "；输入时刻=" + input.time.ToString("F6") + "；到期=" + rules.CurrentAttempt.expiresAt.ToString("F6") + "；阶段=" + rules.CurrentAction + "；此刻资格=" + rules.HasGuardEligibility(input.time));
+                }
             }
             else if (input.kind == 3)
             {
@@ -709,9 +749,9 @@ string edge = "松开";
                 }
 
                 rules.AttackInput();
-                // argumentValue9（按原顺序缓存的实参文字“攻击输入”）：从文字“攻击输入”读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 KnifeCombatModule.Record(string, string) 的参数。
+                // 按原顺序缓存的实参文字“攻击输入”。
 string argumentValue9 = "攻击输入";
-                // selectedValue8（分支选出的文字“缓存下一刀”）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：作为 KnifeCombatModule.Record(string, string) 的参数、KnifeCombatModule.Update()。
+                // 分支选出的文字“缓存下一刀”。
 string selectedValue8;
                 if (rules.HasCache)
                 {
@@ -722,10 +762,14 @@ string selectedValue8;
                     selectedValue8 = "执行单刀";
                 }
 
-                Record(argumentValue9, (selectedValue8) + "；序号=" + input.sequence + "；输入时刻=" + input.time.ToString("F6"));
+                if (recordDiagnostics)
+                {
+                    Record(argumentValue9, (selectedValue8) + "；序号=" + input.sequence + "；输入时刻=" + input.time.ToString("F6"));
+                }
             }
         }
 
+        inputSnapshot.Clear();
         AdvanceTo(Time.timeAsDouble);
         CommitCurrentAnimation();
         UpdateWeakSteering();
@@ -733,12 +777,12 @@ string selectedValue8;
 
     /// <summary>AdvanceTo 的业务处理入口；本方法直接依赖 KnifeCombatRules.Advance(double, double)、Math.Max(double, double)、Math.Min(double, double)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 KnifeCombatModule.Update()；下游（含内部回调体） KnifeCombatRules.Advance(double, double)、Math.Max(double, double)、Math.Min(double, double)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="time">中文含义：时间。使用位置：作为 KnifeCombatRules.Advance(double, double) 的参数、作为 Math.Max(double, double) 的参数、作为 Math.Min(double, double) 的参数 等共 4 处。</param>
+    /// <param name="time">时间。</param>
     private void AdvanceTo(double time)
     {
-        // delta（增量）：保存 Math.Max(double, double) 的返回结果，供当前步骤使用。使用位置：作为 Math.Max(double, double) 的参数。
+        // 增量。
 double delta = Math.Max(0, time - advancedTime);
-        // freeze（冻结）：保存 Math.Max(double, double) 的返回结果，供当前步骤使用。使用位置：作为 Math.Max(double, double) 的参数。
+        // 冻结。
 double freeze = Math.Max(0, Math.Min(time, hitStopEnd) - Math.Max(advancedTime, hitStopBegin));
         advancedTime = time;
         rules.Advance(Math.Max(0, delta - freeze), time);
@@ -746,31 +790,42 @@ double freeze = Math.Max(0, Math.Min(time, hitStopEnd) - Math.Max(advancedTime, 
 
     /// <summary>PrepareTransaction 的业务处理入口；本方法直接依赖 LeonAnimationActionCoordinator.AsKnifeInterruptReload()、LeonAnimationActionCoordinator.RequestIndependentKnifeTransaction()、LeonAnimRig.SetIKMode(IKMode)、LeonCombat.BeginTemporaryKnife()、LeonWeaponVisualController.SetKnifeModeVisible(bool)、object.ReferenceEquals(object, object)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 KnifeCombatModule.Update()；下游（含内部回调体） LeonAnimationActionCoordinator.AsKnifeInterruptReload()、LeonAnimationActionCoordinator.RequestIndependentKnifeTransaction()、LeonAnimRig.SetIKMode(IKMode)、LeonCombat.BeginTemporaryKnife()、LeonWeaponVisualController.SetKnifeModeVisible(bool)、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="guard">中文含义：是否防守。使用位置：KnifeCombatModule.PrepareTransaction(bool)。</param>
+    /// <param name="guard">是否防守。</param>
     internal void ApplyCameraHeading(float heading, float pitch)
     {
         cameraHeading = heading;
         hasCameraHeading = true;
-        if (IsHoldingGuardPose && !IsHitStop && !player.IsolateObserveCameraSteering && Time.deltaTime > 0f)
+        if (ShouldTrackKnifeAimPitch && !IsHitStop && !player.IsolateObserveCameraSteering && Time.deltaTime > 0f)
         {
-            float previousHeading = transform.eulerAngles.y;
-            float bodyHeading = heading;
-            GuardEntryHeadingError = 0f;
-            if (CurrentAction == KnifeAction.EnterGuard || guardEntryTurning)
-            {
-                // 侧面或背面入防时，让真实转角逐帧驱动换脚，保持阶段继续跟随镜头。
-                bodyHeading = Mathf.MoveTowardsAngle(previousHeading, heading, GuardEntryTurnSpeed * Mathf.Min(Time.deltaTime, .05f));
-                GuardEntryHeadingError = Mathf.DeltaAngle(bodyHeading, heading);
-                guardEntryTurning = Mathf.Abs(GuardEntryHeadingError) > .1f;
-            }
-            bool committed = coordinator.CommitKnifeAssistOrientation(Quaternion.Euler(0f, bodyHeading, 0f));
-            GuardTurnDelta = 0f;
-            if (committed)
-            {
-                GuardTurnDelta = Mathf.DeltaAngle(previousHeading, bodyHeading);
-            }
             GuardViewPitch = pitch;
             GuardViewFrame = Time.frameCount;
+
+            if (IsHoldingGuardPose)
+            {
+                float previousHeading = transform.eulerAngles.y;
+                float bodyHeading = heading;
+                GuardEntryHeadingError = 0f;
+                if (CurrentAction == KnifeAction.EnterGuard || guardEntryTurning)
+                {
+                    // 侧面或背面入防时，让真实转角逐帧驱动换脚，保持阶段继续跟随镜头。
+                    bodyHeading = Mathf.MoveTowardsAngle(previousHeading, heading, GuardEntryTurnSpeed * Mathf.Min(Time.deltaTime, .05f));
+                    GuardEntryHeadingError = Mathf.DeltaAngle(bodyHeading, heading);
+                    guardEntryTurning = Mathf.Abs(GuardEntryHeadingError) > .1f;
+                }
+                bool committed = coordinator.CommitKnifeAssistOrientation(Quaternion.Euler(0f, bodyHeading, 0f));
+                GuardTurnDelta = 0f;
+                if (committed)
+                {
+                    GuardTurnDelta = Mathf.DeltaAngle(previousHeading, bodyHeading);
+                }
+            }
+            else if (KnifeCombatRules.IsThrust(CurrentAction) || CurrentAction == KnifeAction.ThrustRecovery || IsReleasedThrust)
+            {
+                // 前刺途中保持实时响应准心水平朝向，避免身体继续沿着起手方向挥刺。
+                float currentHeading = transform.eulerAngles.y;
+                float bodyHeading = Mathf.MoveTowardsAngle(currentHeading, heading, 720f * Mathf.Min(Time.deltaTime, .05f));
+                coordinator.CommitKnifeAssistOrientation(Quaternion.Euler(0f, bodyHeading, 0f));
+            }
         }
     }
 
@@ -849,7 +904,7 @@ double freeze = Math.Max(0, Math.Min(time, hitStopEnd) - Math.Max(advancedTime, 
             return false;
         }
 
-        // newTransaction（新事务）：保存 LeonAnimationActionCoordinator.RequestIndependentKnifeTransaction() 的返回结果，供当前步骤使用。使用位置：KnifeCombatModule.PrepareTransaction(bool)。
+        // 新事务。
 int newTransaction = coordinator.RequestIndependentKnifeTransaction();
         if (newTransaction < 0)
         {
@@ -862,7 +917,7 @@ int newTransaction = coordinator.RequestIndependentKnifeTransaction();
         combat.BeginTemporaryKnife();
         weaponVisual.SetKnifeAppearance(transactionKnife);
         weaponVisual.SetKnifeModeVisible(true);
-        // receiverValue10（判空前缓存的手部约束）：从手部约束读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、KnifeCombatModule.PrepareTransaction(bool)。
+        // 判空前缓存的手部约束。
 global::LeonAnimRig receiverValue10 = handConstraint;
         if (!global::System.Object.ReferenceEquals(receiverValue10, null))
         {
@@ -874,8 +929,8 @@ global::LeonAnimRig receiverValue10 = handConstraint;
 
     /// <summary>ActionSwitch 的业务处理入口；本方法直接依赖 Enum.ToString()、HashSet&lt;(long, int)&gt;.Clear()、HashSet&lt;long&gt;.Clear()、KnifeCombatModule.PlaySound(AudioClip, Vector3)、KnifeCombatModule.Record(string, string)、KnifeCombatModule.SelectAssistTarget()、KnifeCombatRules.IsAttackValue(KnifeAction) 等共 8 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） Enum.ToString()、HashSet&lt;(long, int)&gt;.Clear()、HashSet&lt;long&gt;.Clear()、KnifeCombatModule.PlaySound(AudioClip, Vector3)、KnifeCombatModule.Record(string, string)、KnifeCombatModule.SelectAssistTarget()、KnifeCombatRules.IsAttackValue(KnifeAction) 等共 8 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="action">中文含义：动作。使用位置：作为 KnifeCombatModule.Record(string, string) 的参数、作为 KnifeCombatRules.IsAttackValue(KnifeAction) 的参数、KnifeCombatModule.ActionSwitch(KnifeAction, long, double)。</param>
-    /// <param name="instance">中文含义：实例。使用位置：KnifeCombatModule.ActionSwitch(KnifeAction, long, double)。</param>
+    /// <param name="action">动作。</param>
+    /// <param name="instance">实例。</param>
     /// <param name="offset">中文含义：偏移量。</param>
     private void ActionSwitch(KnifeAction action, long instance, double offset)
     {
@@ -883,7 +938,10 @@ global::LeonAnimRig receiverValue10 = handConstraint;
         {
             guardEntryTurning = false;
         }
-        Record("动作切换", action.ToString());
+        if (recordDiagnostics)
+        {
+            Record("动作切换", action.ToString());
+        }
         pendingSwingSound = false;
         waitingCommitAnimation = action != KnifeAction.None;
         if (action == KnifeAction.None)
@@ -891,9 +949,9 @@ global::LeonAnimRig receiverValue10 = handConstraint;
             return;
         }
 
-        // callReceiver12（调用前缓存的玩家）：从玩家读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：KnifeCombatModule.ActionSwitch(KnifeAction, long, double)。
+        // 调用前缓存的玩家。
 global::LeonController callReceiver12 = player;
-        // selectedValue11（分支选出的里昂状态的近战攻击中）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：作为 LeonController.ChangeState(LeonState) 的参数、KnifeCombatModule.ActionSwitch(KnifeAction, long, double)。
+        // 分支选出的里昂状态的近战攻击中。
 global::LeonState selectedValue11;
         if (KnifeCombatRules.IsAttackValue(action))
         {
@@ -937,11 +995,11 @@ global::LeonState selectedValue11;
         }
 
         waitingCommitAnimation = false;
-        // action（动作）：使用位置：作为 Debug.LogError(object, Object) 的参数、作为 KnifeCombatConfiguration.Find(KnifeAction) 的参数、作为 KnifeCombatRules.IsReaction(KnifeAction) 的参数 等共 4 处。
+        // 动作。
 var action = CurrentAction;
-        // clip（动画片段）：保存 KnifeCombatConfiguration.Find(KnifeAction) 的返回结果，供当前步骤使用。使用位置：作为 LeonAnimationActionCoordinator.AdvanceIndependentKnifeTransaction(int, KnifeActionConfiguration, float, float) 的参数。
+        // 动画片段。
 var clip = configuration.Find(action);
-        // blend（混合）：使用位置：作为 LeonAnimationActionCoordinator.AdvanceIndependentKnifeTransaction(int, KnifeActionConfiguration, float, float) 的参数、作为 LeonWeaponVisualController.SetCombatKnifeGripPose(KnifeCombatConfiguration, bool, float) 的参数、KnifeCombatModule.CommitCurrentAnimation()。
+        // 混合。
 float blend;
         if (KnifeCombatRules.IsReaction(action))
         {
@@ -985,7 +1043,7 @@ float blend;
 
     /// <summary>EndTransaction 的业务处理入口；本方法直接依赖 LeonAnimationActionCoordinator.EndIndependentKnifeTransaction(int)、LeonCombat.EndTemporaryKnife(bool)、LeonWeaponVisualController.EndCombatKnifeGripPose()、LeonWeaponVisualController.SetKnifeModeVisible(bool)、object.ReferenceEquals(object, object)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 KnifeCombatModule.Interrupt(bool)、KnifeCombatModule.ResolveContactsAfterPose()；下游（含内部回调体） LeonAnimationActionCoordinator.EndIndependentKnifeTransaction(int)、LeonCombat.EndTemporaryKnife(bool)、LeonWeaponVisualController.EndCombatKnifeGripPose()、LeonWeaponVisualController.SetKnifeModeVisible(bool)、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="restoreAim">中文含义：是否恢复瞄准。使用位置：作为 LeonCombat.EndTemporaryKnife(bool) 的参数。</param>
+    /// <param name="restoreAim">是否恢复瞄准。</param>
     private void EndTransaction(bool restoreAim, bool releasedThrust = false)
     {
         if (transactionIdValue < 0)
@@ -993,25 +1051,25 @@ float blend;
             return;
         }
 
-        // id（编号）：使用位置：作为 LeonAnimationActionCoordinator.EndIndependentKnifeTransaction(int) 的参数。
+        // 编号。
 int id = transactionIdValue;
         transactionIdValue = -1;
         transactionKnife = null;
-        // receiverValue14（判空前缓存的当前玩家动画动作协调器）：从动作协调组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、KnifeCombatModule.EndTransaction(bool)。
+        // 判空前缓存的当前玩家动画动作协调器。
 global::LeonAnimationActionCoordinator receiverValue14 = coordinator;
         if (!global::System.Object.ReferenceEquals(receiverValue14, null))
         {
             receiverValue14.EndIndependentKnifeTransaction(id, releasedThrust);
         }
 
-        // receiverValue15（判空前缓存的武器视觉）：从武器视觉表现读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、KnifeCombatModule.EndTransaction(bool)。
+        // 判空前缓存的武器视觉。
 global::LeonWeaponVisualController receiverValue15 = weaponVisual;
         if (!global::System.Object.ReferenceEquals(receiverValue15, null))
         {
             receiverValue15.EndCombatKnifeGripPose();
         }
 
-        // receiverValue16（判空前缓存的武器视觉）：从武器视觉表现读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、KnifeCombatModule.EndTransaction(bool)。
+        // 判空前缓存的武器视觉。
 global::LeonWeaponVisualController receiverValue16 = weaponVisual;
         if (!global::System.Object.ReferenceEquals(receiverValue16, null))
         {
@@ -1019,7 +1077,7 @@ global::LeonWeaponVisualController receiverValue16 = weaponVisual;
             receiverValue16.SetKnifeModeVisible(combat != null && combat.IsKnifeMode);
         }
 
-        // receiverValue17（判空前缓存的战斗）：从战斗读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、KnifeCombatModule.EndTransaction(bool)。
+        // 判空前缓存的战斗。
 global::LeonCombat receiverValue17 = combat;
         if (!global::System.Object.ReferenceEquals(receiverValue17, null))
         {
@@ -1029,7 +1087,7 @@ global::LeonCombat receiverValue17 = combat;
 
     /// <summary>Interrupt 的业务处理入口；本方法直接依赖 KnifeCombatModule.EndTransaction(bool)、KnifeCombatRules.Interrupt()、LeonAnimatorDriver.SetKnifeLocalHitStop(bool)、List&lt;KnifeCombatModule.InputRecord&gt;.Clear()、List&lt;KnifeTraversedInterval&gt;.Clear()、object.ReferenceEquals(object, object)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 KnifeCombatModule.ActionInterrupted(AnimationActionTransaction)、KnifeCombatModule.CommitCurrentAnimation()、KnifeCombatModule.DeathInterrupt()、KnifeCombatModule.OnDisable()、KnifeCombatModule.ResolveContactsAfterPose() 等共 11 处；下游（含内部回调体） KnifeCombatModule.EndTransaction(bool)、KnifeCombatRules.Interrupt()、LeonAnimatorDriver.SetKnifeLocalHitStop(bool)、List&lt;KnifeCombatModule.InputRecord&gt;.Clear()、List&lt;KnifeTraversedInterval&gt;.Clear()、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="restoreAim">中文含义：是否恢复瞄准。使用位置：作为 KnifeCombatModule.EndTransaction(bool) 的参数。</param>
+    /// <param name="restoreAim">是否恢复瞄准。</param>
     public void Interrupt(bool restoreAim)
     {
         if (isEnd)
@@ -1044,14 +1102,14 @@ global::LeonCombat receiverValue17 = combat;
         currentRootSlice = default;
         attackKeyHold = false;
         hitStopEnd = 0;
-        // receiverValue18（判空前缓存的动画驱动）：从动画驱动读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、KnifeCombatModule.Interrupt(bool)。
+        // 判空前缓存的动画驱动。
 global::LeonAnimatorDriver receiverValue18 = animationDrive;
         if (!global::System.Object.ReferenceEquals(receiverValue18, null))
         {
             receiverValue18.SetKnifeLocalHitStop(false);
         }
 
-        // receiverValue19（判空前缓存的规则）：从规则读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、KnifeCombatModule.Interrupt(bool)。
+        // 判空前缓存的规则。
 global::GameArchitecture.KnifeCombatRules receiverValue19 = rules;
         if (!global::System.Object.ReferenceEquals(receiverValue19, null))
         {
@@ -1087,22 +1145,32 @@ global::GameArchitecture.KnifeCombatRules receiverValue19 = rules;
         startupOrientation = transform.rotation;
         assistTargetOrientation = startupOrientation;
         hasCorrectionAngle = 0;
-        // minimumAngle（最小角度）：使用位置：KnifeCombatModule.SelectAssistTarget()。
+        // 最小角度。
 float minimumAngle = configuration.assistTotalAngle * .5f;
         // collision（碰撞）：每轮从重叠球体的返回结果取得一个元素，仅代表当前这一项。使用位置：KnifeCombatModule.SelectAssistTarget()。
-foreach (var collision in Physics.OverlapSphere(transform.position + Vector3.up, configuration.assistDistance, configuration.hitMask, QueryTriggerInteraction.Collide))
+        Vector3 assistOrigin = transform.position + Vector3.up;
+        int assistCount = Physics.OverlapSphereNonAlloc(assistOrigin, configuration.assistDistance,
+            assistOverlaps, configuration.hitMask, QueryTriggerInteraction.Collide);
+        while (assistCount == assistOverlaps.Length)
         {
-            // enemy（敌人）：保存 Component.GetComponentInParent<VillagerController>() 的返回结果，供当前步骤使用。使用位置：作为 KnifeCombatModule.NoneOcclusion(Vector3, Transform) 的参数、KnifeCombatModule.SelectAssistTarget()。
+            System.Array.Resize(ref assistOverlaps, assistOverlaps.Length * 2);
+            assistCount = Physics.OverlapSphereNonAlloc(assistOrigin, configuration.assistDistance,
+                assistOverlaps, configuration.hitMask, QueryTriggerInteraction.Collide);
+        }
+        for (int index = 0; index < assistCount; index++)
+        {
+            Collider collision = assistOverlaps[index];
+            // 敌人。
 var enemy = collision.GetComponentInParent<VillagerController>();
             if (enemy == null || enemy.IsDead)
             {
                 continue;
             }
 
-            // direction（方向）：使用位置：作为 Quaternion.LookRotation(Vector3) 的参数、作为 Vector3.Angle(Vector3, Vector3) 的参数、KnifeCombatModule.SelectAssistTarget()。
+            // 方向。
 var direction = enemy.transform.position - transform.position;
             direction.y = 0;
-            // angle（角度）：保存 Vector3.Angle(Vector3, Vector3) 的返回结果，供当前步骤使用。使用位置：KnifeCombatModule.SelectAssistTarget()。
+            // 角度。
 float angle = Vector3.Angle(transform.forward, direction);
             if (direction.sqrMagnitude < .0001f || angle >= minimumAngle || !NoneOcclusion(enemy.transform.position + Vector3.up, enemy.transform))
             {
@@ -1146,9 +1214,9 @@ float angle = Vector3.Angle(transform.forward, direction);
             return;
         }
 
-        // stepSize（步进尺寸）：保存 Mathf.Min(float, float) 的返回结果，供当前步骤使用。使用位置：作为 Quaternion.RotateTowards(Quaternion, Quaternion, float) 的参数。
+        // 步进尺寸。
 float stepSize = Mathf.Min(120f * Time.deltaTime, configuration.maximumCorrectionAngle - hasCorrectionAngle);
-        // newOrientation（新朝向）：保存 Quaternion.RotateTowards(Quaternion, Quaternion, float) 的返回结果，供当前步骤使用。使用位置：作为 LeonAnimationActionCoordinator.CommitKnifeAssistOrientation(Quaternion) 的参数、作为 Quaternion.Angle(Quaternion, Quaternion) 的参数。
+        // 新朝向。
 var newOrientation = Quaternion.RotateTowards(transform.rotation, assistTargetOrientation, stepSize);
         hasCorrectionAngle += Quaternion.Angle(transform.rotation, newOrientation);
         coordinator.CommitKnifeAssistOrientation(newOrientation);
@@ -1156,12 +1224,12 @@ var newOrientation = Quaternion.RotateTowards(transform.rotation, assistTargetOr
 
     /// <summary>RegisterIncomingAttackPrompt 的业务处理入口；本方法直接依赖 Object.GetInstanceID()、object.ReferenceEquals(object, object)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyCombatModule.HandleOnParryWindowOpen()、EnemyCombatModule.LateUpdate()；下游（含内部回调体） Object.GetInstanceID()、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="incomingAttack">中文含义：传入攻击。使用位置：作为 Dictionary&lt;int, KnifeIncomingAttackContext&gt;.this[int] 的参数、KnifeCombatModule.RegisterIncomingAttackPrompt(KnifeIncomingAttackContext)。</param>
+    /// <param name="incomingAttack">传入攻击。</param>
     public void RegisterIncomingAttackPrompt(KnifeIncomingAttackContext incomingAttack)
     {
-        // receiverValue20（判空前缓存的传入攻击）：从传入攻击读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、KnifeCombatModule.RegisterIncomingAttackPrompt(KnifeIncomingAttackContext)。
+        // 判空前缓存的传入攻击。
 global::KnifeIncomingAttackContext receiverValue20 = incomingAttack;
-        // optionalValue21（条件访问得到的接收者值20的攻击者）：保存条件访问的结果，接收者为空时保持默认空值，非空时才执行原成员访问。使用位置：KnifeCombatModule.RegisterIncomingAttackPrompt(KnifeIncomingAttackContext)。
+        // 条件访问得到的接收者值20的攻击者。
 global::VillagerController optionalValue21;
         if (!global::System.Object.ReferenceEquals(receiverValue20, null))
         {
@@ -1180,7 +1248,7 @@ global::VillagerController optionalValue21;
 
     /// <summary>CloseIncomingAttackPrompt 的业务处理入口；本方法直接依赖 Dictionary&lt;int, KnifeIncomingAttackContext&gt;.Remove(int)、Object.GetInstanceID()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyCombatModule.HandleOnParryWindowClose()、EnemyCombatModule.LateUpdate()；下游（含内部回调体） Dictionary&lt;int, KnifeIncomingAttackContext&gt;.Remove(int)、Object.GetInstanceID()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="source">中文含义：来源村民敌人控制器。使用位置：作为 Dictionary&lt;int, KnifeIncomingAttackContext&gt;.Remove(int) 的参数、KnifeCombatModule.CloseIncomingAttackPrompt(VillagerController)。</param>
+    /// <param name="source">来源村民敌人控制器。</param>
     public void CloseIncomingAttackPrompt(VillagerController source)
     {
         if (source != null)
@@ -1189,7 +1257,7 @@ global::VillagerController optionalValue21;
         }
     }
 
-    /// <summary>中文含义：是否显示招架提示。使用位置：LeonCombat.IsParryPromptVisible.get。</summary>
+    /// <summary>是否显示招架提示。</summary>
     public bool ShowParryPrompt { get => CurrentPromptIncomingAttack != null; }
 
     internal KnifeParryPromptKind ReadParryPrompt(bool canReadInput, bool held)
@@ -1227,14 +1295,17 @@ global::VillagerController optionalValue21;
         if (lastParryPrompt != prompt)
         {
             lastParryPrompt = prompt;
-            Record("弹反提示", kind + "；敌人=" + candidate.attacker.name + "；攻击=" + candidate.attackId
-                + "；段=" + candidate.attackSegment + "；预计接触=" + candidate.expectedContactTime.ToString("F6"));
+            if (recordDiagnostics)
+            {
+                Record("弹反提示", kind + "；敌人=" + candidate.attacker.name + "；攻击=" + candidate.attackId
+                    + "；段=" + candidate.attackSegment + "；预计接触=" + candidate.expectedContactTime.ToString("F6"));
+            }
         }
 
         return kind;
     }
 
-    /// <summary>中文含义：当前提示传入攻击。使用位置：KnifeCombatModule.ShowParryPrompt.get。</summary>
+    /// <summary>当前提示传入攻击。</summary>
     public KnifeIncomingAttackContext CurrentPromptIncomingAttack
     {
         get
@@ -1274,7 +1345,7 @@ global::VillagerController optionalValue21;
 
     /// <summary>CommitIncomingAttack 的业务处理入口；本方法直接依赖 List&lt;KnifeIncomingAttackContext&gt;.Add(KnifeIncomingAttackContext)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyCombatModule.LateUpdate()、EnemyCombatModule.TryApplyAttackHit(int)；下游（含内部回调体） List&lt;KnifeIncomingAttackContext&gt;.Add(KnifeIncomingAttackContext)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="incomingAttack">中文含义：传入攻击。使用位置：作为 List&lt;KnifeIncomingAttackContext&gt;.Add(KnifeIncomingAttackContext) 的参数、KnifeCombatModule.CommitIncomingAttack(KnifeIncomingAttackContext)。</param>
+    /// <param name="incomingAttack">传入攻击。</param>
     public void CommitIncomingAttack(KnifeIncomingAttackContext incomingAttack)
     {
         if (incomingAttack != null)
@@ -1285,12 +1356,12 @@ global::VillagerController optionalValue21;
 
     /// <summary>IsFront 的业务处理入口；本方法直接依赖 Vector3.Angle(Vector3, Vector3)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 KnifeCombatModule.CurrentPromptIncomingAttack.get、KnifeCombatModule.ResolveIncomingAttack(KnifeIncomingAttackContext)；下游（含内部回调体） Vector3.Angle(Vector3, Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="incomingAttack">中文含义：传入攻击。使用位置：KnifeCombatModule.IsFront(KnifeIncomingAttackContext)。</param>
+    /// <param name="incomingAttack">传入攻击。</param>
     private bool IsFront(KnifeIncomingAttackContext incomingAttack)
     {
-        // origin（原点）：使用位置：KnifeCombatModule.IsFront(KnifeIncomingAttackContext)。
+        // 原点。
 Vector3 origin = incomingAttack.attacker.transform.position;
-        // playerPosition（玩家位置）：使用位置：KnifeCombatModule.IsFront(KnifeIncomingAttackContext)。
+        // 玩家位置。
 Vector3 playerPosition = transform.position;
         if (incomingAttack.hasAttackOrigin)
         {
@@ -1302,7 +1373,7 @@ Vector3 playerPosition = transform.position;
             playerPosition = incomingAttack.playerPositionAtContact;
         }
 
-        // direction（方向）：使用位置：作为 Vector3.Angle(Vector3, Vector3) 的参数、KnifeCombatModule.IsFront(KnifeIncomingAttackContext)。
+        // 方向。
 Vector3 direction = origin - playerPosition;
         direction.y = 0;
         if (direction.sqrMagnitude < .0001f)
@@ -1310,7 +1381,7 @@ Vector3 direction = origin - playerPosition;
             direction = -incomingAttack.direction;
         }
 
-        // forward（前向）：使用位置：作为 Vector3.Angle(Vector3, Vector3) 的参数、KnifeCombatModule.IsFront(KnifeIncomingAttackContext)。
+        // 前向。
 Vector3 forward = transform.forward;
         if (incomingAttack.hasPlayerFacingAtContact)
         {
@@ -1331,7 +1402,7 @@ Vector3 forward = transform.forward;
 
         incomingAttackQueue.Sort(( /* 中文含义：第一个小刀传入攻击上下文。 */first, /* 中文含义：第二个小刀传入攻击上下文。 */ second) =>
         {
-            // order（顺序）：保存 double.CompareTo(double) 的返回结果，供当前步骤使用。使用位置：作为 List<KnifeIncomingAttackContext>.Sort(Comparison<KnifeIncomingAttackContext>) 的参数。
+            // 顺序。
 int order = first.contactTime.CompareTo(second.contactTime);
             if (order != 0)
             {
@@ -1350,14 +1421,14 @@ int order = first.contactTime.CompareTo(second.contactTime);
 
             return first.attackSegment.CompareTo(second.attackSegment);
         });
-        // contacts（接触集合）：保存 List<KnifeIncomingAttackContext>.ToArray() 的返回结果，供当前步骤使用。使用位置：KnifeCombatModule.ResolveIncomingContacts()。
-KnifeIncomingAttackContext[] contacts = incomingAttackQueue.ToArray();
-        incomingAttackQueue.Clear();
-        // incomingAttack（传入攻击）：每轮从接触集合取得一个元素，仅代表当前这一项。使用位置：作为 KnifeCombatModule.ResolveIncomingAttack(KnifeIncomingAttackContext) 的参数。
-foreach (KnifeIncomingAttackContext incomingAttack in contacts)
+        List<KnifeIncomingAttackContext> contacts = incomingAttackQueue;
+        incomingAttackQueue = incomingAttackBatch;
+        incomingAttackBatch = contacts;
+        foreach (KnifeIncomingAttackContext incomingAttack in contacts)
         {
             ResolveIncomingAttack(incomingAttack);
         }
+        contacts.Clear();
     }
 
     /// <summary>ResolveContactsAfterPose 的业务处理入口；本方法直接依赖 KnifeCombatModule.DetectBlade(KnifeTraversedInterval)、KnifeCombatModule.EndTransaction(bool)、KnifeCombatModule.Interrupt(bool)、List&lt;KnifeTraversedInterval&gt;.Clear()、List&lt;KnifeTraversedInterval&gt;.ToArray()、Transform.TransformPoint(Vector3)，调用方通过参数与返回结果交接本次处理。</summary>
@@ -1370,17 +1441,17 @@ foreach (KnifeIncomingAttackContext incomingAttack in contacts)
         }
 
         // 回调可在扣血或断刀时清空原列表，因此在局部快照上完成当前帧。
-        // intervalSnapshot（间隔快照）：保存 List<KnifeTraversedInterval>.ToArray() 的返回结果，供当前步骤使用。使用位置：KnifeCombatModule.ResolveContactsAfterPose()。
-var intervalSnapshot = hitInterval.ToArray();
-        hitInterval.Clear();
-        if (intervalSnapshot.Length > 0)
+        List<KnifeTraversedInterval> intervalSnapshot = hitInterval;
+        hitInterval = hitIntervalBatch;
+        hitIntervalBatch = intervalSnapshot;
+        if (intervalSnapshot.Count > 0)
         {
             Physics.SyncTransforms();
         }
-        // knifeBreakTimeInstance（小刀破坏时间实例）：使用位置：KnifeCombatModule.ResolveContactsAfterPose()。
-long knifeBreakTimeInstance = -1;
+        // 小刀破坏时间实例。
+        long knifeBreakTimeInstance = -1;
         // interval（间隔）：每轮从间隔快照取得一个元素，仅代表当前这一项。使用位置：作为 KnifeCombatModule.DetectBlade(KnifeTraversedInterval) 的参数、KnifeCombatModule.ResolveContactsAfterPose()。
-foreach (var interval in intervalSnapshot)
+        foreach (var interval in intervalSnapshot)
         {
             if (!CanExecute || transactionIdValue < 0 || knifeBreakTimeInstance >= 0 && knifeBreakTimeInstance != interval.instance)
             {
@@ -1393,6 +1464,8 @@ foreach (var interval in intervalSnapshot)
                 knifeBreakTimeInstance = interval.instance;
             }
         }
+
+        intervalSnapshot.Clear();
 
         if (Active && !ValidKnife)
         {
@@ -1427,7 +1500,7 @@ foreach (var interval in intervalSnapshot)
 
     /// <summary>ResolveIncomingAttack 的业务处理入口；本方法直接依赖 Action&lt;KnifeIncomingAttackContext, KnifeParryOutcome, KnifeParryFailure, KnifeParryAttemptSnapshot&gt;.Invoke(KnifeIncomingAttackContext, KnifeParryOutcome, KnifeParryFailure, KnifeParryAttemptSnapshot)、double.ToString(string)、EnemyCombatModule.ApplyKnifeParryStagger(bool)、float.ToString(string)、HashSet&lt;(int, long, int)&gt;.Add((int, long, int))、HashSet&lt;(int, long, int)&gt;.Clear()、KnifeCombatModule.CommitCurrentAnimation() 等共 22 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 KnifeCombatModule.ResolveIncomingContacts()；下游（含内部回调体） Action&lt;KnifeIncomingAttackContext, KnifeParryOutcome, KnifeParryFailure, KnifeParryAttemptSnapshot&gt;.Invoke(KnifeIncomingAttackContext, KnifeParryOutcome, KnifeParryFailure, KnifeParryAttemptSnapshot)、double.ToString(string)、EnemyCombatModule.ApplyKnifeParryStagger(bool)、float.ToString(string)、HashSet&lt;(int, long, int)&gt;.Add((int, long, int))、HashSet&lt;(int, long, int)&gt;.Clear()、KnifeCombatModule.CommitCurrentAnimation() 等共 22 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="incomingAttack">中文含义：传入攻击。使用位置：作为 Action&lt;KnifeIncomingAttackContext, KnifeParryOutcome, KnifeParryFailure, KnifeParryAttemptSnapshot&gt;.Invoke(KnifeIncomingAttackContext, KnifeParryOutcome, KnifeParryFailure, KnifeParryAttemptSnapshot) 的参数、作为 KnifeCombatModule.IsFront(KnifeIncomingAttackContext) 的参数、作为 KnifeCombatModule.Record(string, string) 的参数 等共 8 处。</param>
+    /// <param name="incomingAttack">传入攻击。</param>
     internal void ResolveIncomingAttack(KnifeIncomingAttackContext incomingAttack)
     {
         if (!incomingAttack.Valid)
@@ -1435,7 +1508,7 @@ foreach (var interval in intervalSnapshot)
             return;
         }
 
-        // key（键）：使用位置：作为 HashSet<(int, long, int)>.Add((int, long, int)) 的参数。
+        // 键。
 var key = (incomingAttack.attacker.GetInstanceID(), incomingAttack.attackId, incomingAttack.attackSegment);
         if (!resolvedIncomingAttack.Add(key))
         {
@@ -1454,11 +1527,11 @@ var key = (incomingAttack.attacker.GetInstanceID(), incomingAttack.attackId, inc
             resolvedIncomingAttack.Add(key);
         }
 
-        // result（当前小刀招架结果）：使用位置：作为 Action<KnifeIncomingAttackContext, KnifeParryOutcome, KnifeParryFailure, KnifeParryAttemptSnapshot>.Invoke(KnifeIncomingAttackContext, KnifeParryOutcome, KnifeParryFailure, KnifeParryAttemptSnapshot) 的参数、作为 KnifeCombatModule.Record(string, string) 的参数、作为 KnifeCombatRules.ParryReaction(KnifeParryOutcome, KnifeIncomingAttackCategory) 的参数 等共 4 处。
+        // 当前小刀招架结果。
 KnifeParryOutcome result = KnifeParryOutcome.Failure;
-        // failure（失败）：使用位置：作为 Action<KnifeIncomingAttackContext, KnifeParryOutcome, KnifeParryFailure, KnifeParryAttemptSnapshot>.Invoke(KnifeIncomingAttackContext, KnifeParryOutcome, KnifeParryFailure, KnifeParryAttemptSnapshot) 的参数、作为 KnifeCombatModule.Record(string, string) 的参数、KnifeCombatModule.ResolveIncomingAttack(KnifeIncomingAttackContext)。
+        // 失败。
 KnifeParryFailure failure = KnifeParryFailure.Unavailable;
-        // attempt（尝试）：使用位置：作为 Action<KnifeIncomingAttackContext, KnifeParryOutcome, KnifeParryFailure, KnifeParryAttemptSnapshot>.Invoke(KnifeIncomingAttackContext, KnifeParryOutcome, KnifeParryFailure, KnifeParryAttemptSnapshot) 的参数、作为 KnifeCombatModule.Record(string, string) 的参数、KnifeCombatModule.ResolveIncomingAttack(KnifeIncomingAttackContext)。
+        // 尝试。
 KnifeParryAttemptSnapshot attempt = rules.CurrentAttempt;
         if (CanExecute && ValidKnife)
         {
@@ -1467,7 +1540,10 @@ KnifeParryAttemptSnapshot attempt = rules.CurrentAttempt;
             attempt = rules.LastResolvedAttempt;
         }
 
-        Record("来袭裁定", result + "；原因=" + failure + "；敌人=" + incomingAttack.attacker.name + "；攻击=" + incomingAttack.attackId + "；段=" + incomingAttack.attackSegment + "；输入序号=" + attempt.sequence + "；按下=" + attempt.pressedAt.ToString("F6") + "；接触=" + incomingAttack.contactTime.ToString("F6") + "；年龄=" + (incomingAttack.contactTime - attempt.pressedAt).ToString("F6") + "；动画秒=" + incomingAttack.animationTime.ToString("F4") + "；依据=" + incomingAttack.contactEvidence);
+        if (recordDiagnostics)
+        {
+            Record("来袭裁定", result + "；原因=" + failure + "；敌人=" + incomingAttack.attacker.name + "；攻击=" + incomingAttack.attackId + "；段=" + incomingAttack.attackSegment + "；输入序号=" + attempt.sequence + "；按下=" + attempt.pressedAt.ToString("F6") + "；接触=" + incomingAttack.contactTime.ToString("F6") + "；年龄=" + (incomingAttack.contactTime - attempt.pressedAt).ToString("F6") + "；动画秒=" + incomingAttack.animationTime.ToString("F4") + "；依据=" + incomingAttack.contactEvidence);
+        }
         if (ParryResolved != null)
         {
             ParryResolved(incomingAttack, result, failure, attempt);
@@ -1489,12 +1565,12 @@ KnifeParryAttemptSnapshot attempt = rules.CurrentAttempt;
             return;
         }
 
-        // perfect（是否完美）：使用位置：作为 EnemyCombatModule.ApplyKnifeParryStagger(bool) 的参数、作为 LeonCombat.PresentKnifeSparks(Vector3, Vector3, bool) 的参数、KnifeCombatModule.ResolveIncomingAttack(KnifeIncomingAttackContext)。
+        // 是否完美。
 bool perfect = result == KnifeParryOutcome.Perfect;
         rules.ParryReaction(result, incomingAttack.category);
         CommitCurrentAnimation();
         incomingAttack.attacker.combatModule.ApplyKnifeParryStagger(perfect);
-        // selectedValue22（分支选出的配置的完美招架消耗）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：作为 KnifeCombatModule.DeductDurability(int) 的参数、KnifeCombatModule.ResolveIncomingAttack(KnifeIncomingAttackContext)。
+        // 分支选出的配置的完美招架消耗。
 int selectedValue22;
         if (perfect)
         {
@@ -1506,10 +1582,13 @@ int selectedValue22;
         }
 
         DeductDurability(selectedValue22);
-        // contact（接触）：使用位置：作为 KnifeCombatModule.PlaySound(AudioClip, Vector3) 的参数、作为 LeonCombat.PresentKnifeSparks(Vector3, Vector3, bool) 的参数。
+        // 接触。
 Vector3 contact = incomingAttack.contactPosition;
-        Record("弹反反馈", "输入序号=" + attempt.sequence + "；攻击=" + incomingAttack.attackId + "；段=" + incomingAttack.attackSegment + "；等级=" + result + "；开始=" + Time.timeAsDouble.ToString("F6"));
-        // selectedValue23（分支选出的配置的完美招架声音）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：作为 KnifeCombatModule.PlaySound(AudioClip, Vector3) 的参数、KnifeCombatModule.ResolveIncomingAttack(KnifeIncomingAttackContext)。
+        if (recordDiagnostics)
+        {
+            Record("弹反反馈", "输入序号=" + attempt.sequence + "；攻击=" + incomingAttack.attackId + "；段=" + incomingAttack.attackSegment + "；等级=" + result + "；开始=" + Time.timeAsDouble.ToString("F6"));
+        }
+        // 分支选出的配置的完美招架声音。
 global::UnityEngine.AudioClip selectedValue23;
         if (perfect)
         {
@@ -1528,7 +1607,7 @@ global::UnityEngine.AudioClip selectedValue23;
 
         PlayConfiguredSound(parry, selectedValue23, contact);
         combat.PresentKnifeSparks(contact, incomingAttack.direction, perfect);
-        // hitStop（命中顿帧）：使用位置：作为 KnifeHitStop.Pause(float) 的参数、作为 Math.Max(double, double) 的参数、KnifeCombatModule.ResolveIncomingAttack(KnifeIncomingAttackContext)。
+        // 命中顿帧。
 float hitStop;
         if (perfect)
         {
@@ -1543,18 +1622,18 @@ float hitStop;
         hitStopEnd = Math.Max(hitStopEnd, hitStopBegin + hitStop);
         animationDrive.SetKnifeLocalHitStop(true);
         coordinator.StopCurrentHorizontalMotion();
-        // receiverValue25（判空前缓存的传入攻击的攻击者的小刀局部命中顿帧）：从传入攻击的攻击者的小刀局部命中顿帧读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、KnifeCombatModule.ResolveIncomingAttack(KnifeIncomingAttackContext)。
+        // 判空前缓存的传入攻击的攻击者的小刀局部命中顿帧。
 global::KnifeHitStop receiverValue25 = incomingAttack.attacker.knifeLocalHitStop;
         if (!global::System.Object.ReferenceEquals(receiverValue25, null))
         {
             receiverValue25.Pause(hitStop);
         }
 
-        // receiverValue26（判空前缓存的玩家的摄像机控制器）：从玩家的摄像机控制器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、KnifeCombatModule.ResolveIncomingAttack(KnifeIncomingAttackContext)。
+        // 判空前缓存的玩家的摄像机控制器。
 global::RE4CameraController receiverValue26 = player.CameraController;
         if (!global::System.Object.ReferenceEquals(receiverValue26, null))
         {
-            // argumentValue29（按原顺序缓存的实参浮点计算）：按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 RE4CameraController.Shake(float, float) 的参数、KnifeCombatModule.ResolveIncomingAttack(KnifeIncomingAttackContext)。
+            // 按原顺序缓存的实参浮点计算。
 float argumentValue29;
             if (perfect)
             {
@@ -1565,7 +1644,7 @@ float argumentValue29;
                 argumentValue29 = .035f;
             }
 
-            // selectedValue28（分支选出的浮点计算）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：作为 RE4CameraController.Shake(float, float) 的参数、KnifeCombatModule.ResolveIncomingAttack(KnifeIncomingAttackContext)。
+            // 分支选出的浮点计算。
 float selectedValue28;
             if (perfect)
             {
@@ -1582,7 +1661,7 @@ float selectedValue28;
 
     /// <summary>DetectBlade 的业务处理入口；本方法直接依赖 Action&lt;KnifeMeleeHitNotification&gt;.Invoke(KnifeMeleeHitNotification)、Collider.ClosestPoint(Vector3)、Component.GetComponent&lt;EnemyHitbox&gt;()、Component.GetComponentInParent&lt;DestructibleWoodenBox&gt;()、Component.GetComponentInParent&lt;VillagerController&gt;()、DamageResolutionModule.CommitEnemyHit(VillagerController, HitboxType, float, Vector3, Vector3)、DestructibleWoodenBox.TakeDamage(float, Vector3) 等共 38 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 KnifeCombatModule.ResolveContactsAfterPose()；下游（含内部回调体） Action&lt;KnifeMeleeHitNotification&gt;.Invoke(KnifeMeleeHitNotification)、Collider.ClosestPoint(Vector3)、Component.GetComponent&lt;EnemyHitbox&gt;()、Component.GetComponentInParent&lt;DestructibleWoodenBox&gt;()、Component.GetComponentInParent&lt;VillagerController&gt;()、DamageResolutionModule.CommitEnemyHit(VillagerController, HitboxType, float, Vector3, Vector3)、DestructibleWoodenBox.TakeDamage(float, Vector3) 等共 38 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="interval">中文含义：间隔。使用位置：作为 HashSet&lt;long&gt;.Add(long) 的参数、作为 HashSet&lt;long&gt;.Contains(long) 的参数、作为 KnifeActionConfiguration.GetTrajectory(double, out Vector3, out Vector3) 的参数 等共 9 处。</param>
+    /// <param name="interval">间隔。</param>
     internal bool TryReadBladeContact(out Vector3 point)
     {
         point = default;
@@ -1637,9 +1716,17 @@ float selectedValue28;
             float ratio = segment / (float)Mathf.Max(1, segments);
             Vector3 bladeBase = Vector3.Lerp(startBase, endBase, ratio);
             Vector3 bladeTip = Vector3.Lerp(startTip, endTip, ratio);
-            foreach (Collider collision in Physics.OverlapCapsule(bladeBase, bladeTip, configuration.bladeDetectRadius,
-                         configuration.hitMask, QueryTriggerInteraction.Collide))
+            int hitCount = Physics.OverlapCapsuleNonAlloc(bladeBase, bladeTip, configuration.bladeDetectRadius,
+                bladeOverlaps, configuration.hitMask, QueryTriggerInteraction.Collide);
+            while (hitCount == bladeOverlaps.Length)
             {
+                System.Array.Resize(ref bladeOverlaps, bladeOverlaps.Length * 2);
+                hitCount = Physics.OverlapCapsuleNonAlloc(bladeBase, bladeTip, configuration.bladeDetectRadius,
+                    bladeOverlaps, configuration.hitMask, QueryTriggerInteraction.Collide);
+            }
+            for (int index = 0; index < hitCount; index++)
+            {
+                Collider collision = bladeOverlaps[index];
                 if (collision == null || collision.transform.IsChildOf(transform))
                 {
                     continue;
@@ -1650,10 +1737,19 @@ float selectedValue28;
                 if (collision is MeshCollider mesh && !mesh.convex && mesh.GetComponentInParent<VillageLegTrap>() != null)
                 {
                     var blade = bladeTip - bladeBase;
-                    point = mesh.Raycast(new Ray(bladeBase, blade.normalized), out var bladeHit, blade.magnitude)
-                        ? bladeHit.point : mesh.bounds.ClosestPoint(middle);
+                    if (mesh.Raycast(new Ray(bladeBase, blade.normalized), out var bladeHit, blade.magnitude))
+                    {
+                        point = bladeHit.point;
+                    }
+                    else
+                    {
+                        point = mesh.bounds.ClosestPoint(middle);
+                    }
                 }
-                else point = collision.ClosestPoint(middle);
+                else
+                {
+                    point = collision.ClosestPoint(middle);
+                }
                 contactList.Add(new ContactCandidate
                 {
                     collider = collision,
@@ -1664,20 +1760,64 @@ float selectedValue28;
             }
         }
 
-        // 水平挥刀的烘焙轨迹够不到地面。朝脚边夹子下刀仍须在攻击有效帧内，
-        // 准心命中夹体，且人物到接触点之间无遮挡。
+        // 水平挥刀的烘焙轨迹够不到地面，且快速前刺途中压低准心时也需要由准心射线补充脚边夹子与近距木箱判定。
         if (player.playerCamera != null)
         {
-            var view = player.playerCamera.transform;
-            if (view.forward.y < 0f && Physics.Raycast(view.position, view.forward, out var groundHit, 8f,
-                configuration.hitMask, QueryTriggerInteraction.Ignore)
-                && groundHit.collider.GetComponentInParent<VillageLegTrap>() != null)
+            Transform view = player.playerCamera.transform;
+            bool isThrust = KnifeCombatRules.IsThrust(interval.action);
+            if (view.forward.y < 0f || isThrust)
             {
-                var reach = groundHit.point - transform.position;
-                if (Mathf.Abs(reach.y) <= .6f && Vector3.ProjectOnPlane(reach, Vector3.up).sqrMagnitude <= .95f * .95f
-                    && Vector3.Dot(transform.forward, reach) >= 0f)
-                    contactList.Add(new ContactCandidate { collider = groundHit.collider, position = groundHit.point,
-                        distance = reach.magnitude, time = interval.end });
+                int hitCount = Physics.RaycastNonAlloc(view.position, view.forward, viewFallbackHits, 8f,
+                    configuration.hitMask, QueryTriggerInteraction.Ignore);
+                RaycastHit closestFallbackHit = default;
+                float closestFallbackDistance = float.PositiveInfinity;
+                for (int hitIndex = 0; hitIndex < hitCount; hitIndex++)
+                {
+                    RaycastHit candidate = viewFallbackHits[hitIndex];
+                    if (candidate.collider == null || candidate.transform.IsChildOf(transform))
+                    {
+                        continue;
+                    }
+
+                    if (candidate.distance < closestFallbackDistance)
+                    {
+                        closestFallbackDistance = candidate.distance;
+                        closestFallbackHit = candidate;
+                    }
+                }
+
+                if (closestFallbackHit.collider != null)
+                {
+                    bool isTrap = view.forward.y < 0f && closestFallbackHit.collider.GetComponentInParent<VillageLegTrap>() != null;
+                    bool isWoodenBox = isThrust && closestFallbackHit.collider.GetComponentInParent<DestructibleWoodenBox>() != null;
+                    if (isTrap || isWoodenBox)
+                    {
+                        Vector3 reach = closestFallbackHit.point - transform.position;
+                        Vector3 planarReach = Vector3.ProjectOnPlane(reach, Vector3.up);
+                        float maxPlanarRadius = 0.95f;
+                        float minVerticalOffset = -0.60f;
+                        float maxVerticalOffset = 0.60f;
+                        if (isWoodenBox)
+                        {
+                            maxPlanarRadius = 1.55f;
+                            minVerticalOffset = -0.65f;
+                            maxVerticalOffset = 1.30f;
+                        }
+
+                        if (reach.y >= minVerticalOffset && reach.y <= maxVerticalOffset
+                            && planarReach.sqrMagnitude <= maxPlanarRadius * maxPlanarRadius
+                            && Vector3.Dot(transform.forward, planarReach) >= 0f)
+                        {
+                            contactList.Add(new ContactCandidate
+                            {
+                                collider = closestFallbackHit.collider,
+                                position = closestFallbackHit.point,
+                                distance = reach.magnitude,
+                                time = interval.end
+                            });
+                        }
+                    }
+                }
             }
         }
         contactList.Sort(( /* 中文含义：第一个接触候选。 */first, /* 中文含义：第二个接触候选。 */ second) =>
@@ -1694,16 +1834,16 @@ float selectedValue28;
         // contact（接触）：每轮从接触列表取得一个元素，仅代表当前这一项。使用位置：作为 DamageResolutionModule.CommitEnemyHit(VillagerController, HitboxType, float, Vector3, Vector3) 的参数、作为 DestructibleWoodenBox.TakeDamage(float, Vector3) 的参数、作为 KnifeCombatModule.NoneOcclusion(Vector3, Transform) 的参数 等共 7 处。
 foreach (var contact in contactList)
         {
-            // collision（碰撞）：使用位置：KnifeCombatModule.DetectBlade(KnifeTraversedInterval)。
+            // 碰撞。
 var collision = contact.collider;
             if (collision == null)
             {
                 continue;
             }
 
-            // bodyPart（身体部位）：保存 Component.GetComponent<EnemyHitbox>() 的返回结果，供当前步骤使用。使用位置：KnifeCombatModule.DetectBlade(KnifeTraversedInterval)。
+            // 身体部位。
 var bodyPart = collision.GetComponent<EnemyHitbox>();
-            // enemy（敌人）：使用位置：作为 DamageResolutionModule.CommitEnemyHit(VillagerController, HitboxType, float, Vector3, Vector3) 的参数、作为 KnifeCombatModule.Record(string, string) 的参数、作为 KnifeMeleeHitNotification.KnifeMeleeHitNotification(long, VillagerController, HitboxType, Vector3) 的参数 等共 4 处。
+            // 敌人。
 global::VillagerController enemy;
             if (bodyPart != null)
             {
@@ -1720,12 +1860,12 @@ global::VillagerController enemy;
                 continue;
             }
 
-            // caseValue（公文包值）：保存 Component.GetComponentInParent<DestructibleWoodenBox>() 的返回结果，供当前步骤使用。使用位置：KnifeCombatModule.DetectBlade(KnifeTraversedInterval)。
+            // 公文包值。
 var caseValue = collision.GetComponentInParent<DestructibleWoodenBox>();
             var trap = collision.GetComponentInParent<VillageLegTrap>();
             if (trap != null && collision.isTrigger)
                 continue;
-            // target（目标变换节点）：使用位置：作为 KnifeCombatModule.NoneOcclusion(Vector3, Transform) 的参数、KnifeCombatModule.DetectBlade(KnifeTraversedInterval)。
+            // 目标变换节点。
 global::UnityEngine.Transform target;
             if (enemy != null)
             {
@@ -1743,7 +1883,7 @@ global::UnityEngine.Transform target;
                 }
             }
 
-            // targetId（目标编号）：保存 Object.GetInstanceID() 的返回结果，供当前步骤使用。使用位置：KnifeCombatModule.DetectBlade(KnifeTraversedInterval)。
+            // 目标编号。
 int targetId = target.GetInstanceID();
             if (hitTargets.Contains((interval.instance, targetId)) || !NoneOcclusion(contact.position, target))
             {
@@ -1758,7 +1898,7 @@ int targetId = target.GetInstanceID();
                 }
 
                 hitTargets.Add((interval.instance, targetId));
-                // hitBodyPart（命中身体部位）：使用位置：作为 DamageResolutionModule.CommitEnemyHit(VillagerController, HitboxType, float, Vector3, Vector3) 的参数、作为 KnifeCombatModule.Record(string, string) 的参数、作为 KnifeMeleeHitNotification.KnifeMeleeHitNotification(long, VillagerController, HitboxType, Vector3) 的参数 等共 4 处。
+                // 命中身体部位。
 global::HitboxType hitBodyPart;
                 if (bodyPart != null)
                 {
@@ -1779,7 +1919,7 @@ global::HitboxType hitBodyPart;
                 float damage = weapon.knife.data.baseDamage * InventoryManager.GetKnifeDamageScale(CurrentKnife());
                 DamageResolutionModule.CommitEnemyHit(enemy, hitBodyPart, damage,
                     contact.position, -transform.forward, impact != null, bloodEffect);
-                // receiverValue37（判空前缓存的已提交命中）：从已提交命中读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、KnifeCombatModule.DetectBlade(KnifeTraversedInterval)。
+                // 判空前缓存的已提交命中。
 global::System.Action<global::KnifeMeleeHitNotification> receiverValue37 = CommittedHit;
                 if (!global::System.Object.ReferenceEquals(receiverValue37, null))
                 {
@@ -1796,7 +1936,10 @@ global::System.Action<global::KnifeMeleeHitNotification> receiverValue37 = Commi
                     DeductDurability(configuration.attackConsumption);
                 }
 
-                Record("刀刃命中", enemy.name + "；部位=" + hitBodyPart + "；刀=" + interval.instance);
+                if (recordDiagnostics)
+                {
+                    Record("刀刃命中", enemy.name + "；部位=" + hitBodyPart + "；刀=" + interval.instance);
+                }
                 if (KnifeCombatRules.IsThrust(interval.action))
                 {
                     if (enemy.currentHealth < previousHealth)
@@ -1859,17 +2002,20 @@ global::System.Action<global::KnifeMeleeHitNotification> receiverValue37 = Commi
 
     /// <summary>NoneOcclusion 的业务处理入口；本方法直接依赖 Component.GetComponentInParent&lt;VillagerController&gt;()、Physics.RaycastAll(Vector3, Vector3, float, int, QueryTriggerInteraction)、Transform.IsChildOf(Transform)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 KnifeCombatModule.DetectBlade(KnifeTraversedInterval)、KnifeCombatModule.SelectAssistTarget()；下游（含内部回调体） Component.GetComponentInParent&lt;VillagerController&gt;()、Physics.RaycastAll(Vector3, Vector3, float, int, QueryTriggerInteraction)、Transform.IsChildOf(Transform)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="point">中文含义：点。使用位置：KnifeCombatModule.NoneOcclusion(Vector3, Transform)。</param>
-    /// <param name="target">中文含义：目标变换节点。使用位置：作为 Transform.IsChildOf(Transform) 的参数。</param>
+    /// <param name="point">点。</param>
+    /// <param name="target">目标变换节点。</param>
     private bool NoneOcclusion(Vector3 point, Transform target)
     {
-        // startPoint（起始点）：使用位置：作为 Physics.RaycastAll(Vector3, Vector3, float, int, QueryTriggerInteraction) 的参数、KnifeCombatModule.NoneOcclusion(Vector3, Transform)。
+        // 起始点。
 Vector3 startPoint = transform.position + Vector3.up * 1.15f;
-        // direction（方向）：使用位置：作为 Physics.RaycastAll(Vector3, Vector3, float, int, QueryTriggerInteraction) 的参数、KnifeCombatModule.NoneOcclusion(Vector3, Transform)。
+        // 方向。
 Vector3 direction = point - startPoint;
         // hit（命中）：每轮从射线检测全部的返回结果取得一个元素，仅代表当前这一项。使用位置：KnifeCombatModule.NoneOcclusion(Vector3, Transform)。
-foreach (var hit in Physics.RaycastAll(startPoint, direction.normalized, direction.magnitude, configuration.hitMask, QueryTriggerInteraction.Ignore))
+        RaycastHit[] hits = knifeOcclusionHits.Raycast(startPoint, direction.normalized, direction.magnitude,
+            configuration.hitMask, QueryTriggerInteraction.Ignore, out int hitCount);
+        for (int index = 0; index < hitCount; index++)
         {
+            RaycastHit hit = hits[index];
             if (hit.transform.IsChildOf(transform) || hit.transform.IsChildOf(target))
             {
                 continue;
@@ -1891,7 +2037,7 @@ foreach (var hit in Physics.RaycastAll(startPoint, direction.normalized, directi
 
     /// <summary>DeductDurability 的业务处理入口；本方法直接依赖 InventoryManager.TryConsumeDurability(string, int, out bool)、KnifeCombatModule.PlaySound(AudioClip, Vector3)、KnifeCombatModule.Record(string, string)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 KnifeCombatModule.DetectBlade(KnifeTraversedInterval)、KnifeCombatModule.ResolveIncomingAttack(KnifeIncomingAttackContext)；下游（含内部回调体） InventoryManager.TryConsumeDurability(string, int, out bool)、KnifeCombatModule.PlaySound(AudioClip, Vector3)、KnifeCombatModule.Record(string, string)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="count">中文含义：数量。使用位置：作为 InventoryManager.TryConsumeDurability(string, int, out bool) 的参数。</param>
+    /// <param name="count">数量。</param>
     private void DeductDurability(int count)
     {
         if (inventory != null && inventory.TryConsumeKnife(CurrentKnife(), count, out bool breakage) && breakage)
@@ -1912,13 +2058,16 @@ foreach (var hit in Physics.RaycastAll(startPoint, direction.normalized, directi
             }
             audio.PlaySFX(fracture);
         }
-        Record("断刀", "耐久已归零");
+        if (recordDiagnostics)
+        {
+            Record("断刀", "耐久已归零");
+        }
     }
 
     /// <summary>PlaySound 的业务处理入口；本方法直接依赖 AudioManager.PlaySFX3D(AudioClip, Vector3)、object.ReferenceEquals(object, object)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 KnifeCombatModule.ActionSwitch(KnifeAction, long, double)、KnifeCombatModule.DeductDurability(int)、KnifeCombatModule.DetectBlade(KnifeTraversedInterval)、KnifeCombatModule.ResolveIncomingAttack(KnifeIncomingAttackContext)；下游（含内部回调体） AudioManager.PlaySFX3D(AudioClip, Vector3)、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="sound">中文含义：声音。使用位置：作为 AudioManager.PlaySFX3D(AudioClip, Vector3) 的参数、KnifeCombatModule.PlaySound(AudioClip, Vector3)。</param>
-    /// <param name="position">中文含义：位置。使用位置：作为 AudioManager.PlaySFX3D(AudioClip, Vector3) 的参数。</param>
+    /// <param name="sound">声音。</param>
+    /// <param name="position">位置。</param>
     private AudioEventData ResolveBladeImpact(KnifeAction action, HitboxType bodyPart)
     {
         bool head = bodyPart == HitboxType.Head;
@@ -1956,7 +2105,7 @@ foreach (var hit in Physics.RaycastAll(startPoint, direction.normalized, directi
     {
         if (sound != null)
         {
-            // receiverValue38（判空前缓存的音频管理器的实例）：从音频管理器的实例读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、KnifeCombatModule.PlaySound(AudioClip, Vector3)。
+            // 判空前缓存的音频管理器的实例。
 global::AudioManager receiverValue38 = AudioManager.Instance;
             if (!global::System.Object.ReferenceEquals(receiverValue38, null))
             {
@@ -1967,8 +2116,8 @@ global::AudioManager receiverValue38 = AudioManager.Instance;
 
     /// <summary>Record 的业务处理入口；本方法直接依赖 double.ToString(string, IFormatProvider)、Queue&lt;string&gt;.Dequeue()、Queue&lt;string&gt;.Enqueue(string)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 KnifeCombatModule.ActionSwitch(KnifeAction, long, double)、KnifeCombatModule.DeductDurability(int)、KnifeCombatModule.DetectBlade(KnifeTraversedInterval)、KnifeCombatModule.ResolveIncomingAttack(KnifeIncomingAttackContext)、KnifeCombatModule.Update()；下游（含内部回调体） double.ToString(string, IFormatProvider)、Queue&lt;string&gt;.Dequeue()、Queue&lt;string&gt;.Enqueue(string)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="category">中文含义：类别。使用位置：作为 Queue&lt;string&gt;.Enqueue(string) 的参数。</param>
-    /// <param name="content">中文含义：内容。使用位置：作为 Queue&lt;string&gt;.Enqueue(string) 的参数。</param>
+    /// <param name="category">类别。</param>
+    /// <param name="content">内容。</param>
     private void Record(string category, string content)
     {
         if (!recordDiagnostics)

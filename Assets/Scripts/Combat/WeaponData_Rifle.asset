@@ -39,3 +39,6 @@ MonoBehaviour:
   impactEffect: {fileID: 0}
   crosshairConfig: {fileID: 11400000, guid: f2a95b0dc19840f0a361904e02f07f5b, type: 2}
   hudIcon: {fileID: 512617896, guid: b299fd5861985164fbd05274f15bb8fd, type: 3}
+  stowedRootInSpine:
+    position: {x: 0.14684105, y: -0.0358204, z: -0.2157033}
+    rotation: {x: 0.7020603, y: 0.17825188, z: -0.48713255, w: 0.48789397}

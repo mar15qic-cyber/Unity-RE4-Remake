@@ -112,7 +112,13 @@ public partial class LeonQTECoordinator
 
     private bool FitsGroundFinisherAt(NativePairPlayback pair, IEnemyQTEParticipant target, Vector3 offset, float yawOffset = 0f)
     {
-        float approachDistance = config.groundFinisherDistance + config.clearanceRadius;
+        float maxDistance = config.groundFinisherDistance;
+        if (target is VillagerQTEParticipant sawTarget && sawTarget.controller != null
+            && sawTarget.controller.missionEnemyType == MissionEnemyType.Sawman)
+        {
+            maxDistance = Mathf.Max(maxDistance, 2.25f);
+        }
+        float approachDistance = maxDistance + config.clearanceRadius;
         bool fits = pair.FitGroundFinisher(transform, target.Root, approachDistance, config.maximumHeightDifference, offset, yawOffset)
             && NativePairStageHasClearance(pair, target, true);
         if (fits)
@@ -135,8 +141,13 @@ public partial class LeonQTECoordinator
         {
             return false;
         }
-        Camera camera = Camera.main;
-        if (camera == null || !IsPromptVisible(camera, selected, selected.Root.position + Vector3.up * .8f))
+        Camera camera = ReadPromptCamera();
+        float promptHeight = 0.8f;
+        if (selected.controller != null && selected.controller.missionEnemyType == MissionEnemyType.Sawman)
+        {
+            promptHeight = 1.25f;
+        }
+        if (camera == null || !IsPromptVisible(camera, selected, selected.Root.position + Vector3.up * promptHeight))
         {
             return false;
         }
@@ -156,9 +167,11 @@ public partial class LeonQTECoordinator
 
         Vector3 bottom = from + Vector3.up * (config.clearanceRadius + .08f);
         Vector3 top = from + Vector3.up * 1.6f;
-        foreach (var hit in Physics.CapsuleCastAll(bottom, top, config.clearanceRadius, delta / distance,
-            distance, config.clearanceMask, QueryTriggerInteraction.Ignore))
+        RaycastHit[] hits = groundFinisherHits.CapsuleCast(bottom, top, config.clearanceRadius, delta / distance,
+            distance, config.clearanceMask, QueryTriggerInteraction.Ignore, out int hitCount);
+        for (int index = 0; index < hitCount; index++)
         {
+            RaycastHit hit = hits[index];
             if (!ContainsCollider(playerColliders, hit.collider) && !ContainsCollider(target.Colliders, hit.collider))
             {
                 return false;
@@ -248,8 +261,9 @@ public partial class LeonQTECoordinator
         }
         if (victim.IsAlive && victim.controller.missionEnemyType == MissionEnemyType.Sawman && nativePair != null)
         {
-            // 1020 的敌方释放标记在 79 帧，存活时从此处退出，致死则继续倒地。
-            nativePair.SurvivorReleaseFrame = 79;
+            // 1020 配对动作由 140 帧交接，存活电锯人完整播完压头与拔刀全程后再平滑过渡到受击硬直。
+            nativePair.SurvivorReleaseFrame = 136;
+            nativePair.SurvivorReleaseFadeDuration = 0.28f;
             nativePair.HoldEnemyResultPose = false;
         }
         Vector3 contact = Vector3.Lerp(bladeBase, bladeTip, .7f);

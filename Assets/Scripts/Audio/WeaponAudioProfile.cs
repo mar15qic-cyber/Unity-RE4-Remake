@@ -11,19 +11,19 @@ public class WeaponAudioProfile : ScriptableObject
     [Header("武器标识")]
     [Tooltip("武器类型标识")]
     public string weaponId;
-    /// <summary>中文含义：射击音效事件。使用位置：作为 AudioManager.Play3D(AudioEventData, Vector3) 的参数、WeaponAudio.PlayFire()。</summary>
+    /// <summary>射击音效事件。</summary>
     [Header("射击")]
     [Tooltip("射击音效事件")]
     public AudioEventData fireEvent;
-    /// <summary>中文含义：弹匣为空时扣动扳机的卡壳音效事件。使用位置：作为 AudioManager.Play3D(AudioEventData, Vector3) 的参数、WeaponAudio.PlayDryFire()。</summary>
+    /// <summary>弹匣为空时扣动扳机的卡壳音效事件。</summary>
     [Header("卡壳")]
     [Tooltip("弹匣为空时扣动扳机的卡壳音效事件")]
     public AudioEventData dryFireEvent;
-    /// <summary>中文含义：换弹音效事件。使用位置：作为 AudioManager.Play3D(AudioEventData, Vector3) 的参数、WeaponAudio.PlayReload()。</summary>
+    /// <summary>换弹音效事件。</summary>
     [Header("换弹")]
     [Tooltip("换弹音效事件")]
     public AudioEventData reloadEvent;
-    /// <summary>中文含义：近战攻击音效事件（无素材时留空）。使用位置：作为 AudioManager.Play3D(AudioEventData, Vector3) 的参数、WeaponAudio.PlayMelee()。</summary>
+    /// <summary>近战攻击音效事件（无素材时留空）。</summary>
     [Header("近战")]
     [Tooltip("近战攻击音效事件（无素材时留空）")]
     public AudioEventData meleeEvent;

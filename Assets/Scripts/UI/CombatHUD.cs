@@ -9,7 +9,7 @@ public class CombatHUD : Singleton<CombatHUD>
     /// <summary>中文含义：切换场景时是否保留此单例对象。</summary>
     protected override bool Persistent => false;
 
-    /// <summary>中文含义：激光点积。使用位置：CombatHUD.DisableLegacyCrosshair()、CombatHUD.SetLaserVisible(bool)。</summary>
+    /// <summary>激光点积。</summary>
     [Header("Laser Dot")]
     public RectTransform laserDot;
     /// <summary>中文含义：激光点积基础尺寸。</summary>
@@ -21,41 +21,42 @@ public class CombatHUD : Singleton<CombatHUD>
     /// <summary>中文含义：弹药分组。</summary>
     [Header("Ammo Display")]
     public CanvasGroup ammoGroup;
-    /// <summary>中文含义：弹药文字。使用位置：作为 CombatHUD.ConfigureAmmoText(Text) 的参数、CombatHUD.BuildOrRepairHealthGauge()、CombatHUD.TryInitializeHealthGauge()。</summary>
+    /// <summary>弹药文字。</summary>
     public Text ammoText;
-    /// <summary>中文含义：武器名称文字。使用位置：作为 CombatHUD.ConfigureWeaponName(Text) 的参数、CombatHUD.BuildOrRepairHealthGauge()、CombatHUD.RefreshAmmoText()。</summary>
+    /// <summary>武器名称文字。</summary>
     public Text weaponNameText;
     /// <summary>中文含义：弹药显示持续时间。</summary>
     public float ammoShowDuration = 3f;
     /// <summary>中文含义：弹药淡入淡出速度。</summary>
     public float ammoFadeSpeed = 4f;
-    /// <summary>中文含义：武器图标。使用位置：作为 CombatHUD.ConfigureWeaponIcon(Image) 的参数、CombatHUD.BuildOrRepairHealthGauge()、CombatHUD.TryInitializeHealthGauge()。</summary>
+    /// <summary>武器图标。</summary>
     [Header("武器图标")]
     public Image weaponIcon;
-    /// <summary>中文含义：手枪图标。使用位置：CombatHUD.ResolveWeaponSprite(WeaponType, Sprite)、WeaponWheelUI.ResolveIcon(WeaponWheelUI.WeaponSlot, WeaponBase)。</summary>
+    /// <summary>手枪图标。</summary>
     public Sprite pistolIcon;
-    /// <summary>中文含义：步枪图标。使用位置：CombatHUD.ResolveWeaponSprite(WeaponType, Sprite)、WeaponWheelUI.ResolveIcon(WeaponWheelUI.WeaponSlot, WeaponBase)。</summary>
+    /// <summary>步枪图标。</summary>
     public Sprite rifleIcon;
-    /// <summary>中文含义：霰弹枪图标。使用位置：CombatHUD.ResolveWeaponSprite(WeaponType, Sprite)、WeaponWheelUI.ResolveIcon(WeaponWheelUI.WeaponSlot, WeaponBase)。</summary>
+    /// <summary>霰弹枪图标。</summary>
     public Sprite shotgunIcon;
-    /// <summary>中文含义：小刀图标。使用位置：CombatHUD.BuildOrRepairParryPrompt()、CombatHUD.ConfigureKnifeStatus()、CombatHUD.ResolveWeaponSprite(WeaponType, Sprite) 等共 5 处。</summary>
+    /// <summary>小刀图标。</summary>
     public Sprite knifeIcon;
-    /// <summary>中文含义：小刀状态精灵图。右下角状态栏使用的战斗小刀切片。为空时会从现有界面图集自动加载。使用位置：CombatHUD.ConfigureKnifeStatus()、CombatHUD.LoadKnifeStatusSprites()、CombatHUD.UpdateKnifeDurability()。</summary>
+    /// <summary>小刀状态精灵图。右下角状态栏使用的战斗小刀切片。为空时会从现有界面图集自动加载。</summary>
     [Tooltip("右下角状态栏使用的战斗小刀切片。为空时会从现有界面图集自动加载。")]
     public Sprite knifeStatusSprite;
-    /// <summary>中文含义：损坏小刀状态精灵图。小刀破损后使用的状态栏切片。为空时会沿用战斗小刀切片并降低亮度。使用位置：CombatHUD.LoadKnifeStatusSprites()、CombatHUD.UpdateKnifeDurability()。</summary>
+    /// <summary>损坏小刀状态精灵图。小刀破损后使用的状态栏切片。为空时会沿用战斗小刀切片并降低亮度。</summary>
     [Tooltip("小刀破损后使用的状态栏切片。为空时会沿用战斗小刀切片并降低亮度。")]
     public Sprite brokenKnifeStatusSprite;
-    /// <summary>中文含义：血迹暗角。使用位置：CombatHUD.Start()、CombatHUD.UpdateBloodVignette()。</summary>
+    /// <summary>血迹暗角。</summary>
     [Header("Blood Vignette")]
     public CanvasGroup bloodVignette;
-    /// <summary>中文含义：最大暗角透明度。使用位置：作为 Mathf.Min(float, float) 的参数。</summary>
+    /// <summary>最大暗角透明度。</summary>
     public float maxVignetteAlpha = 0.2f;
-    /// <summary>中文含义：暗角平滑速度。使用位置：作为 Mathf.Lerp(float, float, float) 的参数。</summary>
+    /// <summary>暗角平滑速度。</summary>
     public float vignetteSmoothSpeed = 3f;
-    /// <summary>中文含义：里昂。使用位置：作为 CombatHUD.UpdateHealthFill(float, float, bool) 的参数、作为 Mathf.Clamp01(float) 的参数、作为 Mathf.Max(float, float) 的参数 等共 10 处。</summary>
+    /// <summary>里昂。</summary>
+    private LeonInputBridge parryInputBridge;
     private LeonController leon;
-    /// <summary>中文含义：管理当前装备与武器切换的组件。使用位置：CombatHUD.RefreshAmmoText()、CombatHUD.TryInitializeHealthGauge()、CombatHUD.UpdateAmmoDisplay()。</summary>
+    /// <summary>管理当前装备与武器切换的组件。</summary>
     private LeonWeaponHandler weaponHandler;
     private const float GaugeHoldDuration = 2.5f;
     private const float GaugeFadeDuration = 0.25f;
@@ -89,101 +90,101 @@ public class CombatHUD : Singleton<CombatHUD>
     private float knifeLossUntil;
     private float knifeBreakUntil;
     private bool hasBrokenKnife;
-    /// <summary>中文含义：命中闪光透明度。使用位置：作为 Mathf.Max(float, float) 的参数、作为 Mathf.MoveTowards(float, float, float) 的参数、CombatHUD.HitFlash() 等共 4 处。</summary>
+    /// <summary>命中闪光透明度。</summary>
     [Header("受击闪烁")]
     private float hitFlashAlpha;
-    /// <summary>中文含义：命中闪光淡入淡出速度。使用位置：作为 Mathf.MoveTowards(float, float, float) 的参数。</summary>
+    /// <summary>命中闪光淡入淡出速度。</summary>
     public float hitFlashFadeSpeed = 3f;
-    /// <summary>中文含义：命中闪光最大透明度。使用位置：CombatHUD.HitFlash()。</summary>
+    /// <summary>命中闪光最大透明度。</summary>
     [Range(0f, 0.5f)]
     public float hitFlashMaxAlpha = 0.3f;
-    /// <summary>中文含义：血量环外框（Sprite 68）。使用位置：作为 CombatHUD.StretchToParent(RectTransform) 的参数、CombatHUD.BuildOrRepairHealthGauge()。</summary>
+    /// <summary>血量环外框（Sprite 68）。</summary>
     [Header("血量环 UI")]
     [Tooltip("血量环外框（Sprite 68）")]
     public Image healthFrame;
-    /// <summary>中文含义：血量环填充（Sprite 69）。使用位置：CombatHUD.BuildOrRepairHealthGauge()。</summary>
+    /// <summary>血量环填充（Sprite 69）。</summary>
     [Tooltip("血量环填充（Sprite 69）")]
     public Image healthFill;
-    /// <summary>中文含义：血量环平滑变化速度。使用位置：作为 Mathf.Lerp(float, float, float) 的参数。</summary>
+    /// <summary>血量环平滑变化速度。</summary>
     [Tooltip("血量环平滑变化速度")]
     public float healthLerpSpeed = 3f;
-    /// <summary>中文含义：血量环尺寸（像素）。使用位置：CombatHUD.BuildOrRepairHealthGauge()。</summary>
+    /// <summary>血量环尺寸（像素）。</summary>
     [Tooltip("血量环尺寸（像素）")]
     public float healthGaugeSize = 140f;
-    /// <summary>中文含义：血量环相对屏幕右下角的偏移。使用位置：CombatHUD.BuildOrRepairHealthGauge()。</summary>
+    /// <summary>血量环相对屏幕右下角的偏移。</summary>
     [Tooltip("血量环相对屏幕右下角的偏移")]
     public Vector2 healthGaugeOffset = new Vector2(-134f, 138f);
-    /// <summary>中文含义：低血量时填充颜色。使用位置：CombatHUD.UpdateHealthFill(float, float, bool)。</summary>
+    /// <summary>低血量时填充颜色。</summary>
     [Tooltip("低血量时填充颜色")]
     public Color healthLowColor = new Color(0.8f, 0.1f, 0.1f, 1f);
-    /// <summary>中文含义：正常血量时填充颜色。使用位置：作为 CombatHUD.ConfigureRing(HealthRingGraphic, Color, float) 的参数、CombatHUD.UpdateHealthFill(float, float, bool)。</summary>
+    /// <summary>正常血量时填充颜色。</summary>
     [Tooltip("正常血量时填充颜色")]
     public Color healthNormalColor = new Color(0.48f, 0.70f, 0.38f, 0.96f);
-    /// <summary>中文含义：生命武器环总根节点，留空时会在运行时自动建立。使用位置：作为 CombatHUD.CreateImage(string, RectTransform) 的参数、作为 CombatHUD.CreateRing(string, RectTransform) 的参数、作为 CombatHUD.CreateText(string, RectTransform, int) 的参数 等共 5 处。</summary>
+    /// <summary>生命武器环总根节点，留空时会在运行时自动建立。</summary>
     [Header("RE4 风格生命武器环")]
     [Tooltip("生命武器环总根节点，留空时会在运行时自动建立。")]
     public RectTransform healthGaugeRoot;
-    /// <summary>中文含义：暗色的完整圆弧背景。使用位置：作为 CombatHUD.ConfigureRing(HealthRingGraphic, Color, float) 的参数、CombatHUD.BuildOrRepairHealthGauge()。</summary>
+    /// <summary>暗色的完整圆弧背景。</summary>
     [Tooltip("暗色的完整圆弧背景。")]
     public HealthRingGraphic healthRingBackground;
-    /// <summary>中文含义：随当前血量线性缩短的绿色圆弧。使用位置：作为 CombatHUD.ConfigureRing(HealthRingGraphic, Color, float) 的参数、CombatHUD.BuildOrRepairHealthGauge()、CombatHUD.UpdateHealthFill(float, float, bool) 等共 4 处。</summary>
+    /// <summary>随当前血量线性缩短的绿色圆弧。</summary>
     [Tooltip("随当前血量线性缩短的绿色圆弧。")]
     public HealthRingGraphic healthRingValue;
-    /// <summary>中文含义：常驻的小刀状态图标，后续可接入耐久度。使用位置：CombatHUD.BuildOrRepairHealthGauge()、CombatHUD.ConfigureKnifeStatus()、CombatHUD.UpdateKnifeDurability()。</summary>
+    /// <summary>常驻的小刀状态图标，后续可接入耐久度。</summary>
     [Tooltip("常驻的小刀状态图标，后续可接入耐久度。")]
     public Image knifeStatusIcon;
-    /// <summary>中文含义：小刀耐久度线，当前默认显示满耐久。使用位置：CombatHUD.ConfigureKnifeStatus()、CombatHUD.UpdateKnifeDurability()。</summary>
+    /// <summary>小刀耐久度线，当前默认显示满耐久。</summary>
     [Tooltip("小刀耐久度线，当前默认显示满耐久。")]
     public Image knifeStatusLine;
-    /// <summary>中文含义：生命环背景颜色。使用位置：作为 CombatHUD.ConfigureRing(HealthRingGraphic, Color, float) 的参数。</summary>
+    /// <summary>生命环背景颜色。</summary>
     public Color healthRingBackgroundColor = new Color(0.62f, 0.65f, 0.67f, 0.48f);
-    /// <summary>中文含义：生命环厚度。使用位置：CombatHUD.ConfigureRing(HealthRingGraphic, Color, float)。</summary>
+    /// <summary>生命环厚度。</summary>
     public float healthRingThickness = 8f;
-    /// <summary>中文含义：招架提示分组。使用位置：CombatHUD.BuildOrRepairParryPrompt()、CombatHUD.UpdateParryPrompt()。</summary>
+    /// <summary>招架提示分组。</summary>
     [Header("弹反提示")]
     public CanvasGroup parryPromptGroup;
-    /// <summary>中文含义：招架提示键标签。使用位置：作为 CombatHUD.StretchToParent(RectTransform) 的参数、CombatHUD.BuildOrRepairParryPrompt()、CombatHUD.UpdateParryPrompt()。</summary>
+    /// <summary>招架提示键标签。</summary>
     public Text parryPromptKeyLabel;
     private Image parryKeyImage;
     private KnifeParryPromptKind shownParryPrompt;
-    /// <summary>中文含义：招架提示动作标签。使用位置：CombatHUD.BuildOrRepairParryPrompt()。</summary>
+    /// <summary>招架提示动作标签。</summary>
     public Text parryPromptActionLabel;
-    /// <summary>中文含义：招架提示小刀图标。使用位置：CombatHUD.BuildOrRepairParryPrompt()。</summary>
+    /// <summary>招架提示小刀图标。</summary>
     public Image parryPromptKnifeIcon;
-    /// <summary>中文含义：招架提示偏移量。使用位置：CombatHUD.BuildOrRepairParryPrompt()。</summary>
+    /// <summary>招架提示偏移量。</summary>
     public Vector2 parryPromptOffset = new Vector2(-255f, 150f);
-    /// <summary>中文含义：招架提示颜色。使用位置：CombatHUD.BuildOrRepairParryPrompt()、CombatHUD.UpdateParryPrompt()。</summary>
+    /// <summary>招架提示颜色。</summary>
     public Color parryPromptColor = new Color(0.96f, 0.97f, 0.98f, 0.96f);
-    /// <summary>中文含义：显示生命。使用位置：作为 CombatHUD.UpdateHealthFill(float, float, bool) 的参数、作为 Mathf.Abs(float) 的参数、作为 Mathf.Lerp(float, float, float) 的参数 等共 6 处。</summary>
+    /// <summary>显示生命。</summary>
     private float displayHealth;
-    /// <summary>中文含义：内部武器图标。使用位置：CombatHUD.RefreshAmmoText()、CombatHUD.TryInitializeHealthGauge()。</summary>
+    /// <summary>内部武器图标。</summary>
     private Image innerWeaponIcon;
-    /// <summary>中文含义：内部弹药文字。使用位置：CombatHUD.RefreshAmmoText()、CombatHUD.TryInitializeHealthGauge()。</summary>
+    /// <summary>内部弹药文字。</summary>
     private Text innerAmmoText;
-    /// <summary>中文含义：生命计量条是否已初始化。使用位置：CombatHUD.TryInitializeHealthGauge()、CombatHUD.Update()。</summary>
+    /// <summary>生命计量条是否已初始化。</summary>
     private bool healthGaugeInitialized;
     // 战斗信息缓存：只有原始数据变化时才更新文本和图标。
-    /// <summary>中文含义：弹药缓存是否已初始化。使用位置：CombatHUD.RefreshAmmoText()、CombatHUD.Update()。</summary>
+    /// <summary>弹药缓存是否已初始化。</summary>
     private bool ammoCacheInitialized;
-    /// <summary>中文含义：缓存当前弹匣弹量。使用位置：CombatHUD.RefreshAmmoText()。</summary>
+    /// <summary>缓存当前弹匣弹量。</summary>
     private int cachedCurrentAmmo;
-    /// <summary>中文含义：缓存背包备弹。使用位置：CombatHUD.RefreshAmmoText()。</summary>
+    /// <summary>缓存背包备弹。</summary>
     private int cachedReserveAmmo;
-    /// <summary>中文含义：缓存弹药武器类型。使用位置：CombatHUD.RefreshAmmoText()。</summary>
+    /// <summary>缓存弹药武器类型。</summary>
     private WeaponType cachedAmmoWeaponType;
-    /// <summary>中文含义：缓存弹药武器。使用位置：CombatHUD.RefreshAmmoText()。</summary>
+    /// <summary>缓存弹药武器。</summary>
     private WeaponBase cachedAmmoWeapon;
-    /// <summary>中文含义：缓存弹药精灵图。使用位置：CombatHUD.RefreshAmmoText()。</summary>
+    /// <summary>缓存弹药精灵图。</summary>
     private Sprite cachedAmmoSprite;
-    /// <summary>中文含义：缓存生命比例。使用位置：作为 Mathf.Abs(float) 的参数、CombatHUD.UpdateHealthFill(float, float, bool)。</summary>
+    /// <summary>缓存生命比例。</summary>
     private float cachedHealthRatio = -1f;
-    /// <summary>中文含义：缓存生命颜色。使用位置：CombatHUD.UpdateHealthFill(float, float, bool)。</summary>
+    /// <summary>缓存生命颜色。</summary>
     private Color cachedHealthColor;
-    /// <summary>中文含义：是否缓存生命所在目标。使用位置：CombatHUD.UpdateHealthFill(float, float, bool)。</summary>
+    /// <summary>是否缓存生命所在目标。</summary>
     private bool cachedHealthAtTarget;
-    /// <summary>中文含义：生命视觉表现缓存是否已初始化。使用位置：CombatHUD.Update()、CombatHUD.UpdateHealthFill(float, float, bool)。</summary>
+    /// <summary>生命视觉表现缓存是否已初始化。</summary>
     private bool healthVisualCacheInitialized;
-    /// <summary>中文含义：战斗。使用位置：CombatHUD.TryInitializeHealthGauge()、CombatHUD.UpdateParryPrompt()。</summary>
+    /// <summary>战斗。</summary>
     private LeonCombat combat;
     /// <summary>实现基类的 OnDestroy 重写入口；框架调用后按本方法分支执行，并通过下游成员完成协作。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） Singleton&lt;CombatHUD&gt;.OnDestroy()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
@@ -278,7 +279,7 @@ public class CombatHUD : Singleton<CombatHUD>
             leon = LeonController.Instance;
             if (leon == null)
             {
-                // playerObject（玩家对象）：保存 GameObject.FindGameObjectWithTag(string) 的返回结果，供当前步骤使用。使用位置：CombatHUD.TryInitializeHealthGauge()。
+                // 玩家对象。
 GameObject playerObject = GameObject.FindGameObjectWithTag("Player");
                 if (playerObject != null)
                 {
@@ -302,6 +303,7 @@ GameObject playerObject = GameObject.FindGameObjectWithTag("Player");
             return;
         }
 
+        parryInputBridge = leon.GetComponent<LeonInputBridge>();
         weaponWheel = leon.GetComponent<WeaponWheelUI>();
         BuildOrRepairHealthGauge();
         innerWeaponIcon = weaponIcon;
@@ -320,7 +322,7 @@ GameObject playerObject = GameObject.FindGameObjectWithTag("Player");
     {
         if (healthGaugeRoot == null)
         {
-            // existing（已有）：保存 Transform.Find(string) 的返回结果，供当前步骤使用。使用位置：CombatHUD.BuildOrRepairHealthGauge()。
+            // 已有。
 Transform existing = transform.Find("RE4生命武器环");
             if (existing != null)
             {
@@ -330,18 +332,18 @@ Transform existing = transform.Find("RE4生命武器环");
 
         if (healthGaugeRoot == null)
         {
-            // root（根游戏对象）：使用位置：CombatHUD.BuildOrRepairHealthGauge()。
+            // 根游戏对象。
 GameObject root = new GameObject("RE4生命武器环", typeof(RectTransform));
             root.transform.SetParent(transform, false);
             healthGaugeRoot = root.GetComponent<RectTransform>();
         }
 
-        // bottomRight（右下角）：使用位置：CombatHUD.BuildOrRepairHealthGauge()。
+        // 右下角。
 Vector2 bottomRight = new Vector2(1f, 0f);
         healthGaugeRoot.anchorMin = bottomRight;
         healthGaugeRoot.anchorMax = bottomRight;
         healthGaugeRoot.pivot = bottomRight;
-        // resolvedSize（解算后的尺寸）：使用位置：CombatHUD.BuildOrRepairHealthGauge()。
+        // 解算后的尺寸。
 float resolvedSize;
         if (healthGaugeSize < 140f || healthGaugeSize > 360f)
         {
@@ -353,9 +355,9 @@ float resolvedSize;
             resolvedSize = healthGaugeSize;
         }
 
-        // resolvedOffset（解算后的偏移量）：使用位置：CombatHUD.BuildOrRepairHealthGauge()。
+        // 解算后的偏移量。
 Vector2 resolvedOffset = healthGaugeOffset;
-        // legacyOffset（是否旧版偏移量）：使用位置：CombatHUD.BuildOrRepairHealthGauge()。
+        // 是否旧版偏移量。
 bool legacyOffset = resolvedOffset.x > -16f || resolvedOffset.x < -240f || resolvedOffset.y < 16f || resolvedOffset.y > 240f;
         if (legacyOffset)
         {
@@ -423,14 +425,14 @@ bool legacyOffset = resolvedOffset.x > -16f || resolvedOffset.x < -240f || resol
 
     /// <summary>CreateRing 的业务处理入口；本方法直接依赖 CombatHUD.StretchToParent(RectTransform)、GameObject.GameObject(string, params Type[])、GameObject.GetComponent&lt;HealthRingGraphic&gt;()、GameObject.GetComponent&lt;RectTransform&gt;()、Transform.SetParent(Transform, bool)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 CombatHUD.BuildOrRepairHealthGauge()；下游（含内部回调体） CombatHUD.StretchToParent(RectTransform)、GameObject.GameObject(string, params Type[])、GameObject.GetComponent&lt;HealthRingGraphic&gt;()、GameObject.GetComponent&lt;RectTransform&gt;()、Transform.SetParent(Transform, bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="objectName">中文含义：对象名称。使用位置：作为 GameObject.GameObject(string, params Type[]) 的参数。</param>
-    /// <param name="parent">中文含义：父级。使用位置：作为 Transform.SetParent(Transform, bool) 的参数。</param>
+    /// <param name="objectName">对象名称。</param>
+    /// <param name="parent">父级。</param>
     HealthRingGraphic CreateRing(string objectName, RectTransform parent)
     {
-        // ring（环）：使用位置：CombatHUD.CreateRing(string, RectTransform)。
+        // 环。
 GameObject ring = new GameObject(objectName, typeof(RectTransform), typeof(CanvasRenderer), typeof(HealthRingGraphic));
         ring.transform.SetParent(parent, false);
-        // rect（矩形）：保存 GameObject.GetComponent<RectTransform>() 的返回结果，供当前步骤使用。使用位置：作为 CombatHUD.StretchToParent(RectTransform) 的参数。
+        // 矩形。
 RectTransform rect = ring.GetComponent<RectTransform>();
         StretchToParent(rect);
         return ring.GetComponent<HealthRingGraphic>();
@@ -438,9 +440,9 @@ RectTransform rect = ring.GetComponent<RectTransform>();
 
     /// <summary>ConfigureRing 的业务处理入口；本方法直接依赖 CombatHUD.StretchToParent(RectTransform)、HealthRingGraphic.SetFillAmount(float)、Transform.SetParent(Transform, bool)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 CombatHUD.BuildOrRepairHealthGauge()；下游（含内部回调体） CombatHUD.StretchToParent(RectTransform)、HealthRingGraphic.SetFillAmount(float)、Transform.SetParent(Transform, bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="ring">中文含义：环。使用位置：CombatHUD.ConfigureRing(HealthRingGraphic, Color, float)。</param>
-    /// <param name="color">中文含义：颜色。使用位置：CombatHUD.ConfigureRing(HealthRingGraphic, Color, float)。</param>
-    /// <param name="fill">中文含义：填充。使用位置：作为 HealthRingGraphic.SetFillAmount(float) 的参数。</param>
+    /// <param name="ring">环。</param>
+    /// <param name="color">颜色。</param>
+    /// <param name="fill">填充。</param>
     void ConfigureRing(HealthRingGraphic ring, Color color, float fill)
     {
         if (ring == null)
@@ -448,7 +450,7 @@ RectTransform rect = ring.GetComponent<RectTransform>();
             return;
         }
 
-        // rect（矩形）：使用位置：作为 CombatHUD.StretchToParent(RectTransform) 的参数、CombatHUD.ConfigureRing(HealthRingGraphic, Color, float)。
+        // 矩形。
 RectTransform rect = ring.rectTransform;
         rect.SetParent(healthGaugeRoot, false);
         StretchToParent(rect);
@@ -464,14 +466,14 @@ RectTransform rect = ring.rectTransform;
 
     /// <summary>CreateImage 的业务处理入口；本方法直接依赖 GameObject.GameObject(string, params Type[])、GameObject.GetComponent&lt;Image&gt;()、Transform.SetParent(Transform, bool)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 CombatHUD.BuildOrRepairHealthGauge()、CombatHUD.BuildOrRepairParryPrompt()、CombatHUD.ConfigureKnifeStatus()；下游（含内部回调体） GameObject.GameObject(string, params Type[])、GameObject.GetComponent&lt;Image&gt;()、Transform.SetParent(Transform, bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="objectName">中文含义：对象名称。使用位置：作为 GameObject.GameObject(string, params Type[]) 的参数。</param>
-    /// <param name="parent">中文含义：父级。使用位置：作为 Transform.SetParent(Transform, bool) 的参数。</param>
+    /// <param name="objectName">对象名称。</param>
+    /// <param name="parent">父级。</param>
     Image CreateImage(string objectName, RectTransform parent)
     {
-        // imageObject（图像对象）：使用位置：CombatHUD.CreateImage(string, RectTransform)。
+        // 图像对象。
 GameObject imageObject = new GameObject(objectName, typeof(RectTransform), typeof(Image));
         imageObject.transform.SetParent(parent, false);
-        // image（图像）：保存 GameObject.GetComponent<Image>() 的返回结果，供当前步骤使用。使用位置：CombatHUD.CreateImage(string, RectTransform)。
+        // 图像。
 Image image = imageObject.GetComponent<Image>();
         image.raycastTarget = false;
         return image;
@@ -479,15 +481,15 @@ Image image = imageObject.GetComponent<Image>();
 
     /// <summary>CreateText 的业务处理入口；本方法直接依赖 GameObject.GameObject(string, params Type[])、GameObject.GetComponent&lt;Text&gt;()、Resources.GetBuiltinResource&lt;Font&gt;(string)、Transform.SetParent(Transform, bool)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 CombatHUD.BuildOrRepairHealthGauge()、CombatHUD.BuildOrRepairParryPrompt()；下游（含内部回调体） GameObject.GameObject(string, params Type[])、GameObject.GetComponent&lt;Text&gt;()、Resources.GetBuiltinResource&lt;Font&gt;(string)、Transform.SetParent(Transform, bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="objectName">中文含义：对象名称。使用位置：作为 GameObject.GameObject(string, params Type[]) 的参数。</param>
-    /// <param name="parent">中文含义：父级。使用位置：作为 Transform.SetParent(Transform, bool) 的参数。</param>
-    /// <param name="fontSize">中文含义：字体尺寸。使用位置：CombatHUD.CreateText(string, RectTransform, int)。</param>
+    /// <param name="objectName">对象名称。</param>
+    /// <param name="parent">父级。</param>
+    /// <param name="fontSize">字体尺寸。</param>
     Text CreateText(string objectName, RectTransform parent, int fontSize)
     {
-        // textObject（文字对象）：使用位置：CombatHUD.CreateText(string, RectTransform, int)。
+        // 文字对象。
 GameObject textObject = new GameObject(objectName, typeof(RectTransform), typeof(Text));
         textObject.transform.SetParent(parent, false);
-        // text（文字）：保存 GameObject.GetComponent<Text>() 的返回结果，供当前步骤使用。使用位置：CombatHUD.CreateText(string, RectTransform, int)。
+        // 文字。
 Text text = textObject.GetComponent<Text>();
         text.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
         text.fontSize = fontSize;
@@ -498,7 +500,7 @@ Text text = textObject.GetComponent<Text>();
 
     /// <summary>ConfigureWeaponIcon 的业务处理入口；本方法直接依赖 Transform.SetAsLastSibling()、Transform.SetParent(Transform, bool)、Vector2.Vector2(float, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 CombatHUD.BuildOrRepairHealthGauge()；下游（含内部回调体） Transform.SetAsLastSibling()、Transform.SetParent(Transform, bool)、Vector2.Vector2(float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="image">中文含义：图像。使用位置：CombatHUD.ConfigureWeaponIcon(Image)。</param>
+    /// <param name="image">图像。</param>
     void ConfigureWeaponIcon(Image image)
     {
         if (image == null)
@@ -518,7 +520,7 @@ Text text = textObject.GetComponent<Text>();
 
     /// <summary>ConfigureAmmoText 的业务处理入口；本方法直接依赖 Color.Color(float, float, float, float)、Transform.SetAsLastSibling()、Transform.SetParent(Transform, bool)、Vector2.Vector2(float, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 CombatHUD.BuildOrRepairHealthGauge()；下游（含内部回调体） Color.Color(float, float, float, float)、Transform.SetAsLastSibling()、Transform.SetParent(Transform, bool)、Vector2.Vector2(float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="text">中文含义：文字。使用位置：CombatHUD.ConfigureAmmoText(Text)。</param>
+    /// <param name="text">文字。</param>
     void ConfigureAmmoText(Text text)
     {
         if (text == null)
@@ -593,7 +595,7 @@ Text text = textObject.GetComponent<Text>();
     {
         if (parryPromptGroup == null)
         {
-            // existing（已有）：保存 Transform.Find(string) 的返回结果，供当前步骤使用。使用位置：CombatHUD.BuildOrRepairParryPrompt()。
+            // 已有。
 Transform existing = transform.Find("弹反提示");
             if (existing != null)
             {
@@ -603,7 +605,7 @@ Transform existing = transform.Find("弹反提示");
 
         if (parryPromptGroup == null)
         {
-            // root（根游戏对象）：使用位置：CombatHUD.BuildOrRepairParryPrompt()。
+            // 根游戏对象。
 GameObject root = new GameObject("弹反提示", typeof(RectTransform), typeof(CanvasGroup));
             root.transform.SetParent(transform, false);
             parryPromptGroup = root.GetComponent<CanvasGroup>();
@@ -669,7 +671,7 @@ GameObject root = new GameObject("弹反提示", typeof(RectTransform), typeof(C
 
     /// <summary>StretchToParent 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
     /// <remarks>静态调用链：上游 CombatHUD.BuildOrRepairHealthGauge()、CombatHUD.BuildOrRepairParryPrompt()、CombatHUD.ConfigureRing(HealthRingGraphic, Color, float)、CombatHUD.CreateRing(string, RectTransform)；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="rect">中文含义：矩形。使用位置：CombatHUD.StretchToParent(RectTransform)。</param>
+    /// <param name="rect">矩形。</param>
     void StretchToParent(RectTransform rect)
     {
         rect.anchorMin = Vector2.zero;
@@ -681,7 +683,7 @@ GameObject root = new GameObject("弹反提示", typeof(RectTransform), typeof(C
 
     /// <summary>OnHealthChanged 的业务处理入口；本方法直接依赖 CombatHUD.HitFlash()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） CombatHUD.HitFlash()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="current">中文含义：当前。使用位置：CombatHUD.OnHealthChanged(float, float)。</param>
+    /// <param name="current">当前。</param>
     /// <param name="max">中文含义：最大。</param>
     void OnHealthChanged(float current, float max)
     {
@@ -699,12 +701,12 @@ GameObject root = new GameObject("弹反提示", typeof(RectTransform), typeof(C
 
     /// <summary>UpdateHealthFill 的业务处理入口；本方法直接依赖 HealthRingGraphic.SetFillAmount(float)、Mathf.Abs(float)、Mathf.Clamp01(float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 CombatHUD.TryInitializeHealthGauge()、CombatHUD.UpdateSmoothHealth()；下游（含内部回调体） HealthRingGraphic.SetFillAmount(float)、Mathf.Abs(float)、Mathf.Clamp01(float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="current">中文含义：当前。使用位置：作为 Mathf.Clamp01(float) 的参数。</param>
-    /// <param name="max">中文含义：最大。使用位置：作为 Mathf.Clamp01(float) 的参数、CombatHUD.UpdateHealthFill(float, float, bool)。</param>
-    /// <param name="isFinalTarget">中文含义：是否最终目标。使用位置：CombatHUD.UpdateHealthFill(float, float, bool)。</param>
+    /// <param name="current">当前。</param>
+    /// <param name="max">最大。</param>
+    /// <param name="isFinalTarget">是否最终目标。</param>
     void UpdateHealthFill(float current, float max, bool isFinalTarget = false)
     {
-        // ratio（比例）：使用位置：作为 HealthRingGraphic.SetFillAmount(float) 的参数、作为 Mathf.Abs(float) 的参数、CombatHUD.UpdateHealthFill(float, float, bool)。
+        // 比例。
 float ratio;
         if (max > 0f)
         {
@@ -715,7 +717,7 @@ float ratio;
             ratio = 0f;
         }
 
-        // targetColor（目标颜色）：使用位置：CombatHUD.UpdateHealthFill(float, float, bool)。
+        // 目标颜色。
 Color targetColor;
         if (ratio < 0.25f)
         {
@@ -866,7 +868,8 @@ Color targetColor;
                 || (combat.knifeModule != null && combat.knifeModule.Active);
         }
 
-        if (weaponActive || (weaponWheel != null && weaponWheel.IsOpen))
+        bool frontGrab = leon.QTECoordinator != null && leon.QTECoordinator.IsFrontGrabActive;
+        if (frontGrab || weaponActive || (weaponWheel != null && weaponWheel.IsOpen))
         {
             RevealGauge();
         }
@@ -1075,9 +1078,9 @@ Color targetColor;
             combat = leon.GetComponent<LeonCombat>();
         }
 
-        LeonInputBridge inputBridge = null;
+        LeonInputBridge inputBridge = parryInputBridge;
         bool canReadInput = leon != null && combat != null && !IsCombatVisualBlocked()
-            && leon.TryGetComponent(out inputBridge) && inputBridge.CanReadParryInput;
+            && inputBridge != null && inputBridge.CanReadParryInput;
         KnifeParryPromptKind prompt = KnifeParryPromptKind.None;
         if (combat != null && combat.knifeModule != null)
         {
@@ -1128,7 +1131,7 @@ Color targetColor;
             return;
         }
 
-        // targetHealth（目标生命）：使用位置：作为 Mathf.Abs(float) 的参数、作为 Mathf.Lerp(float, float, float) 的参数、CombatHUD.UpdateSmoothHealth()。
+        // 目标生命。
 float targetHealth = leon.currentHealth;
         displayHealth = Mathf.Lerp(displayHealth, targetHealth, healthLerpSpeed * Time.unscaledDeltaTime);
         if (Mathf.Abs(displayHealth - targetHealth) < 0.1f)
@@ -1141,12 +1144,12 @@ float targetHealth = leon.currentHealth;
 
     /// <summary>SetLaserVisible 的业务处理入口；本方法直接依赖 Component.GetComponent&lt;Image&gt;()、object.ReferenceEquals(object, object)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 CombatHUD.DisableLegacyCrosshair()；下游（含内部回调体） Component.GetComponent&lt;Image&gt;()、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="v">中文含义：是否显示激光瞄准线。使用位置：CombatHUD.SetLaserVisible(bool)。</param>
+    /// <param name="v">是否显示激光瞄准线。</param>
     public void SetLaserVisible(bool v)
     {
-        // receiverValue15（判空前缓存的激光点积）：从激光点积读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、CombatHUD.SetLaserVisible(bool)。
+        // 判空前缓存的激光点积。
 global::UnityEngine.RectTransform receiverValue15 = laserDot;
-        // img（界面图像组件）：使用位置：CombatHUD.SetLaserVisible(bool)。
+        // 界面图像组件。
 global::UnityEngine.UI.Image img;
         if (!global::System.Object.ReferenceEquals(receiverValue15, null))
         {
@@ -1159,7 +1162,7 @@ global::UnityEngine.UI.Image img;
 
         if (img)
         {
-            // c（当前颜色）：使用位置：CombatHUD.SetLaserVisible(bool)。
+            // 当前颜色。
 Color c = img.color;
             if (v)
             {
@@ -1310,13 +1313,13 @@ Color c = img.color;
             hitFlashAlpha = Mathf.MoveTowards(hitFlashAlpha, 0f, hitFlashFadeSpeed * Time.deltaTime);
         }
 
-        // maxHealth（最大生命值）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Clamp01(float) 的参数。
+        // 最大生命值。
 float maxHealth = Mathf.Max(0.001f, leon.maxHealth);
-        // hp（生命值）：保存 Mathf.Clamp01(float) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Lerp(float, float, float) 的参数、CombatHUD.UpdateBloodVignette()。
+        // 生命值。
 float hp = Mathf.Clamp01(leon.currentHealth / maxHealth);
-        // targetAlpha（目标透明度）：使用位置：作为 Mathf.Max(float, float) 的参数、作为 Mathf.Min(float, float) 的参数、CombatHUD.UpdateBloodVignette()。
+        // 目标透明度。
 float targetAlpha;
-        // comfortableMaximumAlpha（舒适最大透明度）：保存 Mathf.Min(float, float) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Lerp(float, float, float) 的参数、CombatHUD.UpdateBloodVignette()。
+        // 舒适最大透明度。
 float comfortableMaximumAlpha = Mathf.Min(maxVignetteAlpha, 0.2f);
         if (hp >= 0.35f)
         {
@@ -1331,11 +1334,11 @@ float comfortableMaximumAlpha = Mathf.Min(maxVignetteAlpha, 0.2f);
             targetAlpha = Mathf.Lerp(comfortableMaximumAlpha, 0f, (hp - 0.12f) / 0.23f);
         }
 
-        // currentAlpha（当前透明度）：使用位置：作为 Mathf.Lerp(float, float, float) 的参数、CombatHUD.UpdateBloodVignette()。
+        // 当前透明度。
 float currentAlpha = bloodVignette.alpha;
-        // desiredAlpha（期望透明度）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Abs(float) 的参数、作为 Mathf.Lerp(float, float, float) 的参数、CombatHUD.UpdateBloodVignette()。
+        // 期望透明度。
 float desiredAlpha = Mathf.Max(targetAlpha, hitFlashAlpha);
-        // nextAlpha（下一次透明度）：保存 Mathf.Lerp(float, float, float) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Abs(float) 的参数、作为 Mathf.Max(float, float) 的参数、CombatHUD.UpdateBloodVignette()。
+        // 下一次透明度。
 float nextAlpha = Mathf.Lerp(currentAlpha, desiredAlpha, Time.deltaTime * vignetteSmoothSpeed);
         if (Mathf.Abs(nextAlpha - desiredAlpha) < 0.001f)
         {
@@ -1344,7 +1347,7 @@ float nextAlpha = Mathf.Lerp(currentAlpha, desiredAlpha, Time.deltaTime * vignet
 
         if (hp < 0.2f)
         {
-            // pulse（脉冲）：使用位置：作为 Mathf.Min(float, float) 的参数。
+            // 脉冲。
 float pulse = Mathf.Abs(Mathf.Sin(Time.time * 1.4f)) * 0.04f;
             nextAlpha = Mathf.Max(nextAlpha, Mathf.Min(0.24f, targetAlpha + pulse));
         }

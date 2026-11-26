@@ -12,95 +12,95 @@ public class ItemInspectionUI : Singleton<ItemInspectionUI>, IManualSingleton
     /// <summary>中文含义：切换场景时是否保留此单例对象。</summary>
     protected override bool Persistent => false;
 
-    /// <summary>中文含义：留空时自动复用场景内已有中文界面字体。使用位置：ItemInspectionUI.CreateText(string, Transform, string, int, TextAnchor, Color)、ItemInspectionUI.ResolveFont()。</summary>
+    /// <summary>留空时自动复用场景内已有中文界面字体。</summary>
     [Header("界面字体")]
     [Tooltip("留空时自动复用场景内已有中文界面字体")]
     public Font interfaceFont;
-    /// <summary>中文含义：进入持续时间。使用位置：作为 Mathf.Clamp01(float) 的参数、作为 Mathf.Max(float, float) 的参数、ItemInspectionUI.ShowRoutine(ItemData, GameObject)。</summary>
+    /// <summary>进入持续时间。</summary>
     [Header("入场与退场")]
     [Min(0.01f)]
     public float enterDuration = 0.25f;
-    /// <summary>中文含义：退出持续时间。使用位置：作为 Mathf.Clamp01(float) 的参数、ItemInspectionUI.HideRoutine()。</summary>
+    /// <summary>退出持续时间。</summary>
     [Min(0.01f)]
     public float exitDuration = 0.18f;
-    /// <summary>中文含义：输入防抖。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>输入防抖。</summary>
     [Min(0f)]
     public float inputDebounce = 0.25f;
-    /// <summary>中文含义：背景降采样。使用位置：作为 Mathf.Clamp(int, int, int) 的参数。</summary>
+    /// <summary>背景降采样。</summary>
     [Header("冻结背景")]
     [Range(4, 16)]
     public int backgroundDownsample = 10;
-    /// <summary>中文含义：完整屏幕阴影色。使用位置：作为 ItemInspectionUI.CreateImage(string, Transform, Color) 的参数。</summary>
+    /// <summary>完整屏幕阴影色。</summary>
     public Color fullScreenShade = new Color(0f, 0f, 0f, 0.24f);
-    /// <summary>中文含义：显示视野角度。使用位置：作为 Mathf.Max(float, float) 的参数、ItemInspectionUI.BuildDisplayStage()、ItemInspectionUI.PrepareModel(ItemData, GameObject)。</summary>
+    /// <summary>显示视野角度。</summary>
     [Header("三维展示")]
     [Range(15f, 55f)]
     public float displayFieldOfView = 30f;
-    /// <summary>中文含义：自动帧填充。使用位置：作为 Mathf.Clamp(float, float, float) 的参数。</summary>
+    /// <summary>自动帧填充。</summary>
     [Range(0.4f, 0.9f)]
     public float automaticFrameFill = 0.72f;
-    /// <summary>中文含义：键光源颜色。使用位置：作为 ItemInspectionUI.CreateLocalLight(string, Vector3, Color, float) 的参数。</summary>
+    /// <summary>键光源颜色。</summary>
     public Color keyLightColor = new Color(1f, 0.86f, 0.68f, 1f);
-    /// <summary>中文含义：键光源强度。使用位置：作为 ItemInspectionUI.CreateLocalLight(string, Vector3, Color, float) 的参数。</summary>
+    /// <summary>键光源强度。</summary>
     [Range(0f, 3f)]
     public float keyLightIntensity = 1.35f;
-    /// <summary>中文含义：填充光源颜色。使用位置：作为 ItemInspectionUI.CreateLocalLight(string, Vector3, Color, float) 的参数。</summary>
+    /// <summary>填充光源颜色。</summary>
     public Color fillLightColor = new Color(0.52f, 0.62f, 0.78f, 1f);
-    /// <summary>中文含义：填充光源强度。使用位置：作为 ItemInspectionUI.CreateLocalLight(string, Vector3, Color, float) 的参数。</summary>
+    /// <summary>填充光源强度。</summary>
     [Range(0f, 2f)]
     public float fillLightIntensity = 0.45f;
-    /// <summary>中文含义：是否可见。使用位置：ItemInspectionUI.Show(ItemData)。</summary>
+    /// <summary>是否可见。</summary>
     public bool IsVisible => isVisible || isOpening || isClosing;
 
-    /// <summary>中文含义：缺失的模型警告集合。只读字段，初始化后不由普通写入口替换。使用位置：ItemInspectionUI.ReportMissingModel(ItemData)。</summary>
+    /// <summary>缺失的模型警告集合。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly HashSet<string> missingModelWarnings = new HashSet<string>();
-    /// <summary>中文含义：叠加层根节点。使用位置：作为 ItemInspectionUI.CreateImage(string, Transform, Color) 的参数、作为 ItemInspectionUI.CreateRawImage(string, Transform) 的参数、作为 ItemInspectionUI.Stretch(RectTransform) 的参数 等共 8 处。</summary>
+    /// <summary>叠加层根节点。</summary>
     private GameObject overlayRoot;
-    /// <summary>中文含义：叠加层分组。使用位置：ItemInspectionUI.BuildInterface()、ItemInspectionUI.HideRoutine()、ItemInspectionUI.ShowRoutine(ItemData, GameObject)。</summary>
+    /// <summary>叠加层分组。</summary>
     private CanvasGroup overlayGroup;
-    /// <summary>中文含义：物品分组。使用位置：ItemInspectionUI.BuildInterface()、ItemInspectionUI.HideRoutine()、ItemInspectionUI.ShowRoutine(ItemData, GameObject)。</summary>
+    /// <summary>物品分组。</summary>
     private CanvasGroup itemGroup;
-    /// <summary>中文含义：物品容器。使用位置：作为 ItemInspectionUI.Stretch(RectTransform) 的参数、ItemInspectionUI.BuildInterface()、ItemInspectionUI.HideRoutine() 等共 4 处。</summary>
+    /// <summary>物品容器。</summary>
     private RectTransform itemContainer;
-    /// <summary>中文含义：冻结的背景。使用位置：作为 ItemInspectionUI.Stretch(RectTransform) 的参数、ItemInspectionUI.BuildInterface()、ItemInspectionUI.CaptureFrozenBackground() 等共 4 处。</summary>
+    /// <summary>冻结的背景。</summary>
     private RawImage frozenBackground;
-    /// <summary>中文含义：模型图像。使用位置：作为 ItemInspectionUI.SetAnchors(RectTransform, Vector2, Vector2) 的参数、作为 RectTransformUtility.RectangleContainsScreenPoint(RectTransform, Vector2) 的参数、ItemInspectionUI.BuildInterface() 等共 5 处。</summary>
+    /// <summary>模型图像。</summary>
     private RawImage modelImage;
-    /// <summary>中文含义：物品名称文字。使用位置：作为 ItemInspectionUI.SetAnchors(RectTransform, Vector2, Vector2) 的参数、ItemInspectionUI.BuildInterface()、ItemInspectionUI.ShowRoutine(ItemData, GameObject)。</summary>
+    /// <summary>物品名称文字。</summary>
     private Text itemNameText;
-    /// <summary>中文含义：关闭提示文字。使用位置：作为 ItemInspectionUI.SetAnchors(RectTransform, Vector2, Vector2) 的参数、ItemInspectionUI.BuildInterface()、ItemInspectionUI.ShowRoutine(ItemData, GameObject)。</summary>
+    /// <summary>关闭提示文字。</summary>
     private Text closeHintText;
-    /// <summary>中文含义：冻结的纹理。使用位置：作为 Object.Destroy(Object) 的参数、ItemInspectionUI.CaptureFrozenBackground()、ItemInspectionUI.ReleaseFrozenBackground()。</summary>
+    /// <summary>冻结的纹理。</summary>
     private Texture2D frozenTexture;
-    /// <summary>中文含义：渐变纹理。使用位置：作为 Object.Destroy(Object) 的参数、ItemInspectionUI.BuildInterface()、ItemInspectionUI.OnDestroy()。</summary>
+    /// <summary>渐变纹理。</summary>
     private Texture2D gradientTexture;
-    /// <summary>中文含义：模型纹理。使用位置：作为 Object.Destroy(Object) 的参数、ItemInspectionUI.PrepareModel(ItemData, GameObject)、ItemInspectionUI.ReleaseModelResources()。</summary>
+    /// <summary>模型纹理。</summary>
     private RenderTexture modelTexture;
-    /// <summary>中文含义：阶段根节点。使用位置：作为 Object.Instantiate&lt;GameObject&gt;(GameObject, Transform) 的参数、作为 Transform.SetParent(Transform, bool) 的参数、ItemInspectionUI.BuildDisplayStage() 等共 4 处。</summary>
+    /// <summary>阶段根节点。</summary>
     private Transform stageRoot;
-    /// <summary>中文含义：显示摄像机。使用位置：作为 Mathf.Max(float, float) 的参数、ItemInspectionUI.BuildDisplayStage()、ItemInspectionUI.PrepareModel(ItemData, GameObject) 等共 5 处。</summary>
+    /// <summary>显示摄像机。</summary>
     private Camera displayCamera;
-    /// <summary>中文含义：当前模型。使用位置：作为 ItemInspectionUI.DisableModelBehaviours(GameObject) 的参数、作为 ItemInspectionUI.TryGetRendererBounds(GameObject, out Bounds) 的参数、作为 Object.Destroy(Object) 的参数 等共 6 处。</summary>
+    /// <summary>当前模型。</summary>
     private GameObject currentModel;
-    /// <summary>中文含义：输入桥接。使用位置：ItemInspectionUI.CleanupImmediately()、ItemInspectionUI.HideRoutine()、ItemInspectionUI.ReleasePresentationResources() 等共 4 处。</summary>
+    /// <summary>输入桥接。</summary>
     private LeonInputBridge inputBridge;
-    /// <summary>中文含义：过渡协程。使用位置：作为 MonoBehaviour.StopCoroutine(Coroutine) 的参数、ItemInspectionUI.HideRoutine()、ItemInspectionUI.RequestClose() 等共 5 处。</summary>
+    /// <summary>过渡协程。</summary>
     private Coroutine transitionRoutine;
-    /// <summary>中文含义：上一次鼠标位置。使用位置：ItemInspectionUI.Update()。</summary>
+    /// <summary>上一次鼠标位置。</summary>
     private Vector3 lastMousePosition;
-    /// <summary>中文含义：是否旋转。使用位置：ItemInspectionUI.Update()。</summary>
+    /// <summary>是否旋转。</summary>
     private bool isRotation;
-    /// <summary>中文含义：检视中心。使用位置：作为 Transform.RotateAround(Vector3, Vector3, float) 的参数、ItemInspectionUI.PrepareModel(ItemData, GameObject)。</summary>
+    /// <summary>检视中心。</summary>
     private Vector3 inspectionCenter;
-    /// <summary>中文含义：接受关闭时间。使用位置：ItemInspectionUI.RequestClose()、ItemInspectionUI.ShowRoutine(ItemData, GameObject)。</summary>
+    /// <summary>接受关闭时间。</summary>
     private float acceptCloseTime;
-    /// <summary>中文含义：是否模态已登记。使用位置：ItemInspectionUI.CleanupImmediately()、ItemInspectionUI.HideRoutine()、ItemInspectionUI.ShowRoutine(ItemData, GameObject)。</summary>
+    /// <summary>是否模态已登记。</summary>
     private bool modalRegistered;
-    /// <summary>中文含义：是否可见。使用位置：ItemInspectionUI.CleanupImmediately()、ItemInspectionUI.HideRoutine()、ItemInspectionUI.IsVisible.get 等共 6 处。</summary>
+    /// <summary>是否可见。</summary>
     private bool isVisible;
-    /// <summary>中文含义：是否开口。使用位置：ItemInspectionUI.CleanupImmediately()、ItemInspectionUI.IsVisible.get、ItemInspectionUI.RequestClose() 等共 5 处。</summary>
+    /// <summary>是否开口。</summary>
     private bool isOpening;
-    /// <summary>中文含义：是否关闭中。使用位置：ItemInspectionUI.CleanupImmediately()、ItemInspectionUI.HideRoutine()、ItemInspectionUI.IsVisible.get 等共 5 处。</summary>
+    /// <summary>是否关闭中。</summary>
     private bool isClosing;
     /// <summary>实现基类的 Awake 重写入口；框架调用后按本方法分支执行，并通过下游成员完成协作。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） ItemInspectionUI.BuildInterface()、Singleton&lt;ItemInspectionUI&gt;.Awake()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
@@ -112,7 +112,7 @@ public class ItemInspectionUI : Singleton<ItemInspectionUI>, IManualSingleton
 
     /// <summary>显示指定物品；缺少三维模型或界面正忙时返回失败。</summary>
     /// <remarks>静态调用链：上游 ItemPickup.Pickup()；下游（含内部回调体） ItemData.GetInspectionModelPrefab()、ItemInspectionUI.ReportMissingModel(ItemData)、ItemInspectionUI.ShowRoutine(ItemData, GameObject)、MonoBehaviour.StartCoroutine(IEnumerator)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="item">中文含义：当前物品数据配置。使用位置：作为 ItemInspectionUI.ReportMissingModel(ItemData) 的参数、作为 ItemInspectionUI.ShowRoutine(ItemData, GameObject) 的参数、ItemInspectionUI.Show(ItemData)。</param>
+    /// <param name="item">当前物品数据配置。</param>
     public bool Show(ItemData item)
     {
         if (VillageBellSequence.IsPresenting || item == null || IsVisible)
@@ -120,7 +120,7 @@ public class ItemInspectionUI : Singleton<ItemInspectionUI>, IManualSingleton
             return false;
         }
 
-        // modelPrefab（模型预制件）：保存 ItemData.GetInspectionModelPrefab() 的返回结果，供当前步骤使用。使用位置：作为 ItemInspectionUI.ShowRoutine(ItemData, GameObject) 的参数、ItemInspectionUI.Show(ItemData)。
+        // 模型预制件。
 GameObject modelPrefab = item.GetInspectionModelPrefab();
         if (modelPrefab == null)
         {
@@ -158,7 +158,7 @@ GameObject modelPrefab = item.GetInspectionModelPrefab();
             return;
         }
 
-        // delta（增量）：使用位置：作为 Transform.RotateAround(Vector3, Vector3, float) 的参数、ItemInspectionUI.Update()。
+        // 增量。
 Vector3 delta = Input.mousePosition - lastMousePosition;
         lastMousePosition = Input.mousePosition;
         if (delta.sqrMagnitude < .01f)
@@ -190,13 +190,13 @@ Vector3 delta = Input.mousePosition - lastMousePosition;
 
     /// <summary>ShowRoutine 的业务处理入口；本方法直接依赖 GameObject.SetActive(bool)、GameUIManager.RegisterModal(Object, GameUIManager.State, bool, bool, bool)、ItemInspectionUI.CaptureFrozenBackground()、ItemInspectionUI.CleanupImmediately()、ItemInspectionUI.PrepareModel(ItemData, GameObject)、LeonInputBridge.BeginItemInspectionInput(Action)、Mathf.Clamp01(float) 等共 14 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 ItemInspectionUI.Show(ItemData)；下游（含内部回调体） GameObject.SetActive(bool)、GameUIManager.RegisterModal(Object, GameUIManager.State, bool, bool, bool)、ItemInspectionUI.CaptureFrozenBackground()、ItemInspectionUI.CleanupImmediately()、ItemInspectionUI.PrepareModel(ItemData, GameObject)、LeonInputBridge.BeginItemInspectionInput(Action)、Mathf.Clamp01(float) 等共 14 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="item">中文含义：当前物品数据配置。使用位置：作为 ItemInspectionUI.PrepareModel(ItemData, GameObject) 的参数、ItemInspectionUI.ShowRoutine(ItemData, GameObject)。</param>
-    /// <param name="modelPrefab">中文含义：模型预制件。使用位置：作为 ItemInspectionUI.PrepareModel(ItemData, GameObject) 的参数。</param>
+    /// <param name="item">当前物品数据配置。</param>
+    /// <param name="modelPrefab">模型预制件。</param>
     IEnumerator ShowRoutine(ItemData item, GameObject modelPrefab)
     {
         isOpening = true;
         // 先暂停并隐藏实时战斗信息，随后抓取的冻结背景不会残留准星和状态栏。
-        // uiManager（界面管理器）：使用位置：ItemInspectionUI.ShowRoutine(ItemData, GameObject)。
+        // 界面管理器。
 GameUIManager uiManager = GameUIManager.Instance;
         if (uiManager != null)
         {
@@ -216,7 +216,7 @@ GameUIManager uiManager = GameUIManager.Instance;
 
         itemNameText.text = item.displayName;
         inputBridge = FindFirstObjectByType<LeonInputBridge>();
-        // closeKey（关闭键）：使用位置：ItemInspectionUI.ShowRoutine(ItemData, GameObject)。
+        // 关闭键。
 string closeKey;
         if (inputBridge != null)
         {
@@ -234,14 +234,14 @@ string closeKey;
         itemContainer.localScale = Vector3.one * 0.94f;
         isVisible = true;
         acceptCloseTime = Time.unscaledTime + Mathf.Max(inputDebounce, enterDuration);
-        // elapsed（已用）：使用位置：作为 Mathf.Clamp01(float) 的参数、ItemInspectionUI.ShowRoutine(ItemData, GameObject)。
+        // 已用。
 float elapsed = 0f;
         while (elapsed < enterDuration)
         {
             elapsed += Time.unscaledDeltaTime;
-            // t（当前界面动画的归一化进度）：保存 Mathf.Clamp01(float) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.InverseLerp(float, float, float) 的参数、作为 Mathf.Pow(float, float) 的参数。
+            // 当前界面动画的归一化进度。
 float t = Mathf.Clamp01(elapsed / enterDuration);
-            // eased（缓动后的）：使用位置：作为 Mathf.Lerp(float, float, float) 的参数、ItemInspectionUI.ShowRoutine(ItemData, GameObject)。
+            // 缓动后的。
 float eased = 1f - Mathf.Pow(1f - t, 3f);
             overlayGroup.alpha = eased;
             itemGroup.alpha = Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(0.08f, 1f, t));
@@ -261,21 +261,21 @@ float eased = 1f - Mathf.Pow(1f - t, 3f);
     IEnumerator HideRoutine()
     {
         isClosing = true;
-        // receiverValue2（判空前缓存的输入桥接）：从输入桥接读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、ItemInspectionUI.HideRoutine()。
+        // 判空前缓存的输入桥接。
 global::LeonInputBridge receiverValue2 = inputBridge;
         if (!global::System.Object.ReferenceEquals(receiverValue2, null))
         {
             receiverValue2.EndItemInspectionInput();
         }
 
-        // elapsed（已用）：使用位置：作为 Mathf.Clamp01(float) 的参数、ItemInspectionUI.HideRoutine()。
+        // 已用。
 float elapsed = 0f;
         while (elapsed < exitDuration)
         {
             elapsed += Time.unscaledDeltaTime;
-            // t（当前界面动画的归一化进度）：保存 Mathf.Clamp01(float) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.SmoothStep(float, float, float) 的参数、ItemInspectionUI.HideRoutine()。
+            // 当前界面动画的归一化进度。
 float t = Mathf.Clamp01(elapsed / exitDuration);
-            // eased（缓动后的）：使用位置：作为 Mathf.Lerp(float, float, float) 的参数、ItemInspectionUI.HideRoutine()。
+            // 缓动后的。
 float eased = t * t;
             overlayGroup.alpha = 1f - eased;
             itemGroup.alpha = 1f - Mathf.SmoothStep(0f, 1f, t);
@@ -308,14 +308,14 @@ float eased = t * t;
         }
 
         ResolveFont();
-        // canvasObject（画布对象）：使用位置：作为 Transform.SetParent(Transform, bool) 的参数、ItemInspectionUI.BuildInterface()。
+        // 画布对象。
 GameObject canvasObject = new GameObject("物品检视画布", typeof(RectTransform), typeof(Canvas), typeof(CanvasScaler));
         canvasObject.transform.SetParent(transform, false);
-        // canvas（画布）：保存 GameObject.GetComponent<Canvas>() 的返回结果，供当前步骤使用。使用位置：ItemInspectionUI.BuildInterface()。
+        // 画布。
 Canvas canvas = canvasObject.GetComponent<Canvas>();
         canvas.renderMode = RenderMode.ScreenSpaceOverlay;
         canvas.sortingOrder = 900;
-        // scaler（缩放器）：保存 GameObject.GetComponent<CanvasScaler>() 的返回结果，供当前步骤使用。使用位置：ItemInspectionUI.BuildInterface()。
+        // 缩放器。
 CanvasScaler scaler = canvasObject.GetComponent<CanvasScaler>();
         scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
         scaler.referenceResolution = new Vector2(1920f, 1080f);
@@ -329,16 +329,16 @@ CanvasScaler scaler = canvasObject.GetComponent<CanvasScaler>();
         overlayGroup.blocksRaycasts = true;
         frozenBackground = CreateRawImage("冻结模糊背景", overlayRoot.transform);
         Stretch(frozenBackground.rectTransform);
-        // shade（阴影色）：保存 ItemInspectionUI.CreateImage(string, Transform, Color) 的返回结果，供当前步骤使用。使用位置：作为 ItemInspectionUI.Stretch(RectTransform) 的参数。
+        // 阴影色。
 Image shade = CreateImage("全屏暗化", overlayRoot.transform, fullScreenShade);
         Stretch(shade.rectTransform);
-        // gradient（渐变）：保存 ItemInspectionUI.CreateRawImage(string, Transform) 的返回结果，供当前步骤使用。使用位置：作为 ItemInspectionUI.Stretch(RectTransform) 的参数、ItemInspectionUI.BuildInterface()。
+        // 渐变。
 RawImage gradient = CreateRawImage("右侧羽化黑幕", overlayRoot.transform);
         Stretch(gradient.rectTransform);
         gradientTexture = CreateGradientTexture();
         gradient.texture = gradientTexture;
         gradient.color = Color.white;
-        // itemObject（物品对象）：使用位置：作为 ItemInspectionUI.CreateRawImage(string, Transform) 的参数、作为 ItemInspectionUI.CreateText(string, Transform, string, int, TextAnchor, Color) 的参数、ItemInspectionUI.BuildInterface()。
+        // 物品对象。
 GameObject itemObject = new GameObject("物品陈列", typeof(RectTransform), typeof(CanvasGroup));
         itemObject.transform.SetParent(overlayRoot.transform, false);
         itemContainer = itemObject.GetComponent<RectTransform>();
@@ -365,7 +365,7 @@ GameObject itemObject = new GameObject("物品陈列", typeof(RectTransform), ty
             return;
         }
 
-        // existingText（已有文字）：保存 Object.FindFirstObjectByType<Text>(FindObjectsInactive) 的返回结果，供当前步骤使用。使用位置：ItemInspectionUI.ResolveFont()。
+        // 已有文字。
 Text existingText = FindFirstObjectByType<Text>(FindObjectsInactive.Include);
         if (existingText != null)
         {
@@ -382,12 +382,12 @@ Text existingText = FindFirstObjectByType<Text>(FindObjectsInactive.Include);
     /// <remarks>静态调用链：上游 ItemInspectionUI.BuildInterface()；下游（含内部回调体） Color.Color(float, float, float, float)、GameObject.GameObject(string, params Type[])、GameObject.GameObject(string)、GameObject.GetComponent&lt;Camera&gt;()、ItemInspectionUI.CreateLocalLight(string, Vector3, Color, float)、Transform.SetParent(Transform, bool)、Vector3.Vector3(float, float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     void BuildDisplayStage()
     {
-        // stageObject（阶段对象）：使用位置：ItemInspectionUI.BuildDisplayStage()。
+        // 阶段对象。
 GameObject stageObject = new GameObject("物品检视渲染舞台");
         stageObject.transform.SetParent(transform, false);
         stageObject.transform.position = new Vector3(0f, -10000f, 0f);
         stageRoot = stageObject.transform;
-        // cameraObject（摄像机对象）：使用位置：ItemInspectionUI.BuildDisplayStage()。
+        // 摄像机对象。
 GameObject cameraObject = new GameObject("物品检视相机", typeof(Camera));
         cameraObject.transform.SetParent(stageRoot, false);
         displayCamera = cameraObject.GetComponent<Camera>();
@@ -404,17 +404,17 @@ GameObject cameraObject = new GameObject("物品检视相机", typeof(Camera));
 
     /// <summary>CreateLocalLight 的业务处理入口；本方法直接依赖 GameObject.GameObject(string, params Type[])、GameObject.GetComponent&lt;Light&gt;()、Transform.SetParent(Transform, bool)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 ItemInspectionUI.BuildDisplayStage()；下游（含内部回调体） GameObject.GameObject(string, params Type[])、GameObject.GetComponent&lt;Light&gt;()、Transform.SetParent(Transform, bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="objectName">中文含义：对象名称。使用位置：作为 GameObject.GameObject(string, params Type[]) 的参数。</param>
-    /// <param name="localPosition">中文含义：局部位置。使用位置：ItemInspectionUI.CreateLocalLight(string, Vector3, Color, float)。</param>
-    /// <param name="color">中文含义：颜色。使用位置：ItemInspectionUI.CreateLocalLight(string, Vector3, Color, float)。</param>
-    /// <param name="intensity">中文含义：强度。使用位置：ItemInspectionUI.CreateLocalLight(string, Vector3, Color, float)。</param>
+    /// <param name="objectName">对象名称。</param>
+    /// <param name="localPosition">局部位置。</param>
+    /// <param name="color">颜色。</param>
+    /// <param name="intensity">强度。</param>
     void CreateLocalLight(string objectName, Vector3 localPosition, Color color, float intensity)
     {
-        // lightObject（光源对象）：使用位置：ItemInspectionUI.CreateLocalLight(string, Vector3, Color, float)。
+        // 光源对象。
 GameObject lightObject = new GameObject(objectName, typeof(Light));
         lightObject.transform.SetParent(stageRoot, false);
         lightObject.transform.localPosition = localPosition;
-        // light（光源）：保存 GameObject.GetComponent<Light>() 的返回结果，供当前步骤使用。使用位置：ItemInspectionUI.CreateLocalLight(string, Vector3, Color, float)。
+        // 光源。
 Light light = lightObject.GetComponent<Light>();
         light.type = LightType.Point;
         light.color = color;
@@ -425,14 +425,14 @@ Light light = lightObject.GetComponent<Light>();
 
     /// <summary>PrepareModel 的业务处理入口；本方法直接依赖 Debug.LogError(object, Object)、GameObject.SetActive(bool)、ItemInspectionUI.DisableModelBehaviours(GameObject)、ItemInspectionUI.ReleaseModelResources()、ItemInspectionUI.RenderDisplayCameraWithoutCompilationPlaceholder()、ItemInspectionUI.TryGetRendererBounds(GameObject, out Bounds)、Mathf.Clamp(float, float, float) 等共 17 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 ItemInspectionUI.ShowRoutine(ItemData, GameObject)；下游（含内部回调体） Debug.LogError(object, Object)、GameObject.SetActive(bool)、ItemInspectionUI.DisableModelBehaviours(GameObject)、ItemInspectionUI.ReleaseModelResources()、ItemInspectionUI.RenderDisplayCameraWithoutCompilationPlaceholder()、ItemInspectionUI.TryGetRendererBounds(GameObject, out Bounds)、Mathf.Clamp(float, float, float) 等共 17 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="item">中文含义：当前物品数据配置。使用位置：作为 Mathf.Clamp(float, float, float) 的参数、作为 Quaternion.Euler(Vector3) 的参数、ItemInspectionUI.PrepareModel(ItemData, GameObject)。</param>
-    /// <param name="modelPrefab">中文含义：模型预制件。使用位置：作为 Debug.LogError(object, Object) 的参数、作为 Object.Instantiate&lt;GameObject&gt;(GameObject, Transform) 的参数。</param>
+    /// <param name="item">当前物品数据配置。</param>
+    /// <param name="modelPrefab">模型预制件。</param>
     bool PrepareModel(ItemData item, GameObject modelPrefab)
     {
         ReleaseModelResources();
-        // width（宽度）：保存 Mathf.Clamp(int, int, int) 的返回结果，供当前步骤使用。使用位置：作为 RenderTexture.RenderTexture(int, int, int, RenderTextureFormat) 的参数、ItemInspectionUI.PrepareModel(ItemData, GameObject)。
+        // 宽度。
 int width = Mathf.Clamp(Mathf.RoundToInt(Screen.width * 0.5f), 512, 1920);
-        // height（高度）：保存 Mathf.Clamp(int, int, int) 的返回结果，供当前步骤使用。使用位置：作为 RenderTexture.RenderTexture(int, int, int, RenderTextureFormat) 的参数、ItemInspectionUI.PrepareModel(ItemData, GameObject)。
+        // 高度。
 int height = Mathf.Clamp(Mathf.RoundToInt(Screen.height * 0.5f), 288, 1080);
         modelTexture = new RenderTexture(width, height, 24, RenderTextureFormat.ARGB32)
         {
@@ -461,7 +461,7 @@ int height = Mathf.Clamp(Mathf.RoundToInt(Screen.height * 0.5f), 288, 1080);
         }
 
         // 防止长枪或弹药模型沿镜头纵深摆放，只能看到枪口或弹壳端面。
-        // visibleExtent（可见半尺寸）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：ItemInspectionUI.PrepareModel(ItemData, GameObject)。
+        // 可见半尺寸。
 float visibleExtent = Mathf.Max(bounds.extents.x, bounds.extents.y);
         if (bounds.extents.z > visibleExtent * 1.25f)
         {
@@ -473,7 +473,7 @@ float visibleExtent = Mathf.Max(bounds.extents.x, bounds.extents.y);
             }
         }
 
-        // compositionOffset（构图偏移量）：使用位置：ItemInspectionUI.PrepareModel(ItemData, GameObject)。
+        // 构图偏移量。
 Vector3 compositionOffset = item.inspectionModelOffset;
         currentModel.transform.position += stageRoot.position - bounds.center + compositionOffset;
         if (!TryGetRendererBounds(currentModel, out bounds))
@@ -482,16 +482,16 @@ Vector3 compositionOffset = item.inspectionModelOffset;
             return false;
         }
 
-        // aspect（宽高比）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Min(float, float) 的参数。
+        // 宽高比。
 float aspect = Mathf.Max(0.1f, displayCamera.aspect);
         inspectionCenter = bounds.center;
-        // halfSize（一半尺寸）：使用位置：ItemInspectionUI.PrepareModel(ItemData, GameObject)。
+        // 一半尺寸。
 float halfSize = bounds.extents.magnitude / Mathf.Min(1f, aspect);
-        // fill（填充）：保存 Mathf.Clamp(float, float, float) 的返回结果，供当前步骤使用。使用位置：ItemInspectionUI.PrepareModel(ItemData, GameObject)。
+        // 填充。
 float fill = Mathf.Clamp(automaticFrameFill * Mathf.Clamp(item.inspectionViewScale, 0.5f, 1.5f), 0.35f, 0.92f);
-        // angle（角度）：使用位置：作为 Mathf.Tan(float) 的参数。
+        // 角度。
 float angle = Mathf.Max(1f, displayFieldOfView) * Mathf.Deg2Rad * 0.5f;
-        // distance（距离）：使用位置：作为 Mathf.Max(float, float) 的参数、ItemInspectionUI.PrepareModel(ItemData, GameObject)。
+        // 距离。
 float distance = bounds.extents.z + halfSize / (Mathf.Tan(angle) * fill);
         distance = Mathf.Max(0.25f, distance);
         displayCamera.transform.position = stageRoot.position + Vector3.back * distance;
@@ -515,7 +515,7 @@ float distance = bounds.extents.z + halfSize / (Mathf.Tan(angle) * fill);
         }
 
 #if UNITY_EDITOR
-        // previousAsyncCompilation（是否前一次异步编译）：使用位置：ItemInspectionUI.RenderDisplayCameraWithoutCompilationPlaceholder()。
+        // 是否前一次异步编译。
 bool previousAsyncCompilation = UnityEditor.ShaderUtil.allowAsyncCompilation;
         try
         {
@@ -533,37 +533,37 @@ bool previousAsyncCompilation = UnityEditor.ShaderUtil.allowAsyncCompilation;
 
     /// <summary>DisableModelBehaviours 的业务处理入口；本方法直接依赖 GameObject.GetComponentsInChildren&lt;Behaviour&gt;(bool)、GameObject.GetComponentsInChildren&lt;Collider&gt;(bool)、GameObject.GetComponentsInChildren&lt;Renderer&gt;(bool)、GameObject.GetComponentsInChildren&lt;Rigidbody&gt;(bool)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 ItemInspectionUI.PrepareModel(ItemData, GameObject)；下游（含内部回调体） GameObject.GetComponentsInChildren&lt;Behaviour&gt;(bool)、GameObject.GetComponentsInChildren&lt;Collider&gt;(bool)、GameObject.GetComponentsInChildren&lt;Renderer&gt;(bool)、GameObject.GetComponentsInChildren&lt;Rigidbody&gt;(bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="model">中文含义：模型。使用位置：ItemInspectionUI.DisableModelBehaviours(GameObject)。</param>
+    /// <param name="model">模型。</param>
     static void DisableModelBehaviours(GameObject model)
     {
-        // behaviours（行为集合）：保存 GameObject.GetComponentsInChildren<Behaviour>(bool) 的返回结果，供当前步骤使用。使用位置：ItemInspectionUI.DisableModelBehaviours(GameObject)。
+        // 行为集合。
 Behaviour[] behaviours = model.GetComponentsInChildren<Behaviour>(true);
-        // i（当前遍历索引）：使用位置：ItemInspectionUI.DisableModelBehaviours(GameObject)。
+        // 当前遍历索引。
 for (int i = 0; i < behaviours.Length; i++)
         {
             behaviours[i].enabled = false;
         }
 
-        // colliders（碰撞体集合）：保存 GameObject.GetComponentsInChildren<Collider>(bool) 的返回结果，供当前步骤使用。使用位置：ItemInspectionUI.DisableModelBehaviours(GameObject)。
+        // 碰撞体集合。
 Collider[] colliders = model.GetComponentsInChildren<Collider>(true);
-        // i（当前遍历索引）：使用位置：ItemInspectionUI.DisableModelBehaviours(GameObject)。
+        // 当前遍历索引。
 for (int i = 0; i < colliders.Length; i++)
         {
             colliders[i].enabled = false;
         }
 
-        // bodies（刚体集合）：保存 GameObject.GetComponentsInChildren<Rigidbody>(bool) 的返回结果，供当前步骤使用。使用位置：ItemInspectionUI.DisableModelBehaviours(GameObject)。
+        // 刚体集合。
 Rigidbody[] bodies = model.GetComponentsInChildren<Rigidbody>(true);
-        // i（当前遍历索引）：使用位置：ItemInspectionUI.DisableModelBehaviours(GameObject)。
+        // 当前遍历索引。
 for (int i = 0; i < bodies.Length; i++)
         {
             bodies[i].isKinematic = true;
             bodies[i].detectCollisions = false;
         }
 
-        // renderers（渲染器集合）：保存 GameObject.GetComponentsInChildren<Renderer>(bool) 的返回结果，供当前步骤使用。使用位置：ItemInspectionUI.DisableModelBehaviours(GameObject)。
+        // 渲染器集合。
 Renderer[] renderers = model.GetComponentsInChildren<Renderer>(true);
-        // i（当前遍历索引）：使用位置：ItemInspectionUI.DisableModelBehaviours(GameObject)。
+        // 当前遍历索引。
 for (int i = 0; i < renderers.Length; i++)
         {
             renderers[i].enabled = true;
@@ -572,16 +572,16 @@ for (int i = 0; i < renderers.Length; i++)
 
     /// <summary>TryGetRendererBounds 的业务处理入口；本方法直接依赖 Bounds.Encapsulate(Bounds)、GameObject.GetComponentsInChildren&lt;Renderer&gt;(bool)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 ItemInspectionUI.PrepareModel(ItemData, GameObject)；下游（含内部回调体） Bounds.Encapsulate(Bounds)、GameObject.GetComponentsInChildren&lt;Renderer&gt;(bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="model">中文含义：模型。使用位置：ItemInspectionUI.TryGetRendererBounds(GameObject, out Bounds)。</param>
-    /// <param name="bounds">中文含义：包围盒。输出参数，由本入口写入并交给调用方。使用位置：ItemInspectionUI.TryGetRendererBounds(GameObject, out Bounds)。</param>
+    /// <param name="model">模型。</param>
+    /// <param name="bounds">包围盒。输出参数，由本入口写入并交给调用方。</param>
     static bool TryGetRendererBounds(GameObject model, out Bounds bounds)
     {
-        // renderers（渲染器集合）：保存 GameObject.GetComponentsInChildren<Renderer>(bool) 的返回结果，供当前步骤使用。使用位置：作为 Bounds.Encapsulate(Bounds) 的参数、ItemInspectionUI.TryGetRendererBounds(GameObject, out Bounds)。
+        // 渲染器集合。
 Renderer[] renderers = model.GetComponentsInChildren<Renderer>(true);
         bounds = default;
-        // found（是否已找到）：使用位置：ItemInspectionUI.TryGetRendererBounds(GameObject, out Bounds)。
+        // 是否已找到。
 bool found = false;
-        // i（当前遍历索引）：使用位置：ItemInspectionUI.TryGetRendererBounds(GameObject, out Bounds)。
+        // 当前遍历索引。
 for (int i = 0; i < renderers.Length; i++)
         {
             if (!renderers[i].enabled)
@@ -608,7 +608,7 @@ for (int i = 0; i < renderers.Length; i++)
     void CaptureFrozenBackground()
     {
         ReleaseFrozenBackground();
-        // sourceCamera（来源摄像机）：使用位置：ItemInspectionUI.CaptureFrozenBackground()。
+        // 来源摄像机。
 Camera sourceCamera;
         if (Camera.main != null)
         {
@@ -624,29 +624,29 @@ Camera sourceCamera;
             return;
         }
 
-        // divisor（除数）：保存 Mathf.Clamp(int, int, int) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Max(int, int) 的参数。
+        // 除数。
 int divisor = Mathf.Clamp(backgroundDownsample, 4, 16);
-        // width（宽度）：保存 Mathf.Max(int, int) 的返回结果，供当前步骤使用。使用位置：作为 Rect.Rect(float, float, float, float) 的参数、作为 RenderTexture.GetTemporary(int, int, int, RenderTextureFormat) 的参数、作为 Texture2D.Texture2D(int, int, TextureFormat, bool) 的参数。
+        // 宽度。
 int width = Mathf.Max(96, Screen.width / divisor);
-        // height（高度）：保存 Mathf.Max(int, int) 的返回结果，供当前步骤使用。使用位置：作为 Rect.Rect(float, float, float, float) 的参数、作为 RenderTexture.GetTemporary(int, int, int, RenderTextureFormat) 的参数、作为 Texture2D.Texture2D(int, int, TextureFormat, bool) 的参数。
+        // 高度。
 int height = Mathf.Max(54, Screen.height / divisor);
-        // temporary（临时）：保存 RenderTexture.GetTemporary(int, int, int, RenderTextureFormat) 的返回结果，供当前步骤使用。使用位置：作为 RenderTexture.ReleaseTemporary(RenderTexture) 的参数、ItemInspectionUI.CaptureFrozenBackground()。
+        // 临时。
 RenderTexture temporary = RenderTexture.GetTemporary(width, height, 24, RenderTextureFormat.ARGB32);
         temporary.filterMode = FilterMode.Bilinear;
-        // previousTarget（前一次目标）：使用位置：ItemInspectionUI.CaptureFrozenBackground()。
+        // 前一次目标。
 RenderTexture previousTarget = sourceCamera.targetTexture;
-        // previousActive（前一次生效）：使用位置：ItemInspectionUI.CaptureFrozenBackground()。
+        // 前一次生效。
 RenderTexture previousActive = RenderTexture.active;
-        // previousCullingMask（前一次剔除遮罩）：使用位置：ItemInspectionUI.CaptureFrozenBackground()。
+        // 前一次剔除遮罩。
 int previousCullingMask = sourceCamera.cullingMask;
-        // hiddenCanvases（已隐藏画布集合）：使用位置：ItemInspectionUI.CaptureFrozenBackground()。
+        // 已隐藏画布集合。
 var hiddenCanvases = new List<Canvas>();
-        // canvases（画布集合）：保存 Object.FindObjectsByType<Canvas>(FindObjectsInactive, FindObjectsSortMode) 的返回结果，供当前步骤使用。使用位置：ItemInspectionUI.CaptureFrozenBackground()。
+        // 画布集合。
 Canvas[] canvases = FindObjectsByType<Canvas>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
-        // i（当前遍历索引）：使用位置：ItemInspectionUI.CaptureFrozenBackground()。
+        // 当前遍历索引。
 for (int i = 0; i < canvases.Length; i++)
         {
-            // canvas（画布）：使用位置：作为 List<Canvas>.Add(Canvas) 的参数、ItemInspectionUI.CaptureFrozenBackground()。
+            // 画布。
 Canvas canvas = canvases[i];
             if (canvas == null || !canvas.enabled || canvas.transform.IsChildOf(transform))
             {
@@ -660,7 +660,7 @@ Canvas canvas = canvases[i];
         try
         {
             // 单独渲染游戏摄像机，避免把屏幕空间战斗信息烘进冻结背景。
-            // uiLayer（界面图层）：保存 LayerMask.NameToLayer(string) 的返回结果，供当前步骤使用。使用位置：ItemInspectionUI.CaptureFrozenBackground()。
+            // 界面图层。
 int uiLayer = LayerMask.NameToLayer("UI");
             if (uiLayer >= 0)
             {
@@ -684,7 +684,7 @@ int uiLayer = LayerMask.NameToLayer("UI");
             sourceCamera.targetTexture = previousTarget;
             sourceCamera.cullingMask = previousCullingMask;
             RenderTexture.active = previousActive;
-            // i（当前遍历索引）：使用位置：作为 List<Canvas>.this[int] 的参数、ItemInspectionUI.CaptureFrozenBackground()。
+            // 当前遍历索引。
 for (int i = 0; i < hiddenCanvases.Count; i++)
             {
                 if (hiddenCanvases[i] != null)
@@ -703,21 +703,21 @@ for (int i = 0; i < hiddenCanvases.Count; i++)
     /// <remarks>静态调用链：上游 ItemInspectionUI.BuildInterface()；下游（含内部回调体） Color.Color(float, float, float, float)、Mathf.InverseLerp(float, float, float)、Mathf.SmoothStep(float, float, float)、Texture2D.Apply(bool, bool)、Texture2D.SetPixel(int, int, Color)、Texture2D.Texture2D(int, int, TextureFormat, bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     Texture2D CreateGradientTexture()
     {
-        // width（宽度）：使用位置：作为 Texture2D.Texture2D(int, int, TextureFormat, bool) 的参数、ItemInspectionUI.CreateGradientTexture()。
+        // 宽度。
 const int width = 512;
-        // texture（当前处理的纹理资源）：使用位置：ItemInspectionUI.CreateGradientTexture()。
+        // 当前处理的纹理资源。
 Texture2D texture = new Texture2D(width, 1, TextureFormat.RGBA32, false)
         {
             name = "物品检视右侧羽化",
             filterMode = FilterMode.Bilinear,
             wrapMode = TextureWrapMode.Clamp
         };
-        // x（横向）：使用位置：作为 Texture2D.SetPixel(int, int, Color) 的参数、ItemInspectionUI.CreateGradientTexture()。
+        // 横向。
 for (int x = 0; x < width; x++)
         {
-            // u（横向纹理坐标）：使用位置：作为 Mathf.InverseLerp(float, float, float) 的参数。
+            // 横向纹理坐标。
 float u = x / (float)(width - 1);
-            // alpha（透明度）：保存 Mathf.SmoothStep(float, float, float) 的返回结果，供当前步骤使用。使用位置：作为 Color.Color(float, float, float, float) 的参数。
+            // 透明度。
 float alpha = Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(0.28f, 0.72f, u));
             texture.SetPixel(x, 0, new Color(0f, 0f, 0f, alpha));
         }
@@ -728,10 +728,10 @@ float alpha = Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(0.28f, 0.72f, u));
 
     /// <summary>ReportMissingModel 的业务处理入口；本方法直接依赖 Debug.LogWarning(object, Object)、HashSet&lt;string&gt;.Add(string)、string.IsNullOrEmpty(string)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 ItemInspectionUI.Show(ItemData)；下游（含内部回调体） Debug.LogWarning(object, Object)、HashSet&lt;string&gt;.Add(string)、string.IsNullOrEmpty(string)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="item">中文含义：当前物品数据配置。使用位置：作为 Debug.LogWarning(object, Object) 的参数、作为 string.IsNullOrEmpty(string) 的参数、ItemInspectionUI.ReportMissingModel(ItemData)。</param>
+    /// <param name="item">当前物品数据配置。</param>
     void ReportMissingModel(ItemData item)
     {
-        // key（键）：使用位置：作为 Debug.LogWarning(object, Object) 的参数、作为 HashSet<string>.Add(string) 的参数、ItemInspectionUI.ReportMissingModel(ItemData)。
+        // 键。
 string key;
         if (item != null && !string.IsNullOrEmpty(item.itemId))
         {
@@ -811,7 +811,7 @@ string key;
     /// <remarks>静态调用链：上游 ItemInspectionUI.OnDestroy()、ItemInspectionUI.ShowRoutine(ItemData, GameObject)；下游（含内部回调体） GameObject.SetActive(bool)、GameUIManager.UnregisterModal(Object)、ItemInspectionUI.ReleasePresentationResources()、LeonInputBridge.EndItemInspectionInput()、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     void CleanupImmediately()
     {
-        // receiverValue5（判空前缓存的输入桥接）：从输入桥接读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、ItemInspectionUI.CleanupImmediately()。
+        // 判空前缓存的输入桥接。
 global::LeonInputBridge receiverValue5 = inputBridge;
         if (!global::System.Object.ReferenceEquals(receiverValue5, null))
         {
@@ -851,14 +851,14 @@ global::LeonInputBridge receiverValue5 = inputBridge;
 
     /// <summary>CreateRawImage 的业务处理入口；本方法直接依赖 GameObject.GameObject(string, params Type[])、GameObject.GetComponent&lt;RawImage&gt;()、Transform.SetParent(Transform, bool)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 ItemInspectionUI.BuildInterface()；下游（含内部回调体） GameObject.GameObject(string, params Type[])、GameObject.GetComponent&lt;RawImage&gt;()、Transform.SetParent(Transform, bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="objectName">中文含义：对象名称。使用位置：作为 GameObject.GameObject(string, params Type[]) 的参数。</param>
-    /// <param name="parent">中文含义：父级。使用位置：作为 Transform.SetParent(Transform, bool) 的参数。</param>
+    /// <param name="objectName">对象名称。</param>
+    /// <param name="parent">父级。</param>
     static RawImage CreateRawImage(string objectName, Transform parent)
     {
-        // gameObject（游戏对象）：使用位置：ItemInspectionUI.CreateRawImage(string, Transform)。
+        // 游戏对象。
 GameObject gameObject = new GameObject(objectName, typeof(RectTransform), typeof(RawImage));
         gameObject.transform.SetParent(parent, false);
-        // image（图像）：保存 GameObject.GetComponent<RawImage>() 的返回结果，供当前步骤使用。使用位置：ItemInspectionUI.CreateRawImage(string, Transform)。
+        // 图像。
 RawImage image = gameObject.GetComponent<RawImage>();
         image.raycastTarget = false;
         return image;
@@ -866,15 +866,15 @@ RawImage image = gameObject.GetComponent<RawImage>();
 
     /// <summary>CreateImage 的业务处理入口；本方法直接依赖 GameObject.GameObject(string, params Type[])、GameObject.GetComponent&lt;Image&gt;()、Transform.SetParent(Transform, bool)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 ItemInspectionUI.BuildInterface()；下游（含内部回调体） GameObject.GameObject(string, params Type[])、GameObject.GetComponent&lt;Image&gt;()、Transform.SetParent(Transform, bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="objectName">中文含义：对象名称。使用位置：作为 GameObject.GameObject(string, params Type[]) 的参数。</param>
-    /// <param name="parent">中文含义：父级。使用位置：作为 Transform.SetParent(Transform, bool) 的参数。</param>
-    /// <param name="color">中文含义：颜色。使用位置：ItemInspectionUI.CreateImage(string, Transform, Color)。</param>
+    /// <param name="objectName">对象名称。</param>
+    /// <param name="parent">父级。</param>
+    /// <param name="color">颜色。</param>
     static Image CreateImage(string objectName, Transform parent, Color color)
     {
-        // gameObject（游戏对象）：使用位置：ItemInspectionUI.CreateImage(string, Transform, Color)。
+        // 游戏对象。
 GameObject gameObject = new GameObject(objectName, typeof(RectTransform), typeof(Image));
         gameObject.transform.SetParent(parent, false);
-        // image（图像）：保存 GameObject.GetComponent<Image>() 的返回结果，供当前步骤使用。使用位置：ItemInspectionUI.CreateImage(string, Transform, Color)。
+        // 图像。
 Image image = gameObject.GetComponent<Image>();
         image.color = color;
         image.raycastTarget = false;
@@ -883,18 +883,18 @@ Image image = gameObject.GetComponent<Image>();
 
     /// <summary>CreateText 的业务处理入口；本方法直接依赖 GameObject.GameObject(string, params Type[])、GameObject.GetComponent&lt;Text&gt;()、Transform.SetParent(Transform, bool)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 ItemInspectionUI.BuildInterface()；下游（含内部回调体） GameObject.GameObject(string, params Type[])、GameObject.GetComponent&lt;Text&gt;()、Transform.SetParent(Transform, bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="objectName">中文含义：对象名称。使用位置：作为 GameObject.GameObject(string, params Type[]) 的参数。</param>
-    /// <param name="parent">中文含义：父级。使用位置：作为 Transform.SetParent(Transform, bool) 的参数。</param>
-    /// <param name="content">中文含义：内容。使用位置：ItemInspectionUI.CreateText(string, Transform, string, int, TextAnchor, Color)。</param>
-    /// <param name="fontSize">中文含义：字体尺寸。使用位置：ItemInspectionUI.CreateText(string, Transform, string, int, TextAnchor, Color)。</param>
-    /// <param name="alignment">中文含义：对齐状态。使用位置：ItemInspectionUI.CreateText(string, Transform, string, int, TextAnchor, Color)。</param>
-    /// <param name="color">中文含义：颜色。使用位置：ItemInspectionUI.CreateText(string, Transform, string, int, TextAnchor, Color)。</param>
+    /// <param name="objectName">对象名称。</param>
+    /// <param name="parent">父级。</param>
+    /// <param name="content">内容。</param>
+    /// <param name="fontSize">字体尺寸。</param>
+    /// <param name="alignment">对齐状态。</param>
+    /// <param name="color">颜色。</param>
     Text CreateText(string objectName, Transform parent, string content, int fontSize, TextAnchor alignment, Color color)
     {
-        // gameObject（游戏对象）：使用位置：ItemInspectionUI.CreateText(string, Transform, string, int, TextAnchor, Color)。
+        // 游戏对象。
 GameObject gameObject = new GameObject(objectName, typeof(RectTransform), typeof(Text));
         gameObject.transform.SetParent(parent, false);
-        // text（文字）：保存 GameObject.GetComponent<Text>() 的返回结果，供当前步骤使用。使用位置：ItemInspectionUI.CreateText(string, Transform, string, int, TextAnchor, Color)。
+        // 文字。
 Text text = gameObject.GetComponent<Text>();
         text.font = interfaceFont;
         text.text = content;
@@ -910,7 +910,7 @@ Text text = gameObject.GetComponent<Text>();
 
     /// <summary>Stretch 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
     /// <remarks>静态调用链：上游 ItemInspectionUI.BuildInterface()；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="rect">中文含义：矩形。使用位置：ItemInspectionUI.Stretch(RectTransform)。</param>
+    /// <param name="rect">矩形。</param>
     static void Stretch(RectTransform rect)
     {
         rect.anchorMin = Vector2.zero;
@@ -921,9 +921,9 @@ Text text = gameObject.GetComponent<Text>();
 
     /// <summary>SetAnchors 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
     /// <remarks>静态调用链：上游 ItemInspectionUI.BuildInterface()；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="rect">中文含义：矩形。使用位置：ItemInspectionUI.SetAnchors(RectTransform, Vector2, Vector2)。</param>
-    /// <param name="min">中文含义：最小。使用位置：ItemInspectionUI.SetAnchors(RectTransform, Vector2, Vector2)。</param>
-    /// <param name="max">中文含义：最大。使用位置：ItemInspectionUI.SetAnchors(RectTransform, Vector2, Vector2)。</param>
+    /// <param name="rect">矩形。</param>
+    /// <param name="min">最小。</param>
+    /// <param name="max">最大。</param>
     static void SetAnchors(RectTransform rect, Vector2 min, Vector2 max)
     {
         rect.anchorMin = min;

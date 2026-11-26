@@ -6,7 +6,7 @@ using Unity.Profiling;
 [UnityEngine.Scripting.APIUpdating.MovedFrom(true, "", "Assembly-CSharp", "性能采样入口")]
 internal sealed class PerformanceSamplingEntry : MonoBehaviour
 {
-    /// <summary>中文含义：分组集合。只读字段，初始化后不由普通写入口替换。使用位置：作为 List&lt;string&gt;.Add(string) 的参数、作为 Path.Combine(string, string) 的参数。</summary>
+    /// <summary>分组集合。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly string[] groups =
     {
         "静止",
@@ -18,7 +18,7 @@ internal sealed class PerformanceSamplingEntry : MonoBehaviour
         "仓库操作",
         "暂停返回"
     };
-    /// <summary>中文含义：计数器集合。只读字段，初始化后不由普通写入口替换。使用位置：作为 List&lt;string&gt;.Add(string) 的参数、作为 string.Join(string, params string[]) 的参数、PerformanceSamplingEntry.Start() 等共 4 处。</summary>
+    /// <summary>计数器集合。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly string[] counters =
     {
         "CPU Main Thread Frame Time",
@@ -31,52 +31,53 @@ internal sealed class PerformanceSamplingEntry : MonoBehaviour
         "Animators.Update",
         "Physics.Simulate"
     };
-    /// <summary>中文含义：采样集合。只读字段，初始化后不由普通写入口替换。使用位置：作为 StringBuilder.Append(string) 的参数、PerformanceSamplingEntry.Flush()、PerformanceSamplingEntry.Tick()。</summary>
+    /// <summary>采样集合。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly double[, ] samples = new double[20000, 32];
-    /// <summary>中文含义：元数据。只读字段，初始化后不由普通写入口替换。使用位置：作为 File.WriteAllLines(string, IEnumerable&lt;string&gt;) 的参数、PerformanceSamplingEntry.Start()、PerformanceSamplingEntry.Tick()。</summary>
+    /// <summary>元数据。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly List<string> metadata = new List<string>();
-    /// <summary>中文含义：记录器集合。使用位置：PerformanceSamplingEntry.OnDestroy()、PerformanceSamplingEntry.Start()、PerformanceSamplingEntry.Tick()。</summary>
+    /// <summary>记录器集合。</summary>
     private ProfilerRecorder[] recorders;
-    /// <summary>中文含义：有效。使用位置：作为 List&lt;string&gt;.Add(string) 的参数、PerformanceSamplingEntry.OnDestroy()、PerformanceSamplingEntry.Start() 等共 4 处。</summary>
+    /// <summary>有效。</summary>
     private bool[] valid;
-    /// <summary>中文含义：文件夹。使用位置：作为 Directory.CreateDirectory(string) 的参数、作为 Path.Combine(string, string) 的参数、PerformanceSamplingEntry.Initialize()。</summary>
+    /// <summary>文件夹。</summary>
     private string folder;
-    /// <summary>中文含义：stage 表示“阶段”；state 表示“状态”；sampleCount 表示“采样数量”；actionStep 表示“动作步进”；shotCount 表示“射击数量”；hitCount 表示“命中数量”。使用位置：作为 File.WriteAllText(string, string) 的参数、PerformanceSamplingEntry.CurrentRound.get、PerformanceSamplingEntry.Flush() 等共 4 处。；使用位置：PerformanceSamplingEntry.Tick()。；使用位置：PerformanceSamplingEntry.Flush()、PerformanceSamplingEntry.Tick()。；使用位置：PerformanceSamplingEntry.Drive(int, double)、PerformanceSamplingEntry.Tick()。；使用位置：PerformanceSamplingEntry.OnFired()、PerformanceSamplingEntry.Tick()。；使用位置：PerformanceSamplingEntry.OnHit(HitResult)、PerformanceSamplingEntry.Tick()。</summary>
+    /// <summary>stage 表示“阶段”；state 表示“状态”；sampleCount 表示“采样数量”；actionStep 表示“动作步进”；shotCount 表示“射击数量”；hitCount 表示“命中数量”。</summary>
     private int stage, state, sampleCount, actionStep = -1, shotCount, hitCount;
-    /// <summary>中文含义：since 表示“自从”；initializedAt 表示“已初始化所在”；measureStart 表示“测量起始”。使用位置：作为 PerformanceSamplingEntry.Drive(int, double) 的参数、PerformanceSamplingEntry.Tick()。；使用位置：PerformanceSamplingEntry.Tick()。；使用位置：PerformanceSamplingEntry.Tick()。</summary>
+    /// <summary>since 表示“自从”；initializedAt 表示“已初始化所在”；measureStart 表示“测量起始”。</summary>
     private double since, initializedAt, measureStart;
-    /// <summary>中文含义：加载。使用位置：PerformanceSamplingEntry.Tick()。</summary>
+    /// <summary>加载。</summary>
     private AsyncOperation loading;
-    /// <summary>中文含义：玩家。使用位置：作为 EnemyAIManager.UnlockCombatAtVillageEntrance(LeonController) 的参数、作为 WeaponBase.Initialize(LeonController) 的参数、PerformanceSamplingEntry.Drive(int, double) 等共 4 处。</summary>
+    /// <summary>玩家。</summary>
     private LeonController player;
-    /// <summary>中文含义：桥接。使用位置：PerformanceSamplingEntry.Tick()、PerformanceSamplingEntry.Unbind()。</summary>
+    /// <summary>桥接。</summary>
     private LeonInputBridge bridge;
-    /// <summary>中文含义：敌人集合。使用位置：作为 Exception.Exception(string) 的参数、作为 List&lt;string&gt;.Add(string) 的参数、PerformanceSamplingEntry.Drive(int, double) 等共 4 处。</summary>
+    /// <summary>敌人集合。</summary>
     private VillagerController[] enemies;
-    /// <summary>中文含义：主摄像机。使用位置：PerformanceSamplingEntry.Drive(int, double)、PerformanceSamplingEntry.Tick()。</summary>
+    /// <summary>主摄像机。</summary>
     private Camera mainCamera;
-    /// <summary>中文含义：战斗。使用位置：PerformanceSamplingEntry.Drive(int, double)、PerformanceSamplingEntry.Tick()。</summary>
+    /// <summary>战斗。</summary>
     private LeonCombat combat;
-    /// <summary>中文含义：武器集合。使用位置：PerformanceSamplingEntry.Tick()。</summary>
+    /// <summary>武器集合。</summary>
     private LeonWeaponHandler weapons;
-    /// <summary>中文含义：枪械。使用位置：PerformanceSamplingEntry.Drive(int, double)、PerformanceSamplingEntry.Tick()、PerformanceSamplingEntry.Unbind()。</summary>
+    /// <summary>枪械。</summary>
     private WeaponBase gun;
-    /// <summary>中文含义：背包。使用位置：PerformanceSamplingEntry.Drive(int, double)、PerformanceSamplingEntry.Tick()。</summary>
+    /// <summary>背包。</summary>
     private InventoryManager inventory;
-    /// <summary>中文含义：加载器。使用位置：PerformanceSamplingEntry.Tick()。</summary>
+    /// <summary>加载器。</summary>
     private InventorySceneLoader loader;
-    /// <summary>中文含义：箱体。使用位置：PerformanceSamplingEntry.Tick()。</summary>
+    /// <summary>箱体。</summary>
     private StorageBoxController box;
-    /// <summary>中文含义：已存储。使用位置：作为 StorageBoxManager.TransferToInventory(GridItem) 的参数、PerformanceSamplingEntry.Drive(int, double)、PerformanceSamplingEntry.Tick()。</summary>
+    /// <summary>已存储。</summary>
     private GridItem stored;
-    /// <summary>中文含义：requestedWidth 表示“请求的宽度”；requestedHeight 表示“请求的高度”。使用位置：作为 Screen.SetResolution(int, int, FullScreenMode) 的参数、PerformanceSamplingEntry.Start()、PerformanceSamplingEntry.Tick()。；使用位置：作为 Screen.SetResolution(int, int, FullScreenMode) 的参数、PerformanceSamplingEntry.Start()。</summary>
+    /// <summary>requestedWidth 表示“请求的宽度”；requestedHeight 表示“请求的高度”。</summary>
     private int requestedWidth, requestedHeight;
     private bool sampleFormalVillage;
-    /// <summary>中文含义：弹数。使用位置：PerformanceSamplingEntry.CurrentRound.get、PerformanceSamplingEntry.Flush()、PerformanceSamplingEntry.Start() 等共 4 处。</summary>
+    private int sampleQualityLevel = 5;
+    /// <summary>弹数。</summary>
     private int rounds = 3;
-    /// <summary>中文含义：warmSeconds 表示“预热秒”；sampleSeconds 表示“采样秒”。使用位置：PerformanceSamplingEntry.Start()、PerformanceSamplingEntry.Tick()。；使用位置：PerformanceSamplingEntry.Start()、PerformanceSamplingEntry.Tick()。</summary>
+    /// <summary>warmSeconds 表示“预热秒”；sampleSeconds 表示“采样秒”。</summary>
     private double warmSeconds = 15, sampleSeconds = 60;
-    /// <summary>中文含义：场景用例集合。使用位置：PerformanceSamplingEntry.CurrentRound.get、PerformanceSamplingEntry.Flush()、PerformanceSamplingEntry.Start() 等共 4 处。</summary>
+    /// <summary>场景用例集合。</summary>
     private int[] scenarios =
     {
         0,
@@ -88,16 +89,16 @@ internal sealed class PerformanceSamplingEntry : MonoBehaviour
         6,
         7
     };
-    /// <summary>中文含义：当前轮次。使用位置：作为 List&lt;string&gt;.Add(string) 的参数、作为 Path.Combine(string, string) 的参数。</summary>
+    /// <summary>当前轮次。</summary>
     private int CurrentRound
     {
         get
         {
-            // index（当前元素索引）：使用位置：PerformanceSamplingEntry.CurrentRound.get。
+            // 当前元素索引。
 int index = stage / rounds;
-            // result（结果）：使用位置：PerformanceSamplingEntry.CurrentRound.get。
+            // 结果。
 int result = stage % rounds + 1;
-            // i（当前遍历索引）：使用位置：PerformanceSamplingEntry.CurrentRound.get。
+            // 当前遍历索引。
 for (int i = 0; i < index; i++)
             {
                 if (scenarios[i] == scenarios[index])
@@ -123,7 +124,7 @@ foreach (string argument in System.Environment.GetCommandLineArgs())
                 continue;
             }
 
-            // host（所属游戏对象）：使用位置：作为 Object.DontDestroyOnLoad(Object) 的参数、PerformanceSamplingEntry.Initialize()。
+            // 所属游戏对象。
 var host = new GameObject("独立程序性能采样");
             DontDestroyOnLoad(host);
             host.AddComponent<PerformanceSamplingEntry>().folder = argument.Substring("--性能采样=".Length);
@@ -147,10 +148,15 @@ foreach (string argument in System.Environment.GetCommandLineArgs())
 
             if (argument.StartsWith("--采样尺寸="))
             {
-                // size（尺寸）：保存 string.Split(char, StringSplitOptions) 的返回结果，供当前步骤使用。使用位置：作为 int.Parse(string) 的参数。
+                // 尺寸。
 string[] size = argument.Substring("--采样尺寸=".Length).Split('x');
                 requestedWidth = int.Parse(size[0]);
                 requestedHeight = int.Parse(size[1]);
+            }
+
+            if (argument.StartsWith("--采样画质="))
+            {
+                sampleQualityLevel = Mathf.Clamp(int.Parse(argument.Substring("--采样画质=".Length)), 0, QualitySettings.count - 1);
             }
 
             if (argument == "--采样探测")
@@ -173,16 +179,16 @@ string[] size = argument.Substring("--采样尺寸=".Length).Split('x');
 
         recorders = new ProfilerRecorder[counters.Length];
         valid = new bool[counters.Length];
-        // handles（句柄集合）：使用位置：作为 ProfilerRecorderHandle.GetAvailable(List<ProfilerRecorderHandle>) 的参数、PerformanceSamplingEntry.Start()。
+        // 句柄集合。
 var handles = new List<Unity.Profiling.LowLevel.Unsafe.ProfilerRecorderHandle>();
         Unity.Profiling.LowLevel.Unsafe.ProfilerRecorderHandle.GetAvailable(handles);
-        // i（当前遍历索引）：使用位置：PerformanceSamplingEntry.Start()。
+        // 当前遍历索引。
 for (int i = 0; i < counters.Length; i++)
         {
             // handle（句柄）：每轮从句柄集合取得一个元素，仅代表当前这一项。使用位置：作为 ProfilerRecorderHandle.GetDescription(ProfilerRecorderHandle) 的参数。
 foreach (var handle in handles)
             {
-                // description（描述）：保存 ProfilerRecorderHandle.GetDescription(ProfilerRecorderHandle) 的返回结果，供当前步骤使用。使用位置：作为 ProfilerRecorder.StartNew(ProfilerCategory, string, int, ProfilerRecorderOptions) 的参数、PerformanceSamplingEntry.Start()。
+                // 描述。
 var description = Unity.Profiling.LowLevel.Unsafe.ProfilerRecorderHandle.GetDescription(handle);
                 if (description.Name != counters[i])
                 {
@@ -196,7 +202,7 @@ var description = Unity.Profiling.LowLevel.Unsafe.ProfilerRecorderHandle.GetDesc
         }
 
         metadata.Add("引擎=" + Application.unityVersion + "；显卡=" + SystemInfo.graphicsDeviceName + "；图形接口=" + SystemInfo.graphicsDeviceType + "；处理器=" + SystemInfo.processorType + "；显示=" + Screen.currentResolution + "；开发版本=" + Debug.isDebugBuild);
-        // i（当前遍历索引）：使用位置：PerformanceSamplingEntry.Start()。
+        // 当前遍历索引。
 for (int i = 0; i < counters.Length; i++)
         {
             metadata.Add(counters[i] + "；可用=" + valid[i]);
@@ -227,11 +233,11 @@ for (int i = 0; i < counters.Length; i++)
     /// <remarks>静态调用链：上游 PerformanceSamplingEntry.Update()；下游（含内部回调体） Application.Quit()、Array.GetLength(int)、CharacterHealthModule.SetAliveCharacterValidateHealth(float)、Component.GetComponent&lt;HealthComponent&gt;()、Component.GetComponent&lt;LeonCombat&gt;()、Component.GetComponent&lt;LeonInputBridge&gt;()、Component.GetComponent&lt;LeonWeaponHandler&gt;() 等共 39 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     private void Tick()
     {
-        // now（当前时间）：使用位置：作为 PerformanceSamplingEntry.Drive(int, double) 的参数、PerformanceSamplingEntry.Tick()。
+        // 当前时间。
 double now = Time.realtimeSinceStartupAsDouble;
-        // groupIndex（分组索引）：使用位置：PerformanceSamplingEntry.Tick()。
+        // 分组索引。
 int groupIndex = stage / rounds;
-        // group（分组）：使用位置：作为 PerformanceSamplingEntry.Drive(int, double) 的参数、PerformanceSamplingEntry.Tick()。
+        // 分组。
 int group;
         if (groupIndex < scenarios.Length)
         {
@@ -333,7 +339,7 @@ int group;
             shotCount = 0;
             hitCount = 0;
             actionStep = -1;
-            QualitySettings.SetQualityLevel(5, true);
+            QualitySettings.SetQualityLevel(sampleQualityLevel, true);
             if (sampleFormalVillage)
             {
                 QualitySettings.vSyncCount = 0;
@@ -355,11 +361,11 @@ int group;
                 Screen.SetResolution(requestedWidth, requestedHeight, screenMode);
             }
 
-            // body（身体）：保存 Component.GetComponent<Rigidbody>() 的返回结果，供当前步骤使用。使用位置：PerformanceSamplingEntry.Tick()。
+            // 身体。
 var body = player.GetComponent<Rigidbody>();
             body.position = new Vector3(11, .45f, -6);
             body.linearVelocity = Vector3.zero;
-            // health（生命）：保存 Component.GetComponent<HealthComponent>() 的返回结果，供当前步骤使用。使用位置：作为 FieldInfo.SetValue(object, object) 的参数、PerformanceSamplingEntry.Tick()。
+            // 生命。
 var health = player.GetComponent<HealthComponent>();
             health.Initialize(1000000);
             typeof(HealthComponent).GetField("currentHealth", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).SetValue(health, 500000f);
@@ -431,7 +437,7 @@ foreach (var enemy in enemies)
 
         if (state == 2)
         {
-            // ready（是否就绪）：使用位置：PerformanceSamplingEntry.Tick()。
+            // 是否就绪。
 bool ready = group < 5 || group == 5 && loader.IsVisible || group == 6 && StorageBoxUI.Instance != null && StorageBoxUI.Instance.IsVisible || group == 7 && GameUIManager.Instance.IsPaused;
             if (!ready)
             {
@@ -472,7 +478,7 @@ bool ready = group < 5 || group == 5 && loader.IsVisible || group == 6 && Storag
             return;
         }
 
-        // elapsed（已用）：使用位置：作为 PerformanceSamplingEntry.Drive(int, double) 的参数、PerformanceSamplingEntry.Tick()。
+        // 已用。
 double elapsed = now - measureStart;
         if (elapsed >= sampleSeconds)
         {
@@ -494,16 +500,16 @@ double elapsed = now - measureStart;
         samples[sampleCount, 2] = Time.unscaledDeltaTime * 1000;
         samples[sampleCount, 3] = System.GC.CollectionCount(0);
         samples[sampleCount, 4] = System.GC.CollectionCount(1);
-        // i（当前遍历索引）：使用位置：PerformanceSamplingEntry.Tick()。
+        // 当前遍历索引。
 for (int i = 0; i < counters.Length; i++)
         {
-            // assignmentReceiver3（赋值前保存的目标采样集合）：从采样集合读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：PerformanceSamplingEntry.Tick()。
+            // 赋值前保存的目标采样集合。
 double[, ] assignmentReceiver3 = samples;
-            // assignmentIndex4（赋值前保存的索引采样数量）：从采样数量读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：PerformanceSamplingEntry.Tick()。
+            // 赋值前保存的索引采样数量。
 int assignmentIndex4 = sampleCount;
-            // assignmentIndex5（赋值前保存的索引整数计算）：按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：PerformanceSamplingEntry.Tick()。
+            // 赋值前保存的索引整数计算。
 int assignmentIndex5 = 5 + i;
-            // selectedValue6（分支选出的记录器集合的上一次值）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：PerformanceSamplingEntry.Tick()。
+            // 分支选出的记录器集合的上一次值。
 long selectedValue6;
             if (valid[i] && recorders[i].Count > 0)
             {
@@ -520,13 +526,13 @@ long selectedValue6;
         samples[sampleCount, 14] = Time.timeScale;
         samples[sampleCount, 15] = shotCount;
         samples[sampleCount, 16] = hitCount;
-        // assignmentReceiver7（赋值前保存的目标采样集合）：从采样集合读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：PerformanceSamplingEntry.Tick()。
+        // 赋值前保存的目标采样集合。
 double[, ] assignmentReceiver7 = samples;
-        // assignmentIndex8（赋值前保存的索引采样数量）：从采样数量读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：PerformanceSamplingEntry.Tick()。
+        // 赋值前保存的索引采样数量。
 int assignmentIndex8 = sampleCount;
-        // assignmentIndex9（赋值前保存的索引17）：从17读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：PerformanceSamplingEntry.Tick()。
+        // 赋值前保存的索引17。
 int assignmentIndex9 = 17;
-        // selectedValue10（分支选出的1）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：PerformanceSamplingEntry.Tick()。
+        // 分支选出的1。
 int selectedValue10;
         if (Application.isFocused)
         {
@@ -557,15 +563,15 @@ int selectedValue10;
 
     /// <summary>Drive 的业务处理入口；本方法直接依赖 GameUIManager.HidePause()、GameUIManager.ShowPause()、InventoryManager.GetItems()、InventoryManager.MoveItem(GridItem, int, int)、InventoryManager.RotateItem(GridItem)、InventoryManager.Sort()、LeonCombat.HandleAim(bool) 等共 21 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 PerformanceSamplingEntry.Tick()；下游（含内部回调体） GameUIManager.HidePause()、GameUIManager.ShowPause()、InventoryManager.GetItems()、InventoryManager.MoveItem(GridItem, int, int)、InventoryManager.RotateItem(GridItem)、InventoryManager.Sort()、LeonCombat.HandleAim(bool) 等共 21 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="group">中文含义：分组。使用位置：PerformanceSamplingEntry.Drive(int, double)。</param>
-    /// <param name="elapsed">中文含义：已用。使用位置：PerformanceSamplingEntry.Drive(int, double)。</param>
+    /// <param name="group">分组。</param>
+    /// <param name="elapsed">已用。</param>
     private void Drive(int group, double elapsed)
     {
-        // step（步进）：使用位置：PerformanceSamplingEntry.Drive(int, double)。
+        // 步进。
 int step = (int)(elapsed / 2);
         if (group == 1 || group == 2)
         {
-            // angle（角度）：使用位置：作为 Mathf.Cos(float) 的参数、作为 Mathf.Sin(float) 的参数。
+            // 角度。
 float angle = (float)(elapsed * System.Math.PI / 6);
             player.SetMoveInput(new Vector3(Mathf.Sin(angle) * .55f, 0, Mathf.Cos(angle) * .55f));
             player.SetLookInput(new Vector2(.1f * Time.unscaledDeltaTime * 144f, 0));
@@ -573,9 +579,9 @@ float angle = (float)(elapsed * System.Math.PI / 6);
 
         if (group == 3 || group == 4)
         {
-            // target（目标村民敌人控制器）：使用位置：PerformanceSamplingEntry.Drive(int, double)。
+            // 目标村民敌人控制器。
 VillagerController target = null;
-            // best（最佳）：使用位置：PerformanceSamplingEntry.Drive(int, double)。
+            // 最佳。
 float best = float.MaxValue;
             // enemy（敌人）：每轮从敌人集合取得一个元素，仅代表当前这一项。使用位置：PerformanceSamplingEntry.Drive(int, double)。
 foreach (var enemy in enemies)
@@ -585,7 +591,7 @@ foreach (var enemy in enemies)
                     continue;
                 }
 
-                // distance（距离）：使用位置：PerformanceSamplingEntry.Drive(int, double)。
+                // 距离。
 float distance = (enemy.transform.position - player.transform.position).sqrMagnitude;
                 if (distance < best)
                 {
@@ -596,10 +602,10 @@ float distance = (enemy.transform.position - player.transform.position).sqrMagni
 
             if (target != null)
             {
-                // direction（方向）：使用位置：作为 Vector3.SignedAngle(Vector3, Vector3, Vector3) 的参数、PerformanceSamplingEntry.Drive(int, double)。
+                // 方向。
 Vector3 direction = target.transform.position - player.transform.position;
                 direction.y = 0;
-                // facing（朝向）：使用位置：作为 Vector3.SignedAngle(Vector3, Vector3, Vector3) 的参数、PerformanceSamplingEntry.Drive(int, double)。
+                // 朝向。
 Vector3 facing = mainCamera.transform.forward;
                 facing.y = 0;
                 player.SetLookInput(new Vector2(Mathf.Clamp(Vector3.SignedAngle(facing, direction, Vector3.up) * .2f, -6, 6) * Time.unscaledDeltaTime * 144f, 0));
@@ -622,7 +628,7 @@ Vector3 facing = mainCamera.transform.forward;
         if (group == 5 && step != actionStep)
         {
             actionStep = step;
-            // items（物品列表）：保存 InventoryManager.GetItems() 的返回结果，供当前步骤使用。使用位置：作为 InventoryManager.MoveItem(GridItem, int, int) 的参数、作为 InventoryManager.RotateItem(GridItem) 的参数、PerformanceSamplingEntry.Drive(int, double)。
+            // 物品列表。
 var items = inventory.GetItems();
             if (step % 3 == 0)
             {
@@ -674,7 +680,7 @@ foreach (var candidate in StorageBoxManager.Instance.GetStorageItems())
 
         if (group == 7)
         {
-            // pauseStep（暂停步进）：使用位置：PerformanceSamplingEntry.Drive(int, double)。
+            // 暂停步进。
 int pauseStep = (int)(elapsed / 8);
             if (pauseStep != actionStep)
             {
@@ -725,7 +731,7 @@ int pauseStep = (int)(elapsed / 8);
 
     /// <summary>Status 的业务处理入口；本方法直接依赖 DateTime.ToString(string)、File.WriteAllText(string, string)、Path.Combine(string, string)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 PerformanceSamplingEntry.Start()、PerformanceSamplingEntry.Tick()、PerformanceSamplingEntry.Update()；下游（含内部回调体） DateTime.ToString(string)、File.WriteAllText(string, string)、Path.Combine(string, string)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="phase">中文含义：阶段。使用位置：作为 File.WriteAllText(string, string) 的参数。</param>
+    /// <param name="phase">阶段。</param>
     private void Status(string phase)
     {
         System.IO.File.WriteAllText(System.IO.Path.Combine(folder, "状态.txt"), phase + "；阶段=" + stage + "；时间=" + System.DateTime.Now.ToString("O"));
@@ -735,12 +741,12 @@ int pauseStep = (int)(elapsed / 8);
     /// <remarks>静态调用链：上游 PerformanceSamplingEntry.Tick()；下游（含内部回调体） Array.GetLength(int)、double.ToString(IFormatProvider)、File.WriteAllLines(string, IEnumerable&lt;string&gt;)、File.WriteAllText(string, string)、Path.Combine(string, string)、string.Join(string, params string[])、StringBuilder.Append(char) 等共 11 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     private void Flush()
     {
-        // text（文字）：使用位置：作为 File.WriteAllText(string, string) 的参数、PerformanceSamplingEntry.Flush()。
+        // 文字。
 var text = new System.Text.StringBuilder("时刻,帧号,间隔毫秒,回收零代,回收一代," + string.Join(",", counters) + ",时间倍率,开火次数,命中次数,窗口焦点,玩家横坐标,玩家高度,玩家纵坐标,快照累计,寻路提交累计,物理查询累计,候选节点累计,索引重建累计,分类命中累计,分类未命中累计,路径扩容累计,裁剪累计,最大排队秒数,主线程分配累计\n");
-        // i（当前遍历索引）：使用位置：PerformanceSamplingEntry.Flush()。
+        // 当前遍历索引。
 for (int i = 0; i < sampleCount; i++)
         {
-            // j（内层遍历索引）：使用位置：PerformanceSamplingEntry.Flush()。
+            // 内层遍历索引。
 for (int j = 0; j < samples.GetLength(1); j++)
             {
                 if (j > 0)
@@ -765,7 +771,7 @@ for (int j = 0; j < samples.GetLength(1); j++)
         Unbind();
         if (recorders != null)
         {
-            // i（当前遍历索引）：使用位置：PerformanceSamplingEntry.OnDestroy()。
+            // 当前遍历索引。
 for (int i = 0; i < recorders.Length; i++)
             {
                 if (valid[i])

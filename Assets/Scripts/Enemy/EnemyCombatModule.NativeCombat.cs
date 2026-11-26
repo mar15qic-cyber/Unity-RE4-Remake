@@ -45,6 +45,67 @@ public sealed partial class EnemyCombatModule
     private Vector3 nativeKickTravelDirection;
 
     private VillageLegTrap enemyTrap;
+    private Transform trapPelvis;
+    private Transform trapLeftFoot;
+    private Transform trapRightFoot;
+    private EnvironmentPoseOffset trapPelvisOffset;
+    private bool trapBonesSearched;
+
+    internal bool HasCachedTrapFeet
+    {
+        get
+        {
+            EnsureTrapBonesCached();
+            return trapLeftFoot != null || trapRightFoot != null;
+        }
+    }
+
+    private void EnsureTrapBonesCached()
+    {
+        if (trapBonesSearched || anim == null)
+        {
+            return;
+        }
+
+        trapBonesSearched = true;
+        foreach (Transform joint in anim.GetComponentsInChildren<Transform>(true))
+        {
+            if (joint.name == "Hip")
+            {
+                trapPelvis = joint;
+            }
+            else if (joint.name == "L_Foot")
+            {
+                trapLeftFoot = joint;
+            }
+            else if (joint.name == "R_Foot")
+            {
+                trapRightFoot = joint;
+            }
+        }
+
+        if (trapPelvis != null)
+        {
+            trapPelvisOffset = new EnvironmentPoseOffset(trapPelvis);
+        }
+    }
+
+    internal bool IsFootNearLegTrap(Vector3 anklePosition, float maxDistance)
+    {
+        EnsureTrapBonesCached();
+        float maxSqr = maxDistance * maxDistance;
+        if (trapLeftFoot != null && (trapLeftFoot.position - anklePosition).sqrMagnitude <= maxSqr)
+        {
+            return true;
+        }
+
+        if (trapRightFoot != null && (trapRightFoot.position - anklePosition).sqrMagnitude <= maxSqr)
+        {
+            return true;
+        }
+
+        return false;
+    }
 
     internal bool TryCatchLegTrap(VillageLegTrap trap)
     {
@@ -59,11 +120,61 @@ public sealed partial class EnemyCombatModule
         {
             return false;
         }
+        EnsureTrapBonesCached();
         enemyTrap = trap;
         nativeCombatAction = handle;
         nativeCombatOrientation = transform.rotation * Quaternion.Inverse(track.Sample(0f).rotation);
         SetNativeCombatTrack(track, NativeCombatPhase.LegTrap);
+
+        // Trap2000 中由左脚向前踏进夹口（稳态偏移约 (-0.17, 0, +0.52)），入夹瞬间先微调根节点让左脚落点贴近夹口，
+        // 避免大幅拉扯骨盆造成明显滑步或错位。
+        if (trap != null)
+        {
+            Vector3 expectedPinnedFootOffset = transform.rotation * new Vector3(-0.17f, 0f, 0.52f);
+            Vector3 desiredRoot = trap.Ankle - expectedPinnedFootOffset;
+            Vector3 rootShift = Vector3.ProjectOnPlane(desiredRoot - transform.position, Vector3.up);
+            if (rootShift.sqrMagnitude > 0.0004f)
+            {
+                Vector3 clampedShift = Vector3.ClampMagnitude(rootShift, 0.55f);
+                host.CommitNativeCombatMotion(handle, clampedShift, transform.rotation, 0f, false, out _);
+            }
+        }
+
         return true;
+    }
+
+    internal void ApplyLegTrapFootPin()
+    {
+        if (nativeCombatPhase != NativeCombatPhase.LegTrap || enemyTrap == null || IsDead || IsQTEControlled)
+        {
+            if (trapPelvisOffset != null)
+            {
+                trapPelvisOffset.Restore();
+            }
+            return;
+        }
+
+        EnsureTrapBonesCached();
+        if (trapPelvis == null || trapPelvisOffset == null || trapLeftFoot == null)
+        {
+            return;
+        }
+
+        float frame = nativeCombatTime * 60f;
+        float entryWeight = Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(0f, 8f, frame));
+        float releaseWeight = 1f - Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(366f, 419f, frame));
+        float pinWeight = entryWeight * releaseWeight;
+        if (pinWeight <= 0.001f)
+        {
+            trapPelvisOffset.Restore();
+            return;
+        }
+
+        // 参照里昂踩夹对齐方式：平移骨盆使被夹左脚精准钉在夹口中心，完整保留原版挣扎动作。
+        trapPelvisOffset.Capture();
+        Vector3 delta = enemyTrap.Ankle - trapLeftFoot.position;
+        trapPelvis.position += Vector3.ClampMagnitude(delta, 0.75f) * pinWeight;
+        trapPelvisOffset.Commit();
     }
 
     internal bool TryReadTrappedOpportunity(out ActionHandle handle)
@@ -76,6 +187,10 @@ public sealed partial class EnemyCombatModule
 
     internal void ReleaseEnemyTrap()
     {
+        if (trapPelvisOffset != null)
+        {
+            trapPelvisOffset.Restore();
+        }
         if (enemyTrap != null)
         {
             enemyTrap.ReleaseEnemy(this);
@@ -119,13 +234,37 @@ public sealed partial class EnemyCombatModule
 
     private bool IsRevivalPoseNearGround()
     {
-        if (nativeFinisherHead == null)
+        if (nativeCombatTrack != null && nativeCombatTrack.clip != null)
         {
-            return nativeCombatTime < .55f;
+            AnimationClip clip = nativeCombatTrack.clip;
+            float duration = Mathf.Max(0.01f, clip.length);
+            float normalizedTime = nativeCombatTime / duration;
+            string clipName = clip.name;
+            float maxNormalizedTime = 0.65f;
+            if (!string.IsNullOrEmpty(clipName))
+            {
+                if (clipName.IndexOf("3592", System.StringComparison.Ordinal) >= 0)
+                {
+                    maxNormalizedTime = 0.72f;
+                }
+                else if (clipName.IndexOf("3597", System.StringComparison.Ordinal) >= 0)
+                {
+                    maxNormalizedTime = 0.55f;
+                }
+            }
+            if (normalizedTime <= maxNormalizedTime)
+            {
+                return true;
+            }
         }
 
-        // 两套复起动作在地面扭动的时长不同，头部抬离地面后再关闭卧姿补刀。
-        return nativeFinisherHead.position.y - transform.position.y <= .55f;
+        if (nativeFinisherHead == null)
+        {
+            return nativeCombatTime < 2.5f;
+        }
+
+        // 两套复起扭动动作的抬头时点不同；在完全站起前保留倒地与变异补刀窗口。
+        return nativeFinisherHead.position.y - transform.position.y <= 1.15f;
     }
     internal string GroundFinisherMotion
     {
@@ -215,9 +354,10 @@ public sealed partial class EnemyCombatModule
             return false;
         }
 
+        int kneelSide = ConsumeCachedBodyTechniqueKneelState();
         if (IsDead)
         {
-            return NativeDeathActive || BeginTerminalDirectionalKnockdown(source, travelScale, true);
+            return NativeDeathActive || BeginTerminalDirectionalKnockdown(source, travelScale, true, kneelSide);
         }
 
         if (nativeCombatPhase == NativeCombatPhase.LegTrap)
@@ -229,16 +369,28 @@ public sealed partial class EnemyCombatModule
         {
             return true;
         }
-        return BeginNativeKnockdown(source, false, travelScale, true);
+        return BeginNativeKnockdown(source, false, travelScale, true, kneelSide);
     }
 
-    private bool BeginNativeKnockdown(Vector3 source, bool dying, float travelScale = 1f, bool fromKick = false)
+    private bool BeginNativeKnockdown(Vector3 source, bool dying, float travelScale = 1f, bool fromKick = false, int kneelSide = 0)
     {
         Vector3 local = transform.InverseTransformDirection(source - transform.position);
         string motion = "Native_1015";
         nativeLandingMotion = "Native_1016";
         nativeDownFaceUp = true;
-        if (local.z < -Mathf.Abs(local.x))
+        if (fromKick && kneelSide == 1 && TryReadNativeCombatTrack("Ganado_1100", out _))
+        {
+            motion = "Ganado_1100";
+            nativeLandingMotion = "Ganado_1101";
+            nativeDownFaceUp = true;
+        }
+        else if (fromKick && kneelSide == 2 && TryReadNativeCombatTrack("Ganado_1105", out _))
+        {
+            motion = "Ganado_1105";
+            nativeLandingMotion = "Ganado_1106";
+            nativeDownFaceUp = true;
+        }
+        else if (local.z < -Mathf.Abs(local.x))
         {
             motion = "Native_1030";
             nativeLandingMotion = "Native_1031";
@@ -322,7 +474,12 @@ public sealed partial class EnemyCombatModule
         {
             nativeFallLandingTime = ReadNativeFallLandingTime(track);
         }
-        AnimationPresenter.PresentNativeCombat(track.clip, 0f);
+        float entryBlendSeconds = 0f;
+        if (phase == NativeCombatPhase.Falling)
+        {
+            entryBlendSeconds = 0.08f;
+        }
+        AnimationPresenter.PresentNativeCombat(track.clip, 0f, false, entryBlendSeconds);
     }
 
     private bool SwitchNativeCombatTrack(string motion, NativeCombatPhase phase)
@@ -439,7 +596,12 @@ public sealed partial class EnemyCombatModule
         {
             poseTime = Mathf.Min(poseTime, Mathf.Max(0f, nativeFallLandingTime - 1f / nativeCombatTrack.clip.frameRate));
         }
-        AnimationPresenter.PresentNativeCombat(nativeCombatTrack.clip, poseTime, nativeCombatPhase == NativeCombatPhase.GrabRecovery);
+        float entryBlendSeconds = 0f;
+        if (nativeCombatPhase == NativeCombatPhase.Falling)
+        {
+            entryBlendSeconds = 0.08f;
+        }
+        AnimationPresenter.PresentNativeCombat(nativeCombatTrack.clip, poseTime, nativeCombatPhase == NativeCombatPhase.GrabRecovery, entryBlendSeconds);
         if (nativeCombatPhase == NativeCombatPhase.LegTrap && enemyTrap != null)
             enemyTrap.SampleEnemy(poseTime);
         if (nativeCombatPhase == NativeCombatPhase.LegTrap && nativeCombatTime >= 419f / 60f)
@@ -448,14 +610,27 @@ public sealed partial class EnemyCombatModule
         }
         if (nativeCombatPhase == NativeCombatPhase.Falling)
         {
-            if (onSupport && nativeCombatTime >= nativeFallLandingTime)
+            if ((onSupport && nativeCombatTime >= nativeFallLandingTime)
+                || nativeCombatTime >= nativeFallLandingTime + 0.75f)
             {
                 AdvanceNativeCombatPhase();
             }
             return true;
         }
-        if (findingLanding && !onSupport)
+        if (findingLanding && !onSupport && nativeCombatTime < nativeFallLandingTime + 0.85f)
         {
+            return true;
+        }
+
+        bool isGrabPhase = nativeCombatPhase == NativeCombatPhase.Grab || nativeCombatPhase == NativeCombatPhase.GrabRecovery;
+        if (isGrabPhase && !host.HasPhysicalEnemySupport())
+        {
+            EnemyWindowTraversal traversal = host.ArchitectureReadSpecialTraversal;
+            CancelNativeCombat(true);
+            if (traversal != null)
+            {
+                traversal.TryBeginUnsupportedDrop();
+            }
             return true;
         }
 
@@ -587,6 +762,18 @@ public sealed partial class EnemyCombatModule
             || Mathf.Abs(nativeGrabTarget.transform.position.y - transform.position.y) > .28f)
         {
             return;
+        }
+        if (nativeGrabKind == QTEKind.RearBiteNeck)
+        {
+            if (!VillagerQTEParticipant.IsValidRearGrabGeometry(
+                transform.position,
+                transform.forward,
+                nativeGrabTarget.transform.position,
+                nativeGrabTarget.transform.forward,
+                nativeGrabTarget.IsCrouching))
+            {
+                return;
+            }
         }
         if (!nativeGrabTarget.TryGetCurrentWorldCapsule(out Vector3 top, out Vector3 bottom, out float radius))
         {

@@ -7,12 +7,12 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "死亡结算视觉配置", menuName = "游戏界面/死亡结算视觉配置")]
 public sealed class GameOverVisualConfig : ScriptableObject
 {
-    /// <summary>中文含义：标题字体。使用位置：GameOverScreen.ResolveVisualAssets()。</summary>
+    /// <summary>标题字体。</summary>
     [Header("字体")]
     public Font titleFont;
-    /// <summary>中文含义：接口字体。使用位置：GameOverScreen.ResolveVisualAssets()。</summary>
+    /// <summary>接口字体。</summary>
     public Font interfaceFont;
-    /// <summary>中文含义：按钮精灵图。使用位置：GameOverScreen.ResolveVisualAssets()。</summary>
+    /// <summary>按钮精灵图。</summary>
     [Header("按钮")]
     public Sprite buttonSprite;
 }

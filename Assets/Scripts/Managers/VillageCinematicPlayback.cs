@@ -128,13 +128,29 @@ internal sealed class VillageCinematicPlayback
         {
             return;
         }
-        double time = Math.Max(0d, AudioSettings.dspTime - startDsp);
+        double audioTime = Math.Max(0d, AudioSettings.dspTime - startDsp);
         var clock = sources[clockIndex];
-        if (time < clips[clockIndex].length && clock.isPlaying)
+        if (audioTime < clips[clockIndex].length && clock.isPlaying)
         {
-            time = (double)clock.timeSamples / clips[clockIndex].frequency;
+            audioTime = (double)clock.timeSamples / clips[clockIndex].frequency;
         }
-        time = Math.Min(duration, Math.Max(previousTime, time));
+
+        double time;
+        if (previousTime <= 0d && audioTime <= 0d)
+        {
+            time = 0d;
+        }
+        else
+        {
+            double continuousTime = previousTime + Math.Min(0.05d, (double)Time.unscaledDeltaTime);
+            double drift = audioTime - continuousTime;
+            if (Math.Abs(drift) > 0.035d)
+            {
+                continuousTime += drift * 0.35d;
+            }
+            time = Math.Min(duration, Math.Max(previousTime, continuousTime));
+        }
+
         if (time > previousTime)
         {
             director.time = time;

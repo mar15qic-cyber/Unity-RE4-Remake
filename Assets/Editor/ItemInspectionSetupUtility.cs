@@ -7,13 +7,13 @@ using UnityEngine.SceneManagement;
 /// <summary>首次获得物品检视界面的资源安装与配置工具。</summary>
 public static class ItemInspectionSetupUtility
 {
-    /// <summary>中文含义：游戏场景路径。编译期常量，保持既有值与消费者映射。使用位置：作为 EditorSceneManager.OpenScene(string, OpenSceneMode) 的参数、作为 SceneManager.GetSceneByPath(string) 的参数。</summary>
+    /// <summary>游戏场景路径。编译期常量，保持既有值与消费者映射。</summary>
     const string GameScenePath = SceneManagerEx.MainScenePath;
-    /// <summary>中文含义：预制件文件夹。编译期常量，保持既有值与消费者映射。使用位置：ItemInspectionSetupUtility.PrefabPath。</summary>
+    /// <summary>预制件文件夹。编译期常量，保持既有值与消费者映射。</summary>
     const string PrefabFolder = "Assets/Prefab/UI";
-    /// <summary>中文含义：预制件路径。编译期常量，保持既有值与消费者映射。使用位置：作为 AssetDatabase.LoadAssetAtPath&lt;GameObject&gt;(string) 的参数、作为 PrefabUtility.SaveAsPrefabAsset(GameObject, string) 的参数。</summary>
+    /// <summary>预制件路径。编译期常量，保持既有值与消费者映射。</summary>
     const string PrefabPath = PrefabFolder + "/首次获得物品检视界面.prefab";
-    /// <summary>中文含义：已知模型路径集合。只读字段，初始化后不由普通写入口替换。使用位置：ItemInspectionSetupUtility.ConfigureKnownModels()。</summary>
+    /// <summary>已知模型路径集合。只读字段，初始化后不由普通写入口替换。</summary>
     static readonly Dictionary<string, string> KnownModelPaths = new Dictionary<string, string>
     {
         {
@@ -55,12 +55,12 @@ public static class ItemInspectionSetupUtility
     public static void InstallAndConfigure()
     {
         ConfigureKnownModels();
-        // prefab（预制件）：保存 ItemInspectionSetupUtility.EnsurePrefab() 的返回结果，供当前步骤使用。使用位置：作为 ItemInspectionSetupUtility.EnsureSceneInstance(GameObject) 的参数。
+        // 预制件。
 GameObject prefab = EnsurePrefab();
         EnsureSceneInstance(prefab);
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
-        // missingCount（缺失的数量）：保存 ItemInspectionSetupUtility.ValidateAllModels(bool) 的返回结果，供当前步骤使用。使用位置：作为 Debug.Log(object) 的参数。
+        // 缺失的数量。
 int missingCount = ValidateAllModels(true);
         Debug.Log("[物品检视] 安装完成；仍缺少成品三维模型的物品数量：" + missingCount);
     }
@@ -70,7 +70,7 @@ int missingCount = ValidateAllModels(true);
     [MenuItem("工具/物品检视/校验全部物品模型")]
     public static void ValidateFromMenu()
     {
-        // missingCount（缺失的数量）：保存 ItemInspectionSetupUtility.ValidateAllModels(bool) 的返回结果，供当前步骤使用。使用位置：ItemInspectionSetupUtility.ValidateFromMenu()。
+        // 缺失的数量。
 int missingCount = ValidateAllModels(true);
         if (missingCount == 0)
         {
@@ -80,17 +80,17 @@ int missingCount = ValidateAllModels(true);
 
     /// <summary>ValidateAllModels 的业务处理入口；本方法直接依赖 Debug.LogError(object, Object)、ItemData.GetInspectionModelPrefab()、ItemInspectionSetupUtility.LoadAllItems()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 ItemInspectionSetupUtility.InstallAndConfigure()、ItemInspectionSetupUtility.ValidateFromMenu()；下游（含内部回调体） Debug.LogError(object, Object)、ItemData.GetInspectionModelPrefab()、ItemInspectionSetupUtility.LoadAllItems()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="logErrors">中文含义：是否日志错误集合。使用位置：ItemInspectionSetupUtility.ValidateAllModels(bool)。</param>
+    /// <param name="logErrors">是否日志错误集合。</param>
     public static int ValidateAllModels(bool logErrors)
     {
-        // items（物品列表）：保存 ItemInspectionSetupUtility.LoadAllItems() 的返回结果，供当前步骤使用。使用位置：ItemInspectionSetupUtility.ValidateAllModels(bool)。
+        // 物品列表。
 List<ItemData> items = LoadAllItems();
-        // missingCount（缺失的数量）：使用位置：ItemInspectionSetupUtility.ValidateAllModels(bool)。
+        // 缺失的数量。
 int missingCount = 0;
-        // i（当前遍历索引）：使用位置：作为 List<ItemData>.this[int] 的参数、ItemInspectionSetupUtility.ValidateAllModels(bool)。
+        // 当前遍历索引。
 for (int i = 0; i < items.Count; i++)
         {
-            // item（当前物品数据配置）：使用位置：作为 Debug.LogError(object, Object) 的参数、ItemInspectionSetupUtility.ValidateAllModels(bool)。
+            // 当前物品数据配置。
 ItemData item = items[i];
             if (item == null || item.GetInspectionModelPrefab() != null)
             {
@@ -111,12 +111,12 @@ ItemData item = items[i];
     /// <remarks>静态调用链：上游 ItemInspectionSetupUtility.InstallAndConfigure()；下游（含内部回调体） AssetDatabase.LoadAssetAtPath&lt;GameObject&gt;(string)、Debug.LogWarning(object, Object)、Dictionary&lt;string, string&gt;.TryGetValue(string, out string)、EditorUtility.SetDirty(Object)、ItemInspectionSetupUtility.LoadAllItems()、Undo.RecordObject(Object, string)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     static void ConfigureKnownModels()
     {
-        // items（物品列表）：保存 ItemInspectionSetupUtility.LoadAllItems() 的返回结果，供当前步骤使用。使用位置：ItemInspectionSetupUtility.ConfigureKnownModels()。
+        // 物品列表。
 List<ItemData> items = LoadAllItems();
-        // i（当前遍历索引）：使用位置：作为 List<ItemData>.this[int] 的参数、ItemInspectionSetupUtility.ConfigureKnownModels()。
+        // 当前遍历索引。
 for (int i = 0; i < items.Count; i++)
         {
-            // item（当前物品数据配置）：使用位置：作为 Debug.LogWarning(object, Object) 的参数、作为 Dictionary<string, string>.TryGetValue(string, out string) 的参数、作为 EditorUtility.SetDirty(Object) 的参数 等共 5 处。
+            // 当前物品数据配置。
 ItemData item = items[i];
             if (item == null || item.inspectionModelPrefab != null)
             {
@@ -128,7 +128,7 @@ ItemData item = items[i];
                 continue;
             }
 
-            // model（模型）：保存 AssetDatabase.LoadAssetAtPath<GameObject>(string) 的返回结果，供当前步骤使用。使用位置：ItemInspectionSetupUtility.ConfigureKnownModels()。
+            // 模型。
 GameObject model = AssetDatabase.LoadAssetAtPath<GameObject>(modelPath);
             if (model == null)
             {
@@ -147,14 +147,14 @@ GameObject model = AssetDatabase.LoadAssetAtPath<GameObject>(modelPath);
     static GameObject EnsurePrefab()
     {
         EnsureFolder("Assets/Prefab", "UI");
-        // prefab（预制件）：保存 AssetDatabase.LoadAssetAtPath<GameObject>(string) 的返回结果，供当前步骤使用。使用位置：ItemInspectionSetupUtility.EnsurePrefab()。
+        // 预制件。
 GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(PrefabPath);
         if (prefab != null)
         {
             return prefab;
         }
 
-        // root（根游戏对象）：使用位置：作为 Object.DestroyImmediate(Object) 的参数、作为 PrefabUtility.SaveAsPrefabAsset(GameObject, string) 的参数、ItemInspectionSetupUtility.EnsurePrefab()。
+        // 根游戏对象。
 GameObject root = new GameObject("首次获得物品检视界面");
         root.AddComponent<ItemInspectionUI>();
         prefab = PrefabUtility.SaveAsPrefabAsset(root, PrefabPath);
@@ -164,7 +164,7 @@ GameObject root = new GameObject("首次获得物品检视界面");
 
     /// <summary>EnsureSceneInstance 的业务处理入口；本方法直接依赖 EditorSceneManager.CloseScene(Scene, bool)、EditorSceneManager.MarkSceneDirty(Scene)、EditorSceneManager.OpenScene(string, OpenSceneMode)、EditorSceneManager.SaveScene(Scene)、PrefabUtility.InstantiatePrefab(Object, Scene)、Resources.FindObjectsOfTypeAll&lt;ItemInspectionUI&gt;()、Scene.IsValid() 等共 8 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 ItemInspectionSetupUtility.InstallAndConfigure()；下游（含内部回调体） EditorSceneManager.CloseScene(Scene, bool)、EditorSceneManager.MarkSceneDirty(Scene)、EditorSceneManager.OpenScene(string, OpenSceneMode)、EditorSceneManager.SaveScene(Scene)、PrefabUtility.InstantiatePrefab(Object, Scene)、Resources.FindObjectsOfTypeAll&lt;ItemInspectionUI&gt;()、Scene.IsValid() 等共 8 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="prefab">中文含义：预制件。使用位置：作为 PrefabUtility.InstantiatePrefab(Object, Scene) 的参数、ItemInspectionSetupUtility.EnsureSceneInstance(GameObject)。</param>
+    /// <param name="prefab">预制件。</param>
     static void EnsureSceneInstance(GameObject prefab)
     {
         if (prefab == null)
@@ -172,18 +172,18 @@ GameObject root = new GameObject("首次获得物品检视界面");
             return;
         }
 
-        // scene（场景）：保存 SceneManager.GetSceneByPath(string) 的返回结果，供当前步骤使用。使用位置：作为 EditorSceneManager.CloseScene(Scene, bool) 的参数、作为 EditorSceneManager.MarkSceneDirty(Scene) 的参数、作为 EditorSceneManager.SaveScene(Scene) 的参数 等共 5 处。
+        // 场景。
 Scene scene = SceneManager.GetSceneByPath(GameScenePath);
-        // openedByTool（是否已打开依据工具）：使用位置：ItemInspectionSetupUtility.EnsureSceneInstance(GameObject)。
+        // 是否已打开依据工具。
 bool openedByTool = !scene.IsValid() || !scene.isLoaded;
         if (openedByTool)
         {
             scene = EditorSceneManager.OpenScene(GameScenePath, OpenSceneMode.Additive);
         }
 
-        // existing（已有）：保存 Resources.FindObjectsOfTypeAll<ItemInspectionUI>() 的返回结果，供当前步骤使用。使用位置：ItemInspectionSetupUtility.EnsureSceneInstance(GameObject)。
+        // 已有。
 ItemInspectionUI[] existing = Resources.FindObjectsOfTypeAll<ItemInspectionUI>();
-        // i（当前遍历索引）：使用位置：ItemInspectionSetupUtility.EnsureSceneInstance(GameObject)。
+        // 当前遍历索引。
 for (int i = 0; i < existing.Length; i++)
         {
             if (existing[i] != null && existing[i].gameObject.scene == scene)
@@ -197,7 +197,7 @@ for (int i = 0; i < existing.Length; i++)
             }
         }
 
-        // instance（实例）：使用位置：ItemInspectionSetupUtility.EnsureSceneInstance(GameObject)。
+        // 实例。
 GameObject instance = PrefabUtility.InstantiatePrefab(prefab, scene) as GameObject;
         if (instance != null)
         {
@@ -216,16 +216,16 @@ GameObject instance = PrefabUtility.InstantiatePrefab(prefab, scene) as GameObje
     /// <remarks>静态调用链：上游 ItemInspectionSetupUtility.ConfigureKnownModels()、ItemInspectionSetupUtility.ValidateAllModels(bool)；下游（含内部回调体） AssetDatabase.FindAssets(string, string[])、AssetDatabase.GUIDToAssetPath(string)、AssetDatabase.LoadAssetAtPath&lt;ItemData&gt;(string)、List&lt;ItemData&gt;.Add(ItemData)、List&lt;ItemData&gt;.List(int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     static List<ItemData> LoadAllItems()
     {
-        // guids（资源标识集合）：保存 AssetDatabase.FindAssets(string, string[]) 的返回结果，供当前步骤使用。使用位置：作为 AssetDatabase.GUIDToAssetPath(string) 的参数、作为 List<ItemData>.List(int) 的参数、ItemInspectionSetupUtility.LoadAllItems()。
+        // 资源标识集合。
 string[] guids = AssetDatabase.FindAssets("t:ItemData", new[] { "Assets/Resources/Items", "Assets/Scripts/Inventory/Resources/Items" });
-        // items（物品列表）：使用位置：ItemInspectionSetupUtility.LoadAllItems()。
+        // 物品列表。
 var items = new List<ItemData>(guids.Length);
-        // i（当前遍历索引）：使用位置：ItemInspectionSetupUtility.LoadAllItems()。
+        // 当前遍历索引。
 for (int i = 0; i < guids.Length; i++)
         {
-            // path（路径）：保存 AssetDatabase.GUIDToAssetPath(string) 的返回结果，供当前步骤使用。使用位置：作为 AssetDatabase.LoadAssetAtPath<ItemData>(string) 的参数。
+            // 路径。
 string path = AssetDatabase.GUIDToAssetPath(guids[i]);
-            // item（当前物品数据配置）：保存 AssetDatabase.LoadAssetAtPath<ItemData>(string) 的返回结果，供当前步骤使用。使用位置：作为 List<ItemData>.Add(ItemData) 的参数、ItemInspectionSetupUtility.LoadAllItems()。
+            // 当前物品数据配置。
 ItemData item = AssetDatabase.LoadAssetAtPath<ItemData>(path);
             if (item != null)
             {
@@ -238,11 +238,11 @@ ItemData item = AssetDatabase.LoadAssetAtPath<ItemData>(path);
 
     /// <summary>EnsureFolder 的业务处理入口；本方法直接依赖 AssetDatabase.CreateFolder(string, string)、AssetDatabase.IsValidFolder(string)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 ItemInspectionSetupUtility.EnsurePrefab()；下游（含内部回调体） AssetDatabase.CreateFolder(string, string)、AssetDatabase.IsValidFolder(string)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="parent">中文含义：父级。使用位置：作为 AssetDatabase.CreateFolder(string, string) 的参数、ItemInspectionSetupUtility.EnsureFolder(string, string)。</param>
-    /// <param name="folderName">中文含义：文件夹名称。使用位置：作为 AssetDatabase.CreateFolder(string, string) 的参数、ItemInspectionSetupUtility.EnsureFolder(string, string)。</param>
+    /// <param name="parent">父级。</param>
+    /// <param name="folderName">文件夹名称。</param>
     static void EnsureFolder(string parent, string folderName)
     {
-        // path（路径）：使用位置：作为 AssetDatabase.IsValidFolder(string) 的参数。
+        // 路径。
 string path = parent + "/" + folderName;
         if (!AssetDatabase.IsValidFolder(path))
         {

@@ -4,118 +4,119 @@ using UnityEngine;
 /// <remarks>玩家装备映射与切换宿主，核对持有、动作事务和武器实例；运行数据沿 WeaponRuntimeModule 查询，模型、准星和镜头通过既有通知同步。</remarks>
 public class LeonWeaponHandler : MonoBehaviour, ICrosshairWeaponProvider
 {
-    /// <summary>中文含义：里昂玩家控制器。使用位置：作为 Action&lt;WeaponType&gt;.Invoke(WeaponType) 的参数、作为 LeonWeaponHandler.GetReserveAmmo(WeaponType) 的参数、作为 WeaponBase.Initialize(LeonController) 的参数 等共 16 处。</summary>
+    /// <summary>里昂玩家控制器。</summary>
     private LeonController controller;
-    /// <summary>中文含义：当前玩家动画动作协调器。使用位置：作为 LeonAnimationActionCoordinator.RequestWeaponAction(ActionRequest, WeaponType, WeaponType) 的参数、作为 WeaponBase.BeginReload(int) 的参数、LeonWeaponHandler.AdvanceBrokenRecoverKnife() 等共 17 处。</summary>
+    /// <summary>当前玩家动画动作协调器。</summary>
     private LeonAnimationActionCoordinator coordinator;
-    /// <summary>中文含义：动画控制器。使用位置：LeonWeaponHandler.BeginUnscaledAnimatorForPausedMenu()、LeonWeaponHandler.CompletePendingStorageSwitch(bool)、LeonWeaponHandler.EnsureReferences()。</summary>
+    /// <summary>动画控制器。</summary>
     private Animator animator;
-    /// <summary>中文含义：里昂动画控制器驱动器。使用位置：LeonWeaponHandler.EnsureReferences()、LeonWeaponHandler.ForceSyncCurrentWeapon(WeaponType, bool)、LeonWeaponHandler.OnKnifeTransitionExited(AnimationActionTransaction)。</summary>
+    /// <summary>里昂动画控制器驱动器。</summary>
     private LeonAnimatorDriver driver;
-    /// <summary>中文含义：当前里昂动画绑定组件。使用位置：LeonWeaponHandler.EnsureReferences()、LeonWeaponHandler.ForceSyncCurrentWeapon(WeaponType, bool)、LeonWeaponHandler.OnKnifeTransitionExited(AnimationActionTransaction)。</summary>
+    /// <summary>当前里昂动画绑定组件。</summary>
     private LeonAnimRig animRig;
-    /// <summary>中文含义：武器视觉表现控制器。使用位置：LeonWeaponHandler.EnsureReferences()、LeonWeaponHandler.ForceSyncCurrentWeapon(WeaponType, bool)、LeonWeaponHandler.OnKnifeTransitionExited(AnimationActionTransaction)。</summary>
+    /// <summary>武器视觉表现控制器。</summary>
     private LeonWeaponVisualController weaponVisualController;
-    /// <summary>中文含义：小刀战斗模块。使用位置：KnifeCombatBuilder.BindingPlayer(LeonController, KnifeCombatConfiguration, AnimatorController)、LeonWeaponHandler.Start()、LeonWeaponHandler.SwitchTo(WeaponType)。</summary>
+    private LeonInputBridge inputBridge;
+    /// <summary>小刀战斗模块。</summary>
     [Header("临时小刀入口")]
     [UnityEngine.Serialization.FormerlySerializedAs("小刀模块")]
     [UnityEngine.InspectorName("小刀模块")]
     public KnifeCombatModule knifeModule;
-    /// <summary>中文含义：手枪。使用位置：LeonWeaponHandler.EnsureReferences()、LeonWeaponHandler.GetWeapon(WeaponType)、LeonWeaponHandler.OnDisable() 等共 4 处。</summary>
+    /// <summary>手枪。</summary>
     [Header("武器引用")]
     public WeaponBase pistol;
-    /// <summary>中文含义：步枪。使用位置：LeonWeaponHandler.EnsureReferences()、LeonWeaponHandler.GetWeapon(WeaponType)、LeonWeaponHandler.OnDisable() 等共 4 处。</summary>
+    /// <summary>步枪。</summary>
     public WeaponBase rifle;
-    /// <summary>中文含义：霰弹枪。使用位置：LeonWeaponHandler.EnsureReferences()、LeonWeaponHandler.GetWeapon(WeaponType)、LeonWeaponHandler.OnDisable() 等共 5 处。</summary>
+    /// <summary>霰弹枪。</summary>
     public WeaponBase shotgun;
-    /// <summary>中文含义：小刀。使用位置：作为 DamageResolutionModule.CommitEnemyHit(VillagerController, HitboxType, float, Vector3, Vector3) 的参数、作为 DestructibleWoodenBox.TakeDamage(float, Vector3) 的参数、KnifeCombatModule.ValidKnife.get 等共 9 处。</summary>
+    /// <summary>小刀。</summary>
     public WeaponBase knife;
-    /// <summary>中文含义：初始手枪备弹。使用位置：作为 WeaponRuntimeModule.InitializeEquipment(WeaponType, int, int, int) 的参数。</summary>
+    /// <summary>初始手枪备弹。</summary>
     [Header("初始兼容备弹")]
     [UnityEngine.Serialization.FormerlySerializedAs("pistolReserveAmmo")]
     [SerializeField]
     [UnityEngine.Serialization.FormerlySerializedAs("初始手枪备弹")]
     [UnityEngine.InspectorName("初始手枪备弹")]
     private int initialPistolReserveAmmo = 12;
-    /// <summary>中文含义：手枪背包备弹。使用位置：LeonWeaponHandler.GetReserveAmmo(WeaponType)。</summary>
+    /// <summary>手枪背包备弹。</summary>
     public int pistolReserveAmmo => RuntimeModule.QueryCompatibleReserveAmmo(WeaponType.Pistol);
 
-    /// <summary>中文含义：初始步枪备弹。使用位置：作为 WeaponRuntimeModule.InitializeEquipment(WeaponType, int, int, int) 的参数。</summary>
+    /// <summary>初始步枪备弹。</summary>
     [UnityEngine.Serialization.FormerlySerializedAs("rifleReserveAmmo")]
     [SerializeField]
     [UnityEngine.Serialization.FormerlySerializedAs("初始步枪备弹")]
     [UnityEngine.InspectorName("初始步枪备弹")]
     private int initialRifleReserveAmmo = 5;
-    /// <summary>中文含义：步枪背包备弹。使用位置：LeonWeaponHandler.GetReserveAmmo(WeaponType)。</summary>
+    /// <summary>步枪背包备弹。</summary>
     public int rifleReserveAmmo => RuntimeModule.QueryCompatibleReserveAmmo(WeaponType.Rifle);
 
-    /// <summary>中文含义：初始霰弹备弹。使用位置：作为 WeaponRuntimeModule.InitializeEquipment(WeaponType, int, int, int) 的参数。</summary>
+    /// <summary>初始霰弹备弹。</summary>
     [UnityEngine.Serialization.FormerlySerializedAs("shotgunReserveAmmo")]
     [SerializeField]
     [UnityEngine.Serialization.FormerlySerializedAs("初始霰弹备弹")]
     [UnityEngine.InspectorName("初始霰弹备弹")]
     private int initialShotgunAmmoReserveAmmo = 6;
-    /// <summary>中文含义：霰弹枪背包备弹。使用位置：LeonWeaponHandler.GetReserveAmmo(WeaponType)。</summary>
+    /// <summary>霰弹枪背包备弹。</summary>
     public int shotgunReserveAmmo => RuntimeModule.QueryCompatibleReserveAmmo(WeaponType.Shotgun);
 
-    /// <summary>中文含义：换弹警告弹药。使用位置：LeonWeaponHandler.NotifyCurrentAmmoChanged(WeaponBase)。</summary>
+    /// <summary>换弹警告弹药。</summary>
     [Header("教学提示")]
     [Min(0)]
     public int reloadWarningAmmo = 2;
-    /// <summary>中文含义：运行时模块。使用位置：LeonWeaponHandler.AddReserveAmmo(WeaponType, int)、LeonWeaponHandler.ConsumeReserveAmmo(WeaponType, int)、LeonWeaponHandler.CurrentEquipment.get 等共 11 处。</summary>
+    /// <summary>运行时模块。</summary>
     public WeaponRuntimeModule RuntimeModule { get; } = new WeaponRuntimeModule();
-    /// <summary>中文含义：当前装备。使用位置：作为 LeonWeaponHandler.GetWeapon(WeaponType) 的参数、LeonController.currentWeapon.get、LeonWeaponHandler.QuickSelectSelectTarget.get。</summary>
+    /// <summary>当前装备。</summary>
     public WeaponType CurrentEquipment => RuntimeModule.Equipment;
 
     /// <summary>InitializeRuntimeModule 的业务处理入口；本方法直接依赖 WeaponRuntimeModule.InitializeEquipment(WeaponType, int, int, int)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonController.InitPipeline()、LeonWeaponHandler.Start()；下游（含内部回调体） WeaponRuntimeModule.InitializeEquipment(WeaponType, int, int, int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="initialEquipment">中文含义：初始装备。使用位置：作为 WeaponRuntimeModule.InitializeEquipment(WeaponType, int, int, int) 的参数。</param>
+    /// <param name="initialEquipment">初始装备。</param>
     public void InitializeRuntimeModule(WeaponType initialEquipment)
     {
         RuntimeModule.InitializeEquipment(initialEquipment, initialPistolReserveAmmo, initialRifleReserveAmmo, initialShotgunAmmoReserveAmmo);
     }
 
-    /// <summary>中文含义：待处理武器类型。使用位置：LeonWeaponHandler.QuickSelectSelectTarget.get、LeonWeaponHandler.QuickSelectSwitch(WeaponType)、LeonWeaponHandler.SwitchTo(WeaponType)。</summary>
+    /// <summary>待处理武器类型。</summary>
     private WeaponType pendingWeaponType;
-    /// <summary>中文含义：是否正在切换武器。使用位置：LeonWeaponHandler.AdvanceBrokenRecoverKnife()、LeonWeaponHandler.AdvanceQuickSelectSwitch()、LeonWeaponHandler.FinishWeaponSwitch() 等共 12 处。</summary>
+    /// <summary>是否正在切换武器。</summary>
     private bool isSwitching;
-    /// <summary>中文含义：是否存在待处理的斩击快速选择武器。使用位置：LeonWeaponHandler.AdvanceQuickSelectSwitch()、LeonWeaponHandler.OnDisable()、LeonWeaponHandler.OnWeaponActionInterrupted(AnimationActionTransaction) 等共 5 处。</summary>
+    /// <summary>是否存在待处理的斩击快速选择武器。</summary>
     private bool hasPendingSlashQuickSelectWeapon;
-    /// <summary>中文含义：待处理斩击快速选择武器。使用位置：LeonWeaponHandler.AdvanceQuickSelectSwitch()、LeonWeaponHandler.QuickSelectSelectTarget.get、LeonWeaponHandler.QuickSelectSwitch(WeaponType)。</summary>
+    /// <summary>待处理斩击快速选择武器。</summary>
     private WeaponType pendingSlashQuickSelectWeapon;
-    /// <summary>中文含义：当前切换动作事务编号。使用位置：LeonWeaponHandler.FinishWeaponSwitch()、LeonWeaponHandler.OnEquipAnimCompleted(AnimationActionTransaction)、LeonWeaponHandler.OnHolsterAnimCompleted(AnimationActionTransaction) 等共 7 处。</summary>
+    /// <summary>当前切换动作事务编号。</summary>
     private int currentSwitchTxId = -1;
-    /// <summary>中文含义：是否已经发出动作管线未就绪的警告。使用位置：LeonWeaponHandler.SwitchTo(WeaponType)。</summary>
+    /// <summary>是否已经发出动作管线未就绪的警告。</summary>
     private bool newPipelineWarned;
-    /// <summary>中文含义：是否已绑定事件。使用位置：LeonWeaponHandler.BindCoordinatorEvents()、LeonWeaponHandler.UnbindCoordinatorEvents()。</summary>
+    /// <summary>是否已绑定事件。</summary>
     private bool eventsBound;
-    /// <summary>中文含义：待处理仓库切换完成。使用位置：LeonWeaponHandler.CompletePendingStorageSwitch(bool)、LeonWeaponHandler.TrySwitchAwayForStorage(WeaponType, Action&lt;bool&gt;)。</summary>
+    /// <summary>待处理仓库切换完成。</summary>
     private System.Action<bool> pendingStorageSwitchCompletion;
-    /// <summary>中文含义：已保存动画控制器更新模式。使用位置：LeonWeaponHandler.BeginUnscaledAnimatorForPausedMenu()、LeonWeaponHandler.CompletePendingStorageSwitch(bool)。</summary>
+    /// <summary>已保存动画控制器更新模式。</summary>
     private AnimatorUpdateMode savedAnimatorUpdateMode;
-    /// <summary>中文含义：是否动画控制器更新模式被覆盖的。使用位置：LeonWeaponHandler.BeginUnscaledAnimatorForPausedMenu()、LeonWeaponHandler.CompletePendingStorageSwitch(bool)。</summary>
+    /// <summary>是否动画控制器更新模式被覆盖的。</summary>
     private bool animatorUpdateModeOverridden;
-    /// <summary>中文含义：是否等待中损坏恢复小刀。使用位置：LeonWeaponHandler.AdvanceBrokenRecoverKnife()、LeonWeaponHandler.HandleKnifeBroken()、LeonWeaponHandler.OnDisable()。</summary>
+    /// <summary>是否等待中损坏恢复小刀。</summary>
     private bool waitingBrokenRecoverKnife;
-    /// <summary>中文含义：损坏后方候选武器。只读字段，初始化后不由普通写入口替换。使用位置：LeonWeaponHandler.TryGetOwnedFallbackWeapon(WeaponType, out WeaponType)。</summary>
+    /// <summary>损坏后方候选武器。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly WeaponType[] brokenBackCandidateWeapon =
     {
         WeaponType.Pistol,
         WeaponType.Rifle,
         WeaponType.Shotgun
     };
-    /// <summary>中文含义：武器已切换时的通知回调。事件通信成员 OnWeaponSwitched，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。使用位置：LeonPlayerAudio.BindEvents()、LeonPlayerAudio.UnbindEvents()、LeonWeaponHandler.FinishWeaponSwitch() 等共 8 处。</summary>
+    /// <summary>武器已切换时的通知回调。事件通信成员 OnWeaponSwitched，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。</summary>
     public event System.Action<WeaponType> OnWeaponSwitched;
-    /// <summary>中文含义：数据提供者已切换时的通知回调。事件通信成员 OnDataProviderSwitched，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。使用位置：LeonWeaponHandler.FinishWeaponSwitch()、LeonWeaponHandler.ForceSyncCurrentWeapon(WeaponType, bool)。</summary>
+    /// <summary>数据提供者已切换时的通知回调。事件通信成员 OnDataProviderSwitched，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。</summary>
     public event System.Action<ICrosshairDataProvider> OnDataProviderSwitched;
-    /// <summary>中文含义：当前弹匣弹量变化时的通知回调。事件通信成员 OnCurrentAmmoChanged，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。使用位置：LeonWeaponHandler.NotifyCurrentAmmoChanged(WeaponBase)。</summary>
+    /// <summary>当前弹匣弹量变化时的通知回调。事件通信成员 OnCurrentAmmoChanged，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。</summary>
     public event System.Action<WeaponType, int, int> OnCurrentAmmoChanged;
-    /// <summary>中文含义：当前武器低弹药时的通知回调。事件通信成员 OnCurrentWeaponLowAmmo，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。使用位置：LeonWeaponHandler.NotifyCurrentAmmoChanged(WeaponBase)、TutorialManager.BindEvents()、TutorialManager.UnbindEvents()。</summary>
+    /// <summary>当前武器低弹药时的通知回调。事件通信成员 OnCurrentWeaponLowAmmo，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。</summary>
     public event System.Action<WeaponType, int, int> OnCurrentWeaponLowAmmo;
-    /// <summary>中文含义：是否正在切换武器。使用位置：LeonCombat.CanBeginParryAction.get、LeonCombat.ShouldQueueKnifeToggle()。</summary>
+    /// <summary>是否正在切换武器。</summary>
     public bool IsSwitching => isSwitching;
 
-    /// <summary>中文含义：快速选择选择目标。使用位置：作为 Array.IndexOf&lt;WeaponType&gt;(WeaponType[], WeaponType) 的参数、WeaponWheelUI.FindCurrentWeaponIndex()。</summary>
+    /// <summary>快速选择选择目标。</summary>
     public WeaponType QuickSelectSelectTarget
     {
         get
@@ -138,7 +139,7 @@ public class LeonWeaponHandler : MonoBehaviour, ICrosshairWeaponProvider
         }
     }
 
-    /// <summary>中文含义：是否开火阻挡依据武器动作。使用位置：LeonCombat.IsFireBlockedByWeaponAction()、LeonWeaponHandler.Fire()。</summary>
+    /// <summary>是否开火阻挡依据武器动作。</summary>
     public bool IsFireBlockedByWeaponAction
     {
         get
@@ -162,7 +163,7 @@ public class LeonWeaponHandler : MonoBehaviour, ICrosshairWeaponProvider
         }
 
         EnsureReferences();
-        // selectedValue3（分支选出的控制器的初始装备）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：作为 LeonWeaponHandler.InitializeRuntimeModule(WeaponType) 的参数、LeonWeaponHandler.Start()。
+        // 分支选出的控制器的初始装备。
 global::WeaponType selectedValue3;
         if (controller != null)
         {
@@ -174,28 +175,28 @@ global::WeaponType selectedValue3;
         }
 
         InitializeRuntimeModule(selectedValue3);
-        // receiverValue4（判空前缓存的手枪）：从手枪读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonWeaponHandler.Start()。
+        // 判空前缓存的手枪。
 global::WeaponBase receiverValue4 = pistol;
         if (!global::System.Object.ReferenceEquals(receiverValue4, null))
         {
             receiverValue4.Initialize(controller);
         }
 
-        // receiverValue5（判空前缓存的步枪）：从步枪读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonWeaponHandler.Start()。
+        // 判空前缓存的步枪。
 global::WeaponBase receiverValue5 = rifle;
         if (!global::System.Object.ReferenceEquals(receiverValue5, null))
         {
             receiverValue5.Initialize(controller);
         }
 
-        // receiverValue6（判空前缓存的霰弹枪）：从霰弹枪读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonWeaponHandler.Start()。
+        // 判空前缓存的霰弹枪。
 global::WeaponBase receiverValue6 = shotgun;
         if (!global::System.Object.ReferenceEquals(receiverValue6, null))
         {
             receiverValue6.Initialize(controller);
         }
 
-        // receiverValue7（判空前缓存的小刀）：从小刀读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonWeaponHandler.Start()。
+        // 判空前缓存的小刀。
 global::WeaponBase receiverValue7 = knife;
         if (!global::System.Object.ReferenceEquals(receiverValue7, null))
         {
@@ -228,28 +229,28 @@ global::WeaponBase receiverValue7 = knife;
         waitingBrokenRecoverKnife = false;
         hasPendingSlashQuickSelectWeapon = false;
         UnbindCoordinatorEvents();
-        // receiverValue8（判空前缓存的手枪）：从手枪读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonWeaponHandler.OnDisable()。
+        // 判空前缓存的手枪。
 global::WeaponBase receiverValue8 = pistol;
         if (!global::System.Object.ReferenceEquals(receiverValue8, null))
         {
             receiverValue8.CancelReload();
         }
 
-        // receiverValue9（判空前缓存的步枪）：从步枪读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonWeaponHandler.OnDisable()。
+        // 判空前缓存的步枪。
 global::WeaponBase receiverValue9 = rifle;
         if (!global::System.Object.ReferenceEquals(receiverValue9, null))
         {
             receiverValue9.CancelReload();
         }
 
-        // receiverValue10（判空前缓存的霰弹枪）：从霰弹枪读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonWeaponHandler.OnDisable()。
+        // 判空前缓存的霰弹枪。
 global::WeaponBase receiverValue10 = shotgun;
         if (!global::System.Object.ReferenceEquals(receiverValue10, null))
         {
             receiverValue10.CancelReload();
         }
 
-        // receiverValue11（判空前缓存的小刀）：从小刀读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonWeaponHandler.OnDisable()。
+        // 判空前缓存的小刀。
 global::WeaponBase receiverValue11 = knife;
         if (!global::System.Object.ReferenceEquals(receiverValue11, null))
         {
@@ -293,9 +294,14 @@ global::WeaponBase receiverValue11 = knife;
             weaponVisualController = GetComponent<LeonWeaponVisualController>();
         }
 
+        if (inputBridge == null)
+        {
+            inputBridge = GetComponent<LeonInputBridge>();
+        }
+
         if (pistol == null)
         {
-            // pistolTransform（手枪变换）：保存 Transform.Find(string) 的返回结果，供当前步骤使用。使用位置：LeonWeaponHandler.EnsureReferences()。
+            // 手枪变换。
 Transform pistolTransform = transform.Find("手枪");
             if (pistolTransform != null)
             {
@@ -305,7 +311,7 @@ Transform pistolTransform = transform.Find("手枪");
 
         if (rifle == null)
         {
-            // rifleTransform（步枪变换）：保存 Transform.Find(string) 的返回结果，供当前步骤使用。使用位置：LeonWeaponHandler.EnsureReferences()。
+            // 步枪变换。
 Transform rifleTransform = transform.Find("Rifle");
             if (rifleTransform != null)
             {
@@ -315,7 +321,7 @@ Transform rifleTransform = transform.Find("Rifle");
 
         if (shotgun == null)
         {
-            // shotgunTransform（霰弹枪变换）：保存 Transform.Find(string) 的返回结果，供当前步骤使用。使用位置：LeonWeaponHandler.EnsureReferences()。
+            // 霰弹枪变换。
 Transform shotgunTransform = transform.Find("Shotgun");
             if (shotgunTransform == null)
             {
@@ -335,7 +341,7 @@ Transform shotgunTransform = transform.Find("Shotgun");
 
         if (knife == null)
         {
-            // knifeTransform（小刀变换）：保存 Transform.Find(string) 的返回结果，供当前步骤使用。使用位置：LeonWeaponHandler.EnsureReferences()。
+            // 小刀变换。
 Transform knifeTransform = transform.Find("小刀");
             if (knifeTransform != null)
             {
@@ -448,7 +454,7 @@ Transform knifeTransform = transform.Find("小刀");
 
     /// <summary>QuickSelectSwitch 的业务处理入口；本方法直接依赖 LeonController.CanAct()、LeonWeaponHandler.EnsureReferences()、LeonWeaponHandler.GetWeapon(WeaponType)、LeonWeaponHandler.HasWeaponInInventory(WeaponType)、LeonWeaponHandler.IsGunWeapon(WeaponType)、LeonWeaponHandler.SwitchTo(WeaponType)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonInputBridge.OnSwitchWeapon(InputAction.CallbackContext)、LeonWeaponHandler.AdvanceQuickSelectSwitch()、WeaponWheelUI.Close(bool)、WeaponWheelUI.SelectRelative(int)；下游（含内部回调体） LeonController.CanAct()、LeonWeaponHandler.EnsureReferences()、LeonWeaponHandler.GetWeapon(WeaponType)、LeonWeaponHandler.HasWeaponInInventory(WeaponType)、LeonWeaponHandler.IsGunWeapon(WeaponType)、LeonWeaponHandler.SwitchTo(WeaponType)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="type">中文含义：当前武器类别。使用位置：作为 LeonWeaponHandler.GetWeapon(WeaponType) 的参数、作为 LeonWeaponHandler.HasWeaponInInventory(WeaponType) 的参数、作为 LeonWeaponHandler.IsGunWeapon(WeaponType) 的参数 等共 5 处。</param>
+    /// <param name="type">当前武器类别。</param>
     private float quickSelectExpiresAt;
 
     public bool QuickSelectSwitch(WeaponType type)
@@ -507,7 +513,7 @@ Transform knifeTransform = transform.Find("小刀");
             return;
         }
 
-        // target（目标武器类别）：使用位置：作为 LeonWeaponHandler.QuickSelectSwitch(WeaponType) 的参数。
+        // 目标武器类别。
 WeaponType target = pendingSlashQuickSelectWeapon;
         hasPendingSlashQuickSelectWeapon = false;
         QuickSelectSwitch(target);
@@ -515,7 +521,7 @@ WeaponType target = pendingSlashQuickSelectWeapon;
 
     /// <summary>SwitchTo 的业务处理入口；本方法直接依赖 Debug.LogWarning(object)、LeonAnimationActionCoordinator.CreateActionRequest(string, ActionKind)、LeonAnimationActionCoordinator.RequestWeaponAction(ActionRequest, WeaponType, WeaponType)、LeonController.TrySetCrouching(bool)、LeonWeaponHandler.BindCoordinatorEvents()、LeonWeaponHandler.EnsureReferences()、LeonWeaponHandler.HasUsableKnife() 等共 10 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonCombat.TryToggleKnifeMode()、LeonController.TrySwitchWeapon(WeaponType)、LeonWeaponHandler.AdvanceBrokenRecoverKnife()、LeonWeaponHandler.QuickSelectSwitch(WeaponType)、LeonWeaponHandler.TrySwitchAwayForStorage(WeaponType, Action&lt;bool&gt;)；下游（含内部回调体） Debug.LogWarning(object)、LeonAnimationActionCoordinator.CreateActionRequest(string, ActionKind)、LeonAnimationActionCoordinator.RequestWeaponAction(ActionRequest, WeaponType, WeaponType)、LeonController.TrySetCrouching(bool)、LeonWeaponHandler.BindCoordinatorEvents()、LeonWeaponHandler.EnsureReferences()、LeonWeaponHandler.HasUsableKnife() 等共 10 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="type">中文含义：当前武器类别。使用位置：作为 LeonAnimationActionCoordinator.RequestWeaponAction(ActionRequest, WeaponType, WeaponType) 的参数、作为 LeonWeaponHandler.HasWeaponInInventory(WeaponType) 的参数、作为 LeonWeaponHandler.IsSupportedWeapon(WeaponType) 的参数 等共 4 处。</param>
+    /// <param name="type">当前武器类别。</param>
     public bool SwitchTo(WeaponType type)
     {
         EnsureReferences();
@@ -534,7 +540,7 @@ WeaponType target = pendingSlashQuickSelectWeapon;
             }
         }
 
-        // oldType（旧类型）：使用位置：作为 LeonAnimationActionCoordinator.RequestWeaponAction(ActionRequest, WeaponType, WeaponType) 的参数、LeonWeaponHandler.SwitchTo(WeaponType)。
+        // 旧类型。
 var oldType = controller.currentWeapon;
         if (oldType == type)
         {
@@ -585,7 +591,7 @@ var oldType = controller.currentWeapon;
 
         isSwitching = true;
         pendingWeaponType = type;
-        // ok（是否成功）：使用位置：LeonWeaponHandler.SwitchTo(WeaponType)。
+        // 是否成功。
 bool ok = coordinator.RequestWeaponAction(coordinator.CreateActionRequest("玩家武器入口", GameArchitecture.ActionKind.SwitchWeapon), oldType, type).HasAccept;
         if (!ok)
         {
@@ -600,7 +606,7 @@ bool ok = coordinator.RequestWeaponAction(coordinator.CreateActionRequest("玩�
     // 新管线收枪完成事件
     /// <summary>OnHolsterAnimCompleted 的业务处理入口；本方法直接依赖 LeonAnimationActionCoordinator.ContinueEquipAfterWeaponCommit(int)、LeonAnimationActionCoordinator.ContinueKnifeTakeAfterWeaponCommit(int)、LeonWeaponHandler.CompletePendingStorageSwitch(bool)、WeaponRuntimeModule.CommitEquipment(WeaponType)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） LeonAnimationActionCoordinator.ContinueEquipAfterWeaponCommit(int)、LeonAnimationActionCoordinator.ContinueKnifeTakeAfterWeaponCommit(int)、LeonWeaponHandler.CompletePendingStorageSwitch(bool)、WeaponRuntimeModule.CommitEquipment(WeaponType)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="tx">中文含义：动画动作事务。使用位置：作为 LeonAnimationActionCoordinator.ContinueEquipAfterWeaponCommit(int) 的参数、作为 LeonAnimationActionCoordinator.ContinueKnifeTakeAfterWeaponCommit(int) 的参数、作为 WeaponRuntimeModule.CommitEquipment(WeaponType) 的参数 等共 4 处。</param>
+    /// <param name="tx">动画动作事务。</param>
     private void OnHolsterAnimCompleted(AnimationActionTransaction tx)
     {
         if (!tx.isWeaponSwitch)
@@ -618,7 +624,7 @@ bool ok = coordinator.RequestWeaponAction(coordinator.CreateActionRequest("玩�
             return;
         }
 
-        // continued（是否继续）：使用位置：LeonWeaponHandler.OnHolsterAnimCompleted(AnimationActionTransaction)。
+        // 是否继续。
 bool continued;
         if (tx.pendingWeaponType == WeaponType.Knife)
         {
@@ -640,7 +646,7 @@ bool continued;
 
     /// <summary>OnKnifeTransitionExited 的业务处理入口；本方法直接依赖 LeonAnimationActionCoordinator.ContinueEquipAfterKnifeHide(int)、LeonAnimatorDriver.SetKnifeMode(bool)、LeonAnimRig.CommitWeaponSwitchIK(WeaponType)、LeonWeaponHandler.CompletePendingStorageSwitch(bool)、LeonWeaponHandler.FinishWeaponSwitch()、LeonWeaponHandler.IsGunWeapon(WeaponType)、LeonWeaponVisualController.FinishKnifeEquip() 等共 10 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） LeonAnimationActionCoordinator.ContinueEquipAfterKnifeHide(int)、LeonAnimatorDriver.SetKnifeMode(bool)、LeonAnimRig.CommitWeaponSwitchIK(WeaponType)、LeonWeaponHandler.CompletePendingStorageSwitch(bool)、LeonWeaponHandler.FinishWeaponSwitch()、LeonWeaponHandler.IsGunWeapon(WeaponType)、LeonWeaponVisualController.FinishKnifeEquip() 等共 10 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="tx">中文含义：动画动作事务。使用位置：作为 LeonAnimationActionCoordinator.ContinueEquipAfterKnifeHide(int) 的参数、作为 LeonWeaponHandler.IsGunWeapon(WeaponType) 的参数、作为 LeonWeaponVisualController.PrepareGunEquipAfterKnifeHide(WeaponType) 的参数 等共 5 处。</param>
+    /// <param name="tx">动画动作事务。</param>
     private void OnKnifeTransitionExited(AnimationActionTransaction tx)
     {
         if (!tx.isWeaponSwitch)
@@ -656,21 +662,21 @@ bool continued;
         if (tx.weaponActionType == WeaponActionType.KnifeTake && tx.pendingWeaponType == WeaponType.Knife)
         {
             RuntimeModule.CommitEquipment(WeaponType.Knife);
-            // receiverValue12（判空前缓存的里昂动画控制器驱动器）：从驱动组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonWeaponHandler.OnKnifeTransitionExited(AnimationActionTransaction)。
+            // 判空前缓存的里昂动画控制器驱动器。
 global::LeonAnimatorDriver receiverValue12 = driver;
             if (!global::System.Object.ReferenceEquals(receiverValue12, null))
             {
                 receiverValue12.SetKnifeMode(true);
             }
 
-            // receiverValue13（判空前缓存的当前里昂动画绑定组件）：从动画绑定组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonWeaponHandler.OnKnifeTransitionExited(AnimationActionTransaction)。
+            // 判空前缓存的当前里昂动画绑定组件。
 global::LeonAnimRig receiverValue13 = animRig;
             if (!global::System.Object.ReferenceEquals(receiverValue13, null))
             {
                 receiverValue13.CommitWeaponSwitchIK(WeaponType.Knife);
             }
 
-            // receiverValue14（判空前缓存的武器视觉表现控制器）：从武器视觉表现控制器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonWeaponHandler.OnKnifeTransitionExited(AnimationActionTransaction)。
+            // 判空前缓存的武器视觉表现控制器。
 global::LeonWeaponVisualController receiverValue14 = weaponVisualController;
             if (!global::System.Object.ReferenceEquals(receiverValue14, null))
             {
@@ -684,14 +690,14 @@ global::LeonWeaponVisualController receiverValue14 = weaponVisualController;
         if (tx.weaponActionType == WeaponActionType.KnifeHide && IsGunWeapon(tx.pendingWeaponType))
         {
             RuntimeModule.CommitEquipment(tx.pendingWeaponType);
-            // receiverValue15（判空前缓存的里昂动画控制器驱动器）：从驱动组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonWeaponHandler.OnKnifeTransitionExited(AnimationActionTransaction)。
+            // 判空前缓存的里昂动画控制器驱动器。
 global::LeonAnimatorDriver receiverValue15 = driver;
             if (!global::System.Object.ReferenceEquals(receiverValue15, null))
             {
                 receiverValue15.SetKnifeMode(false);
             }
 
-            // receiverValue16（判空前缓存的武器视觉表现控制器）：从武器视觉表现控制器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonWeaponHandler.OnKnifeTransitionExited(AnimationActionTransaction)。
+            // 判空前缓存的武器视觉表现控制器。
 global::LeonWeaponVisualController receiverValue16 = weaponVisualController;
             if (!global::System.Object.ReferenceEquals(receiverValue16, null))
             {
@@ -710,7 +716,7 @@ global::LeonWeaponVisualController receiverValue16 = weaponVisualController;
     // 新管线拔枪完成事件
     /// <summary>OnEquipAnimCompleted 的业务处理入口；本方法直接依赖 LeonWeaponHandler.FinishWeaponSwitch()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） LeonWeaponHandler.FinishWeaponSwitch()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="tx">中文含义：动画动作事务。使用位置：LeonWeaponHandler.OnEquipAnimCompleted(AnimationActionTransaction)。</param>
+    /// <param name="tx">动画动作事务。</param>
     private void OnEquipAnimCompleted(AnimationActionTransaction tx)
     {
         if (!tx.isWeaponSwitch)
@@ -732,14 +738,14 @@ global::LeonWeaponVisualController receiverValue16 = weaponVisualController;
     {
         isSwitching = false;
         currentSwitchTxId = -1;
-        // receiverValue17（判空前缓存的武器已切换时的通知回调）：从武器已切换时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonWeaponHandler.FinishWeaponSwitch()。
+        // 判空前缓存的武器已切换时的通知回调。
 global::System.Action<global::WeaponType> receiverValue17 = OnWeaponSwitched;
         if (!global::System.Object.ReferenceEquals(receiverValue17, null))
         {
             receiverValue17.Invoke(controller.currentWeapon);
         }
 
-        // receiverValue18（判空前缓存的数据提供者已切换时的通知回调）：从数据提供者已切换时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonWeaponHandler.FinishWeaponSwitch()。
+        // 判空前缓存的数据提供者已切换时的通知回调。
 global::System.Action<global::ICrosshairDataProvider> receiverValue18 = OnDataProviderSwitched;
         if (!global::System.Object.ReferenceEquals(receiverValue18, null))
         {
@@ -747,6 +753,10 @@ global::System.Action<global::ICrosshairDataProvider> receiverValue18 = OnDataPr
         }
 
         CompletePendingStorageSwitch(true);
+        if (inputBridge != null)
+        {
+            inputBridge.NotifyActionWindowOpened();
+        }
     }
 
     /// <summary>RecoverStaleSwitchLock 的业务处理入口；本方法直接依赖 LeonWeaponHandler.CompletePendingStorageSwitch(bool)，调用方通过参数与返回结果交接本次处理。</summary>
@@ -779,7 +789,7 @@ global::System.Action<global::ICrosshairDataProvider> receiverValue18 = OnDataPr
     // 新管线武器动作中断
     /// <summary>OnWeaponActionInterrupted 的业务处理入口；本方法直接依赖 LeonWeaponHandler.CompletePendingStorageSwitch(bool)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） LeonWeaponHandler.CompletePendingStorageSwitch(bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="tx">中文含义：动画动作事务。使用位置：LeonWeaponHandler.OnWeaponActionInterrupted(AnimationActionTransaction)。</param>
+    /// <param name="tx">动画动作事务。</param>
     private void OnWeaponActionInterrupted(AnimationActionTransaction tx)
     {
         if (!controller.NewPipelineValid)
@@ -812,8 +822,8 @@ global::System.Action<global::ICrosshairDataProvider> receiverValue18 = OnDataPr
     /// 游戏暂停时仅让角色动画器使用非缩放时间，事务结束后恢复原模式。
     /// </summary>
     /// <remarks>静态调用链：上游 StorageBoxManager.TransferToStorage(GridItem)；下游（含内部回调体） Action&lt;bool&gt;.Invoke(bool)、LeonWeaponHandler.BeginUnscaledAnimatorForPausedMenu()、LeonWeaponHandler.CompletePendingStorageSwitch(bool)、LeonWeaponHandler.EnsureReferences()、LeonWeaponHandler.SwitchTo(WeaponType)、LeonWeaponHandler.TryGetOwnedFallbackWeapon(WeaponType, out WeaponType)、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="weaponToStore">中文含义：武器目标寄存。使用位置：作为 LeonWeaponHandler.TryGetOwnedFallbackWeapon(WeaponType, out WeaponType) 的参数、LeonWeaponHandler.TrySwitchAwayForStorage(WeaponType, Action&lt;bool&gt;)。</param>
-    /// <param name="onCompleted">中文含义：完成通知回调。使用位置：LeonWeaponHandler.TrySwitchAwayForStorage(WeaponType, Action&lt;bool&gt;)。</param>
+    /// <param name="weaponToStore">武器目标寄存。</param>
+    /// <param name="onCompleted">完成通知回调。</param>
     public bool TrySwitchAwayForStorage(WeaponType weaponToStore, System.Action<bool> onCompleted)
     {
         EnsureReferences();
@@ -824,7 +834,7 @@ global::System.Action<global::ICrosshairDataProvider> receiverValue18 = OnDataPr
 
         if (controller.currentWeapon != weaponToStore)
         {
-            // receiverValue19（判空前缓存的完成通知回调）：从完成通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonWeaponHandler.TrySwitchAwayForStorage(WeaponType, Action<bool>)。
+            // 判空前缓存的完成通知回调。
 global::System.Action<bool> receiverValue19 = onCompleted;
             if (!global::System.Object.ReferenceEquals(receiverValue19, null))
             {
@@ -852,17 +862,17 @@ global::System.Action<bool> receiverValue19 = onCompleted;
 
     /// <summary>当前背包中是否仍然拥有指定的正式枪械。</summary>
     /// <remarks>静态调用链：上游 LeonInputBridge.OnSwitchWeapon(InputAction.CallbackContext)、LeonQTECoordinator.CanRestoreWeapon(WeaponType)、LeonWeaponHandler.QuickSelectSwitch(WeaponType)、LeonWeaponHandler.SwitchTo(WeaponType)、LeonWeaponHandler.TryGetOwnedFallbackWeapon(WeaponType, out WeaponType) 等共 7 处；下游（含内部回调体） InventoryManager.HasItem(string, int)、LeonWeaponHandler.GetWeapon(WeaponType)、LeonWeaponHandler.GetWeaponItemId(WeaponType)、string.IsNullOrEmpty(string)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="type">中文含义：当前武器类别。使用位置：作为 LeonWeaponHandler.GetWeapon(WeaponType) 的参数、作为 LeonWeaponHandler.GetWeaponItemId(WeaponType) 的参数。</param>
+    /// <param name="type">当前武器类别。</param>
     public bool HasWeaponInInventory(WeaponType type)
     {
-        // itemId（物品编号）：保存 LeonWeaponHandler.GetWeaponItemId(WeaponType) 的返回结果，供当前步骤使用。使用位置：作为 InventoryManager.HasItem(string, int) 的参数、作为 string.IsNullOrEmpty(string) 的参数。
+        // 物品编号。
 string itemId = GetWeaponItemId(type);
         if (string.IsNullOrEmpty(itemId))
         {
             return false;
         }
 
-        // inventoryManager（背包数据与操作宿主）：使用位置：LeonWeaponHandler.HasWeaponInInventory(WeaponType)。
+        // 背包数据与操作宿主。
 InventoryManager inventoryManager;
         if (InventoryManager.HasInstance)
         {
@@ -885,7 +895,7 @@ InventoryManager inventoryManager;
     /// <remarks>静态调用链：上游 LeonCombat.CanBeginParryAction.get、LeonCombat.HandleKnifeAttack()、LeonCombat.OnMeleeActionExited(AnimationActionTransaction)、LeonCombat.Update()、LeonQTECoordinator.CanQueryAssassinationPrompt() 等共 8 处；下游（含内部回调体） InventoryManager.HasUsableDurability(string)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     public bool HasUsableKnife()
     {
-        // inventoryManager（背包数据与操作宿主）：使用位置：LeonWeaponHandler.HasUsableKnife()。
+        // 背包数据与操作宿主。
 InventoryManager inventoryManager;
         if (InventoryManager.HasInstance)
         {
@@ -942,16 +952,16 @@ InventoryManager inventoryManager;
 
     /// <summary>TryGetOwnedFallbackWeapon 的业务处理入口；本方法直接依赖 LeonWeaponHandler.HasWeaponInInventory(WeaponType)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonWeaponHandler.AdvanceBrokenRecoverKnife()、LeonWeaponHandler.TrySwitchAwayForStorage(WeaponType, Action&lt;bool&gt;)；下游（含内部回调体） LeonWeaponHandler.HasWeaponInInventory(WeaponType)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="excluded">中文含义：已排除。使用位置：LeonWeaponHandler.TryGetOwnedFallbackWeapon(WeaponType, out WeaponType)。</param>
-    /// <param name="fallback">中文含义：后备。输出参数，由本入口写入并交给调用方。使用位置：LeonWeaponHandler.TryGetOwnedFallbackWeapon(WeaponType, out WeaponType)。</param>
+    /// <param name="excluded">已排除。</param>
+    /// <param name="fallback">后备。输出参数，由本入口写入并交给调用方。</param>
     bool TryGetOwnedFallbackWeapon(WeaponType excluded, out WeaponType fallback)
     {
-        // supportedWeapons（支持的武器集合）：使用位置：LeonWeaponHandler.TryGetOwnedFallbackWeapon(WeaponType, out WeaponType)。
+        // 支持的武器集合。
 WeaponType[] supportedWeapons = brokenBackCandidateWeapon;
-        // i（当前遍历索引）：使用位置：LeonWeaponHandler.TryGetOwnedFallbackWeapon(WeaponType, out WeaponType)。
+        // 当前遍历索引。
 for (int i = 0; i < supportedWeapons.Length; i++)
         {
-            // candidate（候选）：使用位置：作为 LeonWeaponHandler.HasWeaponInInventory(WeaponType) 的参数、LeonWeaponHandler.TryGetOwnedFallbackWeapon(WeaponType, out WeaponType)。
+            // 候选。
 WeaponType candidate = supportedWeapons[i];
             if (candidate == excluded || !HasWeaponInInventory(candidate))
             {
@@ -968,7 +978,7 @@ WeaponType candidate = supportedWeapons[i];
 
     /// <summary>GetWeaponItemId 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
     /// <remarks>静态调用链：上游 LeonWeaponHandler.HasWeaponInInventory(WeaponType)；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="type">中文含义：当前武器类别。使用位置：LeonWeaponHandler.GetWeaponItemId(WeaponType)。</param>
+    /// <param name="type">当前武器类别。</param>
     string GetWeaponItemId(WeaponType type)
     {
         return type switch
@@ -997,7 +1007,7 @@ WeaponType candidate = supportedWeapons[i];
 
     /// <summary>CompletePendingStorageSwitch 的业务处理入口；本方法直接依赖 Action&lt;bool&gt;.Invoke(bool)、object.ReferenceEquals(object, object)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonWeaponHandler.FinishWeaponSwitch()、LeonWeaponHandler.OnDisable()、LeonWeaponHandler.OnHolsterAnimCompleted(AnimationActionTransaction)、LeonWeaponHandler.OnKnifeTransitionExited(AnimationActionTransaction)、LeonWeaponHandler.OnWeaponActionInterrupted(AnimationActionTransaction) 等共 7 处；下游（含内部回调体） Action&lt;bool&gt;.Invoke(bool)、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="success">中文含义：是否成功。使用位置：作为 Action&lt;bool&gt;.Invoke(bool) 的参数。</param>
+    /// <param name="success">是否成功。</param>
     void CompletePendingStorageSwitch(bool success)
     {
         if (animatorUpdateModeOverridden && animator != null)
@@ -1006,10 +1016,10 @@ WeaponType candidate = supportedWeapons[i];
             animatorUpdateModeOverridden = false;
         }
 
-        // completion（完成）：使用位置：LeonWeaponHandler.CompletePendingStorageSwitch(bool)。
+        // 完成。
 System.Action<bool> completion = pendingStorageSwitchCompletion;
         pendingStorageSwitchCompletion = null;
-        // receiverValue22（判空前缓存的完成）：从完成读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonWeaponHandler.CompletePendingStorageSwitch(bool)。
+        // 判空前缓存的完成。
 global::System.Action<bool> receiverValue22 = completion;
         if (!global::System.Object.ReferenceEquals(receiverValue22, null))
         {
@@ -1034,21 +1044,21 @@ global::System.Action<bool> receiverValue22 = completion;
             return false;
         }
 
-        // weapon（当前武器组件）：保存 LeonWeaponHandler.GetCurrentWeapon() 的返回结果，供当前步骤使用。使用位置：作为 LeonWeaponHandler.NotifyCurrentAmmoChanged(WeaponBase) 的参数、LeonWeaponHandler.Fire()。
+        // 当前武器组件。
 WeaponBase weapon = GetCurrentWeapon();
         if (weapon == null)
         {
             return false;
         }
 
-        // cam（摄像机）：使用位置：LeonWeaponHandler.Fire()。
+        // 摄像机。
 var cam = controller.playerCamera;
         if (cam == null)
         {
             return false;
         }
 
-        // range（范围）：使用位置：作为 RE4CameraController.ResolveAimPoint(float) 的参数、LeonWeaponHandler.Fire()。
+        // 范围。
 float range;
         if (weapon.data != null)
         {
@@ -1061,7 +1071,7 @@ float range;
 
         // 让准星和枪口射线使用同一帧的敌人部位碰撞体。
         Physics.SyncTransforms();
-        // aimPoint（瞄准点）：使用位置：作为 WeaponBase.FireAt(Vector3) 的参数、LeonWeaponHandler.Fire()。
+        // 瞄准点。
 Vector3 aimPoint;
         if (controller.CameraController != null)
         {
@@ -1072,7 +1082,7 @@ Vector3 aimPoint;
             aimPoint = cam.transform.position + cam.transform.forward * range;
         }
 
-        // fired（是否已开火）：保存 WeaponBase.FireAt(Vector3) 的返回结果，供当前步骤使用。使用位置：LeonWeaponHandler.Fire()。
+        // 是否已开火。
 bool fired = weapon.FireAt(aimPoint);
         if (fired)
         {
@@ -1091,7 +1101,7 @@ bool fired = weapon.FireAt(aimPoint);
 
     /// <summary>GetWeapon 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
     /// <remarks>静态调用链：上游 CombatHUD.RefreshAmmoText()、CrosshairUI.RefreshWeaponConfig(bool)、CrosshairUI.UpdateSpread()、LeonCombat.OnMeleeHitWindow(AnimationActionTransaction)、LeonWeaponHandler.CancelReload(WeaponType) 等共 14 处；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="weaponType">中文含义：武器类型。使用位置：LeonWeaponHandler.GetWeapon(WeaponType)。</param>
+    /// <param name="weaponType">武器类型。</param>
     public WeaponBase GetWeapon(WeaponType weaponType)
     {
         return weaponType switch
@@ -1106,8 +1116,8 @@ bool fired = weapon.FireAt(aimPoint);
 
     /// <summary>ForceSyncCurrentWeapon 的业务处理入口；本方法直接依赖 Action&lt;ICrosshairDataProvider&gt;.Invoke(ICrosshairDataProvider)、Action&lt;WeaponType&gt;.Invoke(WeaponType)、LeonAnimatorDriver.SetKnifeMode(bool)、LeonAnimatorDriver.SetWeaponType(WeaponType)、LeonAnimRig.SetWeapon(WeaponType)、LeonWeaponHandler.EnsureReferences()、LeonWeaponHandler.GetCurrentWeapon() 等共 13 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonController.InitPipeline()、LeonQTECoordinator.RestoreWeaponVisualAfterQTE(WeaponType, bool)、PerformanceSamplingEntry.Tick()；下游（含内部回调体） Action&lt;ICrosshairDataProvider&gt;.Invoke(ICrosshairDataProvider)、Action&lt;WeaponType&gt;.Invoke(WeaponType)、LeonAnimatorDriver.SetKnifeMode(bool)、LeonAnimatorDriver.SetWeaponType(WeaponType)、LeonAnimRig.SetWeapon(WeaponType)、LeonWeaponHandler.EnsureReferences()、LeonWeaponHandler.GetCurrentWeapon() 等共 13 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="type">中文含义：当前武器类别。使用位置：作为 Action&lt;WeaponType&gt;.Invoke(WeaponType) 的参数、作为 LeonAnimatorDriver.SetKnifeMode(bool) 的参数、作为 LeonAnimatorDriver.SetWeaponType(WeaponType) 的参数 等共 9 处。</param>
-    /// <param name="notify">中文含义：是否通知。使用位置：LeonWeaponHandler.ForceSyncCurrentWeapon(WeaponType, bool)。</param>
+    /// <param name="type">当前武器类别。</param>
+    /// <param name="notify">是否通知。</param>
     public void ForceSyncCurrentWeapon(WeaponType type, bool notify)
     {
         if (!IsSupportedWeapon(type))
@@ -1116,21 +1126,21 @@ bool fired = weapon.FireAt(aimPoint);
         }
 
         EnsureReferences();
-        // weaponChanged（武器是否发生变化）：使用位置：LeonWeaponHandler.ForceSyncCurrentWeapon(WeaponType, bool)。
+        // 武器是否发生变化。
 bool weaponChanged = controller != null && controller.currentWeapon != type;
         if (controller != null)
         {
             RuntimeModule.CommitEquipment(type);
         }
 
-        // receiverValue25（判空前缓存的武器视觉表现控制器）：从武器视觉表现控制器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonWeaponHandler.ForceSyncCurrentWeapon(WeaponType, bool)。
+        // 判空前缓存的武器视觉表现控制器。
 global::LeonWeaponVisualController receiverValue25 = weaponVisualController;
         if (!global::System.Object.ReferenceEquals(receiverValue25, null))
         {
             receiverValue25.SetEquippedWeapon(type);
         }
 
-        // receiverValue26（判空前缓存的当前里昂动画绑定组件）：从动画绑定组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonWeaponHandler.ForceSyncCurrentWeapon(WeaponType, bool)。
+        // 判空前缓存的当前里昂动画绑定组件。
 global::LeonAnimRig receiverValue26 = animRig;
         if (!global::System.Object.ReferenceEquals(receiverValue26, null))
         {
@@ -1151,14 +1161,14 @@ global::LeonAnimRig receiverValue26 = animRig;
             return;
         }
 
-        // receiverValue27（判空前缓存的武器已切换时的通知回调）：从武器已切换时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonWeaponHandler.ForceSyncCurrentWeapon(WeaponType, bool)。
+        // 判空前缓存的武器已切换时的通知回调。
 global::System.Action<global::WeaponType> receiverValue27 = OnWeaponSwitched;
         if (!global::System.Object.ReferenceEquals(receiverValue27, null))
         {
             receiverValue27.Invoke(type);
         }
 
-        // receiverValue28（判空前缓存的数据提供者已切换时的通知回调）：从数据提供者已切换时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonWeaponHandler.ForceSyncCurrentWeapon(WeaponType, bool)。
+        // 判空前缓存的数据提供者已切换时的通知回调。
 global::System.Action<global::ICrosshairDataProvider> receiverValue28 = OnDataProviderSwitched;
         if (!global::System.Object.ReferenceEquals(receiverValue28, null))
         {
@@ -1172,7 +1182,7 @@ global::System.Action<global::ICrosshairDataProvider> receiverValue28 = OnDataPr
     /// <remarks>静态调用链：上游 LeonController.CompleteReload()；下游（含内部回调体） LeonWeaponHandler.CompleteReload(int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     public void CompleteReload()
     {
-        // selectedValue29（分支选出的动作协调组件的当前武器事务编号）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：作为 LeonWeaponHandler.CompleteReload(int) 的参数、LeonWeaponHandler.CompleteReload()。
+        // 分支选出的动作协调组件的当前武器事务编号。
 int selectedValue29;
         if (coordinator != null)
         {
@@ -1188,19 +1198,19 @@ int selectedValue29;
 
     /// <summary>CompleteReload 的业务处理入口；本方法直接依赖 LeonWeaponHandler.ConsumeReserveAmmo(WeaponType, int)、LeonWeaponHandler.GetCurrentWeapon()、LeonWeaponHandler.GetReserveAmmo(WeaponType)、LeonWeaponHandler.NotifyCurrentAmmoChanged(WeaponBase)、WeaponBase.CommitReload(int, int, bool, Action&lt;int&gt;)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonCombat.OnReloadAnimCompleted(AnimationActionTransaction)、LeonWeaponHandler.CompleteReload()；下游（含内部回调体） LeonWeaponHandler.ConsumeReserveAmmo(WeaponType, int)、LeonWeaponHandler.GetCurrentWeapon()、LeonWeaponHandler.GetReserveAmmo(WeaponType)、LeonWeaponHandler.NotifyCurrentAmmoChanged(WeaponBase)、WeaponBase.CommitReload(int, int, bool, Action&lt;int&gt;)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="transactionId">中文含义：事务编号。使用位置：作为 WeaponBase.CommitReload(int, int, bool, Action&lt;int&gt;) 的参数。</param>
+    /// <param name="transactionId">事务编号。</param>
     public void CompleteReload(int transactionId)
     {
-        // weapon（当前武器组件）：保存 LeonWeaponHandler.GetCurrentWeapon() 的返回结果，供当前步骤使用。使用位置：作为 LeonWeaponHandler.NotifyCurrentAmmoChanged(WeaponBase) 的参数、LeonWeaponHandler.CompleteReload(int)。
+        // 当前武器组件。
 var weapon = GetCurrentWeapon();
         if (weapon == null)
         {
             return;
         }
 
-        // wt（武器类型）：使用位置：作为 LeonWeaponHandler.ConsumeReserveAmmo(WeaponType, int) 的参数、作为 LeonWeaponHandler.GetReserveAmmo(WeaponType) 的参数。
+        // 武器类型。
 WeaponType wt = controller.currentWeapon;
-        // toLoad（目标加载）：保存 WeaponBase.CommitReload(int, int, bool, Action<int>) 的返回结果，供当前步骤使用。使用位置：LeonWeaponHandler.CompleteReload(int)。
+        // 目标加载。
 int toLoad = weapon.CommitReload(transactionId, GetReserveAmmo(wt), false, /* 中文含义：大小。 */ amount => ConsumeReserveAmmo(wt, amount));
         if (toLoad > 0)
         {
@@ -1210,10 +1220,10 @@ int toLoad = weapon.CommitReload(transactionId, GetReserveAmmo(wt), false, /* �
 
     /// <summary>CanLoadOneRoundFromReserve 的业务处理入口；本方法直接依赖 LeonWeaponHandler.GetReserveAmmo(WeaponType)、LeonWeaponHandler.GetWeapon(WeaponType)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonCombat.ShotgunShellReloadRoutine(int)、LeonCombat.TryCompleteShotgunShellReload(int)、LeonWeaponHandler.LoadOneRoundFromReserve(WeaponType, int)；下游（含内部回调体） LeonWeaponHandler.GetReserveAmmo(WeaponType)、LeonWeaponHandler.GetWeapon(WeaponType)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="weaponType">中文含义：武器类型。使用位置：作为 LeonWeaponHandler.GetReserveAmmo(WeaponType) 的参数、作为 LeonWeaponHandler.GetWeapon(WeaponType) 的参数。</param>
+    /// <param name="weaponType">武器类型。</param>
     public bool CanLoadOneRoundFromReserve(WeaponType weaponType)
     {
-        // weapon（当前武器组件）：保存 LeonWeaponHandler.GetWeapon(WeaponType) 的返回结果，供当前步骤使用。使用位置：LeonWeaponHandler.CanLoadOneRoundFromReserve(WeaponType)。
+        // 当前武器组件。
 WeaponBase weapon = GetWeapon(weaponType);
         if (weapon == null || weapon.data == null)
         {
@@ -1225,12 +1235,12 @@ WeaponBase weapon = GetWeapon(weaponType);
 
     /// <summary>LoadOneRoundFromReserve 的业务处理入口；本方法直接依赖 LeonWeaponHandler.LoadOneRoundFromReserve(WeaponType, int)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） LeonWeaponHandler.LoadOneRoundFromReserve(WeaponType, int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="weaponType">中文含义：武器类型。使用位置：LeonWeaponHandler.LoadOneRoundFromReserve(WeaponType)。</param>
+    /// <param name="weaponType">武器类型。</param>
     public bool LoadOneRoundFromReserve(WeaponType weaponType)
     {
-        // argumentValue31（按原顺序缓存的实参武器类型）：从武器类型读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 LeonWeaponHandler.LoadOneRoundFromReserve(WeaponType, int) 的参数。
+        // 按原顺序缓存的实参武器类型。
 global::WeaponType argumentValue31 = weaponType;
-        // selectedValue30（分支选出的动作协调组件的当前武器事务编号）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：作为 LeonWeaponHandler.LoadOneRoundFromReserve(WeaponType, int) 的参数、LeonWeaponHandler.LoadOneRoundFromReserve(WeaponType)。
+        // 分支选出的动作协调组件的当前武器事务编号。
 int selectedValue30;
         if (coordinator != null)
         {
@@ -1246,8 +1256,8 @@ int selectedValue30;
 
     /// <summary>LoadOneRoundFromReserve 的业务处理入口；本方法直接依赖 LeonWeaponHandler.CanLoadOneRoundFromReserve(WeaponType)、LeonWeaponHandler.ConsumeReserveAmmo(WeaponType, int)、LeonWeaponHandler.GetReserveAmmo(WeaponType)、LeonWeaponHandler.GetWeapon(WeaponType)、LeonWeaponHandler.NotifyCurrentAmmoChanged(WeaponBase)、WeaponBase.CommitReload(int, int, bool, Action&lt;int&gt;)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonCombat.ShotgunShellReloadRoutine(int)、LeonWeaponHandler.LoadOneRoundFromReserve(WeaponType)；下游（含内部回调体） LeonWeaponHandler.CanLoadOneRoundFromReserve(WeaponType)、LeonWeaponHandler.ConsumeReserveAmmo(WeaponType, int)、LeonWeaponHandler.GetReserveAmmo(WeaponType)、LeonWeaponHandler.GetWeapon(WeaponType)、LeonWeaponHandler.NotifyCurrentAmmoChanged(WeaponBase)、WeaponBase.CommitReload(int, int, bool, Action&lt;int&gt;)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="weaponType">中文含义：武器类型。使用位置：作为 LeonWeaponHandler.CanLoadOneRoundFromReserve(WeaponType) 的参数、作为 LeonWeaponHandler.ConsumeReserveAmmo(WeaponType, int) 的参数、作为 LeonWeaponHandler.GetReserveAmmo(WeaponType) 的参数 等共 4 处。</param>
-    /// <param name="transactionId">中文含义：事务编号。使用位置：作为 WeaponBase.CommitReload(int, int, bool, Action&lt;int&gt;) 的参数。</param>
+    /// <param name="weaponType">武器类型。</param>
+    /// <param name="transactionId">事务编号。</param>
     public bool LoadOneRoundFromReserve(WeaponType weaponType, int transactionId)
     {
         if (!CanLoadOneRoundFromReserve(weaponType))
@@ -1255,9 +1265,9 @@ int selectedValue30;
             return false;
         }
 
-        // weapon（当前武器组件）：保存 LeonWeaponHandler.GetWeapon(WeaponType) 的返回结果，供当前步骤使用。使用位置：作为 LeonWeaponHandler.NotifyCurrentAmmoChanged(WeaponBase) 的参数、LeonWeaponHandler.LoadOneRoundFromReserve(WeaponType, int)。
+        // 当前武器组件。
 WeaponBase weapon = GetWeapon(weaponType);
-        // loaded（已加载）：保存 WeaponBase.CommitReload(int, int, bool, Action<int>) 的返回结果，供当前步骤使用。使用位置：LeonWeaponHandler.LoadOneRoundFromReserve(WeaponType, int)。
+        // 已加载。
 int loaded = weapon.CommitReload(transactionId, GetReserveAmmo(weaponType), true, /* 中文含义：大小。 */ amount => ConsumeReserveAmmo(weaponType, amount));
         if (loaded == 0)
         {
@@ -1280,10 +1290,10 @@ int loaded = weapon.CommitReload(transactionId, GetReserveAmmo(weaponType), true
 
     /// <summary>CancelReload 的业务处理入口；本方法直接依赖 LeonWeaponHandler.GetWeapon(WeaponType)、WeaponBase.CancelReload()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonCombat.OnWeaponActionInterrupted(AnimationActionTransaction)、LeonCombat.StopShotgunShellReload(bool)、LeonCombat.TryCompleteShotgunShellReload(int)；下游（含内部回调体） LeonWeaponHandler.GetWeapon(WeaponType)、WeaponBase.CancelReload()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="weaponType">中文含义：武器类型。使用位置：作为 LeonWeaponHandler.GetWeapon(WeaponType) 的参数。</param>
+    /// <param name="weaponType">武器类型。</param>
     public void CancelReload(WeaponType weaponType)
     {
-        // weapon（当前武器组件）：保存 LeonWeaponHandler.GetWeapon(WeaponType) 的返回结果，供当前步骤使用。使用位置：LeonWeaponHandler.CancelReload(WeaponType)。
+        // 当前武器组件。
 WeaponBase weapon = GetWeapon(weaponType);
         if (weapon != null)
         {
@@ -1293,7 +1303,7 @@ WeaponBase weapon = GetWeapon(weaponType);
 
     /// <summary>NotifyCurrentAmmoChanged 的业务处理入口；本方法直接依赖 Action&lt;WeaponType, int, int&gt;.Invoke(WeaponType, int, int)、object.ReferenceEquals(object, object)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonWeaponHandler.CompleteReload(int)、LeonWeaponHandler.Fire()、LeonWeaponHandler.ForceSyncCurrentWeapon(WeaponType, bool)、LeonWeaponHandler.LoadOneRoundFromReserve(WeaponType, int)；下游（含内部回调体） Action&lt;WeaponType, int, int&gt;.Invoke(WeaponType, int, int)、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="weapon">中文含义：当前武器组件。使用位置：作为 Action&lt;WeaponType, int, int&gt;.Invoke(WeaponType, int, int) 的参数、LeonWeaponHandler.NotifyCurrentAmmoChanged(WeaponBase)。</param>
+    /// <param name="weapon">当前武器组件。</param>
     private void NotifyCurrentAmmoChanged(WeaponBase weapon)
     {
         if (weapon == null || weapon.data == null || controller == null)
@@ -1301,11 +1311,11 @@ WeaponBase weapon = GetWeapon(weaponType);
             return;
         }
 
-        // weaponType（武器类型）：使用位置：作为 Action<WeaponType, int, int>.Invoke(WeaponType, int, int) 的参数、LeonWeaponHandler.NotifyCurrentAmmoChanged(WeaponBase)。
+        // 武器类型。
 WeaponType weaponType = weapon.data.weaponType;
-        // magazineSize（弹匣尺寸）：使用位置：作为 Action<WeaponType, int, int>.Invoke(WeaponType, int, int) 的参数。
+        // 弹匣尺寸。
 int magazineSize = weapon.data.magazineSize;
-        // receiverValue32（判空前缓存的当前弹匣弹量变化时的通知回调）：从当前弹匣弹量变化时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonWeaponHandler.NotifyCurrentAmmoChanged(WeaponBase)。
+        // 判空前缓存的当前弹匣弹量变化时的通知回调。
 global::System.Action<global::WeaponType, int, int> receiverValue32 = OnCurrentAmmoChanged;
         if (!global::System.Object.ReferenceEquals(receiverValue32, null))
         {
@@ -1327,7 +1337,7 @@ global::System.Action<global::WeaponType, int, int> receiverValue32 = OnCurrentA
             return;
         }
 
-        // receiverValue33（判空前缓存的当前武器低弹药时的通知回调）：从当前武器低弹药时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonWeaponHandler.NotifyCurrentAmmoChanged(WeaponBase)。
+        // 判空前缓存的当前武器低弹药时的通知回调。
 global::System.Action<global::WeaponType, int, int> receiverValue33 = OnCurrentWeaponLowAmmo;
         if (!global::System.Object.ReferenceEquals(receiverValue33, null))
         {
@@ -1339,7 +1349,7 @@ global::System.Action<global::WeaponType, int, int> receiverValue33 = OnCurrentW
     /// <remarks>静态调用链：上游 LeonController.StartReload()；下游（含内部回调体） LeonWeaponHandler.GetCurrentWeapon()、LeonWeaponHandler.GetReserveAmmo(WeaponType)、object.ReferenceEquals(object, object)、WeaponAudio.PlayReload()、WeaponBase.BeginReload(int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     public void StartReload()
     {
-        // weapon（当前武器组件）：保存 LeonWeaponHandler.GetCurrentWeapon() 的返回结果，供当前步骤使用。使用位置：LeonWeaponHandler.StartReload()。
+        // 当前武器组件。
 var weapon = GetCurrentWeapon();
         if (weapon == null)
         {
@@ -1358,7 +1368,7 @@ var weapon = GetCurrentWeapon();
 
         if (weapon.BeginReload(coordinator.CurrentWeaponTransactionId))
         {
-            // receiverValue34（判空前缓存的武器的武器音频引用）：从武器的武器音频引用读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonWeaponHandler.StartReload()。
+            // 判空前缓存的武器的武器音频引用。
 global::WeaponAudio receiverValue34 = weapon.WeaponAudioRef;
             if (receiverValue34 != null && !receiverValue34.UsesStagedReload)
             {
@@ -1371,7 +1381,7 @@ global::WeaponAudio receiverValue34 = weapon.WeaponAudioRef;
     /// <remarks>静态调用链：上游 LeonController.CanReload()；下游（含内部回调体） LeonWeaponHandler.GetCurrentWeapon()、LeonWeaponHandler.GetReserveAmmo(WeaponType)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     public bool CanReload()
     {
-        // weapon（当前武器组件）：保存 LeonWeaponHandler.GetCurrentWeapon() 的返回结果，供当前步骤使用。使用位置：LeonWeaponHandler.CanReload()。
+        // 当前武器组件。
 var weapon = GetCurrentWeapon();
         if (weapon == null)
         {
@@ -1383,12 +1393,12 @@ var weapon = GetCurrentWeapon();
 
     /// <summary>GetReserveAmmo 的业务处理入口；本方法直接依赖 InventoryManager.GetItemCount(string)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 CombatHUD.RefreshAmmoText()、DropResourceReader.Read()、LeonWeaponHandler.CanLoadOneRoundFromReserve(WeaponType)、LeonWeaponHandler.CanReload()、LeonWeaponHandler.CompleteReload(int) 等共 8 处；下游（含内部回调体） InventoryManager.GetItemCount(string)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="weapon">中文含义：当前武器类别。使用位置：LeonWeaponHandler.GetReserveAmmo(WeaponType)。</param>
+    /// <param name="weapon">当前武器类别。</param>
     public int GetReserveAmmo(WeaponType weapon)
     {
         if (InventoryManager.HasInstance)
         {
-            // itemId（物品编号）：使用位置：作为 InventoryManager.GetItemCount(string) 的参数、LeonWeaponHandler.GetReserveAmmo(WeaponType)。
+            // 物品编号。
 string itemId = weapon switch
             {
                 WeaponType.Pistol => "pistol_ammo",
@@ -1413,8 +1423,8 @@ string itemId = weapon switch
 
     /// <summary>AddReserveAmmo 的业务处理入口；本方法直接依赖 WeaponRuntimeModule.IncreaseCompatibleReserveAmmo(WeaponType, int)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonController.IItemUseTarget.IncreaseCompatibleReserveAmmo(WeaponType, int)；下游（含内部回调体） WeaponRuntimeModule.IncreaseCompatibleReserveAmmo(WeaponType, int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="weapon">中文含义：当前武器类别。使用位置：作为 WeaponRuntimeModule.IncreaseCompatibleReserveAmmo(WeaponType, int) 的参数、LeonWeaponHandler.AddReserveAmmo(WeaponType, int)。</param>
-    /// <param name="amount">中文含义：大小。使用位置：作为 WeaponRuntimeModule.IncreaseCompatibleReserveAmmo(WeaponType, int) 的参数。</param>
+    /// <param name="weapon">当前武器类别。</param>
+    /// <param name="amount">大小。</param>
     public void AddReserveAmmo(WeaponType weapon, int amount)
     {
         if (weapon != WeaponType.Knife)
@@ -1425,13 +1435,13 @@ string itemId = weapon switch
 
     /// <summary>ConsumeReserveAmmo 的业务处理入口；本方法直接依赖 InventoryManager.RemoveItem(string, int)、WeaponRuntimeModule.ConsumptionCompatibleReserveAmmo(WeaponType, int)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonWeaponHandler.CompleteReload(int)、LeonWeaponHandler.LoadOneRoundFromReserve(WeaponType, int)；下游（含内部回调体） InventoryManager.RemoveItem(string, int)、WeaponRuntimeModule.ConsumptionCompatibleReserveAmmo(WeaponType, int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="weapon">中文含义：当前武器类别。使用位置：作为 WeaponRuntimeModule.ConsumptionCompatibleReserveAmmo(WeaponType, int) 的参数、LeonWeaponHandler.ConsumeReserveAmmo(WeaponType, int)。</param>
-    /// <param name="amount">中文含义：大小。使用位置：作为 InventoryManager.RemoveItem(string, int) 的参数、作为 WeaponRuntimeModule.ConsumptionCompatibleReserveAmmo(WeaponType, int) 的参数。</param>
+    /// <param name="weapon">当前武器类别。</param>
+    /// <param name="amount">大小。</param>
     public void ConsumeReserveAmmo(WeaponType weapon, int amount)
     {
         if (InventoryManager.HasInstance)
         {
-            // itemId（物品编号）：使用位置：作为 InventoryManager.RemoveItem(string, int) 的参数、LeonWeaponHandler.ConsumeReserveAmmo(WeaponType, int)。
+            // 物品编号。
 string itemId = weapon switch
             {
                 WeaponType.Pistol => "pistol_ammo",
@@ -1454,7 +1464,7 @@ string itemId = weapon switch
 
     /// <summary>IsGunWeapon 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
     /// <remarks>静态调用链：上游 LeonWeaponHandler.ForceSyncCurrentWeapon(WeaponType, bool)、LeonWeaponHandler.IsSupportedWeapon(WeaponType)、LeonWeaponHandler.OnKnifeTransitionExited(AnimationActionTransaction)、LeonWeaponHandler.QuickSelectSwitch(WeaponType)；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="type">中文含义：当前武器类别。使用位置：LeonWeaponHandler.IsGunWeapon(WeaponType)。</param>
+    /// <param name="type">当前武器类别。</param>
     private static bool IsGunWeapon(WeaponType type)
     {
         return type == WeaponType.Pistol || type == WeaponType.Rifle || type == WeaponType.Shotgun;
@@ -1462,7 +1472,7 @@ string itemId = weapon switch
 
     /// <summary>IsSupportedWeapon 的业务处理入口；本方法直接依赖 LeonWeaponHandler.IsGunWeapon(WeaponType)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonWeaponHandler.ForceSyncCurrentWeapon(WeaponType, bool)、LeonWeaponHandler.SwitchTo(WeaponType)；下游（含内部回调体） LeonWeaponHandler.IsGunWeapon(WeaponType)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="type">中文含义：当前武器类别。使用位置：作为 LeonWeaponHandler.IsGunWeapon(WeaponType) 的参数、LeonWeaponHandler.IsSupportedWeapon(WeaponType)。</param>
+    /// <param name="type">当前武器类别。</param>
     private static bool IsSupportedWeapon(WeaponType type)
     {
         return IsGunWeapon(type) || type == WeaponType.Knife;
@@ -1470,8 +1480,8 @@ string itemId = weapon switch
 
     /// <summary>FindChildByName 的业务处理入口；本方法直接依赖 Component.GetComponentsInChildren&lt;Transform&gt;(bool)、string.IsNullOrEmpty(string)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonWeaponHandler.EnsureReferences()；下游（含内部回调体） Component.GetComponentsInChildren&lt;Transform&gt;(bool)、string.IsNullOrEmpty(string)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="root">中文含义：根变换节点。使用位置：LeonWeaponHandler.FindChildByName(Transform, string)。</param>
-    /// <param name="childName">中文含义：子级名称。使用位置：作为 string.IsNullOrEmpty(string) 的参数、LeonWeaponHandler.FindChildByName(Transform, string)。</param>
+    /// <param name="root">根变换节点。</param>
+    /// <param name="childName">子级名称。</param>
     private static Transform FindChildByName(Transform root, string childName)
     {
         if (root == null || string.IsNullOrEmpty(childName))
@@ -1479,9 +1489,9 @@ string itemId = weapon switch
             return null;
         }
 
-        // children（子对象集合）：保存 Component.GetComponentsInChildren<Transform>(bool) 的返回结果，供当前步骤使用。使用位置：LeonWeaponHandler.FindChildByName(Transform, string)。
+        // 子对象集合。
 Transform[] children = root.GetComponentsInChildren<Transform>(true);
-        // i（当前遍历索引）：使用位置：LeonWeaponHandler.FindChildByName(Transform, string)。
+        // 当前遍历索引。
 for (int i = 0; i < children.Length; i++)
         {
             if (children[i].name == childName)
@@ -1497,9 +1507,9 @@ for (int i = 0; i < children.Length; i++)
     /// <remarks>静态调用链：上游 CombatHUD.RefreshAmmoText()、LeonController.GetCurrentAmmo()；下游（含内部回调体） LeonWeaponHandler.GetCurrentWeapon()、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     public int GetCurrentAmmo()
     {
-        // receiverValue35（判空前缓存的武器组件）：按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonWeaponHandler.GetCurrentAmmo()。
+        // 判空前缓存的武器组件。
 global::WeaponBase receiverValue35 = GetCurrentWeapon();
-        // availableValue37（空值判断前缓存的接收者值35的当前弹匣弹量）：保存空值判断之前的值，只读取一次，非空时不执行回退分支。使用位置：LeonWeaponHandler.GetCurrentAmmo()。
+        // 空值判断前缓存的接收者值35的当前弹匣弹量。
 int? availableValue37;
         if (!global::System.Object.ReferenceEquals(receiverValue35, null))
         {
@@ -1524,13 +1534,13 @@ int? availableValue37;
     /// <remarks>静态调用链：上游 LeonController.GetMaxAmmo()；下游（含内部回调体） LeonWeaponHandler.GetCurrentWeapon()、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     public int GetMaxAmmo()
     {
-        // receiverValue39（判空前缓存的武器组件）：按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonWeaponHandler.GetMaxAmmo()。
+        // 判空前缓存的武器组件。
 global::WeaponBase receiverValue39 = GetCurrentWeapon();
-        // availableValue43（空值判断前缓存的接收者值40的弹匣尺寸）：保存空值判断之前的值，只读取一次，非空时不执行回退分支。使用位置：LeonWeaponHandler.GetMaxAmmo()。
+        // 空值判断前缓存的接收者值40的弹匣尺寸。
 int? availableValue43;
         if (!global::System.Object.ReferenceEquals(receiverValue39, null))
         {
-            // receiverValue40（判空前缓存的接收者值39的数据）：从接收者值39的数据读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonWeaponHandler.GetMaxAmmo()。
+            // 判空前缓存的接收者值39的数据。
 global::WeaponData receiverValue40 = receiverValue39.data;
             if (!global::System.Object.ReferenceEquals(receiverValue40, null))
             {

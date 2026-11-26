@@ -5,74 +5,74 @@ using UnityEngine;
 [DefaultExecutionOrder(1200)]
 public class LeonPlayerStairRampRuntime : MonoBehaviour
 {
-    /// <summary>中文含义：玩家入口留白。编译期常量，保持既有值与消费者映射。使用位置：LeonPlayerStairRampRuntime.ApplyPlayerMotionAssistInternal(LeonController, Rigidbody, CapsuleCollider, Vector3, LeonActionMotionDriver, MotionControlToken)、LeonPlayerStairRampRuntime.TryFindPlayerRamp(Vector3, CapsuleCollider, out BoxCollider, out Vector3)。</summary>
+    /// <summary>玩家入口留白。编译期常量，保持既有值与消费者映射。</summary>
     private const float playerEntryPadding = 0.96f;
-    /// <summary>中文含义：玩家竖直下部留白。编译期常量，保持既有值与消费者映射。使用位置：LeonPlayerStairRampRuntime.TryFindPlayerRamp(Vector3, CapsuleCollider, out BoxCollider, out Vector3)。</summary>
+    /// <summary>玩家竖直下部留白。编译期常量，保持既有值与消费者映射。</summary>
     private const float playerVerticalLowerPadding = 2.10f;
-    /// <summary>中文含义：玩家竖直上部留白。编译期常量，保持既有值与消费者映射。使用位置：LeonPlayerStairRampRuntime.TryFindPlayerRamp(Vector3, CapsuleCollider, out BoxCollider, out Vector3)。</summary>
+    /// <summary>玩家竖直上部留白。编译期常量，保持既有值与消费者映射。</summary>
     private const float playerVerticalUpperPadding = 3.10f;
-    /// <summary>中文含义：玩家表面净空。编译期常量，保持既有值与消费者映射。使用位置：LeonPlayerStairRampRuntime.ApplyPlayerMotionAssistInternal(LeonController, Rigidbody, CapsuleCollider, Vector3, LeonActionMotionDriver, MotionControlToken)。</summary>
+    /// <summary>玩家表面净空。编译期常量，保持既有值与消费者映射。</summary>
     private const float playerSurfaceClearance = 0.035f;
-    /// <summary>中文含义：优先步进高度。编译期常量，保持既有值与消费者映射。使用位置：作为 Mathf.RoundToInt(float) 的参数。</summary>
+    /// <summary>优先步进高度。编译期常量，保持既有值与消费者映射。</summary>
     private const float preferredStepHeight = 0.24f;
-    /// <summary>中文含义：步进支撑厚度。编译期常量，保持既有值与消费者映射。使用位置：作为 Vector3.Vector3(float, float, float) 的参数。</summary>
+    /// <summary>步进支撑厚度。编译期常量，保持既有值与消费者映射。</summary>
     private const float stepSupportThickness = 0.08f;
-    /// <summary>中文含义：玩家向上探测深度。编译期常量，保持既有值与消费者映射。使用位置：LeonPlayerStairRampRuntime.ApplyPlayerMotionAssistInternal(LeonController, Rigidbody, CapsuleCollider, Vector3, LeonActionMotionDriver, MotionControlToken)。</summary>
+    /// <summary>玩家向上探测深度。编译期常量，保持既有值与消费者映射。</summary>
     private const float playerUpProbeDepth = 0.42f;
-    /// <summary>中文含义：玩家向下探测深度。编译期常量，保持既有值与消费者映射。使用位置：LeonPlayerStairRampRuntime.ApplyPlayerMotionAssistInternal(LeonController, Rigidbody, CapsuleCollider, Vector3, LeonActionMotionDriver, MotionControlToken)。</summary>
+    /// <summary>玩家向下探测深度。编译期常量，保持既有值与消费者映射。</summary>
     private const float playerDownProbeDepth = 0.36f;
-    /// <summary>中文含义：玩家向上竖直速度最小。编译期常量，保持既有值与消费者映射。使用位置：作为 Mathf.Clamp(float, float, float) 的参数。</summary>
+    /// <summary>玩家向上竖直速度最小。编译期常量，保持既有值与消费者映射。</summary>
     private const float playerUpVerticalSpeedMinimum = 0.85f;
-    /// <summary>中文含义：玩家向上竖直速度最大。编译期常量，保持既有值与消费者映射。使用位置：作为 Mathf.Clamp(float, float, float) 的参数。</summary>
+    /// <summary>玩家向上竖直速度最大。编译期常量，保持既有值与消费者映射。</summary>
     private const float playerUpVerticalSpeedMaximum = 2.35f;
-    /// <summary>中文含义：玩家向下竖直速度最大。编译期常量，保持既有值与消费者映射。使用位置：作为 Mathf.Min(float, float) 的参数。</summary>
+    /// <summary>玩家向下竖直速度最大。编译期常量，保持既有值与消费者映射。</summary>
     private const float playerDownVerticalSpeedMaximum = 2.80f;
-    /// <summary>中文含义：玩家竖直校正量增益。编译期常量，保持既有值与消费者映射。使用位置：作为 Mathf.Clamp(float, float, float) 的参数。</summary>
+    /// <summary>玩家竖直校正量增益。编译期常量，保持既有值与消费者映射。</summary>
     private const float playerVerticalCorrectionGain = 7.5f;
-    /// <summary>中文含义：玩家轴输入死亡区。编译期常量，保持既有值与消费者映射。使用位置：LeonPlayerStairRampRuntime.TryResolveStairInput(BoxCollider, Vector3, out float, out bool)。</summary>
+    /// <summary>玩家轴输入死亡区。编译期常量，保持既有值与消费者映射。</summary>
     private const float playerAxisInputDeadZone = 0.12f;
-    /// <summary>中文含义：玩家高退出向上淡入淡出距离。编译期常量，保持既有值与消费者映射。使用位置：作为 Mathf.InverseLerp(float, float, float) 的参数、LeonPlayerStairRampRuntime.ResolveHighExitUpAssistScale(BoxCollider, Vector3)。</summary>
+    /// <summary>玩家高退出向上淡入淡出距离。编译期常量，保持既有值与消费者映射。</summary>
     private const float playerHighExitUpFadeDistance = 0.58f;
-    /// <summary>中文含义：玩家高退出向上停止距离。编译期常量，保持既有值与消费者映射。使用位置：作为 Mathf.InverseLerp(float, float, float) 的参数、LeonPlayerStairRampRuntime.ResolveHighExitUpAssistScale(BoxCollider, Vector3)。</summary>
+    /// <summary>玩家高退出向上停止距离。编译期常量，保持既有值与消费者映射。</summary>
     private const float playerHighExitUpStopDistance = 0.22f;
-    /// <summary>中文含义：玩家竖直辅助留白。编译期常量，保持既有值与消费者映射。使用位置：作为 LeonPlayerStairRampRuntime.IsInsideLocalRange(float, float, float) 的参数。</summary>
+    /// <summary>玩家竖直辅助留白。编译期常量，保持既有值与消费者映射。</summary>
     private const float playerVerticalAssistPadding = 0.36f;
-    /// <summary>中文含义：斜坡来源集合。使用位置：作为 LeonPlayerStairRampRuntime.RefreshRamp(LeonPlayerStairRampRuntime.RampSource) 的参数、LeonPlayerStairRampRuntime.ConfigurationError()、LeonPlayerStairRampRuntime.RefreshRamps()。</summary>
+    /// <summary>斜坡来源集合。</summary>
     [Header("楼梯分段与踏面")]
     public RampSource[] rampSources;
-    /// <summary>中文含义：初始角色。使用位置：LeonPlayerStairRampRuntime.PrepareTraversal()。</summary>
+    /// <summary>初始角色。</summary>
     [Header("场景内已有敌人")]
     [UnityEngine.Serialization.FormerlySerializedAs("初始角色")]
     [UnityEngine.InspectorName("初始角色")]
     public VillagerController[] initialCharacter;
-    /// <summary>中文含义：角色。只读字段，初始化后不由普通写入口替换。使用位置：LeonPlayerStairRampRuntime.PrepareTraversal()、LeonPlayerStairRampRuntime.RefreshEnemyCollisionIgnores()、LeonPlayerStairRampRuntime.RegisterCharacter(VillagerController) 等共 4 处。</summary>
+    /// <summary>角色。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly HashSet<VillagerController> character = new HashSet<VillagerController>();
-    /// <summary>中文含义：角色碰撞。只读字段，初始化后不由普通写入口替换。使用位置：作为 Component.GetComponentsInChildren&lt;Collider&gt;(bool, List&lt;Collider&gt;) 的参数、LeonPlayerStairRampRuntime.RefreshEnemyCollisionIgnores()。</summary>
+    /// <summary>角色碰撞。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly List<Collider> characterCollision = new List<Collider>();
-    /// <summary>中文含义：是否具有准备。使用位置：LeonPlayerStairRampRuntime.ApplyPlayerMotionAssist(LeonController, Rigidbody, CapsuleCollider, Vector3, LeonActionMotionDriver, MotionControlToken)、LeonPlayerStairRampRuntime.PrepareTraversal()、LeonPlayerStairRampRuntime.QueryStair(Ray, float, out RaycastHit, out bool)。</summary>
+    /// <summary>是否具有准备。</summary>
     private bool hasPrepare;
-    /// <summary>中文含义：实例。使用位置：LeonPlayerStairRampRuntime.ApplyPlayerMotionAssist(LeonController, Rigidbody, CapsuleCollider, Vector3, LeonActionMotionDriver, MotionControlToken)、LeonPlayerStairRampRuntime.CurrentStair.get、LeonPlayerStairRampRuntime.EnsureSceneRamps() 等共 7 处。</summary>
+    /// <summary>实例。</summary>
     private static LeonPlayerStairRampRuntime instance;
-    /// <summary>中文含义：斜坡碰撞体集合。只读字段，初始化后不由普通写入口替换。使用位置：LeonPlayerStairRampRuntime.ApplyPlayerMotionAssistInternal(LeonController, Rigidbody, CapsuleCollider, Vector3, LeonActionMotionDriver, MotionControlToken)、LeonPlayerStairRampRuntime.QueryStair(Ray, float, out RaycastHit, out bool)、LeonPlayerStairRampRuntime.RefreshRamp(LeonPlayerStairRampRuntime.RampSource) 等共 5 处。</summary>
+    /// <summary>斜坡碰撞体集合。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly List<Collider> rampColliders = new List<Collider>();
-    /// <summary>中文含义：敌人已忽略碰撞体集合。只读字段，初始化后不由普通写入口替换。使用位置：LeonPlayerStairRampRuntime.ConfigureSideGuard(GameObject, BoxCollider, string, float)、LeonPlayerStairRampRuntime.RefreshEnemyCollisionIgnores()、LeonPlayerStairRampRuntime.RefreshRamp(LeonPlayerStairRampRuntime.RampSource) 等共 5 处。</summary>
+    /// <summary>敌人已忽略碰撞体集合。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly List<Collider> enemyIgnoredColliders = new List<Collider>();
-    /// <summary>中文含义：当前楼梯。使用位置：作为 BipedFootPlanting.WeightBindStair(MonoBehaviour) 的参数、EnemyFootAction.LateUpdate()、EnemyFootAction.Start()。</summary>
+    /// <summary>当前楼梯。</summary>
     internal static LeonPlayerStairRampRuntime CurrentStair => instance;
 
-    /// <summary>中文含义：下部行胶囊。使用位置：LeonPlayerStairRampRuntime.FixedUpdate()、LeonPlayerStairRampRuntime.RestoreCapsuleFriction()、LeonPlayerStairRampRuntime.UseLowerRowFriction(CapsuleCollider)。</summary>
+    /// <summary>下部行胶囊。</summary>
     private CapsuleCollider lowerRowCapsule;
-    /// <summary>中文含义：originalCapsuleMaterial 表示“原始胶囊材质”；lowerRowMaterial 表示“下部行材质”。使用位置：LeonPlayerStairRampRuntime.RestoreCapsuleFriction()、LeonPlayerStairRampRuntime.UseLowerRowFriction(CapsuleCollider)。；使用位置：作为 Object.Destroy(Object) 的参数、LeonPlayerStairRampRuntime.OnDisable()、LeonPlayerStairRampRuntime.RestoreCapsuleFriction() 等共 4 处。</summary>
+    /// <summary>originalCapsuleMaterial 表示“原始胶囊材质”；lowerRowMaterial 表示“下部行材质”。</summary>
     private PhysicsMaterial originalCapsuleMaterial, lowerRowMaterial;
-    /// <summary>中文含义：下部行物理时间戳。使用位置：LeonPlayerStairRampRuntime.FixedUpdate()、LeonPlayerStairRampRuntime.UseLowerRowFriction(CapsuleCollider)。</summary>
+    /// <summary>下部行物理时间戳。</summary>
     private double lowerRowPhysicsTimestamp;
-    /// <summary>中文含义：下一次敌人刷新时间。使用位置：LeonPlayerStairRampRuntime.Update()。</summary>
+    /// <summary>下一次敌人刷新时间。</summary>
     private float nextEnemyRefreshTime;
     /// <summary>EnsureSceneRamps 的业务处理入口；本方法直接依赖 LeonPlayerStairRampRuntime.PrepareTraversal()、object.ReferenceEquals(object, object)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） LeonPlayerStairRampRuntime.PrepareTraversal()、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     public static void EnsureSceneRamps()
     {
-        // receiverValue1（判空前缓存的实例）：从实例读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonPlayerStairRampRuntime.EnsureSceneRamps()。
+        // 判空前缓存的实例。
 global::LeonPlayerStairRampRuntime receiverValue1 = instance;
         if (!global::System.Object.ReferenceEquals(receiverValue1, null))
         {
@@ -82,7 +82,7 @@ global::LeonPlayerStairRampRuntime receiverValue1 = instance;
 
     /// <summary>RegisterCharacter 的业务处理入口；本方法直接依赖 HashSet&lt;VillagerController&gt;.Add(VillagerController)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillagerController.Start()；下游（含内部回调体） HashSet&lt;VillagerController&gt;.Add(VillagerController)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="enemy">中文含义：敌人。使用位置：作为 HashSet&lt;VillagerController&gt;.Add(VillagerController) 的参数、LeonPlayerStairRampRuntime.RegisterCharacter(VillagerController)。</param>
+    /// <param name="enemy">敌人。</param>
     internal static void RegisterCharacter(VillagerController enemy)
     {
         if (instance != null && enemy != null)
@@ -93,7 +93,7 @@ global::LeonPlayerStairRampRuntime receiverValue1 = instance;
 
     /// <summary>RemoveCharacter 的业务处理入口；本方法直接依赖 HashSet&lt;VillagerController&gt;.Remove(VillagerController)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillagerController.OnDestroy()；下游（含内部回调体） HashSet&lt;VillagerController&gt;.Remove(VillagerController)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="enemy">中文含义：敌人。使用位置：作为 HashSet&lt;VillagerController&gt;.Remove(VillagerController) 的参数。</param>
+    /// <param name="enemy">敌人。</param>
     internal static void RemoveCharacter(VillagerController enemy)
     {
         if (instance != null)
@@ -111,7 +111,7 @@ global::LeonPlayerStairRampRuntime receiverValue1 = instance;
             return nameof(rampSources);
         }
 
-        // name（名称）：使用位置：LeonPlayerStairRampRuntime.ConfigurationError()。
+        // 名称。
 var name = new HashSet<string>();
         // segment（线段）：每轮从斜坡来源集合取得一个元素，仅代表当前这一项。使用位置：作为 HashSet<string>.Add(string) 的参数、作为 string.IsNullOrWhiteSpace(string) 的参数、LeonPlayerStairRampRuntime.ConfigurationError()。
 foreach (var segment in rampSources)
@@ -163,13 +163,13 @@ foreach (var enemy in initialCharacter)
 
     /// <summary>ApplyPlayerMotionAssist 的业务处理入口；本方法直接依赖 Component.GetComponent&lt;LeonActionMotionDriver&gt;()、LeonPlayerStairRampRuntime.ApplyPlayerMotionAssist(LeonController, Rigidbody, CapsuleCollider, Vector3, LeonActionMotionDriver, MotionControlToken)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） Component.GetComponent&lt;LeonActionMotionDriver&gt;()、LeonPlayerStairRampRuntime.ApplyPlayerMotionAssist(LeonController, Rigidbody, CapsuleCollider, Vector3, LeonActionMotionDriver, MotionControlToken)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="controller">中文含义：里昂玩家控制器。使用位置：LeonPlayerStairRampRuntime.ApplyPlayerMotionAssist(LeonController, Rigidbody, CapsuleCollider, Vector3)。</param>
-    /// <param name="body">中文含义：身体。使用位置：LeonPlayerStairRampRuntime.ApplyPlayerMotionAssist(LeonController, Rigidbody, CapsuleCollider, Vector3)。</param>
-    /// <param name="capsule">中文含义：胶囊。使用位置：LeonPlayerStairRampRuntime.ApplyPlayerMotionAssist(LeonController, Rigidbody, CapsuleCollider, Vector3)。</param>
-    /// <param name="moveDirection">中文含义：移动方向。使用位置：LeonPlayerStairRampRuntime.ApplyPlayerMotionAssist(LeonController, Rigidbody, CapsuleCollider, Vector3)。</param>
+    /// <param name="controller">里昂玩家控制器。</param>
+    /// <param name="body">身体。</param>
+    /// <param name="capsule">胶囊。</param>
+    /// <param name="moveDirection">移动方向。</param>
     public static bool ApplyPlayerMotionAssist(LeonController controller, Rigidbody body, CapsuleCollider capsule, Vector3 moveDirection)
     {
-        // executor（执行器）：使用位置：LeonPlayerStairRampRuntime.ApplyPlayerMotionAssist(LeonController, Rigidbody, CapsuleCollider, Vector3)。
+        // 执行器。
 global::LeonActionMotionDriver executor;
         if (controller != null)
         {
@@ -180,17 +180,17 @@ global::LeonActionMotionDriver executor;
             executor = null;
         }
 
-        // argumentValue4（按原顺序缓存的实参里昂玩家控制器）：从控制器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 LeonPlayerStairRampRuntime.ApplyPlayerMotionAssist(LeonController, Rigidbody, CapsuleCollider, Vector3, LeonActionMotionDriver, MotionControlToken) 的参数。
+        // 按原顺序缓存的实参里昂玩家控制器。
 global::LeonController argumentValue4 = controller;
-        // argumentValue5（按原顺序缓存的实参身体）：从身体读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 LeonPlayerStairRampRuntime.ApplyPlayerMotionAssist(LeonController, Rigidbody, CapsuleCollider, Vector3, LeonActionMotionDriver, MotionControlToken) 的参数。
+        // 按原顺序缓存的实参身体。
 global::UnityEngine.Rigidbody argumentValue5 = body;
-        // argumentValue6（按原顺序缓存的实参胶囊）：从胶囊读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 LeonPlayerStairRampRuntime.ApplyPlayerMotionAssist(LeonController, Rigidbody, CapsuleCollider, Vector3, LeonActionMotionDriver, MotionControlToken) 的参数。
+        // 按原顺序缓存的实参胶囊。
 global::UnityEngine.CapsuleCollider argumentValue6 = capsule;
-        // argumentValue7（按原顺序缓存的实参移动方向）：从移动方向读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 LeonPlayerStairRampRuntime.ApplyPlayerMotionAssist(LeonController, Rigidbody, CapsuleCollider, Vector3, LeonActionMotionDriver, MotionControlToken) 的参数。
+        // 按原顺序缓存的实参移动方向。
 global::UnityEngine.Vector3 argumentValue7 = moveDirection;
-        // argumentValue8（按原顺序缓存的实参执行器）：从执行器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 LeonPlayerStairRampRuntime.ApplyPlayerMotionAssist(LeonController, Rigidbody, CapsuleCollider, Vector3, LeonActionMotionDriver, MotionControlToken) 的参数。
+        // 按原顺序缓存的实参执行器。
 global::LeonActionMotionDriver argumentValue8 = executor;
-        // selectedValue3（分支选出的执行器的当前运动凭证）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：作为 LeonPlayerStairRampRuntime.ApplyPlayerMotionAssist(LeonController, Rigidbody, CapsuleCollider, Vector3, LeonActionMotionDriver, MotionControlToken) 的参数、LeonPlayerStairRampRuntime.ApplyPlayerMotionAssist(LeonController, Rigidbody, CapsuleCollider, Vector3)。
+        // 分支选出的执行器的当前运动凭证。
 global::GameArchitecture.MotionControlToken selectedValue3;
         if (executor != null)
         {
@@ -206,12 +206,12 @@ global::GameArchitecture.MotionControlToken selectedValue3;
 
     /// <summary>ApplyPlayerMotionAssist 的业务处理入口；本方法直接依赖 LeonPlayerStairRampRuntime.ApplyPlayerMotionAssistInternal(LeonController, Rigidbody, CapsuleCollider, Vector3, LeonActionMotionDriver, MotionControlToken)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonLocomotion.HandleMovement()、LeonPlayerStairRampRuntime.ApplyPlayerMotionAssist(LeonController, Rigidbody, CapsuleCollider, Vector3)；下游（含内部回调体） LeonPlayerStairRampRuntime.ApplyPlayerMotionAssistInternal(LeonController, Rigidbody, CapsuleCollider, Vector3, LeonActionMotionDriver, MotionControlToken)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="controller">中文含义：里昂玩家控制器。使用位置：作为 LeonPlayerStairRampRuntime.ApplyPlayerMotionAssistInternal(LeonController, Rigidbody, CapsuleCollider, Vector3, LeonActionMotionDriver, MotionControlToken) 的参数、LeonPlayerStairRampRuntime.ApplyPlayerMotionAssist(LeonController, Rigidbody, CapsuleCollider, Vector3, LeonActionMotionDriver, MotionControlToken)。</param>
-    /// <param name="body">中文含义：身体。使用位置：作为 LeonPlayerStairRampRuntime.ApplyPlayerMotionAssistInternal(LeonController, Rigidbody, CapsuleCollider, Vector3, LeonActionMotionDriver, MotionControlToken) 的参数、LeonPlayerStairRampRuntime.ApplyPlayerMotionAssist(LeonController, Rigidbody, CapsuleCollider, Vector3, LeonActionMotionDriver, MotionControlToken)。</param>
-    /// <param name="capsule">中文含义：胶囊。使用位置：作为 LeonPlayerStairRampRuntime.ApplyPlayerMotionAssistInternal(LeonController, Rigidbody, CapsuleCollider, Vector3, LeonActionMotionDriver, MotionControlToken) 的参数、LeonPlayerStairRampRuntime.ApplyPlayerMotionAssist(LeonController, Rigidbody, CapsuleCollider, Vector3, LeonActionMotionDriver, MotionControlToken)。</param>
-    /// <param name="moveDirection">中文含义：移动方向。使用位置：作为 LeonPlayerStairRampRuntime.ApplyPlayerMotionAssistInternal(LeonController, Rigidbody, CapsuleCollider, Vector3, LeonActionMotionDriver, MotionControlToken) 的参数。</param>
-    /// <param name="executor">中文含义：执行器。使用位置：作为 LeonPlayerStairRampRuntime.ApplyPlayerMotionAssistInternal(LeonController, Rigidbody, CapsuleCollider, Vector3, LeonActionMotionDriver, MotionControlToken) 的参数、LeonPlayerStairRampRuntime.ApplyPlayerMotionAssist(LeonController, Rigidbody, CapsuleCollider, Vector3, LeonActionMotionDriver, MotionControlToken)。</param>
-    /// <param name="token">中文含义：凭证。使用位置：作为 LeonPlayerStairRampRuntime.ApplyPlayerMotionAssistInternal(LeonController, Rigidbody, CapsuleCollider, Vector3, LeonActionMotionDriver, MotionControlToken) 的参数、LeonPlayerStairRampRuntime.ApplyPlayerMotionAssist(LeonController, Rigidbody, CapsuleCollider, Vector3, LeonActionMotionDriver, MotionControlToken)。</param>
+    /// <param name="controller">里昂玩家控制器。</param>
+    /// <param name="body">身体。</param>
+    /// <param name="capsule">胶囊。</param>
+    /// <param name="moveDirection">移动方向。</param>
+    /// <param name="executor">执行器。</param>
+    /// <param name="token">凭证。</param>
     public static bool ApplyPlayerMotionAssist(LeonController controller, Rigidbody body, CapsuleCollider capsule, Vector3 moveDirection, LeonActionMotionDriver executor, GameArchitecture.MotionControlToken token)
     {
         if (controller == null || body == null || capsule == null || executor == null || token.Source != GameArchitecture.MotionSource.NormalMovement)
@@ -253,7 +253,7 @@ global::GameArchitecture.MotionControlToken selectedValue3;
 
     /// <summary>UseLowerRowFriction 的业务处理入口；本方法直接依赖 LeonPlayerStairRampRuntime.RestoreCapsuleFriction()、PhysicsMaterial.PhysicsMaterial(string)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonPlayerStairRampRuntime.ApplyPlayerMotionAssistInternal(LeonController, Rigidbody, CapsuleCollider, Vector3, LeonActionMotionDriver, MotionControlToken)；下游（含内部回调体） LeonPlayerStairRampRuntime.RestoreCapsuleFriction()、PhysicsMaterial.PhysicsMaterial(string)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="capsule">中文含义：胶囊。使用位置：LeonPlayerStairRampRuntime.UseLowerRowFriction(CapsuleCollider)。</param>
+    /// <param name="capsule">胶囊。</param>
     private void UseLowerRowFriction(CapsuleCollider capsule)
     {
         lowerRowPhysicsTimestamp = Time.fixedTimeAsDouble;
@@ -271,7 +271,7 @@ global::GameArchitecture.MotionControlToken selectedValue3;
 
         lowerRowMaterial.staticFriction = lowerRowMaterial.dynamicFriction = 0f;
         lowerRowMaterial.frictionCombine = PhysicsMaterialCombine.Minimum;
-        // assignmentReceiver9（赋值前保存的目标下部行材质）：从下部行材质读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：LeonPlayerStairRampRuntime.UseLowerRowFriction(CapsuleCollider)。
+        // 赋值前保存的目标下部行材质。
 global::UnityEngine.PhysicsMaterial assignmentReceiver9 = lowerRowMaterial;
         if (originalCapsuleMaterial)
         {
@@ -282,7 +282,7 @@ global::UnityEngine.PhysicsMaterial assignmentReceiver9 = lowerRowMaterial;
             assignmentReceiver9.bounciness = 0f;
         }
 
-        // assignmentReceiver11（赋值前保存的目标下部行材质）：从下部行材质读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：LeonPlayerStairRampRuntime.UseLowerRowFriction(CapsuleCollider)。
+        // 赋值前保存的目标下部行材质。
 global::UnityEngine.PhysicsMaterial assignmentReceiver11 = lowerRowMaterial;
         if (originalCapsuleMaterial)
         {
@@ -329,7 +329,7 @@ global::UnityEngine.PhysicsMaterial assignmentReceiver11 = lowerRowMaterial;
     {
         rampColliders.Clear();
         enemyIgnoredColliders.Clear();
-        // i（当前遍历索引）：使用位置：LeonPlayerStairRampRuntime.RefreshRamps()。
+        // 当前遍历索引。
 for (int i = 0; i < rampSources.Length; i++)
         {
             RefreshRamp(rampSources[i]);
@@ -340,11 +340,11 @@ for (int i = 0; i < rampSources.Length; i++)
 
     /// <summary>RefreshRamp 的业务处理入口；本方法直接依赖 GameObject.AddComponent&lt;BoxCollider&gt;()、GameObject.GetComponent&lt;BoxCollider&gt;()、GameObject.SetActive(bool)、LeonPlayerStairRampRuntime.ConfigureFromFallback(GameObject, BoxCollider, LeonPlayerStairRampRuntime.RampSource)、LeonPlayerStairRampRuntime.ConfigureFromSource(GameObject, BoxCollider, BoxCollider, LeonPlayerStairRampRuntime.RampSource)、LeonPlayerStairRampRuntime.FindOrCreateChild(string)、LeonPlayerStairRampRuntime.RefreshSideGuards(GameObject, BoxCollider) 等共 9 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonPlayerStairRampRuntime.RefreshRamps()；下游（含内部回调体） GameObject.AddComponent&lt;BoxCollider&gt;()、GameObject.GetComponent&lt;BoxCollider&gt;()、GameObject.SetActive(bool)、LeonPlayerStairRampRuntime.ConfigureFromFallback(GameObject, BoxCollider, LeonPlayerStairRampRuntime.RampSource)、LeonPlayerStairRampRuntime.ConfigureFromSource(GameObject, BoxCollider, BoxCollider, LeonPlayerStairRampRuntime.RampSource)、LeonPlayerStairRampRuntime.FindOrCreateChild(string)、LeonPlayerStairRampRuntime.RefreshSideGuards(GameObject, BoxCollider) 等共 9 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="source">中文含义：来源斜坡来源。使用位置：作为 LeonPlayerStairRampRuntime.ConfigureFromFallback(GameObject, BoxCollider, LeonPlayerStairRampRuntime.RampSource) 的参数、作为 LeonPlayerStairRampRuntime.ConfigureFromSource(GameObject, BoxCollider, BoxCollider, LeonPlayerStairRampRuntime.RampSource) 的参数、作为 LeonPlayerStairRampRuntime.FindOrCreateChild(string) 的参数 等共 4 处。</param>
+    /// <param name="source">来源斜坡来源。</param>
     private void RefreshRamp(RampSource source)
     {
         GameObject ramp = FindOrCreateChild(source.rampName);
-        // rampBox（斜坡箱体）：保存 GameObject.GetComponent<BoxCollider>() 的返回结果，供当前步骤使用。使用位置：作为 LeonPlayerStairRampRuntime.ConfigureFromFallback(GameObject, BoxCollider, LeonPlayerStairRampRuntime.RampSource) 的参数、作为 LeonPlayerStairRampRuntime.ConfigureFromSource(GameObject, BoxCollider, BoxCollider, LeonPlayerStairRampRuntime.RampSource) 的参数、作为 LeonPlayerStairRampRuntime.RefreshSideGuards(GameObject, BoxCollider) 的参数 等共 6 处。
+        // 斜坡箱体。
 BoxCollider rampBox = ramp.GetComponent<BoxCollider>();
         if (rampBox == null)
         {
@@ -374,17 +374,17 @@ BoxCollider rampBox = ramp.GetComponent<BoxCollider>();
 
     /// <summary>FindOrCreateChild 的业务处理入口；本方法直接依赖 GameObject.GameObject(string)、Transform.Find(string)、Transform.SetParent(Transform, bool)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonPlayerStairRampRuntime.RefreshRamp(LeonPlayerStairRampRuntime.RampSource)；下游（含内部回调体） GameObject.GameObject(string)、Transform.Find(string)、Transform.SetParent(Transform, bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="objectName">中文含义：对象名称。使用位置：作为 GameObject.GameObject(string) 的参数、作为 Transform.Find(string) 的参数。</param>
+    /// <param name="objectName">对象名称。</param>
     private GameObject FindOrCreateChild(string objectName)
     {
-        // child（子级）：保存 Transform.Find(string) 的返回结果，供当前步骤使用。使用位置：LeonPlayerStairRampRuntime.FindOrCreateChild(string)。
+        // 子级。
 Transform child = transform.Find(objectName);
         if (child != null)
         {
             return child.gameObject;
         }
 
-        // childObject（子级对象）：使用位置：LeonPlayerStairRampRuntime.FindOrCreateChild(string)。
+        // 子级对象。
 GameObject childObject = new GameObject(objectName);
         childObject.transform.SetParent(transform, false);
         return childObject;
@@ -392,8 +392,8 @@ GameObject childObject = new GameObject(objectName);
 
     /// <summary>RefreshSideGuards 的业务处理入口；本方法直接依赖 LeonPlayerStairRampRuntime.ConfigureSideGuard(GameObject, BoxCollider, string, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonPlayerStairRampRuntime.RefreshRamp(LeonPlayerStairRampRuntime.RampSource)；下游（含内部回调体） LeonPlayerStairRampRuntime.ConfigureSideGuard(GameObject, BoxCollider, string, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="ramp">中文含义：斜坡。使用位置：作为 LeonPlayerStairRampRuntime.ConfigureSideGuard(GameObject, BoxCollider, string, float) 的参数。</param>
-    /// <param name="rampBox">中文含义：斜坡箱体。使用位置：作为 LeonPlayerStairRampRuntime.ConfigureSideGuard(GameObject, BoxCollider, string, float) 的参数。</param>
+    /// <param name="ramp">斜坡。</param>
+    /// <param name="rampBox">斜坡箱体。</param>
     private void RefreshSideGuards(GameObject ramp, BoxCollider rampBox)
     {
         ConfigureSideGuard(ramp, rampBox, "LeftGuard", -1f);
@@ -402,15 +402,15 @@ GameObject childObject = new GameObject(objectName);
 
     /// <summary>ConfigureSideGuard 的业务处理入口；本方法直接依赖 GameObject.AddComponent&lt;BoxCollider&gt;()、GameObject.GameObject(string)、GameObject.GetComponent&lt;BoxCollider&gt;()、LeonPlayerStairRampRuntime.ResolveScale(Transform)、List&lt;Collider&gt;.Add(Collider)、Mathf.Abs(float)、Mathf.Max(float, float) 等共 10 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonPlayerStairRampRuntime.RefreshSideGuards(GameObject, BoxCollider)；下游（含内部回调体） GameObject.AddComponent&lt;BoxCollider&gt;()、GameObject.GameObject(string)、GameObject.GetComponent&lt;BoxCollider&gt;()、LeonPlayerStairRampRuntime.ResolveScale(Transform)、List&lt;Collider&gt;.Add(Collider)、Mathf.Abs(float)、Mathf.Max(float, float) 等共 10 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="ramp">中文含义：斜坡。使用位置：作为 LeonPlayerStairRampRuntime.ResolveScale(Transform) 的参数、作为 Transform.SetParent(Transform, bool) 的参数、LeonPlayerStairRampRuntime.ConfigureSideGuard(GameObject, BoxCollider, string, float)。</param>
-    /// <param name="rampBox">中文含义：斜坡箱体。使用位置：作为 Vector3.Vector3(float, float, float) 的参数、LeonPlayerStairRampRuntime.ConfigureSideGuard(GameObject, BoxCollider, string, float)。</param>
-    /// <param name="guardName">中文含义：防守名称。使用位置：作为 GameObject.GameObject(string) 的参数、作为 Transform.Find(string) 的参数。</param>
-    /// <param name="side">中文含义：侧边。使用位置：作为 Vector3.Vector3(float, float, float) 的参数。</param>
+    /// <param name="ramp">斜坡。</param>
+    /// <param name="rampBox">斜坡箱体。</param>
+    /// <param name="guardName">防守名称。</param>
+    /// <param name="side">侧边。</param>
     private void ConfigureSideGuard(GameObject ramp, BoxCollider rampBox, string guardName, float side)
     {
-        // child（子级）：保存 Transform.Find(string) 的返回结果，供当前步骤使用。使用位置：LeonPlayerStairRampRuntime.ConfigureSideGuard(GameObject, BoxCollider, string, float)。
+        // 子级。
 Transform child = ramp.transform.Find(guardName);
-        // guard（防守）：使用位置：LeonPlayerStairRampRuntime.ConfigureSideGuard(GameObject, BoxCollider, string, float)。
+        // 防守。
 GameObject guard;
         if (child != null)
         {
@@ -426,24 +426,24 @@ GameObject guard;
         guard.transform.localRotation = Quaternion.identity;
         guard.transform.localScale = Vector3.one;
         guard.layer = ramp.layer;
-        // guardBox（防守箱体）：保存 GameObject.GetComponent<BoxCollider>() 的返回结果，供当前步骤使用。使用位置：作为 List<Collider>.Add(Collider) 的参数、LeonPlayerStairRampRuntime.ConfigureSideGuard(GameObject, BoxCollider, string, float)。
+        // 防守箱体。
 BoxCollider guardBox = guard.GetComponent<BoxCollider>();
         if (guardBox == null)
         {
             guardBox = guard.AddComponent<BoxCollider>();
         }
 
-        // scale（缩放）：保存 LeonPlayerStairRampRuntime.ResolveScale(Transform) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Abs(float) 的参数。
+        // 缩放。
 Vector3 scale = ResolveScale(ramp.transform);
-        // localThickness（局部厚度）：使用位置：作为 Vector3.Vector3(float, float, float) 的参数、LeonPlayerStairRampRuntime.ConfigureSideGuard(GameObject, BoxCollider, string, float)。
+        // 局部厚度。
 float localThickness = 0.18f / Mathf.Max(0.001f, Mathf.Abs(scale.x));
-        // localHeight（局部高度）：使用位置：作为 Vector3.Vector3(float, float, float) 的参数。
+        // 局部高度。
 float localHeight = 1.80f / Mathf.Max(0.001f, Mathf.Abs(scale.y));
-        // localBase（局部基础）：使用位置：作为 Vector3.Vector3(float, float, float) 的参数。
+        // 局部基础。
 float localBase = -0.10f / Mathf.Max(0.001f, Mathf.Abs(scale.y));
-        // localLengthPadding（局部长度留白）：使用位置：作为 Vector3.Vector3(float, float, float) 的参数。
+        // 局部长度留白。
 float localLengthPadding = 0.65f / Mathf.Max(0.001f, Mathf.Abs(scale.z));
-        // localSideOffset（局部侧边偏移量）：使用位置：作为 Vector3.Vector3(float, float, float) 的参数。
+        // 局部侧边偏移量。
 float localSideOffset = rampBox.size.x * 0.5f + localThickness * 0.5f - 0.04f / Mathf.Max(0.001f, Mathf.Abs(scale.x));
         guardBox.center = new Vector3(rampBox.center.x + side * localSideOffset, rampBox.center.y + localBase + localHeight * 0.5f, rampBox.center.z);
         guardBox.size = new Vector3(localThickness, localHeight, rampBox.size.z + localLengthPadding);
@@ -453,13 +453,13 @@ float localSideOffset = rampBox.size.x * 0.5f + localThickness * 0.5f - 0.04f / 
 
     /// <summary>RefreshStepSupports 的业务处理入口；本方法直接依赖 GameObject.AddComponent&lt;BoxCollider&gt;()、GameObject.GameObject(string)、GameObject.GetComponent&lt;BoxCollider&gt;()、GameObject.SetActive(bool)、LeonPlayerStairRampRuntime.FindOrCreateStepSupport(Transform, int)、LeonPlayerStairRampRuntime.ResolveStepCount(float, float)、LeonPlayerStairRampRuntime.ResolveWorldWidth(BoxCollider) 等共 21 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonPlayerStairRampRuntime.RefreshRamp(LeonPlayerStairRampRuntime.RampSource)；下游（含内部回调体） GameObject.AddComponent&lt;BoxCollider&gt;()、GameObject.GameObject(string)、GameObject.GetComponent&lt;BoxCollider&gt;()、GameObject.SetActive(bool)、LeonPlayerStairRampRuntime.FindOrCreateStepSupport(Transform, int)、LeonPlayerStairRampRuntime.ResolveStepCount(float, float)、LeonPlayerStairRampRuntime.ResolveWorldWidth(BoxCollider) 等共 21 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="ramp">中文含义：斜坡。使用位置：作为 Transform.SetParent(Transform, bool) 的参数、作为 Vector3.ProjectOnPlane(Vector3, Vector3) 的参数、LeonPlayerStairRampRuntime.RefreshStepSupports(GameObject, BoxCollider)。</param>
-    /// <param name="rampBox">中文含义：斜坡箱体。使用位置：作为 LeonPlayerStairRampRuntime.ResolveWorldWidth(BoxCollider) 的参数、作为 LeonPlayerStairRampRuntime.TryResolveRampEnds(BoxCollider, out Vector3, out Vector3, out float, out float) 的参数。</param>
+    /// <param name="ramp">斜坡。</param>
+    /// <param name="rampBox">斜坡箱体。</param>
     private void RefreshStepSupports(GameObject ramp, BoxCollider rampBox)
     {
-        // supportRoot（支撑根节点）：保存 Transform.Find(string) 的返回结果，供当前步骤使用。使用位置：LeonPlayerStairRampRuntime.RefreshStepSupports(GameObject, BoxCollider)。
+        // 支撑根节点。
 Transform supportRoot = ramp.transform.Find("StepSupports");
-        // supportRootObject（支撑根游戏对象）：使用位置：作为 LeonPlayerStairRampRuntime.FindOrCreateStepSupport(Transform, int) 的参数、LeonPlayerStairRampRuntime.RefreshStepSupports(GameObject, BoxCollider)。
+        // 支撑根游戏对象。
 GameObject supportRootObject;
         if (supportRoot != null)
         {
@@ -481,11 +481,11 @@ GameObject supportRootObject;
         }
 
         supportRootObject.SetActive(true);
-        // stepCount（步进数量）：保存 LeonPlayerStairRampRuntime.ResolveStepCount(float, float) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Max(float, float) 的参数、LeonPlayerStairRampRuntime.RefreshStepSupports(GameObject, BoxCollider)。
+        // 步进数量。
 int stepCount = ResolveStepCount(lowPoint.y, highPoint.y);
-        // supportCount（支撑数量）：使用位置：作为 Mathf.Max(int, int) 的参数、LeonPlayerStairRampRuntime.RefreshStepSupports(GameObject, BoxCollider)。
+        // 支撑数量。
 int supportCount = stepCount + 1;
-        // horizontalForward（水平前向）：保存 Vector3.ProjectOnPlane(Vector3, Vector3) 的返回结果，供当前步骤使用。使用位置：作为 Quaternion.LookRotation(Vector3, Vector3) 的参数、LeonPlayerStairRampRuntime.RefreshStepSupports(GameObject, BoxCollider)。
+        // 水平前向。
 Vector3 horizontalForward = Vector3.ProjectOnPlane(highPoint - lowPoint, Vector3.up);
         if (horizontalForward.sqrMagnitude <= 0.0001f)
         {
@@ -498,29 +498,29 @@ Vector3 horizontalForward = Vector3.ProjectOnPlane(highPoint - lowPoint, Vector3
         }
 
         horizontalForward.Normalize();
-        // supportRotation（支撑旋转）：保存 Quaternion.LookRotation(Vector3, Vector3) 的返回结果，供当前步骤使用。使用位置：作为 Transform.SetPositionAndRotation(Vector3, Quaternion) 的参数。
+        // 支撑旋转。
 Quaternion supportRotation = Quaternion.LookRotation(horizontalForward, Vector3.up);
-        // horizontalLength（水平长度）：保存 Vector3.Distance(Vector3, Vector3) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Max(float, float) 的参数。
+        // 水平长度。
 float horizontalLength = Vector3.Distance(Vector3.ProjectOnPlane(lowPoint, Vector3.up), Vector3.ProjectOnPlane(highPoint, Vector3.up));
-        // supportDepth（支撑深度）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：作为 Vector3.Vector3(float, float, float) 的参数。
+        // 支撑深度。
 float supportDepth = Mathf.Max(0.18f, horizontalLength / Mathf.Max(1, supportCount));
-        // supportWidth（支撑宽度）：保存 LeonPlayerStairRampRuntime.ResolveWorldWidth(BoxCollider) 的返回结果，供当前步骤使用。使用位置：作为 Vector3.Vector3(float, float, float) 的参数。
+        // 支撑宽度。
 float supportWidth = ResolveWorldWidth(rampBox);
-        // rise（抬升）：使用位置：LeonPlayerStairRampRuntime.RefreshStepSupports(GameObject, BoxCollider)。
+        // 抬升。
 float rise = highPoint.y - lowPoint.y;
-        // i（当前遍历索引）：使用位置：作为 LeonPlayerStairRampRuntime.FindOrCreateStepSupport(Transform, int) 的参数、LeonPlayerStairRampRuntime.RefreshStepSupports(GameObject, BoxCollider)。
+        // 当前遍历索引。
 for (int i = 0; i < supportCount; i++)
         {
-            // support（支撑）：保存 LeonPlayerStairRampRuntime.FindOrCreateStepSupport(Transform, int) 的返回结果，供当前步骤使用。使用位置：LeonPlayerStairRampRuntime.RefreshStepSupports(GameObject, BoxCollider)。
+            // 支撑。
 GameObject support = FindOrCreateStepSupport(supportRootObject.transform, i);
-            // supportBox（支撑箱体）：保存 GameObject.GetComponent<BoxCollider>() 的返回结果，供当前步骤使用。使用位置：作为 List<Collider>.Add(Collider) 的参数、LeonPlayerStairRampRuntime.RefreshStepSupports(GameObject, BoxCollider)。
+            // 支撑箱体。
 BoxCollider supportBox = support.GetComponent<BoxCollider>();
             if (supportBox == null)
             {
                 supportBox = support.AddComponent<BoxCollider>();
             }
 
-            // progress（进度）：使用位置：作为 Vector3.Lerp(Vector3, Vector3, float) 的参数、LeonPlayerStairRampRuntime.RefreshStepSupports(GameObject, BoxCollider)。
+            // 进度。
 float progress;
             if (supportCount <= 1)
             {
@@ -531,11 +531,11 @@ float progress;
                 progress = (i + 0.5f) / supportCount;
             }
 
-            // basePoint（基础点）：保存 Vector3.Lerp(Vector3, Vector3, float) 的返回结果，供当前步骤使用。使用位置：作为 Vector3.Vector3(float, float, float) 的参数。
+            // 基础点。
 Vector3 basePoint = Vector3.Lerp(lowPoint, highPoint, progress);
-            // topY（顶部纵向）：使用位置：作为 Vector3.Vector3(float, float, float) 的参数。
+            // 顶部纵向。
 float topY = lowPoint.y + rise * (i / Mathf.Max(1f, stepCount));
-            // center（中心）：使用位置：作为 Transform.SetPositionAndRotation(Vector3, Quaternion) 的参数。
+            // 中心。
 Vector3 center = new Vector3(basePoint.x, topY - stepSupportThickness * 0.5f, basePoint.z);
             support.transform.SetPositionAndRotation(center, supportRotation);
             support.transform.localScale = Vector3.one;
@@ -547,7 +547,7 @@ Vector3 center = new Vector3(basePoint.x, topY - stepSupportThickness * 0.5f, ba
             enemyIgnoredColliders.Add(supportBox);
         }
 
-        // i（当前遍历索引）：使用位置：作为 Transform.GetChild(int) 的参数、LeonPlayerStairRampRuntime.RefreshStepSupports(GameObject, BoxCollider)。
+        // 当前遍历索引。
 for (int i = supportCount; i < supportRootObject.transform.childCount; i++)
         {
             supportRootObject.transform.GetChild(i).gameObject.SetActive(false);
@@ -556,20 +556,20 @@ for (int i = supportCount; i < supportRootObject.transform.childCount; i++)
 
     /// <summary>FindOrCreateStepSupport 的业务处理入口；本方法直接依赖 GameObject.GameObject(string)、int.ToString(string)、Transform.Find(string)、Transform.SetParent(Transform, bool)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonPlayerStairRampRuntime.RefreshStepSupports(GameObject, BoxCollider)；下游（含内部回调体） GameObject.GameObject(string)、int.ToString(string)、Transform.Find(string)、Transform.SetParent(Transform, bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="root">中文含义：根变换节点。使用位置：作为 Transform.SetParent(Transform, bool) 的参数、LeonPlayerStairRampRuntime.FindOrCreateStepSupport(Transform, int)。</param>
-    /// <param name="index">中文含义：索引。使用位置：LeonPlayerStairRampRuntime.FindOrCreateStepSupport(Transform, int)。</param>
+    /// <param name="root">根变换节点。</param>
+    /// <param name="index">索引。</param>
     private static GameObject FindOrCreateStepSupport(Transform root, int index)
     {
-        // objectName（对象名称）：使用位置：作为 GameObject.GameObject(string) 的参数、作为 Transform.Find(string) 的参数。
+        // 对象名称。
 string objectName = "StepSupport_" + index.ToString("00");
-        // child（子级）：保存 Transform.Find(string) 的返回结果，供当前步骤使用。使用位置：LeonPlayerStairRampRuntime.FindOrCreateStepSupport(Transform, int)。
+        // 子级。
 Transform child = root.Find(objectName);
         if (child != null)
         {
             return child.gameObject;
         }
 
-        // support（支撑）：使用位置：LeonPlayerStairRampRuntime.FindOrCreateStepSupport(Transform, int)。
+        // 支撑。
 GameObject support = new GameObject(objectName);
         support.transform.SetParent(root, false);
         return support;
@@ -593,20 +593,20 @@ foreach (var enemy in character)
             }
 
             enemy.GetComponentsInChildren(true, characterCollision);
-            // rampIndex（斜坡索引）：使用位置：作为 List<Collider>.this[int] 的参数、LeonPlayerStairRampRuntime.RefreshEnemyCollisionIgnores()。
+            // 斜坡索引。
 for (int rampIndex = 0; rampIndex < enemyIgnoredColliders.Count; rampIndex++)
             {
-                // ramp（斜坡）：使用位置：作为 Physics.IgnoreCollision(Collider, Collider, bool) 的参数、LeonPlayerStairRampRuntime.RefreshEnemyCollisionIgnores()。
+                // 斜坡。
 Collider ramp = enemyIgnoredColliders[rampIndex];
                 if (ramp == null)
                 {
                     continue;
                 }
 
-                // colliderIndex（碰撞体索引）：使用位置：作为 List<Collider>.this[int] 的参数、LeonPlayerStairRampRuntime.RefreshEnemyCollisionIgnores()。
+                // 碰撞体索引。
 for (int colliderIndex = 0; colliderIndex < characterCollision.Count; colliderIndex++)
                 {
-                    // enemyCollider（敌人碰撞体）：使用位置：作为 Physics.IgnoreCollision(Collider, Collider, bool) 的参数、LeonPlayerStairRampRuntime.RefreshEnemyCollisionIgnores()。
+                    // 敌人碰撞体。
 Collider enemyCollider = characterCollision[colliderIndex];
                     if (enemyCollider == null || enemyCollider == ramp)
                     {
@@ -621,12 +621,12 @@ Collider enemyCollider = characterCollision[colliderIndex];
 
     /// <summary>ApplyPlayerMotionAssistInternal 的业务处理入口；本方法直接依赖 LeonActionMotionDriver.CommitSpeed(MotionControlToken, Vector3)、LeonPlayerStairRampRuntime.IsInsideLocalRange(float, float, float)、LeonPlayerStairRampRuntime.ResolveCapsuleBottomOffset(CapsuleCollider)、LeonPlayerStairRampRuntime.ResolveHighExitUpAssistScale(BoxCollider, Vector3)、LeonPlayerStairRampRuntime.ResolveSteppedSurfaceY(BoxCollider, Vector3)、LeonPlayerStairRampRuntime.TryFindPlayerRamp(Vector3, CapsuleCollider, out BoxCollider, out Vector3)、LeonPlayerStairRampRuntime.TryResolveStairInput(BoxCollider, Vector3, out float, out bool) 等共 15 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonPlayerStairRampRuntime.ApplyPlayerMotionAssist(LeonController, Rigidbody, CapsuleCollider, Vector3, LeonActionMotionDriver, MotionControlToken)；下游（含内部回调体） LeonActionMotionDriver.CommitSpeed(MotionControlToken, Vector3)、LeonPlayerStairRampRuntime.IsInsideLocalRange(float, float, float)、LeonPlayerStairRampRuntime.ResolveCapsuleBottomOffset(CapsuleCollider)、LeonPlayerStairRampRuntime.ResolveHighExitUpAssistScale(BoxCollider, Vector3)、LeonPlayerStairRampRuntime.ResolveSteppedSurfaceY(BoxCollider, Vector3)、LeonPlayerStairRampRuntime.TryFindPlayerRamp(Vector3, CapsuleCollider, out BoxCollider, out Vector3)、LeonPlayerStairRampRuntime.TryResolveStairInput(BoxCollider, Vector3, out float, out bool) 等共 15 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="controller">中文含义：里昂玩家控制器。使用位置：LeonPlayerStairRampRuntime.ApplyPlayerMotionAssistInternal(LeonController, Rigidbody, CapsuleCollider, Vector3, LeonActionMotionDriver, MotionControlToken)。</param>
-    /// <param name="body">中文含义：身体。使用位置：作为 LeonPlayerStairRampRuntime.TryFindPlayerRamp(Vector3, CapsuleCollider, out BoxCollider, out Vector3) 的参数、LeonPlayerStairRampRuntime.ApplyPlayerMotionAssistInternal(LeonController, Rigidbody, CapsuleCollider, Vector3, LeonActionMotionDriver, MotionControlToken)。</param>
-    /// <param name="capsule">中文含义：胶囊。使用位置：作为 LeonPlayerStairRampRuntime.ResolveCapsuleBottomOffset(CapsuleCollider) 的参数、作为 LeonPlayerStairRampRuntime.TryFindPlayerRamp(Vector3, CapsuleCollider, out BoxCollider, out Vector3) 的参数、作为 LeonPlayerStairRampRuntime.UseLowerRowFriction(CapsuleCollider) 的参数。</param>
-    /// <param name="moveDirection">中文含义：移动方向。使用位置：作为 LeonPlayerStairRampRuntime.TryResolveStairInput(BoxCollider, Vector3, out float, out bool) 的参数。</param>
-    /// <param name="executor">中文含义：执行器。使用位置：LeonPlayerStairRampRuntime.ApplyPlayerMotionAssistInternal(LeonController, Rigidbody, CapsuleCollider, Vector3, LeonActionMotionDriver, MotionControlToken)。</param>
-    /// <param name="token">中文含义：凭证。使用位置：作为 LeonActionMotionDriver.CommitSpeed(MotionControlToken, Vector3) 的参数。</param>
+    /// <param name="controller">里昂玩家控制器。</param>
+    /// <param name="body">身体。</param>
+    /// <param name="capsule">胶囊。</param>
+    /// <param name="moveDirection">移动方向。</param>
+    /// <param name="executor">执行器。</param>
+    /// <param name="token">凭证。</param>
     private bool ApplyPlayerMotionAssistInternal(LeonController controller, Rigidbody body, CapsuleCollider capsule, Vector3 moveDirection, LeonActionMotionDriver executor, GameArchitecture.MotionControlToken token)
     {
         if (rampColliders.Count == 0 || controller.currentState == LeonState.Dead || controller.currentState == LeonState.QTE || controller.currentState == LeonState.Traversing)
@@ -639,17 +639,17 @@ Collider enemyCollider = characterCollision[colliderIndex];
             return false;
         }
 
-        // center（中心）：使用位置：LeonPlayerStairRampRuntime.ApplyPlayerMotionAssistInternal(LeonController, Rigidbody, CapsuleCollider, Vector3, LeonActionMotionDriver, MotionControlToken)。
+        // 中心。
 Vector3 center = ramp.center;
-        // halfSize（一半尺寸）：使用位置：LeonPlayerStairRampRuntime.ApplyPlayerMotionAssistInternal(LeonController, Rigidbody, CapsuleCollider, Vector3, LeonActionMotionDriver, MotionControlToken)。
+        // 一半尺寸。
 Vector3 halfSize = ramp.size * 0.5f;
-        // coreBottom（核心底部）：使用位置：作为 LeonPlayerStairRampRuntime.IsInsideLocalRange(float, float, float) 的参数、LeonPlayerStairRampRuntime.ApplyPlayerMotionAssistInternal(LeonController, Rigidbody, CapsuleCollider, Vector3, LeonActionMotionDriver, MotionControlToken)。
+        // 核心底部。
 float coreBottom = center.z - halfSize.z;
-        // coreTop（核心顶部）：使用位置：作为 LeonPlayerStairRampRuntime.IsInsideLocalRange(float, float, float) 的参数、LeonPlayerStairRampRuntime.ApplyPlayerMotionAssistInternal(LeonController, Rigidbody, CapsuleCollider, Vector3, LeonActionMotionDriver, MotionControlToken)。
+        // 核心顶部。
 float coreTop = center.z + halfSize.z;
-        // localBottom（局部底部）：使用位置：作为 Mathf.Clamp(float, float, float) 的参数。
+        // 局部底部。
 float localBottom = coreBottom - playerEntryPadding;
-        // localTop（局部顶部）：使用位置：作为 Mathf.Clamp(float, float, float) 的参数。
+        // 局部顶部。
 float localTop = coreTop + playerEntryPadding;
         if (!TryResolveStairInput(ramp, moveDirection, out float /* 中文含义：轴输入。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ axisInput, out bool /* 中文含义：是否移动中目标高侧边。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ movingToHighSide))
         {
@@ -666,7 +666,7 @@ float localTop = coreTop + playerEntryPadding;
             UseLowerRowFriction(capsule);
         }
 
-        // probeDepth（探测深度）：使用位置：作为 Mathf.Clamp(float, float, float) 的参数、LeonPlayerStairRampRuntime.ApplyPlayerMotionAssistInternal(LeonController, Rigidbody, CapsuleCollider, Vector3, LeonActionMotionDriver, MotionControlToken)。
+        // 探测深度。
 float probeDepth;
         if (movingToHighSide)
         {
@@ -677,24 +677,24 @@ float probeDepth;
             probeDepth = playerDownProbeDepth;
         }
 
-        // probeLocalZ（探测局部深度）：保存 Mathf.Clamp(float, float, float) 的返回结果，供当前步骤使用。使用位置：LeonPlayerStairRampRuntime.ApplyPlayerMotionAssistInternal(LeonController, Rigidbody, CapsuleCollider, Vector3, LeonActionMotionDriver, MotionControlToken)。
+        // 探测局部深度。
 float probeLocalZ = Mathf.Clamp(localPosition.z + Mathf.Sign(axisInput) * probeDepth, localBottom, localTop);
-        // probeLocalPosition（探测局部位置）：使用位置：作为 LeonPlayerStairRampRuntime.ResolveSteppedSurfaceY(BoxCollider, Vector3) 的参数、LeonPlayerStairRampRuntime.ApplyPlayerMotionAssistInternal(LeonController, Rigidbody, CapsuleCollider, Vector3, LeonActionMotionDriver, MotionControlToken)。
+        // 探测局部位置。
 Vector3 probeLocalPosition = localPosition;
         probeLocalPosition.z = probeLocalZ;
-        // surfaceY（表面纵向）：保存 LeonPlayerStairRampRuntime.ResolveSteppedSurfaceY(BoxCollider, Vector3) 的返回结果，供当前步骤使用。使用位置：LeonPlayerStairRampRuntime.ApplyPlayerMotionAssistInternal(LeonController, Rigidbody, CapsuleCollider, Vector3, LeonActionMotionDriver, MotionControlToken)。
+        // 表面纵向。
 float surfaceY = ResolveSteppedSurfaceY(ramp, probeLocalPosition);
-        // bottomOffset（底部偏移量）：保存 LeonPlayerStairRampRuntime.ResolveCapsuleBottomOffset(CapsuleCollider) 的返回结果，供当前步骤使用。使用位置：LeonPlayerStairRampRuntime.ApplyPlayerMotionAssistInternal(LeonController, Rigidbody, CapsuleCollider, Vector3, LeonActionMotionDriver, MotionControlToken)。
+        // 底部偏移量。
 float bottomOffset = ResolveCapsuleBottomOffset(capsule);
-        // targetRootY（目标根节点纵向）：使用位置：LeonPlayerStairRampRuntime.ApplyPlayerMotionAssistInternal(LeonController, Rigidbody, CapsuleCollider, Vector3, LeonActionMotionDriver, MotionControlToken)。
+        // 目标根节点纵向。
 float targetRootY = surfaceY - bottomOffset + playerSurfaceClearance;
-        // velocity（速度）：使用位置：作为 LeonActionMotionDriver.CommitSpeed(MotionControlToken, Vector3) 的参数、作为 Mathf.Max(float, float) 的参数、作为 Mathf.Min(float, float) 的参数 等共 5 处。
+        // 速度。
 Vector3 velocity = body.linearVelocity;
-        // heightDelta（高度增量）：使用位置：作为 Mathf.Clamp(float, float, float) 的参数、LeonPlayerStairRampRuntime.ApplyPlayerMotionAssistInternal(LeonController, Rigidbody, CapsuleCollider, Vector3, LeonActionMotionDriver, MotionControlToken)。
+        // 高度增量。
 float heightDelta = targetRootY - body.position.y;
         if (movingToHighSide && heightDelta > 0.015f)
         {
-            // exitScale（退出缩放）：保存 LeonPlayerStairRampRuntime.ResolveHighExitUpAssistScale(BoxCollider, Vector3) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Max(float, float) 的参数、LeonPlayerStairRampRuntime.ApplyPlayerMotionAssistInternal(LeonController, Rigidbody, CapsuleCollider, Vector3, LeonActionMotionDriver, MotionControlToken)。
+            // 退出缩放。
 float exitScale = ResolveHighExitUpAssistScale(ramp, localPosition);
             if (exitScale <= 0.001f)
             {
@@ -712,11 +712,11 @@ float exitScale = ResolveHighExitUpAssistScale(ramp, localPosition);
         else if (!movingToHighSide && heightDelta < -0.015f)
         {
             // 只沿楼梯坡度向下跟随。慢走时朝下一踏面强压胶囊会使阶面摩擦抵消水平步速。
-            // slopeAxis（坡度轴）：使用位置：作为 Mathf.Abs(float) 的参数、作为 Vector3.ProjectOnPlane(Vector3, Vector3) 的参数。
+            // 坡度轴。
 Vector3 slopeAxis = ramp.transform.forward;
-            // slopeRatio（坡度比例）：使用位置：LeonPlayerStairRampRuntime.ApplyPlayerMotionAssistInternal(LeonController, Rigidbody, CapsuleCollider, Vector3, LeonActionMotionDriver, MotionControlToken)。
+            // 坡度比例。
 float slopeRatio = Mathf.Abs(slopeAxis.y) / Mathf.Max(.01f, Vector3.ProjectOnPlane(slopeAxis, Vector3.up).magnitude);
-            // lowerRowSpeed（下部行速度）：使用位置：作为 Mathf.Min(float, float) 的参数。
+            // 下部行速度。
 float lowerRowSpeed = Mathf.Abs(Vector3.Dot(velocity, Vector3.ProjectOnPlane(slopeAxis, Vector3.up).normalized)) * slopeRatio;
             velocity.y = Mathf.Min(velocity.y, -Mathf.Min(lowerRowSpeed, playerDownVerticalSpeedMaximum));
         }
@@ -727,8 +727,8 @@ float lowerRowSpeed = Mathf.Abs(Vector3.Dot(velocity, Vector3.ProjectOnPlane(slo
 
     /// <summary>ResolveHighExitUpAssistScale 的业务处理入口；本方法直接依赖 LeonPlayerStairRampRuntime.ResolveScale(Transform)、LeonPlayerStairRampRuntime.TryResolveRampEnds(BoxCollider, out Vector3, out Vector3, out float, out float)、Mathf.Abs(float)、Mathf.Approximately(float, float)、Mathf.InverseLerp(float, float, float)、Mathf.Sign(float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonPlayerStairRampRuntime.ApplyPlayerMotionAssistInternal(LeonController, Rigidbody, CapsuleCollider, Vector3, LeonActionMotionDriver, MotionControlToken)；下游（含内部回调体） LeonPlayerStairRampRuntime.ResolveScale(Transform)、LeonPlayerStairRampRuntime.TryResolveRampEnds(BoxCollider, out Vector3, out Vector3, out float, out float)、Mathf.Abs(float)、Mathf.Approximately(float, float)、Mathf.InverseLerp(float, float, float)、Mathf.Sign(float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="ramp">中文含义：斜坡。使用位置：作为 LeonPlayerStairRampRuntime.ResolveScale(Transform) 的参数、作为 LeonPlayerStairRampRuntime.TryResolveRampEnds(BoxCollider, out Vector3, out Vector3, out float, out float) 的参数。</param>
-    /// <param name="localPosition">中文含义：局部位置。使用位置：LeonPlayerStairRampRuntime.ResolveHighExitUpAssistScale(BoxCollider, Vector3)。</param>
+    /// <param name="ramp">斜坡。</param>
+    /// <param name="localPosition">局部位置。</param>
     private static float ResolveHighExitUpAssistScale(BoxCollider ramp, Vector3 localPosition)
     {
         if (!TryResolveRampEnds(ramp, out _, out _, out float /* 中文含义：低局部深度。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ lowLocalZ, out float /* 中文含义：高局部深度。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ highLocalZ))
@@ -736,16 +736,16 @@ float lowerRowSpeed = Mathf.Abs(Vector3.Dot(velocity, Vector3.ProjectOnPlane(slo
             return 1f;
         }
 
-        // directionToHighSide（方向目标高侧边）：保存 Mathf.Sign(float) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Approximately(float, float) 的参数、LeonPlayerStairRampRuntime.ResolveHighExitUpAssistScale(BoxCollider, Vector3)。
+        // 方向目标高侧边。
 float directionToHighSide = Mathf.Sign(highLocalZ - lowLocalZ);
         if (Mathf.Approximately(directionToHighSide, 0f))
         {
             return 1f;
         }
 
-        // scale（缩放）：保存 LeonPlayerStairRampRuntime.ResolveScale(Transform) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Abs(float) 的参数。
+        // 缩放。
 Vector3 scale = ResolveScale(ramp.transform);
-        // remainingDistance（剩余距离）：使用位置：作为 Mathf.InverseLerp(float, float, float) 的参数、LeonPlayerStairRampRuntime.ResolveHighExitUpAssistScale(BoxCollider, Vector3)。
+        // 剩余距离。
 float remainingDistance = (highLocalZ - localPosition.z) * directionToHighSide * Mathf.Abs(scale.z);
         if (remainingDistance <= playerHighExitUpStopDistance)
         {
@@ -762,36 +762,36 @@ float remainingDistance = (highLocalZ - localPosition.z) * directionToHighSide *
 
     /// <summary>IsInsideLocalRange 的业务处理入口；本方法直接依赖 Mathf.Max(float, float)、Mathf.Min(float, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonPlayerStairRampRuntime.ApplyPlayerMotionAssistInternal(LeonController, Rigidbody, CapsuleCollider, Vector3, LeonActionMotionDriver, MotionControlToken)；下游（含内部回调体） Mathf.Max(float, float)、Mathf.Min(float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="value">中文含义：值。使用位置：LeonPlayerStairRampRuntime.IsInsideLocalRange(float, float, float)。</param>
-    /// <param name="edgeA">中文含义：边缘起点。使用位置：作为 Mathf.Max(float, float) 的参数、作为 Mathf.Min(float, float) 的参数。</param>
-    /// <param name="edgeB">中文含义：边缘终点。使用位置：作为 Mathf.Max(float, float) 的参数、作为 Mathf.Min(float, float) 的参数。</param>
+    /// <param name="value">值。</param>
+    /// <param name="edgeA">边缘起点。</param>
+    /// <param name="edgeB">边缘终点。</param>
     private static bool IsInsideLocalRange(float value, float edgeA, float edgeB)
     {
-        // min（最小）：保存 Mathf.Min(float, float) 的返回结果，供当前步骤使用。使用位置：LeonPlayerStairRampRuntime.IsInsideLocalRange(float, float, float)。
+        // 最小。
 float min = Mathf.Min(edgeA, edgeB);
-        // max（最大）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：LeonPlayerStairRampRuntime.IsInsideLocalRange(float, float, float)。
+        // 最大。
 float max = Mathf.Max(edgeA, edgeB);
         return value >= min && value <= max;
     }
 
     /// <summary>TryResolveStairInput 的业务处理入口；本方法直接依赖 LeonPlayerStairRampRuntime.TryResolveRampEnds(BoxCollider, out Vector3, out Vector3, out float, out float)、Mathf.Abs(float)、Mathf.Approximately(float, float)、Mathf.Clamp(float, float, float)、Mathf.Sign(float)、Transform.InverseTransformDirection(Vector3)、Vector3.ProjectOnPlane(Vector3, Vector3)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonPlayerStairRampRuntime.ApplyPlayerMotionAssistInternal(LeonController, Rigidbody, CapsuleCollider, Vector3, LeonActionMotionDriver, MotionControlToken)；下游（含内部回调体） LeonPlayerStairRampRuntime.TryResolveRampEnds(BoxCollider, out Vector3, out Vector3, out float, out float)、Mathf.Abs(float)、Mathf.Approximately(float, float)、Mathf.Clamp(float, float, float)、Mathf.Sign(float)、Transform.InverseTransformDirection(Vector3)、Vector3.ProjectOnPlane(Vector3, Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="ramp">中文含义：斜坡。使用位置：作为 LeonPlayerStairRampRuntime.TryResolveRampEnds(BoxCollider, out Vector3, out Vector3, out float, out float) 的参数、LeonPlayerStairRampRuntime.TryResolveStairInput(BoxCollider, Vector3, out float, out bool)。</param>
-    /// <param name="moveDirection">中文含义：移动方向。使用位置：作为 Vector3.ProjectOnPlane(Vector3, Vector3) 的参数。</param>
-    /// <param name="axisInput">中文含义：轴输入。输出参数，由本入口写入并交给调用方。使用位置：作为 Mathf.Abs(float) 的参数、作为 Mathf.Sign(float) 的参数、LeonPlayerStairRampRuntime.TryResolveStairInput(BoxCollider, Vector3, out float, out bool)。</param>
-    /// <param name="movingToHighSide">中文含义：是否移动中目标高侧边。输出参数，由本入口写入并交给调用方。使用位置：LeonPlayerStairRampRuntime.TryResolveStairInput(BoxCollider, Vector3, out float, out bool)。</param>
+    /// <param name="ramp">斜坡。</param>
+    /// <param name="moveDirection">移动方向。</param>
+    /// <param name="axisInput">轴输入。输出参数，由本入口写入并交给调用方。</param>
+    /// <param name="movingToHighSide">是否移动中目标高侧边。输出参数，由本入口写入并交给调用方。</param>
     private static bool TryResolveStairInput(BoxCollider ramp, Vector3 moveDirection, out float axisInput, out bool movingToHighSide)
     {
         axisInput = 0f;
         movingToHighSide = false;
-        // flatMove（平面移动）：保存 Vector3.ProjectOnPlane(Vector3, Vector3) 的返回结果，供当前步骤使用。使用位置：作为 Transform.InverseTransformDirection(Vector3) 的参数、LeonPlayerStairRampRuntime.TryResolveStairInput(BoxCollider, Vector3, out float, out bool)。
+        // 平面移动。
 Vector3 flatMove = Vector3.ProjectOnPlane(moveDirection, Vector3.up);
         if (flatMove.sqrMagnitude <= 0.0001f)
         {
             return false;
         }
 
-        // localMove（局部移动）：保存 Transform.InverseTransformDirection(Vector3) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Clamp(float, float, float) 的参数。
+        // 局部移动。
 Vector3 localMove = ramp.transform.InverseTransformDirection(flatMove.normalized);
         axisInput = Mathf.Clamp(localMove.z, -1f, 1f);
         if (Mathf.Abs(axisInput) <= playerAxisInputDeadZone)
@@ -805,7 +805,7 @@ Vector3 localMove = ramp.transform.InverseTransformDirection(flatMove.normalized
             return true;
         }
 
-        // directionToHighSide（方向目标高侧边）：保存 Mathf.Sign(float) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Approximately(float, float) 的参数、LeonPlayerStairRampRuntime.TryResolveStairInput(BoxCollider, Vector3, out float, out bool)。
+        // 方向目标高侧边。
 float directionToHighSide = Mathf.Sign(highLocalZ - lowLocalZ);
         if (Mathf.Approximately(directionToHighSide, 0f))
         {
@@ -819,52 +819,52 @@ float directionToHighSide = Mathf.Sign(highLocalZ - lowLocalZ);
 
     /// <summary>TryFindPlayerRamp 的业务处理入口；本方法直接依赖 LeonPlayerStairRampRuntime.ResolveCapsuleRadius(CapsuleCollider)、LeonPlayerStairRampRuntime.ResolveScale(Transform)、Mathf.Abs(float)、Mathf.Max(float, float)、Transform.InverseTransformPoint(Vector3)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonPlayerStairRampRuntime.ApplyPlayerMotionAssistInternal(LeonController, Rigidbody, CapsuleCollider, Vector3, LeonActionMotionDriver, MotionControlToken)；下游（含内部回调体） LeonPlayerStairRampRuntime.ResolveCapsuleRadius(CapsuleCollider)、LeonPlayerStairRampRuntime.ResolveScale(Transform)、Mathf.Abs(float)、Mathf.Max(float, float)、Transform.InverseTransformPoint(Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="playerPosition">中文含义：玩家位置。使用位置：作为 Transform.InverseTransformPoint(Vector3) 的参数。</param>
-    /// <param name="capsule">中文含义：胶囊。使用位置：作为 LeonPlayerStairRampRuntime.ResolveCapsuleRadius(CapsuleCollider) 的参数。</param>
-    /// <param name="bestRamp">中文含义：最佳斜坡。输出参数，由本入口写入并交给调用方。使用位置：LeonPlayerStairRampRuntime.TryFindPlayerRamp(Vector3, CapsuleCollider, out BoxCollider, out Vector3)。</param>
-    /// <param name="bestLocalPosition">中文含义：最佳局部位置。输出参数，由本入口写入并交给调用方。使用位置：LeonPlayerStairRampRuntime.TryFindPlayerRamp(Vector3, CapsuleCollider, out BoxCollider, out Vector3)。</param>
+    /// <param name="playerPosition">玩家位置。</param>
+    /// <param name="capsule">胶囊。</param>
+    /// <param name="bestRamp">最佳斜坡。输出参数，由本入口写入并交给调用方。</param>
+    /// <param name="bestLocalPosition">最佳局部位置。输出参数，由本入口写入并交给调用方。</param>
     private bool TryFindPlayerRamp(Vector3 playerPosition, CapsuleCollider capsule, out BoxCollider bestRamp, out Vector3 bestLocalPosition)
     {
         bestRamp = null;
         bestLocalPosition = Vector3.zero;
-        // bestScore（最佳分值）：使用位置：LeonPlayerStairRampRuntime.TryFindPlayerRamp(Vector3, CapsuleCollider, out BoxCollider, out Vector3)。
+        // 最佳分值。
 float bestScore = float.MaxValue;
-        // radius（半径）：保存 LeonPlayerStairRampRuntime.ResolveCapsuleRadius(CapsuleCollider) 的返回结果，供当前步骤使用。使用位置：LeonPlayerStairRampRuntime.TryFindPlayerRamp(Vector3, CapsuleCollider, out BoxCollider, out Vector3)。
+        // 半径。
 float radius = ResolveCapsuleRadius(capsule);
-        // i（当前遍历索引）：使用位置：作为 List<Collider>.this[int] 的参数、LeonPlayerStairRampRuntime.TryFindPlayerRamp(Vector3, CapsuleCollider, out BoxCollider, out Vector3)。
+        // 当前遍历索引。
 for (int i = 0; i < rampColliders.Count; i++)
         {
-            // ramp（斜坡）：使用位置：作为 LeonPlayerStairRampRuntime.ResolveScale(Transform) 的参数、LeonPlayerStairRampRuntime.TryFindPlayerRamp(Vector3, CapsuleCollider, out BoxCollider, out Vector3)。
+            // 斜坡。
 BoxCollider ramp = rampColliders[i] as BoxCollider;
             if (ramp == null || !ramp.enabled || !ramp.gameObject.activeInHierarchy)
             {
                 continue;
             }
 
-            // local（局部）：保存 Transform.InverseTransformPoint(Vector3) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Abs(float) 的参数、LeonPlayerStairRampRuntime.TryFindPlayerRamp(Vector3, CapsuleCollider, out BoxCollider, out Vector3)。
+            // 局部。
 Vector3 local = ramp.transform.InverseTransformPoint(playerPosition);
-            // center（中心）：使用位置：作为 Mathf.Abs(float) 的参数、LeonPlayerStairRampRuntime.TryFindPlayerRamp(Vector3, CapsuleCollider, out BoxCollider, out Vector3)。
+            // 中心。
 Vector3 center = ramp.center;
-            // halfSize（一半尺寸）：使用位置：作为 Mathf.Max(float, float) 的参数、LeonPlayerStairRampRuntime.TryFindPlayerRamp(Vector3, CapsuleCollider, out BoxCollider, out Vector3)。
+            // 一半尺寸。
 Vector3 halfSize = ramp.size * 0.5f;
-            // scale（缩放）：保存 LeonPlayerStairRampRuntime.ResolveScale(Transform) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Abs(float) 的参数。
+            // 缩放。
 Vector3 scale = ResolveScale(ramp.transform);
-            // localRadius（局部半径）：使用位置：作为 Mathf.Max(float, float) 的参数。
+            // 局部半径。
 float localRadius = radius / Mathf.Max(0.001f, Mathf.Abs(scale.x));
-            // lateralLimit（侧向限制）：使用位置：LeonPlayerStairRampRuntime.TryFindPlayerRamp(Vector3, CapsuleCollider, out BoxCollider, out Vector3)。
+            // 侧向限制。
 float lateralLimit = halfSize.x + Mathf.Max(0.24f, localRadius);
-            // lengthLimit（长度限制）：使用位置：LeonPlayerStairRampRuntime.TryFindPlayerRamp(Vector3, CapsuleCollider, out BoxCollider, out Vector3)。
+            // 长度限制。
 float lengthLimit = halfSize.z + playerEntryPadding;
-            // verticalOffset（竖直偏移量）：使用位置：作为 Mathf.Abs(float) 的参数、LeonPlayerStairRampRuntime.TryFindPlayerRamp(Vector3, CapsuleCollider, out BoxCollider, out Vector3)。
+            // 竖直偏移量。
 float verticalOffset = local.y - center.y;
             if (Mathf.Abs(local.x - center.x) > lateralLimit || Mathf.Abs(local.z - center.z) > lengthLimit || verticalOffset < -playerVerticalLowerPadding || verticalOffset > playerVerticalUpperPadding)
             {
                 continue;
             }
 
-            // overflowZ（溢出深度）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：LeonPlayerStairRampRuntime.TryFindPlayerRamp(Vector3, CapsuleCollider, out BoxCollider, out Vector3)。
+            // 溢出深度。
 float overflowZ = Mathf.Max(0f, Mathf.Abs(local.z - center.z) - halfSize.z);
-            // score（分值）：使用位置：LeonPlayerStairRampRuntime.TryFindPlayerRamp(Vector3, CapsuleCollider, out BoxCollider, out Vector3)。
+            // 分值。
 float score = Mathf.Abs(local.x - center.x) + overflowZ * 0.5f + Mathf.Abs(verticalOffset) * 0.05f;
             if (score >= bestScore)
             {
@@ -881,10 +881,10 @@ float score = Mathf.Abs(local.x - center.x) + overflowZ * 0.5f + Mathf.Abs(verti
 
     /// <summary>ResolveCapsuleRadius 的业务处理入口；本方法直接依赖 Mathf.Abs(float)、Mathf.Max(float, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonPlayerStairRampRuntime.TryFindPlayerRamp(Vector3, CapsuleCollider, out BoxCollider, out Vector3)；下游（含内部回调体） Mathf.Abs(float)、Mathf.Max(float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="capsule">中文含义：胶囊。使用位置：LeonPlayerStairRampRuntime.ResolveCapsuleRadius(CapsuleCollider)。</param>
+    /// <param name="capsule">胶囊。</param>
     private static float ResolveCapsuleRadius(CapsuleCollider capsule)
     {
-        // scale（缩放）：使用位置：作为 Mathf.Abs(float) 的参数。
+        // 缩放。
 Vector3 scale = capsule.transform.lossyScale;
         switch (capsule.direction)
         {
@@ -928,37 +928,37 @@ Vector3 scale = capsule.transform.lossyScale;
 
     /// <summary>ResolveSteppedSurfaceY 的业务处理入口；本方法直接依赖 LeonPlayerStairRampRuntime.ResolveStepCount(float, float)、LeonPlayerStairRampRuntime.TryResolveRampEnds(BoxCollider, out Vector3, out Vector3, out float, out float)、Mathf.Clamp(int, int, int)、Mathf.FloorToInt(float)、Mathf.InverseLerp(float, float, float)、Mathf.Lerp(float, float, float)、Mathf.Max(float, float) 等共 9 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonPlayerStairRampRuntime.ApplyPlayerMotionAssistInternal(LeonController, Rigidbody, CapsuleCollider, Vector3, LeonActionMotionDriver, MotionControlToken)；下游（含内部回调体） LeonPlayerStairRampRuntime.ResolveStepCount(float, float)、LeonPlayerStairRampRuntime.TryResolveRampEnds(BoxCollider, out Vector3, out Vector3, out float, out float)、Mathf.Clamp(int, int, int)、Mathf.FloorToInt(float)、Mathf.InverseLerp(float, float, float)、Mathf.Lerp(float, float, float)、Mathf.Max(float, float) 等共 9 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="ramp">中文含义：斜坡。使用位置：作为 LeonPlayerStairRampRuntime.TryResolveRampEnds(BoxCollider, out Vector3, out Vector3, out float, out float) 的参数、LeonPlayerStairRampRuntime.ResolveSteppedSurfaceY(BoxCollider, Vector3)。</param>
-    /// <param name="localPosition">中文含义：局部位置。使用位置：作为 Mathf.InverseLerp(float, float, float) 的参数、作为 Vector3.Vector3(float, float, float) 的参数。</param>
+    /// <param name="ramp">斜坡。</param>
+    /// <param name="localPosition">局部位置。</param>
     private static float ResolveSteppedSurfaceY(BoxCollider ramp, Vector3 localPosition)
     {
         if (!TryResolveRampEnds(ramp, out Vector3 /* 中文含义：低点。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ lowPoint, out Vector3 /* 中文含义：高点。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ highPoint, out float /* 中文含义：低局部深度。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ lowLocalZ, out float /* 中文含义：高局部深度。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ highLocalZ))
         {
-            // center（中心）：使用位置：作为 Vector3.Vector3(float, float, float) 的参数。
+            // 中心。
 Vector3 center = ramp.center;
-            // halfSize（一半尺寸）：使用位置：作为 Vector3.Vector3(float, float, float) 的参数。
+            // 一半尺寸。
 Vector3 halfSize = ramp.size * 0.5f;
-            // fallback（后备）：保存 Transform.TransformPoint(Vector3) 的返回结果，供当前步骤使用。使用位置：LeonPlayerStairRampRuntime.ResolveSteppedSurfaceY(BoxCollider, Vector3)。
+            // 后备。
 Vector3 fallback = ramp.transform.TransformPoint(new Vector3(localPosition.x, center.y + halfSize.y, localPosition.z));
             return fallback.y;
         }
 
-        // stepCount（步进数量）：保存 LeonPlayerStairRampRuntime.ResolveStepCount(float, float) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Clamp(int, int, int) 的参数、作为 Mathf.FloorToInt(float) 的参数、作为 Mathf.Max(float, float) 的参数。
+        // 步进数量。
 int stepCount = ResolveStepCount(lowPoint.y, highPoint.y);
-        // progress（进度）：保存 Mathf.InverseLerp(float, float, float) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.FloorToInt(float) 的参数。
+        // 进度。
 float progress = Mathf.InverseLerp(lowLocalZ, highLocalZ, localPosition.z);
-        // stepIndex（步进索引）：保存 Mathf.Clamp(int, int, int) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Lerp(float, float, float) 的参数。
+        // 步进索引。
 int stepIndex = Mathf.Clamp(Mathf.FloorToInt(progress * stepCount + 0.0001f), 0, stepCount);
         return Mathf.Lerp(lowPoint.y, highPoint.y, stepIndex / Mathf.Max(1f, stepCount));
     }
 
     /// <summary>TryResolveRampEnds 的业务处理入口；本方法直接依赖 Transform.TransformPoint(Vector3)、Vector3.Vector3(float, float, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonPlayerStairRampRuntime.RefreshStepSupports(GameObject, BoxCollider)、LeonPlayerStairRampRuntime.ResolveHighExitUpAssistScale(BoxCollider, Vector3)、LeonPlayerStairRampRuntime.ResolveSteppedSurfaceY(BoxCollider, Vector3)、LeonPlayerStairRampRuntime.TryResolveStairInput(BoxCollider, Vector3, out float, out bool)；下游（含内部回调体） Transform.TransformPoint(Vector3)、Vector3.Vector3(float, float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="ramp">中文含义：斜坡。使用位置：LeonPlayerStairRampRuntime.TryResolveRampEnds(BoxCollider, out Vector3, out Vector3, out float, out float)。</param>
-    /// <param name="lowPoint">中文含义：低点。输出参数，由本入口写入并交给调用方。使用位置：LeonPlayerStairRampRuntime.TryResolveRampEnds(BoxCollider, out Vector3, out Vector3, out float, out float)。</param>
-    /// <param name="highPoint">中文含义：高点。输出参数，由本入口写入并交给调用方。使用位置：LeonPlayerStairRampRuntime.TryResolveRampEnds(BoxCollider, out Vector3, out Vector3, out float, out float)。</param>
-    /// <param name="lowLocalZ">中文含义：低局部深度。输出参数，由本入口写入并交给调用方。使用位置：LeonPlayerStairRampRuntime.TryResolveRampEnds(BoxCollider, out Vector3, out Vector3, out float, out float)。</param>
-    /// <param name="highLocalZ">中文含义：高局部深度。输出参数，由本入口写入并交给调用方。使用位置：LeonPlayerStairRampRuntime.TryResolveRampEnds(BoxCollider, out Vector3, out Vector3, out float, out float)。</param>
+    /// <param name="ramp">斜坡。</param>
+    /// <param name="lowPoint">低点。输出参数，由本入口写入并交给调用方。</param>
+    /// <param name="highPoint">高点。输出参数，由本入口写入并交给调用方。</param>
+    /// <param name="lowLocalZ">低局部深度。输出参数，由本入口写入并交给调用方。</param>
+    /// <param name="highLocalZ">高局部深度。输出参数，由本入口写入并交给调用方。</param>
     private static bool TryResolveRampEnds(BoxCollider ramp, out Vector3 lowPoint, out Vector3 highPoint, out float lowLocalZ, out float highLocalZ)
     {
         lowPoint = Vector3.zero;
@@ -970,19 +970,19 @@ int stepIndex = Mathf.Clamp(Mathf.FloorToInt(progress * stepCount + 0.0001f), 0,
             return false;
         }
 
-        // center（中心）：使用位置：作为 Vector3.Vector3(float, float, float) 的参数、LeonPlayerStairRampRuntime.TryResolveRampEnds(BoxCollider, out Vector3, out Vector3, out float, out float)。
+        // 中心。
 Vector3 center = ramp.center;
-        // halfSize（一半尺寸）：使用位置：LeonPlayerStairRampRuntime.TryResolveRampEnds(BoxCollider, out Vector3, out Vector3, out float, out float)。
+        // 一半尺寸。
 Vector3 halfSize = ramp.size * 0.5f;
-        // surfaceLocalY（表面局部纵向）：使用位置：作为 Vector3.Vector3(float, float, float) 的参数。
+        // 表面局部纵向。
 float surfaceLocalY = center.y + halfSize.y;
-        // negativeZ（负值深度）：使用位置：作为 Vector3.Vector3(float, float, float) 的参数、LeonPlayerStairRampRuntime.TryResolveRampEnds(BoxCollider, out Vector3, out Vector3, out float, out float)。
+        // 负值深度。
 float negativeZ = center.z - halfSize.z;
-        // positiveZ（正向深度）：使用位置：作为 Vector3.Vector3(float, float, float) 的参数、LeonPlayerStairRampRuntime.TryResolveRampEnds(BoxCollider, out Vector3, out Vector3, out float, out float)。
+        // 正向深度。
 float positiveZ = center.z + halfSize.z;
-        // negativePoint（负值点）：保存 Transform.TransformPoint(Vector3) 的返回结果，供当前步骤使用。使用位置：LeonPlayerStairRampRuntime.TryResolveRampEnds(BoxCollider, out Vector3, out Vector3, out float, out float)。
+        // 负值点。
 Vector3 negativePoint = ramp.transform.TransformPoint(new Vector3(center.x, surfaceLocalY, negativeZ));
-        // positivePoint（正向点）：保存 Transform.TransformPoint(Vector3) 的返回结果，供当前步骤使用。使用位置：LeonPlayerStairRampRuntime.TryResolveRampEnds(BoxCollider, out Vector3, out Vector3, out float, out float)。
+        // 正向点。
 Vector3 positivePoint = ramp.transform.TransformPoint(new Vector3(center.x, surfaceLocalY, positiveZ));
         if (negativePoint.y <= positivePoint.y)
         {
@@ -1004,11 +1004,11 @@ Vector3 positivePoint = ramp.transform.TransformPoint(new Vector3(center.x, surf
 
     /// <summary>ResolveStepCount 的业务处理入口；本方法直接依赖 Mathf.Abs(float)、Mathf.Clamp(int, int, int)、Mathf.RoundToInt(float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonPlayerStairRampRuntime.RefreshStepSupports(GameObject, BoxCollider)、LeonPlayerStairRampRuntime.ResolveSteppedSurfaceY(BoxCollider, Vector3)；下游（含内部回调体） Mathf.Abs(float)、Mathf.Clamp(int, int, int)、Mathf.RoundToInt(float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="lowY">中文含义：低纵向。使用位置：作为 Mathf.Abs(float) 的参数。</param>
-    /// <param name="highY">中文含义：高纵向。使用位置：作为 Mathf.Abs(float) 的参数。</param>
+    /// <param name="lowY">低纵向。</param>
+    /// <param name="highY">高纵向。</param>
     private static int ResolveStepCount(float lowY, float highY)
     {
-        // rise（抬升）：保存 Mathf.Abs(float) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.RoundToInt(float) 的参数、LeonPlayerStairRampRuntime.ResolveStepCount(float, float)。
+        // 抬升。
 float rise = Mathf.Abs(highY - lowY);
         if (rise <= 0.001f)
         {
@@ -1020,7 +1020,7 @@ float rise = Mathf.Abs(highY - lowY);
 
     /// <summary>ResolveWorldWidth 的业务处理入口；本方法直接依赖 LeonPlayerStairRampRuntime.ResolveScale(Transform)、Mathf.Abs(float)、Mathf.Max(float, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonPlayerStairRampRuntime.RefreshStepSupports(GameObject, BoxCollider)；下游（含内部回调体） LeonPlayerStairRampRuntime.ResolveScale(Transform)、Mathf.Abs(float)、Mathf.Max(float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="ramp">中文含义：斜坡。使用位置：作为 LeonPlayerStairRampRuntime.ResolveScale(Transform) 的参数、作为 Mathf.Max(float, float) 的参数、LeonPlayerStairRampRuntime.ResolveWorldWidth(BoxCollider)。</param>
+    /// <param name="ramp">斜坡。</param>
     private static float ResolveWorldWidth(BoxCollider ramp)
     {
         if (ramp == null)
@@ -1028,17 +1028,17 @@ float rise = Mathf.Abs(highY - lowY);
             return 1f;
         }
 
-        // scale（缩放）：保存 LeonPlayerStairRampRuntime.ResolveScale(Transform) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Abs(float) 的参数。
+        // 缩放。
 Vector3 scale = ResolveScale(ramp.transform);
         return Mathf.Max(0.3f, ramp.size.x * Mathf.Abs(scale.x));
     }
 
     /// <summary>ResolveCapsuleBottomOffset 的业务处理入口；本方法直接依赖 Mathf.Abs(float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonPlayerStairRampRuntime.ApplyPlayerMotionAssistInternal(LeonController, Rigidbody, CapsuleCollider, Vector3, LeonActionMotionDriver, MotionControlToken)；下游（含内部回调体） Mathf.Abs(float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="capsule">中文含义：胶囊。使用位置：LeonPlayerStairRampRuntime.ResolveCapsuleBottomOffset(CapsuleCollider)。</param>
+    /// <param name="capsule">胶囊。</param>
     private static float ResolveCapsuleBottomOffset(CapsuleCollider capsule)
     {
-        // scale（缩放）：使用位置：作为 Mathf.Abs(float) 的参数、LeonPlayerStairRampRuntime.ResolveCapsuleBottomOffset(CapsuleCollider)。
+        // 缩放。
 Vector3 scale = capsule.transform.lossyScale;
         switch (capsule.direction)
         {
@@ -1053,10 +1053,10 @@ Vector3 scale = capsule.transform.lossyScale;
 
     /// <summary>ResolveScale 的业务处理入口；本方法直接依赖 Mathf.Abs(float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonPlayerStairRampRuntime.ConfigureFromSource(GameObject, BoxCollider, BoxCollider, LeonPlayerStairRampRuntime.RampSource)、LeonPlayerStairRampRuntime.ConfigureSideGuard(GameObject, BoxCollider, string, float)、LeonPlayerStairRampRuntime.ResolveHighExitUpAssistScale(BoxCollider, Vector3)、LeonPlayerStairRampRuntime.ResolveWorldWidth(BoxCollider)、LeonPlayerStairRampRuntime.TryFindPlayerRamp(Vector3, CapsuleCollider, out BoxCollider, out Vector3)；下游（含内部回调体） Mathf.Abs(float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="target">中文含义：目标变换节点。使用位置：LeonPlayerStairRampRuntime.ResolveScale(Transform)。</param>
+    /// <param name="target">目标变换节点。</param>
     private static Vector3 ResolveScale(Transform target)
     {
-        // scale（缩放）：使用位置：作为 Mathf.Abs(float) 的参数、LeonPlayerStairRampRuntime.ResolveScale(Transform)。
+        // 缩放。
 Vector3 scale = target.lossyScale;
         if (Mathf.Abs(scale.x) <= 0.001f)
         {
@@ -1084,20 +1084,20 @@ Vector3 scale = target.lossyScale;
         public Transform surface;
         [Tooltip("场景踏面的宽度和长度，单位为米。")]
         public Vector2 surfaceSize;
-        /// <summary>中文含义：桥面。使用位置：LeonPlayerStairRampRuntime.ConfigurationError()、LeonPlayerStairRampRuntime.RefreshRamp(LeonPlayerStairRampRuntime.RampSource)。</summary>
-        /// <summary>中文含义：斜坡名称。使用位置：作为 HashSet&lt;string&gt;.Add(string) 的参数、作为 LeonPlayerStairRampRuntime.FindOrCreateChild(string) 的参数、作为 string.IsNullOrWhiteSpace(string) 的参数 等共 4 处。</summary>
+        /// <summary>桥面。</summary>
+        /// <summary>斜坡名称。</summary>
         public string rampName;
-        /// <summary>中文含义：最小宽度。使用位置：作为 Vector3.Vector3(float, float, float) 的参数、LeonPlayerStairRampRuntime.ConfigurationError()、LeonPlayerStairRampRuntime.ConfigureFromSource(GameObject, BoxCollider, BoxCollider, LeonPlayerStairRampRuntime.RampSource)。</summary>
+        /// <summary>最小宽度。</summary>
         public float minimumWidth;
-        /// <summary>中文含义：宽度留白。使用位置：LeonPlayerStairRampRuntime.ConfigureFromSource(GameObject, BoxCollider, BoxCollider, LeonPlayerStairRampRuntime.RampSource)。</summary>
+        /// <summary>宽度留白。</summary>
         public float widthPadding;
-        /// <summary>中文含义：长度留白。使用位置：作为 Vector3.Vector3(float, float, float) 的参数、LeonPlayerStairRampRuntime.ConfigureFromSource(GameObject, BoxCollider, BoxCollider, LeonPlayerStairRampRuntime.RampSource)。</summary>
+        /// <summary>长度留白。</summary>
         public float lengthPadding;
-        /// <summary>中文含义：表面抬升。使用位置：LeonPlayerStairRampRuntime.ConfigureFromFallback(GameObject, BoxCollider, LeonPlayerStairRampRuntime.RampSource)、LeonPlayerStairRampRuntime.ConfigureFromSource(GameObject, BoxCollider, BoxCollider, LeonPlayerStairRampRuntime.RampSource)。</summary>
+        /// <summary>表面抬升。</summary>
         public float surfaceLift;
-        /// <summary>中文含义：厚度。使用位置：作为 Vector3.Vector3(float, float, float) 的参数、LeonPlayerStairRampRuntime.ConfigurationError()、LeonPlayerStairRampRuntime.ConfigureFromFallback(GameObject, BoxCollider, LeonPlayerStairRampRuntime.RampSource) 等共 4 处。</summary>
+        /// <summary>厚度。</summary>
         public float thickness;
-        /// <summary>中文含义：是否创建的侧边防守集合。使用位置：LeonPlayerStairRampRuntime.RefreshRamp(LeonPlayerStairRampRuntime.RampSource)。</summary>
+        /// <summary>是否创建的侧边防守集合。</summary>
         public bool createsSideGuards;
     }
 }

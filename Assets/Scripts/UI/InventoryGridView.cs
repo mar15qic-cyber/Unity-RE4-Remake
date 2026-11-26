@@ -10,45 +10,45 @@ using System.Collections.Generic;
 /// </summary>
 public class InventoryGridView : MonoBehaviour
 {
-    /// <summary>中文含义：公文包与物品的三维展示组件。使用位置：InterfaceReworkBuilder.ConfigurationInventory()、InventoryGridView.ConfigureItemWidget(RectTransform, GridItem, float, bool)、InventoryGridView.RebuildInternal(int, int, IReadOnlyList&lt;GridItem&gt;) 等共 4 处。</summary>
+    /// <summary>公文包与物品的三维展示组件。</summary>
     [Header("可选三维表现")]
     [UnityEngine.Serialization.FormerlySerializedAs("三维展示")]
     [UnityEngine.InspectorName("三维展示")]
     public AttacheCasePresentationController threeDimensionalPresentation;
-    /// <summary>中文含义：界面视觉主题配置。使用位置：AttacheCasePresentationController.CreateCountText(GridItem)、InterfaceReworkBuilder.ConfigurationInventory()、InterfaceReworkBuilder.ConfigurationOtherInterface() 等共 5 处。</summary>
+    /// <summary>界面视觉主题配置。</summary>
     public UIVisualTheme visualTheme;
-    /// <summary>中文含义：网格内容容器（格子+物品的父节点）。使用位置：作为 RectTransformUtility.ScreenPointToLocalPointInRectangle(RectTransform, Vector2, Camera, out Vector2) 的参数、作为 Transform.SetParent(Transform, bool) 的参数、AttacheCasePresentationController.CreateStage() 等共 8 处。</summary>
+    /// <summary>网格内容容器（格子+物品的父节点）。</summary>
     [Header("网格区域")]
     [Tooltip("网格内容容器（格子+物品的父节点）")]
     public RectTransform gridContainer;
-    /// <summary>中文含义：网格区域。网格可用区域的 RectTransform，格子尺寸根据此区域计算。使用位置：作为 RectTransformUtility.RectangleContainsScreenPoint(RectTransform, Vector2) 的参数、作为 Transform.SetParent(Transform, bool) 的参数、作为 VillageInterfaceRefinementConfigurator.Locate(RectTransform, float, float, float, float) 的参数 等共 8 处。</summary>
+    /// <summary>网格区域。网格可用区域的 RectTransform，格子尺寸根据此区域计算。</summary>
     [Tooltip("网格可用区域的 RectTransform，格子尺寸根据此区域计算")]
     public RectTransform gridArea;
-    /// <summary>中文含义：格子底图 Sprite（留空则使用纯色方块）。使用位置：InterfaceReworkBuilder.ConfigurationInventory()、InventoryGridView.ConfigureCell(RectTransform, int, int, float)、InventoryGridView.RebuildInternal(int, int, IReadOnlyList&lt;GridItem&gt;) 等共 4 处。</summary>
+    /// <summary>格子底图 Sprite（留空则使用纯色方块）。</summary>
     [Header("格子外观")]
     [Tooltip("格子底图 Sprite（留空则使用纯色方块）")]
     public Sprite cellBackgroundSprite;
-    /// <summary>中文含义：格子间距（像素）。使用位置：作为 Mathf.RoundToInt(float) 的参数、作为 Vector2.Vector2(float, float) 的参数、AttacheCasePresentationController.PreviewLandPoint(GridItem, Vector2, Vector2) 等共 9 处。</summary>
+    /// <summary>格子间距（像素）。</summary>
     [Tooltip("格子间距（像素）")]
     public float cellSpacing = 1f;
-    /// <summary>中文含义：格子底色（无 Sprite 时使用）。使用位置：InterfaceReworkBuilder.ConfigurationInventory()、InterfaceReworkBuilder.ConfigurationOtherInterface()、InventoryGridView.ConfigureCell(RectTransform, int, int, float) 等共 5 处。</summary>
+    /// <summary>格子底色（无 Sprite 时使用）。</summary>
     [Tooltip("格子底色（无 Sprite 时使用）")]
     public Color cellFallbackColor = new Color(0.15f, 0.15f, 0.15f, 0.5f);
-    /// <summary>中文含义：选中高亮颜色。使用位置：作为 InventoryGridView.EnsureOverlay(string, Color, float) 的参数、InterfaceReworkBuilder.ConfigurationInventory()、InterfaceReworkBuilder.ConfigurationOtherInterface() 等共 4 处。</summary>
+    /// <summary>选中高亮颜色。</summary>
     [Header("选中高亮")]
     [Tooltip("选中高亮颜色")]
     public Color selectedColor = new Color(0.15f, 1f, 0.35f, 0.85f);
-    /// <summary>中文含义：选中高亮边框外扩像素。使用位置：作为 InventoryGridView.EnsureOverlay(string, Color, float) 的参数、作为 InventoryGridView.PositionOverlay(Image, GridItem, float) 的参数。</summary>
+    /// <summary>选中高亮边框外扩像素。</summary>
     [Tooltip("选中高亮边框外扩像素")]
     public float selectedPadding = 2f;
-    /// <summary>中文含义：悬停高亮颜色。使用位置：作为 InventoryGridView.EnsureOverlay(string, Color, float) 的参数、InterfaceReworkBuilder.ConfigurationInventory()、InterfaceReworkBuilder.ConfigurationOtherInterface() 等共 4 处。</summary>
+    /// <summary>悬停高亮颜色。</summary>
     [Header("悬停高亮")]
     [Tooltip("悬停高亮颜色")]
     public Color hoverColor = new Color(1f, 0.85f, 0.3f, 0.6f);
-    /// <summary>中文含义：悬停高亮边框外扩像素。使用位置：作为 InventoryGridView.EnsureOverlay(string, Color, float) 的参数、作为 InventoryGridView.PositionOverlay(Image, GridItem, float) 的参数。</summary>
+    /// <summary>悬停高亮边框外扩像素。</summary>
     [Tooltip("悬停高亮边框外扩像素")]
     public float hoverPadding = 1f;
-    /// <summary>中文含义：拖拽中物品的透明度。使用位置：InventoryGridView.SetItemDragAlpha(GridItem, bool)。</summary>
+    /// <summary>拖拽中物品的透明度。</summary>
     [Header("拖拽高亮")]
     [Tooltip("拖拽中物品的透明度")]
     public float dragAlpha = 0.5f;
@@ -71,38 +71,38 @@ public class InventoryGridView : MonoBehaviour
     public float TotalHeight { get; private set; }
 
     // 高亮覆盖层
-    /// <summary>中文含义：选定叠加层。使用位置：作为 InventoryGridView.PositionOverlay(Image, GridItem, float) 的参数、作为 Transform.SetSiblingIndex(int) 的参数、InventoryGridView.CacheReusableChildren() 等共 8 处。</summary>
+    /// <summary>选定叠加层。</summary>
     private Image selectedOverlay;
-    /// <summary>中文含义：悬停叠加层。使用位置：作为 InventoryGridView.PositionOverlay(Image, GridItem, float) 的参数、InventoryGridView.CacheReusableChildren()、InventoryGridView.HideHover() 等共 6 处。</summary>
+    /// <summary>悬停叠加层。</summary>
     private Image hoverOverlay;
-    /// <summary>中文含义：选定覆盖。使用位置：作为 AttacheCasePresentationController.UpdateSpaceOverride(Image) 的参数。</summary>
+    /// <summary>选定覆盖。</summary>
     public Image SelectedOverride => selectedOverlay;
-    /// <summary>中文含义：悬停覆盖。使用位置：作为 AttacheCasePresentationController.UpdateSpaceOverride(Image) 的参数。</summary>
+    /// <summary>悬停覆盖。</summary>
     public Image HoverOverride => hoverOverlay;
 
-    /// <summary>中文含义：发光精灵图。使用位置：InventoryGridView.EnsureGlowSprite()。</summary>
+    /// <summary>发光精灵图。</summary>
     private Sprite glowSprite;
-    /// <summary>中文含义：物品控件集合。只读字段，初始化后不由普通写入口替换。使用位置：InventoryGridView.CacheReusableChildren()、InventoryGridView.CreateItemWidget(GridItem, float)、InventoryGridView.GetItemWidget(GridItem) 等共 4 处。</summary>
+    /// <summary>物品控件集合。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly Dictionary<GridItem, RectTransform> itemWidgets = new Dictionary<GridItem, RectTransform>();
-    /// <summary>中文含义：可复用的单元格集合。只读字段，初始化后不由普通写入口替换。使用位置：InventoryGridView.CacheReusableChildren()、InventoryGridView.RebuildInternal(int, int, IReadOnlyList&lt;GridItem&gt;)。</summary>
+    /// <summary>可复用的单元格集合。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly List<RectTransform> reusableCells = new List<RectTransform>();
-    /// <summary>中文含义：池化的物品控件集合。只读字段，初始化后不由普通写入口替换。使用位置：InventoryGridView.CacheReusableChildren()、InventoryGridView.RebuildInternal(int, int, IReadOnlyList&lt;GridItem&gt;)、InventoryGridView.ReleaseItemWidget(RectTransform)。</summary>
+    /// <summary>池化的物品控件集合。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly List<RectTransform> pooledItemWidgets = new List<RectTransform>();
-    /// <summary>中文含义：界面控件绑定集合。只读字段，初始化后不由普通写入口替换。使用位置：InventoryGridView.CreateItemWidget(GridItem, float)、InventoryGridView.RebuildInternal(int, int, IReadOnlyList&lt;GridItem&gt;)、InventoryGridView.ReleaseItemWidget(RectTransform)。</summary>
+    /// <summary>界面控件绑定集合。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly Dictionary<RectTransform, GridItem> widgetBindings = new Dictionary<RectTransform, GridItem>();
-    /// <summary>中文含义：前一次控件集合。只读字段，初始化后不由普通写入口替换。使用位置：InventoryGridView.Rebuild(int, int, IReadOnlyList&lt;GridItem&gt;)、InventoryGridView.RebuildInternal(int, int, IReadOnlyList&lt;GridItem&gt;)。</summary>
+    /// <summary>前一次控件集合。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly Dictionary<GridItem, RectTransform> previousWidgets = new Dictionary<GridItem, RectTransform>();
-    /// <summary>中文含义：期望物品列表。只读字段，初始化后不由普通写入口替换。使用位置：InventoryGridView.Rebuild(int, int, IReadOnlyList&lt;GridItem&gt;)、InventoryGridView.RebuildInternal(int, int, IReadOnlyList&lt;GridItem&gt;)。</summary>
+    /// <summary>期望物品列表。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly List<GridItem> desiredItems = new List<GridItem>();
-    /// <summary>中文含义：期望集合。只读字段，初始化后不由普通写入口替换。使用位置：InventoryGridView.Rebuild(int, int, IReadOnlyList&lt;GridItem&gt;)、InventoryGridView.RebuildInternal(int, int, IReadOnlyList&lt;GridItem&gt;)。</summary>
+    /// <summary>期望集合。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly HashSet<GridItem> desiredSet = new HashSet<GridItem>();
-    /// <summary>中文含义：前一次条目集合。只读字段，初始化后不由普通写入口替换。使用位置：InventoryGridView.Rebuild(int, int, IReadOnlyList&lt;GridItem&gt;)、InventoryGridView.RebuildInternal(int, int, IReadOnlyList&lt;GridItem&gt;)。</summary>
+    /// <summary>前一次条目集合。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly List<KeyValuePair<GridItem, RectTransform>> previousEntries = new List<KeyValuePair<GridItem, RectTransform>>();
-    /// <summary>中文含义：rebuilding 表示“是否重建中”；rebuildPending 表示“重建是否仍待处理”。使用位置：InventoryGridView.LateUpdate()、InventoryGridView.Rebuild(int, int, IReadOnlyList&lt;GridItem&gt;)。；使用位置：InventoryGridView.LateUpdate()、InventoryGridView.Rebuild(int, int, IReadOnlyList&lt;GridItem&gt;)。</summary>
+    /// <summary>rebuilding 表示“是否重建中”；rebuildPending 表示“重建是否仍待处理”。</summary>
     private bool rebuilding, rebuildPending;
-    /// <summary>中文含义：pendingWidth 表示“待处理宽度”；pendingHeight 表示“待处理高度”。使用位置：作为 InventoryGridView.Rebuild(int, int, IReadOnlyList&lt;GridItem&gt;) 的参数、InventoryGridView.Rebuild(int, int, IReadOnlyList&lt;GridItem&gt;)。；使用位置：作为 InventoryGridView.Rebuild(int, int, IReadOnlyList&lt;GridItem&gt;) 的参数、InventoryGridView.Rebuild(int, int, IReadOnlyList&lt;GridItem&gt;)。</summary>
+    /// <summary>pendingWidth 表示“待处理宽度”；pendingHeight 表示“待处理高度”。</summary>
     private int pendingWidth, pendingHeight;
-    /// <summary>中文含义：待处理物品列表。使用位置：InventoryGridView.LateUpdate()、InventoryGridView.Rebuild(int, int, IReadOnlyList&lt;GridItem&gt;)。</summary>
+    /// <summary>待处理物品列表。</summary>
     private IReadOnlyList<GridItem> pendingItems;
     /// <summary>Unity 帧末更新回调；状态处理与资源交接按函数内顺序执行，下游协作见调用链。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） InventoryGridView.Rebuild(int, int, IReadOnlyList&lt;GridItem&gt;)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
@@ -114,7 +114,7 @@ public class InventoryGridView : MonoBehaviour
         }
 
         rebuildPending = false;
-        // nextItems（下一次物品列表）：使用位置：作为 InventoryGridView.Rebuild(int, int, IReadOnlyList<GridItem>) 的参数。
+        // 下一次物品列表。
 IReadOnlyList<GridItem> nextItems = pendingItems;
         pendingItems = null;
         Rebuild(pendingWidth, pendingHeight, nextItems);
@@ -122,9 +122,9 @@ IReadOnlyList<GridItem> nextItems = pendingItems;
 
     /// <summary>Rebuild 的业务处理入口；本方法直接依赖 Dictionary&lt;GridItem, RectTransform&gt;.Clear()、HashSet&lt;GridItem&gt;.Clear()、InventoryGridView.RebuildInternal(int, int, IReadOnlyList&lt;GridItem&gt;)、List&lt;GridItem&gt;.Clear()、List&lt;KeyValuePair&lt;GridItem, RectTransform&gt; &gt;.Clear()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 InventoryGridView.LateUpdate()、InventoryUI.RefreshGridInternal()、StorageBoxUI.RefreshInventoryGridInternal()；下游（含内部回调体） Dictionary&lt;GridItem, RectTransform&gt;.Clear()、HashSet&lt;GridItem&gt;.Clear()、InventoryGridView.RebuildInternal(int, int, IReadOnlyList&lt;GridItem&gt;)、List&lt;GridItem&gt;.Clear()、List&lt;KeyValuePair&lt;GridItem, RectTransform&gt; &gt;.Clear()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="caseWidth">中文含义：公文包宽度。使用位置：作为 InventoryGridView.RebuildInternal(int, int, IReadOnlyList&lt;GridItem&gt;) 的参数、InventoryGridView.Rebuild(int, int, IReadOnlyList&lt;GridItem&gt;)。</param>
-    /// <param name="caseHeight">中文含义：公文包高度。使用位置：作为 InventoryGridView.RebuildInternal(int, int, IReadOnlyList&lt;GridItem&gt;) 的参数、InventoryGridView.Rebuild(int, int, IReadOnlyList&lt;GridItem&gt;)。</param>
-    /// <param name="items">中文含义：物品列表。使用位置：作为 InventoryGridView.RebuildInternal(int, int, IReadOnlyList&lt;GridItem&gt;) 的参数、InventoryGridView.Rebuild(int, int, IReadOnlyList&lt;GridItem&gt;)。</param>
+    /// <param name="caseWidth">公文包宽度。</param>
+    /// <param name="caseHeight">公文包高度。</param>
+    /// <param name="items">物品列表。</param>
     public void Rebuild(int caseWidth, int caseHeight, IReadOnlyList<GridItem> items)
     {
         if (rebuilding)
@@ -154,27 +154,27 @@ IReadOnlyList<GridItem> nextItems = pendingItems;
     }
 
     // 回调
-    /// <summary>中文含义：物品指针向下时的通知回调。使用位置：作为 UnityEvent&lt;BaseEventData&gt;.AddListener(UnityAction&lt;BaseEventData&gt;) 的参数、AttacheCaseProjectionInput.OnPointerDown(PointerEventData)、InventoryUI.ConfigureGridCallbacks() 等共 4 处。</summary>
+    /// <summary>物品指针向下时的通知回调。</summary>
     public Action<GridItem, Vector2> onItemPointerDown;
-    /// <summary>中文含义：物品拖拽时的通知回调。使用位置：作为 UnityEvent&lt;BaseEventData&gt;.AddListener(UnityAction&lt;BaseEventData&gt;) 的参数、AttacheCaseProjectionInput.OnDrag(PointerEventData)、InventoryUI.ConfigureGridCallbacks() 等共 4 处。</summary>
+    /// <summary>物品拖拽时的通知回调。</summary>
     public Action<GridItem, Vector2> onItemDrag;
-    /// <summary>中文含义：物品指针向上时的通知回调。使用位置：作为 UnityEvent&lt;BaseEventData&gt;.AddListener(UnityAction&lt;BaseEventData&gt;) 的参数、AttacheCaseProjectionInput.OnPointerUp(PointerEventData)、InventoryUI.ConfigureGridCallbacks() 等共 4 处。</summary>
+    /// <summary>物品指针向上时的通知回调。</summary>
     public Action<GridItem, Vector2> onItemPointerUp;
-    /// <summary>中文含义：物品已点击时的通知回调。使用位置：作为 UnityEvent&lt;BaseEventData&gt;.AddListener(UnityAction&lt;BaseEventData&gt;) 的参数、AttacheCaseProjectionInput.OnPointerClick(PointerEventData)、InventoryUI.ConfigureGridCallbacks() 等共 4 处。</summary>
+    /// <summary>物品已点击时的通知回调。</summary>
     public Action<GridItem, PointerEventData.InputButton, Vector2> onItemClicked;
-    /// <summary>中文含义：单元格已点击时的通知回调。使用位置：作为 UnityEvent&lt;BaseEventData&gt;.AddListener(UnityAction&lt;BaseEventData&gt;) 的参数、AttacheCaseProjectionInput.OnPointerClick(PointerEventData)、InventoryUI.ConfigureGridCallbacks() 等共 4 处。</summary>
+    /// <summary>单元格已点击时的通知回调。</summary>
     public Action<int, int> onCellClicked;
-    /// <summary>中文含义：物品悬停进入时的通知回调。使用位置：作为 UnityEvent&lt;BaseEventData&gt;.AddListener(UnityAction&lt;BaseEventData&gt;) 的参数、AttacheCaseProjectionInput.Update()、InventoryUI.ConfigureGridCallbacks() 等共 4 处。</summary>
+    /// <summary>物品悬停进入时的通知回调。</summary>
     public Action<GridItem> onItemHoverEnter;
-    /// <summary>中文含义：物品悬停退出时的通知回调。使用位置：作为 UnityEvent&lt;BaseEventData&gt;.AddListener(UnityAction&lt;BaseEventData&gt;) 的参数、AttacheCaseProjectionInput.Update()、InventoryUI.ConfigureGridCallbacks() 等共 4 处。</summary>
+    /// <summary>物品悬停退出时的通知回调。</summary>
     public Action onItemHoverExit;
     /// <summary>
     /// 重建整个网格（格子+物品），尺寸根据 gridArea 计算。
     /// </summary>
     /// <remarks>静态调用链：上游 InventoryGridView.Rebuild(int, int, IReadOnlyList&lt;GridItem&gt;)；下游（含内部回调体） AttacheCasePresentationController.Synchronize(IReadOnlyList&lt;GridItem&gt;)、Component.GetComponent&lt;EventTrigger&gt;()、Component.GetComponent&lt;Image&gt;()、Dictionary&lt;GridItem, RectTransform&gt;.Add(GridItem, RectTransform)、Dictionary&lt;GridItem, RectTransform&gt;.Clear()、Dictionary&lt;GridItem, RectTransform&gt;.Remove(GridItem)、Dictionary&lt;GridItem, RectTransform&gt;.TryGetValue(GridItem, out RectTransform) 等共 35 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="caseWidth">中文含义：公文包宽度。使用位置：InventoryGridView.RebuildInternal(int, int, IReadOnlyList&lt;GridItem&gt;)。</param>
-    /// <param name="caseHeight">中文含义：公文包高度。使用位置：InventoryGridView.RebuildInternal(int, int, IReadOnlyList&lt;GridItem&gt;)。</param>
-    /// <param name="items">中文含义：物品列表。使用位置：作为 AttacheCasePresentationController.Synchronize(IReadOnlyList&lt;GridItem&gt;) 的参数、InventoryGridView.RebuildInternal(int, int, IReadOnlyList&lt;GridItem&gt;)。</param>
+    /// <param name="caseWidth">公文包宽度。</param>
+    /// <param name="caseHeight">公文包高度。</param>
+    /// <param name="items">物品列表。</param>
     private void RebuildInternal(int caseWidth, int caseHeight, IReadOnlyList<GridItem> items)
     {
         if (gridContainer == null)
@@ -254,7 +254,7 @@ foreach (var oldWidget in previousWidgets.Values)
         }
 
         // 根据网格区域实际尺寸计算单元格大小
-        // areaRect（区域矩形）：使用位置：InventoryGridView.RebuildInternal(int, int, IReadOnlyList<GridItem>)。
+        // 区域矩形。
 Rect areaRect;
         if (gridArea != null)
         {
@@ -265,20 +265,20 @@ Rect areaRect;
             areaRect = new Rect(0, 0, Screen.width, Screen.height);
         }
 
-        // availW（可用宽度）：使用位置：InventoryGridView.RebuildInternal(int, int, IReadOnlyList<GridItem>)。
+        // 可用宽度。
 float availW = areaRect.width;
-        // availH（可用高度）：使用位置：InventoryGridView.RebuildInternal(int, int, IReadOnlyList<GridItem>)。
+        // 可用高度。
 float availH = areaRect.height;
-        // fitW（适配宽度）：使用位置：作为 Mathf.Min(float, float) 的参数。
+        // 适配宽度。
 float fitW = (availW - (caseWidth - 1) * cellSpacing) / caseWidth;
-        // fitH（适配高度）：使用位置：作为 Mathf.Min(float, float) 的参数。
+        // 适配高度。
 float fitH = (availH - (caseHeight - 1) * cellSpacing) / caseHeight;
-        // cell（单元格）：保存 Mathf.Min(float, float) 的返回结果，供当前步骤使用。使用位置：作为 InventoryGridView.ConfigureCell(RectTransform, int, int, float) 的参数、作为 InventoryGridView.ConfigureItemWidget(RectTransform, GridItem, float, bool) 的参数、作为 InventoryGridView.GridToLocal(int, int, float) 的参数 等共 5 处。
+        // 单元格。
 float cell = Mathf.Min(fitW, fitH);
         CurrentCell = cell;
-        // totalW（总计宽度）：使用位置：作为 Vector2.Vector2(float, float) 的参数、InventoryGridView.RebuildInternal(int, int, IReadOnlyList<GridItem>)。
+        // 总计宽度。
 float totalW = caseWidth * (cell + cellSpacing) - cellSpacing;
-        // totalH（总计高度）：使用位置：作为 Vector2.Vector2(float, float) 的参数、InventoryGridView.RebuildInternal(int, int, IReadOnlyList<GridItem>)。
+        // 总计高度。
 float totalH = caseHeight * (cell + cellSpacing) - cellSpacing;
         TotalWidth = totalW;
         TotalHeight = totalH;
@@ -288,19 +288,19 @@ float totalH = caseHeight * (cell + cellSpacing) - cellSpacing;
         gridContainer.pivot = new Vector2(0.5f, 0.5f);
         gridContainer.anchoredPosition = Vector2.zero;
         gridContainer.sizeDelta = new Vector2(totalW, totalH);
-        // requiredCellCount（所需单元格数量）：使用位置：InventoryGridView.RebuildInternal(int, int, IReadOnlyList<GridItem>)。
+        // 所需单元格数量。
 int requiredCellCount = caseWidth * caseHeight;
         while (reusableCells.Count < requiredCellCount)
         {
             reusableCells.Add(CreateEmptyCell());
         }
 
-        // i（当前遍历索引）：使用位置：作为 List<RectTransform>.this[int] 的参数、作为 Transform.SetSiblingIndex(int) 的参数、InventoryGridView.RebuildInternal(int, int, IReadOnlyList<GridItem>)。
+        // 当前遍历索引。
 for (int i = 0; i < reusableCells.Count; i++)
         {
-            // cellRt（单元格矩形变换）：使用位置：作为 InventoryGridView.ConfigureCell(RectTransform, int, int, float) 的参数、作为 Mathf.Approximately(float, float) 的参数、作为 Vector2.Distance(Vector2, Vector2) 的参数 等共 4 处。
+            // 单元格矩形变换。
 RectTransform cellRt = reusableCells[i];
-            // active（是否生效）：使用位置：作为 GameObject.SetActive(bool) 的参数、InventoryGridView.RebuildInternal(int, int, IReadOnlyList<GridItem>)。
+            // 是否生效。
 bool active = i < requiredCellCount;
             if (cellRt == null)
             {
@@ -313,15 +313,15 @@ bool active = i < requiredCellCount;
                 continue;
             }
 
-            // x（横向）：使用位置：作为 InventoryGridView.ConfigureCell(RectTransform, int, int, float) 的参数、作为 InventoryGridView.GridToLocal(int, int, float) 的参数、InventoryGridView.RebuildInternal(int, int, IReadOnlyList<GridItem>)。
+            // 横向。
 int x = i % caseWidth;
-            // y（纵向）：使用位置：作为 InventoryGridView.ConfigureCell(RectTransform, int, int, float) 的参数、作为 InventoryGridView.GridToLocal(int, int, float) 的参数、InventoryGridView.RebuildInternal(int, int, IReadOnlyList<GridItem>)。
+            // 纵向。
 int y = i / caseWidth;
-            // expectedName（预期名称）：使用位置：InventoryGridView.RebuildInternal(int, int, IReadOnlyList<GridItem>)。
+            // 预期名称。
 string expectedName = $"Cell_{x}_{y}";
-            // cellImage（单元格图像）：保存 Component.GetComponent<Image>() 的返回结果，供当前步骤使用。使用位置：InventoryGridView.RebuildInternal(int, int, IReadOnlyList<GridItem>)。
+            // 单元格图像。
 Image cellImage = cellRt.GetComponent<Image>();
-            // expectedColor（是否预期颜色）：使用位置：InventoryGridView.RebuildInternal(int, int, IReadOnlyList<GridItem>)。
+            // 是否预期颜色。
 bool expectedColor;
             if (cellBackgroundSprite != null)
             {
@@ -332,7 +332,7 @@ bool expectedColor;
                 expectedColor = cellImage != null && cellImage.sprite == null && cellImage.color == cellFallbackColor;
             }
 
-            // configured（是否已配置）：使用位置：InventoryGridView.RebuildInternal(int, int, IReadOnlyList<GridItem>)。
+            // 是否已配置。
 bool configured = cellRt.name == expectedName && Mathf.Approximately(cellRt.sizeDelta.x, cell) && Mathf.Approximately(cellRt.sizeDelta.y, cell) && Vector2.Distance(cellRt.anchoredPosition, GridToLocal(x, y, cell)) < 0.001f && expectedColor && cellImage != null && cellImage.raycastTarget && cellRt.GetComponent<EventTrigger>() != null && cellRt.GetComponent<EventTrigger>().triggers.Count == 1;
             if (!configured)
             {
@@ -346,9 +346,9 @@ bool configured = cellRt.name == expectedName && Mathf.Approximately(cellRt.size
         // gi（背包网格物品）：每轮从期望物品列表取得一个元素，仅代表当前这一项。使用位置：作为 Dictionary<GridItem, RectTransform>.Add(GridItem, RectTransform) 的参数、作为 Dictionary<GridItem, RectTransform>.Remove(GridItem) 的参数、作为 Dictionary<GridItem, RectTransform>.TryGetValue(GridItem, out RectTransform) 的参数 等共 5 处。
 foreach (var gi in desiredItems)
         {
-            // widget（界面控件）：使用位置：作为 Dictionary<GridItem, RectTransform>.Add(GridItem, RectTransform) 的参数、作为 Dictionary<GridItem, RectTransform>.TryGetValue(GridItem, out RectTransform) 的参数、作为 Dictionary<RectTransform, GridItem>.this[RectTransform] 的参数 等共 6 处。
+            // 界面控件。
 RectTransform widget;
-            // sameBinding（是否相同绑定）：使用位置：作为 InventoryGridView.ConfigureItemWidget(RectTransform, GridItem, float, bool) 的参数、InventoryGridView.RebuildInternal(int, int, IReadOnlyList<GridItem>)。
+            // 是否相同绑定。
 bool sameBinding = false;
             if (previousWidgets.TryGetValue(gi, out widget))
             {
@@ -357,7 +357,7 @@ bool sameBinding = false;
             }
             else if (pooledItemWidgets.Count > 0)
             {
-                // lastIndex（上一次索引）：使用位置：作为 List<RectTransform>.RemoveAt(int) 的参数、作为 List<RectTransform>.this[int] 的参数。
+                // 上一次索引。
 int lastIndex = pooledItemWidgets.Count - 1;
                 widget = pooledItemWidgets[lastIndex];
                 pooledItemWidgets.RemoveAt(lastIndex);
@@ -379,7 +379,7 @@ foreach (var oldWidget in previousWidgets.Values)
             ReleaseItemWidget(oldWidget);
         }
 
-        // receiverValue3（判空前缓存的公文包与物品的三维展示组件）：从公文包与物品的三维展示组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、InventoryGridView.RebuildInternal(int, int, IReadOnlyList<GridItem>)。
+        // 判空前缓存的公文包与物品的三维展示组件。
 global::AttacheCasePresentationController receiverValue3 = threeDimensionalPresentation;
         if (!global::System.Object.ReferenceEquals(receiverValue3, null))
         {
@@ -400,25 +400,25 @@ global::AttacheCasePresentationController receiverValue3 = threeDimensionalPrese
 
     /// <summary>网格坐标转局部坐标（中心对齐）</summary>
     /// <remarks>静态调用链：上游 InventoryGridView.ConfigureCell(RectTransform, int, int, float)、InventoryGridView.RebuildInternal(int, int, IReadOnlyList&lt;GridItem&gt;)；下游（含内部回调体） Vector2.Vector2(float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="gridX">中文含义：网格横向。使用位置：作为 Vector2.Vector2(float, float) 的参数。</param>
-    /// <param name="gridY">中文含义：网格纵向。使用位置：作为 Vector2.Vector2(float, float) 的参数。</param>
-    /// <param name="cell">中文含义：单元格。使用位置：作为 Vector2.Vector2(float, float) 的参数、InventoryGridView.GridToLocal(int, int, float)。</param>
+    /// <param name="gridX">网格横向。</param>
+    /// <param name="gridY">网格纵向。</param>
+    /// <param name="cell">单元格。</param>
     public Vector2 GridToLocal(int gridX, int gridY, float cell)
     {
-        // step（步进）：使用位置：作为 Vector2.Vector2(float, float) 的参数。
+        // 步进。
 float step = cell + cellSpacing;
         return new Vector2(gridX * step - TotalWidth / 2f + cell / 2f, -(gridY * step) + TotalHeight / 2f - cell / 2f);
     }
 
     /// <summary>局部坐标转网格坐标</summary>
     /// <remarks>静态调用链：上游 AttacheCaseProjectionInput.Find(Vector2)、AttacheCaseProjectionInput.OnPointerClick(PointerEventData)；下游（含内部回调体） Mathf.FloorToInt(float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="localPoint">中文含义：局部坐标点。使用位置：作为 Mathf.FloorToInt(float) 的参数。</param>
-    /// <param name="cell">中文含义：单元格。使用位置：InventoryGridView.LocalToGrid(Vector2, float, out int, out int)。</param>
-    /// <param name="gridX">中文含义：网格横向。输出参数，由本入口写入并交给调用方。使用位置：InventoryGridView.LocalToGrid(Vector2, float, out int, out int)。</param>
-    /// <param name="gridY">中文含义：网格纵向。输出参数，由本入口写入并交给调用方。使用位置：InventoryGridView.LocalToGrid(Vector2, float, out int, out int)。</param>
+    /// <param name="localPoint">局部坐标点。</param>
+    /// <param name="cell">单元格。</param>
+    /// <param name="gridX">网格横向。输出参数，由本入口写入并交给调用方。</param>
+    /// <param name="gridY">网格纵向。输出参数，由本入口写入并交给调用方。</param>
     public bool LocalToGrid(Vector2 localPoint, float cell, out int gridX, out int gridY)
     {
-        // step（步进）：使用位置：作为 Mathf.FloorToInt(float) 的参数。
+        // 步进。
 float step = cell + cellSpacing;
         gridX = Mathf.FloorToInt((localPoint.x + TotalWidth / 2f) / step);
         gridY = Mathf.FloorToInt((TotalHeight / 2f - localPoint.y) / step);
@@ -427,8 +427,8 @@ float step = cell + cellSpacing;
 
     /// <summary>屏幕坐标转换为网格容器内的局部坐标。</summary>
     /// <remarks>静态调用链：上游 InventoryGridView.TryGetDropGrid(GridItem, Vector2, Vector2, out int, out int)、InventoryUI.OnItemDrag(GridItem, Vector2)、InventoryUI.OnItemPointerDown(GridItem, Vector2)、StorageBoxUI.OnInventoryItemDrag(GridItem, Vector2)；下游（含内部回调体） AttacheCasePresentationController.ScreenRotateMesh(Vector2, out Vector2)、Component.GetComponentInParent&lt;Canvas&gt;()、RectTransformUtility.ScreenPointToLocalPointInRectangle(RectTransform, Vector2, Camera, out Vector2)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="screenPoint">中文含义：屏幕坐标点。使用位置：作为 AttacheCasePresentationController.ScreenRotateMesh(Vector2, out Vector2) 的参数、作为 RectTransformUtility.ScreenPointToLocalPointInRectangle(RectTransform, Vector2, Camera, out Vector2) 的参数。</param>
-    /// <param name="localPoint">中文含义：局部坐标点。输出参数，由本入口写入并交给调用方。使用位置：作为 AttacheCasePresentationController.ScreenRotateMesh(Vector2, out Vector2) 的参数、作为 RectTransformUtility.ScreenPointToLocalPointInRectangle(RectTransform, Vector2, Camera, out Vector2) 的参数、InventoryGridView.TryScreenPointToLocal(Vector2, out Vector2)。</param>
+    /// <param name="screenPoint">屏幕坐标点。</param>
+    /// <param name="localPoint">局部坐标点。输出参数，由本入口写入并交给调用方。</param>
     public bool TryScreenPointToLocal(Vector2 screenPoint, out Vector2 localPoint)
     {
         localPoint = Vector2.zero;
@@ -442,9 +442,9 @@ float step = cell + cellSpacing;
             return false;
         }
 
-        // canvas（画布）：保存 Component.GetComponentInParent<Canvas>() 的返回结果，供当前步骤使用。使用位置：InventoryGridView.TryScreenPointToLocal(Vector2, out Vector2)。
+        // 画布。
 Canvas canvas = gridContainer.GetComponentInParent<Canvas>();
-        // eventCamera（事件摄像机）：使用位置：作为 RectTransformUtility.ScreenPointToLocalPointInRectangle(RectTransform, Vector2, Camera, out Vector2) 的参数、InventoryGridView.TryScreenPointToLocal(Vector2, out Vector2)。
+        // 事件摄像机。
 Camera eventCamera;
         if (canvas != null && canvas.renderMode != RenderMode.ScreenSpaceOverlay)
         {
@@ -462,11 +462,11 @@ Camera eventCamera;
     /// 根据物品视觉中心计算落格坐标，保留玩家按下时的抓取偏移。
     /// </summary>
     /// <remarks>静态调用链：上游 AttacheCasePresentationController.PreviewLandPoint(GridItem, Vector2, Vector2)、InventoryUI.OnItemPointerUp(GridItem, Vector2)；下游（含内部回调体） InventoryGridView.TryScreenPointToLocal(Vector2, out Vector2)、Mathf.RoundToInt(float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="item">中文含义：当前背包网格物品。使用位置：InventoryGridView.TryGetDropGrid(GridItem, Vector2, Vector2, out int, out int)。</param>
-    /// <param name="screenPoint">中文含义：屏幕坐标点。使用位置：作为 InventoryGridView.TryScreenPointToLocal(Vector2, out Vector2) 的参数。</param>
-    /// <param name="pointerOffset">中文含义：指针偏移量。使用位置：InventoryGridView.TryGetDropGrid(GridItem, Vector2, Vector2, out int, out int)。</param>
-    /// <param name="gridX">中文含义：网格横向。输出参数，由本入口写入并交给调用方。使用位置：InventoryGridView.TryGetDropGrid(GridItem, Vector2, Vector2, out int, out int)。</param>
-    /// <param name="gridY">中文含义：网格纵向。输出参数，由本入口写入并交给调用方。使用位置：InventoryGridView.TryGetDropGrid(GridItem, Vector2, Vector2, out int, out int)。</param>
+    /// <param name="item">当前背包网格物品。</param>
+    /// <param name="screenPoint">屏幕坐标点。</param>
+    /// <param name="pointerOffset">指针偏移量。</param>
+    /// <param name="gridX">网格横向。输出参数，由本入口写入并交给调用方。</param>
+    /// <param name="gridY">网格纵向。输出参数，由本入口写入并交给调用方。</param>
     public bool TryGetDropGrid(GridItem item, Vector2 screenPoint, Vector2 pointerOffset, out int gridX, out int gridY)
     {
         gridX = 0;
@@ -481,13 +481,13 @@ Camera eventCamera;
             return false;
         }
 
-        // itemCenter（物品中心）：使用位置：作为 Mathf.RoundToInt(float) 的参数。
+        // 物品中心。
 Vector2 itemCenter = pointerLocal - pointerOffset;
-        // step（步进）：使用位置：作为 Mathf.RoundToInt(float) 的参数。
+        // 步进。
 float step = CurrentCell + cellSpacing;
-        // pixelWidth（像素宽度）：使用位置：作为 Mathf.RoundToInt(float) 的参数。
+        // 像素宽度。
 float pixelWidth = item.Width * CurrentCell + (item.Width - 1) * cellSpacing;
-        // pixelHeight（像素高度）：使用位置：作为 Mathf.RoundToInt(float) 的参数。
+        // 像素高度。
 float pixelHeight = item.Height * CurrentCell + (item.Height - 1) * cellSpacing;
         gridX = Mathf.RoundToInt((itemCenter.x + TotalWidth * 0.5f - pixelWidth * 0.5f) / step);
         gridY = Mathf.RoundToInt((TotalHeight * 0.5f - pixelHeight * 0.5f - itemCenter.y) / step);
@@ -496,21 +496,21 @@ float pixelHeight = item.Height * CurrentCell + (item.Height - 1) * cellSpacing;
 
     /// <summary>物品占据区域的像素位置和尺寸</summary>
     /// <remarks>静态调用链：上游 InventoryGridView.ConfigureItemWidget(RectTransform, GridItem, float, bool)、InventoryGridView.PositionOverlay(Image, GridItem, float)、InventoryUI.OnItemPointerDown(GridItem, Vector2)；下游（含内部回调体） Vector2.Vector2(float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="gi">中文含义：背包网格物品。使用位置：作为 Vector2.Vector2(float, float) 的参数、InventoryGridView.GetItemRect(GridItem, float, out Vector2, out Vector2)。</param>
-    /// <param name="cell">中文含义：单元格。使用位置：InventoryGridView.GetItemRect(GridItem, float, out Vector2, out Vector2)。</param>
-    /// <param name="pos">中文含义：位置。输出参数，由本入口写入并交给调用方。使用位置：InventoryGridView.GetItemRect(GridItem, float, out Vector2, out Vector2)。</param>
-    /// <param name="size">中文含义：尺寸。输出参数，由本入口写入并交给调用方。使用位置：InventoryGridView.GetItemRect(GridItem, float, out Vector2, out Vector2)。</param>
+    /// <param name="gi">背包网格物品。</param>
+    /// <param name="cell">单元格。</param>
+    /// <param name="pos">位置。输出参数，由本入口写入并交给调用方。</param>
+    /// <param name="size">尺寸。输出参数，由本入口写入并交给调用方。</param>
     public void GetItemRect(GridItem gi, float cell, out Vector2 pos, out Vector2 size)
     {
-        // step（步进）：使用位置：作为 Vector2.Vector2(float, float) 的参数。
+        // 步进。
 float step = cell + cellSpacing;
-        // w（背包网格物品的宽度）：使用位置：InventoryGridView.GetItemRect(GridItem, float, out Vector2, out Vector2)。
+        // 背包网格物品的宽度。
 int w = gi.Width;
-        // h（背包网格物品的高度）：使用位置：InventoryGridView.GetItemRect(GridItem, float, out Vector2, out Vector2)。
+        // 背包网格物品的高度。
 int h = gi.Height;
-        // pixelW（像素宽度）：使用位置：作为 Vector2.Vector2(float, float) 的参数。
+        // 像素宽度。
 float pixelW = w * cell + (w - 1) * cellSpacing;
-        // pixelH（像素高度）：使用位置：作为 Vector2.Vector2(float, float) 的参数。
+        // 像素高度。
 float pixelH = h * cell + (h - 1) * cellSpacing;
         size = new Vector2(pixelW, pixelH);
         pos = new Vector2(gi.gridX * step + pixelW / 2f - TotalWidth / 2f, -(gi.gridY * step + pixelH / 2f) + TotalHeight / 2f);
@@ -518,12 +518,12 @@ float pixelH = h * cell + (h - 1) * cellSpacing;
 
     /// <summary>CreateCell 的业务处理入口；本方法直接依赖 InventoryGridView.ConfigureCell(RectTransform, int, int, float)、InventoryGridView.CreateEmptyCell()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） InventoryGridView.ConfigureCell(RectTransform, int, int, float)、InventoryGridView.CreateEmptyCell()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="x">中文含义：横向。使用位置：作为 InventoryGridView.ConfigureCell(RectTransform, int, int, float) 的参数。</param>
-    /// <param name="y">中文含义：纵向。使用位置：作为 InventoryGridView.ConfigureCell(RectTransform, int, int, float) 的参数。</param>
-    /// <param name="cell">中文含义：单元格。使用位置：作为 InventoryGridView.ConfigureCell(RectTransform, int, int, float) 的参数。</param>
+    /// <param name="x">横向。</param>
+    /// <param name="y">纵向。</param>
+    /// <param name="cell">单元格。</param>
     RectTransform CreateCell(int x, int y, float cell)
     {
-        // rt（界面矩形变换）：保存 InventoryGridView.CreateEmptyCell() 的返回结果，供当前步骤使用。使用位置：作为 InventoryGridView.ConfigureCell(RectTransform, int, int, float) 的参数、InventoryGridView.CreateCell(int, int, float)。
+        // 界面矩形变换。
 RectTransform rt = CreateEmptyCell();
         ConfigureCell(rt, x, y, cell);
         return rt;
@@ -533,7 +533,7 @@ RectTransform rt = CreateEmptyCell();
     /// <remarks>静态调用链：上游 InventoryGridView.CreateCell(int, int, float)、InventoryGridView.RebuildInternal(int, int, IReadOnlyList&lt;GridItem&gt;)；下游（含内部回调体） GameObject.GameObject(string, params Type[])、GameObject.GetComponent&lt;RectTransform&gt;()、Transform.SetParent(Transform, bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     RectTransform CreateEmptyCell()
     {
-        // go（当前游戏对象）：使用位置：InventoryGridView.CreateEmptyCell()。
+        // 当前游戏对象。
 var go = new GameObject("Cell_复用", typeof(Image), typeof(EventTrigger));
         go.transform.SetParent(gridContainer, false);
         return go.GetComponent<RectTransform>();
@@ -541,10 +541,10 @@ var go = new GameObject("Cell_复用", typeof(Image), typeof(EventTrigger));
 
     /// <summary>ConfigureCell 的业务处理入口；本方法直接依赖 Action&lt;int, int&gt;.Invoke(int, int)、Component.GetComponent&lt;EventTrigger&gt;()、Component.GetComponent&lt;Image&gt;()、EventTrigger.Entry.Entry()、GameObject.AddComponent&lt;EventTrigger&gt;()、InventoryGridView.GridToLocal(int, int, float)、List&lt;EventTrigger.Entry&gt;.Add(EventTrigger.Entry) 等共 12 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 InventoryGridView.CreateCell(int, int, float)、InventoryGridView.RebuildInternal(int, int, IReadOnlyList&lt;GridItem&gt;)；下游（含内部回调体） Action&lt;int, int&gt;.Invoke(int, int)、Component.GetComponent&lt;EventTrigger&gt;()、Component.GetComponent&lt;Image&gt;()、EventTrigger.Entry.Entry()、GameObject.AddComponent&lt;EventTrigger&gt;()、InventoryGridView.GridToLocal(int, int, float)、List&lt;EventTrigger.Entry&gt;.Add(EventTrigger.Entry) 等共 12 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="rt">中文含义：界面矩形变换。使用位置：InventoryGridView.ConfigureCell(RectTransform, int, int, float)。</param>
-    /// <param name="x">中文含义：横向。使用位置：作为 InventoryGridView.GridToLocal(int, int, float) 的参数、InventoryGridView.ConfigureCell(RectTransform, int, int, float)。</param>
-    /// <param name="y">中文含义：纵向。使用位置：作为 InventoryGridView.GridToLocal(int, int, float) 的参数、InventoryGridView.ConfigureCell(RectTransform, int, int, float)。</param>
-    /// <param name="cell">中文含义：单元格。使用位置：作为 InventoryGridView.GridToLocal(int, int, float) 的参数、作为 Vector2.Vector2(float, float) 的参数。</param>
+    /// <param name="rt">界面矩形变换。</param>
+    /// <param name="x">横向。</param>
+    /// <param name="y">纵向。</param>
+    /// <param name="cell">单元格。</param>
     void ConfigureCell(RectTransform rt, int x, int y, float cell)
     {
         if (rt == null)
@@ -556,7 +556,7 @@ var go = new GameObject("Cell_复用", typeof(Image), typeof(EventTrigger));
         rt.SetParent(gridContainer, false);
         rt.sizeDelta = new Vector2(cell, cell);
         rt.anchoredPosition = GridToLocal(x, y, cell);
-        // img（界面图像组件）：保存 Component.GetComponent<Image>() 的返回结果，供当前步骤使用。使用位置：InventoryGridView.ConfigureCell(RectTransform, int, int, float)。
+        // 界面图像组件。
 var img = rt.GetComponent<Image>();
         if (img != null)
         {
@@ -576,7 +576,7 @@ var img = rt.GetComponent<Image>();
             img.raycastTarget = true;
         }
 
-        // trigger（触发器）：保存 Component.GetComponent<EventTrigger>() 的返回结果，供当前步骤使用。使用位置：InventoryGridView.ConfigureCell(RectTransform, int, int, float)。
+        // 触发器。
 var trigger = rt.GetComponent<EventTrigger>();
         if (trigger == null)
         {
@@ -584,18 +584,18 @@ var trigger = rt.GetComponent<EventTrigger>();
         }
 
         trigger.triggers.Clear();
-        // entry（当前入口）：使用位置：作为 List<EventTrigger.Entry>.Add(EventTrigger.Entry) 的参数、InventoryGridView.ConfigureCell(RectTransform, int, int, float)。
+        // 当前入口。
 var entry = new EventTrigger.Entry
         {
             eventID = EventTriggerType.PointerClick
         };
-        // cx（列坐标）：使用位置：作为 Action<int, int>.Invoke(int, int) 的参数。
+        // 列坐标。
 int cx = x;
-        // cy（行坐标）：使用位置：作为 Action<int, int>.Invoke(int, int) 的参数。
+        // 行坐标。
 int cy = y;
         entry.callback.AddListener( /* 中文含义：当前流程中不使用的传入结果。 */_ =>
         {
-            // receiverValue5（判空前缓存的单元格已点击时的通知回调）：从单元格已点击时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、作为 UnityEvent<BaseEventData>.AddListener(UnityAction<BaseEventData>) 的参数。
+            // 判空前缓存的单元格已点击时的通知回调。
 global::System.Action<int, int> receiverValue5 = onCellClicked;
             if (!global::System.Object.ReferenceEquals(receiverValue5, null))
             {
@@ -607,8 +607,8 @@ global::System.Action<int, int> receiverValue5 = onCellClicked;
 
     /// <summary>CreateItemWidget 的业务处理入口；本方法直接依赖 InventoryGridView.ConfigureItemWidget(RectTransform, GridItem, float, bool)、InventoryGridView.CreateEmptyItemWidget()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） InventoryGridView.ConfigureItemWidget(RectTransform, GridItem, float, bool)、InventoryGridView.CreateEmptyItemWidget()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="gi">中文含义：背包网格物品。使用位置：作为 Dictionary&lt;GridItem, RectTransform&gt;.this[GridItem] 的参数、作为 InventoryGridView.ConfigureItemWidget(RectTransform, GridItem, float, bool) 的参数、InventoryGridView.CreateItemWidget(GridItem, float)。</param>
-    /// <param name="cell">中文含义：单元格。使用位置：作为 InventoryGridView.ConfigureItemWidget(RectTransform, GridItem, float, bool) 的参数。</param>
+    /// <param name="gi">背包网格物品。</param>
+    /// <param name="cell">单元格。</param>
     void CreateItemWidget(GridItem gi, float cell)
     {
         if (gi == null || gi.item == null)
@@ -616,7 +616,7 @@ global::System.Action<int, int> receiverValue5 = onCellClicked;
             return;
         }
 
-        // widget（界面控件）：保存 InventoryGridView.CreateEmptyItemWidget() 的返回结果，供当前步骤使用。使用位置：作为 Dictionary<RectTransform, GridItem>.this[RectTransform] 的参数、作为 InventoryGridView.ConfigureItemWidget(RectTransform, GridItem, float, bool) 的参数、InventoryGridView.CreateItemWidget(GridItem, float)。
+        // 界面控件。
 RectTransform widget = CreateEmptyItemWidget();
         ConfigureItemWidget(widget, gi, cell, true);
         itemWidgets[gi] = widget;
@@ -627,33 +627,33 @@ RectTransform widget = CreateEmptyItemWidget();
     /// <remarks>静态调用链：上游 InventoryGridView.CreateItemWidget(GridItem, float)、InventoryGridView.RebuildInternal(int, int, IReadOnlyList&lt;GridItem&gt;)；下游（含内部回调体） GameObject.GameObject(string, params Type[])、GameObject.GetComponent&lt;Image&gt;()、GameObject.GetComponent&lt;RectTransform&gt;()、GameObject.GetComponent&lt;Text&gt;()、GameObject.SetActive(bool)、Resources.GetBuiltinResource&lt;Font&gt;(string)、Transform.SetParent(Transform, bool) 等共 8 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     RectTransform CreateEmptyItemWidget()
     {
-        // go（当前游戏对象）：使用位置：InventoryGridView.CreateEmptyItemWidget()。
+        // 当前游戏对象。
 var go = new GameObject("Item_复用", typeof(RectMask2D), typeof(EventTrigger));
         go.transform.SetParent(gridContainer, false);
-        // rt（界面矩形变换）：保存 GameObject.GetComponent<RectTransform>() 的返回结果，供当前步骤使用。使用位置：作为 Transform.SetParent(Transform, bool) 的参数、InventoryGridView.CreateEmptyItemWidget()。
+        // 界面矩形变换。
 var rt = go.GetComponent<RectTransform>();
-        // iconGo（图标游戏对象）：使用位置：InventoryGridView.CreateEmptyItemWidget()。
+        // 图标游戏对象。
 var iconGo = new GameObject("Icon", typeof(Image));
         iconGo.transform.SetParent(rt, false);
-        // iconRt（图标矩形变换）：保存 GameObject.GetComponent<RectTransform>() 的返回结果，供当前步骤使用。使用位置：InventoryGridView.CreateEmptyItemWidget()。
+        // 图标矩形变换。
 var iconRt = iconGo.GetComponent<RectTransform>();
         iconRt.anchorMin = new Vector2(0.5f, 0.5f);
         iconRt.anchorMax = new Vector2(0.5f, 0.5f);
         iconRt.pivot = new Vector2(0.5f, 0.5f);
         iconGo.GetComponent<Image>().raycastTarget = true;
-        // countGo（数量游戏对象）：使用位置：InventoryGridView.CreateEmptyItemWidget()。
+        // 数量游戏对象。
 var countGo = new GameObject("Count", typeof(Text));
         countGo.transform.SetParent(rt, false);
-        // countRt（数量矩形变换）：保存 GameObject.GetComponent<RectTransform>() 的返回结果，供当前步骤使用。使用位置：InventoryGridView.CreateEmptyItemWidget()。
+        // 数量矩形变换。
 var countRt = countGo.GetComponent<RectTransform>();
         countRt.anchorMin = Vector2.one;
         countRt.anchorMax = Vector2.one;
         countRt.pivot = Vector2.one;
         countRt.anchoredPosition = new Vector2(-4, -4);
         countRt.sizeDelta = new Vector2(60, 30);
-        // count（数量）：保存 GameObject.GetComponent<Text>() 的返回结果，供当前步骤使用。使用位置：InventoryGridView.CreateEmptyItemWidget()。
+        // 数量。
 var count = countGo.GetComponent<Text>();
-        // assignmentReceiver6（赋值前保存的目标数量）：从数量读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：InventoryGridView.CreateEmptyItemWidget()。
+        // 赋值前保存的目标数量。
 global::UnityEngine.UI.Text assignmentReceiver6 = count;
         if (visualTheme != null && visualTheme.interfaceFont != null)
         {
@@ -673,10 +673,10 @@ global::UnityEngine.UI.Text assignmentReceiver6 = count;
 
     /// <summary>ConfigureItemWidget 的业务处理入口；本方法直接依赖 Action.Invoke()、Action&lt;GridItem, PointerEventData.InputButton, Vector2&gt;.Invoke(GridItem, PointerEventData.InputButton, Vector2)、Action&lt;GridItem, Vector2&gt;.Invoke(GridItem, Vector2)、Action&lt;GridItem&gt;.Invoke(GridItem)、Color.Color(float, float, float, float)、Component.GetComponent&lt;EventTrigger&gt;()、Component.GetComponent&lt;Image&gt;() 等共 30 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 InventoryGridView.CreateItemWidget(GridItem, float)、InventoryGridView.RebuildInternal(int, int, IReadOnlyList&lt;GridItem&gt;)；下游（含内部回调体） Action.Invoke()、Action&lt;GridItem, PointerEventData.InputButton, Vector2&gt;.Invoke(GridItem, PointerEventData.InputButton, Vector2)、Action&lt;GridItem, Vector2&gt;.Invoke(GridItem, Vector2)、Action&lt;GridItem&gt;.Invoke(GridItem)、Color.Color(float, float, float, float)、Component.GetComponent&lt;EventTrigger&gt;()、Component.GetComponent&lt;Image&gt;() 等共 30 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="rt">中文含义：界面矩形变换。使用位置：作为 Transform.SetParent(Transform, bool) 的参数、InventoryGridView.ConfigureItemWidget(RectTransform, GridItem, float, bool)。</param>
-    /// <param name="gi">中文含义：背包网格物品。使用位置：作为 Action&lt;GridItem, PointerEventData.InputButton, Vector2&gt;.Invoke(GridItem, PointerEventData.InputButton, Vector2) 的参数、作为 Action&lt;GridItem, Vector2&gt;.Invoke(GridItem, Vector2) 的参数、作为 Action&lt;GridItem&gt;.Invoke(GridItem) 的参数 等共 7 处。</param>
-    /// <param name="cell">中文含义：单元格。使用位置：作为 InventoryGridView.GetItemRect(GridItem, float, out Vector2, out Vector2) 的参数。</param>
-    /// <param name="rebindCallbacks">中文含义：是否重新绑定回调集合。使用位置：InventoryGridView.ConfigureItemWidget(RectTransform, GridItem, float, bool)。</param>
+    /// <param name="rt">界面矩形变换。</param>
+    /// <param name="gi">背包网格物品。</param>
+    /// <param name="cell">单元格。</param>
+    /// <param name="rebindCallbacks">是否重新绑定回调集合。</param>
     void ConfigureItemWidget(RectTransform rt, GridItem gi, float cell, bool rebindCallbacks)
     {
         if (rt == null || gi == null || gi.item == null)
@@ -689,21 +689,21 @@ global::UnityEngine.UI.Text assignmentReceiver6 = count;
         GetItemRect(gi, cell, out var /* 中文含义：位置。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ pos, out var /* 中文含义：尺寸。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ size);
         rt.sizeDelta = size;
         rt.anchoredPosition = pos;
-        // mask（遮罩）：保存 Component.GetComponent<RectMask2D>() 的返回结果，供当前步骤使用。使用位置：InventoryGridView.ConfigureItemWidget(RectTransform, GridItem, float, bool)。
+        // 遮罩。
 var mask = rt.GetComponent<RectMask2D>();
         if (mask == null)
         {
             mask = rt.gameObject.AddComponent<RectMask2D>();
         }
 
-        // padding（留白）：使用位置：作为 Vector4.Vector4(float, float, float, float) 的参数。
+        // 留白。
 float padding = gi.item.iconPadding;
         mask.padding = new Vector4(padding, padding, padding, padding);
-        // iconRt（图标矩形变换）：使用位置：作为 InventoryGridView.FitIconWithoutDistortion(RectTransform, Sprite, Vector2, float, float, float) 的参数、InventoryGridView.ConfigureItemWidget(RectTransform, GridItem, float, bool)。
+        // 图标矩形变换。
 var iconRt = rt.Find("Icon") as RectTransform;
         if (iconRt == null)
         {
-            // iconGo（图标游戏对象）：使用位置：InventoryGridView.ConfigureItemWidget(RectTransform, GridItem, float, bool)。
+            // 图标游戏对象。
 var iconGo = new GameObject("Icon", typeof(Image));
             iconGo.transform.SetParent(rt, false);
             iconRt = iconGo.GetComponent<RectTransform>();
@@ -712,14 +712,14 @@ var iconGo = new GameObject("Icon", typeof(Image));
             iconRt.pivot = new Vector2(0.5f, 0.5f);
         }
 
-        // img（界面图像组件）：保存 Component.GetComponent<Image>() 的返回结果，供当前步骤使用。使用位置：InventoryGridView.ConfigureItemWidget(RectTransform, GridItem, float, bool)。
+        // 界面图像组件。
 var img = iconRt.GetComponent<Image>();
         if (img == null)
         {
             img = iconRt.gameObject.AddComponent<Image>();
         }
 
-        // finalRotation（最终旋转）：使用位置：作为 InventoryGridView.FitIconWithoutDistortion(RectTransform, Sprite, Vector2, float, float, float) 的参数、作为 Quaternion.Euler(float, float, float) 的参数。
+        // 最终旋转。
 float finalRotation = gi.item.iconRotation + gi.rotation * 90f;
         iconRt.localRotation = Quaternion.Euler(0, 0, finalRotation);
         iconRt.localScale = Vector3.one;
@@ -748,7 +748,7 @@ float finalRotation = gi.item.iconRotation + gi.rotation * 90f;
         }
 
         img.raycastTarget = true;
-        // trigger（触发器）：保存 Component.GetComponent<EventTrigger>() 的返回结果，供当前步骤使用。使用位置：InventoryGridView.ConfigureItemWidget(RectTransform, GridItem, float, bool)。
+        // 触发器。
 var trigger = rt.GetComponent<EventTrigger>();
         if (trigger == null)
         {
@@ -759,18 +759,18 @@ var trigger = rt.GetComponent<EventTrigger>();
         if (rebindCallbacks)
         {
             trigger.triggers.Clear();
-            // downEntry（向下入口）：使用位置：作为 List<EventTrigger.Entry>.Add(EventTrigger.Entry) 的参数、InventoryGridView.ConfigureItemWidget(RectTransform, GridItem, float, bool)。
+            // 向下入口。
 var downEntry = new EventTrigger.Entry
             {
                 eventID = EventTriggerType.PointerDown
             };
             downEntry.callback.AddListener( /* 中文含义：当前基础事件配置。 */e =>
             {
-                // pe（指针事件）：使用位置：作为 Action<GridItem, Vector2>.Invoke(GridItem, Vector2) 的参数、作为 UnityEvent<BaseEventData>.AddListener(UnityAction<BaseEventData>) 的参数。
+                // 指针事件。
 var pe = (PointerEventData)e;
                 if (pe.button == PointerEventData.InputButton.Left)
                 {
-                    // receiverValue8（判空前缓存的物品指针向下时的通知回调）：从物品指针向下时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、作为 UnityEvent<BaseEventData>.AddListener(UnityAction<BaseEventData>) 的参数。
+                    // 判空前缓存的物品指针向下时的通知回调。
 global::System.Action<global::GridItem, global::UnityEngine.Vector2> receiverValue8 = onItemPointerDown;
                     if (!global::System.Object.ReferenceEquals(receiverValue8, null))
                     {
@@ -779,16 +779,16 @@ global::System.Action<global::GridItem, global::UnityEngine.Vector2> receiverVal
                 }
             });
             trigger.triggers.Add(downEntry);
-            // dragEntry（拖拽入口）：使用位置：作为 List<EventTrigger.Entry>.Add(EventTrigger.Entry) 的参数、InventoryGridView.ConfigureItemWidget(RectTransform, GridItem, float, bool)。
+            // 拖拽入口。
 var dragEntry = new EventTrigger.Entry
             {
                 eventID = EventTriggerType.Drag
             };
             dragEntry.callback.AddListener( /* 中文含义：当前基础事件配置。 */e =>
             {
-                // pe（指针事件）：使用位置：作为 Action<GridItem, Vector2>.Invoke(GridItem, Vector2) 的参数。
+                // 指针事件。
 var pe = (PointerEventData)e;
-                // receiverValue9（判空前缓存的物品拖拽时的通知回调）：从物品拖拽时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、作为 UnityEvent<BaseEventData>.AddListener(UnityAction<BaseEventData>) 的参数。
+                // 判空前缓存的物品拖拽时的通知回调。
 global::System.Action<global::GridItem, global::UnityEngine.Vector2> receiverValue9 = onItemDrag;
                 if (!global::System.Object.ReferenceEquals(receiverValue9, null))
                 {
@@ -796,16 +796,16 @@ global::System.Action<global::GridItem, global::UnityEngine.Vector2> receiverVal
                 }
             });
             trigger.triggers.Add(dragEntry);
-            // upEntry（向上入口）：使用位置：作为 List<EventTrigger.Entry>.Add(EventTrigger.Entry) 的参数、InventoryGridView.ConfigureItemWidget(RectTransform, GridItem, float, bool)。
+            // 向上入口。
 var upEntry = new EventTrigger.Entry
             {
                 eventID = EventTriggerType.PointerUp
             };
             upEntry.callback.AddListener( /* 中文含义：当前基础事件配置。 */e =>
             {
-                // pe（指针事件）：使用位置：作为 Action<GridItem, Vector2>.Invoke(GridItem, Vector2) 的参数。
+                // 指针事件。
 var pe = (PointerEventData)e;
-                // receiverValue10（判空前缓存的物品指针向上时的通知回调）：从物品指针向上时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、作为 UnityEvent<BaseEventData>.AddListener(UnityAction<BaseEventData>) 的参数。
+                // 判空前缓存的物品指针向上时的通知回调。
 global::System.Action<global::GridItem, global::UnityEngine.Vector2> receiverValue10 = onItemPointerUp;
                 if (!global::System.Object.ReferenceEquals(receiverValue10, null))
                 {
@@ -813,16 +813,16 @@ global::System.Action<global::GridItem, global::UnityEngine.Vector2> receiverVal
                 }
             });
             trigger.triggers.Add(upEntry);
-            // clickEntry（点击入口）：使用位置：作为 List<EventTrigger.Entry>.Add(EventTrigger.Entry) 的参数、InventoryGridView.ConfigureItemWidget(RectTransform, GridItem, float, bool)。
+            // 点击入口。
 var clickEntry = new EventTrigger.Entry
             {
                 eventID = EventTriggerType.PointerClick
             };
             clickEntry.callback.AddListener( /* 中文含义：当前基础事件配置。 */e =>
             {
-                // pe（指针事件）：使用位置：作为 Action<GridItem, PointerEventData.InputButton, Vector2>.Invoke(GridItem, PointerEventData.InputButton, Vector2) 的参数。
+                // 指针事件。
 var pe = (PointerEventData)e;
-                // receiverValue11（判空前缓存的物品已点击时的通知回调）：从物品已点击时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、作为 UnityEvent<BaseEventData>.AddListener(UnityAction<BaseEventData>) 的参数。
+                // 判空前缓存的物品已点击时的通知回调。
 global::System.Action<global::GridItem, global::UnityEngine.EventSystems.PointerEventData.InputButton, global::UnityEngine.Vector2> receiverValue11 = onItemClicked;
                 if (!global::System.Object.ReferenceEquals(receiverValue11, null))
                 {
@@ -830,14 +830,14 @@ global::System.Action<global::GridItem, global::UnityEngine.EventSystems.Pointer
                 }
             });
             trigger.triggers.Add(clickEntry);
-            // enterEntry（进入入口）：使用位置：作为 List<EventTrigger.Entry>.Add(EventTrigger.Entry) 的参数、InventoryGridView.ConfigureItemWidget(RectTransform, GridItem, float, bool)。
+            // 进入入口。
 var enterEntry = new EventTrigger.Entry
             {
                 eventID = EventTriggerType.PointerEnter
             };
             enterEntry.callback.AddListener( /* 中文含义：当前流程中不使用的传入结果。 */_ =>
             {
-                // receiverValue12（判空前缓存的物品悬停进入时的通知回调）：从物品悬停进入时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、作为 UnityEvent<BaseEventData>.AddListener(UnityAction<BaseEventData>) 的参数。
+                // 判空前缓存的物品悬停进入时的通知回调。
 global::System.Action<global::GridItem> receiverValue12 = onItemHoverEnter;
                 if (!global::System.Object.ReferenceEquals(receiverValue12, null))
                 {
@@ -845,14 +845,14 @@ global::System.Action<global::GridItem> receiverValue12 = onItemHoverEnter;
                 }
             });
             trigger.triggers.Add(enterEntry);
-            // exitEntry（退出入口）：使用位置：作为 List<EventTrigger.Entry>.Add(EventTrigger.Entry) 的参数、InventoryGridView.ConfigureItemWidget(RectTransform, GridItem, float, bool)。
+            // 退出入口。
 var exitEntry = new EventTrigger.Entry
             {
                 eventID = EventTriggerType.PointerExit
             };
             exitEntry.callback.AddListener( /* 中文含义：当前流程中不使用的传入结果。 */_ =>
             {
-                // receiverValue13（判空前缓存的物品悬停退出时的通知回调）：从物品悬停退出时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、作为 UnityEvent<BaseEventData>.AddListener(UnityAction<BaseEventData>) 的参数。
+                // 判空前缓存的物品悬停退出时的通知回调。
 global::System.Action receiverValue13 = onItemHoverExit;
                 if (!global::System.Object.ReferenceEquals(receiverValue13, null))
                 {
@@ -862,9 +862,9 @@ global::System.Action receiverValue13 = onItemHoverExit;
             trigger.triggers.Add(exitEntry);
         }
 
-        // receiverValue14（判空前缓存的查找的返回结果）：从查找的返回结果读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、InventoryGridView.ConfigureItemWidget(RectTransform, GridItem, float, bool)。
+        // 判空前缓存的查找的返回结果。
 global::UnityEngine.RectTransform receiverValue14 = (rt.Find("Count") as RectTransform);
-        // count（数量）：使用位置：InventoryGridView.ConfigureItemWidget(RectTransform, GridItem, float, bool)。
+        // 数量。
 global::UnityEngine.UI.Text count;
         if (!global::System.Object.ReferenceEquals(receiverValue14, null))
         {
@@ -877,12 +877,12 @@ global::UnityEngine.UI.Text count;
 
         if (count == null)
         {
-            // countGo（数量游戏对象）：使用位置：InventoryGridView.ConfigureItemWidget(RectTransform, GridItem, float, bool)。
+            // 数量游戏对象。
 var countGo = new GameObject("Count", typeof(Text));
             countGo.transform.SetParent(rt, false);
             count = countGo.GetComponent<Text>();
             count.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-            // countRt（数量矩形变换）：保存 GameObject.GetComponent<RectTransform>() 的返回结果，供当前步骤使用。使用位置：InventoryGridView.ConfigureItemWidget(RectTransform, GridItem, float, bool)。
+            // 数量矩形变换。
 var countRt = countGo.GetComponent<RectTransform>();
             Vector2 bottomRight = new Vector2(1f, 0f);
             countRt.anchorMin = bottomRight;
@@ -966,7 +966,7 @@ var countRt = countGo.GetComponent<RectTransform>();
 
     /// <summary>ReleaseItemWidget 的业务处理入口；本方法直接依赖 Component.GetComponent&lt;CanvasGroup&gt;()、Component.GetComponent&lt;EventTrigger&gt;()、Dictionary&lt;RectTransform, GridItem&gt;.Remove(RectTransform)、GameObject.SetActive(bool)、List&lt;EventTrigger.Entry&gt;.Clear()、List&lt;RectTransform&gt;.Add(RectTransform)、List&lt;RectTransform&gt;.Contains(RectTransform)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 InventoryGridView.RebuildInternal(int, int, IReadOnlyList&lt;GridItem&gt;)；下游（含内部回调体） Component.GetComponent&lt;CanvasGroup&gt;()、Component.GetComponent&lt;EventTrigger&gt;()、Dictionary&lt;RectTransform, GridItem&gt;.Remove(RectTransform)、GameObject.SetActive(bool)、List&lt;EventTrigger.Entry&gt;.Clear()、List&lt;RectTransform&gt;.Add(RectTransform)、List&lt;RectTransform&gt;.Contains(RectTransform)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="widget">中文含义：界面控件。使用位置：作为 Dictionary&lt;RectTransform, GridItem&gt;.Remove(RectTransform) 的参数、作为 List&lt;RectTransform&gt;.Add(RectTransform) 的参数、作为 List&lt;RectTransform&gt;.Contains(RectTransform) 的参数 等共 4 处。</param>
+    /// <param name="widget">界面控件。</param>
     void ReleaseItemWidget(RectTransform widget)
     {
         if (widget == null)
@@ -974,7 +974,7 @@ var countRt = countGo.GetComponent<RectTransform>();
             return;
         }
 
-        // trigger（触发器）：保存 Component.GetComponent<EventTrigger>() 的返回结果，供当前步骤使用。使用位置：InventoryGridView.ReleaseItemWidget(RectTransform)。
+        // 触发器。
 var trigger = widget.GetComponent<EventTrigger>();
         if (trigger != null)
         {
@@ -982,7 +982,7 @@ var trigger = widget.GetComponent<EventTrigger>();
         }
 
         widgetBindings.Remove(widget);
-        // canvasGroup（画布组）：保存 Component.GetComponent<CanvasGroup>() 的返回结果，供当前步骤使用。使用位置：InventoryGridView.ReleaseItemWidget(RectTransform)。
+        // 画布组。
 var canvasGroup = widget.GetComponent<CanvasGroup>();
         if (canvasGroup != null)
         {
@@ -1007,21 +1007,21 @@ var canvasGroup = widget.GetComponent<CanvasGroup>();
             return;
         }
 
-        // i（当前遍历索引）：使用位置：作为 Transform.GetChild(int) 的参数、InventoryGridView.CacheReusableChildren()。
+        // 当前遍历索引。
 for (int i = 0; i < gridContainer.childCount; i++)
         {
-            // child（子级）：保存 Transform.GetChild(int) 的返回结果，供当前步骤使用。使用位置：InventoryGridView.CacheReusableChildren()。
+            // 子级。
 Transform child = gridContainer.GetChild(i);
             if (child == null)
             {
                 continue;
             }
 
-            // leftOperand18（计算前缓存的左侧子级）：从子级读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：InventoryGridView.CacheReusableChildren()。
+            // 计算前缓存的左侧子级。
 global::UnityEngine.Object leftOperand18 = child;
-            // receiverValue16（判空前缓存的选定叠加层）：从选定叠加层读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、InventoryGridView.CacheReusableChildren()。
+            // 判空前缓存的选定叠加层。
 global::UnityEngine.UI.Image receiverValue16 = selectedOverlay;
-            // optionalValue17（条件访问得到的接收者值16的变换）：保存条件访问的结果，接收者为空时保持默认空值，非空时才执行原成员访问。使用位置：InventoryGridView.CacheReusableChildren()。
+            // 条件访问得到的接收者值16的变换。
 global::UnityEngine.Transform optionalValue17;
             if (!global::System.Object.ReferenceEquals(receiverValue16, null))
             {
@@ -1037,11 +1037,11 @@ global::UnityEngine.Transform optionalValue17;
                 continue;
             }
 
-            // leftOperand21（计算前缓存的左侧子级）：从子级读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：InventoryGridView.CacheReusableChildren()。
+            // 计算前缓存的左侧子级。
 global::UnityEngine.Object leftOperand21 = child;
-            // receiverValue19（判空前缓存的悬停叠加层）：从悬停叠加层读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、InventoryGridView.CacheReusableChildren()。
+            // 判空前缓存的悬停叠加层。
 global::UnityEngine.UI.Image receiverValue19 = hoverOverlay;
-            // optionalValue20（条件访问得到的接收者值19的变换）：保存条件访问的结果，接收者为空时保持默认空值，非空时才执行原成员访问。使用位置：InventoryGridView.CacheReusableChildren()。
+            // 条件访问得到的接收者值19的变换。
 global::UnityEngine.Transform optionalValue20;
             if (!global::System.Object.ReferenceEquals(receiverValue19, null))
             {
@@ -1059,7 +1059,7 @@ global::UnityEngine.Transform optionalValue20;
 
             if (child.name.StartsWith("Cell_", StringComparison.Ordinal))
             {
-                // rt（界面矩形变换）：使用位置：作为 List<RectTransform>.Add(RectTransform) 的参数、作为 List<RectTransform>.Contains(RectTransform) 的参数、InventoryGridView.CacheReusableChildren()。
+                // 界面矩形变换。
 var rt = child as RectTransform;
                 if (rt != null && !reusableCells.Contains(rt))
                 {
@@ -1068,7 +1068,7 @@ var rt = child as RectTransform;
             }
             else if (child.name.StartsWith("Item_", StringComparison.Ordinal))
             {
-                // rt（界面矩形变换）：使用位置：作为 Dictionary<GridItem, RectTransform>.ContainsValue(RectTransform) 的参数、作为 List<RectTransform>.Add(RectTransform) 的参数、作为 List<RectTransform>.Contains(RectTransform) 的参数 等共 4 处。
+                // 界面矩形变换。
 var rt = child as RectTransform;
                 if (rt != null && !itemWidgets.ContainsValue(rt) && !pooledItemWidgets.Contains(rt))
                 {
@@ -1091,12 +1091,12 @@ var rt = child as RectTransform;
     /// 这样九十度旋转不会继续沿用旋转前的拉伸矩形，也不会改变贴图比例。
     /// </summary>
     /// <remarks>静态调用链：上游 InventoryGridView.ConfigureItemWidget(RectTransform, GridItem, float, bool)；下游（含内部回调体） Mathf.Abs(int)、Mathf.Max(float, float)、Mathf.RoundToInt(float)、Vector2.Vector2(float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="iconRect">中文含义：图标矩形。使用位置：InventoryGridView.FitIconWithoutDistortion(RectTransform, Sprite, Vector2, float, float, float)。</param>
-    /// <param name="sprite">中文含义：精灵图。使用位置：作为 Mathf.Max(float, float) 的参数、InventoryGridView.FitIconWithoutDistortion(RectTransform, Sprite, Vector2, float, float, float)。</param>
-    /// <param name="containerSize">中文含义：容器尺寸。使用位置：作为 Mathf.Max(float, float) 的参数。</param>
-    /// <param name="rotationDegrees">中文含义：旋转度。使用位置：作为 Mathf.RoundToInt(float) 的参数。</param>
-    /// <param name="padding">中文含义：留白。使用位置：作为 Mathf.Max(float, float) 的参数。</param>
-    /// <param name="scale">中文含义：缩放。使用位置：作为 Mathf.Max(float, float) 的参数。</param>
+    /// <param name="iconRect">图标矩形。</param>
+    /// <param name="sprite">精灵图。</param>
+    /// <param name="containerSize">容器尺寸。</param>
+    /// <param name="rotationDegrees">旋转度。</param>
+    /// <param name="padding">留白。</param>
+    /// <param name="scale">缩放。</param>
     static void FitIconWithoutDistortion(RectTransform iconRect, Sprite sprite, Vector2 containerSize, float rotationDegrees, float padding, float scale)
     {
         if (iconRect == null || sprite == null)
@@ -1104,26 +1104,26 @@ var rt = child as RectTransform;
             return;
         }
 
-        // safePadding（安全留白）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Max(float, float) 的参数。
+        // 安全留白。
 float safePadding = Mathf.Max(0f, padding);
-        // available（可用）：使用位置：作为 Vector2.Vector2(float, float) 的参数、InventoryGridView.FitIconWithoutDistortion(RectTransform, Sprite, Vector2, float, float, float)。
+        // 可用。
 Vector2 available = new Vector2(Mathf.Max(1f, containerSize.x - safePadding * 2f), Mathf.Max(1f, containerSize.y - safePadding * 2f));
-        // quarterTurns（四分之一转数）：使用位置：InventoryGridView.FitIconWithoutDistortion(RectTransform, Sprite, Vector2, float, float, float)。
+        // 四分之一转数。
 int quarterTurns = Mathf.Abs(Mathf.RoundToInt(rotationDegrees / 90f)) % 2;
         if (quarterTurns == 1)
         {
             available = new Vector2(available.y, available.x);
         }
 
-        // spriteWidth（精灵图宽度）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：InventoryGridView.FitIconWithoutDistortion(RectTransform, Sprite, Vector2, float, float, float)。
+        // 精灵图宽度。
 float spriteWidth = Mathf.Max(1f, sprite.rect.width);
-        // spriteHeight（精灵图高度）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：InventoryGridView.FitIconWithoutDistortion(RectTransform, Sprite, Vector2, float, float, float)。
+        // 精灵图高度。
 float spriteHeight = Mathf.Max(1f, sprite.rect.height);
-        // spriteAspect（精灵图宽高比）：使用位置：作为 Vector2.Vector2(float, float) 的参数、InventoryGridView.FitIconWithoutDistortion(RectTransform, Sprite, Vector2, float, float, float)。
+        // 精灵图宽高比。
 float spriteAspect = spriteWidth / spriteHeight;
-        // availableAspect（可用宽高比）：使用位置：InventoryGridView.FitIconWithoutDistortion(RectTransform, Sprite, Vector2, float, float, float)。
+        // 可用宽高比。
 float availableAspect = available.x / available.y;
-        // fittedSize（适配后的尺寸）：使用位置：InventoryGridView.FitIconWithoutDistortion(RectTransform, Sprite, Vector2, float, float, float)。
+        // 适配后的尺寸。
 Vector2 fittedSize;
         if (availableAspect > spriteAspect)
         {
@@ -1147,33 +1147,33 @@ Vector2 fittedSize;
             return glowSprite;
         }
 
-        // size（尺寸）：使用位置：作为 Mathf.Min(int, int) 的参数、作为 Rect.Rect(float, float, float, float) 的参数、作为 Texture2D.Texture2D(int, int, TextureFormat, bool) 的参数 等共 4 处。
+        // 尺寸。
 int size = 128;
-        // border（边框）：使用位置：作为 Vector4.Vector4(float, float, float, float) 的参数、InventoryGridView.EnsureGlowSprite()。
+        // 边框。
 int border = 4;
-        // tex（纹理）：使用位置：作为 Sprite.Create(Texture2D, Rect, Vector2, float, uint, SpriteMeshType, Vector4) 的参数、InventoryGridView.EnsureGlowSprite()。
+        // 纹理。
 var tex = new Texture2D(size, size, TextureFormat.RGBA32, false);
         tex.filterMode = FilterMode.Bilinear;
         tex.wrapMode = TextureWrapMode.Clamp;
-        // pixels（像素集合）：使用位置：作为 Texture2D.SetPixels32(Color32[]) 的参数、InventoryGridView.EnsureGlowSprite()。
+        // 像素集合。
 var pixels = new Color32[size * size];
-        // y（纵向）：使用位置：作为 Mathf.Min(int, int) 的参数、InventoryGridView.EnsureGlowSprite()。
+        // 纵向。
 for (int y = 0; y < size; y++)
         {
-            // x（横向）：使用位置：作为 Mathf.Min(int, int) 的参数、InventoryGridView.EnsureGlowSprite()。
+            // 横向。
 for (int x = 0; x < size; x++)
             {
-                // dx（横向增量）：保存 Mathf.Min(int, int) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Min(int, int) 的参数。
+                // 横向增量。
 int dx = Mathf.Min(x, size - 1 - x);
-                // dy（纵向增量）：保存 Mathf.Min(int, int) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Min(int, int) 的参数。
+                // 纵向增量。
 int dy = Mathf.Min(y, size - 1 - y);
-                // dist（距离）：保存 Mathf.Min(int, int) 的返回结果，供当前步骤使用。使用位置：InventoryGridView.EnsureGlowSprite()。
+                // 距离。
 int dist = Mathf.Min(dx, dy);
-                // alpha（透明度）：使用位置：作为 Color32.Color32(byte, byte, byte, byte) 的参数、InventoryGridView.EnsureGlowSprite()。
+                // 透明度。
 float alpha = 0f;
                 if (dist < border)
                 {
-                    // t（像素到高亮边界距离的归一化比例）：使用位置：InventoryGridView.EnsureGlowSprite()。
+                    // 像素到高亮边界距离的归一化比例。
 float t = (float)dist / border;
                     alpha = 1f - (1f - t) * (1f - t) * (1f - t);
                 }
@@ -1190,20 +1190,20 @@ float t = (float)dist / border;
 
     /// <summary>EnsureOverlay 的业务处理入口；本方法直接依赖 GameObject.GameObject(string, params Type[])、GameObject.GetComponent&lt;Image&gt;()、GameObject.GetComponent&lt;RectTransform&gt;()、GameObject.SetActive(bool)、InventoryGridView.EnsureGlowSprite()、Transform.SetParent(Transform, bool)、Vector2.Vector2(float, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 InventoryGridView.ShowHover(GridItem)、InventoryGridView.ShowSelected(GridItem)；下游（含内部回调体） GameObject.GameObject(string, params Type[])、GameObject.GetComponent&lt;Image&gt;()、GameObject.GetComponent&lt;RectTransform&gt;()、GameObject.SetActive(bool)、InventoryGridView.EnsureGlowSprite()、Transform.SetParent(Transform, bool)、Vector2.Vector2(float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="name">中文含义：名称。使用位置：作为 GameObject.GameObject(string, params Type[]) 的参数。</param>
-    /// <param name="color">中文含义：颜色。使用位置：InventoryGridView.EnsureOverlay(string, Color, float)。</param>
+    /// <param name="name">名称。</param>
+    /// <param name="color">颜色。</param>
     /// <param name="padding">中文含义：留白。</param>
     Image EnsureOverlay(string name, Color color, float padding)
     {
-        // go（当前游戏对象）：使用位置：InventoryGridView.EnsureOverlay(string, Color, float)。
+        // 当前游戏对象。
 var go = new GameObject(name, typeof(Image));
         go.transform.SetParent(gridContainer, false);
-        // rt（界面矩形变换）：保存 GameObject.GetComponent<RectTransform>() 的返回结果，供当前步骤使用。使用位置：InventoryGridView.EnsureOverlay(string, Color, float)。
+        // 界面矩形变换。
 var rt = go.GetComponent<RectTransform>();
         rt.anchorMin = new Vector2(0.5f, 0.5f);
         rt.anchorMax = new Vector2(0.5f, 0.5f);
         rt.pivot = new Vector2(0.5f, 0.5f);
-        // img（界面图像组件）：保存 GameObject.GetComponent<Image>() 的返回结果，供当前步骤使用。使用位置：InventoryGridView.EnsureOverlay(string, Color, float)。
+        // 界面图像组件。
 var img = go.GetComponent<Image>();
         img.sprite = EnsureGlowSprite();
         img.type = Image.Type.Sliced;
@@ -1215,7 +1215,7 @@ var img = go.GetComponent<Image>();
 
     /// <summary>显示选中高亮</summary>
     /// <remarks>静态调用链：上游 InventoryUI.OnItemClicked(GridItem, PointerEventData.InputButton, Vector2)、InventoryUI.OnItemPointerDown(GridItem, Vector2)、InventoryUI.RefreshGridInternal()、StorageBoxUI.OnInventoryItemPointerDown(GridItem, Vector2)；下游（含内部回调体） GameObject.SetActive(bool)、InventoryGridView.EnsureOverlay(string, Color, float)、InventoryGridView.HideSelected()、InventoryGridView.PositionOverlay(Image, GridItem, float)、Transform.SetAsLastSibling()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="gi">中文含义：背包网格物品。使用位置：作为 InventoryGridView.PositionOverlay(Image, GridItem, float) 的参数、InventoryGridView.ShowSelected(GridItem)。</param>
+    /// <param name="gi">背包网格物品。</param>
     public void ShowSelected(GridItem gi)
     {
         if (gi == null)
@@ -1246,7 +1246,7 @@ var img = go.GetComponent<Image>();
 
     /// <summary>显示悬停高亮</summary>
     /// <remarks>静态调用链：上游 InventoryUI.OnItemHoverEnter(GridItem)、StorageBoxUI.OnInventoryItemHoverEnter(GridItem)；下游（含内部回调体） GameObject.SetActive(bool)、InventoryGridView.EnsureOverlay(string, Color, float)、InventoryGridView.HideHover()、InventoryGridView.PositionOverlay(Image, GridItem, float)、Transform.GetSiblingIndex()、Transform.SetSiblingIndex(int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="gi">中文含义：背包网格物品。使用位置：作为 InventoryGridView.PositionOverlay(Image, GridItem, float) 的参数、InventoryGridView.ShowHover(GridItem)。</param>
+    /// <param name="gi">背包网格物品。</param>
     public void ShowHover(GridItem gi)
     {
         if (gi == null)
@@ -1281,13 +1281,13 @@ var img = go.GetComponent<Image>();
 
     /// <summary>PositionOverlay 的业务处理入口；本方法直接依赖 InventoryGridView.GetItemRect(GridItem, float, out Vector2, out Vector2)、Vector2.Vector2(float, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 InventoryGridView.ShowHover(GridItem)、InventoryGridView.ShowSelected(GridItem)；下游（含内部回调体） InventoryGridView.GetItemRect(GridItem, float, out Vector2, out Vector2)、Vector2.Vector2(float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="overlay">中文含义：叠加层。使用位置：InventoryGridView.PositionOverlay(Image, GridItem, float)。</param>
-    /// <param name="gi">中文含义：背包网格物品。使用位置：作为 InventoryGridView.GetItemRect(GridItem, float, out Vector2, out Vector2) 的参数。</param>
-    /// <param name="padding">中文含义：留白。使用位置：作为 Vector2.Vector2(float, float) 的参数。</param>
+    /// <param name="overlay">叠加层。</param>
+    /// <param name="gi">背包网格物品。</param>
+    /// <param name="padding">留白。</param>
     void PositionOverlay(Image overlay, GridItem gi, float padding)
     {
         GetItemRect(gi, CurrentCell, out var /* 中文含义：位置。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ pos, out var /* 中文含义：尺寸。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ size);
-        // rt（界面矩形变换）：使用位置：InventoryGridView.PositionOverlay(Image, GridItem, float)。
+        // 界面矩形变换。
 var rt = overlay.rectTransform;
         rt.sizeDelta = new Vector2(size.x + padding * 2f, size.y + padding * 2f);
         rt.anchoredPosition = pos;
@@ -1295,25 +1295,25 @@ var rt = overlay.rectTransform;
 
     /// <summary>设置物品控件的拖拽透明度</summary>
     /// <remarks>静态调用链：上游 InventoryUI.OnItemPointerDown(GridItem, Vector2)、InventoryUI.OnItemPointerUp(GridItem, Vector2)、InventoryUI.RefreshGridInternal()、StorageBoxUI.OnInventoryItemPointerDown(GridItem, Vector2)、StorageBoxUI.OnInventoryItemPointerUp(GridItem, Vector2) 等共 6 处；下游（含内部回调体） Component.GetComponent&lt;CanvasGroup&gt;()、GameObject.AddComponent&lt;CanvasGroup&gt;()、InventoryGridView.GetItemWidget(GridItem)、Transform.SetAsLastSibling()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="gi">中文含义：背包网格物品。使用位置：作为 InventoryGridView.GetItemWidget(GridItem) 的参数。</param>
-    /// <param name="dragging">中文含义：是否拖拽中。使用位置：InventoryGridView.SetItemDragAlpha(GridItem, bool)。</param>
+    /// <param name="gi">背包网格物品。</param>
+    /// <param name="dragging">是否拖拽中。</param>
     public void SetItemDragAlpha(GridItem gi, bool dragging)
     {
-        // widget（界面控件）：保存 InventoryGridView.GetItemWidget(GridItem) 的返回结果，供当前步骤使用。使用位置：InventoryGridView.SetItemDragAlpha(GridItem, bool)。
+        // 界面控件。
 RectTransform widget = GetItemWidget(gi);
         if (widget == null)
         {
             return;
         }
 
-        // canvasGroup（画布组）：保存 Component.GetComponent<CanvasGroup>() 的返回结果，供当前步骤使用。使用位置：InventoryGridView.SetItemDragAlpha(GridItem, bool)。
+        // 画布组。
 CanvasGroup canvasGroup = widget.GetComponent<CanvasGroup>();
         if (canvasGroup == null)
         {
             canvasGroup = widget.gameObject.AddComponent<CanvasGroup>();
         }
 
-        // assignmentReceiver22（赋值前保存的目标画布组）：从画布组读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：InventoryGridView.SetItemDragAlpha(GridItem, bool)。
+        // 赋值前保存的目标画布组。
 global::UnityEngine.CanvasGroup assignmentReceiver22 = canvasGroup;
         if (dragging)
         {
@@ -1334,7 +1334,7 @@ global::UnityEngine.CanvasGroup assignmentReceiver22 = canvasGroup;
 
     /// <summary>获取指定数据实例对应的物品控件。</summary>
     /// <remarks>静态调用链：上游 AttacheCasePresentationController.LateUpdate()、InventoryGridView.SetItemDragAlpha(GridItem, bool)、InventoryGridView.SetItemWidgetPosition(GridItem, Vector2)、InventoryUI.RefreshGridInternal()、StorageBoxUI.GetItemAnchoredPos(GridItem) 等共 6 处；下游（含内部回调体） Dictionary&lt;GridItem, RectTransform&gt;.TryGetValue(GridItem, out RectTransform)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="item">中文含义：当前背包网格物品。使用位置：作为 Dictionary&lt;GridItem, RectTransform&gt;.TryGetValue(GridItem, out RectTransform) 的参数、InventoryGridView.GetItemWidget(GridItem)。</param>
+    /// <param name="item">当前背包网格物品。</param>
     public RectTransform GetItemWidget(GridItem item)
     {
         if (item == null)
@@ -1354,11 +1354,11 @@ global::UnityEngine.CanvasGroup assignmentReceiver22 = canvasGroup;
 
     /// <summary>拖拽期间移动指定物品控件。</summary>
     /// <remarks>静态调用链：上游 InventoryUI.OnItemDrag(GridItem, Vector2)、InventoryUI.RefreshGridInternal()、StorageBoxUI.OnInventoryItemDrag(GridItem, Vector2)、StorageBoxUI.RefreshInventoryGridInternal()；下游（含内部回调体） InventoryGridView.GetItemWidget(GridItem)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="item">中文含义：当前背包网格物品。使用位置：作为 InventoryGridView.GetItemWidget(GridItem) 的参数。</param>
-    /// <param name="anchoredPosition">中文含义：锚定位置。使用位置：InventoryGridView.SetItemWidgetPosition(GridItem, Vector2)。</param>
+    /// <param name="item">当前背包网格物品。</param>
+    /// <param name="anchoredPosition">锚定位置。</param>
     public void SetItemWidgetPosition(GridItem item, Vector2 anchoredPosition)
     {
-        // widget（界面控件）：保存 InventoryGridView.GetItemWidget(GridItem) 的返回结果，供当前步骤使用。使用位置：InventoryGridView.SetItemWidgetPosition(GridItem, Vector2)。
+        // 界面控件。
 RectTransform widget = GetItemWidget(item);
         if (widget != null)
         {

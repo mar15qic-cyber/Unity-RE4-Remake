@@ -12,44 +12,44 @@ public class TitleScreenManager : MonoBehaviour
     private AudioEventData titleMusic;
     private AudioEventData mainMenuMusic;
     private AudioEventData titleStartCue;
-    /// <summary>中文含义：界面视觉主题配置。使用位置：作为 MenuThemeApplier.Apply(Transform, UIVisualTheme) 的参数、InterfaceReworkBuilder.ConfigurationTitle()、TitleScreenManager.Start()。</summary>
+    /// <summary>界面视觉主题配置。</summary>
     [Header("统一视觉主题")]
     public UIVisualTheme visualTheme;
-    /// <summary>中文含义：标题演出。使用位置：InterfaceReworkBuilder.ConfigurationTitle()、TitleScreenManager.Update()。</summary>
+    /// <summary>标题演出。</summary>
     [Header("标题演出")]
     [UnityEngine.Serialization.FormerlySerializedAs("标题演出")]
     [UnityEngine.InspectorName("标题演出")]
     public TitleTypewriterPresentation titlePresentation;
-    /// <summary>中文含义：标题面板。使用位置：InterfaceReworkBuilder.ConfigurationTitle()、TitleScreenManager.LoadGameScene()、TitleScreenManager.OpenOptions() 等共 5 处。</summary>
+    /// <summary>标题面板。</summary>
     [Header("界面引用")]
     public GameObject titlePanel;
-    /// <summary>中文含义：菜单面板。使用位置：作为 InterfaceReworkBuilder.Locate(RectTransform, Vector2, Vector2) 的参数、作为 InterfaceReworkBuilder.NewImage(Transform, string, Color) 的参数、作为 InterfaceReworkBuilder.NewText(Transform, string, string, Font, int) 的参数 等共 9 处。</summary>
+    /// <summary>菜单面板。</summary>
     public GameObject menuPanel;
-    /// <summary>中文含义：标识图文字。使用位置：作为 InterfaceReworkBuilder.Locate(RectTransform, Vector2, Vector2) 的参数、InterfaceReworkBuilder.ConfigurationTitle()、TitleScreenManager.Start()。</summary>
+    /// <summary>标识图文字。</summary>
     public Text logoText;
-    /// <summary>中文含义：按下任意按钮文字。使用位置：作为 InterfaceReworkBuilder.Locate(RectTransform, Vector2, Vector2) 的参数、InterfaceReworkBuilder.ConfigurationTitle()、TitleScreenManager.Start()。</summary>
+    /// <summary>按下任意按钮文字。</summary>
     public Text pressAnyButtonText;
-    /// <summary>中文含义：菜单物品列表。使用位置：InterfaceReworkBuilder.ConfigurationTitle()、TitleScreenManager.HandleMenuMouse()、TitleScreenManager.NavigateMenu(int) 等共 6 处。</summary>
+    /// <summary>菜单物品列表。</summary>
     public Text[] menuItems;
-    /// <summary>中文含义：选择指示器。使用位置：InterfaceReworkBuilder.ConfigurationTitle()、TitleScreenManager.RefreshMenuDisplay()。</summary>
+    /// <summary>选择指示器。</summary>
     public RectTransform selectionIndicator;
-    /// <summary>中文含义：菜单按钮集合。使用位置：TitleScreenManager.SetMenuButtonsInteractable(bool)、TitleScreenManager.Start()。</summary>
+    /// <summary>菜单按钮集合。</summary>
     [Header("菜单项按钮（用于鼠标点击）")]
     public Button[] menuButtons;
-    /// <summary>中文含义：粒子集合容器。使用位置：作为 Object.Instantiate&lt;GameObject&gt;(GameObject, Transform) 的参数、作为 Transform.SetParent(Transform, bool) 的参数、InterfaceReworkBuilder.ConfigurationTitle() 等共 5 处。</summary>
+    /// <summary>粒子集合容器。</summary>
     [Header("背景粒子")]
     public RectTransform particlesContainer;
-    /// <summary>中文含义：粒子预制件。使用位置：作为 Object.Instantiate&lt;GameObject&gt;(GameObject, Transform) 的参数、TitleScreenManager.BackgroundParticles()。</summary>
+    /// <summary>粒子预制件。</summary>
     public GameObject particlePrefab;
-    /// <summary>中文含义：粒子数量。使用位置：InterfaceReworkBuilder.ConfigurationTitle()、TitleScreenManager.BackgroundParticles()。</summary>
+    /// <summary>粒子数量。</summary>
     public int particleCount = 12;
-    /// <summary>中文含义：菜单悬停缩放。使用位置：InterfaceReworkBuilder.ConfigurationTitle()、TitleScreenManager.HandleMenuMouse()、TitleScreenManager.NavigateMenu(int) 等共 4 处。</summary>
+    /// <summary>菜单悬停缩放。</summary>
     [Header("选项菜单")]
     [Header("联动缩放")]
     public MenuHoverScale menuHoverScale;
-    /// <summary>中文含义：选项集合菜单。使用位置：InterfaceReworkBuilder.ConfigurationTitle()、TitleScreenManager.OpenOptions()、TitleScreenManager.Start() 等共 4 处。</summary>
+    /// <summary>选项集合菜单。</summary>
     public OptionsTabManager optionsMenu;
-    /// <summary>中文含义：新版分页菜单存在时优先使用新版。兼容当前标题场景中的简易选项菜单；新版分页菜单存在时优先使用新版。使用位置：TitleScreenManager.OpenOptions()、TitleScreenManager.Start()、TitleScreenManager.Update()。</summary>
+    /// <summary>新版分页菜单存在时优先使用新版。兼容当前标题场景中的简易选项菜单；新版分页菜单存在时优先使用新版。</summary>
     [Tooltip("兼容当前标题场景中的简易选项菜单；新版分页菜单存在时优先使用新版")]
     public OptionsMenu simpleOptionsMenu;
     /// <summary>中文含义：标识图移动持续时间。</summary>
@@ -61,19 +61,19 @@ public class TitleScreenManager : MonoBehaviour
     public Vector2 logoTargetPos = new Vector2(-350, 380);
     /// <summary>中文含义：标识图淡入淡出目标。</summary>
     public float logoFadeTarget = 0.55f;
-    /// <summary>中文含义：菜单滑移持续时间。使用位置：TitleScreenManager.SlideMenuItemIn(int, float)。</summary>
+    /// <summary>菜单滑移持续时间。</summary>
     [Header("菜单滑入")]
     public float menuSlideDuration = 0.35f;
     /// <summary>中文含义：菜单滑移延迟。</summary>
     public float menuSlideDelay = 0.12f;
-    /// <summary>中文含义：菜单滑移偏移量。使用位置：TitleScreenManager.SlideMenuItemIn(int, float)。</summary>
+    /// <summary>菜单滑移偏移量。</summary>
     public float menuSlideOffset = 180f;
-    /// <summary>中文含义：呼吸起伏速度。使用位置：作为 Mathf.Sin(float) 的参数。</summary>
+    /// <summary>呼吸起伏速度。</summary>
     [Header("呼吸灯")]
     public float breatheSpeed = 0.8f;
-    /// <summary>中文含义：呼吸起伏最小透明度。使用位置：作为 Mathf.Lerp(float, float, float) 的参数。</summary>
+    /// <summary>呼吸起伏最小透明度。</summary>
     public float breatheMinAlpha = 0.2f;
-    /// <summary>中文含义：呼吸起伏最大透明度。使用位置：作为 Mathf.Lerp(float, float, float) 的参数。</summary>
+    /// <summary>呼吸起伏最大透明度。</summary>
     public float breatheMaxAlpha = 0.85f;
     [Header("村庄实景")]
     [Tooltip("标题和主菜单共用的正式村庄取景。")]
@@ -84,15 +84,15 @@ public class TitleScreenManager : MonoBehaviour
     private Texture2D titleBackdropShade;
     private GameObject villageScenery;
 
-    /// <summary>中文含义：选定颜色。使用位置：TitleScreenManager.RefreshMenuDisplay()、TitleScreenManager.Start()。</summary>
+    /// <summary>选定颜色。</summary>
     [Header("颜色")]
     public Color selectedColor = new Color(0.85f, 0.1f, 0.1f, 1f);
-    /// <summary>中文含义：普通状态颜色。使用位置：TitleScreenManager.RefreshMenuDisplay()、TitleScreenManager.Start()。</summary>
+    /// <summary>普通状态颜色。</summary>
     public Color normalColor = new Color(1f, 1f, 1f, 0.7f);
-    /// <summary>中文含义：禁用状态颜色。使用位置：TitleScreenManager.RefreshMenuDisplay()、TitleScreenManager.Start()。</summary>
+    /// <summary>禁用状态颜色。</summary>
     public Color disabledColor = new Color(0.4f, 0.4f, 0.4f, 0.5f);
     // 菜单项标签
-    /// <summary>中文含义：菜单标签集合。只读字段，初始化后不由普通写入口替换。使用位置：TitleScreenManager.Start()。</summary>
+    /// <summary>菜单标签集合。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly string[] MenuLabels =
     {
         "继续游戏",
@@ -102,7 +102,7 @@ public class TitleScreenManager : MonoBehaviour
         "退出游戏"
     };
     // 初始可用状态：CONTINUE 和 LOAD GAME 禁用（无存档系统）
-    /// <summary>中文含义：菜单启用默认。只读字段，初始化后不由普通写入口替换。使用位置：TitleScreenManager.Start()。</summary>
+    /// <summary>菜单启用默认。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly bool[] MenuEnabledDefault =
     {
         false,
@@ -126,21 +126,21 @@ public class TitleScreenManager : MonoBehaviour
         Loading
     }
 
-    /// <summary>中文含义：当前标题状态。使用位置：TitleScreenManager.BackgroundParticles()、TitleScreenManager.ExecuteMenuAction(int)、TitleScreenManager.LoadGameScene() 等共 8 处。</summary>
+    /// <summary>当前标题状态。</summary>
     private TitleState state = TitleState.Title;
-    /// <summary>中文含义：选定索引。使用位置：作为 MenuHoverScale.SetHoveredIndex(int) 的参数、作为 TitleScreenManager.ExecuteMenuAction(int) 的参数、TitleScreenManager.HandleMenuMouse() 等共 6 处。</summary>
+    /// <summary>选定索引。</summary>
     private int selectedIndex = 1; // 默认选中 NEW GAME
-    /// <summary>中文含义：按下按钮分组。使用位置：TitleScreenManager.Start()、TitleScreenManager.TransitionToMenu()、TitleScreenManager.Update() 等共 4 处。</summary>
+    /// <summary>按下按钮分组。</summary>
     private CanvasGroup pressButtonGroup;
-    /// <summary>中文含义：标识图分组。使用位置：TitleScreenManager.Start()、TitleScreenManager.TransitionToMenu()。</summary>
+    /// <summary>标识图分组。</summary>
     private CanvasGroup logoGroup;
-    /// <summary>中文含义：标识图矩形。使用位置：TitleScreenManager.Start()。</summary>
+    /// <summary>标识图矩形。</summary>
     private RectTransform logoRect;
-    /// <summary>中文含义：菜单物品分组集合。使用位置：TitleScreenManager.SlideMenuItemIn(int, float)、TitleScreenManager.Start()、TitleScreenManager.TransitionToMenu()。</summary>
+    /// <summary>菜单物品分组集合。</summary>
     private CanvasGroup[] menuItemGroups;
-    /// <summary>中文含义：菜单启用。使用位置：TitleScreenManager.ExecuteMenuAction(int)、TitleScreenManager.NavigateMenu(int)、TitleScreenManager.OnMenuItemClicked(int) 等共 7 处。</summary>
+    /// <summary>菜单启用。</summary>
     private bool[] menuEnabled;
-    /// <summary>中文含义：是否加载。使用位置：TitleScreenManager.ExecuteMenuAction(int)、TitleScreenManager.LoadGameScene()、TitleScreenManager.OnMenuItemClicked(int)。</summary>
+    /// <summary>是否加载。</summary>
     private bool isLoading;
     private void CreateVillageBackdrop()
     {
@@ -191,7 +191,7 @@ public class TitleScreenManager : MonoBehaviour
             MenuThemeApplier.Apply(transform, visualTheme);
         }
 
-        // i（当前遍历索引）：使用位置：TitleScreenManager.Start()。
+        // 当前遍历索引。
 for (int i = 0; menuItems != null && i < menuItems.Length && i < MenuLabels.Length; i++)
         {
             if (menuItems[i] != null)
@@ -209,7 +209,7 @@ for (int i = 0; menuItems != null && i < menuItems.Length && i < MenuLabels.Leng
         // 初始化各组件引用
         if (pressAnyButtonText != null)
         {
-            // availableValue1（空值判断前缓存的取得组件的返回结果）：从取得组件的返回结果读取一次后保存，供后续分支使用。保存空值判断之前的值，只读取一次，非空时不执行回退分支。使用位置：作为 object.ReferenceEquals(object, object) 的参数、TitleScreenManager.Start()。
+            // 空值判断前缓存的取得组件的返回结果。
 global::UnityEngine.CanvasGroup availableValue1 = pressAnyButtonText.GetComponent<CanvasGroup>();
             if (!global::System.Object.ReferenceEquals(availableValue1, null))
             {
@@ -224,7 +224,7 @@ global::UnityEngine.CanvasGroup availableValue1 = pressAnyButtonText.GetComponen
         if (logoText != null)
         {
             logoRect = logoText.GetComponent<RectTransform>();
-            // availableValue3（空值判断前缓存的取得组件的返回结果）：从取得组件的返回结果读取一次后保存，供后续分支使用。保存空值判断之前的值，只读取一次，非空时不执行回退分支。使用位置：作为 object.ReferenceEquals(object, object) 的参数、TitleScreenManager.Start()。
+            // 空值判断前缓存的取得组件的返回结果。
 global::UnityEngine.CanvasGroup availableValue3 = logoText.GetComponent<CanvasGroup>();
             if (!global::System.Object.ReferenceEquals(availableValue3, null))
             {
@@ -241,7 +241,7 @@ global::UnityEngine.CanvasGroup availableValue3 = logoText.GetComponent<CanvasGr
         {
             menuItemGroups = new CanvasGroup[menuItems.Length];
             menuEnabled = new bool[menuItems.Length];
-            // i（当前遍历索引）：使用位置：TitleScreenManager.Start()。
+            // 当前遍历索引。
 for (int i = 0; i < menuItems.Length; i++)
             {
                 if (menuItems[i] == null)
@@ -249,11 +249,11 @@ for (int i = 0; i < menuItems.Length; i++)
                     continue;
                 }
 
-                // assignmentReceiver5（赋值前保存的目标菜单物品分组集合）：从菜单物品分组集合读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：TitleScreenManager.Start()。
+                // 赋值前保存的目标菜单物品分组集合。
 global::UnityEngine.CanvasGroup[] assignmentReceiver5 = menuItemGroups;
-                // assignmentIndex6（赋值前保存的索引当前遍历索引）：从索引读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：TitleScreenManager.Start()。
+                // 赋值前保存的索引当前遍历索引。
 int assignmentIndex6 = i;
-                // availableValue7（空值判断前缓存的取得组件的返回结果）：从取得组件的返回结果读取一次后保存，供后续分支使用。保存空值判断之前的值，只读取一次，非空时不执行回退分支。使用位置：作为 object.ReferenceEquals(object, object) 的参数、TitleScreenManager.Start()。
+                // 空值判断前缓存的取得组件的返回结果。
 global::UnityEngine.CanvasGroup availableValue7 = menuItems[i].GetComponent<CanvasGroup>();
                 if (!global::System.Object.ReferenceEquals(availableValue7, null))
                 {
@@ -264,9 +264,9 @@ global::UnityEngine.CanvasGroup availableValue7 = menuItems[i].GetComponent<Canv
                     assignmentReceiver5[assignmentIndex6] = menuItems[i].gameObject.AddComponent<CanvasGroup>();
                 }
 
-                // assignmentReceiver9（赋值前保存的目标菜单启用）：从菜单启用读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：TitleScreenManager.Start()。
+                // 赋值前保存的目标菜单启用。
 bool[] assignmentReceiver9 = menuEnabled;
-                // assignmentIndex10（赋值前保存的索引当前遍历索引）：从索引读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：TitleScreenManager.Start()。
+                // 赋值前保存的索引当前遍历索引。
 int assignmentIndex10 = i;
                 if ((i < MenuEnabledDefault.Length))
                 {
@@ -282,7 +282,7 @@ int assignmentIndex10 = i;
         // 绑定菜单按钮点击
         if (menuButtons != null)
         {
-            // i（当前遍历索引）：使用位置：TitleScreenManager.Start()。
+            // 当前遍历索引。
 for (int i = 0; i < menuButtons.Length && i < menuItems.Length; i++)
             {
                 if (menuButtons[i] == null)
@@ -290,7 +290,7 @@ for (int i = 0; i < menuButtons.Length && i < menuItems.Length; i++)
                     continue;
                 }
 
-                // index（当前元素索引）：使用位置：作为 TitleScreenManager.OnMenuItemClicked(int) 的参数。
+                // 当前元素索引。
 int index = i;
                 menuButtons[i].onClick.AddListener(() => OnMenuItemClicked(index));
             }
@@ -299,7 +299,7 @@ int index = i;
         {
             // 如果没赋值按钮，自动添加 Button 组件
             menuButtons = new Button[menuItems.Length];
-            // i（当前遍历索引）：使用位置：TitleScreenManager.Start()。
+            // 当前遍历索引。
 for (int i = 0; i < menuItems.Length; i++)
             {
                 if (menuItems[i] == null)
@@ -307,7 +307,7 @@ for (int i = 0; i < menuItems.Length; i++)
                     continue;
                 }
 
-                // btn（按钮）：保存 Component.GetComponent<Button>() 的返回结果，供当前步骤使用。使用位置：TitleScreenManager.Start()。
+                // 按钮。
 Button btn = menuItems[i].GetComponent<Button>();
                 if (btn == null)
                 {
@@ -315,7 +315,7 @@ Button btn = menuItems[i].GetComponent<Button>();
                 }
 
                 menuButtons[i] = btn;
-                // index（当前元素索引）：使用位置：作为 TitleScreenManager.OnMenuItemClicked(int) 的参数。
+                // 当前元素索引。
 int index = i;
                 btn.onClick.AddListener(() => OnMenuItemClicked(index));
             }
@@ -355,7 +355,7 @@ int index = i;
 
         CreateVillageBackdrop();
         Cursor.lockState = CursorLockMode.None;
-        // receiverValue12（判空前缓存的界面光标管理器的实例）：从界面光标管理器的实例读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、TitleScreenManager.Start()。
+        // 判空前缓存的界面光标管理器的实例。
 global::UICursorManager receiverValue12 = UICursorManager.Instance;
         if (!global::System.Object.ReferenceEquals(receiverValue12, null))
         {
@@ -421,7 +421,7 @@ global::UICursorManager receiverValue12 = UICursorManager.Instance;
                     }
                     else
                     {
-                        // receiverValue13（判空前缓存的新版分页菜单存在时优先使用新版）：从简单选项集合菜单读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、TitleScreenManager.Update()。
+                        // 判空前缓存的新版分页菜单存在时优先使用新版。
 global::OptionsMenu receiverValue13 = simpleOptionsMenu;
                         if (!global::System.Object.ReferenceEquals(receiverValue13, null))
                         {
@@ -445,7 +445,7 @@ global::OptionsMenu receiverValue13 = simpleOptionsMenu;
         }
 
         // 动态创建粒子
-        // i（当前遍历索引）：使用位置：作为 GameObject.GameObject(string) 的参数、TitleScreenManager.BackgroundParticles()。
+        // 当前遍历索引。
 for (int i = 0; i < particleCount; i++)
         {
             if (i < particlesContainer.childCount)
@@ -453,7 +453,7 @@ for (int i = 0; i < particleCount; i++)
                 continue;
             }
 
-            // dot（点积）：使用位置：TitleScreenManager.BackgroundParticles()。
+            // 点积。
 GameObject dot;
             if (particlePrefab != null)
             {
@@ -463,24 +463,24 @@ GameObject dot;
             {
                 dot = new GameObject("Particle" + i);
                 dot.transform.SetParent(particlesContainer, false);
-                // img（界面图像组件）：保存 GameObject.AddComponent<Image>() 的返回结果，供当前步骤使用。使用位置：TitleScreenManager.BackgroundParticles()。
+                // 界面图像组件。
 Image img = dot.AddComponent<Image>();
                 img.color = new Color(1f, 1f, 1f, Random.Range(0.05f, 0.25f));
                 dot.AddComponent<CanvasGroup>();
-                // rt（界面矩形变换）：保存 GameObject.GetComponent<RectTransform>() 的返回结果，供当前步骤使用。使用位置：TitleScreenManager.BackgroundParticles()。
+                // 界面矩形变换。
 RectTransform rt = dot.GetComponent<RectTransform>();
                 rt.sizeDelta = new Vector2(Random.Range(2f, 6f), Random.Range(2f, 6f));
             }
         }
 
         // 为每个子对象创建动画
-        // children（子对象集合）：使用位置：TitleScreenManager.BackgroundParticles()。
+        // 子对象集合。
 RectTransform[] children = new RectTransform[particlesContainer.childCount];
-        // velocities（速度集合）：使用位置：TitleScreenManager.BackgroundParticles()。
+        // 速度集合。
 Vector2[] velocities = new Vector2[particlesContainer.childCount];
-        // alphas（透明度集合）：使用位置：作为 Mathf.Sin(float) 的参数、TitleScreenManager.BackgroundParticles()。
+        // 透明度集合。
 float[] alphas = new float[particlesContainer.childCount];
-        // i（当前遍历索引）：使用位置：作为 Transform.GetChild(int) 的参数、TitleScreenManager.BackgroundParticles()。
+        // 当前遍历索引。
 for (int i = 0; i < particlesContainer.childCount; i++)
         {
             children[i] = particlesContainer.GetChild(i) as RectTransform;
@@ -497,9 +497,9 @@ for (int i = 0; i < particlesContainer.childCount; i++)
 
         while (state != TitleState.Loading)
         {
-            // dt（本次计算的时间步长）：使用位置：TitleScreenManager.BackgroundParticles()。
+            // 本次计算的时间步长。
 float dt = Time.unscaledDeltaTime;
-            // i（当前遍历索引）：使用位置：TitleScreenManager.BackgroundParticles()。
+            // 当前遍历索引。
 for (int i = 0; i < children.Length; i++)
             {
                 if (children[i] == null)
@@ -507,7 +507,7 @@ for (int i = 0; i < children.Length; i++)
                     continue;
                 }
 
-                // pos（位置）：使用位置：TitleScreenManager.BackgroundParticles()。
+                // 位置。
 Vector2 pos = children[i].anchoredPosition;
                 pos += velocities[i] * dt;
                 // 超出屏幕则循环
@@ -529,7 +529,7 @@ Vector2 pos = children[i].anchoredPosition;
 
                 children[i].anchoredPosition = pos;
                 // 透明度脉动
-                // cg（画布组）：保存 Component.GetComponent<CanvasGroup>() 的返回结果，供当前步骤使用。使用位置：TitleScreenManager.BackgroundParticles()。
+                // 画布组。
 CanvasGroup cg = children[i].GetComponent<CanvasGroup>();
                 if (cg != null)
                 {
@@ -554,9 +554,9 @@ CanvasGroup cg = children[i].GetComponent<CanvasGroup>();
         }
 
         // 使用修正正弦：慢速呼吸，停留时间长（模拟 RE4 原版节奏）
-        // sin（正弦）：保存 Mathf.Sin(float) 的返回结果，供当前步骤使用。使用位置：TitleScreenManager.UpdateBreatheEffect()。
+        // 正弦。
 float sin = Mathf.Sin(Time.unscaledTime * breatheSpeed * Mathf.PI * 1.6f);
-        // t（标题呼吸亮度在零到一之间的变化比例）：使用位置：作为 Mathf.Lerp(float, float, float) 的参数、作为 Mathf.Pow(float, float) 的参数、TitleScreenManager.UpdateBreatheEffect()。
+        // 标题呼吸亮度在零到一之间的变化比例。
 float t = (sin + 1f) * 0.5f;
         // 让高亮停留更久
         t = Mathf.Pow(t, 0.7f);
@@ -579,15 +579,15 @@ float t = (sin + 1f) * 0.5f;
         {
             AudioManager.PlayInterface(AudioEventNames.UITitleStart);
         }
-        // elapsed（已用）：使用位置：作为 Mathf.Clamp01(float) 的参数、TitleScreenManager.TransitionToMenu()。
+        // 已用。
 float elapsed = 0f;
-        // duration（持续时间）：使用位置：作为 Mathf.Clamp01(float) 的参数、TitleScreenManager.TransitionToMenu()。
+        // 持续时间。
 float duration = 0.4f;
         // 第一步：LOGO和提示文字淡出
         while (elapsed < duration)
         {
             elapsed += Time.unscaledDeltaTime;
-            // t（当前界面动画的归一化进度）：保存 Mathf.Clamp01(float) 的返回结果，供当前步骤使用。使用位置：TitleScreenManager.TransitionToMenu()。
+            // 当前界面动画的归一化进度。
 float t = Mathf.Clamp01(elapsed / duration);
             // 使用SmoothStep曲线
             t = t * t * (3f - 2f * t);
@@ -624,7 +624,7 @@ float t = Mathf.Clamp01(elapsed / duration);
         // 第三步：菜单项逐个淡入
         if (menuItemGroups != null)
         {
-            // i（当前遍历索引）：使用位置：TitleScreenManager.TransitionToMenu()。
+            // 当前遍历索引。
 for (int i = 0; i < menuItemGroups.Length; i++)
             {
                 if (menuItemGroups[i] != null)
@@ -637,10 +637,10 @@ for (int i = 0; i < menuItemGroups.Length; i++)
             while (elapsed < duration)
             {
                 elapsed += Time.unscaledDeltaTime;
-                // t（当前界面动画的归一化进度）：保存 Mathf.Clamp01(float) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Lerp(float, float, float) 的参数、TitleScreenManager.TransitionToMenu()。
+                // 当前界面动画的归一化进度。
 float t = Mathf.Clamp01(elapsed / duration);
                 t = t * t * (3f - 2f * t);
-                // i（当前遍历索引）：使用位置：TitleScreenManager.TransitionToMenu()。
+                // 当前遍历索引。
 for (int i = 0; i < menuItemGroups.Length; i++)
                 {
                     if (menuItemGroups[i] != null)
@@ -652,7 +652,7 @@ for (int i = 0; i < menuItemGroups.Length; i++)
                 yield return null;
             }
 
-            // i（当前遍历索引）：使用位置：TitleScreenManager.TransitionToMenu()。
+            // 当前遍历索引。
 for (int i = 0; i < menuItemGroups.Length; i++)
             {
                 if (menuItemGroups[i] != null)
@@ -667,13 +667,13 @@ for (int i = 0; i < menuItemGroups.Length; i++)
 
     /// <summary>SlideMenuItemIn 的业务处理入口；本方法直接依赖 Component.GetComponent&lt;RectTransform&gt;()、Mathf.Pow(float, float)、Vector2.Lerp(Vector2, Vector2, float)、WaitForSecondsRealtime.WaitForSecondsRealtime(float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） Component.GetComponent&lt;RectTransform&gt;()、Mathf.Pow(float, float)、Vector2.Lerp(Vector2, Vector2, float)、WaitForSecondsRealtime.WaitForSecondsRealtime(float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="index">中文含义：索引。使用位置：TitleScreenManager.SlideMenuItemIn(int, float)。</param>
-    /// <param name="delay">中文含义：延迟。使用位置：作为 WaitForSecondsRealtime.WaitForSecondsRealtime(float) 的参数。</param>
+    /// <param name="index">索引。</param>
+    /// <param name="delay">延迟。</param>
     IEnumerator SlideMenuItemIn(int index, float delay)
     {
-        // rt（界面矩形变换）：保存 Component.GetComponent<RectTransform>() 的返回结果，供当前步骤使用。使用位置：TitleScreenManager.SlideMenuItemIn(int, float)。
+        // 界面矩形变换。
 RectTransform rt = menuItems[index].GetComponent<RectTransform>();
-        // cg（画布组）：使用位置：TitleScreenManager.SlideMenuItemIn(int, float)。
+        // 画布组。
 CanvasGroup cg = menuItemGroups[index];
         if (rt == null || cg == null)
         {
@@ -684,23 +684,23 @@ CanvasGroup cg = menuItemGroups[index];
         cg.interactable = menuEnabled[index];
         cg.blocksRaycasts = menuEnabled[index];
         yield return new WaitForSecondsRealtime(delay);
-        // targetPos（目标位置）：使用位置：作为 Vector2.Lerp(Vector2, Vector2, float) 的参数、TitleScreenManager.SlideMenuItemIn(int, float)。
+        // 目标位置。
 Vector2 targetPos = rt.anchoredPosition;
-        // startPos（起始位置）：使用位置：作为 Vector2.Lerp(Vector2, Vector2, float) 的参数、TitleScreenManager.SlideMenuItemIn(int, float)。
+        // 起始位置。
 Vector2 startPos = targetPos + Vector2.left * menuSlideOffset;
         rt.anchoredPosition = startPos;
         cg.alpha = 1f;
-        // elapsed（已用）：使用位置：TitleScreenManager.SlideMenuItemIn(int, float)。
+        // 已用。
 float elapsed = 0f;
         while (elapsed < menuSlideDuration)
         {
             elapsed += Time.unscaledDeltaTime;
-            // t（当前界面动画的归一化进度）：使用位置：作为 Mathf.Pow(float, float) 的参数、作为 Vector2.Lerp(Vector2, Vector2, float) 的参数、TitleScreenManager.SlideMenuItemIn(int, float)。
+            // 当前界面动画的归一化进度。
 float t = elapsed / menuSlideDuration;
             // EaseOutBack（轻微过冲）
-            // c1（候选值1）：使用位置：TitleScreenManager.SlideMenuItemIn(int, float)。
+            // 候选值1。
 float c1 = 1.70158f;
-            // c3（候选值3）：使用位置：TitleScreenManager.SlideMenuItemIn(int, float)。
+            // 候选值3。
 float c3 = c1 + 1f;
             t = 1f + c3 * Mathf.Pow(t - 1f, 3f) + c1 * Mathf.Pow(t - 1f, 2f);
             rt.anchoredPosition = Vector2.Lerp(startPos, targetPos, t);
@@ -738,9 +738,9 @@ float c3 = c1 + 1f;
     /// <remarks>静态调用链：上游 TitleScreenManager.Update()；下游（含内部回调体） Component.GetComponent&lt;RectTransform&gt;()、MenuHoverScale.ClearHover()、MenuHoverScale.SetHoveredIndex(int)、object.ReferenceEquals(object, object)、RectTransformUtility.RectangleContainsScreenPoint(RectTransform, Vector2)、TitleScreenManager.PlayHoverSound()、TitleScreenManager.RefreshMenuDisplay()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     void HandleMenuMouse()
     {
-        // mousePos（鼠标位置）：使用位置：作为 RectTransformUtility.RectangleContainsScreenPoint(RectTransform, Vector2) 的参数。
+        // 鼠标位置。
 Vector2 mousePos = Input.mousePosition;
-        // i（当前遍历索引）：使用位置：作为 MenuHoverScale.SetHoveredIndex(int) 的参数、TitleScreenManager.HandleMenuMouse()。
+        // 当前遍历索引。
 for (int i = 0; i < menuItems.Length; i++)
         {
             if (menuItems[i] == null)
@@ -748,7 +748,7 @@ for (int i = 0; i < menuItems.Length; i++)
                 continue;
             }
 
-            // rt（界面矩形变换）：保存 Component.GetComponent<RectTransform>() 的返回结果，供当前步骤使用。使用位置：作为 RectTransformUtility.RectangleContainsScreenPoint(RectTransform, Vector2) 的参数、TitleScreenManager.HandleMenuMouse()。
+            // 界面矩形变换。
 RectTransform rt = menuItems[i].GetComponent<RectTransform>();
             if (rt == null)
             {
@@ -763,7 +763,7 @@ RectTransform rt = menuItems[i].GetComponent<RectTransform>();
                     selectedIndex = i;
                     PlayHoverSound();
                     RefreshMenuDisplay();
-                    // receiverValue14（判空前缓存的菜单悬停缩放）：从菜单悬停缩放读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、TitleScreenManager.HandleMenuMouse()。
+                    // 判空前缓存的菜单悬停缩放。
 global::MenuHoverScale receiverValue14 = menuHoverScale;
                     if (!global::System.Object.ReferenceEquals(receiverValue14, null))
                     {
@@ -777,7 +777,7 @@ global::MenuHoverScale receiverValue14 = menuHoverScale;
         }
 
         // 鼠标未在任何菜单项上，清除悬停效果
-        // receiverValue15（判空前缓存的菜单悬停缩放）：从菜单悬停缩放读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、TitleScreenManager.HandleMenuMouse()。
+        // 判空前缓存的菜单悬停缩放。
 global::MenuHoverScale receiverValue15 = // 鼠标未在任何菜单项上，清除悬停效果
  menuHoverScale;
         if (!global::System.Object.ReferenceEquals(receiverValue15, null))
@@ -788,12 +788,12 @@ global::MenuHoverScale receiverValue15 = // 鼠标未在任何菜单项上，清
 
     /// <summary>NavigateMenu 的业务处理入口；本方法直接依赖 MenuHoverScale.SetHoveredIndex(int)、object.ReferenceEquals(object, object)、TitleScreenManager.PlayHoverSound()、TitleScreenManager.RefreshMenuDisplay()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 TitleScreenManager.HandleMenuKeyboard()；下游（含内部回调体） MenuHoverScale.SetHoveredIndex(int)、object.ReferenceEquals(object, object)、TitleScreenManager.PlayHoverSound()、TitleScreenManager.RefreshMenuDisplay()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="direction">中文含义：方向。使用位置：TitleScreenManager.NavigateMenu(int)。</param>
+    /// <param name="direction">方向。</param>
     void NavigateMenu(int direction)
     {
-        // oldIndex（旧索引）：使用位置：TitleScreenManager.NavigateMenu(int)。
+        // 旧索引。
 int oldIndex = selectedIndex;
-        // attempts（尝试次数）：使用位置：TitleScreenManager.NavigateMenu(int)。
+        // 尝试次数。
 int attempts = 0;
         do
         {
@@ -806,7 +806,7 @@ int attempts = 0;
             PlayHoverSound();
             RefreshMenuDisplay();
             // 同步联动缩放效果到键盘选中项
-            // receiverValue16（判空前缓存的菜单悬停缩放）：从菜单悬停缩放读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、TitleScreenManager.NavigateMenu(int)。
+            // 判空前缓存的菜单悬停缩放。
 global::MenuHoverScale receiverValue16 = // 同步联动缩放效果到键盘选中项
  menuHoverScale;
             if (!global::System.Object.ReferenceEquals(receiverValue16, null))
@@ -818,7 +818,7 @@ global::MenuHoverScale receiverValue16 = // 同步联动缩放效果到键盘选
 
     /// <summary>OnMenuItemClicked 的业务处理入口；本方法直接依赖 TitleScreenManager.ExecuteMenuAction(int)、TitleScreenManager.RefreshMenuDisplay()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 TitleScreenManager.Start()；下游（含内部回调体） TitleScreenManager.ExecuteMenuAction(int)、TitleScreenManager.RefreshMenuDisplay()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="index">中文含义：索引。使用位置：作为 TitleScreenManager.ExecuteMenuAction(int) 的参数、TitleScreenManager.OnMenuItemClicked(int)。</param>
+    /// <param name="index">索引。</param>
     void OnMenuItemClicked(int index)
     {
         if (state != TitleState.Menu || isLoading)
@@ -841,7 +841,7 @@ global::MenuHoverScale receiverValue16 = // 同步联动缩放效果到键盘选
     /// <remarks>静态调用链：上游 TitleScreenManager.HandleMenuMouse()、TitleScreenManager.NavigateMenu(int)、TitleScreenManager.OnMenuItemClicked(int)、TitleScreenManager.OnOptionsClosed()、TitleScreenManager.Start()；下游（含内部回调体） Component.GetComponent&lt;RectTransform&gt;()、GameObject.SetActive(bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     void RefreshMenuDisplay()
     {
-        // i（当前遍历索引）：使用位置：TitleScreenManager.RefreshMenuDisplay()。
+        // 当前遍历索引。
 for (int i = 0; i < menuItems.Length; i++)
         {
             if (menuItems[i] == null)
@@ -849,13 +849,13 @@ for (int i = 0; i < menuItems.Length; i++)
                 continue;
             }
 
-            // isSelected（是否选定）：使用位置：TitleScreenManager.RefreshMenuDisplay()。
+            // 是否选定。
 bool isSelected = (i == selectedIndex);
-            // isEnabled（是否启用）：使用位置：TitleScreenManager.RefreshMenuDisplay()。
+            // 是否启用。
 bool isEnabled = menuEnabled[i];
             if (isEnabled)
             {
-                // assignmentReceiver17（赋值前保存的目标菜单物品列表）：从菜单物品列表读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：TitleScreenManager.RefreshMenuDisplay()。
+                // 赋值前保存的目标菜单物品列表。
 global::UnityEngine.UI.Text assignmentReceiver17 = menuItems[i];
                 if (isSelected)
                 {
@@ -866,7 +866,7 @@ global::UnityEngine.UI.Text assignmentReceiver17 = menuItems[i];
                     assignmentReceiver17.color = normalColor;
                 }
 
-                // assignmentReceiver19（赋值前保存的目标菜单物品列表）：从菜单物品列表读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：TitleScreenManager.RefreshMenuDisplay()。
+                // 赋值前保存的目标菜单物品列表。
 global::UnityEngine.UI.Text assignmentReceiver19 = menuItems[i];
                 if (isSelected)
                 {
@@ -888,12 +888,12 @@ global::UnityEngine.UI.Text assignmentReceiver19 = menuItems[i];
         // 移动左侧指示条
         if (selectionIndicator != null && selectedIndex < menuItems.Length && menuItems[selectedIndex] != null)
         {
-            // targetRt（目标矩形变换）：保存 Component.GetComponent<RectTransform>() 的返回结果，供当前步骤使用。使用位置：TitleScreenManager.RefreshMenuDisplay()。
+            // 目标矩形变换。
 RectTransform targetRt = menuItems[selectedIndex].GetComponent<RectTransform>();
             if (targetRt != null)
             {
                 selectionIndicator.gameObject.SetActive(true);
-                // pos（位置）：使用位置：TitleScreenManager.RefreshMenuDisplay()。
+                // 位置。
 Vector2 pos = selectionIndicator.anchoredPosition;
                 pos.y = targetRt.anchoredPosition.y;
                 selectionIndicator.anchoredPosition = pos;
@@ -903,7 +903,7 @@ Vector2 pos = selectionIndicator.anchoredPosition;
 
     /// <summary>ExecuteMenuAction 的业务处理入口；本方法直接依赖 MonoBehaviour.StartCoroutine(IEnumerator)、TitleScreenManager.LoadGameScene()、TitleScreenManager.OpenOptions()、TitleScreenManager.PlayConfirmSound()、TitleScreenManager.QuitGame()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 TitleScreenManager.HandleMenuKeyboard()、TitleScreenManager.OnMenuItemClicked(int)；下游（含内部回调体） MonoBehaviour.StartCoroutine(IEnumerator)、TitleScreenManager.LoadGameScene()、TitleScreenManager.OpenOptions()、TitleScreenManager.PlayConfirmSound()、TitleScreenManager.QuitGame()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="index">中文含义：索引。使用位置：TitleScreenManager.ExecuteMenuAction(int)。</param>
+    /// <param name="index">索引。</param>
     void ExecuteMenuAction(int index)
     {
         if (state != TitleState.Menu || isLoading)
@@ -958,9 +958,9 @@ Vector2 pos = selectionIndicator.anchoredPosition;
             Debug.LogWarning("[菜单系统] menuPanel 为 null！");
         }
 
-        // leftOperand22（计算前缓存的左侧文字“[菜单系统] 分页选项菜单引用状态: ”）：从文字“[菜单系统] 分页选项菜单引用状态: ”读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 Debug.Log(object) 的参数。
+        // 计算前缓存的左侧文字“[菜单系统] 分页选项菜单引用状态: ”。
 string leftOperand22 = "[菜单系统] 分页选项菜单引用状态: ";
-        // selectedValue21（分支选出的文字“未配置”）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：作为 Debug.Log(object) 的参数、TitleScreenManager.OpenOptions()。
+        // 分支选出的文字“未配置”。
 string selectedValue21;
         if (optionsMenu != null)
         {
@@ -972,9 +972,9 @@ string selectedValue21;
         }
 
         Debug.Log(leftOperand22 + (selectedValue21));
-        // leftOperand24（计算前缓存的左侧文字“[菜单系统] 简易选项菜单引用状态: ”）：从文字“[菜单系统] 简易选项菜单引用状态: ”读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 Debug.Log(object) 的参数。
+        // 计算前缓存的左侧文字“[菜单系统] 简易选项菜单引用状态: ”。
 string leftOperand24 = "[菜单系统] 简易选项菜单引用状态: ";
-        // selectedValue23（分支选出的文字“未配置”）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：作为 Debug.Log(object) 的参数、TitleScreenManager.OpenOptions()。
+        // 分支选出的文字“未配置”。
 string selectedValue23;
         if (simpleOptionsMenu != null)
         {
@@ -988,9 +988,9 @@ string selectedValue23;
         Debug.Log(leftOperand24 + (selectedValue23));
         if (optionsMenu != null)
         {
-            // leftOperand26（计算前缓存的左侧文字“[菜单系统] optionsMenu.panelRoot: ”）：从文字“[菜单系统] optionsMenu.panelRoot: ”读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 Debug.Log(object) 的参数。
+            // 计算前缓存的左侧文字“[菜单系统] optionsMenu.panelRoot: ”。
 string leftOperand26 = "[菜单系统] optionsMenu.panelRoot: ";
-            // selectedValue25（分支选出的选项集合菜单的面板根节点的名称）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：作为 Debug.Log(object) 的参数、TitleScreenManager.OpenOptions()。
+            // 分支选出的选项集合菜单的面板根节点的名称。
 string selectedValue25;
             if (optionsMenu.panelRoot != null)
             {
@@ -1003,9 +1003,9 @@ string selectedValue25;
 
             Debug.Log(leftOperand26 + (selectedValue25));
             optionsMenu.Show();
-            // leftOperand28（计算前缓存的左侧文本选择）：按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 Debug.Log(object) 的参数。
+            // 计算前缓存的左侧文本选择。
 string leftOperand28 = "[菜单系统] Show() 调用完成，panelRoot.activeSelf=";
-            // selectedValue27（分支选出的转换后的文字）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：作为 Debug.Log(object) 的参数、TitleScreenManager.OpenOptions()。
+            // 分支选出的转换后的文字。
 string selectedValue27;
             if (optionsMenu.panelRoot != null)
             {
@@ -1020,9 +1020,9 @@ string selectedValue27;
         }
         else if (simpleOptionsMenu != null)
         {
-            // leftOperand30（计算前缓存的左侧文字“[菜单系统] simpleOptionsMenu.panel: ”）：从文字“[菜单系统] simpleOptionsMenu.panel: ”读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 Debug.Log(object) 的参数。
+            // 计算前缓存的左侧文字“[菜单系统] simpleOptionsMenu.panel: ”。
 string leftOperand30 = "[菜单系统] simpleOptionsMenu.panel: ";
-            // selectedValue29（分支选出的简单选项集合菜单的面板的名称）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：作为 Debug.Log(object) 的参数、TitleScreenManager.OpenOptions()。
+            // 分支选出的简单选项集合菜单的面板的名称。
 string selectedValue29;
             if (simpleOptionsMenu.panel != null)
             {
@@ -1035,9 +1035,9 @@ string selectedValue29;
 
             Debug.Log(leftOperand30 + (selectedValue29));
             simpleOptionsMenu.Show();
-            // leftOperand32（计算前缓存的左侧文本选择）：按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 Debug.Log(object) 的参数。
+            // 计算前缓存的左侧文本选择。
 string leftOperand32 = "[菜单系统] Show() 调用完成，panel.activeSelf=";
-            // selectedValue31（分支选出的转换后的文字）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：作为 Debug.Log(object) 的参数、TitleScreenManager.OpenOptions()。
+            // 分支选出的转换后的文字。
 string selectedValue31;
             if (simpleOptionsMenu.panel != null)
             {
@@ -1188,7 +1188,7 @@ string selectedValue31;
 
     /// <summary>SetMenuButtonsInteractable 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
     /// <remarks>静态调用链：上游 TitleScreenManager.LoadGameScene()；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="interactable">中文含义：是否可交互。使用位置：TitleScreenManager.SetMenuButtonsInteractable(bool)。</param>
+    /// <param name="interactable">是否可交互。</param>
     void SetMenuButtonsInteractable(bool interactable)
     {
         if (menuButtons == null)
@@ -1196,7 +1196,7 @@ string selectedValue31;
             return;
         }
 
-        // i（当前遍历索引）：使用位置：TitleScreenManager.SetMenuButtonsInteractable(bool)。
+        // 当前遍历索引。
 for (int i = 0; i < menuButtons.Length; i++)
         {
             if (menuButtons[i] != null)
@@ -1237,7 +1237,7 @@ for (int i = 0; i < menuButtons.Length; i++)
     /// <remarks>静态调用链：上游 TitleScreenManager.HandleMenuMouse()、TitleScreenManager.NavigateMenu(int)；下游（含内部回调体） AudioManager.PlaySfx(string)、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     void PlayHoverSound()
     {
-        // receiverValue38（判空前缓存的音频管理器的实例）：从音频管理器的实例读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、TitleScreenManager.PlayHoverSound()。
+        // 判空前缓存的音频管理器的实例。
 global::AudioManager receiverValue38 = AudioManager.Instance;
         if (!global::System.Object.ReferenceEquals(receiverValue38, null))
         {
@@ -1249,7 +1249,7 @@ global::AudioManager receiverValue38 = AudioManager.Instance;
     /// <remarks>静态调用链：上游 TitleScreenManager.ExecuteMenuAction(int)；下游（含内部回调体） AudioManager.PlaySfx(string)、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     void PlayConfirmSound()
     {
-        // receiverValue39（判空前缓存的音频管理器的实例）：从音频管理器的实例读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、TitleScreenManager.PlayConfirmSound()。
+        // 判空前缓存的音频管理器的实例。
 global::AudioManager receiverValue39 = AudioManager.Instance;
         if (!global::System.Object.ReferenceEquals(receiverValue39, null))
         {

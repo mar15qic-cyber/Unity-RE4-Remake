@@ -9,18 +9,18 @@ using Object = UnityEngine.Object;
 /// <summary>只接入已经验收的制作源，生成无渲染、无业务组件的隔离采样骨架。</summary>
 public static class KnifePreviewIntegrationBuilder
 {
-    /// <summary>中文含义：来源目录。编译期常量，保持既有值与消费者映射。使用位置：作为 AssetDatabase.LoadAssetAtPath&lt;AnimationClip&gt;(string) 的参数。</summary>
+    /// <summary>来源目录。编译期常量，保持既有值与消费者映射。</summary>
     private const string SourceDirectory = "Assets/Animations/左臂整体重构/";
-    /// <summary>中文含义：骨架路径。编译期常量，保持既有值与消费者映射。使用位置：作为 PrefabUtility.SaveAsPrefabAsset(GameObject, string) 的参数。</summary>
+    /// <summary>骨架路径。编译期常量，保持既有值与消费者映射。</summary>
     private const string SkeletonPath = "Assets/Animations/小刀战斗/KnifePoseSkeleton.prefab";
     /// <summary>Configure 的业务处理入口；本方法直接依赖 Animator.GetBoneTransform(HumanBodyBones)、AssetDatabase.LoadAssetAtPath&lt;AnimatorController&gt;(string)、AssetDatabase.LoadAssetAtPath&lt;GameObject&gt;(string)、EditorUtility.SetDirty(Object)、Enum.ToString()、GameObject.GetComponentsInChildren&lt;Component&gt;(bool)、InvalidOperationException.InvalidOperationException(string) 等共 20 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 KnifeCombatBuilder.Build()、KnifePreviewIntegrationBuilder.Integrate()；下游（含内部回调体） Animator.GetBoneTransform(HumanBodyBones)、AssetDatabase.LoadAssetAtPath&lt;AnimatorController&gt;(string)、AssetDatabase.LoadAssetAtPath&lt;GameObject&gt;(string)、EditorUtility.SetDirty(Object)、Enum.ToString()、GameObject.GetComponentsInChildren&lt;Component&gt;(bool)、InvalidOperationException.InvalidOperationException(string) 等共 20 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="configuration">中文含义：配置。使用位置：作为 EditorUtility.SetDirty(Object) 的参数、作为 Transform.TransformPoint(Vector3) 的参数、KnifePreviewIntegrationBuilder.Configure(KnifeCombatConfiguration)。</param>
+    /// <param name="configuration">配置。</param>
     public static void Configure(KnifeCombatConfiguration configuration)
     {
-        // source（来源游戏对象）：保存 AssetDatabase.LoadAssetAtPath<GameObject>(string) 的返回结果，供当前步骤使用。使用位置：作为 Object.Instantiate<GameObject>(GameObject) 的参数。
+        // 来源游戏对象。
 GameObject source = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Models/角色/里昂/LeonR4R.fbx");
-        // skeleton（骨架）：保存 Object.Instantiate<GameObject>(GameObject) 的返回结果，供当前步骤使用。使用位置：作为 Object.DestroyImmediate(Object) 的参数、作为 PrefabUtility.SaveAsPrefabAsset(GameObject, string) 的参数、KnifePreviewIntegrationBuilder.Configure(KnifeCombatConfiguration)。
+        // 骨架。
 GameObject skeleton = Object.Instantiate(source);
         try
         {
@@ -48,7 +48,7 @@ foreach (Component component in skeleton.GetComponentsInChildren<Component>(true
         configuration.previewIdle = Read("低位待机");
         configuration.previewLocomotionIdle = LeonKnifeAnimationPreview.Read("低位待机");
         configuration.previewLocomotion = new AnimationClip[6];
-        // directions（方向集合）：使用位置：作为 LeonKnifeAnimationPreview.ReadSourceMaterial(string) 的参数。
+        // 方向集合。
 string[] directions =
         {
             "F",
@@ -57,16 +57,16 @@ string[] directions =
             "R",
             "F"
         };
-        // index（当前元素索引）：使用位置：KnifePreviewIntegrationBuilder.Configure(KnifeCombatConfiguration)。
+        // 当前元素索引。
 for (int index = 0; index < 5; index++)
         {
             configuration.previewLocomotion[index] = LeonKnifeAnimationPreview.ReadSourceMaterial("Knife_St_LocomotionSet_IPC/Walk/Act_Walk_" + directions[index] + "_IPC");
         }
 
         configuration.previewLocomotion[5] = LeonKnifeAnimationPreview.ReadSourceMaterial("Knife_St_LocomotionSet/IdleTurns/Act_Idle_Turn90R_IPC");
-        // controller（动画控制器资源）：保存 AssetDatabase.LoadAssetAtPath<AnimatorController>(string) 的返回结果，供当前步骤使用。使用位置：作为 EditorUtility.SetDirty(Object) 的参数、KnifePreviewIntegrationBuilder.Configure(KnifeCombatConfiguration)。
+        // 动画控制器资源。
 AnimatorController controller = AssetDatabase.LoadAssetAtPath<AnimatorController>(KnifeCombatBuilder.controllerPath);
-        // knifeStates（小刀状态集合）：使用位置：KnifePreviewIntegrationBuilder.Configure(KnifeCombatConfiguration)。
+        // 小刀状态集合。
 AnimatorStateMachine knifeStates = null;
         // child（子级）：每轮从被遍历的集合取得一个元素，仅代表当前这一项。使用位置：KnifePreviewIntegrationBuilder.Configure(KnifeCombatConfiguration)。
 foreach (ChildAnimatorStateMachine child in controller.layers[AnimatorLayerID.WeaponAction].stateMachine.stateMachines)
@@ -94,7 +94,7 @@ foreach (ChildAnimatorState state in knifeStates.states)
             }
 
             action.sourceStart = 0;
-            // name（名称）：使用位置：作为 KnifePreviewIntegrationBuilder.Read(string) 的参数、KnifePreviewIntegrationBuilder.Configure(KnifeCombatConfiguration)。
+            // 名称。
 string name;
             switch (action.action)
             {
@@ -150,7 +150,7 @@ string name;
 using (var preview = new LeonKnifeAnimationPreview.PreviewCharacter())
         {
             preview.bakePreviewMesh = false;
-            // knife（小刀）：保存 Transform.GetChild(int) 的返回结果，供当前步骤使用。使用位置：KnifePreviewIntegrationBuilder.Configure(KnifeCombatConfiguration)。
+            // 小刀。
 Transform knife = preview.AnimatorValue.GetBoneTransform(HumanBodyBones.RightHand).GetChild(preview.AnimatorValue.GetBoneTransform(HumanBodyBones.RightHand).childCount - 1);
             // action（动作）：每轮从配置的动作动画片段取得一个元素，仅代表当前这一项。使用位置：作为 LeonKnifeAnimationPreview.PreviewCharacter.Sample(AnimationClip, float, int, float) 的参数、作为 Mathf.CeilToInt(float) 的参数、作为 Mathf.Min(float, float) 的参数 等共 4 处。
 foreach (KnifeActionConfiguration action in configuration.actionClip)
@@ -160,15 +160,15 @@ foreach (KnifeActionConfiguration action in configuration.actionClip)
                     continue;
                 }
 
-                // count（数量）：使用位置：KnifePreviewIntegrationBuilder.Configure(KnifeCombatConfiguration)。
+                // 数量。
 int count = Mathf.CeilToInt(action.timing.duration * 120) + 1;
                 action.bladeBaseTrajectory = new Vector3[count];
                 action.bladeTipTrajectory = new Vector3[count];
                 action.sampleInterval = 1f / 120;
-                // frame（帧）：使用位置：作为 Mathf.Min(float, float) 的参数、KnifePreviewIntegrationBuilder.Configure(KnifeCombatConfiguration)。
+                // 帧。
 for (int frame = 0; frame < count; frame++)
                 {
-                    // time（时间）：保存 Mathf.Min(float, float) 的返回结果，供当前步骤使用。使用位置：作为 LeonKnifeAnimationPreview.PreviewCharacter.Sample(AnimationClip, float, int, float) 的参数。
+                    // 时间。
 float time = Mathf.Min(action.timing.duration, frame / 120f);
                     preview.Sample(action.sourceClip, action.sourceStart + time, 0, time);
                     action.bladeBaseTrajectory[frame] = knife.TransformPoint(configuration.bladeBaseLocal);
@@ -183,10 +183,10 @@ float time = Mathf.Min(action.timing.duration, frame / 120f);
 
     /// <summary>Read 的业务处理入口；本方法直接依赖 AssetDatabase.LoadAssetAtPath&lt;AnimationClip&gt;(string)、FileNotFoundException.FileNotFoundException(string)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 KnifePreviewIntegrationBuilder.Configure(KnifeCombatConfiguration)；下游（含内部回调体） AssetDatabase.LoadAssetAtPath&lt;AnimationClip&gt;(string)、FileNotFoundException.FileNotFoundException(string)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="name">中文含义：名称。使用位置：作为 AssetDatabase.LoadAssetAtPath&lt;AnimationClip&gt;(string) 的参数、作为 FileNotFoundException.FileNotFoundException(string) 的参数。</param>
+    /// <param name="name">名称。</param>
     private static AnimationClip Read(string name)
     {
-        // clip（动画片段）：保存 AssetDatabase.LoadAssetAtPath<AnimationClip>(string) 的返回结果，供当前步骤使用。使用位置：KnifePreviewIntegrationBuilder.Read(string)。
+        // 动画片段。
 AnimationClip clip = AssetDatabase.LoadAssetAtPath<AnimationClip>(SourceDirectory + name + ".anim");
         if (clip == null)
         {
@@ -205,7 +205,7 @@ AnimationClip clip = AssetDatabase.LoadAssetAtPath<AnimationClip>(SourceDirector
             throw new InvalidOperationException("请先退出播放模式。");
         }
 
-        // configuration（配置）：保存 AssetDatabase.LoadAssetAtPath<KnifeCombatConfiguration>(string) 的返回结果，供当前步骤使用。使用位置：作为 KnifePreviewIntegrationBuilder.Configure(KnifeCombatConfiguration) 的参数。
+        // 配置。
 KnifeCombatConfiguration configuration = AssetDatabase.LoadAssetAtPath<KnifeCombatConfiguration>(KnifeCombatBuilder.configurationPath);
         Configure(configuration);
         AssetDatabase.SaveAssets();

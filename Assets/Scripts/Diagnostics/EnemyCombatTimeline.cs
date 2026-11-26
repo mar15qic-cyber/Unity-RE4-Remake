@@ -10,31 +10,31 @@ using UnityEngine;
 [UnityEngine.Scripting.APIUpdating.MovedFrom(true, "", "Assembly-CSharp", "敌人战斗时间轴")]
 public class EnemyCombatTimeline : MonoBehaviour
 {
-    /// <summary>中文含义：是否启用记录中。使用位置：EnemyCombatTimeline.IsRecording.get、EnemyCombatTimeline.LateUpdate()。</summary>
+    /// <summary>是否启用记录中。</summary>
     [Header("记录设置")]
     public bool enableRecording;
-    /// <summary>中文含义：是否首个波次仅。使用位置：EnemyCombatTimeline.IsRecord(VillagerController)。</summary>
+    /// <summary>是否首个波次仅。</summary>
     public bool firstWaveOnly = true;
-    /// <summary>中文含义：快照间隔。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>快照间隔。</summary>
     [Min(.1f)]
     public float snapshotInterval = .5f;
-    /// <summary>中文含义：选定敌人。使用位置：EnemyCombatTimeline.IsRecord(VillagerController)。</summary>
+    /// <summary>选定敌人。</summary>
     public VillagerController selectedEnemy;
-    /// <summary>中文含义：当前敌人智能管理器。使用位置：EnemyCombatTimeline.Start()。</summary>
+    /// <summary>当前敌人智能管理器。</summary>
     [Header("场景引用")]
     public EnemyAIManager manager;
-    /// <summary>中文含义：玩家。使用位置：EnemyCombatTimeline.Start()。</summary>
+    /// <summary>玩家。</summary>
     public LeonController player;
     /// <summary>运行诊断模块 Entry；通过方法参数、返回值及声明成员与调用方通信，静态调用索引记录可解析的直接依赖。</summary>
     private sealed class Entry
     {
-        /// <summary>中文含义：敌人。使用位置：作为 EnemyCombatTimeline.CreateRecord(VillagerController, string) 的参数、作为 EnemyCombatTimeline.IsRecord(VillagerController) 的参数、作为 Vector3.Distance(Vector3, Vector3) 的参数 等共 5 处。</summary>
+        /// <summary>敌人。</summary>
         internal VillagerController enemy;
-        /// <summary>中文含义：number 表示“数量”；wave 表示“波次”；key 表示“键”。使用位置：EnemyCombatTimeline.Register(VillagerController, int)。；使用位置：作为 CombatDiagnosticFields.Count(string, double) 的参数、EnemyCombatTimeline.Register(VillagerController, int)。；使用位置：作为 Dictionary&lt;int, EnemyCombatTimeline.Entry&gt;.Remove(int) 的参数、EnemyCombatTimeline.Register(VillagerController, int)。</summary>
+        /// <summary>number 表示“数量”；wave 表示“波次”；key 表示“键”。</summary>
         internal int number, wave, key;
-        /// <summary>中文含义：上一次位置。使用位置：作为 Vector3.Distance(Vector3, Vector3) 的参数、EnemyCombatTimeline.LateUpdate()、EnemyCombatTimeline.Register(VillagerController, int)。</summary>
+        /// <summary>上一次位置。</summary>
         internal Vector3 lastPosition;
-        /// <summary>中文含义：lastSampleTime 表示“上一次采样时间”；stillDuration 表示“仍然持续时间”；nextSample 表示“下一次采样”。使用位置：作为 Mathf.Max(float, float) 的参数、EnemyCombatTimeline.LateUpdate()、EnemyCombatTimeline.Register(VillagerController, int)。；使用位置：EnemyCombatTimeline.LateUpdate()。；使用位置：EnemyCombatTimeline.LateUpdate()、EnemyCombatTimeline.Register(VillagerController, int)。</summary>
+        /// <summary>lastSampleTime 表示“上一次采样时间”；stillDuration 表示“仍然持续时间”；nextSample 表示“下一次采样”。</summary>
         internal float lastSampleTime, stillDuration, nextSample;
     }
 
@@ -42,17 +42,17 @@ public class EnemyCombatTimeline : MonoBehaviour
     [UnityEngine.Scripting.APIUpdating.MovedFrom(true, "", "Assembly-CSharp", "敌人战斗时间轴+记录项")]
     private struct TimelineEntry
     {
-        /// <summary>中文含义：sequence 表示“序号”；frame 表示“帧”；enemy 表示“敌人”；wave 表示“波次”。使用位置：作为 StringBuilder.Append(int) 的参数、EnemyCombatTimeline.CreateRecord(VillagerController, string)。；使用位置：作为 StringBuilder.Append(int) 的参数、EnemyCombatTimeline.CreateRecord(VillagerController, string)。；使用位置：作为 Dictionary&lt;int, int&gt;.Remove(int) 的参数、作为 Dictionary&lt;int, int&gt;.this[int] 的参数、作为 Dictionary&lt;int, int&gt;.TryGetValue(int, out int) 的参数 等共 5 处。；使用位置：作为 StringBuilder.Append(int) 的参数、EnemyCombatTimeline.CreateRecord(VillagerController, string)。</summary>
+        /// <summary>sequence 表示“序号”；frame 表示“帧”；enemy 表示“敌人”；wave 表示“波次”。</summary>
         internal int sequence, frame, enemy, wave;
-        /// <summary>中文含义：gameTime 表示“游戏时间”；realTimeTime 表示“实际游戏当前时间”。使用位置：作为 StringBuilder.Append(float) 的参数、EnemyCombatTimeline.CreateRecord(VillagerController, string)。；使用位置：作为 StringBuilder.Append(float) 的参数、EnemyCombatTimeline.CreateRecord(VillagerController, string)。</summary>
+        /// <summary>gameTime 表示“游戏时间”；realTimeTime 表示“实际游戏当前时间”。</summary>
         internal float gameTime, realTimeTime;
-        /// <summary>中文含义：category 表示“类别”；text 表示“文字”。使用位置：作为 StringBuilder.Append(string) 的参数、EnemyCombatTimeline.CreateRecord(VillagerController, string)。；使用位置：作为 StringBuilder.Append(string) 的参数、EnemyCombatTimeline.Record(VillagerController, string, string)。</summary>
+        /// <summary>category 表示“类别”；text 表示“文字”。</summary>
         internal string category, text;
-        /// <summary>中文含义：是否快照。使用位置：作为 EnemyCombatTimeline.WriteSession.Missed(bool) 的参数、EnemyCombatTimeline.LateUpdate()、EnemyCombatTimeline.WriteSession.Enqueue(in EnemyCombatTimeline.TimelineEntry) 等共 5 处。</summary>
+        /// <summary>是否快照。</summary>
         internal bool isSnapshot;
-        /// <summary>中文含义：快照。使用位置：EnemyCombatTimeline.LateUpdate()、EnemyCombatTimeline.WriteSession.Execute()。</summary>
+        /// <summary>快照。</summary>
         internal CombatTimelineSnapshot snapshot;
-        /// <summary>中文含义：one 表示“第一”；two 表示“第二”；three 表示“第三”；four 表示“第四”；five 表示“第五”；six 表示“第六”；seven 表示“第七”；eight 表示“第八”。使用位置：EnemyCombatTimeline.Record(VillagerController, string, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields)、EnemyCombatTimeline.WriteSession.Execute()。；使用位置：EnemyCombatTimeline.Record(VillagerController, string, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields)、EnemyCombatTimeline.WriteSession.Execute()。；使用位置：EnemyCombatTimeline.Record(VillagerController, string, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields)、EnemyCombatTimeline.WriteSession.Execute()。；使用位置：EnemyCombatTimeline.Record(VillagerController, string, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields)、EnemyCombatTimeline.WriteSession.Execute()。；使用位置：EnemyCombatTimeline.Record(VillagerController, string, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields)、EnemyCombatTimeline.WriteSession.Execute()。；使用位置：EnemyCombatTimeline.Record(VillagerController, string, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields)、EnemyCombatTimeline.WriteSession.Execute()。；使用位置：EnemyCombatTimeline.Record(VillagerController, string, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields)、EnemyCombatTimeline.WriteSession.Execute()。；使用位置：EnemyCombatTimeline.Record(VillagerController, string, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields)、EnemyCombatTimeline.WriteSession.Execute()。</summary>
+        /// <summary>one 表示“第一”；two 表示“第二”；three 表示“第三”；four 表示“第四”；five 表示“第五”；six 表示“第六”；seven 表示“第七”；eight 表示“第八”。</summary>
         internal CombatDiagnosticFields one, two, three, four, five, six, seven, eight;
     }
 
@@ -60,35 +60,35 @@ public class EnemyCombatTimeline : MonoBehaviour
     [UnityEngine.Scripting.APIUpdating.MovedFrom(true, "", "Assembly-CSharp", "敌人战斗时间轴+写入会话")]
     private sealed class WriteSession
     {
-        /// <summary>中文含义：队列。只读字段，初始化后不由普通写入口替换。使用位置：作为 Dictionary&lt;int, int&gt;.Remove(int) 的参数、EnemyCombatTimeline.WriteSession.Enqueue(in EnemyCombatTimeline.TimelineEntry)、EnemyCombatTimeline.WriteSession.Extract(out EnemyCombatTimeline.TimelineEntry) 等共 4 处。</summary>
+        /// <summary>队列。只读字段，初始化后不由普通写入口替换。</summary>
         private readonly TimelineEntry[] queue = new TimelineEntry[4096];
-        /// <summary>中文含义：backItem 表示“后方物品”；frontItem 表示“前方物品”。只读字段，初始化后不由普通写入口替换。使用位置：EnemyCombatTimeline.WriteSession.Enqueue(in EnemyCombatTimeline.TimelineEntry)、EnemyCombatTimeline.WriteSession.RemoveValue(int)、EnemyCombatTimeline.WriteSession.WriteSession(string)。；只读字段，初始化后不由普通写入口替换。使用位置：EnemyCombatTimeline.WriteSession.Enqueue(in EnemyCombatTimeline.TimelineEntry)、EnemyCombatTimeline.WriteSession.RemoveValue(int)。</summary>
+        /// <summary>backItem 表示“后方物品”；frontItem 表示“前方物品”。只读字段，初始化后不由普通写入口替换。</summary>
         private readonly int[] backItem = new int[4096], frontItem = new int[4096];
-        /// <summary>中文含义：周期位置。只读字段，初始化后不由普通写入口替换。使用位置：EnemyCombatTimeline.WriteSession.Enqueue(in EnemyCombatTimeline.TimelineEntry)、EnemyCombatTimeline.WriteSession.RemoveValue(int)。</summary>
+        /// <summary>周期位置。只读字段，初始化后不由普通写入口替换。</summary>
         private readonly Dictionary<int, int> cyclePosition = new(32);
-        /// <summary>中文含义：队列锁定。只读字段，初始化后不由普通写入口替换。使用位置：作为 Monitor.Exit(object) 的参数、作为 Monitor.TryEnter(object) 的参数、EnemyCombatTimeline.WriteSession.Extract(out EnemyCombatTimeline.TimelineEntry)。</summary>
+        /// <summary>队列锁定。只读字段，初始化后不由普通写入口替换。</summary>
         private readonly object queueLock = new();
-        /// <summary>中文含义：唤醒。只读字段，初始化后不由普通写入口替换。使用位置：EnemyCombatTimeline.WriteSession.Enqueue(in EnemyCombatTimeline.TimelineEntry)、EnemyCombatTimeline.WriteSession.Execute()、EnemyCombatTimeline.WriteSession.RequestRefresh() 等共 4 处。</summary>
+        /// <summary>唤醒。只读字段，初始化后不由普通写入口替换。</summary>
         private readonly AutoResetEvent wake = new(false);
-        /// <summary>中文含义：路径。只读字段，初始化后不由普通写入口替换。使用位置：作为 Path.GetDirectoryName(string) 的参数、作为 StreamWriter.StreamWriter(string, bool, Encoding, int) 的参数、EnemyCombatTimeline.WriteSession.WriteSession(string)。</summary>
+        /// <summary>路径。只读字段，初始化后不由普通写入口替换。</summary>
         private readonly string path;
-        /// <summary>中文含义：线程。只读字段，初始化后不由普通写入口替换。使用位置：EnemyCombatTimeline.WriteSession.Stop(bool)、EnemyCombatTimeline.WriteSession.WriteSession(string)。</summary>
+        /// <summary>线程。只读字段，初始化后不由普通写入口替换。</summary>
         private readonly Thread thread;
-        /// <summary>中文含义：emptyPosition 表示“空位置”；queueFirst 表示“队列首个”；queueTail 表示“队列尾部”。使用位置：EnemyCombatTimeline.WriteSession.Enqueue(in EnemyCombatTimeline.TimelineEntry)、EnemyCombatTimeline.WriteSession.RemoveValue(int)。；使用位置：作为 EnemyCombatTimeline.WriteSession.RemoveValue(int) 的参数、EnemyCombatTimeline.WriteSession.Enqueue(in EnemyCombatTimeline.TimelineEntry)、EnemyCombatTimeline.WriteSession.Extract(out EnemyCombatTimeline.TimelineEntry) 等共 4 处。；使用位置：EnemyCombatTimeline.WriteSession.Enqueue(in EnemyCombatTimeline.TimelineEntry)、EnemyCombatTimeline.WriteSession.RemoveValue(int)。</summary>
+        /// <summary>emptyPosition 表示“空位置”；queueFirst 表示“队列首个”；queueTail 表示“队列尾部”。</summary>
         private int emptyPosition, queueFirst = -1, queueTail = -1;
-        /// <summary>中文含义：close 表示“是否关闭”；refresh 表示“是否刷新”。使用位置：EnemyCombatTimeline.WriteSession.Enqueue(in EnemyCombatTimeline.TimelineEntry)、EnemyCombatTimeline.WriteSession.Execute()、EnemyCombatTimeline.WriteSession.RequestRefresh() 等共 4 处。；使用位置：EnemyCombatTimeline.WriteSession.Execute()、EnemyCombatTimeline.WriteSession.RequestRefresh()。</summary>
+        /// <summary>close 表示“是否关闭”；refresh 表示“是否刷新”。</summary>
         private volatile bool close, refresh;
-        /// <summary>中文含义：错误。使用位置：作为 Debug.LogWarning(object, Object) 的参数、EnemyCombatTimeline.IsRecording.get、EnemyCombatTimeline.LateUpdate() 等共 5 处。</summary>
+        /// <summary>错误。</summary>
         internal volatile string error;
-        /// <summary>中文含义：missedEvent 表示“未命中的事件”；missedSnapshot 表示“未命中的快照”。使用位置：作为 Interlocked.Increment(ref int) 的参数、作为 StreamWriter.WriteLine(string) 的参数。；使用位置：作为 Interlocked.Increment(ref int) 的参数、作为 StreamWriter.WriteLine(string) 的参数。</summary>
+        /// <summary>missedEvent 表示“未命中的事件”；missedSnapshot 表示“未命中的快照”。</summary>
         internal int missedEvent, missedSnapshot;
         /// <summary>构造并初始化 WriteSession 的声明状态；具体外部协作见静态调用链。</summary>
         /// <remarks>静态调用链：上游 EnemyCombatTimeline.BeginSession()；下游（含内部回调体） Thread.Start()、Thread.Thread(ThreadStart)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-        /// <param name="path">中文含义：路径。使用位置：EnemyCombatTimeline.WriteSession.WriteSession(string)。</param>
+        /// <param name="path">路径。</param>
         internal WriteSession(string path)
         {
             this.path = path;
-            // sequence（序号）：使用位置：EnemyCombatTimeline.WriteSession.WriteSession(string)。
+            // 序号。
 for (int sequence = 0; sequence < backItem.Length; sequence++)
             {
                 backItem[sequence] = sequence + 1;
@@ -105,7 +105,7 @@ for (int sequence = 0; sequence < backItem.Length; sequence++)
 
         /// <summary>Enqueue 的业务处理入口；本方法直接依赖 Dictionary&lt;int, int&gt;.TryGetValue(int, out int)、EnemyCombatTimeline.WriteSession.Missed(bool)、EnemyCombatTimeline.WriteSession.RemoveValue(int)、EventWaitHandle.Set()、Monitor.Exit(object)、Monitor.TryEnter(object)，调用方通过参数与返回结果交接本次处理。</summary>
         /// <remarks>静态调用链：上游 EnemyCombatTimeline.LateUpdate()、EnemyCombatTimeline.Record(VillagerController, string, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields)、EnemyCombatTimeline.Record(VillagerController, string, string)；下游（含内部回调体） Dictionary&lt;int, int&gt;.TryGetValue(int, out int)、EnemyCombatTimeline.WriteSession.Missed(bool)、EnemyCombatTimeline.WriteSession.RemoveValue(int)、EventWaitHandle.Set()、Monitor.Exit(object)、Monitor.TryEnter(object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-        /// <param name="item">中文含义：当前时间轴入口。使用位置：作为 Dictionary&lt;int, int&gt;.this[int] 的参数、作为 Dictionary&lt;int, int&gt;.TryGetValue(int, out int) 的参数、作为 EnemyCombatTimeline.WriteSession.Missed(bool) 的参数 等共 4 处。</param>
+        /// <param name="item">当前时间轴入口。</param>
         internal void Enqueue(in TimelineEntry item)
         {
             if (close || error != null)
@@ -130,7 +130,7 @@ for (int sequence = 0; sequence < backItem.Length; sequence++)
 
                 if (emptyPosition < 0 && !item.isSnapshot && cyclePosition.Count > 0)
                 {
-                    // evict（驱逐）：使用位置：作为 EnemyCombatTimeline.WriteSession.RemoveValue(int) 的参数、EnemyCombatTimeline.WriteSession.Enqueue(in EnemyCombatTimeline.TimelineEntry)。
+                    // 驱逐。
 int evict = -1;
                     // pair（当前键值配对）：每轮从周期位置取得一个元素，仅代表当前这一项。使用位置：EnemyCombatTimeline.WriteSession.Enqueue(in EnemyCombatTimeline.TimelineEntry)。
 foreach (var pair in cyclePosition)
@@ -149,7 +149,7 @@ foreach (var pair in cyclePosition)
                     return;
                 }
 
-                // position（位置）：使用位置：EnemyCombatTimeline.WriteSession.Enqueue(in EnemyCombatTimeline.TimelineEntry)。
+                // 位置。
 int position = emptyPosition;
                 emptyPosition = backItem[position];
                 queue[position] = item;
@@ -181,7 +181,7 @@ int position = emptyPosition;
 
         /// <summary>RemoveValue 的业务处理入口；本方法直接依赖 Dictionary&lt;int, int&gt;.Remove(int)，调用方通过参数与返回结果交接本次处理。</summary>
         /// <remarks>静态调用链：上游 EnemyCombatTimeline.WriteSession.Enqueue(in EnemyCombatTimeline.TimelineEntry)、EnemyCombatTimeline.WriteSession.Extract(out EnemyCombatTimeline.TimelineEntry)；下游（含内部回调体） Dictionary&lt;int, int&gt;.Remove(int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-        /// <param name="position">中文含义：位置。使用位置：EnemyCombatTimeline.WriteSession.RemoveValue(int)。</param>
+        /// <param name="position">位置。</param>
         private void RemoveValue(int position)
         {
             if (queue[position].isSnapshot)
@@ -217,7 +217,7 @@ int front = frontItem[position], back = backItem[position];
 
         /// <summary>Missed 的业务处理入口；本方法直接依赖 Interlocked.Increment(ref int)，调用方通过参数与返回结果交接本次处理。</summary>
         /// <remarks>静态调用链：上游 EnemyCombatTimeline.WriteSession.Enqueue(in EnemyCombatTimeline.TimelineEntry)；下游（含内部回调体） Interlocked.Increment(ref int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-        /// <param name="snapshot">中文含义：是否快照。使用位置：EnemyCombatTimeline.WriteSession.Missed(bool)。</param>
+        /// <param name="snapshot">是否快照。</param>
         private void Missed(bool snapshot)
         {
             if (snapshot)
@@ -232,7 +232,7 @@ int front = frontItem[position], back = backItem[position];
 
         /// <summary>Extract 的业务处理入口；本方法直接依赖 EnemyCombatTimeline.WriteSession.RemoveValue(int)，调用方通过参数与返回结果交接本次处理。</summary>
         /// <remarks>静态调用链：上游 EnemyCombatTimeline.WriteSession.Execute()；下游（含内部回调体） EnemyCombatTimeline.WriteSession.RemoveValue(int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-        /// <param name="item">中文含义：当前时间轴入口。输出参数，由本入口写入并交给调用方。使用位置：EnemyCombatTimeline.WriteSession.Extract(out EnemyCombatTimeline.TimelineEntry)。</param>
+        /// <param name="item">当前时间轴入口。输出参数，由本入口写入并交给调用方。</param>
         private bool Extract(out TimelineEntry item)
         {
             lock (queueLock)
@@ -262,7 +262,7 @@ int front = frontItem[position], back = backItem[position];
 
         /// <summary>Stop 的业务处理入口；本方法直接依赖 EventWaitHandle.Set()、Thread.Join(int)，调用方通过参数与返回结果交接本次处理。</summary>
         /// <remarks>静态调用链：上游 EnemyCombatTimeline.EndSession(bool)；下游（含内部回调体） EventWaitHandle.Set()、Thread.Join(int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-        /// <param name="waiting">中文含义：是否等待中。使用位置：EnemyCombatTimeline.WriteSession.Stop(bool)。</param>
+        /// <param name="waiting">是否等待中。</param>
         internal void Stop(bool waiting)
         {
             if (!close)
@@ -284,12 +284,12 @@ int front = frontItem[position], back = backItem[position];
             try
             {
                 Directory.CreateDirectory(Path.GetDirectoryName(path));
-                // write（写入）：使用位置：EnemyCombatTimeline.WriteSession.Execute()。
+                // 写入。
 using var write = new StreamWriter(path, false, new UTF8Encoding(true), 65536);
-                // text（文字）：使用位置：作为 CombatDiagnosticFields.AppendValue(StringBuilder) 的参数、作为 CombatTimelineSnapshot.AppendValue(StringBuilder) 的参数、作为 StreamWriter.WriteLine(string) 的参数 等共 4 处。
+                // 文字。
 var text = new StringBuilder(4096);
                 write.WriteLine("敌人战斗时间轴；数值主线程采集，格式化及文件写入由后台完成。");
-                // nextRefresh（下一次刷新）：保存 DateTime.AddSeconds(double) 的返回结果，供当前步骤使用。使用位置：EnemyCombatTimeline.WriteSession.Execute()。
+                // 下一次刷新。
 DateTime nextRefresh = DateTime.UtcNow.AddSeconds(1);
                 while (true)
                 {
@@ -343,26 +343,26 @@ DateTime nextRefresh = DateTime.UtcNow.AddSeconds(1);
         }
     }
 
-    /// <summary>中文含义：生效。使用位置：作为 Mathf.Max(float, float) 的参数、EnemyCombatTimeline.IsRecord(VillagerController)、EnemyCombatTimeline.IsRecording.get 等共 11 处。</summary>
+    /// <summary>生效。</summary>
     private static EnemyCombatTimeline active;
-    /// <summary>中文含义：条目集合。只读字段，初始化后不由普通写入口替换。使用位置：EnemyCombatTimeline.CreateRecord(VillagerController, string)、EnemyCombatTimeline.EndSession(bool)、EnemyCombatTimeline.LateUpdate() 等共 5 处。</summary>
+    /// <summary>条目集合。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly Dictionary<int, Entry> entries = new(32);
-    /// <summary>中文含义：顺序。只读字段，初始化后不由普通写入口替换。使用位置：EnemyCombatTimeline.EndSession(bool)、EnemyCombatTimeline.LateUpdate()、EnemyCombatTimeline.Register(VillagerController, int) 等共 4 处。</summary>
+    /// <summary>顺序。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly List<Entry> order = new(32);
-    /// <summary>中文含义：会话。使用位置：作为 Debug.LogWarning(object, Object) 的参数、EnemyCombatTimeline.BeginSession()、EnemyCombatTimeline.EndSession(bool) 等共 8 处。</summary>
+    /// <summary>会话。</summary>
     private WriteSession session;
-    /// <summary>中文含义：是否具有启动。使用位置：EnemyCombatTimeline.OnEnable()、EnemyCombatTimeline.Start()。</summary>
+    /// <summary>是否具有启动。</summary>
     private bool hasStartup;
-    /// <summary>中文含义：cursor 表示“光标”；sequence 表示“序号”；nextNumber 表示“下一次数量”；nextSceneNumber 表示“下一次场景数量”。使用位置：作为 List&lt;EnemyCombatTimeline.Entry&gt;.this[int] 的参数、EnemyCombatTimeline.EndSession(bool)、EnemyCombatTimeline.LateUpdate()。；使用位置：EnemyCombatTimeline.CreateRecord(VillagerController, string)、EnemyCombatTimeline.EndSession(bool)。；使用位置：EnemyCombatTimeline.EndSession(bool)、EnemyCombatTimeline.Register(VillagerController, int)。；使用位置：EnemyCombatTimeline.EndSession(bool)、EnemyCombatTimeline.Register(VillagerController, int)。</summary>
+    /// <summary>cursor 表示“光标”；sequence 表示“序号”；nextNumber 表示“下一次数量”；nextSceneNumber 表示“下一次场景数量”。</summary>
     private int cursor, sequence, nextNumber, nextSceneNumber;
-    /// <summary>中文含义：日志路径。使用位置：作为 EnemyCombatTimeline.WriteSession.WriteSession(string) 的参数、EnemyCombatTimeline.BeginSession()。</summary>
+    /// <summary>日志路径。</summary>
     public string LogPath { get; private set; }
-    /// <summary>中文含义：是否记录中。使用位置：EnemyCombatTimeline.IsRecord(VillagerController)、EnemyCombatTimeline.Register(VillagerController, int)。</summary>
+    /// <summary>是否记录中。</summary>
     public static bool IsRecording => active != null && active.enableRecording && active.session != null && active.session.error == null;
 
     /// <summary>IsRecord 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
     /// <remarks>静态调用链：上游 EnemyActionCoordinator.SetObservableState(VillagerState, string, int)、EnemyAIManager.BuildCombatTimelineSummary(VillagerController)、EnemyAIManager.UpdatePlayerPursuitRegion()、EnemyCombatTimeline.LateUpdate()、EnemyCombatTimeline.Record(VillagerController, string, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields) 等共 18 处；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="enemy">中文含义：敌人。使用位置：EnemyCombatTimeline.IsRecord(VillagerController)。</param>
+    /// <param name="enemy">敌人。</param>
     public static bool IsRecord(VillagerController enemy) => IsRecording && enemy != null && (!active.firstWaveOnly || enemy.diagnosticWave <= 1) && (active.selectedEnemy == null || active.selectedEnemy == enemy);
     /// <summary>ResetSession 的业务处理入口；本方法直接依赖 EnemyCombatTimeline.EndSession(bool)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） EnemyCombatTimeline.EndSession(bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
@@ -409,7 +409,7 @@ DateTime nextRefresh = DateTime.UtcNow.AddSeconds(1);
     /// <remarks>静态调用链：上游 EnemyCombatTimeline.LateUpdate()；下游（含内部回调体） DateTime.ToString(string)、EnemyCombatTimeline.Register(VillagerController, int)、EnemyCombatTimeline.WriteSession.WriteSession(string)、Guid.NewGuid()、Guid.ToString(string)、Object.FindObjectsByType&lt;VillagerController&gt;(FindObjectsSortMode)、Path.Combine(string, string, string) 等共 9 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     void BeginSession()
     {
-        // root（根节点）：使用位置：作为 Path.Combine(string, string) 的参数、EnemyCombatTimeline.BeginSession()。
+        // 根节点。
 string root;
         if (Application.isEditor)
         {
@@ -432,10 +432,10 @@ foreach (var enemy in FindObjectsByType<VillagerController>(FindObjectsSortMode.
 
     /// <summary>EndSession 的业务处理入口；本方法直接依赖 Dictionary&lt;int, EnemyCombatTimeline.Entry&gt;.Clear()、EnemyCombatTimeline.WriteSession.Stop(bool)、List&lt;EnemyCombatTimeline.Entry&gt;.Clear()、object.ReferenceEquals(object, object)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyCombatTimeline.LateUpdate()、EnemyCombatTimeline.OnApplicationQuit()、EnemyCombatTimeline.OnDisable()、EnemyCombatTimeline.ResetSession()；下游（含内部回调体） Dictionary&lt;int, EnemyCombatTimeline.Entry&gt;.Clear()、EnemyCombatTimeline.WriteSession.Stop(bool)、List&lt;EnemyCombatTimeline.Entry&gt;.Clear()、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="waiting">中文含义：是否等待中。使用位置：作为 EnemyCombatTimeline.WriteSession.Stop(bool) 的参数。</param>
+    /// <param name="waiting">是否等待中。</param>
     void EndSession(bool waiting)
     {
-        // receiverValue2（判空前缓存的会话）：从会话读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、EnemyCombatTimeline.EndSession(bool)。
+        // 判空前缓存的会话。
 global::EnemyCombatTimeline.WriteSession receiverValue2 = session;
         if (!global::System.Object.ReferenceEquals(receiverValue2, null))
         {
@@ -450,8 +450,8 @@ global::EnemyCombatTimeline.WriteSession receiverValue2 = session;
 
     /// <summary>Register 的业务处理入口；本方法直接依赖 CombatDiagnosticFields.Count(string, double)、Dictionary&lt;int, EnemyCombatTimeline.Entry&gt;.Add(int, EnemyCombatTimeline.Entry)、Dictionary&lt;int, EnemyCombatTimeline.Entry&gt;.TryGetValue(int, out EnemyCombatTimeline.Entry)、EnemyCombatTimeline.Entry.Entry()、EnemyCombatTimeline.Record(VillagerController, string, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields)、List&lt;EnemyCombatTimeline.Entry&gt;.Add(EnemyCombatTimeline.Entry)、Mathf.Max(float, float) 等共 8 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 ChapterOneMissionManager.TrySpawnEnemy(GameObject, MissionEnemyType)、EnemyCombatTimeline.BeginSession()、EnemyCombatTimeline.CreateRecord(VillagerController, string)、VillagerController.OnEnable()、VillagerController.Start()；下游（含内部回调体） CombatDiagnosticFields.Count(string, double)、Dictionary&lt;int, EnemyCombatTimeline.Entry&gt;.Add(int, EnemyCombatTimeline.Entry)、Dictionary&lt;int, EnemyCombatTimeline.Entry&gt;.TryGetValue(int, out EnemyCombatTimeline.Entry)、EnemyCombatTimeline.Entry.Entry()、EnemyCombatTimeline.Record(VillagerController, string, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields)、List&lt;EnemyCombatTimeline.Entry&gt;.Add(EnemyCombatTimeline.Entry)、Mathf.Max(float, float) 等共 8 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="enemy">中文含义：敌人。使用位置：作为 EnemyCombatTimeline.Record(VillagerController, string, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields) 的参数、EnemyCombatTimeline.Register(VillagerController, int)。</param>
-    /// <param name="wave">中文含义：波次。使用位置：EnemyCombatTimeline.Register(VillagerController, int)。</param>
+    /// <param name="enemy">敌人。</param>
+    /// <param name="wave">波次。</param>
     public static int Register(VillagerController enemy, int wave = 0)
     {
         if (enemy == null)
@@ -469,7 +469,7 @@ global::EnemyCombatTimeline.WriteSession receiverValue2 = session;
             return 0;
         }
 
-        // key（键）：保存 Object.GetInstanceID() 的返回结果，供当前步骤使用。使用位置：作为 CombatDiagnosticFields.Count(string, double) 的参数、作为 Dictionary<int, EnemyCombatTimeline.Entry>.Add(int, EnemyCombatTimeline.Entry) 的参数、作为 Dictionary<int, EnemyCombatTimeline.Entry>.TryGetValue(int, out EnemyCombatTimeline.Entry) 的参数 等共 4 处。
+        // 键。
 int key = enemy.GetInstanceID();
         if (active.entries.TryGetValue(key, out var /* 中文含义：前一次物品。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ previousItem))
         {
@@ -477,7 +477,7 @@ int key = enemy.GetInstanceID();
             return previousItem.number;
         }
 
-        // createdValue3（本次新建的当前入口）：保存本次创建实例，按原先顺序完成逐项初始化后交给后续使用方。使用位置：EnemyCombatTimeline.Register(VillagerController, int)。
+        // 本次新建的当前入口。
 global::EnemyCombatTimeline.Entry createdValue3 = new Entry();
         createdValue3.enemy = enemy;
         createdValue3.key = key;
@@ -494,7 +494,7 @@ global::EnemyCombatTimeline.Entry createdValue3 = new Entry();
         createdValue3.lastPosition = enemy.transform.position;
         createdValue3.lastSampleTime = Time.time;
         createdValue3.nextSample = Time.unscaledTime + (active.order.Count % 16) * Mathf.Max(.1f, active.snapshotInterval) / 16f;
-        // item（当前入口）：使用位置：作为 CombatDiagnosticFields.Count(string, double) 的参数、作为 Dictionary<int, EnemyCombatTimeline.Entry>.Add(int, EnemyCombatTimeline.Entry) 的参数、作为 List<EnemyCombatTimeline.Entry>.Add(EnemyCombatTimeline.Entry) 的参数 等共 4 处。
+        // 当前入口。
 var item = createdValue3;
         active.entries.Add(key, item);
         active.order.Add(item);
@@ -505,7 +505,7 @@ var item = createdValue3;
 
     /// <summary>Unregister 的业务处理入口；本方法直接依赖 Dictionary&lt;int, EnemyCombatTimeline.Entry&gt;.Remove(int, out EnemyCombatTimeline.Entry)、List&lt;EnemyCombatTimeline.Entry&gt;.Remove(EnemyCombatTimeline.Entry)、Object.GetInstanceID()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillagerController.OnDisable()；下游（含内部回调体） Dictionary&lt;int, EnemyCombatTimeline.Entry&gt;.Remove(int, out EnemyCombatTimeline.Entry)、List&lt;EnemyCombatTimeline.Entry&gt;.Remove(EnemyCombatTimeline.Entry)、Object.GetInstanceID()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="enemy">中文含义：敌人。使用位置：作为 Dictionary&lt;int, EnemyCombatTimeline.Entry&gt;.Remove(int, out EnemyCombatTimeline.Entry) 的参数、EnemyCombatTimeline.Unregister(VillagerController)。</param>
+    /// <param name="enemy">敌人。</param>
     public static void Unregister(VillagerController enemy)
     {
         if (active == null || enemy == null)
@@ -521,7 +521,7 @@ var item = createdValue3;
 
     /// <summary>Number 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
     /// <remarks>静态调用链：上游 EnemyAIManager.BuildCombatTimelineSummary(VillagerController)；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="enemy">中文含义：敌人。使用位置：EnemyCombatTimeline.Number(VillagerController)。</param>
+    /// <param name="enemy">敌人。</param>
     public static string Number(VillagerController enemy)
     {
         if (enemy == null)
@@ -536,9 +536,9 @@ var item = createdValue3;
 
     /// <summary>Record 的业务处理入口；本方法直接依赖 EnemyCombatTimeline.CreateRecord(VillagerController, string)、EnemyCombatTimeline.IsRecord(VillagerController)、EnemyCombatTimeline.WriteSession.Enqueue(in EnemyCombatTimeline.TimelineEntry)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyTaskBase.DiagTaskEnd()、EnemyTaskBase.DiagTaskStart()、VillagerController.UpdateCrowdBypass()；下游（含内部回调体） EnemyCombatTimeline.CreateRecord(VillagerController, string)、EnemyCombatTimeline.IsRecord(VillagerController)、EnemyCombatTimeline.WriteSession.Enqueue(in EnemyCombatTimeline.TimelineEntry)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="enemy">中文含义：敌人。使用位置：作为 EnemyCombatTimeline.CreateRecord(VillagerController, string) 的参数、作为 EnemyCombatTimeline.IsRecord(VillagerController) 的参数。</param>
-    /// <param name="category">中文含义：类别。使用位置：作为 EnemyCombatTimeline.CreateRecord(VillagerController, string) 的参数。</param>
-    /// <param name="detail">中文含义：细节。使用位置：EnemyCombatTimeline.Record(VillagerController, string, string)。</param>
+    /// <param name="enemy">敌人。</param>
+    /// <param name="category">类别。</param>
+    /// <param name="detail">细节。</param>
     public static void Record(VillagerController enemy, string category, string detail)
     {
         if (!IsRecord(enemy))
@@ -546,7 +546,7 @@ var item = createdValue3;
             return;
         }
 
-        // item（当前时间轴入口）：保存 EnemyCombatTimeline.CreateRecord(VillagerController, string) 的返回结果，供当前步骤使用。使用位置：作为 EnemyCombatTimeline.WriteSession.Enqueue(in EnemyCombatTimeline.TimelineEntry) 的参数、EnemyCombatTimeline.Record(VillagerController, string, string)。
+        // 当前时间轴入口。
 var item = active.CreateRecord(enemy, category);
         item.text = detail;
         active.session.Enqueue(item);
@@ -554,16 +554,16 @@ var item = active.CreateRecord(enemy, category);
 
     /// <summary>Record 的业务处理入口；本方法直接依赖 EnemyCombatTimeline.CreateRecord(VillagerController, string)、EnemyCombatTimeline.IsRecord(VillagerController)、EnemyCombatTimeline.WriteSession.Enqueue(in EnemyCombatTimeline.TimelineEntry)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyActionCoordinator.SetObservableState(VillagerState, string, int)、EnemyAIManager.UpdatePlayerPursuitRegion()、EnemyCombatTimeline.Register(VillagerController, int)、VillagerController.OnDisable()、VillagerController.RecordTimelineAnimationChanges() 等共 11 处；下游（含内部回调体） EnemyCombatTimeline.CreateRecord(VillagerController, string)、EnemyCombatTimeline.IsRecord(VillagerController)、EnemyCombatTimeline.WriteSession.Enqueue(in EnemyCombatTimeline.TimelineEntry)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="enemy">中文含义：敌人。使用位置：作为 EnemyCombatTimeline.CreateRecord(VillagerController, string) 的参数、作为 EnemyCombatTimeline.IsRecord(VillagerController) 的参数。</param>
-    /// <param name="category">中文含义：类别。使用位置：作为 EnemyCombatTimeline.CreateRecord(VillagerController, string) 的参数。</param>
-    /// <param name="one">中文含义：第一。使用位置：EnemyCombatTimeline.Record(VillagerController, string, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields)。</param>
-    /// <param name="two">中文含义：第二。使用位置：EnemyCombatTimeline.Record(VillagerController, string, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields)。</param>
-    /// <param name="three">中文含义：第三。使用位置：EnemyCombatTimeline.Record(VillagerController, string, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields)。</param>
-    /// <param name="four">中文含义：第四。使用位置：EnemyCombatTimeline.Record(VillagerController, string, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields)。</param>
-    /// <param name="five">中文含义：第五。使用位置：EnemyCombatTimeline.Record(VillagerController, string, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields)。</param>
-    /// <param name="six">中文含义：第六。使用位置：EnemyCombatTimeline.Record(VillagerController, string, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields)。</param>
-    /// <param name="seven">中文含义：第七。使用位置：EnemyCombatTimeline.Record(VillagerController, string, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields)。</param>
-    /// <param name="eight">中文含义：第八。使用位置：EnemyCombatTimeline.Record(VillagerController, string, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields)。</param>
+    /// <param name="enemy">敌人。</param>
+    /// <param name="category">类别。</param>
+    /// <param name="one">第一。</param>
+    /// <param name="two">第二。</param>
+    /// <param name="three">第三。</param>
+    /// <param name="four">第四。</param>
+    /// <param name="five">第五。</param>
+    /// <param name="six">第六。</param>
+    /// <param name="seven">第七。</param>
+    /// <param name="eight">第八。</param>
     public static void Record(VillagerController enemy, string category, CombatDiagnosticFields one = default, CombatDiagnosticFields two = default, CombatDiagnosticFields three = default, CombatDiagnosticFields four = default, CombatDiagnosticFields five = default, CombatDiagnosticFields six = default, CombatDiagnosticFields seven = default, CombatDiagnosticFields eight = default)
     {
         if (!IsRecord(enemy))
@@ -571,7 +571,7 @@ var item = active.CreateRecord(enemy, category);
             return;
         }
 
-        // item（当前时间轴入口）：保存 EnemyCombatTimeline.CreateRecord(VillagerController, string) 的返回结果，供当前步骤使用。使用位置：作为 EnemyCombatTimeline.WriteSession.Enqueue(in EnemyCombatTimeline.TimelineEntry) 的参数、EnemyCombatTimeline.Record(VillagerController, string, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields)。
+        // 当前时间轴入口。
 var item = active.CreateRecord(enemy, category);
         item.one = one;
         item.two = two;
@@ -586,8 +586,8 @@ var item = active.CreateRecord(enemy, category);
 
     /// <summary>CreateRecord 的业务处理入口；本方法直接依赖 Dictionary&lt;int, EnemyCombatTimeline.Entry&gt;.ContainsKey(int)、EnemyCombatTimeline.Register(VillagerController, int)、EnemyCombatTimeline.TimelineEntry.TimelineEntry()、Object.GetInstanceID()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyCombatTimeline.LateUpdate()、EnemyCombatTimeline.Record(VillagerController, string, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields, CombatDiagnosticFields)、EnemyCombatTimeline.Record(VillagerController, string, string)；下游（含内部回调体） Dictionary&lt;int, EnemyCombatTimeline.Entry&gt;.ContainsKey(int)、EnemyCombatTimeline.Register(VillagerController, int)、EnemyCombatTimeline.TimelineEntry.TimelineEntry()、Object.GetInstanceID()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="enemy">中文含义：敌人。使用位置：作为 Dictionary&lt;int, EnemyCombatTimeline.Entry&gt;.ContainsKey(int) 的参数、作为 EnemyCombatTimeline.Register(VillagerController, int) 的参数、EnemyCombatTimeline.CreateRecord(VillagerController, string)。</param>
-    /// <param name="category">中文含义：类别。使用位置：EnemyCombatTimeline.CreateRecord(VillagerController, string)。</param>
+    /// <param name="enemy">敌人。</param>
+    /// <param name="category">类别。</param>
     private TimelineEntry CreateRecord(VillagerController enemy, string category)
     {
         if (!entries.ContainsKey(enemy.GetInstanceID()))
@@ -653,7 +653,7 @@ int budget = 2, checkCount = order.Count;
                 cursor = 0;
             }
 
-            // item（当前入口）：使用位置：作为 Dictionary<int, EnemyCombatTimeline.Entry>.Remove(int) 的参数、作为 EnemyCombatTimeline.CreateRecord(VillagerController, string) 的参数、作为 EnemyCombatTimeline.IsRecord(VillagerController) 的参数 等共 7 处。
+            // 当前入口。
 var item = order[cursor++];
             if (item.enemy == null || !item.enemy.isActiveAndEnabled)
             {
@@ -674,11 +674,11 @@ var item = order[cursor++];
 
             using (CombatPerformanceCounters.snapshotMarker.Auto())
             {
-                // timeValue（时间值）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：EnemyCombatTimeline.LateUpdate()。
+                // 时间值。
 float timeValue = Mathf.Max(0, Time.time - item.lastSampleTime);
-                // displacement（位移）：保存 Vector3.Distance(Vector3, Vector3) 的返回结果，供当前步骤使用。使用位置：EnemyCombatTimeline.LateUpdate()。
+                // 位移。
 float displacement = Vector3.Distance(item.enemy.transform.position, item.lastPosition);
-                // assignmentReceiver6（赋值前保存的目标当前入口）：从物品读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：EnemyCombatTimeline.LateUpdate()。
+                // 赋值前保存的目标当前入口。
 global::EnemyCombatTimeline.Entry assignmentReceiver6 = item;
                 if (displacement < .025f)
                 {
@@ -692,7 +692,7 @@ global::EnemyCombatTimeline.Entry assignmentReceiver6 = item;
                 item.lastSampleTime = Time.time;
                 item.lastPosition = item.enemy.transform.position;
                 item.nextSample = Time.unscaledTime + Mathf.Max(.1f, snapshotInterval);
-                // record（当前时间轴入口）：保存 EnemyCombatTimeline.CreateRecord(VillagerController, string) 的返回结果，供当前步骤使用。使用位置：作为 EnemyCombatTimeline.WriteSession.Enqueue(in EnemyCombatTimeline.TimelineEntry) 的参数、EnemyCombatTimeline.LateUpdate()。
+                // 当前时间轴入口。
 var record = CreateRecord(item.enemy, "快照");
                 record.isSnapshot = true;
                 record.snapshot = item.enemy.CollectCombatTimelineSnapshot();
@@ -710,7 +710,7 @@ var record = CreateRecord(item.enemy, "快照");
     [ContextMenu("立即保存时间轴")]
     public void Flush()
     {
-        // receiverValue8（判空前缓存的会话）：从会话读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、EnemyCombatTimeline.Flush()。
+        // 判空前缓存的会话。
 global::EnemyCombatTimeline.WriteSession receiverValue8 = session;
         if (!global::System.Object.ReferenceEquals(receiverValue8, null))
         {
@@ -720,7 +720,7 @@ global::EnemyCombatTimeline.WriteSession receiverValue8 = session;
 
     /// <summary>OnApplicationPause 的业务处理入口；本方法直接依赖 EnemyCombatTimeline.Flush()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） EnemyCombatTimeline.Flush()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="paused">中文含义：是否已暂停。使用位置：EnemyCombatTimeline.OnApplicationPause(bool)。</param>
+    /// <param name="paused">是否已暂停。</param>
     void OnApplicationPause(bool paused)
     {
         if (paused)
@@ -749,7 +749,7 @@ global::EnemyCombatTimeline.WriteSession receiverValue8 = session;
 
     /// <summary>Describe 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
     /// <remarks>静态调用链：上游 CombatTimelineSnapshot.AppendValue(StringBuilder)、EnemyAIManager.BuildCombatTimelineSummary(VillagerController)、VillagerController.RecordTimelineAnimationChanges()、VillagerController.UpdateChaseProgressRecovery()；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="value">中文含义：是否值。使用位置：EnemyCombatTimeline.Describe(bool)。</param>
+    /// <param name="value">是否值。</param>
     public static string Describe(bool value)
     {
         if (value)
@@ -764,7 +764,7 @@ global::EnemyCombatTimeline.WriteSession receiverValue8 = session;
 
     /// <summary>Describe 的业务处理入口；本方法直接依赖 Dictionary&lt;T, string&gt;.TryGetValue(T, out string)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 CombatTimelineSnapshot.AppendValue(StringBuilder)、EnemyActionCoordinator.SetObservableState(VillagerState, string, int)、VillagerController.CollectCombatTimelineSnapshot()、VillagerController.OnDisable()、VillagerController.RecordTimelineAnimationChanges() 等共 8 处；下游（含内部回调体） Dictionary&lt;T, string&gt;.TryGetValue(T, out string)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="value">中文含义：当前进度。使用位置：作为 Dictionary&lt;T, string&gt;.TryGetValue(T, out string) 的参数。</param>
+    /// <param name="value">当前进度。</param>
     public static string Describe</* 中文含义：由调用方指定的通用类型参数。 */ T>(T value)
         where T : struct, Enum
     {
@@ -783,13 +783,13 @@ global::EnemyCombatTimeline.WriteSession receiverValue8 = session;
     private static class EnumLabels</* 中文含义：泛型枚举类型参数。 */ T>
         where T : struct, Enum
     {
-        /// <summary>中文含义：缓存。只读字段，初始化后不由普通写入口替换。使用位置：EnemyCombatTimeline.Describe&lt;T&gt;(T)。</summary>
+        /// <summary>缓存。只读字段，初始化后不由普通写入口替换。</summary>
         internal static readonly Dictionary<T, string> cache = Create();
         /// <summary>Create 的业务处理入口；本方法直接依赖 Dictionary&lt;T, string&gt;.Dictionary()、EnemyCombatTimeline.Describe(string)、Enum.GetValues(Type)、Enum.ToString()，调用方通过参数与返回结果交接本次处理。</summary>
         /// <remarks>静态调用链：上游 EnemyCombatTimeline.EnumLabels&lt;T&gt;.cache；下游（含内部回调体） Dictionary&lt;T, string&gt;.Dictionary()、EnemyCombatTimeline.Describe(string)、Enum.GetValues(Type)、Enum.ToString()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
         private static Dictionary<T, string> Create()
         {
-            // dictionary（字典）：使用位置：EnemyCombatTimeline.EnumLabels<T>.Create()。
+            // 字典。
 var dictionary = new Dictionary<T, string>();
             // value（当前进度）：每轮从取得数值集合的返回结果取得一个元素，仅代表当前这一项。使用位置：作为 Dictionary<T, string>.this[T] 的参数、作为 EnemyCombatTimeline.Describe(string) 的参数。
 foreach (T value in Enum.GetValues(typeof(T)))
@@ -803,7 +803,7 @@ foreach (T value in Enum.GetValues(typeof(T)))
 
     /// <summary>Describe 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
     /// <remarks>静态调用链：上游 EnemyActionCoordinator.SetObservableState(VillagerState, string, int)、EnemyCombatTimeline.EnumLabels&lt;T&gt;.Create()、EnemyTaskBase.DiagTaskEnd()、EnemyTaskBase.DiagTaskStart()、VillagerController.SetMovementMode(EnemyMovementMode, string, int)；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="value">中文含义：值。使用位置：EnemyCombatTimeline.Describe(string)。</param>
+    /// <param name="value">值。</param>
     public static string Describe(string value)
     {
         if (value == null)

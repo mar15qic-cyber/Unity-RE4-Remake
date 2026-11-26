@@ -11,36 +11,36 @@ using UnityEngine.UI;
 /// </summary>
 public class InventoryCraftingPanel : MonoBehaviour
 {
-    /// <summary>中文含义：物品列表页面根节点。使用位置：InventoryCraftingPanel.ShowCraftingPage()、InventoryCraftingPanel.ShowItemsPage()。</summary>
+    /// <summary>物品列表页面根节点。</summary>
     [Header("分页引用")]
     public GameObject itemsPageRoot;
-    /// <summary>中文含义：合成页面根节点。使用位置：InventoryCraftingPanel.ShowCraftingPage()、InventoryCraftingPanel.ShowItemsPage()。</summary>
+    /// <summary>合成页面根节点。</summary>
     public GameObject craftingPageRoot;
-    /// <summary>中文含义：物品列表分页按钮。使用位置：作为 InventoryCraftingPanel.ApplyTabStyle(Button, bool) 的参数、InventoryCraftingPanel.Initialize(InventoryUI)。</summary>
+    /// <summary>物品列表分页按钮。</summary>
     public Button itemsTabButton;
-    /// <summary>中文含义：合成分页按钮。使用位置：作为 InventoryCraftingPanel.ApplyTabStyle(Button, bool) 的参数、InventoryCraftingPanel.Initialize(InventoryUI)。</summary>
+    /// <summary>合成分页按钮。</summary>
     public Button craftingTabButton;
-    /// <summary>中文含义：页面标题文字。使用位置：InventoryCraftingPanel.ShowCraftingPage()、InventoryCraftingPanel.ShowItemsPage()。</summary>
+    /// <summary>页面标题文字。</summary>
     public Text pageTitleText;
-    /// <summary>中文含义：配方列表根节点。使用位置：作为 Transform.SetParent(Transform, bool) 的参数、InventoryCraftingPanel.Refresh()。</summary>
+    /// <summary>配方列表根节点。</summary>
     [Header("配方列表")]
     public RectTransform recipeListRoot;
     public RectTransform ownedMaterialsRoot;
-    /// <summary>中文含义：结果图标。使用位置：InventoryCraftingPanel.ShowRecipeDetails(ItemData, InventoryManager)。</summary>
+    /// <summary>结果图标。</summary>
     [Header("配方详情")]
     public Image resultIcon;
     public StoredItemPreview resultModelPreview;
-    /// <summary>中文含义：结果名称文字。使用位置：InventoryCraftingPanel.ShowRecipeDetails(ItemData, InventoryManager)。</summary>
+    /// <summary>结果名称文字。</summary>
     public Text resultNameText;
-    /// <summary>中文含义：结果描述文字。使用位置：InventoryCraftingPanel.ShowRecipeDetails(ItemData, InventoryManager)。</summary>
+    /// <summary>结果描述文字。</summary>
     public Text resultDescriptionText;
-    /// <summary>中文含义：需求文字。使用位置：InventoryCraftingPanel.ShowRecipeDetails(ItemData, InventoryManager)。</summary>
+    /// <summary>需求文字。</summary>
     public Text requirementText;
-    /// <summary>中文含义：结果数量文字。使用位置：InventoryCraftingPanel.ShowRecipeDetails(ItemData, InventoryManager)。</summary>
+    /// <summary>结果数量文字。</summary>
     public Text resultCountText;
-    /// <summary>中文含义：合成按钮。使用位置：InventoryCraftingPanel.Initialize(InventoryUI)、InventoryCraftingPanel.ShowRecipeDetails(ItemData, InventoryManager)。</summary>
+    /// <summary>合成按钮。</summary>
     public Button craftButton;
-    /// <summary>中文含义：合成按钮文字。使用位置：InventoryCraftingPanel.ShowRecipeDetails(ItemData, InventoryManager)。</summary>
+    /// <summary>合成按钮文字。</summary>
     public Text craftButtonText;
     [Tooltip("配方分类按钮，依次为全部、弹药、其它、草药。")]
     public Button[] recipeCategoryButtons;
@@ -50,31 +50,31 @@ public class InventoryCraftingPanel : MonoBehaviour
     public Sprite nativeMaterialFocus;
     public Sprite nativeListLine;
     public CanvasGroup itemDetailsGroup;
-    /// <summary>中文含义：分页普通状态颜色。使用位置：InventoryCraftingPanel.ApplyTabStyle(Button, bool)。</summary>
+    /// <summary>分页普通状态颜色。</summary>
     [Header("视觉颜色")]
     public Color tabNormalColor = new Color(0.16f, 0.17f, 0.16f, 0.95f);
-    /// <summary>中文含义：分页选定颜色。使用位置：InventoryCraftingPanel.ApplyTabStyle(Button, bool)。</summary>
+    /// <summary>分页选定颜色。</summary>
     public Color tabSelectedColor = new Color(0.45f, 0.46f, 0.42f, 1f);
-    /// <summary>中文含义：配方普通状态颜色。使用位置：InventoryCraftingPanel.CreateRecipeWidget(ItemData, InventoryManager)。</summary>
+    /// <summary>配方普通状态颜色。</summary>
     public Color recipeNormalColor = new Color(0.09f, 0.1f, 0.095f, 0.96f);
-    /// <summary>中文含义：配方可用颜色。使用位置：InventoryCraftingPanel.CreateRecipeWidget(ItemData, InventoryManager)。</summary>
+    /// <summary>配方可用颜色。</summary>
     public Color recipeAvailableColor = new Color(0.2f, 0.23f, 0.18f, 0.98f);
-    /// <summary>中文含义：配方选定颜色。使用位置：InventoryCraftingPanel.CreateRecipeWidget(ItemData, InventoryManager)。</summary>
+    /// <summary>配方选定颜色。</summary>
     public Color recipeSelectedColor = new Color(0.46f, 0.43f, 0.31f, 1f);
-    /// <summary>中文含义：可用文字颜色。使用位置：InventoryCraftingPanel.CreateRecipeWidget(ItemData, InventoryManager)。</summary>
+    /// <summary>可用文字颜色。</summary>
     public Color availableTextColor = new Color(0.92f, 0.9f, 0.78f, 1f);
-    /// <summary>中文含义：不可用文字颜色。使用位置：InventoryCraftingPanel.CreateRecipeWidget(ItemData, InventoryManager)。</summary>
+    /// <summary>不可用文字颜色。</summary>
     public Color unavailableTextColor = new Color(0.56f, 0.56f, 0.54f, 1f);
-    /// <summary>中文含义：配方控件集合。只读字段，初始化后不由普通写入口替换。使用位置：作为 Object.Destroy(Object) 的参数、InventoryCraftingPanel.CreateRecipeWidget(ItemData, InventoryManager)、InventoryCraftingPanel.RebuildRecipeList(InventoryManager)。</summary>
+    /// <summary>配方控件集合。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly List<GameObject> recipeWidgets = new List<GameObject>();
-    /// <summary>中文含义：背包界面。使用位置：InventoryCraftingPanel.CraftSelectedRecipe()、InventoryCraftingPanel.Initialize(InventoryUI)。</summary>
+    /// <summary>背包界面。</summary>
     private InventoryUI inventoryUI;
     private CanvasGroup itemsPageGroup;
     private float itemDetailsAlpha = 1f;
     private readonly Dictionary<string, ItemData> materialsById = new Dictionary<string, ItemData>();
-    /// <summary>中文含义：选定配方。使用位置：作为 InventoryCraftingPanel.ShowRecipeDetails(ItemData, InventoryManager) 的参数、作为 InventoryManager.TryCraft(ItemData, out int) 的参数、作为 InventoryUI.ShowPickupToast(string) 的参数 等共 7 处。</summary>
+    /// <summary>选定配方。</summary>
     private ItemData selectedRecipe;
-    /// <summary>中文含义：是否已初始化。使用位置：InventoryCraftingPanel.Initialize(InventoryUI)。</summary>
+    /// <summary>是否已初始化。</summary>
     private bool initialized;
     private int recipeCategory;
     private const float CraftHoldSeconds = 0.65f;
@@ -92,7 +92,7 @@ public class InventoryCraftingPanel : MonoBehaviour
 
     /// <summary>Initialize 的业务处理入口；本方法直接依赖 InventoryCraftingPanel.ShowItemsPage()、UnityEvent.AddListener(UnityAction)、UnityEvent.RemoveListener(UnityAction)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 InventoryUI.Start()；下游（含内部回调体） InventoryCraftingPanel.ShowItemsPage()、UnityEvent.AddListener(UnityAction)、UnityEvent.RemoveListener(UnityAction)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="owner">中文含义：拥有者。使用位置：InventoryCraftingPanel.Initialize(InventoryUI)。</param>
+    /// <param name="owner">拥有者。</param>
     public void Initialize(InventoryUI owner)
     {
         inventoryUI = owner;
@@ -394,7 +394,7 @@ public class InventoryCraftingPanel : MonoBehaviour
     public void Refresh()
     {
         CancelCraftHold();
-        // manager（当前背包管理器）：使用位置：作为 InventoryCraftingPanel.RebuildRecipeList(InventoryManager) 的参数、作为 InventoryCraftingPanel.ShowRecipeDetails(ItemData, InventoryManager) 的参数、InventoryCraftingPanel.Refresh()。
+        // 当前背包管理器。
 InventoryManager manager = InventoryManager.Instance;
         if (manager == null || recipeListRoot == null)
         {
@@ -484,10 +484,10 @@ InventoryManager manager = InventoryManager.Instance;
 
     /// <summary>RebuildRecipeList 的业务处理入口；本方法直接依赖 Dictionary&lt;ItemData, Image&gt;.Clear()、InventoryCraftingPanel.CreateRecipeWidget(ItemData, InventoryManager)、InventoryManager.GetCraftingRecipes()、List&lt;GameObject&gt;.Clear()、Object.Destroy(Object)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 InventoryCraftingPanel.Refresh()；下游（含内部回调体） Dictionary&lt;ItemData, Image&gt;.Clear()、InventoryCraftingPanel.CreateRecipeWidget(ItemData, InventoryManager)、InventoryManager.GetCraftingRecipes()、List&lt;GameObject&gt;.Clear()、Object.Destroy(Object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="manager">中文含义：当前背包管理器。使用位置：作为 InventoryCraftingPanel.CreateRecipeWidget(ItemData, InventoryManager) 的参数、InventoryCraftingPanel.RebuildRecipeList(InventoryManager)。</param>
+    /// <param name="manager">当前背包管理器。</param>
     private void RebuildRecipeList(InventoryManager manager, List<ItemData> recipes)
     {
-        // i（当前遍历索引）：使用位置：作为 List<GameObject>.this[int] 的参数、InventoryCraftingPanel.RebuildRecipeList(InventoryManager)。
+        // 当前遍历索引。
 for (int i = 0; i < recipeWidgets.Count; i++)
         {
             if (recipeWidgets[i] != null)
@@ -499,7 +499,7 @@ for (int i = 0; i < recipeWidgets.Count; i++)
 
         recipeWidgets.Clear();
         // recipes（配方集合）：保存 InventoryManager.GetCraftingRecipes() 的返回结果，供当前步骤使用。使用位置：作为 InventoryCraftingPanel.CreateRecipeWidget(ItemData, InventoryManager) 的参数、InventoryCraftingPanel.RebuildRecipeList(InventoryManager)。
-        // i（当前遍历索引）：使用位置：作为 List<ItemData>.this[int] 的参数、InventoryCraftingPanel.RebuildRecipeList(InventoryManager)。
+        // 当前遍历索引。
 for (int i = 0; i < recipes.Count; i++)
         {
             CreateRecipeWidget(recipes[i], manager);
@@ -508,8 +508,8 @@ for (int i = 0; i < recipes.Count; i++)
 
     /// <summary>CreateRecipeWidget 的业务处理入口；本方法直接依赖 Color.Color(float, float, float, float)、GameObject.GameObject(string, params Type[])、GameObject.GetComponent&lt;Button&gt;()、GameObject.GetComponent&lt;Image&gt;()、GameObject.GetComponent&lt;LayoutElement&gt;()、InventoryCraftingPanel.CreateImage(Transform, string, Vector2, Vector2)、InventoryCraftingPanel.CreateText(Transform, string, int, TextAnchor) 等共 15 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 InventoryCraftingPanel.RebuildRecipeList(InventoryManager)；下游（含内部回调体） Color.Color(float, float, float, float)、GameObject.GameObject(string, params Type[])、GameObject.GetComponent&lt;Button&gt;()、GameObject.GetComponent&lt;Image&gt;()、GameObject.GetComponent&lt;LayoutElement&gt;()、InventoryCraftingPanel.CreateImage(Transform, string, Vector2, Vector2)、InventoryCraftingPanel.CreateText(Transform, string, int, TextAnchor) 等共 15 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="recipe">中文含义：配方。使用位置：作为 Dictionary&lt;ItemData, Image&gt;.this[ItemData] 的参数、作为 GameObject.GameObject(string, params Type[]) 的参数、作为 InventoryCraftingPanel.SelectRecipe(ItemData) 的参数 等共 7 处。</param>
-    /// <param name="manager">中文含义：当前背包管理器。使用位置：InventoryCraftingPanel.CreateRecipeWidget(ItemData, InventoryManager)。</param>
+    /// <param name="recipe">配方。</param>
+    /// <param name="manager">当前背包管理器。</param>
     private void CreateRecipeWidget(ItemData recipe, InventoryManager manager)
     {
         var widget = new GameObject("配方_" + recipe.displayName, typeof(Image), typeof(Button), typeof(LayoutElement));
@@ -722,11 +722,11 @@ for (int i = 0; i < recipes.Count; i++)
 
     /// <summary>ShowRecipeDetails 的业务处理入口；本方法直接依赖 InventoryManager.CanCraft(ItemData)、InventoryManager.GetCraftingRequirementText(ItemData)、Mathf.Max(int, int)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 InventoryCraftingPanel.Refresh()；下游（含内部回调体） InventoryManager.CanCraft(ItemData)、InventoryManager.GetCraftingRequirementText(ItemData)、Mathf.Max(int, int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="recipe">中文含义：配方。使用位置：作为 InventoryManager.CanCraft(ItemData) 的参数、作为 InventoryManager.GetCraftingRequirementText(ItemData) 的参数、作为 Mathf.Max(int, int) 的参数 等共 4 处。</param>
-    /// <param name="manager">中文含义：当前背包管理器。使用位置：InventoryCraftingPanel.ShowRecipeDetails(ItemData, InventoryManager)。</param>
+    /// <param name="recipe">配方。</param>
+    /// <param name="manager">当前背包管理器。</param>
     private void ShowRecipeDetails(ItemData recipe, InventoryManager manager)
     {
-        // hasRecipe（是否具有配方）：使用位置：InventoryCraftingPanel.ShowRecipeDetails(ItemData, InventoryManager)。
+        // 是否具有配方。
         bool hasRecipe = recipe != null;
         bool hasModel = false;
         if (resultModelPreview != null && resultModelPreview.isActiveAndEnabled)
@@ -736,7 +736,7 @@ for (int i = 0; i < recipes.Count; i++)
         if (resultIcon != null)
         {
             resultIcon.enabled = !hasModel;
-            // assignmentReceiver10（赋值前保存的目标结果图标）：从结果图标读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：InventoryCraftingPanel.ShowRecipeDetails(ItemData, InventoryManager)。
+            // 赋值前保存的目标结果图标。
 global::UnityEngine.UI.Image assignmentReceiver10 = resultIcon;
             if (hasRecipe)
             {
@@ -747,7 +747,7 @@ global::UnityEngine.UI.Image assignmentReceiver10 = resultIcon;
                 assignmentReceiver10.sprite = null;
             }
 
-            // assignmentReceiver12（赋值前保存的目标结果图标）：从结果图标读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：InventoryCraftingPanel.ShowRecipeDetails(ItemData, InventoryManager)。
+            // 赋值前保存的目标结果图标。
 global::UnityEngine.UI.Image assignmentReceiver12 = resultIcon;
             if (hasRecipe && recipe.icon != null)
             {
@@ -763,7 +763,7 @@ global::UnityEngine.UI.Image assignmentReceiver12 = resultIcon;
 
         if (resultNameText != null)
         {
-            // assignmentReceiver14（赋值前保存的目标结果名称文字）：从结果名称文字读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：InventoryCraftingPanel.ShowRecipeDetails(ItemData, InventoryManager)。
+            // 赋值前保存的目标结果名称文字。
 global::UnityEngine.UI.Text assignmentReceiver14 = resultNameText;
             if (hasRecipe)
             {
@@ -777,7 +777,7 @@ global::UnityEngine.UI.Text assignmentReceiver14 = resultNameText;
 
         if (resultDescriptionText != null)
         {
-            // assignmentReceiver16（赋值前保存的目标结果描述文字）：从结果描述文字读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：InventoryCraftingPanel.ShowRecipeDetails(ItemData, InventoryManager)。
+            // 赋值前保存的目标结果描述文字。
 global::UnityEngine.UI.Text assignmentReceiver16 = resultDescriptionText;
             if (hasRecipe)
             {
@@ -791,7 +791,7 @@ global::UnityEngine.UI.Text assignmentReceiver16 = resultDescriptionText;
 
         if (requirementText != null)
         {
-            // assignmentReceiver18（赋值前保存的目标需求文字）：从需求文字读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：InventoryCraftingPanel.ShowRecipeDetails(ItemData, InventoryManager)。
+            // 赋值前保存的目标需求文字。
 global::UnityEngine.UI.Text assignmentReceiver18 = requirementText;
             if (hasRecipe)
             {
@@ -805,7 +805,7 @@ global::UnityEngine.UI.Text assignmentReceiver18 = requirementText;
 
         if (resultCountText != null)
         {
-            // assignmentReceiver20（赋值前保存的目标结果数量文字）：从结果数量文字读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：InventoryCraftingPanel.ShowRecipeDetails(ItemData, InventoryManager)。
+            // 赋值前保存的目标结果数量文字。
 global::UnityEngine.UI.Text assignmentReceiver20 = resultCountText;
             if (hasRecipe)
             {
@@ -817,7 +817,7 @@ global::UnityEngine.UI.Text assignmentReceiver20 = resultCountText;
             }
         }
 
-        // canCraft（是否可以合成）：使用位置：InventoryCraftingPanel.ShowRecipeDetails(ItemData, InventoryManager)。
+        // 是否可以合成。
 bool canCraft = hasRecipe && manager.CanCraft(recipe);
         if (craftButton != null)
         {
@@ -826,7 +826,7 @@ bool canCraft = hasRecipe && manager.CanCraft(recipe);
 
         if (craftButtonText != null)
         {
-            // assignmentReceiver22（赋值前保存的目标合成按钮文字）：从合成按钮文字读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：InventoryCraftingPanel.ShowRecipeDetails(ItemData, InventoryManager)。
+            // 赋值前保存的目标合成按钮文字。
 global::UnityEngine.UI.Text assignmentReceiver22 = craftButtonText;
             if (canCraft)
             {
@@ -878,7 +878,7 @@ global::UnityEngine.UI.Text assignmentReceiver22 = craftButtonText;
             return;
         }
 
-        // image（图像）：保存 Component.GetComponent<Image>() 的返回结果，供当前步骤使用。使用位置：InventoryCraftingPanel.ApplyTabStyle(Button, bool)。
+        // 图像。
 Image image = button.GetComponent<Image>();
         if (image != null)
         {
@@ -903,11 +903,11 @@ Image image = button.GetComponent<Image>();
             }
         }
 
-        // label（标签）：保存 Component.GetComponentInChildren<Text>(bool) 的返回结果，供当前步骤使用。使用位置：InventoryCraftingPanel.ApplyTabStyle(Button, bool)。
+        // 标签。
 Text label = button.GetComponentInChildren<Text>(true);
         if (label != null)
         {
-            // assignmentReceiver28（赋值前保存的目标标签）：从标签读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：InventoryCraftingPanel.ApplyTabStyle(Button, bool)。
+            // 赋值前保存的目标标签。
 global::UnityEngine.UI.Text assignmentReceiver28 = label;
             if (selected)
             {
@@ -922,18 +922,18 @@ global::UnityEngine.UI.Text assignmentReceiver28 = label;
 
     /// <summary>CreateImage 的业务处理入口；本方法直接依赖 GameObject.GameObject(string, params Type[])、GameObject.GetComponent&lt;Image&gt;()、Transform.SetParent(Transform, bool)、Vector2.Vector2(float, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 InventoryCraftingPanel.CreateRecipeWidget(ItemData, InventoryManager)；下游（含内部回调体） GameObject.GameObject(string, params Type[])、GameObject.GetComponent&lt;Image&gt;()、Transform.SetParent(Transform, bool)、Vector2.Vector2(float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="parent">中文含义：父级。使用位置：作为 Transform.SetParent(Transform, bool) 的参数。</param>
-    /// <param name="objectName">中文含义：对象名称。使用位置：作为 GameObject.GameObject(string, params Type[]) 的参数。</param>
-    /// <param name="position">中文含义：位置。使用位置：InventoryCraftingPanel.CreateImage(Transform, string, Vector2, Vector2)。</param>
-    /// <param name="size">中文含义：尺寸。使用位置：InventoryCraftingPanel.CreateImage(Transform, string, Vector2, Vector2)。</param>
+    /// <param name="parent">父级。</param>
+    /// <param name="objectName">对象名称。</param>
+    /// <param name="position">位置。</param>
+    /// <param name="size">尺寸。</param>
     private static Image CreateImage(Transform parent, string objectName, Vector2 position, Vector2 size)
     {
-        // gameObject（游戏对象）：使用位置：InventoryCraftingPanel.CreateImage(Transform, string, Vector2, Vector2)。
+        // 游戏对象。
 GameObject gameObject = new GameObject(objectName, typeof(Image));
         gameObject.transform.SetParent(parent, false);
-        // image（图像）：保存 GameObject.GetComponent<Image>() 的返回结果，供当前步骤使用。使用位置：InventoryCraftingPanel.CreateImage(Transform, string, Vector2, Vector2)。
+        // 图像。
 Image image = gameObject.GetComponent<Image>();
-        // rect（矩形）：使用位置：InventoryCraftingPanel.CreateImage(Transform, string, Vector2, Vector2)。
+        // 矩形。
 RectTransform rect = image.rectTransform;
         rect.anchorMin = new Vector2(0f, 1f);
         rect.anchorMax = new Vector2(0f, 1f);
@@ -946,16 +946,16 @@ RectTransform rect = image.rectTransform;
 
     /// <summary>CreateText 的业务处理入口；本方法直接依赖 GameObject.GameObject(string, params Type[])、GameObject.GetComponent&lt;Text&gt;()、Resources.GetBuiltinResource&lt;Font&gt;(string)、Transform.SetParent(Transform, bool)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 InventoryCraftingPanel.CreateRecipeWidget(ItemData, InventoryManager)；下游（含内部回调体） GameObject.GameObject(string, params Type[])、GameObject.GetComponent&lt;Text&gt;()、Resources.GetBuiltinResource&lt;Font&gt;(string)、Transform.SetParent(Transform, bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="parent">中文含义：父级。使用位置：作为 Transform.SetParent(Transform, bool) 的参数。</param>
-    /// <param name="objectName">中文含义：对象名称。使用位置：作为 GameObject.GameObject(string, params Type[]) 的参数。</param>
-    /// <param name="fontSize">中文含义：字体尺寸。使用位置：InventoryCraftingPanel.CreateText(Transform, string, int, TextAnchor)。</param>
-    /// <param name="alignment">中文含义：对齐状态。使用位置：InventoryCraftingPanel.CreateText(Transform, string, int, TextAnchor)。</param>
+    /// <param name="parent">父级。</param>
+    /// <param name="objectName">对象名称。</param>
+    /// <param name="fontSize">字体尺寸。</param>
+    /// <param name="alignment">对齐状态。</param>
     private Text CreateText(Transform parent, string objectName, int fontSize, TextAnchor alignment)
     {
-        // gameObject（游戏对象）：使用位置：InventoryCraftingPanel.CreateText(Transform, string, int, TextAnchor)。
+        // 游戏对象。
 GameObject gameObject = new GameObject(objectName, typeof(Text));
         gameObject.transform.SetParent(parent, false);
-        // text（文字）：保存 GameObject.GetComponent<Text>() 的返回结果，供当前步骤使用。使用位置：InventoryCraftingPanel.CreateText(Transform, string, int, TextAnchor)。
+        // 文字。
 Text text = gameObject.GetComponent<Text>();
         text.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
         if (resultNameText != null && resultNameText.font != null)

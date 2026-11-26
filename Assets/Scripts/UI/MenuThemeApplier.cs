@@ -7,9 +7,10 @@ public static class MenuThemeApplier
 {
     /// <summary>Apply 的业务处理入口；本方法直接依赖 Color.Color(float, float, float, float)、Component.GetComponentsInChildren&lt;Selectable&gt;(bool)、Component.GetComponentsInChildren&lt;Text&gt;(bool)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 InterfaceReworkBuilder.ConfigurationInventory()、InterfaceReworkBuilder.ConfigurationOtherInterface()、InventoryUI.OnSceneLoaded()、OptionsTabManager.Initialize()、PauseMenu.BuildInterface() 等共 8 处；下游（含内部回调体） Color.Color(float, float, float, float)、Component.GetComponentsInChildren&lt;Selectable&gt;(bool)、Component.GetComponentsInChildren&lt;Text&gt;(bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="root">中文含义：根变换节点。使用位置：MenuThemeApplier.Apply(Transform, UIVisualTheme)。</param>
-    /// <param name="theme">中文含义：主题。使用位置：作为 Color.Color(float, float, float, float) 的参数、MenuThemeApplier.Apply(Transform, UIVisualTheme)。</param>
-    public static void Apply(Transform root, UIVisualTheme theme)
+    /// <param name="root">根变换节点。</param>
+    /// <param name="theme">主题。</param>
+    /// <param name="excludedSubtree">自行绘制样式的子树，可为空。</param>
+    public static void Apply(Transform root, UIVisualTheme theme, Transform excludedSubtree = null)
     {
         if (root == null || theme == null)
         {
@@ -19,6 +20,11 @@ public static class MenuThemeApplier
         // text（文字）：每轮从取得组件集合内部子对象集合的返回结果取得一个元素，仅代表当前这一项。使用位置：作为 Color.Color(float, float, float, float) 的参数、MenuThemeApplier.Apply(Transform, UIVisualTheme)。
 foreach (Text text in root.GetComponentsInChildren<Text>(true))
         {
+            if (excludedSubtree != null && text.transform.IsChildOf(excludedSubtree))
+            {
+                continue;
+            }
+
             if (theme.interfaceFont != null)
             {
                 text.font = theme.interfaceFont;
@@ -31,7 +37,12 @@ foreach (Text text in root.GetComponentsInChildren<Text>(true))
         // control（控制）：每轮从取得组件集合内部子对象集合的返回结果取得一个元素，仅代表当前这一项。使用位置：MenuThemeApplier.Apply(Transform, UIVisualTheme)。
 foreach (Selectable control in root.GetComponentsInChildren<Selectable>(true))
         {
-            // colors（颜色集合）：使用位置：MenuThemeApplier.Apply(Transform, UIVisualTheme)。
+            if (excludedSubtree != null && control.transform.IsChildOf(excludedSubtree))
+            {
+                continue;
+            }
+
+            // 颜色集合。
 var colors = control.colors;
             colors.normalColor = Color.white;
             colors.highlightedColor = new Color(1.15f, 1.13f, 1.06f, 1f);

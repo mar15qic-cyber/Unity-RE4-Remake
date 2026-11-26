@@ -10,32 +10,32 @@ using UnityEngine.Audio;
 [CustomEditor(typeof(AudioEventData))]
 public class AudioEventDataEditor : Editor
 {
-    /// <summary>中文含义：当前音频事件配置。使用位置：作为 AudioMixer.FindMatchingGroups(string) 的参数、作为 EditorUtility.SetDirty(Object) 的参数、作为 string.IsNullOrEmpty(string) 的参数 等共 9 处。</summary>
+    /// <summary>当前音频事件配置。</summary>
     private AudioEventData data;
     // 试听状态
-    /// <summary>中文含义：预览动画片段索引。使用位置：AudioEventDataEditor.DrawClipPreviewButton(AudioClip, int)、AudioEventDataEditor.PlayClipPreview(AudioClip, int, bool)、AudioEventDataEditor.StopPreview()。</summary>
+    /// <summary>预览动画片段索引。</summary>
     private int previewClipIndex = -1;
-    /// <summary>中文含义：预览动画片段名称。使用位置：作为 EditorGUILayout.LabelField(string, string, params GUILayoutOption[]) 的参数、AudioEventDataEditor.PlayClipPreview(AudioClip, int, bool)、AudioEventDataEditor.StopPreview()。</summary>
+    /// <summary>预览动画片段名称。</summary>
     private string previewClipName = "";
-    /// <summary>中文含义：是否循环播放。使用位置：AudioEventDataEditor.DrawPreviewSection()、AudioEventDataEditor.PlayClipPreview(AudioClip, int, bool)、AudioEventDataEditor.StopPreview()。</summary>
+    /// <summary>是否循环播放。</summary>
     private bool isLooping;
     // 临时试听音源
-    /// <summary>中文含义：预览游戏对象。使用位置：作为 Object.DestroyImmediate(Object) 的参数、AudioEventDataEditor.CleanupIfDestroyed()、AudioEventDataEditor.DestroyPreviewSource() 等共 4 处。</summary>
+    /// <summary>预览游戏对象。</summary>
     private static GameObject previewGo;
-    /// <summary>中文含义：预览来源。使用位置：AudioEventDataEditor.CleanupIfDestroyed()、AudioEventDataEditor.DestroyPreviewSource()、AudioEventDataEditor.DrawPreviewSection() 等共 7 处。</summary>
+    /// <summary>预览来源。</summary>
     private static AudioSource previewSource;
     // 折叠状态
-    /// <summary>中文含义：是否动画片段集合折叠面板。使用位置：作为 EditorGUILayout.BeginFoldoutHeaderGroup(bool, string, GUIStyle, Action&lt;Rect&gt;, GUIStyle) 的参数、AudioEventDataEditor.DrawClipsSection()。</summary>
+    /// <summary>是否动画片段集合折叠面板。</summary>
     private bool clipsFoldout = true;
-    /// <summary>中文含义：是否音量折叠面板。使用位置：作为 EditorGUILayout.BeginFoldoutHeaderGroup(bool, string, GUIStyle, Action&lt;Rect&gt;, GUIStyle) 的参数、AudioEventDataEditor.DrawVolumeSection()。</summary>
+    /// <summary>是否音量折叠面板。</summary>
     private bool volumeFoldout = true;
-    /// <summary>中文含义：是否音高折叠面板。使用位置：作为 EditorGUILayout.BeginFoldoutHeaderGroup(bool, string, GUIStyle, Action&lt;Rect&gt;, GUIStyle) 的参数、AudioEventDataEditor.DrawPitchSection()。</summary>
+    /// <summary>是否音高折叠面板。</summary>
     private bool pitchFoldout = true;
-    /// <summary>中文含义：是否空间音效折叠面板。使用位置：作为 EditorGUILayout.BeginFoldoutHeaderGroup(bool, string, GUIStyle, Action&lt;Rect&gt;, GUIStyle) 的参数、AudioEventDataEditor.DrawSpatialSection()。</summary>
+    /// <summary>是否空间音效折叠面板。</summary>
     private bool spatialFoldout = true;
-    /// <summary>中文含义：是否控制折叠面板。使用位置：作为 EditorGUILayout.BeginFoldoutHeaderGroup(bool, string, GUIStyle, Action&lt;Rect&gt;, GUIStyle) 的参数、AudioEventDataEditor.DrawControlSection()。</summary>
+    /// <summary>是否控制折叠面板。</summary>
     private bool controlFoldout = true;
-    /// <summary>中文含义：是否路由折叠面板。使用位置：作为 EditorGUILayout.BeginFoldoutHeaderGroup(bool, string, GUIStyle, Action&lt;Rect&gt;, GUIStyle) 的参数、AudioEventDataEditor.DrawRoutingSection()。</summary>
+    /// <summary>是否路由折叠面板。</summary>
     private bool routingFoldout = true;
     /// <summary>OnEnable 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
@@ -60,7 +60,7 @@ public class AudioEventDataEditor : Editor
     /// 进入运行模式时停止试听并清理
     /// </summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） AudioEventDataEditor.StopPreview()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="state">中文含义：当前播放模式状态变化。使用位置：AudioEventDataEditor.OnPlayModeChanged(PlayModeStateChange)。</param>
+    /// <param name="state">当前播放模式状态变化。</param>
     private void OnPlayModeChanged(PlayModeStateChange state)
     {
         if (state == PlayModeStateChange.EnteredPlayMode || state == PlayModeStateChange.ExitingEditMode)
@@ -106,9 +106,9 @@ public class AudioEventDataEditor : Editor
             if (IsPreviewPlaying())
             {
                 EditorGUILayout.LabelField("正在试听", previewClipName);
-                // argumentValue2（按原顺序缓存的实参文字“循环”）：从文字“循环”读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 EditorGUILayout.LabelField(string, string, params GUILayoutOption[]) 的参数。
+                // 按原顺序缓存的实参文字“循环”。
 string argumentValue2 = "循环";
-                // selectedValue1（分支选出的文字“是”）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：作为 EditorGUILayout.LabelField(string, string, params GUILayoutOption[]) 的参数、AudioEventDataEditor.DrawPreviewSection()。
+                // 分支选出的文字“是”。
 string selectedValue1;
                 if (isLooping)
                 {
@@ -122,9 +122,9 @@ string selectedValue1;
                 EditorGUILayout.LabelField(argumentValue2, selectedValue1);
                 if (previewSource != null && previewSource.clip != null)
                 {
-                    // pos（位置）：使用位置：作为 EditorGUILayout.LabelField(string, string, params GUILayoutOption[]) 的参数。
+                    // 位置。
 float pos = previewSource.time;
-                    // len（长度）：使用位置：作为 EditorGUILayout.LabelField(string, string, params GUILayoutOption[]) 的参数。
+                    // 长度。
 float len = previewSource.clip.length;
                     EditorGUILayout.LabelField("进度", $"{pos:F1}s / {len:F1}s");
                 }
@@ -165,8 +165,8 @@ float len = previewSource.clip.length;
     /// 为单个片段绘制试听按钮
     /// </summary>
     /// <remarks>静态调用链：上游 AudioEventDataEditor.DrawClipsSection()；下游（含内部回调体） AudioEventDataEditor.IsPreviewPlaying()、AudioEventDataEditor.PlayClipPreview(AudioClip, int, bool)、AudioEventDataEditor.StopPreview()、GUILayout.Button(string, params GUILayoutOption[])、GUILayout.Height(float)、GUILayout.Width(float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="clip">中文含义：音频片段。使用位置：作为 AudioEventDataEditor.PlayClipPreview(AudioClip, int, bool) 的参数、AudioEventDataEditor.DrawClipPreviewButton(AudioClip, int)。</param>
-    /// <param name="index">中文含义：索引。使用位置：作为 AudioEventDataEditor.PlayClipPreview(AudioClip, int, bool) 的参数、AudioEventDataEditor.DrawClipPreviewButton(AudioClip, int)。</param>
+    /// <param name="clip">音频片段。</param>
+    /// <param name="index">索引。</param>
     private void DrawClipPreviewButton(AudioClip clip, int index)
     {
         if (clip == null)
@@ -174,9 +174,9 @@ float len = previewSource.clip.length;
             return;
         }
 
-        // isPlaying（是否正在播放）：使用位置：AudioEventDataEditor.DrawClipPreviewButton(AudioClip, int)。
+        // 是否正在播放。
 bool isPlaying = previewClipIndex == index && IsPreviewPlaying();
-        // label（标签）：使用位置：作为 GUILayout.Button(string, params GUILayoutOption[]) 的参数、AudioEventDataEditor.DrawClipPreviewButton(AudioClip, int)。
+        // 标签。
 string label;
         if (isPlaying)
         {
@@ -204,7 +204,7 @@ string label;
     /// 随机试听
     /// </summary>
     /// <remarks>静态调用链：上游 AudioEventDataEditor.DrawPreviewSection()；下游（含内部回调体） AudioEventData.SelectClip()、AudioEventDataEditor.PlayClipPreview(AudioClip, int, bool)、Debug.LogWarning(object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="loop">中文含义：是否循环。使用位置：作为 AudioEventDataEditor.PlayClipPreview(AudioClip, int, bool) 的参数。</param>
+    /// <param name="loop">是否循环。</param>
     private void PlayRandomPreview(bool loop)
     {
         if (data.clips == null || data.clips.Length == 0)
@@ -213,7 +213,7 @@ string label;
             return;
         }
 
-        // clip（音频片段）：保存 AudioEventData.SelectClip() 的返回结果，供当前步骤使用。使用位置：作为 AudioEventDataEditor.PlayClipPreview(AudioClip, int, bool) 的参数、AudioEventDataEditor.PlayRandomPreview(bool)。
+        // 音频片段。
 AudioClip clip = data.SelectClip();
         if (clip == null)
         {
@@ -221,9 +221,9 @@ AudioClip clip = data.SelectClip();
             return;
         }
 
-        // index（当前元素索引）：使用位置：作为 AudioEventDataEditor.PlayClipPreview(AudioClip, int, bool) 的参数、AudioEventDataEditor.PlayRandomPreview(bool)。
+        // 当前元素索引。
 int index = -1;
-        // i（当前遍历索引）：使用位置：AudioEventDataEditor.PlayRandomPreview(bool)。
+        // 当前遍历索引。
 for (int i = 0; i < data.clips.Length; i++)
         {
             if (data.clips[i] != null && data.clips[i].clip == clip)
@@ -240,9 +240,9 @@ for (int i = 0; i < data.clips.Length; i++)
     /// 播放指定片段试听——使用临时 AudioSource 真实应用音量和音高
     /// </summary>
     /// <remarks>静态调用链：上游 AudioEventDataEditor.DrawClipPreviewButton(AudioClip, int)、AudioEventDataEditor.PlayRandomPreview(bool)；下游（含内部回调体） AssetDatabase.FindAssets(string)、AssetDatabase.GUIDToAssetPath(string)、AssetDatabase.LoadAssetAtPath&lt;AudioMixer&gt;(string)、AudioEventData.GetMixerGroupPath()、AudioEventData.GetPitch()、AudioEventData.GetVolume()、AudioEventDataEditor.EnsurePreviewSource() 等共 14 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="clip">中文含义：音频片段。使用位置：AudioEventDataEditor.PlayClipPreview(AudioClip, int, bool)。</param>
-    /// <param name="index">中文含义：索引。使用位置：AudioEventDataEditor.PlayClipPreview(AudioClip, int, bool)。</param>
-    /// <param name="loop">中文含义：是否循环。使用位置：AudioEventDataEditor.PlayClipPreview(AudioClip, int, bool)。</param>
+    /// <param name="clip">音频片段。</param>
+    /// <param name="index">索引。</param>
+    /// <param name="loop">是否循环。</param>
     private void PlayClipPreview(AudioClip clip, int index, bool loop)
     {
         StopPreview();
@@ -254,27 +254,27 @@ for (int i = 0; i < data.clips.Length; i++)
         }
 
         // 每次试听使用最新参数
-        // volume（音量）：保存 AudioEventData.GetVolume() 的返回结果，供当前步骤使用。使用位置：AudioEventDataEditor.PlayClipPreview(AudioClip, int, bool)。
+        // 音量。
 float volume = data.GetVolume();
-        // pitch（音高）：保存 AudioEventData.GetPitch() 的返回结果，供当前步骤使用。使用位置：AudioEventDataEditor.PlayClipPreview(AudioClip, int, bool)。
+        // 音高。
 float pitch = data.GetPitch();
         // 尝试设置混音分组
-        // group（分组）：使用位置：AudioEventDataEditor.PlayClipPreview(AudioClip, int, bool)。
+        // 分组。
 AudioMixerGroup group = null;
         if (!string.IsNullOrEmpty(data.GetMixerGroupPath()))
         {
-            // mixers（混音器集合）：保存 AssetDatabase.FindAssets(string) 的返回结果，供当前步骤使用。使用位置：AudioEventDataEditor.PlayClipPreview(AudioClip, int, bool)。
+            // 混音器集合。
 var mixers = AssetDatabase.FindAssets("t:AudioMixer");
             // guid（资源标识）：每轮从混音器集合取得一个元素，仅代表当前这一项。使用位置：作为 AssetDatabase.GUIDToAssetPath(string) 的参数。
 foreach (var guid in mixers)
             {
-                // path（路径）：保存 AssetDatabase.GUIDToAssetPath(string) 的返回结果，供当前步骤使用。使用位置：作为 AssetDatabase.LoadAssetAtPath<AudioMixer>(string) 的参数。
+                // 路径。
 var path = AssetDatabase.GUIDToAssetPath(guid);
-                // mixer（混音器）：保存 AssetDatabase.LoadAssetAtPath<AudioMixer>(string) 的返回结果，供当前步骤使用。使用位置：AudioEventDataEditor.PlayClipPreview(AudioClip, int, bool)。
+                // 混音器。
 var mixer = AssetDatabase.LoadAssetAtPath<AudioMixer>(path);
                 if (mixer != null)
                 {
-                    // groups（分组集合）：保存 AudioMixer.FindMatchingGroups(string) 的返回结果，供当前步骤使用。使用位置：AudioEventDataEditor.PlayClipPreview(AudioClip, int, bool)。
+                    // 分组集合。
 var groups = mixer.FindMatchingGroups(data.GetMixerGroupPath());
                     if (groups != null && groups.Length > 0)
                     {
@@ -290,7 +290,7 @@ var groups = mixer.FindMatchingGroups(data.GetMixerGroupPath());
         previewSource.pitch = pitch;
         previewSource.loop = loop;
         previewSource.outputAudioMixerGroup = group;
-        // assignmentReceiver4（赋值前保存的目标预览来源）：从预览来源读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：AudioEventDataEditor.PlayClipPreview(AudioClip, int, bool)。
+        // 赋值前保存的目标预览来源。
 global::UnityEngine.AudioSource assignmentReceiver4 = previewSource;
         if (data.spatialMode == AudioEventData.SpatialMode.ThreeD)
         {
@@ -305,15 +305,15 @@ global::UnityEngine.AudioSource assignmentReceiver4 = previewSource;
         previewClipIndex = index;
         previewClipName = clip.name;
         isLooping = loop;
-        // formatArgument7（插值文本使用的动画片段的名称）：从动画片段的名称读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 Debug.Log(object) 的参数。
+        // 插值文本使用的动画片段的名称。
 string formatArgument7 = clip.name;
-        // formatArgument8（插值文本使用的音量）：从音量读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 Debug.Log(object) 的参数。
+        // 插值文本使用的音量。
 float formatArgument8 = volume;
-        // formatArgument9（插值文本使用的音高）：从俯仰读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 Debug.Log(object) 的参数。
+        // 插值文本使用的音高。
 float formatArgument9 = pitch;
-        // formatArgument10（插值文本使用的是否循环）：从循环读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 Debug.Log(object) 的参数。
+        // 插值文本使用的是否循环。
 bool formatArgument10 = loop;
-        // selectedValue6（分支选出的分组的名称）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：作为 Debug.Log(object) 的参数、AudioEventDataEditor.PlayClipPreview(AudioClip, int, bool)。
+        // 分支选出的分组的名称。
 string selectedValue6;
         if (group != null)
         {
@@ -424,18 +424,18 @@ string selectedValue6;
         clipsFoldout = EditorGUILayout.BeginFoldoutHeaderGroup(clipsFoldout, "片段列表");
         if (clipsFoldout)
         {
-            // clipsProp（动画片段集合属性）：保存 SerializedObject.FindProperty(string) 的返回结果，供当前步骤使用。使用位置：作为 SerializedProperty.GetArrayElementAtIndex(int) 的参数、作为 SerializedProperty.InsertArrayElementAtIndex(int) 的参数、AudioEventDataEditor.DrawClipsSection()。
+            // 动画片段集合属性。
 var clipsProp = serializedObject.FindProperty("clips");
-            // i（当前遍历索引）：使用位置：作为 AudioEventDataEditor.DrawClipPreviewButton(AudioClip, int) 的参数、作为 SerializedProperty.DeleteArrayElementAtIndex(int) 的参数、作为 SerializedProperty.GetArrayElementAtIndex(int) 的参数 等共 5 处。
+            // 当前遍历索引。
 for (int i = 0; i < clipsProp.arraySize; i++)
             {
-                // entry（当前序列化的属性）：保存 SerializedProperty.GetArrayElementAtIndex(int) 的返回结果，供当前步骤使用。使用位置：AudioEventDataEditor.DrawClipsSection()。
+                // 当前序列化的属性。
 var entry = clipsProp.GetArrayElementAtIndex(i);
-                // clipProp（动画片段属性）：保存 SerializedProperty.FindPropertyRelative(string) 的返回结果，供当前步骤使用。使用位置：作为 AudioEventDataEditor.DrawClipPreviewButton(AudioClip, int) 的参数、作为 EditorGUILayout.ObjectField(Object, Type, bool, params GUILayoutOption[]) 的参数、AudioEventDataEditor.DrawClipsSection()。
+                // 动画片段属性。
 var clipProp = entry.FindPropertyRelative("clip");
-                // enabledProp（启用属性）：保存 SerializedProperty.FindPropertyRelative(string) 的返回结果，供当前步骤使用。使用位置：作为 EditorGUILayout.Toggle(bool, params GUILayoutOption[]) 的参数、AudioEventDataEditor.DrawClipsSection()。
+                // 启用属性。
 var enabledProp = entry.FindPropertyRelative("enabled");
-                // weightProp（权重属性）：保存 SerializedProperty.FindPropertyRelative(string) 的返回结果，供当前步骤使用。使用位置：作为 EditorGUILayout.Slider(float, float, float, params GUILayoutOption[]) 的参数、AudioEventDataEditor.DrawClipsSection()。
+                // 权重属性。
 var weightProp = entry.FindPropertyRelative("weight");
                 EditorGUILayout.BeginHorizontal(EditorStyles.helpBox);
                 {
@@ -476,7 +476,7 @@ var weightProp = entry.FindPropertyRelative("weight");
                 if (GUILayout.Button("添加片段", GUILayout.Height(22)))
                 {
                     clipsProp.InsertArrayElementAtIndex(clipsProp.arraySize);
-                    // newEntry（新入口）：保存 SerializedProperty.GetArrayElementAtIndex(int) 的返回结果，供当前步骤使用。使用位置：AudioEventDataEditor.DrawClipsSection()。
+                    // 新入口。
 var newEntry = clipsProp.GetArrayElementAtIndex(clipsProp.arraySize - 1);
                     newEntry.FindPropertyRelative("enabled").boolValue = true;
                     newEntry.FindPropertyRelative("weight").floatValue = 1f;
@@ -484,7 +484,7 @@ var newEntry = clipsProp.GetArrayElementAtIndex(clipsProp.arraySize - 1);
             }
 
             EditorGUILayout.EndHorizontal();
-            // modeProp（模式属性）：保存 SerializedObject.FindProperty(string) 的返回结果，供当前步骤使用。使用位置：作为 EditorGUILayout.PropertyField(SerializedProperty, params GUILayoutOption[]) 的参数。
+            // 模式属性。
 var modeProp = serializedObject.FindProperty("selectionMode");
             EditorGUILayout.PropertyField(modeProp);
         }
@@ -501,10 +501,10 @@ var modeProp = serializedObject.FindProperty("selectionMode");
         volumeFoldout = EditorGUILayout.BeginFoldoutHeaderGroup(volumeFoldout, "音量");
         if (volumeFoldout)
         {
-            // baseVol（基础音量）：保存 SerializedObject.FindProperty(string) 的返回结果，供当前步骤使用。使用位置：作为 EditorGUILayout.Slider(SerializedProperty, float, float, GUIContent, params GUILayoutOption[]) 的参数。
+            // 基础音量。
 var baseVol = serializedObject.FindProperty("baseVolume");
             EditorGUILayout.Slider(baseVol, 0f, 1f, new GUIContent("基础音量"));
-            // volRange（音量范围）：保存 SerializedObject.FindProperty(string) 的返回结果，供当前步骤使用。使用位置：作为 EditorGUILayout.PropertyField(SerializedProperty, GUIContent, params GUILayoutOption[]) 的参数。
+            // 音量范围。
 var volRange = serializedObject.FindProperty("volumeRange");
             EditorGUILayout.PropertyField(volRange, new GUIContent("随机音量范围"));
         }
@@ -521,10 +521,10 @@ var volRange = serializedObject.FindProperty("volumeRange");
         pitchFoldout = EditorGUILayout.BeginFoldoutHeaderGroup(pitchFoldout, "音高");
         if (pitchFoldout)
         {
-            // basePitch（基础音高）：保存 SerializedObject.FindProperty(string) 的返回结果，供当前步骤使用。使用位置：作为 EditorGUILayout.Slider(SerializedProperty, float, float, GUIContent, params GUILayoutOption[]) 的参数。
+            // 基础音高。
 var basePitch = serializedObject.FindProperty("basePitch");
             EditorGUILayout.Slider(basePitch, 0f, 3f, new GUIContent("基础音高"));
-            // pitchRange（随机音高变化范围）：保存 SerializedObject.FindProperty(string) 的返回结果，供当前步骤使用。使用位置：作为 EditorGUILayout.PropertyField(SerializedProperty, GUIContent, params GUILayoutOption[]) 的参数。
+            // 随机音高变化范围。
 var pitchRange = serializedObject.FindProperty("pitchRange");
             EditorGUILayout.PropertyField(pitchRange, new GUIContent("随机音高范围"));
         }
@@ -541,16 +541,16 @@ var pitchRange = serializedObject.FindProperty("pitchRange");
         spatialFoldout = EditorGUILayout.BeginFoldoutHeaderGroup(spatialFoldout, "空间设置");
         if (spatialFoldout)
         {
-            // modeProp（模式属性）：保存 SerializedObject.FindProperty(string) 的返回结果，供当前步骤使用。使用位置：作为 EditorGUILayout.PropertyField(SerializedProperty, GUIContent, params GUILayoutOption[]) 的参数。
+            // 模式属性。
 var modeProp = serializedObject.FindProperty("spatialMode");
             EditorGUILayout.PropertyField(modeProp, new GUIContent("播放模式"));
             if (data.spatialMode == AudioEventData.SpatialMode.ThreeD)
             {
-                // minDist（最小距离）：保存 SerializedObject.FindProperty(string) 的返回结果，供当前步骤使用。使用位置：作为 EditorGUILayout.Slider(SerializedProperty, float, float, GUIContent, params GUILayoutOption[]) 的参数。
+                // 最小距离。
 var minDist = serializedObject.FindProperty("minDistance");
-                // maxDist（最大距离）：保存 SerializedObject.FindProperty(string) 的返回结果，供当前步骤使用。使用位置：作为 EditorGUILayout.Slider(SerializedProperty, float, float, GUIContent, params GUILayoutOption[]) 的参数。
+                // 最大距离。
 var maxDist = serializedObject.FindProperty("maxDistance");
-                // rolloff（衰减）：保存 SerializedObject.FindProperty(string) 的返回结果，供当前步骤使用。使用位置：作为 EditorGUILayout.PropertyField(SerializedProperty, GUIContent, params GUILayoutOption[]) 的参数。
+                // 衰减。
 var rolloff = serializedObject.FindProperty("rolloffMode");
                 EditorGUILayout.Slider(minDist, 0f, 500f, new GUIContent("最小距离"));
                 EditorGUILayout.Slider(maxDist, 0f, 1000f, new GUIContent("最大距离"));
@@ -574,13 +574,13 @@ var rolloff = serializedObject.FindProperty("rolloffMode");
         controlFoldout = EditorGUILayout.BeginFoldoutHeaderGroup(controlFoldout, "播放控制");
         if (controlFoldout)
         {
-            // priority（优先级）：保存 SerializedObject.FindProperty(string) 的返回结果，供当前步骤使用。使用位置：作为 EditorGUILayout.Slider(SerializedProperty, float, float, GUIContent, params GUILayoutOption[]) 的参数。
+            // 优先级。
 var priority = serializedObject.FindProperty("priority");
-            // cooldown（冷却）：保存 SerializedObject.FindProperty(string) 的返回结果，供当前步骤使用。使用位置：作为 EditorGUILayout.Slider(SerializedProperty, float, float, GUIContent, params GUILayoutOption[]) 的参数。
+            // 冷却。
 var cooldown = serializedObject.FindProperty("cooldown");
-            // maxConcurrent（最大并发）：保存 SerializedObject.FindProperty(string) 的返回结果，供当前步骤使用。使用位置：作为 EditorGUILayout.Slider(SerializedProperty, float, float, GUIContent, params GUILayoutOption[]) 的参数。
+            // 最大并发。
 var maxConcurrent = serializedObject.FindProperty("maxConcurrent");
-            // loop（循环）：保存 SerializedObject.FindProperty(string) 的返回结果，供当前步骤使用。使用位置：作为 EditorGUILayout.PropertyField(SerializedProperty, GUIContent, params GUILayoutOption[]) 的参数。
+            // 循环。
 var loop = serializedObject.FindProperty("loop");
             EditorGUILayout.Slider(priority, 0, 256, new GUIContent("优先级", "数值越小优先级越高"));
             EditorGUILayout.Slider(cooldown, 0f, 10f, new GUIContent("冷却时间（秒）"));
@@ -600,16 +600,16 @@ var loop = serializedObject.FindProperty("loop");
         routingFoldout = EditorGUILayout.BeginFoldoutHeaderGroup(routingFoldout, "分类与路由");
         if (routingFoldout)
         {
-            // categoryProp（类别属性）：保存 SerializedObject.FindProperty(string) 的返回结果，供当前步骤使用。使用位置：作为 EditorGUILayout.PropertyField(SerializedProperty, GUIContent, params GUILayoutOption[]) 的参数。
+            // 类别属性。
 var categoryProp = serializedObject.FindProperty("category");
             EditorGUILayout.PropertyField(categoryProp, new GUIContent("音频分类"));
-            // mixerPath（混音器路径）：保存 SerializedObject.FindProperty(string) 的返回结果，供当前步骤使用。使用位置：作为 EditorGUILayout.PropertyField(SerializedProperty, GUIContent, params GUILayoutOption[]) 的参数。
+            // 混音器路径。
 var mixerPath = serializedObject.FindProperty("mixerGroupPath");
             EditorGUILayout.PropertyField(mixerPath, new GUIContent("混音分组路径", "留空时由分类自动推断"));
-            // voicePriority（语音优先级）：保存 SerializedObject.FindProperty(string) 的返回结果，供当前步骤使用。使用位置：作为 EditorGUILayout.PropertyField(SerializedProperty, GUIContent, params GUILayoutOption[]) 的参数。
+            // 语音优先级。
 var voicePriority = serializedObject.FindProperty("voicePriority");
             EditorGUILayout.PropertyField(voicePriority, new GUIContent("语音优先级"));
-            // warnMissing（警告缺失的）：保存 SerializedObject.FindProperty(string) 的返回结果，供当前步骤使用。使用位置：作为 EditorGUILayout.PropertyField(SerializedProperty, GUIContent, params GUILayoutOption[]) 的参数。
+            // 警告缺失的。
 var warnMissing = serializedObject.FindProperty("warnIfMissing");
             EditorGUILayout.PropertyField(warnMissing, new GUIContent("片段缺失时警告"));
         }
@@ -623,13 +623,13 @@ var warnMissing = serializedObject.FindProperty("warnIfMissing");
     /// <remarks>静态调用链：上游 AudioEventDataEditor.OnInspectorGUI()；下游（含内部回调体） EditorGUILayout.HelpBox(string, MessageType)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     private void DrawWarnings()
     {
-        // hasWarning（是否具有警告）：使用位置：AudioEventDataEditor.DrawWarnings()。
+        // 是否具有警告。
 bool hasWarning = false;
-        // warnings（警告集合）：使用位置：作为 EditorGUILayout.HelpBox(string, MessageType) 的参数、AudioEventDataEditor.DrawWarnings()。
+        // 警告集合。
 string warnings = "";
         if (data.clips != null)
         {
-            // i（当前遍历索引）：使用位置：AudioEventDataEditor.DrawWarnings()。
+            // 当前遍历索引。
 for (int i = 0; i < data.clips.Length; i++)
             {
                 if (data.clips[i] == null || data.clips[i].clip == null)
@@ -642,7 +642,7 @@ for (int i = 0; i < data.clips.Length; i++)
 
         if (data.clips != null && data.clips.Length > 1)
         {
-            // i（当前遍历索引）：使用位置：AudioEventDataEditor.DrawWarnings()。
+            // 当前遍历索引。
 for (int i = 0; i < data.clips.Length; i++)
             {
                 if (data.clips[i] == null || data.clips[i].clip == null)
@@ -650,7 +650,7 @@ for (int i = 0; i < data.clips.Length; i++)
                     continue;
                 }
 
-                // j（内层遍历索引）：使用位置：AudioEventDataEditor.DrawWarnings()。
+                // 内层遍历索引。
 for (int j = i + 1; j < data.clips.Length; j++)
                 {
                     if (data.clips[j] != null && data.clips[j].clip == data.clips[i].clip)

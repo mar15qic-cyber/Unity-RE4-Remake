@@ -3,6 +3,30 @@ using UnityEngine;
 
 public partial class LeonQTECoordinator
 {
+    private Camera promptCamera;
+    private System.Predicate<IInteractable> acceptVisiblePrompt;
+    private Transform promptPlayerRoot;
+    private static readonly HitQueryBuffer promptVisibilityHits = new();
+    private readonly HitQueryBuffer groundFinisherHits = new();
+
+    internal Camera ReadPromptCamera()
+    {
+        if (promptCamera == null || !promptCamera.isActiveAndEnabled)
+        {
+            promptCamera = Camera.main;
+        }
+        return promptCamera;
+    }
+
+    private bool IsPromptVisible(Camera camera, Component target, Vector3 position)
+    {
+        if (promptPlayerRoot == null && controller != null)
+        {
+            promptPlayerRoot = controller.transform;
+        }
+        return IsPromptVisible(camera, target, position, promptPlayerRoot);
+    }
+
     private int promptSnapshotFrame = -1;
     private InteractionPromptSnapshot interactSnapshot;
     private InteractionPromptSnapshot finisherSnapshot;
@@ -63,7 +87,7 @@ public partial class LeonQTECoordinator
             return;
         }
         heldCabinet = null;
-        Camera camera = Camera.main;
+        Camera camera = ReadPromptCamera();
         if (camera == null)
         {
             return;
@@ -84,23 +108,31 @@ public partial class LeonQTECoordinator
                 continue;
             }
             float distance = Vector3.Distance(transform.position, target.Root.position);
-            Vector3 position = target.Root.position + Vector3.up * 1.8f;
-            bool ground = hasFinisherKnife && target.TryReadGroundFinisher(out _);
-            if (ground)
-            {
-                position = target.Root.position + Vector3.up * .8f;
-            }
             if (distance > 8f)
             {
                 continue;
             }
-            if (!IsPromptVisible(camera, target, position))
+            bool isSawman = target.controller.missionEnemyType == MissionEnemyType.Sawman;
+            Vector3 bodyPosition = target.Root.position + Vector3.up * 1.85f;
+            Vector3 finisherPosition;
+            if (isSawman)
+            {
+                finisherPosition = target.Root.position + Vector3.up * 1.25f;
+            }
+            else
+            {
+                finisherPosition = target.Root.position + Vector3.up * .8f;
+            }
+            bool ground = hasFinisherKnife && target.TryReadGroundFinisher(out _);
+            bool finisherVisible = ground && IsPromptVisible(camera, target, finisherPosition);
+            bool bodyVisible = IsPromptVisible(camera, target, bodyPosition);
+            if (!finisherVisible && !bodyVisible)
             {
                 continue;
             }
             ActionHandle action = target.controller.actionCoordinator.CurrentHandle;
             QTECancelReason finisherReason = QTECancelReason.None;
-            bool canFinish = ground && canKnife && CanStart(QTEKind.GroundFinisher, target, out finisherReason);
+            bool canFinish = finisherVisible && canKnife && CanStart(QTEKind.GroundFinisher, target, out finisherReason);
             if (canFinish)
             {
                 if (distance < finisherDistance || distance == finisherDistance
@@ -108,31 +140,37 @@ public partial class LeonQTECoordinator
                 {
                     finisherDistance = distance;
                     finisherSnapshot = new InteractionPromptSnapshot(target, action, InteractionPromptKind.GroundFinisher,
-                        true, "Shoot", "补刀", position);
+                        true, "Shoot", "补刀", finisherPosition);
                 }
             }
-            if (ground && !canFinish)
+            if (finisherVisible && !canFinish)
             {
                 float planarDistance = Vector3.ProjectOnPlane(transform.position - target.Root.position, Vector3.up).magnitude;
-                bool withinReach = planarDistance <= config.groundFinisherDistance;
+                float reachDistance = config.groundFinisherDistance;
+                if (isSawman)
+                {
+                    reachDistance = Mathf.Max(reachDistance, 2.25f);
+                }
+                bool withinReach = planarDistance <= reachDistance;
                 if (withinReach && !canKnife && distance < pendingFinisherDistance
                     && ValidatePairing(target, QTEKind.GroundFinisher, out _))
                 {
                     pendingFinisherDistance = distance;
                     pendingFinisherSnapshot = new InteractionPromptSnapshot(target, action,
-                        InteractionPromptKind.GroundFinisher, true, "Shoot", "补刀", position);
+                        InteractionPromptKind.GroundFinisher, true, "Shoot", "补刀", finisherPosition);
                 }
             }
-            if (distance < pendingBodyDistance && target.TryReadPendingBodyTechnique(controller, out int pendingTechnique))
+            if (bodyVisible && distance < pendingBodyDistance && target.TryReadPendingBodyTechnique(controller, out int pendingTechnique))
             {
                 pendingBodyDistance = distance;
                 pendingBodySnapshot = new InteractionPromptSnapshot(target, action, InteractionPromptKind.BodyTechnique,
-                    false, "Interact", "体术", position, pendingTechnique);
+                    false, "Interact", "体术", bodyPosition, pendingTechnique);
             }
-            if (canBody && target.TryReadBodyTechniqueOpportunity(out int technique))
+            bool suppressBodyForSawmanFinisher = isSawman && hasFinisherKnife && canKnife && ground;
+            if (!suppressBodyForSawmanFinisher && bodyVisible && canBody && target.TryReadBodyTechniqueOpportunity(out int technique))
             {
                 bool near = target.CanStartBodyTechnique(controller, out technique, out _);
-                var snapshot = new InteractionPromptSnapshot(target, action, InteractionPromptKind.BodyTechnique, near, "Interact", "体术", position, technique);
+                var snapshot = new InteractionPromptSnapshot(target, action, InteractionPromptKind.BodyTechnique, near, "Interact", "体术", bodyPosition, technique);
                 if (near && distance < bodyDistance)
                 {
                     bodyDistance = distance;
@@ -152,13 +190,10 @@ public partial class LeonQTECoordinator
                 "Interact", ladder.GetPromptText(), ladder.PromptPosition);
             return;
         }
-        if (interactSnapshot.IsValid)
-        {
-            return;
-        }
         if (canKnife)
         {
-            float closest = config.assassinationStartDistance;
+            float closest = bodyDistance;
+            float maxScanDistance = config.assassinationStartDistance + Mathf.Max(0f, config.assassinationTurnGraceDistanceBonus);
             foreach (var target in GetPromptCandidates())
             {
                 if (target == null || !target.CanStart(controller, QTEKind.KnifeAssassination, out _)
@@ -167,23 +202,31 @@ public partial class LeonQTECoordinator
                     continue;
                 }
                 float distance = Vector3.Distance(transform.position, target.Root.position);
+                if (distance > maxScanDistance)
+                {
+                    continue;
+                }
                 Vector3 position = target.Root.position + Vector3.up * 1.5f;
                 if (distance < closest && IsPromptVisible(camera, target, position))
                 {
                     closest = distance;
+                    string label = "暗杀";
+                    if (target.controller != null && target.controller.CanBeStaggerBackstabbedBy(controller))
+                    {
+                        label = "背刺";
+                    }
                     interactSnapshot = new InteractionPromptSnapshot(target, target.controller.actionCoordinator.CurrentHandle,
-                        InteractionPromptKind.Assassination, true, "Interact", "暗杀", position);
+                        InteractionPromptKind.Assassination, true, "Interact", label, position);
                 }
             }
         }
         if (!interactSnapshot.IsValid)
         {
-            var nearby = InteractionSystem.FindNearby(transform, item =>
+            if (acceptVisiblePrompt == null)
             {
-                return item is Component component && component is not VillageLadderSite
-                    && ((component is not VillageEntranceGate && IsPassageInteraction(component))
-                        || IsPromptVisible(camera, component, ReadWorldPromptPosition(component)));
-            });
+                acceptVisiblePrompt = IsVisiblePromptCandidate;
+            }
+            var nearby = InteractionSystem.FindNearby(transform, acceptVisiblePrompt);
             if (nearby is Component component)
             {
                 interactSnapshot = new InteractionPromptSnapshot(component, default, InteractionPromptKind.Interact,
@@ -192,6 +235,13 @@ public partial class LeonQTECoordinator
 
             SelectWindowLadderPush(camera);
         }
+    }
+
+    private bool IsVisiblePromptCandidate(IInteractable item)
+    {
+        return item is Component component && component is not VillageLadderSite
+            && ((component is not VillageEntranceGate && IsPassageInteraction(component))
+                || IsPromptVisible(promptCamera, component, ReadWorldPromptPosition(component)));
     }
 
     private void SelectWindowLadderPush(Camera camera)
@@ -276,7 +326,7 @@ public partial class LeonQTECoordinator
 
     internal InteractionPromptSnapshot ReadThrustFollowUpPickup()
     {
-        Camera camera = Camera.main;
+        Camera camera = ReadPromptCamera();
         if (camera == null || !TryGetComponent<LeonItemPickup>(out var pickupAction))
         {
             return default;
@@ -376,7 +426,7 @@ public partial class LeonQTECoordinator
         return target is DoorController or VillageEntranceGate or WindowTraversalPoint;
     }
 
-    internal static bool IsPromptVisible(Camera camera, Component target, Vector3 position)
+    internal static bool IsPromptVisible(Camera camera, Component target, Vector3 position, Transform playerRoot)
     {
         Vector3 viewport = camera.WorldToViewportPoint(position);
         if (viewport.z <= 0f || viewport.x < .02f || viewport.x > .98f || viewport.y < .02f || viewport.y > .98f)
@@ -384,11 +434,14 @@ public partial class LeonQTECoordinator
             return false;
         }
         Vector3 direction = position - camera.transform.position;
-        foreach (RaycastHit hit in Physics.RaycastAll(camera.transform.position, direction.normalized, direction.magnitude,
-            Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore))
+        RaycastHit[] hits = promptVisibilityHits.Raycast(camera.transform.position, direction.normalized, direction.magnitude,
+            Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore, out int hitCount);
+        Transform targetRoot = target.transform;
+        for (int index = 0; index < hitCount; index++)
         {
-            if (hit.transform.IsChildOf(target.transform) || target.transform.IsChildOf(hit.transform)
-                || hit.collider.GetComponentInParent<LeonController>() != null)
+            Transform hitTransform = hits[index].transform;
+            if (hitTransform.IsChildOf(targetRoot) || targetRoot.IsChildOf(hitTransform)
+                || (playerRoot != null && hitTransform.IsChildOf(playerRoot)))
             {
                 continue;
             }

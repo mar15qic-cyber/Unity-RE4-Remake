@@ -40,7 +40,7 @@ public abstract class Singleton</* 中文含义：由调用方指定的通用类
                 // 场景中不存在则自动创建
                 if (instance == null)
                 {
-                    // singletonObject（单例对象）：使用位置：Singleton<T>.Instance.get。
+                    // 单例对象。
 GameObject singletonObject = new GameObject(typeof(T).Name);
                     instance = singletonObject.AddComponent<T>();
                 }

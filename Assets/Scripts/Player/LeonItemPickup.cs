@@ -14,15 +14,31 @@ public sealed class LeonItemPickup : MonoBehaviour
     private ItemPickup target;
     private ItemData firstInspectionItem;
     private int transactionId;
+    private int pickupHeight;
     private float contactTime;
     private float requestedAt;
     private bool processedContact;
     private bool movingPickup;
+    private float fadeCarrySpeed;
     internal float MovingEntrySpeed { get; private set; }
     private ChapterOneArmAim.Arm pickupArm;
     private Transform pickupFinger;
     private Transform pickupUpper;
     private Transform pickupLower;
+    private Transform rightScapula;
+    private Transform rightShoulder;
+    private Transform rightUpperArm;
+    private Transform rightForearm;
+    private Transform spineUpper;
+    private Quaternion previousRightScapula;
+    private Quaternion previousRightShoulder;
+    private Quaternion previousRightUpperArm;
+    private Quaternion previousRightForearm;
+    private Quaternion solvedRightScapula;
+    private Quaternion solvedRightShoulder;
+    private Quaternion solvedRightUpperArm;
+    private Quaternion solvedRightForearm;
+    private bool rightArmRelaxApplied;
     private Quaternion previousUpper;
     private Quaternion previousLower;
     private Quaternion previousWrist;
@@ -39,8 +55,70 @@ public sealed class LeonItemPickup : MonoBehaviour
     private Vector3 itemContact;
     private const int WorldCollisionMask = 1 << 0;
     private const float PickupSourceFrameRate = 60f;
-    private const float MovingRecoveryTime = 7f / PickupSourceFrameRate;
-    private const float StandingRecoveryTime = 12f / PickupSourceFrameRate;
+    private const float EarlyCancelRecoveryTime = 14f / PickupSourceFrameRate;
+    private const float StandingLowNaturalRecoveryTime = 26f / PickupSourceFrameRate;
+    private const float StandingMiddleNaturalRecoveryTime = 34f / PickupSourceFrameRate;
+    private const float StandingHighNaturalRecoveryTime = 24f / PickupSourceFrameRate;
+    private const float MovingLowNaturalRecoveryTime = 9f / PickupSourceFrameRate;
+    private const float MovingMiddleNaturalRecoveryTime = 18f / PickupSourceFrameRate;
+    private const float MovingHighNaturalRecoveryTime = 16f / PickupSourceFrameRate;
+
+    internal bool IsMovingPickup
+    {
+        get
+        {
+            if (transactionId != 0 && movingPickup)
+            {
+                return true;
+            }
+
+            return false;
+        }
+    }
+
+    internal bool IsPickupMotionProtected
+    {
+        get
+        {
+            if (transactionId != 0)
+            {
+                return true;
+            }
+
+            if (driver != null && driver.IsItemPickupLayerBlending)
+            {
+                return true;
+            }
+
+            return false;
+        }
+    }
+
+    internal float ReadPickupSpeedFloor(float desiredPlanarSpeed)
+    {
+        if (desiredPlanarSpeed <= 0.01f)
+        {
+            return 0f;
+        }
+
+        if (transactionId != 0 && movingPickup)
+        {
+            MovingEntrySpeed = Mathf.Max(MovingEntrySpeed, desiredPlanarSpeed);
+            return MovingEntrySpeed;
+        }
+
+        if (driver != null && driver.IsItemPickupLayerBlending)
+        {
+            float layerWeight = driver.ItemPickupLayerWeight;
+            if (layerWeight > 0.001f)
+            {
+                float carrySpeed = Mathf.Max(fadeCarrySpeed, desiredPlanarSpeed);
+                return Mathf.Lerp(desiredPlanarSpeed, carrySpeed, Mathf.SmoothStep(0f, 1f, layerWeight));
+            }
+        }
+
+        return 0f;
+    }
 
     private void Start()
     {
@@ -61,6 +139,26 @@ public sealed class LeonItemPickup : MonoBehaviour
                 pickupUpper = pickupLower.parent;
                 pickupArm = new ChapterOneArmAim.Arm(bone);
             }
+            else if (bone.name == "spine upper")
+            {
+                spineUpper = bone;
+            }
+            else if (bone.name == "arm right scapula")
+            {
+                rightScapula = bone;
+            }
+            else if (bone.name == "arm right shoulder")
+            {
+                rightShoulder = bone;
+            }
+            else if (bone.name == "arm right upperarm")
+            {
+                rightUpperArm = bone;
+            }
+            else if (bone.name == "arm right forearm")
+            {
+                rightForearm = bone;
+            }
         }
         actions.OnTraversalActionCompleted += Complete;
         actions.OnTraversalActionInterrupted += Interrupt;
@@ -69,6 +167,7 @@ public sealed class LeonItemPickup : MonoBehaviour
 
     private void OnDisable()
     {
+        RestoreRightArmRelaxation();
         DiscardBufferedInput();
         if (OwnsTransaction())
         {
@@ -135,7 +234,18 @@ public sealed class LeonItemPickup : MonoBehaviour
         }
 
         Vector3 velocity = Vector3.ProjectOnPlane(player.HorizontalSpeed, Vector3.up);
-        bool moving = player.MoveInput.sqrMagnitude > 0.01f;
+        bool hasEffectiveMove = false;
+        if (inputBridge != null && inputBridge.ReadEffectiveMoveInput().sqrMagnitude > 0.01f)
+        {
+            hasEffectiveMove = true;
+            if (player.MoveInput.sqrMagnitude <= 0.01f)
+            {
+                inputBridge.RestoreMovementInput();
+            }
+        }
+
+        pickupHeight = height;
+        bool moving = player.MoveInput.sqrMagnitude > 0.01f || hasEffectiveMove;
         if (moving)
         {
             // 移动取物继续使用正常位移，伸手轨迹随物品位置修正。
@@ -149,6 +259,7 @@ public sealed class LeonItemPickup : MonoBehaviour
             }
             movingPickup = true;
             MovingEntrySpeed = velocity.magnitude;
+            fadeCarrySpeed = 0f;
             transactionId = actions.CurrentFullBodyTransactionId;
             target = pickup;
             requestedAt = Time.time;
@@ -240,10 +351,21 @@ public sealed class LeonItemPickup : MonoBehaviour
                     return;
                 }
 
-                // 物品在接触帧入包，动作继续收手。持续方向输入沿用原步态或在站姿恢复时接管。
-                if (elapsed >= contactTime + RecoveryTime)
+                // 物品在接触帧入包，有持续方向或战斗输入时走早取消恢复窗口，无输入时完整播完自然收手。
+                bool earlyCancel = HasCancelIntent();
+                float activeRecoveryTime;
+                if (earlyCancel)
                 {
-                    actions.CompleteItemPickup(transactionId);
+                    activeRecoveryTime = EarlyCancelRecoveryTime;
+                }
+                else
+                {
+                    activeRecoveryTime = ReadNaturalRecoveryTime();
+                }
+
+                if (elapsed >= contactTime + activeRecoveryTime)
+                {
+                    actions.CompleteItemPickup(transactionId, earlyCancel);
                 }
             }
         }
@@ -253,16 +375,52 @@ public sealed class LeonItemPickup : MonoBehaviour
         }
     }
 
-    private float RecoveryTime
+    private float ReadNaturalRecoveryTime()
     {
-        get
+        if (movingPickup)
         {
-            if (movingPickup)
+            if (pickupHeight == 2)
             {
-                return MovingRecoveryTime;
+                return MovingHighNaturalRecoveryTime;
             }
-            return StandingRecoveryTime;
+            if (pickupHeight == 1)
+            {
+                return MovingMiddleNaturalRecoveryTime;
+            }
+            return MovingLowNaturalRecoveryTime;
         }
+
+        if (pickupHeight == 2)
+        {
+            return StandingHighNaturalRecoveryTime;
+        }
+        if (pickupHeight == 1)
+        {
+            return StandingMiddleNaturalRecoveryTime;
+        }
+        return StandingLowNaturalRecoveryTime;
+    }
+
+    private bool HasCancelIntent()
+    {
+        if (player != null && player.MoveInput.sqrMagnitude > 0.01f)
+        {
+            return true;
+        }
+
+        if (inputBridge != null)
+        {
+            if (inputBridge.ReadEffectiveMoveInput().sqrMagnitude > 0.01f)
+            {
+                return true;
+            }
+            if (inputBridge.IsEffectiveAimPressed())
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private bool CommitContact()
@@ -293,13 +451,10 @@ public sealed class LeonItemPickup : MonoBehaviour
         return processedContact;
     }
 
-    private void LateUpdate()
+    internal void RestoreBoneOverridesBeforeDriver()
     {
-        if (pickupArm == null || pickupFinger == null)
-        {
-            return;
-        }
-        if (reachApplied)
+        RestoreRightArmRelaxation();
+        if (pickupArm != null && pickupFinger != null && reachApplied)
         {
             if (pickupUpper.localRotation.Equals(solvedUpper))
             {
@@ -315,34 +470,184 @@ public sealed class LeonItemPickup : MonoBehaviour
             }
             reachApplied = false;
         }
-        float weight = 0f;
-        if (OwnsTransaction() && driver.TryReadItemPickupTime(out float elapsed))
+    }
+
+    private void LateUpdate()
+    {
+        RestoreBoneOverridesBeforeDriver();
+        if (pickupArm != null && pickupFinger != null)
         {
-            float rise = Mathf.InverseLerp(1f / PickupSourceFrameRate, contactTime, elapsed);
-            float fade = 1f - Mathf.InverseLerp(contactTime, contactTime + RecoveryTime, elapsed);
-            weight = Mathf.SmoothStep(0f, 1f, Mathf.Min(rise, fade));
+
+            float weight = 0f;
+            if (OwnsTransaction() && driver != null && driver.TryReadItemPickupTime(out float elapsed))
+            {
+                float activeRecoveryTime;
+                if (HasCancelIntent())
+                {
+                    activeRecoveryTime = EarlyCancelRecoveryTime;
+                }
+                else
+                {
+                    activeRecoveryTime = ReadNaturalRecoveryTime();
+                }
+
+                float rise = Mathf.InverseLerp(1f / PickupSourceFrameRate, contactTime, elapsed);
+                float fade = 1f - Mathf.InverseLerp(contactTime, contactTime + activeRecoveryTime, elapsed);
+                weight = Mathf.SmoothStep(0f, 1f, Mathf.Min(rise, fade));
+            }
+            else if (Time.time - reachReleasedAt < .12f && player != null && player.CanAct()
+                && !player.IsAiming && actions != null && !actions.HasActiveFullBodyAction)
+            {
+                // 输入可以立即恢复，手臂修正仍平滑交还当前动画，避免接触帧直接清零。
+                weight = releasedReachWeight * (1f - Mathf.SmoothStep(0f, 1f, (Time.time - reachReleasedAt) / .12f));
+            }
+
+            reachWeight = weight;
+            if (weight > 0f)
+            {
+                Vector3 correction = Vector3.ClampMagnitude(itemContact - pickupFinger.position, 0.46f);
+                previousUpper = pickupUpper.localRotation;
+                previousLower = pickupLower.localRotation;
+                previousWrist = pickupArm.wrist.localRotation;
+                pickupArm.Solve(pickupArm.wrist.position + correction * weight, pickupArm.wrist.rotation, -transform.up);
+                solvedUpper = pickupUpper.localRotation;
+                solvedLower = pickupLower.localRotation;
+                solvedWrist = pickupArm.wrist.localRotation;
+                reachApplied = true;
+            }
         }
-        else if (Time.time - reachReleasedAt < .12f && player != null && player.CanAct()
-            && !player.IsAiming && actions != null && !actions.HasActiveFullBodyAction)
+
+        float rightArmRelaxWeight = 0f;
+        if (driver != null && driver.IsItemPickupLayerBlending && player != null
+            && player.currentState != LeonState.Dead && !player.IsHeldByTrap)
         {
-            // 输入可以立即恢复，手臂修正仍平滑交还当前动画，避免接触帧直接清零。
-            weight = releasedReachWeight * (1f - Mathf.SmoothStep(0f, 1f, (Time.time - reachReleasedAt) / .12f));
+            rightArmRelaxWeight = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(driver.ItemPickupLayerWeight));
         }
-        reachWeight = weight;
-        if (weight <= 0f)
+
+        if (rightArmRelaxWeight > 0.001f)
+        {
+            ApplyRightArmPickupRelaxation(rightArmRelaxWeight);
+        }
+    }
+
+    private void RestoreRightArmRelaxation()
+    {
+        if (!rightArmRelaxApplied)
         {
             return;
         }
 
-        Vector3 correction = Vector3.ClampMagnitude(itemContact - pickupFinger.position, 0.46f);
-        previousUpper = pickupUpper.localRotation;
-        previousLower = pickupLower.localRotation;
-        previousWrist = pickupArm.wrist.localRotation;
-        pickupArm.Solve(pickupArm.wrist.position + correction * weight, pickupArm.wrist.rotation, -transform.up);
-        solvedUpper = pickupUpper.localRotation;
-        solvedLower = pickupLower.localRotation;
-        solvedWrist = pickupArm.wrist.localRotation;
-        reachApplied = true;
+        if (rightForearm != null && rightForearm.localRotation.Equals(solvedRightForearm))
+        {
+            rightForearm.localRotation = previousRightForearm;
+        }
+        if (rightUpperArm != null && rightUpperArm.localRotation.Equals(solvedRightUpperArm))
+        {
+            rightUpperArm.localRotation = previousRightUpperArm;
+        }
+        if (rightShoulder != null && rightShoulder.localRotation.Equals(solvedRightShoulder))
+        {
+            rightShoulder.localRotation = previousRightShoulder;
+        }
+        if (rightScapula != null && rightScapula.localRotation.Equals(solvedRightScapula))
+        {
+            rightScapula.localRotation = previousRightScapula;
+        }
+
+        rightArmRelaxApplied = false;
+    }
+
+    private void ApplyRightArmPickupRelaxation(float weight)
+    {
+        if (player == null || rightUpperArm == null)
+        {
+            return;
+        }
+
+        // 低/中位拾取弯腰幅度更大，高位伸手仅需轻微缓解肩臂悬空。
+        float heightScale = 0.85f;
+        if (pickupHeight == 0)
+        {
+            heightScale = 1.0f;
+        }
+        else if (pickupHeight == 2)
+        {
+            heightScale = 0.6f;
+        }
+
+        float effective = Mathf.Clamp01(weight) * heightScale;
+        if (effective <= 0.001f)
+        {
+            return;
+        }
+
+        WeaponType weapon = player.currentWeapon;
+        bool isLongGun = weapon == WeaponType.Rifle || weapon == WeaponType.Shotgun;
+
+        if (rightScapula != null)
+        {
+            previousRightScapula = rightScapula.localRotation;
+            // 右肩胛随躯干微沉微扣，减轻悬空僵硬感。
+            Quaternion scapulaOffset = Quaternion.AngleAxis(3.5f * effective, transform.right)
+                * Quaternion.AngleAxis(-2.5f * effective, transform.forward);
+            rightScapula.rotation = scapulaOffset * rightScapula.rotation;
+            solvedRightScapula = rightScapula.localRotation;
+        }
+
+        if (rightShoulder != null)
+        {
+            previousRightShoulder = rightShoulder.localRotation;
+            float shoulderAbductDeg;
+            if (isLongGun)
+            {
+                shoulderAbductDeg = 3.5f;
+            }
+            else
+            {
+                shoulderAbductDeg = -2.0f;
+            }
+            Quaternion shoulderOffset = Quaternion.AngleAxis(4.0f * effective, transform.right)
+                * Quaternion.AngleAxis(shoulderAbductDeg * effective, transform.forward);
+            rightShoulder.rotation = shoulderOffset * rightShoulder.rotation;
+            solvedRightShoulder = rightShoulder.localRotation;
+        }
+
+        previousRightUpperArm = rightUpperArm.localRotation;
+        if (isLongGun)
+        {
+            // 双手长枪左臂伸出后改为单手微低持，适度外展避开胸口与腿部碰撞。
+            Quaternion longGunUpperOffset = Quaternion.AngleAxis(9.5f * effective, transform.right)
+                * Quaternion.AngleAxis(7.5f * effective, transform.forward)
+                * Quaternion.AngleAxis(3.5f * effective, transform.up);
+            rightUpperArm.rotation = longGunUpperOffset * rightUpperArm.rotation;
+        }
+        else
+        {
+            // 手枪/小刀单手自然垂落与轻度内收，避免端臂悬空。
+            Quaternion sidearmUpperOffset = Quaternion.AngleAxis(13.0f * effective, transform.right)
+                * Quaternion.AngleAxis(-4.5f * effective, transform.up);
+            rightUpperArm.rotation = sidearmUpperOffset * rightUpperArm.rotation;
+        }
+        solvedRightUpperArm = rightUpperArm.localRotation;
+
+        if (rightForearm != null)
+        {
+            previousRightForearm = rightForearm.localRotation;
+            float forearmRelaxDeg;
+            if (isLongGun)
+            {
+                forearmRelaxDeg = 5.0f;
+            }
+            else
+            {
+                forearmRelaxDeg = 8.5f;
+            }
+            Quaternion forearmOffset = Quaternion.AngleAxis(forearmRelaxDeg * effective, transform.right);
+            rightForearm.rotation = forearmOffset * rightForearm.rotation;
+            solvedRightForearm = rightForearm.localRotation;
+        }
+
+        rightArmRelaxApplied = true;
     }
 
     private bool HasClearReach(Vector3 point)
@@ -401,23 +706,40 @@ public sealed class LeonItemPickup : MonoBehaviour
             return;
         }
 
+        if (movingPickup)
+        {
+            fadeCarrySpeed = MovingEntrySpeed;
+        }
+        else
+        {
+            fadeCarrySpeed = 0f;
+        }
+
         releasedReachWeight = reachWeight;
         reachReleasedAt = Time.time;
         transactionId = 0;
-        if (!movingPickup)
+        if (!movingPickup && motion != null)
         {
             motion.ReleaseMotion(motionToken);
         }
-        motionToken = default;
-        if (!movingPickup && player != null && player.currentState == LeonState.Traversing)
+        if (!movingPickup && driver != null)
         {
-            if (player.MoveInput.sqrMagnitude > .01f)
+            driver.ReleaseNativeGait(false);
+        }
+        motionToken = default;
+        if (!movingPickup && player != null)
+        {
+            player.SyncNormalMovementAuthorityImmediate();
+            if (player.currentState == LeonState.Traversing)
             {
-                player.ChangeState(LeonState.Walking);
-            }
-            else
-            {
-                player.ChangeState(LeonState.Idle);
+                if (player.MoveInput.sqrMagnitude > .01f)
+                {
+                    player.ChangeState(LeonState.Walking);
+                }
+                else
+                {
+                    player.ChangeState(LeonState.Idle);
+                }
             }
         }
 

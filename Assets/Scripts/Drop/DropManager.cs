@@ -4,6 +4,8 @@ using System.Collections.Generic;
 /// <summary>本局掉落执行宿主。敌人死亡或容器破坏直接提交位置，宿主读取当前资源快照交给权重规则，完成独立金钱与物品随机后创建拾取物；连续未掉落和重复类别状态只归本宿主拥有。</summary>
 public class DropManager : Singleton<DropManager>
 {
+    private readonly List<(DropEntry entry, float weight)> dropCandidates = new();
+
     /// <summary>中文含义：切换场景时是否保留此单例对象。掉落管理器不跨场景存活，单例生命周期由基类管理。</summary>
     protected override bool Persistent => false;
 
@@ -202,7 +204,8 @@ var asset = DropResourceReader.Read();
         // 构建加权列表
         // 本轮条目与最终权重的候选列表，保持配置顺序。
         // 中文含义：candidates 为“候选集合”。
-var candidates = new List<(DropEntry /* 中文含义：掉落候选条目。 */ entry, float /* 中文含义：该掉落候选的抽取权重。 */ weight)>();
+        List<(DropEntry entry, float weight)> candidates = dropCandidates;
+        candidates.Clear();
         // 当前配置候选，缺条目或物品时跳过。
         // 中文含义：entry 为“当前掉落入口”。每轮从掉落表的条目集合取得一个元素，仅代表当前这一项。
 foreach (var entry in dropTable.entries)

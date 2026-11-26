@@ -13,7 +13,7 @@ public class Re4SetupTool : EditorWindow
     [MenuItem("Tools/RE4/Setup Leon (Add All Components)", false, 100)]
     public static void SetupLeon()
     {
-        // leon（里昂）：保存 GameObject.Find(string) 的返回结果，供当前步骤使用。使用位置：作为 EditorUtility.SetDirty(Object) 的参数、作为 Undo.AddComponent<CapsuleCollider>(GameObject) 的参数、作为 Undo.AddComponent<Rigidbody>(GameObject) 的参数 等共 4 处。
+        // 里昂。
 var leon = GameObject.Find("LeonR4R");
         if (leon == null)
         {
@@ -21,7 +21,7 @@ var leon = GameObject.Find("LeonR4R");
             return;
         }
 
-        // bridge（桥接）：保存 GameObject.GetComponent<LeonInputBridge>() 的返回结果，供当前步骤使用。使用位置：Re4SetupTool.SetupLeon()。
+        // 桥接。
 var bridge = leon.GetComponent<LeonInputBridge>();
         if (bridge == null)
         {
@@ -29,7 +29,7 @@ var bridge = leon.GetComponent<LeonInputBridge>();
             Debug.Log("[RE4 Setup] Added LeonInputBridge");
         }
 
-        // ik（反向动力学）：保存 GameObject.GetComponent<LeonAnimRig>() 的返回结果，供当前步骤使用。使用位置：Re4SetupTool.SetupLeon()。
+        // 反向动力学。
 var ik = leon.GetComponent<LeonAnimRig>();
         if (ik == null)
         {
@@ -37,7 +37,7 @@ var ik = leon.GetComponent<LeonAnimRig>();
             Debug.Log("[RE4 Setup] Added LeonAnimRig");
         }
 
-        // rb（运动刚体）：保存 GameObject.GetComponent<Rigidbody>() 的返回结果，供当前步骤使用。使用位置：Re4SetupTool.SetupLeon()。
+        // 运动刚体。
 var rb = leon.GetComponent<Rigidbody>();
         if (rb == null)
         {
@@ -48,7 +48,7 @@ var rb = leon.GetComponent<Rigidbody>();
         rb.freezeRotation = true;
         rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
         rb.interpolation = RigidbodyInterpolation.Interpolate;
-        // cc（角色碰撞器）：保存 GameObject.GetComponent<CapsuleCollider>() 的返回结果，供当前步骤使用。使用位置：Re4SetupTool.SetupLeon()。
+        // 角色碰撞器。
 var cc = leon.GetComponent<CapsuleCollider>();
         if (cc == null)
         {

@@ -90,7 +90,12 @@ public sealed partial class EnemyAnimationAdapter
                 ReturnToNativeCycle(0, 0);
                 return;
             }
-            if (edge.toPace == 0 && requested > 0 && remaining > edge.travel + 0.55f)
+            float resumeWalkThreshold = edge.travel + 0.55f;
+            if (nativeSawGait)
+            {
+                resumeWalkThreshold = Mathf.Max(resumeWalkThreshold, 1.25f);
+            }
+            if (edge.toPace == 0 && requested > 0 && remaining > resumeWalkThreshold)
             {
                 StartNativeGaitEdge("Ganado_1000");
                 return;
@@ -130,11 +135,24 @@ public sealed partial class EnemyAnimationAdapter
         }
         if (nativeGaitPace == 0)
         {
+            float walkStartThreshold = 0.04f;
+            if (nativeSawGait)
+            {
+                if (host != null && host.HasActivePlatformExitClearance)
+                {
+                    walkStartThreshold = 0.25f;
+                }
+                else
+                {
+                    // 电锯人停步制动距离最高达 1.11m，起步增加滞回门槛，避免原地反复放锯起步又立刻抬锯停步。
+                    walkStartThreshold = 1.25f;
+                }
+            }
             if (requested == 2)
             {
                 StartNativeGaitEdge("Ganado_2000");
             }
-            else if (remaining > 0.04f)
+            else if (remaining > walkStartThreshold)
             {
                 StartNativeGaitEdge("Ganado_1000");
             }

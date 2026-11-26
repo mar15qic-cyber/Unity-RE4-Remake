@@ -14,77 +14,77 @@ public partial class LeonQTECoordinator : MonoBehaviour
     /// <summary>玩家控制、动作与运动的结构化数据 CollisionPair；声明字段保存该步骤需要的值，具体读写由使用方执行。</summary>
     private struct CollisionPair
     {
-        /// <summary>中文含义：第一个碰撞体。使用位置：作为 List&lt;LeonQTECoordinator.CollisionPair&gt;.Add(LeonQTECoordinator.CollisionPair) 的参数、作为 Physics.IgnoreCollision(Collider, Collider, bool) 的参数、LeonQTECoordinator.RestorePairCollisions()。</summary>
+        /// <summary>第一个碰撞体。</summary>
         public Collider first;
-        /// <summary>中文含义：第二个碰撞体。使用位置：作为 List&lt;LeonQTECoordinator.CollisionPair&gt;.Add(LeonQTECoordinator.CollisionPair) 的参数、作为 Physics.IgnoreCollision(Collider, Collider, bool) 的参数、LeonQTECoordinator.RestorePairCollisions()。</summary>
+        /// <summary>第二个碰撞体。</summary>
         public Collider second;
-        /// <summary>中文含义：之前是否已忽略。使用位置：作为 List&lt;LeonQTECoordinator.CollisionPair&gt;.Add(LeonQTECoordinator.CollisionPair) 的参数、LeonQTECoordinator.RestorePairCollisions()。</summary>
+        /// <summary>之前是否已忽略。</summary>
         public bool wasIgnored;
     }
 
-    /// <summary>中文含义：全局拥有者。使用位置：LeonQTECoordinator.CanQueryAssassinationPrompt()、LeonQTECoordinator.CanQueryBodyTechniquePrompt()、LeonQTECoordinator.CanStart(QTEKind, IEnemyQTEParticipant, out QTECancelReason) 等共 9 处。</summary>
+    /// <summary>全局拥有者。</summary>
     private static LeonQTECoordinator globalOwner;
-    /// <summary>中文含义：全局会话序号。使用位置：LeonQTECoordinator.ResetStatics()、LeonQTECoordinator.TryStart(QTEKind, IEnemyQTEParticipant, out int)、LeonQTECoordinator.TryStartNearestBodyTechnique(out int)。</summary>
+    /// <summary>全局会话序号。</summary>
     private static int globalSessionSequence;
-    /// <summary>中文含义：当前里昂配对动作配置。使用位置：作为 LeonQTECoordinator.GetSafeSeparationDistance(Vector3, Vector3, float, IEnemyQTEParticipant) 的参数、作为 Mathf.Clamp(float, float, float) 的参数、作为 Mathf.Clamp01(float) 的参数 等共 31 处。</summary>
+    /// <summary>当前里昂配对动作配置。</summary>
     [Header("配置")]
     public LeonQTEConfig config;
-    /// <summary>中文含义：提示扫描间隔。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>提示扫描间隔。</summary>
     [Header("提示检测")]
     [Min(0.02f)]
     public float promptScanInterval = 0.05f;
-    /// <summary>中文含义：里昂玩家控制器。使用位置：作为 IEnemyQTEParticipant.CanStart(LeonController, QTEKind, out QTECancelReason) 的参数、作为 VillagerQTEParticipant.CanStart(LeonController, QTEKind, out QTECancelReason) 的参数、作为 VillagerQTEParticipant.CanStartBodyTechnique(LeonController, out int, out QTECancelReason) 的参数 等共 16 处。</summary>
+    /// <summary>里昂玩家控制器。</summary>
     [Header("组件引用")]
     public LeonController controller;
-    /// <summary>中文含义：战斗。使用位置：LeonQTECoordinator.BindEvents()、LeonQTECoordinator.CanQueryBodyTechniquePrompt()、LeonQTECoordinator.CanStart(QTEKind, IEnemyQTEParticipant, out QTECancelReason) 等共 6 处。</summary>
+    /// <summary>战斗。</summary>
     public LeonCombat combat;
-    /// <summary>中文含义：动画协调器。使用位置：LeonQTECoordinator.AlignAndEnter(int)、LeonQTECoordinator.BeginResult(bool)、LeonQTECoordinator.BindEvents() 等共 17 处。</summary>
+    /// <summary>动画协调器。</summary>
     public LeonAnimationActionCoordinator animationCoordinator;
-    /// <summary>中文含义：输入桥接。使用位置：LeonQTECoordinator.CanStart(QTEKind, IEnemyQTEParticipant, out QTECancelReason)、LeonQTECoordinator.ReleasePlayer(int)、LeonQTECoordinator.Start() 等共 5 处。</summary>
+    /// <summary>输入桥接。</summary>
     public LeonInputBridge inputBridge;
-    /// <summary>中文含义：当前里昂动画绑定组件。使用位置：LeonQTECoordinator.ReleasePlayer(int)、LeonQTECoordinator.ResolveCurrentSessionWeapon()、LeonQTECoordinator.RestoreWeaponVisualAfterQTE(WeaponType, bool) 等共 5 处。</summary>
+    /// <summary>当前里昂动画绑定组件。</summary>
     public LeonAnimRig animRig;
-    /// <summary>中文含义：动画控制器驱动器。使用位置：LeonQTECoordinator.ReleasePlayer(int)、LeonQTECoordinator.RestoreWeaponTypeAfterQTE()、LeonQTECoordinator.RestoreWeaponVisualAfterQTE(WeaponType, bool) 等共 5 处。</summary>
+    /// <summary>动画控制器驱动器。</summary>
     public LeonAnimatorDriver animatorDriver;
-    /// <summary>中文含义：武器视觉表现控制器。使用位置：LeonQTECoordinator.EndAssassinationKnifeVisualIfNeeded()、LeonQTECoordinator.LateUpdate()、LeonQTECoordinator.ResolveCurrentSessionWeapon() 等共 6 处。</summary>
+    /// <summary>武器视觉表现控制器。</summary>
     public LeonWeaponVisualController weaponVisualController;
-    /// <summary>中文含义：管理当前装备与武器切换的组件。使用位置：LeonQTECoordinator.CanRestoreWeapon(WeaponType)、LeonQTECoordinator.ResolveWeaponFromHandler()、LeonQTECoordinator.RestoreWeaponVisualAfterQTE(WeaponType, bool) 等共 4 处。</summary>
+    /// <summary>管理当前装备与武器切换的组件。</summary>
     public LeonWeaponHandler weaponHandler;
-    /// <summary>中文含义：玩家身体。使用位置：LeonQTECoordinator.Start()、LeonQTESetupUtility.BuildTestScene(LeonQTEConfig, GameObject)。</summary>
+    /// <summary>玩家身体。</summary>
     public Rigidbody playerBody;
-    /// <summary>中文含义：玩家动画控制器。使用位置：作为 QTESessionContext.QTESessionContext(int, QTEKind, Transform, Animator, Transform, Animator) 的参数、LeonQTECoordinator.ApplyResultMotion()、LeonQTECoordinator.CanStart(QTEKind, IEnemyQTEParticipant, out QTECancelReason) 等共 11 处。</summary>
+    /// <summary>玩家动画控制器。</summary>
     public Animator playerAnimator;
-    /// <summary>中文含义：玩家碰撞体集合。使用位置：作为 LeonQTECoordinator.ContainsCollider(Collider[], Collider) 的参数、LeonQTECoordinator.IgnorePairCollisions(IEnemyQTEParticipant)、LeonQTECoordinator.Start() 等共 4 处。</summary>
+    /// <summary>玩家碰撞体集合。</summary>
     [Header("玩家碰撞体")]
     public Collider[] playerColliders;
-    /// <summary>中文含义：腿部撕咬血迹后备高度。使用位置：LeonQTECoordinator.ResolveLegBiteHitPoint()。</summary>
+    /// <summary>腿部撕咬血迹后备高度。</summary>
     [Header("失败伤口定位")]
     [Min(0f)]
     public float legBiteBloodFallbackHeight = 0.42f;
-    /// <summary>中文含义：腿部撕咬血迹后备侧边偏移量。使用位置：LeonQTECoordinator.IsLeftLegCloserToEnemy(Vector3, Transform, Transform, Transform, Transform)、LeonQTECoordinator.ResolveLegBiteHitPoint()。</summary>
+    /// <summary>腿部撕咬血迹后备侧边偏移量。</summary>
     [Min(0f)]
     public float legBiteBloodFallbackSideOffset = 0.18f;
-    /// <summary>中文含义：颈部撕咬血迹前向偏移量。使用位置：LeonQTECoordinator.ResolveNeckBiteHitPoint()。</summary>
+    /// <summary>颈部撕咬血迹前向偏移量。</summary>
     [Min(0f)]
     public float neckBiteBloodForwardOffset = 0.05f;
-    /// <summary>中文含义：参与者。使用位置：作为 LeonQTECoordinator.GetSafeSeparationDistance(Vector3, Vector3, float, IEnemyQTEParticipant) 的参数、作为 LeonQTECoordinator.IsPairingSpaceBlocked(Vector3, IEnemyQTEParticipant) 的参数、作为 LeonQTECoordinator.SetParticipantWorldPosition(Transform, Vector3) 的参数 等共 26 处。</summary>
+    /// <summary>参与者。</summary>
     private IEnemyQTEParticipant participant;
-    /// <summary>中文含义：生效协程。使用位置：作为 MonoBehaviour.StopCoroutine(Coroutine) 的参数、LeonQTECoordinator.AlignAndEnter(int)、LeonQTECoordinator.Cancel(int, QTECancelReason) 等共 7 处。</summary>
+    /// <summary>生效协程。</summary>
     private Coroutine activeRoutine;
-    /// <summary>中文含义：生效种类。使用位置：作为 QTESessionContext.QTESessionContext(int, QTEKind, Transform, Animator, Transform, Animator) 的参数、LeonQTECoordinator.AlignAndEnter(int)、LeonQTECoordinator.BeginResult(bool) 等共 16 处。</summary>
+    /// <summary>生效种类。</summary>
     private QTEKind activeKind;
     private bool sessionStartedCrouching;
-    /// <summary>中文含义：生效变体。使用位置：作为 LeonQTECoordinator.BeginResult(bool) 的参数、LeonQTECoordinator.AlignAndEnter(int)、LeonQTECoordinator.CommitBiteDamage(int) 等共 9 处。</summary>
+    /// <summary>生效变体。</summary>
     private QTEAnimationVariant activeVariant;
-    /// <summary>中文含义：阶段。使用位置：作为 Debug.LogWarning(object) 的参数、LeonQTECoordinator.BeginResult(bool)、LeonQTECoordinator.Cancel(int, QTECancelReason) 等共 19 处。</summary>
+    /// <summary>阶段。</summary>
     private QTEPhase phase;
-    /// <summary>中文含义：待处理结果。使用位置：作为 Debug.LogWarning(object) 的参数、LeonQTECoordinator.ApplyResultMotion()、LeonQTECoordinator.BeginResult(bool) 等共 22 处。</summary>
+    /// <summary>待处理结果。</summary>
     private QTEResult pendingResult;
-    /// <summary>中文含义：上一次拒绝原因。使用位置：LeonQTECoordinator.LastRejectionReason.get、LeonQTECoordinator.Reject(QTECancelReason)、LeonQTECoordinator.TryStart(QTEKind, IEnemyQTEParticipant, out int)。</summary>
+    /// <summary>上一次拒绝原因。</summary>
     private QTECancelReason lastRejectionReason;
-    /// <summary>中文含义：活动会话编号。使用位置：作为 Action&lt;int, QTEPhase&gt;.Invoke(int, QTEPhase) 的参数、作为 Debug.LogWarning(object) 的参数、作为 IEnemyQTEParticipant.BeginAction(int, EnemyQTEAction) 的参数 等共 43 处。</summary>
+    /// <summary>活动会话编号。</summary>
     private int activeSessionId;
-    /// <summary>中文含义：按下数量。使用位置：作为 Mathf.Min(int, int) 的参数、作为 QTEProgressInfo.QTEProgressInfo(int, int, int, float, float) 的参数、LeonQTECoordinator.ChangePhase(QTEPhase) 等共 5 处。</summary>
+    /// <summary>按下数量。</summary>
     private int pressCount;
     private float rearHoldElapsed;
     private int rearEscapePresses;
@@ -98,135 +98,142 @@ public partial class LeonQTECoordinator : MonoBehaviour
             !rearHelperHit && rearHelper != null && rearHelper == enemy && !enemy.IsDead &&
             enemy.actionCoordinator.Identity == rearHelperIdentity;
     }
-    /// <summary>中文含义：上一次输入帧。使用位置：LeonQTECoordinator.SubmitEscapePress(int)、LeonQTECoordinator.TryStart(QTEKind, IEnemyQTEParticipant, out int)。</summary>
+    /// <summary>上一次输入帧。</summary>
     private int lastInputFrame = -1;
     private const double EarlyEscapeWindow = .12;
     private double earlyEscapePressedAt = double.NegativeInfinity;
-    /// <summary>中文含义：剩余时间。使用位置：作为 Mathf.Max(float, float) 的参数、作为 QTEProgressInfo.QTEProgressInfo(int, int, int, float, float) 的参数、LeonQTECoordinator.ChangePhase(QTEPhase) 等共 5 处。</summary>
+    /// <summary>剩余时间。</summary>
     private float remainingTime;
-    /// <summary>中文含义：阶段已用。使用位置：LeonQTECoordinator.ChangePhase(QTEPhase)、LeonQTECoordinator.CheckAssassinationCommitFallback()、LeonQTECoordinator.CheckFailureExitFailsafe() 等共 6 处。</summary>
+    /// <summary>阶段已用。</summary>
     private float phaseElapsed;
-    /// <summary>中文含义：玩家动作是否已完成。使用位置：LeonQTECoordinator.HandlePlayerActionCompleted(AnimationActionTransaction)、LeonQTECoordinator.ResetPairFlags()、LeonQTECoordinator.TryAdvanceAfterPairCompletion() 等共 5 处。</summary>
+    /// <summary>玩家动作是否已完成。</summary>
     private bool playerActionCompleted;
-    /// <summary>中文含义：敌人动作是否已完成。使用位置：LeonQTECoordinator.BeginResult(bool)、LeonQTECoordinator.CommitAssassination(int)、LeonQTECoordinator.ForceReleasePlayerFromResult(int) 等共 11 处。</summary>
+    /// <summary>敌人动作是否已完成。</summary>
     private bool enemyActionCompleted;
-    /// <summary>中文含义：是否玩家已退出。使用位置：LeonQTECoordinator.CheckFailureExitFailsafe()、LeonQTECoordinator.ForceReleasePlayerFromResult(int)、LeonQTECoordinator.HandlePlayerActionExited(AnimationActionTransaction) 等共 6 处。</summary>
+    /// <summary>是否玩家已退出。</summary>
     private bool playerExited;
-    /// <summary>中文含义：是否敌人已退出。使用位置：LeonQTECoordinator.CheckFailureExitFailsafe()、LeonQTECoordinator.HandleParticipantActionExited(int, EnemyQTEAction, int, bool)、LeonQTECoordinator.ResetPairFlags() 等共 5 处。</summary>
+    /// <summary>是否敌人已退出。</summary>
     private bool enemyExited;
-    /// <summary>中文含义：是否伤害已提交。使用位置：作为 QTESessionEndInfo.QTESessionEndInfo(int, QTEResult, QTECancelReason, bool) 的参数、LeonQTECoordinator.FinishCleanup(QTEResult, QTECancelReason)、LeonQTECoordinator.ForceReleasePlayerFromResult(int) 等共 6 处。</summary>
+    /// <summary>是否伤害已提交。</summary>
     private bool damageCommitted;
-    /// <summary>中文含义：是否暗杀已提交。使用位置：LeonQTECoordinator.BeginResult(bool)、LeonQTECoordinator.BeginSingleShotAssassinationResult()、LeonQTECoordinator.CheckAssassinationCommitFallback() 等共 9 处。</summary>
+    /// <summary>是否暗杀已提交。</summary>
     private bool assassinationCommitted;
-    /// <summary>中文含义：暗杀已提交时间。使用位置：LeonQTECoordinator.CommitAssassination(int)、LeonQTECoordinator.FinishCleanup(QTEResult, QTECancelReason)、LeonQTECoordinator.TryFinalizeCommittedAssassination() 等共 4 处。</summary>
+    /// <summary>暗杀已提交时间。</summary>
     private float assassinationCommittedTime = float.NegativeInfinity;
-    /// <summary>中文含义：是否清理运行中。使用位置：LeonQTECoordinator.BeginResult(bool)、LeonQTECoordinator.BeginSingleShotAssassinationResult()、LeonQTECoordinator.CheckFailureExitFailsafe() 等共 12 处。</summary>
+    /// <summary>是否清理运行中。</summary>
     private bool cleanupRunning;
-    /// <summary>中文含义：是否已绑定事件。使用位置：LeonQTECoordinator.BindEvents()、LeonQTECoordinator.UnbindEvents()。</summary>
+    /// <summary>是否已绑定事件。</summary>
     private bool eventsBound;
-    /// <summary>中文含义：是否已开始。使用位置：LeonQTECoordinator.CanQueryAssassinationPrompt()、LeonQTECoordinator.CanQueryBodyTechniquePrompt()、LeonQTECoordinator.CanStart(QTEKind, IEnemyQTEParticipant, out QTECancelReason) 等共 5 处。</summary>
+    /// <summary>是否已开始。</summary>
     private bool started;
-    /// <summary>中文含义：是否提示可用。使用位置：LeonQTECoordinator.IsPromptAvailable.get、LeonQTECoordinator.SetPromptAvailability(bool)。</summary>
+    /// <summary>是否提示可用。</summary>
     private bool promptAvailable;
-    /// <summary>中文含义：下一次提示扫描时间。使用位置：LeonQTECoordinator.ClearBodyTechniqueSession()、LeonQTECoordinator.FinishCleanup(QTEResult, QTECancelReason)、LeonQTECoordinator.OnEnable() 等共 5 处。</summary>
+    /// <summary>下一次提示扫描时间。</summary>
     private float nextPromptScanTime;
+    private const int SawAssassinationSurvivorReleaseFrame = 100;
+    private const int SawAssassinationSurvivorPlayerExitFrame = 112;
+    private bool temporaryKnifeCarryReturnActive;
     private bool bodyTechniquePromptAvailable;
-    /// <summary>中文含义：是否玩家锁定缓存。使用位置：LeonQTECoordinator.CacheAndLockPlayer()、LeonQTECoordinator.RestorePlayerLock()、LeonQTECoordinator.TryStart(QTEKind, IEnemyQTEParticipant, out int)。</summary>
+    private IEnemyQTEParticipant assassinationLatchTarget;
+    private float assassinationLatchExpiresAt;
+    private bool assassinationLatchIsStagger;
+    private bool assassinationTriggeredFromStagger;
+    /// <summary>是否玩家锁定缓存。</summary>
     private bool playerLockCached;
-    /// <summary>中文含义：玩家运动。使用位置：LeonQTECoordinator.CacheAndLockPlayer()、LeonQTECoordinator.CanStart(QTEKind, IEnemyQTEParticipant, out QTECancelReason)、LeonQTECoordinator.RestorePlayerLock() 等共 6 处。</summary>
+    /// <summary>玩家运动。</summary>
     [Header("玩家运动执行引用")]
     [UnityEngine.Serialization.FormerlySerializedAs("玩家运动")]
     [UnityEngine.InspectorName("玩家运动")]
     public LeonActionMotionDriver playerMotion;
-    /// <summary>中文含义：上一次结束信息。使用位置：作为 Action&lt;QTESessionEndInfo&gt;.Invoke(QTESessionEndInfo) 的参数、LeonQTECoordinator.FinishCleanup(QTEResult, QTECancelReason)、LeonQTECoordinator.LastEndInfo.get。</summary>
+    /// <summary>上一次结束信息。</summary>
     private QTESessionEndInfo lastEndInfo;
-    /// <summary>中文含义：预期玩家动作。使用位置：作为 Debug.LogWarning(object) 的参数、LeonQTECoordinator.AlignAndEnter(int)、LeonQTECoordinator.BeginResult(bool) 等共 6 处。</summary>
+    /// <summary>预期玩家动作。</summary>
     private FullBodyActionType expectedPlayerAction;
-    /// <summary>中文含义：预期敌人动作。使用位置：LeonQTECoordinator.AlignAndEnter(int)、LeonQTECoordinator.BeginResult(bool)、LeonQTECoordinator.FinishCleanup(QTEResult, QTECancelReason) 等共 5 处。</summary>
+    /// <summary>预期敌人动作。</summary>
     private EnemyQTEAction expectedEnemyAction;
-    /// <summary>中文含义：结果运动是否生效。使用位置：LeonQTECoordinator.ApplyResultMotion()、LeonQTECoordinator.BeginResultMotion(bool)、LeonQTECoordinator.FinishCleanup(QTEResult, QTECancelReason) 等共 5 处。</summary>
+    /// <summary>结果运动是否生效。</summary>
     private bool resultMotionActive;
-    /// <summary>中文含义：结果玩家起始。使用位置：作为 LeonQTECoordinator.GetSafeSeparationDistance(Vector3, Vector3, float, IEnemyQTEParticipant) 的参数、作为 Vector3.Lerp(Vector3, Vector3, float) 的参数、LeonQTECoordinator.BeginResultMotion(bool)。</summary>
+    /// <summary>结果玩家起始。</summary>
     private Vector3 resultPlayerStart;
-    /// <summary>中文含义：结果敌人起始。使用位置：作为 LeonQTECoordinator.GetSafeSeparationDistance(Vector3, Vector3, float, IEnemyQTEParticipant) 的参数、作为 Vector3.Lerp(Vector3, Vector3, float) 的参数、LeonQTECoordinator.BeginResultMotion(bool)。</summary>
+    /// <summary>结果敌人起始。</summary>
     private Vector3 resultEnemyStart;
-    /// <summary>中文含义：结果玩家目标。使用位置：作为 LeonQTECoordinator.SetPlayerWorldPosition(Vector3) 的参数、作为 Vector3.Lerp(Vector3, Vector3, float) 的参数、LeonQTECoordinator.BeginResultMotion(bool)。</summary>
+    /// <summary>结果玩家目标。</summary>
     private Vector3 resultPlayerTarget;
-    /// <summary>中文含义：结果敌人目标。使用位置：作为 LeonQTECoordinator.SetParticipantWorldPosition(Transform, Vector3) 的参数、作为 Vector3.Lerp(Vector3, Vector3, float) 的参数、LeonQTECoordinator.BeginResultMotion(bool)。</summary>
+    /// <summary>结果敌人目标。</summary>
     private Vector3 resultEnemyTarget;
-    /// <summary>中文含义：是否玩家已释放。使用位置：LeonQTECoordinator.ApplyResultMotion()、LeonQTECoordinator.BlocksOrdinaryDamage.get、LeonQTECoordinator.CheckFailureExitFailsafe() 等共 17 处。</summary>
+    /// <summary>是否玩家已释放。</summary>
     private bool playerReleased;
-    /// <summary>中文含义：是否计划的恢复退出。使用位置：LeonQTECoordinator.FinishCleanup(QTEResult, QTECancelReason)、LeonQTECoordinator.HandlePlayerActionExited(AnimationActionTransaction)、LeonQTECoordinator.RequestPlayerRecoveryExit() 等共 5 处。</summary>
+    /// <summary>是否计划的恢复退出。</summary>
     private bool plannedRecoveryExit;
-    /// <summary>中文含义：玩家退出请求的时间。使用位置：LeonQTECoordinator.RequestPlayerRecoveryExit()、LeonQTECoordinator.Update()。</summary>
+    /// <summary>玩家退出请求的时间。</summary>
     private float playerExitRequestedTime;
-    /// <summary>中文含义：敌人结束是否已经申请。使用位置：LeonQTECoordinator.FinishCleanup(QTEResult, QTECancelReason)、LeonQTECoordinator.ForceReleasePlayerFromResult(int)、LeonQTECoordinator.HandleParticipantActionCompleted(int, EnemyQTEAction, int) 等共 8 处。</summary>
+    /// <summary>敌人结束是否已经申请。</summary>
     private bool enemyEndRequested;
-    /// <summary>中文含义：敌人结束请求的时间。使用位置：LeonQTECoordinator.RequestEnemyEnd()、LeonQTECoordinator.Update()。</summary>
+    /// <summary>敌人结束请求的时间。</summary>
     private float enemyEndRequestedTime;
-    /// <summary>中文含义：清理会话编号。使用位置：LeonQTECoordinator.FinishCleanup(QTEResult, QTECancelReason)、LeonQTECoordinator.TryStart(QTEKind, IEnemyQTEParticipant, out int)。</summary>
+    /// <summary>清理会话编号。</summary>
     private int cleanupSessionId;
-    /// <summary>中文含义：生效体术目标。使用位置：LeonQTECoordinator.CancelBodyTechniqueIfActive()、LeonQTECoordinator.ClearBodyTechniqueSession()、LeonQTECoordinator.HandleBodyTechniqueHit(int, FullBodyActionType) 等共 4 处。</summary>
+    /// <summary>生效体术目标。</summary>
     private VillagerQTEParticipant activeBodyTechniqueTarget;
-    /// <summary>中文含义：生效体术会话编号。使用位置：作为 VillagerQTEParticipant.CancelBodyTechnique(int) 的参数、LeonQTECoordinator.CancelBodyTechniqueIfActive()、LeonQTECoordinator.ClearBodyTechniqueSession() 等共 8 处。</summary>
+    /// <summary>生效体术会话编号。</summary>
     private int activeBodyTechniqueSessionId;
-    /// <summary>中文含义：活动会话武器。使用位置：作为 LeonQTECoordinator.CanRestoreWeapon(WeaponType) 的参数、LeonQTECoordinator.ResolveQTEExitWeapon()、LeonQTECoordinator.TryStart(QTEKind, IEnemyQTEParticipant, out int)。</summary>
+    /// <summary>活动会话武器。</summary>
     private WeaponType activeSessionWeapon = WeaponType.Pistol;
-    /// <summary>中文含义：待处理武器恢复。使用位置：作为 LeonAnimatorDriver.SetWeaponType(WeaponType) 的参数、LeonQTECoordinator.ScheduleWeaponTypeRestore(WeaponType)、LeonQTECoordinator.TryStart(QTEKind, IEnemyQTEParticipant, out int)。</summary>
+    /// <summary>待处理武器恢复。</summary>
     private WeaponType pendingWeaponRestore = WeaponType.Pistol;
-    /// <summary>中文含义：武器恢复是否仍待处理。使用位置：LeonQTECoordinator.RestoreWeaponTypeAfterQTE()、LeonQTECoordinator.ScheduleWeaponTypeRestore(WeaponType)、LeonQTECoordinator.TryStart(QTEKind, IEnemyQTEParticipant, out int)。</summary>
+    /// <summary>武器恢复是否仍待处理。</summary>
     private bool weaponRestorePending;
-    /// <summary>中文含义：武器恢复帧集合。使用位置：LeonQTECoordinator.RestoreWeaponTypeAfterQTE()、LeonQTECoordinator.ScheduleWeaponTypeRestore(WeaponType)、LeonQTECoordinator.TryStart(QTEKind, IEnemyQTEParticipant, out int)。</summary>
+    /// <summary>武器恢复帧集合。</summary>
     private int weaponRestoreFrames;
-    /// <summary>中文含义：暗杀小刀视觉表现是否生效。使用位置：LeonQTECoordinator.EndAssassinationKnifeVisualIfNeeded()、LeonQTECoordinator.LateUpdate()、LeonQTECoordinator.SetAssassinationKnifeVisualIfNeeded(QTEKind)。</summary>
+    /// <summary>暗杀小刀视觉表现是否生效。</summary>
     private bool assassinationKnifeVisualActive;
-    /// <summary>中文含义：配对动作挣脱循环句柄。使用位置：作为 AudioManager.Stop(AudioPlayHandle) 的参数、LeonQTECoordinator.StartQTEStruggleLoop(AudioEventData)、LeonQTECoordinator.StopQTEStruggleLoop() 等共 4 处。</summary>
+    /// <summary>配对动作挣脱循环句柄。</summary>
     private AudioPlayHandle qteStruggleLoopHandle;
-    /// <summary>中文含义：配对动作成功状态的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。使用位置：LeonQTECoordinator.ApplyResultMotion()、LeonQTECoordinator.CheckPlayerRecoveryThreshold()、LeonQTECoordinator.TryGetPlayerResultNormalizedTime(bool, out float)。</summary>
+    /// <summary>配对动作成功状态的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly int HashQTESuccessState = Animator.StringToHash("QTESuccess");
-    /// <summary>中文含义：配对动作失败状态的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。使用位置：LeonQTECoordinator.ApplyResultMotion()、LeonQTECoordinator.TryGetPlayerResultNormalizedTime(bool, out float)。</summary>
+    /// <summary>配对动作失败状态的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly int HashQTEFailState = Animator.StringToHash("QTEFail");
-    /// <summary>中文含义：武器类型的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。使用位置：作为 Animator.GetFloat(int) 的参数、LeonQTECoordinator.EnsureWeaponParameterCache()。</summary>
+    /// <summary>武器类型的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly int HashWeaponType = Animator.StringToHash("WeaponType");
-    /// <summary>中文含义：小刀模式的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。使用位置：作为 Animator.GetFloat(int) 的参数、LeonQTECoordinator.EnsureWeaponParameterCache()。</summary>
+    /// <summary>小刀模式的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly int HashKnifeMode = Animator.StringToHash("KnifeMode");
-    /// <summary>中文含义：碰撞配对集合。只读字段，初始化后不由普通写入口替换。使用位置：LeonQTECoordinator.IgnorePairCollisions(IEnemyQTEParticipant)、LeonQTECoordinator.RestorePairCollisions()。</summary>
+    /// <summary>碰撞配对集合。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly List<CollisionPair> collisionPairs = new List<CollisionPair>();
-    /// <summary>中文含义：配对动作会话已开始时的通知回调。事件通信成员 OnQTESessionStarted，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。使用位置：LeonQTECoordinator.TryStart(QTEKind, IEnemyQTEParticipant, out int)、QTECameraPresenter.BindEvents()、QTECameraPresenter.UnbindEvents() 等共 5 处。</summary>
+    /// <summary>配对动作会话已开始时的通知回调。事件通信成员 OnQTESessionStarted，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。</summary>
     public event Action<int, QTEKind> OnQTESessionStarted;
-    /// <summary>中文含义：配对动作阶段变化时的通知回调。事件通信成员 OnQTEPhaseChanged，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。使用位置：LeonQTECoordinator.ChangePhase(QTEPhase)、QTECameraPresenter.BindEvents()、QTECameraPresenter.UnbindEvents() 等共 5 处。</summary>
+    /// <summary>配对动作阶段变化时的通知回调。事件通信成员 OnQTEPhaseChanged，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。</summary>
     public event Action<int, QTEPhase> OnQTEPhaseChanged;
-    /// <summary>中文含义：配对动作撕咬接触时的通知回调。事件通信成员 OnQTEBiteContact，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。使用位置：LeonQTECoordinator.HandleBiteContact(int)、QTECameraPresenter.BindEvents()、QTECameraPresenter.UnbindEvents()。</summary>
+    /// <summary>配对动作撕咬接触时的通知回调。事件通信成员 OnQTEBiteContact，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。</summary>
     public event Action<int> OnQTEBiteContact;
-    /// <summary>中文含义：配对动作暗杀接触时的通知回调。事件通信成员 OnQTEAssassinationContact，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。使用位置：LeonQTECoordinator.HandleAssassinationContact(int)、QTECameraPresenter.BindEvents()、QTECameraPresenter.UnbindEvents()。</summary>
+    /// <summary>配对动作暗杀接触时的通知回调。事件通信成员 OnQTEAssassinationContact，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。</summary>
     public event Action<int> OnQTEAssassinationContact;
-    /// <summary>中文含义：配对动作进度变化时的通知回调。事件通信成员 OnQTEProgressChanged，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。使用位置：LeonQTECoordinator.PublishProgress()、QTEPromptView.BindEvents()、QTEPromptView.UnbindEvents()。</summary>
+    /// <summary>配对动作进度变化时的通知回调。事件通信成员 OnQTEProgressChanged，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。</summary>
     public event Action<QTEProgressInfo> OnQTEProgressChanged;
-    /// <summary>中文含义：配对动作会话已结束时的通知回调。事件通信成员 OnQTESessionEnded，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。使用位置：LeonQTECoordinator.FinishCleanup(QTEResult, QTECancelReason)、QTECameraPresenter.BindEvents()、QTECameraPresenter.UnbindEvents() 等共 5 处。</summary>
+    /// <summary>配对动作会话已结束时的通知回调。事件通信成员 OnQTESessionEnded，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。</summary>
     public event Action<QTESessionEndInfo> OnQTESessionEnded;
-    /// <summary>中文含义：配对动作提示可用性变化时的通知回调。事件通信成员 OnQTEPromptAvailabilityChanged，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。使用位置：LeonQTECoordinator.SetPromptAvailability(bool)、QTEPromptView.BindEvents()、QTEPromptView.UnbindEvents()。</summary>
+    /// <summary>配对动作提示可用性变化时的通知回调。事件通信成员 OnQTEPromptAvailabilityChanged，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。</summary>
     public event Action<bool> OnQTEPromptAvailabilityChanged;
     /// <summary>中文含义：当前会话编号。</summary>
     public int CurrentSessionId => activeSessionId;
     /// <summary>中文含义：当前阶段。</summary>
     public QTEPhase CurrentPhase => phase;
-    /// <summary>中文含义：上一次拒绝原因。使用位置：作为 VillagerQTEParticipant.RecordQTERejection(QTECancelReason, QTEKind) 的参数。</summary>
+    /// <summary>上一次拒绝原因。</summary>
     public QTECancelReason LastRejectionReason => lastRejectionReason;
-    /// <summary>中文含义：是否生效。使用位置：LeonQTECoordinator.BlocksOrdinaryDamage.get、LeonQTECoordinator.CanQueryAssassinationPrompt()、LeonQTECoordinator.CanQueryBodyTechniquePrompt() 等共 15 处。</summary>
+    /// <summary>是否生效。</summary>
     public bool IsActive => activeSessionId != 0;
     /// <summary>中文含义：上一次结束信息。</summary>
     public QTESessionEndInfo LastEndInfo => lastEndInfo;
     /// <summary>中文含义：玩家操作是否被锁定。</summary>
     public bool IsPlayerControlLocked => IsActive && !playerReleased;
-    /// <summary>中文含义：是否阻断项普通伤害。使用位置：LeonController.ApplyDamage(float, Vector3, LeonHitDirection)。</summary>
+    /// <summary>是否阻断项普通伤害。</summary>
     public bool BlocksOrdinaryDamage => IsActive && !playerReleased;
-    /// <summary>中文含义：是否提示可用。使用位置：作为 QTEPromptView.HandlePromptAvailabilityChanged(bool) 的参数。</summary>
+    /// <summary>是否提示可用。</summary>
     public bool IsPromptAvailable => promptAvailable;
 
     /// <summary>TryGetPromptPresentation 的业务处理入口；本方法直接依赖 LeonQTECoordinator.TryGetBodyTechniquePromptCandidate(out VillagerQTEParticipant, out int)、LeonQTECoordinator.TryGetPromptCandidate(out IEnemyQTEParticipant, out QTEKind)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 QTEPromptView.HandlePromptAvailabilityChanged(bool)、QTEPromptView.HandleSessionStarted(int, QTEKind)、QTEPromptView.LateUpdate()；下游（含内部回调体） LeonQTECoordinator.TryGetBodyTechniquePromptCandidate(out VillagerQTEParticipant, out int)、LeonQTECoordinator.TryGetPromptCandidate(out IEnemyQTEParticipant, out QTEKind)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="targetRoot">中文含义：目标根节点。输出参数，由本入口写入并交给调用方。使用位置：LeonQTECoordinator.TryGetPromptPresentation(out Transform, out string)。</param>
-    /// <param name="actionText">中文含义：动作文字。输出参数，由本入口写入并交给调用方。使用位置：LeonQTECoordinator.TryGetPromptPresentation(out Transform, out string)。</param>
+    /// <param name="targetRoot">目标根节点。输出参数，由本入口写入并交给调用方。</param>
+    /// <param name="actionText">动作文字。输出参数，由本入口写入并交给调用方。</param>
     public bool TryGetPromptPresentation(out Transform targetRoot, out string actionText)
     {
         targetRoot = null;
@@ -236,7 +243,14 @@ public partial class LeonQTECoordinator : MonoBehaviour
             targetRoot = participant.Root;
             if (activeKind == QTEKind.KnifeAssassination)
             {
-                actionText = "暗杀";
+                if (assassinationTriggeredFromStagger)
+                {
+                    actionText = "背刺";
+                }
+                else
+                {
+                    actionText = "暗杀";
+                }
             }
             else
             {
@@ -257,6 +271,12 @@ public partial class LeonQTECoordinator : MonoBehaviour
         {
             targetRoot = assassinationTarget.Root;
             actionText = "暗杀";
+            if (assassinationTarget is VillagerQTEParticipant assassinationVillager
+                && assassinationVillager.controller != null
+                && assassinationVillager.controller.CanBeStaggerBackstabbedBy(controller))
+            {
+                actionText = "背刺";
+            }
             return true;
         }
 
@@ -277,8 +297,8 @@ public partial class LeonQTECoordinator : MonoBehaviour
     /// 会话结束或编号不匹配时不会返回已经释放的敌人引用。
     /// </summary>
     /// <remarks>静态调用链：上游 QTECameraPresenter.HandleSessionStarted(int, QTEKind)；下游（含内部回调体） QTESessionContext.QTESessionContext(int, QTEKind, Transform, Animator, Transform, Animator)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="sessionId">中文含义：会话编号。使用位置：LeonQTECoordinator.TryGetSessionContext(int, out QTESessionContext)。</param>
-    /// <param name="context">中文含义：上下文。输出参数，由本入口写入并交给调用方。使用位置：LeonQTECoordinator.TryGetSessionContext(int, out QTESessionContext)。</param>
+    /// <param name="sessionId">会话编号。</param>
+    /// <param name="context">上下文。输出参数，由本入口写入并交给调用方。</param>
     public bool TryGetSessionContext(int sessionId, out QTESessionContext context)
     {
         if (sessionId == 0 || sessionId != activeSessionId || participant == null || participant.Root == null)
@@ -406,13 +426,22 @@ public partial class LeonQTECoordinator : MonoBehaviour
             return;
         }
 
-        if (participant == null || (!participant.IsAlive && !((activeKind == QTEKind.KnifeAssassination || activeKind == QTEKind.GroundFinisher) && pendingResult == QTEResult.Success)))
+        bool allowDeadParticipant = pendingResult == QTEResult.Success
+            && (activeKind == QTEKind.KnifeAssassination
+                || activeKind == QTEKind.GroundFinisher
+                || (activeKind == QTEKind.FrontGrab && playingFrontGrabStab));
+        if (participant == null || (!participant.IsAlive && !allowDeadParticipant))
         {
             Cancel(activeSessionId, QTECancelReason.EnemyDied);
             return;
         }
 
         if (cleanupRunning)
+        {
+            return;
+        }
+
+        if (activeKind == QTEKind.FrontGrab && UpdateFrontGrabChoice())
         {
             return;
         }
@@ -483,18 +512,24 @@ public partial class LeonQTECoordinator : MonoBehaviour
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） Component.GetComponent&lt;LeonWeaponVisualController&gt;()、LeonQTECoordinator.RestoreWeaponTypeAfterQTE()、LeonWeaponVisualController.SetKnifeModeVisible(bool)、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     void LateUpdate()
     {
+        PresentFrontGrabEscape();
         DispatchNativePairContact();
         RestoreWeaponTypeAfterQTE();
         UpdatePromptAvailability();
         // 配对动画可能重写渲染器开关，因此在每帧动画求值后重申小刀可见。
-        if (assassinationKnifeVisualActive && IsActive)
+        bool frontGrabKnifeHidden = activeKind == QTEKind.FrontGrab
+            && playingFrontGrabStab
+            && nativePair != null
+            && frontGrabMotion != null
+            && nativePair.SourceFrame >= frontGrabMotion.knifeHideFrame;
+        if (assassinationKnifeVisualActive && IsActive && !frontGrabKnifeHidden)
         {
             if (weaponVisualController == null)
             {
                 weaponVisualController = GetComponent<LeonWeaponVisualController>();
             }
 
-            // receiverValue2（判空前缓存的武器视觉表现控制器）：从武器视觉表现控制器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonQTECoordinator.LateUpdate()。
+            // 判空前缓存的武器视觉表现控制器。
 global::LeonWeaponVisualController receiverValue2 = weaponVisualController;
             if (!global::System.Object.ReferenceEquals(receiverValue2, null))
             {
@@ -559,9 +594,9 @@ global::LeonWeaponVisualController receiverValue2 = weaponVisualController;
     /// 检查交接资格，不登记会话，也不改变角色或动画状态。
     /// </summary>
     /// <remarks>静态调用链：上游 EnemyAIManager.IsQTERequestEligible(VillagerController, QTEKind)、LeonQTECoordinator.TryStart(QTEKind, IEnemyQTEParticipant, out int)；下游（含内部回调体） IEnemyQTEParticipant.CanStart(LeonController, QTEKind, out QTECancelReason)、LeonQTEConfig.GetVariant(QTEKind)、LeonQTECoordinator.ValidatePairing(IEnemyQTEParticipant, QTEKind, out QTECancelReason)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="kind">中文含义：种类。使用位置：作为 IEnemyQTEParticipant.CanStart(LeonController, QTEKind, out QTECancelReason) 的参数、作为 LeonQTEConfig.GetVariant(QTEKind) 的参数、作为 LeonQTECoordinator.ValidatePairing(IEnemyQTEParticipant, QTEKind, out QTECancelReason) 的参数 等共 4 处。</param>
-    /// <param name="targetParticipant">中文含义：目标参与者。使用位置：作为 LeonQTECoordinator.ValidatePairing(IEnemyQTEParticipant, QTEKind, out QTECancelReason) 的参数、LeonQTECoordinator.CanStart(QTEKind, IEnemyQTEParticipant, out QTECancelReason)。</param>
-    /// <param name="reason">中文含义：原因。输出参数，由本入口写入并交给调用方。使用位置：作为 IEnemyQTEParticipant.CanStart(LeonController, QTEKind, out QTECancelReason) 的参数、作为 LeonQTECoordinator.ValidatePairing(IEnemyQTEParticipant, QTEKind, out QTECancelReason) 的参数、LeonQTECoordinator.CanStart(QTEKind, IEnemyQTEParticipant, out QTECancelReason)。</param>
+    /// <param name="kind">种类。</param>
+    /// <param name="targetParticipant">目标参与者。</param>
+    /// <param name="reason">原因。输出参数，由本入口写入并交给调用方。</param>
     public bool CanStart(QTEKind kind, IEnemyQTEParticipant targetParticipant, out QTECancelReason reason)
     {
         if (kind == QTEKind.LegBite)
@@ -595,7 +630,7 @@ global::LeonWeaponVisualController receiverValue2 = weaponVisualController;
             return false;
         }
 
-        // variant（变体）：保存 LeonQTEConfig.GetVariant(QTEKind) 的返回结果，供当前步骤使用。使用位置：LeonQTECoordinator.CanStart(QTEKind, IEnemyQTEParticipant, out QTECancelReason)。
+        // 变体。
 QTEAnimationVariant variant = config.GetVariant(kind);
         if (variant == null || (kind != QTEKind.FrontGrab && kind != QTEKind.GroundFinisher && !variant.IsComplete))
         {
@@ -610,9 +645,9 @@ QTEAnimationVariant variant = config.GetVariant(kind);
     /// 发起快速反应事件。
     /// </summary>
     /// <remarks>静态调用链：上游 LeonQTECoordinator.TryStartNearestPrompt(out int)、TryStartEnemyQTEBase.OnUpdate()、TryStartFrontGrabQTE.TryStartStandingGrab(LeonQTECoordinator, QTEKind)、VillagerQTEParticipant.TryStartLegBiteFromAI(LeonController)；下游（含内部回调体） Action&lt;int, QTEKind&gt;.Invoke(int, QTEKind)、IEnemyQTEParticipant.ApplyAnimationVariant(QTEAnimationVariant)、IEnemyQTEParticipant.TryAcquire(int, QTEKind)、LeonAnimationActionCoordinator.ApplyQTEAnimationVariant(QTEAnimationVariant)、LeonAnimationActionCoordinator.ClearQTEAnimationVariant()、LeonController.PrepareForQTE()、LeonInputBridge.EnterQTEInput(int) 等共 23 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="kind">中文含义：种类。使用位置：作为 Action&lt;int, QTEKind&gt;.Invoke(int, QTEKind) 的参数、作为 IEnemyQTEParticipant.TryAcquire(int, QTEKind) 的参数、作为 LeonQTEConfig.GetVariant(QTEKind) 的参数 等共 6 处。</param>
-    /// <param name="targetParticipant">中文含义：目标参与者。使用位置：作为 LeonQTECoordinator.CanStart(QTEKind, IEnemyQTEParticipant, out QTECancelReason) 的参数、作为 LeonQTECoordinator.IgnorePairCollisions(IEnemyQTEParticipant) 的参数、作为 LeonQTECoordinator.SubscribeParticipant(IEnemyQTEParticipant) 的参数 等共 5 处。</param>
-    /// <param name="sessionId">中文含义：会话编号。输出参数，由本入口写入并交给调用方。使用位置：LeonQTECoordinator.TryStart(QTEKind, IEnemyQTEParticipant, out int)。</param>
+    /// <param name="kind">种类。</param>
+    /// <param name="targetParticipant">目标参与者。</param>
+    /// <param name="sessionId">会话编号。输出参数，由本入口写入并交给调用方。</param>
     public bool TryStart(QTEKind kind, IEnemyQTEParticipant targetParticipant, out int sessionId)
     {
         sessionId = 0;
@@ -622,9 +657,9 @@ QTEAnimationVariant variant = config.GetVariant(kind);
             return Reject(reason);
         }
 
-        // variant（变体）：保存 LeonQTEConfig.GetVariant(QTEKind) 的返回结果，供当前步骤使用。使用位置：作为 IEnemyQTEParticipant.ApplyAnimationVariant(QTEAnimationVariant) 的参数、作为 LeonAnimationActionCoordinator.ApplyQTEAnimationVariant(QTEAnimationVariant) 的参数、LeonQTECoordinator.TryStart(QTEKind, IEnemyQTEParticipant, out int)。
+        // 变体。
 QTEAnimationVariant variant = config.GetVariant(kind);
-        // newSessionId（新会话编号）：使用位置：作为 Action<int, QTEKind>.Invoke(int, QTEKind) 的参数、作为 IEnemyQTEParticipant.TryAcquire(int, QTEKind) 的参数、作为 LeonInputBridge.EnterQTEInput(int) 的参数 等共 6 处。
+        // 新会话编号。
 int newSessionId = ++globalSessionSequence;
         if (newSessionId <= 0)
         {
@@ -637,6 +672,18 @@ int newSessionId = ++globalSessionSequence;
         DisposeNativePairFade();
         activeKind = kind;
         sessionStartedCrouching = controller.IsCrouching;
+        assassinationTriggeredFromStagger = false;
+        if (kind == QTEKind.KnifeAssassination)
+        {
+            if (targetParticipant is VillagerQTEParticipant staggerVillager && staggerVillager.controller != null)
+            {
+                assassinationTriggeredFromStagger = staggerVillager.controller.CanBeStaggerBackstabbedBy(controller);
+            }
+
+            assassinationLatchTarget = null;
+            assassinationLatchExpiresAt = 0f;
+            assassinationLatchIsStagger = false;
+        }
         activeVariant = variant;
         participant = targetParticipant;
         if (UsesNativeSawPair(kind, targetParticipant) && !TryLoadNativeSawPair(out nativePair))
@@ -645,6 +692,7 @@ int newSessionId = ++globalSessionSequence;
             activeVariant = null;
             activeSessionId = 0;
             globalOwner = null;
+            assassinationTriggeredFromStagger = false;
             return Reject(QTECancelReason.ResourceMissing);
         }
         if (nativePair == null && (useNativeVillagerPairs || config.nativeCameras != null
@@ -657,12 +705,17 @@ int newSessionId = ++globalSessionSequence;
         bool missingGroundFinisher = kind == QTEKind.GroundFinisher
             && !TryLoadGroundFinisher(targetParticipant, out nativePair, out groundFinisherMotion);
         bool missingRearGrab = kind == QTEKind.RearBiteNeck && config.useNativeRearGrab && nativePair == null;
-        if (missingGroundFinisher || missingRearGrab)
+        bool missingSawAssassination = kind == QTEKind.KnifeAssassination && nativePair == null
+            && targetParticipant is VillagerQTEParticipant sawAssassinationTarget
+            && sawAssassinationTarget.controller != null
+            && sawAssassinationTarget.controller.missionEnemyType == MissionEnemyType.Sawman;
+        if (missingGroundFinisher || missingRearGrab || missingSawAssassination)
         {
             participant = null;
             activeVariant = null;
             activeSessionId = 0;
             globalOwner = null;
+            assassinationTriggeredFromStagger = false;
             return Reject(QTECancelReason.ResourceMissing);
         }
         activeSessionWeapon = ResolveCurrentSessionWeapon();
@@ -679,6 +732,7 @@ int newSessionId = ++globalSessionSequence;
         remainingTime = config.inputDuration;
         phaseElapsed = 0f;
         pendingResult = QTEResult.None;
+        temporaryKnifeCarryReturnActive = false;
         damageCommitted = false;
         assassinationCommitted = false;
         assassinationCommittedTime = float.NegativeInfinity;
@@ -689,7 +743,7 @@ int newSessionId = ++globalSessionSequence;
         cleanupSessionId = 0;
         ResetPairFlags();
         SubscribeParticipant(targetParticipant);
-        // variantApplied（是否变体已应用）：使用位置：LeonQTECoordinator.TryStart(QTEKind, IEnemyQTEParticipant, out int)。
+        // 是否变体已应用。
 bool variantApplied;
         if (variant.IsComplete && nativePair == null)
         {
@@ -764,7 +818,7 @@ bool variantApplied;
 
         SetPromptAvailability(false);
         ChangePhase(QTEPhase.Requested);
-        // receiverValue4（判空前缓存的配对动作会话已开始时的通知回调）：从配对动作会话已开始时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonQTECoordinator.TryStart(QTEKind, IEnemyQTEParticipant, out int)。
+        // 判空前缓存的配对动作会话已开始时的通知回调。
 global::System.Action<int, global::QTEKind> receiverValue4 = OnQTESessionStarted;
         if (!global::System.Object.ReferenceEquals(receiverValue4, null))
         {
@@ -789,7 +843,7 @@ global::System.Action<int, global::QTEKind> receiverValue4 = OnQTESessionStarted
 
     /// <summary>SubmitEscapePress 的业务处理入口；本方法直接依赖 LeonQTECoordinator.DecideResult(bool)、LeonQTECoordinator.PublishProgress()、Mathf.Min(int, int)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonInputBridge.OnEscapePress(InputAction.CallbackContext)；下游（含内部回调体） LeonQTECoordinator.DecideResult(bool)、LeonQTECoordinator.PublishProgress()、Mathf.Min(int, int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="sessionId">中文含义：会话编号。使用位置：LeonQTECoordinator.SubmitEscapePress(int)。</param>
+    /// <param name="sessionId">会话编号。</param>
     public bool SubmitEscapePress(int sessionId)
     {
         return SubmitEscapePress(sessionId, Time.timeAsDouble);
@@ -812,7 +866,7 @@ global::System.Action<int, global::QTEKind> receiverValue4 = OnQTESessionStarted
             return true;
         }
 
-        if (phase != QTEPhase.WaitingForInput)
+        if (phase != QTEPhase.WaitingForInput || (activeKind == QTEKind.FrontGrab && !FrontGrabInputOpen))
         {
             return false;
         }
@@ -835,7 +889,11 @@ global::System.Action<int, global::QTEKind> receiverValue4 = OnQTESessionStarted
         PublishProgress();
         if (pressCount >= config.requiredPresses)
         {
-            if (nativePair != null)
+            if (activeKind == QTEKind.FrontGrab)
+            {
+                QueueFrontGrabManualEscape();
+            }
+            else if (nativePair != null)
             {
                 nativePair.QueueEscape();
             }
@@ -850,8 +908,8 @@ global::System.Action<int, global::QTEKind> receiverValue4 = OnQTESessionStarted
 
     /// <summary>Cancel 的业务处理入口；本方法直接依赖 LeonAnimationActionCoordinator.CancelQTE(int)、LeonQTECoordinator.ChangePhase(QTEPhase)、LeonQTECoordinator.FinishCleanup(QTEResult, QTECancelReason)、MonoBehaviour.StopCoroutine(Coroutine)、object.ReferenceEquals(object, object)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonController.TryApplyQTEFailureDamage(int, float, Vector3, Vector3)、LeonQTECoordinator.AlignAndEnter(int)、LeonQTECoordinator.BeginResult(bool)、LeonQTECoordinator.HandleParticipantInvalidated(int, QTECancelReason)、LeonQTECoordinator.HandlePlayerActionInterrupted(AnimationActionTransaction) 等共 11 处；下游（含内部回调体） LeonAnimationActionCoordinator.CancelQTE(int)、LeonQTECoordinator.ChangePhase(QTEPhase)、LeonQTECoordinator.FinishCleanup(QTEResult, QTECancelReason)、MonoBehaviour.StopCoroutine(Coroutine)、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="sessionId">中文含义：会话编号。使用位置：作为 LeonAnimationActionCoordinator.CancelQTE(int) 的参数、LeonQTECoordinator.Cancel(int, QTECancelReason)。</param>
-    /// <param name="reason">中文含义：原因。使用位置：作为 LeonQTECoordinator.FinishCleanup(QTEResult, QTECancelReason) 的参数。</param>
+    /// <param name="sessionId">会话编号。</param>
+    /// <param name="reason">原因。</param>
     public void Cancel(int sessionId, QTECancelReason reason)
     {
         if (sessionId == 0 || sessionId != activeSessionId)
@@ -870,9 +928,9 @@ global::System.Action<int, global::QTEKind> receiverValue4 = OnQTESessionStarted
             ChangePhase(QTEPhase.Cancelled);
         }
 
-        // receiverValue5（判空前缓存的动画协调器）：从动画协调器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonQTECoordinator.Cancel(int, QTECancelReason)。
+        // 判空前缓存的动画协调器。
 global::LeonAnimationActionCoordinator receiverValue5 = animationCoordinator;
-        // optionalValue6（条件访问得到的取消配对动作的返回结果）：保存条件访问的结果，接收者为空时保持默认空值，非空时才执行原成员访问。使用位置：LeonQTECoordinator.Cancel(int, QTECancelReason)。
+        // 条件访问得到的取消配对动作的返回结果。
 bool? optionalValue6;
         if (!global::System.Object.ReferenceEquals(receiverValue5, null))
         {
@@ -890,7 +948,7 @@ bool? optionalValue6;
     /// 由里昂生命值入口调用并一次性消费失败伤害许可。
     /// </summary>
     /// <remarks>静态调用链：上游 LeonController.TryApplyQTEFailureDamage(int, float, Vector3, Vector3)；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="sessionId">中文含义：会话编号。使用位置：LeonQTECoordinator.TryConsumeFailureDamageAuthorization(int)。</param>
+    /// <param name="sessionId">会话编号。</param>
     public bool TryConsumeFailureDamageAuthorization(int sessionId)
     {
         if (sessionId != activeSessionId || damageCommitted)
@@ -909,21 +967,21 @@ bool? optionalValue6;
 
     /// <summary>AlignAndEnter 的业务处理入口；本方法直接依赖 IEnemyQTEParticipant.BeginAction(int, EnemyQTEAction)、LeonAnimationActionCoordinator.RequestQTE(int)、LeonQTECoordinator.Cancel(int, QTECancelReason)、LeonQTECoordinator.ChangePhase(QTEPhase)、LeonQTECoordinator.IsPairingSpaceBlocked(Vector3, IEnemyQTEParticipant)、LeonQTECoordinator.ResetPairFlags()、LeonQTECoordinator.SetParticipantWorldPose(Transform, Vector3, Quaternion) 等共 13 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonQTECoordinator.TryStart(QTEKind, IEnemyQTEParticipant, out int)；下游（含内部回调体） IEnemyQTEParticipant.BeginAction(int, EnemyQTEAction)、LeonAnimationActionCoordinator.RequestQTE(int)、LeonQTECoordinator.Cancel(int, QTECancelReason)、LeonQTECoordinator.ChangePhase(QTEPhase)、LeonQTECoordinator.IsPairingSpaceBlocked(Vector3, IEnemyQTEParticipant)、LeonQTECoordinator.ResetPairFlags()、LeonQTECoordinator.SetParticipantWorldPose(Transform, Vector3, Quaternion) 等共 13 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="sessionId">中文含义：会话编号。使用位置：作为 IEnemyQTEParticipant.BeginAction(int, EnemyQTEAction) 的参数、作为 LeonAnimationActionCoordinator.RequestQTE(int) 的参数、作为 LeonQTECoordinator.Cancel(int, QTECancelReason) 的参数 等共 4 处。</param>
+    /// <param name="sessionId">会话编号。</param>
     private IEnumerator AlignAndEnter(int sessionId)
     {
         ChangePhase(QTEPhase.Aligning);
-        // enemyRoot（敌人根节点）：使用位置：作为 LeonQTECoordinator.SetParticipantWorldPose(Transform, Vector3, Quaternion) 的参数、LeonQTECoordinator.AlignAndEnter(int)。
+        // 敌人根节点。
 Transform enemyRoot = participant.Root;
-        // enemyStartPosition（敌人起始位置）：使用位置：作为 LeonQTECoordinator.SetParticipantWorldPose(Transform, Vector3, Quaternion) 的参数、LeonQTECoordinator.AlignAndEnter(int)。
+        // 敌人起始位置。
 Vector3 enemyStartPosition = enemyRoot.position;
-        // enemyStartRotation（敌人起始旋转）：使用位置：作为 Quaternion.Slerp(Quaternion, Quaternion, float) 的参数。
+        // 敌人起始旋转。
 Quaternion enemyStartRotation = enemyRoot.rotation;
-        // playerStartPosition（玩家起始位置）：使用位置：作为 Vector3.Lerp(Vector3, Vector3, float) 的参数。
+        // 玩家起始位置。
 Vector3 playerStartPosition = transform.position;
-        // playerStartRotation（玩家起始旋转）：使用位置：作为 Quaternion.Slerp(Quaternion, Quaternion, float) 的参数。
+        // 玩家起始旋转。
 Quaternion playerStartRotation = transform.rotation;
-        // enemyToPlayer（从敌人指向玩家的方向向量）：使用位置：LeonQTECoordinator.AlignAndEnter(int)。
+        // 从敌人指向玩家的方向向量。
 Vector3 enemyToPlayer = transform.position - enemyRoot.position;
         enemyToPlayer.y = 0f;
         if (enemyToPlayer.sqrMagnitude <= 0.0001f)
@@ -933,13 +991,13 @@ Vector3 enemyToPlayer = transform.position - enemyRoot.position;
         }
 
         enemyToPlayer.Normalize();
-        // sameFacing（是否相同朝向）：使用位置：LeonQTECoordinator.AlignAndEnter(int)。
+        // 是否相同朝向。
 bool sameFacing = activeKind == QTEKind.RearBiteNeck || activeKind == QTEKind.KnifeAssassination;
-        // facing（朝向）：使用位置：LeonQTECoordinator.AlignAndEnter(int)。
+        // 朝向。
 Vector3 facing;
         if (sameFacing)
         {
-            // selectedValue7（分支选出的从敌人指向玩家的方向向量）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：LeonQTECoordinator.AlignAndEnter(int)。
+            // 分支选出的从敌人指向玩家的方向向量。
 global::UnityEngine.Vector3 selectedValue7;
             if (activeKind == QTEKind.KnifeAssassination)
             {
@@ -957,7 +1015,7 @@ global::UnityEngine.Vector3 selectedValue7;
             facing = enemyToPlayer;
         }
 
-        // selectedValue9（分支选出的朝向）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：作为 Quaternion.LookRotation(Vector3, Vector3) 的参数、LeonQTECoordinator.AlignAndEnter(int)。
+        // 分支选出的朝向。
 global::UnityEngine.Vector3 selectedValue9;
         if (activeKind == QTEKind.KnifeAssassination)
         {
@@ -968,9 +1026,9 @@ global::UnityEngine.Vector3 selectedValue9;
             selectedValue9 = enemyToPlayer;
         }
 
-        // enemyTargetRotation（敌人目标旋转）：保存 Quaternion.LookRotation(Vector3, Vector3) 的返回结果，供当前步骤使用。使用位置：作为 LeonQTECoordinator.SetParticipantWorldPose(Transform, Vector3, Quaternion) 的参数、作为 Quaternion.Slerp(Quaternion, Quaternion, float) 的参数。
+        // 敌人目标旋转。
 Quaternion enemyTargetRotation = Quaternion.LookRotation(selectedValue9, Vector3.up);
-        // selectedValue10（分支选出的朝向）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：作为 Quaternion.LookRotation(Vector3, Vector3) 的参数、LeonQTECoordinator.AlignAndEnter(int)。
+        // 分支选出的朝向。
 global::UnityEngine.Vector3 selectedValue10;
         if (sameFacing)
         {
@@ -981,9 +1039,9 @@ global::UnityEngine.Vector3 selectedValue10;
             selectedValue10 = -enemyToPlayer;
         }
 
-        // playerTargetRotation（玩家目标旋转）：保存 Quaternion.LookRotation(Vector3, Vector3) 的返回结果，供当前步骤使用。使用位置：作为 LeonQTECoordinator.SetPlayerWorldPose(Vector3, Quaternion) 的参数、作为 Quaternion.Slerp(Quaternion, Quaternion, float) 的参数。
+        // 玩家目标旋转。
 Quaternion playerTargetRotation = Quaternion.LookRotation(selectedValue10, Vector3.up);
-        // pairingDistance（配对中距离）：使用位置：LeonQTECoordinator.AlignAndEnter(int)。
+        // 配对中距离。
 float pairingDistance;
         if (activeVariant != null && activeVariant.pairingDistance > 0f)
         {
@@ -994,7 +1052,7 @@ float pairingDistance;
             pairingDistance = config.pairingDistance;
         }
 
-        // playerTargetPosition（玩家目标位置）：使用位置：作为 LeonQTECoordinator.IsPairingSpaceBlocked(Vector3, IEnemyQTEParticipant) 的参数、作为 LeonQTECoordinator.SetPlayerWorldPose(Vector3, Quaternion) 的参数、作为 Vector3.Lerp(Vector3, Vector3, float) 的参数 等共 4 处。
+        // 玩家目标位置。
 Vector3 playerTargetPosition;
         if (activeKind == QTEKind.KnifeAssassination)
         {
@@ -1012,7 +1070,7 @@ Vector3 playerTargetPosition;
             yield break;
         }
 
-        // elapsed（已用）：使用位置：作为 Mathf.Clamp01(float) 的参数、LeonQTECoordinator.AlignAndEnter(int)。
+        // 已用。
 float elapsed = 0f;
         while (elapsed < config.alignmentDuration)
         {
@@ -1022,9 +1080,9 @@ float elapsed = 0f;
             }
 
             elapsed += Time.deltaTime;
-            // t（配对双方对齐阶段的归一化进度）：保存 Mathf.Clamp01(float) 的返回结果，供当前步骤使用。使用位置：LeonQTECoordinator.AlignAndEnter(int)。
+            // 配对双方对齐阶段的归一化进度。
 float t = Mathf.Clamp01(elapsed / config.alignmentDuration);
-            // smooth（平滑）：使用位置：作为 Quaternion.Slerp(Quaternion, Quaternion, float) 的参数、作为 Vector3.Lerp(Vector3, Vector3, float) 的参数。
+            // 平滑。
 float smooth = t * t * (3f - 2f * t);
             SetPlayerWorldPose(Vector3.Lerp(playerStartPosition, playerTargetPosition, smooth), Quaternion.Slerp(playerStartRotation, playerTargetRotation, smooth));
             SetParticipantWorldPose(enemyRoot, enemyStartPosition, Quaternion.Slerp(enemyStartRotation, enemyTargetRotation, smooth));
@@ -1053,7 +1111,7 @@ float smooth = t * t * (3f - 2f * t);
 
     /// <summary>HandlePlayerActionCompleted 的业务处理入口；本方法直接依赖 LeonQTECoordinator.MatchesCurrentPlayerAction(FullBodyActionType)、LeonQTECoordinator.TryAdvanceAfterPairCompletion()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） LeonQTECoordinator.MatchesCurrentPlayerAction(FullBodyActionType)、LeonQTECoordinator.TryAdvanceAfterPairCompletion()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="transaction">中文含义：事务。使用位置：作为 LeonQTECoordinator.MatchesCurrentPlayerAction(FullBodyActionType) 的参数、LeonQTECoordinator.HandlePlayerActionCompleted(AnimationActionTransaction)。</param>
+    /// <param name="transaction">事务。</param>
     private void HandlePlayerActionCompleted(AnimationActionTransaction transaction)
     {
         if (!IsActive || transaction.qteSessionId != activeSessionId)
@@ -1072,8 +1130,8 @@ float smooth = t * t * (3f - 2f * t);
 
     /// <summary>HandleParticipantActionCompleted 的业务处理入口；本方法直接依赖 LeonQTECoordinator.CommitAssassination(int)、LeonQTECoordinator.MatchesCurrentEnemyAction(EnemyQTEAction)、LeonQTECoordinator.RequestEnemyEnd()、LeonQTECoordinator.TryAdvanceAfterPairCompletion()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） LeonQTECoordinator.CommitAssassination(int)、LeonQTECoordinator.MatchesCurrentEnemyAction(EnemyQTEAction)、LeonQTECoordinator.RequestEnemyEnd()、LeonQTECoordinator.TryAdvanceAfterPairCompletion()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="sessionId">中文含义：会话编号。使用位置：作为 LeonQTECoordinator.CommitAssassination(int) 的参数、LeonQTECoordinator.HandleParticipantActionCompleted(int, EnemyQTEAction, int)。</param>
-    /// <param name="action">中文含义：动作。使用位置：作为 LeonQTECoordinator.MatchesCurrentEnemyAction(EnemyQTEAction) 的参数、LeonQTECoordinator.HandleParticipantActionCompleted(int, EnemyQTEAction, int)。</param>
+    /// <param name="sessionId">会话编号。</param>
+    /// <param name="action">动作。</param>
     /// <param name="sequence">中文含义：序号。</param>
     private void HandleParticipantActionCompleted(int sessionId, EnemyQTEAction action, int sequence)
     {
@@ -1120,7 +1178,7 @@ float smooth = t * t * (3f - 2f * t);
             return;
         }
 
-        // sessionId（会话编号）：使用位置：作为 Debug.LogWarning(object) 的参数、作为 IEnemyQTEParticipant.BeginAction(int, EnemyQTEAction) 的参数、作为 IEnemyQTEParticipant.EndAction(int) 的参数 等共 9 处。
+        // 会话编号。
 int sessionId = activeSessionId;
         if (phase == QTEPhase.Entering && expectedPlayerAction == FullBodyActionType.QTEEnter)
         {
@@ -1137,9 +1195,9 @@ int sessionId = activeSessionId;
                 return;
             }
 
-            // playerAdvanced（是否玩家推进后的）：保存 LeonAnimationActionCoordinator.AdvanceQTEPhase(int, FullBodyActionType) 的返回结果，供当前步骤使用。使用位置：LeonQTECoordinator.TryAdvanceAfterPairCompletion()。
+            // 是否玩家推进后的。
 bool playerAdvanced = animationCoordinator.AdvanceQTEPhase(sessionId, FullBodyActionType.QTEHold);
-            // enemyAdvanced（是否敌人推进后的）：保存 IEnemyQTEParticipant.BeginAction(int, EnemyQTEAction) 的返回结果，供当前步骤使用。使用位置：LeonQTECoordinator.TryAdvanceAfterPairCompletion()。
+            // 是否敌人推进后的。
 bool enemyAdvanced = participant.BeginAction(sessionId, EnemyQTEAction.Hold);
             if (!playerAdvanced || !enemyAdvanced)
             {
@@ -1179,9 +1237,9 @@ bool enemyAdvanced = participant.BeginAction(sessionId, EnemyQTEAction.Hold);
 
             ResetPairFlags();
             ChangePhase(QTEPhase.Exiting);
-            // playerEnding（是否玩家结束中）：保存 LeonAnimationActionCoordinator.CompleteQTE(int) 的返回结果，供当前步骤使用。使用位置：LeonQTECoordinator.TryAdvanceAfterPairCompletion()。
+            // 是否玩家结束中。
 bool playerEnding = animationCoordinator.CompleteQTE(sessionId);
-            // enemyEnding（是否敌人结束中）：保存 IEnemyQTEParticipant.EndAction(int) 的返回结果，供当前步骤使用。使用位置：LeonQTECoordinator.TryAdvanceAfterPairCompletion()。
+            // 是否敌人结束中。
 bool enemyEnding = participant.EndAction(sessionId);
             if (!playerEnding)
             {
@@ -1202,7 +1260,7 @@ bool enemyEnding = participant.EndAction(sessionId);
 
     /// <summary>HandlePlayerActionExited 的业务处理入口；本方法直接依赖 LeonQTECoordinator.HandleEnemySuccessExit(int)、LeonQTECoordinator.IsCommittedAssassinationSuccess()、LeonQTECoordinator.ReleasePlayer(int)、LeonQTECoordinator.RequestEnemyEnd()、LeonQTECoordinator.TryFinishAfterPairExit()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） LeonQTECoordinator.HandleEnemySuccessExit(int)、LeonQTECoordinator.IsCommittedAssassinationSuccess()、LeonQTECoordinator.ReleasePlayer(int)、LeonQTECoordinator.RequestEnemyEnd()、LeonQTECoordinator.TryFinishAfterPairExit()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="transaction">中文含义：事务。使用位置：LeonQTECoordinator.HandlePlayerActionExited(AnimationActionTransaction)。</param>
+    /// <param name="transaction">事务。</param>
     private void HandlePlayerActionExited(AnimationActionTransaction transaction)
     {
         if (transaction.qteSessionId != activeSessionId)
@@ -1249,8 +1307,8 @@ bool enemyEnding = participant.EndAction(sessionId);
 
     /// <summary>HandleParticipantActionExited 的业务处理入口；本方法直接依赖 LeonQTECoordinator.HandleEnemySuccessExit(int)、LeonQTECoordinator.TryFinishAfterPairExit()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） LeonQTECoordinator.HandleEnemySuccessExit(int)、LeonQTECoordinator.TryFinishAfterPairExit()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="sessionId">中文含义：会话编号。使用位置：作为 LeonQTECoordinator.HandleEnemySuccessExit(int) 的参数、LeonQTECoordinator.HandleParticipantActionExited(int, EnemyQTEAction, int, bool)。</param>
-    /// <param name="action">中文含义：动作。使用位置：LeonQTECoordinator.HandleParticipantActionExited(int, EnemyQTEAction, int, bool)。</param>
+    /// <param name="sessionId">会话编号。</param>
+    /// <param name="action">动作。</param>
     /// <param name="sequence">中文含义：序号。</param>
     /// <param name="wasCompleted">中文含义：之前是否已完成。</param>
     private void HandleParticipantActionExited(int sessionId, EnemyQTEAction action, int sequence, bool wasCompleted)
@@ -1301,12 +1359,12 @@ bool enemyEnding = participant.EndAction(sessionId);
 
     /// <summary>SeparateAndFinish 的业务处理入口；本方法直接依赖 LeonQTECoordinator.ChangePhase(QTEPhase)、LeonQTECoordinator.FinishCleanup(QTEResult, QTECancelReason)、LeonQTECoordinator.GetSafeSeparationDistance(Vector3, Vector3, float, IEnemyQTEParticipant)、LeonQTECoordinator.SetParticipantWorldPosition(Transform, Vector3)、LeonQTECoordinator.SetPlayerWorldPosition(Vector3)、Mathf.Clamp01(float)、Vector3.Lerp(Vector3, Vector3, float) 等共 8 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonQTECoordinator.TryFinishAfterPairExit()；下游（含内部回调体） LeonQTECoordinator.ChangePhase(QTEPhase)、LeonQTECoordinator.FinishCleanup(QTEResult, QTECancelReason)、LeonQTECoordinator.GetSafeSeparationDistance(Vector3, Vector3, float, IEnemyQTEParticipant)、LeonQTECoordinator.SetParticipantWorldPosition(Transform, Vector3)、LeonQTECoordinator.SetPlayerWorldPosition(Vector3)、Mathf.Clamp01(float)、Vector3.Lerp(Vector3, Vector3, float) 等共 8 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="sessionId">中文含义：会话编号。使用位置：LeonQTECoordinator.SeparateAndFinish(int)。</param>
+    /// <param name="sessionId">会话编号。</param>
     private IEnumerator SeparateAndFinish(int sessionId)
     {
-        // enemyRoot（敌人根节点）：使用位置：作为 LeonQTECoordinator.SetParticipantWorldPosition(Transform, Vector3) 的参数、LeonQTECoordinator.SeparateAndFinish(int)。
+        // 敌人根节点。
 Transform enemyRoot = participant.Root;
-        // direction（方向）：使用位置：作为 LeonQTECoordinator.GetSafeSeparationDistance(Vector3, Vector3, float, IEnemyQTEParticipant) 的参数、LeonQTECoordinator.SeparateAndFinish(int)。
+        // 方向。
 Vector3 direction = transform.position - enemyRoot.position;
         direction.y = 0f;
         if (direction.sqrMagnitude <= 0.0001f)
@@ -1315,19 +1373,19 @@ Vector3 direction = transform.position - enemyRoot.position;
         }
 
         direction.Normalize();
-        // playerStart（玩家起始）：使用位置：作为 LeonQTECoordinator.GetSafeSeparationDistance(Vector3, Vector3, float, IEnemyQTEParticipant) 的参数、作为 Vector3.Lerp(Vector3, Vector3, float) 的参数、LeonQTECoordinator.SeparateAndFinish(int)。
+        // 玩家起始。
 Vector3 playerStart = transform.position;
-        // enemyStart（敌人起始）：使用位置：作为 LeonQTECoordinator.GetSafeSeparationDistance(Vector3, Vector3, float, IEnemyQTEParticipant) 的参数、作为 Vector3.Lerp(Vector3, Vector3, float) 的参数、LeonQTECoordinator.SeparateAndFinish(int)。
+        // 敌人起始。
 Vector3 enemyStart = enemyRoot.position;
-        // playerDistance（玩家距离）：保存 LeonQTECoordinator.GetSafeSeparationDistance(Vector3, Vector3, float, IEnemyQTEParticipant) 的返回结果，供当前步骤使用。使用位置：LeonQTECoordinator.SeparateAndFinish(int)。
+        // 玩家距离。
 float playerDistance = GetSafeSeparationDistance(playerStart, direction, config.playerSeparationDistance, participant);
-        // enemyDistance（敌人距离）：保存 LeonQTECoordinator.GetSafeSeparationDistance(Vector3, Vector3, float, IEnemyQTEParticipant) 的返回结果，供当前步骤使用。使用位置：LeonQTECoordinator.SeparateAndFinish(int)。
+        // 敌人距离。
 float enemyDistance = GetSafeSeparationDistance(enemyStart, -direction, config.enemySeparationDistance, participant);
-        // playerTarget（玩家目标）：使用位置：作为 LeonQTECoordinator.SetPlayerWorldPosition(Vector3) 的参数、作为 Vector3.Lerp(Vector3, Vector3, float) 的参数。
+        // 玩家目标。
 Vector3 playerTarget = playerStart + direction * playerDistance;
-        // enemyTarget（敌人目标）：使用位置：作为 LeonQTECoordinator.SetParticipantWorldPosition(Transform, Vector3) 的参数、作为 Vector3.Lerp(Vector3, Vector3, float) 的参数。
+        // 敌人目标。
 Vector3 enemyTarget = enemyStart - direction * enemyDistance;
-        // elapsed（已用）：使用位置：作为 Mathf.Clamp01(float) 的参数、LeonQTECoordinator.SeparateAndFinish(int)。
+        // 已用。
 float elapsed = 0f;
         while (elapsed < config.separationDuration)
         {
@@ -1337,9 +1395,9 @@ float elapsed = 0f;
             }
 
             elapsed += Time.deltaTime;
-            // t（配对结束后双方分离阶段的归一化进度）：保存 Mathf.Clamp01(float) 的返回结果，供当前步骤使用。使用位置：LeonQTECoordinator.SeparateAndFinish(int)。
+            // 配对结束后双方分离阶段的归一化进度。
 float t = Mathf.Clamp01(elapsed / config.separationDuration);
-            // smooth（平滑）：使用位置：作为 Vector3.Lerp(Vector3, Vector3, float) 的参数。
+            // 平滑。
 float smooth = t * t * (3f - 2f * t);
             SetPlayerWorldPosition(Vector3.Lerp(playerStart, playerTarget, smooth));
             SetParticipantWorldPosition(enemyRoot, Vector3.Lerp(enemyStart, enemyTarget, smooth));
@@ -1349,7 +1407,7 @@ float smooth = t * t * (3f - 2f * t);
         SetPlayerWorldPosition(playerTarget);
         SetParticipantWorldPosition(enemyRoot, enemyTarget);
         activeRoutine = null;
-        // result（当前配对动作结果）：使用位置：作为 LeonQTECoordinator.FinishCleanup(QTEResult, QTECancelReason) 的参数。
+        // 当前配对动作结果。
 QTEResult result = pendingResult;
         ChangePhase(QTEPhase.Completed);
         FinishCleanup(result, QTECancelReason.None);
@@ -1357,7 +1415,7 @@ QTEResult result = pendingResult;
 
     /// <summary>DecideResult 的业务处理入口；本方法直接依赖 LeonQTECoordinator.BeginResult(bool)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonQTECoordinator.SubmitEscapePress(int)、LeonQTECoordinator.Update()；下游（含内部回调体） LeonQTECoordinator.BeginResult(bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="success">中文含义：是否成功。使用位置：作为 LeonQTECoordinator.BeginResult(bool) 的参数。</param>
+    /// <param name="success">是否成功。</param>
     private void DecideResult(bool success)
     {
         if (phase != QTEPhase.WaitingForInput || cleanupRunning)
@@ -1370,7 +1428,7 @@ QTEResult result = pendingResult;
 
     /// <summary>BeginResult 的业务处理入口；本方法直接依赖 IEnemyQTEParticipant.BeginAction(int, EnemyQTEAction)、LeonAnimationActionCoordinator.AdvanceQTEPhase(int, FullBodyActionType)、LeonQTECoordinator.BeginResultMotion(bool)、LeonQTECoordinator.Cancel(int, QTECancelReason)、LeonQTECoordinator.ChangePhase(QTEPhase)、LeonQTECoordinator.CommitAssassination(int)、LeonQTECoordinator.ResetPairFlags() 等共 8 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonQTECoordinator.DecideResult(bool)、LeonQTECoordinator.TryAdvanceAfterPairCompletion()；下游（含内部回调体） IEnemyQTEParticipant.BeginAction(int, EnemyQTEAction)、LeonAnimationActionCoordinator.AdvanceQTEPhase(int, FullBodyActionType)、LeonQTECoordinator.BeginResultMotion(bool)、LeonQTECoordinator.Cancel(int, QTECancelReason)、LeonQTECoordinator.ChangePhase(QTEPhase)、LeonQTECoordinator.CommitAssassination(int)、LeonQTECoordinator.ResetPairFlags() 等共 8 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="success">中文含义：是否成功。使用位置：LeonQTECoordinator.BeginResult(bool)。</param>
+    /// <param name="success">是否成功。</param>
     private void BeginResult(bool success)
     {
         if (cleanupRunning || participant == null || (phase != QTEPhase.WaitingForInput && phase != QTEPhase.Entering))
@@ -1395,9 +1453,9 @@ QTEResult result = pendingResult;
             BeginResultMotion(true);
             expectedPlayerAction = FullBodyActionType.QTESuccess;
             expectedEnemyAction = EnemyQTEAction.Success;
-            // playerAdvanced（是否玩家推进后的）：保存 LeonAnimationActionCoordinator.AdvanceQTEPhase(int, FullBodyActionType) 的返回结果，供当前步骤使用。使用位置：LeonQTECoordinator.BeginResult(bool)。
+            // 是否玩家推进后的。
 bool playerAdvanced = animationCoordinator.AdvanceQTEPhase(activeSessionId, FullBodyActionType.QTESuccess);
-            // enemyAdvanced（是否敌人推进后的）：保存 IEnemyQTEParticipant.BeginAction(int, EnemyQTEAction) 的返回结果，供当前步骤使用。使用位置：LeonQTECoordinator.BeginResult(bool)。
+            // 是否敌人推进后的。
 bool enemyAdvanced = participant.BeginAction(activeSessionId, EnemyQTEAction.Success);
             if (!playerAdvanced || !enemyAdvanced)
             {
@@ -1415,9 +1473,9 @@ bool enemyAdvanced = participant.BeginAction(activeSessionId, EnemyQTEAction.Suc
             BeginResultMotion(false);
             expectedPlayerAction = FullBodyActionType.QTEFail;
             expectedEnemyAction = EnemyQTEAction.Failure;
-            // playerAdvanced（是否玩家推进后的）：保存 LeonAnimationActionCoordinator.AdvanceQTEPhase(int, FullBodyActionType) 的返回结果，供当前步骤使用。使用位置：LeonQTECoordinator.BeginResult(bool)。
+            // 是否玩家推进后的。
 bool playerAdvanced = animationCoordinator.AdvanceQTEPhase(activeSessionId, FullBodyActionType.QTEFail);
-            // enemyAdvanced（是否敌人推进后的）：保存 IEnemyQTEParticipant.BeginAction(int, EnemyQTEAction) 的返回结果，供当前步骤使用。使用位置：LeonQTECoordinator.BeginResult(bool)。
+            // 是否敌人推进后的。
 bool enemyAdvanced = participant.BeginAction(activeSessionId, EnemyQTEAction.Failure);
             if (!playerAdvanced || !enemyAdvanced)
             {
@@ -1428,7 +1486,7 @@ bool enemyAdvanced = participant.BeginAction(activeSessionId, EnemyQTEAction.Fai
 
     /// <summary>BeginResultMotion 的业务处理入口；本方法直接依赖 LeonQTECoordinator.GetSafeSeparationDistance(Vector3, Vector3, float, IEnemyQTEParticipant)、Mathf.Min(float, float)、Vector3.Normalize()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonQTECoordinator.BeginResult(bool)；下游（含内部回调体） LeonQTECoordinator.GetSafeSeparationDistance(Vector3, Vector3, float, IEnemyQTEParticipant)、Mathf.Min(float, float)、Vector3.Normalize()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="success">中文含义：是否成功。使用位置：LeonQTECoordinator.BeginResultMotion(bool)。</param>
+    /// <param name="success">是否成功。</param>
     private void BeginResultMotion(bool success)
     {
         if (participant == null || participant.Root == null || config == null)
@@ -1437,9 +1495,9 @@ bool enemyAdvanced = participant.BeginAction(activeSessionId, EnemyQTEAction.Fai
             return;
         }
 
-        // enemyRoot（敌人根节点）：使用位置：LeonQTECoordinator.BeginResultMotion(bool)。
+        // 敌人根节点。
 Transform enemyRoot = participant.Root;
-        // awayFromEnemy（远离来源敌人）：使用位置：作为 LeonQTECoordinator.GetSafeSeparationDistance(Vector3, Vector3, float, IEnemyQTEParticipant) 的参数、LeonQTECoordinator.BeginResultMotion(bool)。
+        // 远离来源敌人。
 Vector3 awayFromEnemy = transform.position - enemyRoot.position;
         awayFromEnemy.y = 0f;
         if (awayFromEnemy.sqrMagnitude <= 0.0001f)
@@ -1452,20 +1510,20 @@ Vector3 awayFromEnemy = transform.position - enemyRoot.position;
         resultEnemyStart = enemyRoot.position;
         if (success)
         {
-            // playerDistance（玩家距离）：保存 LeonQTECoordinator.GetSafeSeparationDistance(Vector3, Vector3, float, IEnemyQTEParticipant) 的返回结果，供当前步骤使用。使用位置：LeonQTECoordinator.BeginResultMotion(bool)。
+            // 玩家距离。
 float playerDistance = GetSafeSeparationDistance(resultPlayerStart, awayFromEnemy, config.successPlayerMotionDistance, participant);
-            // enemyDistance（敌人距离）：保存 LeonQTECoordinator.GetSafeSeparationDistance(Vector3, Vector3, float, IEnemyQTEParticipant) 的返回结果，供当前步骤使用。使用位置：LeonQTECoordinator.BeginResultMotion(bool)。
+            // 敌人距离。
 float enemyDistance = GetSafeSeparationDistance(resultEnemyStart, -awayFromEnemy, config.successEnemyMotionDistance, participant);
             resultPlayerTarget = resultPlayerStart + awayFromEnemy * playerDistance;
             resultEnemyTarget = resultEnemyStart - awayFromEnemy * enemyDistance;
         }
         else
         {
-            // playerDistance（玩家距离）：保存 LeonQTECoordinator.GetSafeSeparationDistance(Vector3, Vector3, float, IEnemyQTEParticipant) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Min(float, float) 的参数。
+            // 玩家距离。
 float playerDistance = GetSafeSeparationDistance(resultPlayerStart, awayFromEnemy, config.failurePairMotionDistance, participant);
-            // enemyDistance（敌人距离）：保存 LeonQTECoordinator.GetSafeSeparationDistance(Vector3, Vector3, float, IEnemyQTEParticipant) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Min(float, float) 的参数。
+            // 敌人距离。
 float enemyDistance = GetSafeSeparationDistance(resultEnemyStart, awayFromEnemy, config.failurePairMotionDistance, participant);
-            // pairDistance（配对距离）：保存 Mathf.Min(float, float) 的返回结果，供当前步骤使用。使用位置：LeonQTECoordinator.BeginResultMotion(bool)。
+            // 配对距离。
 float pairDistance = Mathf.Min(playerDistance, enemyDistance);
             resultPlayerTarget = resultPlayerStart + awayFromEnemy * pairDistance;
             resultEnemyTarget = resultEnemyStart + awayFromEnemy * pairDistance;
@@ -1483,9 +1541,9 @@ float pairDistance = Mathf.Min(playerDistance, enemyDistance);
             return;
         }
 
-        // isSuccess（是否成功）：使用位置：LeonQTECoordinator.ApplyResultMotion()。
+        // 是否成功。
 bool isSuccess = pendingResult == QTEResult.Success;
-        // expectedHash（预期哈希编号）：使用位置：LeonQTECoordinator.ApplyResultMotion()。
+        // 预期哈希编号。
 int expectedHash;
         if (isSuccess)
         {
@@ -1496,7 +1554,7 @@ int expectedHash;
             expectedHash = HashQTEFailState;
         }
 
-        // playerStateInfo（玩家状态信息）：保存 Animator.GetCurrentAnimatorStateInfo(int) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Clamp01(float) 的参数、LeonQTECoordinator.ApplyResultMotion()。
+        // 玩家状态信息。
 AnimatorStateInfo playerStateInfo = playerAnimator.GetCurrentAnimatorStateInfo(AnimatorLayerID.FullBodyAction);
         if (playerStateInfo.shortNameHash != expectedHash && playerAnimator.IsInTransition(AnimatorLayerID.FullBodyAction))
         {
@@ -1510,7 +1568,7 @@ AnimatorStateInfo playerStateInfo = playerAnimator.GetCurrentAnimatorStateInfo(A
 
         if (!playerReleased)
         {
-            // playerProgress（玩家进度）：使用位置：作为 AnimationCurve.Evaluate(float) 的参数、LeonQTECoordinator.ApplyResultMotion()。
+            // 玩家进度。
 float playerProgress;
             if (isSuccess)
             {
@@ -1521,7 +1579,7 @@ float playerProgress;
                 playerProgress = Mathf.Clamp01(playerStateInfo.normalizedTime);
             }
 
-            // playerCurved（玩家弯曲）：使用位置：作为 Vector3.Lerp(Vector3, Vector3, float) 的参数、LeonQTECoordinator.ApplyResultMotion()。
+            // 玩家弯曲。
 float playerCurved;
             if (config.resultMotionCurve != null)
             {
@@ -1535,19 +1593,19 @@ float playerCurved;
             SetPlayerWorldPosition(Vector3.Lerp(resultPlayerStart, resultPlayerTarget, playerCurved));
         }
 
-        // enemyAnimator（敌人动画控制器）：使用位置：LeonQTECoordinator.ApplyResultMotion()。
+        // 敌人动画控制器。
 Animator enemyAnimator = participant.Animator;
         if (enemyAnimator != null)
         {
-            // enemyQteLayer（敌人配对动作图层）：保存 Animator.GetLayerIndex(string) 的返回结果，供当前步骤使用。使用位置：作为 Animator.GetCurrentAnimatorStateInfo(int) 的参数、LeonQTECoordinator.ApplyResultMotion()。
+            // 敌人配对动作图层。
 int enemyQteLayer = enemyAnimator.GetLayerIndex("QTE Override");
             if (enemyQteLayer >= 0)
             {
-                // enemyStateInfo（敌人状态信息）：保存 Animator.GetCurrentAnimatorStateInfo(int) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Clamp01(float) 的参数。
+                // 敌人状态信息。
 AnimatorStateInfo enemyStateInfo = enemyAnimator.GetCurrentAnimatorStateInfo(enemyQteLayer);
-                // enemyProgress（敌人进度）：保存 Mathf.Clamp01(float) 的返回结果，供当前步骤使用。使用位置：作为 AnimationCurve.Evaluate(float) 的参数、LeonQTECoordinator.ApplyResultMotion()。
+                // 敌人进度。
 float enemyProgress = Mathf.Clamp01(enemyStateInfo.normalizedTime);
-                // enemyCurved（敌人弯曲）：使用位置：作为 Vector3.Lerp(Vector3, Vector3, float) 的参数、LeonQTECoordinator.ApplyResultMotion()。
+                // 敌人弯曲。
 float enemyCurved;
                 if (config.resultMotionCurve != null)
                 {
@@ -1587,12 +1645,12 @@ float enemyCurved;
 
     /// <summary>SetPlayerWorldPosition 的业务处理入口；本方法直接依赖 LeonActionMotionDriver.CommitPairedActionPose(int, Vector3, Quaternion, bool)、object.ReferenceEquals(object, object)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonQTECoordinator.ApplyResultMotion()、LeonQTECoordinator.FinishResultMotion()、LeonQTECoordinator.RequestPlayerRecoveryExit()、LeonQTECoordinator.SeparateAndFinish(int)；下游（含内部回调体） LeonActionMotionDriver.CommitPairedActionPose(int, Vector3, Quaternion, bool)、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="position">中文含义：位置。使用位置：作为 LeonActionMotionDriver.CommitPairedActionPose(int, Vector3, Quaternion, bool) 的参数。</param>
+    /// <param name="position">位置。</param>
     private void SetPlayerWorldPosition(Vector3 position)
     {
-        // receiverValue17（判空前缓存的玩家运动）：从玩家运动读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonQTECoordinator.SetPlayerWorldPosition(Vector3)。
+        // 判空前缓存的玩家运动。
 global::LeonActionMotionDriver receiverValue17 = playerMotion;
-        // optionalValue18（条件访问得到的提交已配对动作姿态的返回结果）：保存条件访问的结果，接收者为空时保持默认空值，非空时才执行原成员访问。使用位置：LeonQTECoordinator.SetPlayerWorldPosition(Vector3)。
+        // 条件访问得到的提交已配对动作姿态的返回结果。
 bool? optionalValue18;
         if (!global::System.Object.ReferenceEquals(receiverValue17, null))
         {
@@ -1606,8 +1664,8 @@ bool? optionalValue18;
 
     /// <summary>SetParticipantWorldPosition 的业务处理入口；本方法直接依赖 IEnemyQTEParticipant.CommitPairedActionPose(int, Vector3, Quaternion)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonQTECoordinator.ApplyResultMotion()、LeonQTECoordinator.FinishResultMotion()、LeonQTECoordinator.HandleEnemySuccessExit(int)、LeonQTECoordinator.SeparateAndFinish(int)；下游（含内部回调体） IEnemyQTEParticipant.CommitPairedActionPose(int, Vector3, Quaternion)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="participantRoot">中文含义：参与者根节点。使用位置：作为 IEnemyQTEParticipant.CommitPairedActionPose(int, Vector3, Quaternion) 的参数、LeonQTECoordinator.SetParticipantWorldPosition(Transform, Vector3)。</param>
-    /// <param name="position">中文含义：位置。使用位置：作为 IEnemyQTEParticipant.CommitPairedActionPose(int, Vector3, Quaternion) 的参数。</param>
+    /// <param name="participantRoot">参与者根节点。</param>
+    /// <param name="position">位置。</param>
     private void SetParticipantWorldPosition(Transform participantRoot, Vector3 position)
     {
         if (participant == null || participant.Root != participantRoot)
@@ -1620,13 +1678,13 @@ bool? optionalValue18;
 
     /// <summary>SetPlayerWorldPose 的业务处理入口；本方法直接依赖 LeonActionMotionDriver.CommitPairedActionPose(int, Vector3, Quaternion, bool)、object.ReferenceEquals(object, object)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonQTECoordinator.AlignAndEnter(int)；下游（含内部回调体） LeonActionMotionDriver.CommitPairedActionPose(int, Vector3, Quaternion, bool)、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="position">中文含义：位置。使用位置：作为 LeonActionMotionDriver.CommitPairedActionPose(int, Vector3, Quaternion, bool) 的参数。</param>
-    /// <param name="rotation">中文含义：旋转。使用位置：作为 LeonActionMotionDriver.CommitPairedActionPose(int, Vector3, Quaternion, bool) 的参数。</param>
+    /// <param name="position">位置。</param>
+    /// <param name="rotation">旋转。</param>
     private void SetPlayerWorldPose(Vector3 position, Quaternion rotation)
     {
-        // receiverValue19（判空前缓存的玩家运动）：从玩家运动读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonQTECoordinator.SetPlayerWorldPose(Vector3, Quaternion)。
+        // 判空前缓存的玩家运动。
 global::LeonActionMotionDriver receiverValue19 = playerMotion;
-        // optionalValue20（条件访问得到的提交已配对动作姿态的返回结果）：保存条件访问的结果，接收者为空时保持默认空值，非空时才执行原成员访问。使用位置：LeonQTECoordinator.SetPlayerWorldPose(Vector3, Quaternion)。
+        // 条件访问得到的提交已配对动作姿态的返回结果。
 bool? optionalValue20;
         if (!global::System.Object.ReferenceEquals(receiverValue19, null))
         {
@@ -1640,9 +1698,9 @@ bool? optionalValue20;
 
     /// <summary>SetParticipantWorldPose 的业务处理入口；本方法直接依赖 IEnemyQTEParticipant.CommitPairedActionPose(int, Vector3, Quaternion)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonQTECoordinator.AlignAndEnter(int)；下游（含内部回调体） IEnemyQTEParticipant.CommitPairedActionPose(int, Vector3, Quaternion)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="participantRoot">中文含义：参与者根节点。使用位置：LeonQTECoordinator.SetParticipantWorldPose(Transform, Vector3, Quaternion)。</param>
-    /// <param name="position">中文含义：位置。使用位置：作为 IEnemyQTEParticipant.CommitPairedActionPose(int, Vector3, Quaternion) 的参数。</param>
-    /// <param name="rotation">中文含义：旋转。使用位置：作为 IEnemyQTEParticipant.CommitPairedActionPose(int, Vector3, Quaternion) 的参数。</param>
+    /// <param name="participantRoot">参与者根节点。</param>
+    /// <param name="position">位置。</param>
+    /// <param name="rotation">旋转。</param>
     private void SetParticipantWorldPose(Transform participantRoot, Vector3 position, Quaternion rotation)
     {
         if (participant == null || participant.Root != participantRoot)
@@ -1655,7 +1713,7 @@ bool? optionalValue20;
 
     /// <summary>HandleBiteContact 的业务处理入口；本方法直接依赖 Action&lt;int&gt;.Invoke(int)、LeonQTECoordinator.CommitBiteDamage(int)、object.ReferenceEquals(object, object)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） Action&lt;int&gt;.Invoke(int)、LeonQTECoordinator.CommitBiteDamage(int)、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="sessionId">中文含义：会话编号。使用位置：作为 Action&lt;int&gt;.Invoke(int) 的参数、作为 LeonQTECoordinator.CommitBiteDamage(int) 的参数、LeonQTECoordinator.HandleBiteContact(int)。</param>
+    /// <param name="sessionId">会话编号。</param>
     private void HandleBiteContact(int sessionId)
     {
         if (sessionId != activeSessionId || phase != QTEPhase.FailureResult)
@@ -1663,7 +1721,7 @@ bool? optionalValue20;
             return;
         }
 
-        // receiverValue21（判空前缓存的配对动作撕咬接触时的通知回调）：从配对动作撕咬接触时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonQTECoordinator.HandleBiteContact(int)。
+        // 判空前缓存的配对动作撕咬接触时的通知回调。
 global::System.Action<int> receiverValue21 = OnQTEBiteContact;
         if (!global::System.Object.ReferenceEquals(receiverValue21, null))
         {
@@ -1675,7 +1733,7 @@ global::System.Action<int> receiverValue21 = OnQTEBiteContact;
 
     /// <summary>HandleAssassinationContact 的业务处理入口；本方法直接依赖 Action&lt;int&gt;.Invoke(int)、LeonQTECoordinator.ChangePhase(QTEPhase)、LeonQTECoordinator.CommitAssassination(int)、LeonQTECoordinator.IsSingleShotAssassination()、LeonQTECoordinator.StopQTEStruggleLoop()、object.ReferenceEquals(object, object)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） Action&lt;int&gt;.Invoke(int)、LeonQTECoordinator.ChangePhase(QTEPhase)、LeonQTECoordinator.CommitAssassination(int)、LeonQTECoordinator.IsSingleShotAssassination()、LeonQTECoordinator.StopQTEStruggleLoop()、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="sessionId">中文含义：会话编号。使用位置：作为 Action&lt;int&gt;.Invoke(int) 的参数、作为 LeonQTECoordinator.CommitAssassination(int) 的参数、LeonQTECoordinator.HandleAssassinationContact(int)。</param>
+    /// <param name="sessionId">会话编号。</param>
     private void HandleAssassinationContact(int sessionId)
     {
         if (sessionId != activeSessionId || activeKind != QTEKind.KnifeAssassination)
@@ -1683,7 +1741,7 @@ global::System.Action<int> receiverValue21 = OnQTEBiteContact;
             return;
         }
 
-        // receiverValue22（判空前缓存的配对动作暗杀接触时的通知回调）：从配对动作暗杀接触时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonQTECoordinator.HandleAssassinationContact(int)。
+        // 判空前缓存的配对动作暗杀接触时的通知回调。
 global::System.Action<int> receiverValue22 = OnQTEAssassinationContact;
         if (!global::System.Object.ReferenceEquals(receiverValue22, null))
         {
@@ -1707,7 +1765,7 @@ global::System.Action<int> receiverValue22 = OnQTEAssassinationContact;
 
     /// <summary>CommitBiteDamage 的业务处理入口；本方法直接依赖 LeonController.TryApplyQTEFailureDamage(int, float, Vector3, Vector3)、LeonQTECoordinator.ResolveFailureBiteHitNormal(Vector3)、LeonQTECoordinator.ResolveFailureBiteHitPoint()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonQTECoordinator.ForceReleasePlayerFromResult(int)、LeonQTECoordinator.HandleBiteContact(int)、LeonQTECoordinator.TryAdvanceAfterPairCompletion()；下游（含内部回调体） LeonController.TryApplyQTEFailureDamage(int, float, Vector3, Vector3)、LeonQTECoordinator.ResolveFailureBiteHitNormal(Vector3)、LeonQTECoordinator.ResolveFailureBiteHitPoint()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="sessionId">中文含义：会话编号。使用位置：作为 LeonController.TryApplyQTEFailureDamage(int, float, Vector3, Vector3) 的参数。</param>
+    /// <param name="sessionId">会话编号。</param>
     private void CommitBiteDamage(int sessionId)
     {
         if (activeKind == QTEKind.RearGrab)
@@ -1719,11 +1777,11 @@ global::System.Action<int> receiverValue22 = OnQTEAssassinationContact;
             return;
         }
 
-        // hitPoint（命中点位置）：保存 LeonQTECoordinator.ResolveFailureBiteHitPoint() 的返回结果，供当前步骤使用。使用位置：作为 LeonController.TryApplyQTEFailureDamage(int, float, Vector3, Vector3) 的参数、作为 LeonQTECoordinator.ResolveFailureBiteHitNormal(Vector3) 的参数。
+        // 命中点位置。
 Vector3 hitPoint = ResolveFailureBiteHitPoint();
-        // hitNormal（命中表面法线）：保存 LeonQTECoordinator.ResolveFailureBiteHitNormal(Vector3) 的返回结果，供当前步骤使用。使用位置：作为 LeonController.TryApplyQTEFailureDamage(int, float, Vector3, Vector3) 的参数。
+        // 命中表面法线。
 Vector3 hitNormal = ResolveFailureBiteHitNormal(hitPoint);
-        // damage（伤害）：使用位置：作为 LeonController.TryApplyQTEFailureDamage(int, float, Vector3, Vector3) 的参数、LeonQTECoordinator.CommitBiteDamage(int)。
+        // 伤害。
 float damage;
         if (activeVariant != null && activeVariant.failureDamage > 0f)
         {
@@ -1764,15 +1822,15 @@ float damage;
     /// <remarks>静态调用链：上游 LeonQTECoordinator.ResolveFailureBiteHitPoint()；下游（含内部回调体） LeonQTECoordinator.GetPlayerBone(HumanBodyBones)、LeonQTECoordinator.IsLeftLegCloserToEnemy(Vector3, Transform, Transform, Transform, Transform)、Vector3.Lerp(Vector3, Vector3, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     private Vector3 ResolveLegBiteHitPoint()
     {
-        // leftLowerLeg（左侧小腿）：保存 LeonQTECoordinator.GetPlayerBone(HumanBodyBones) 的返回结果，供当前步骤使用。使用位置：作为 LeonQTECoordinator.IsLeftLegCloserToEnemy(Vector3, Transform, Transform, Transform, Transform) 的参数、LeonQTECoordinator.ResolveLegBiteHitPoint()。
+        // 左侧小腿。
 Transform leftLowerLeg = GetPlayerBone(HumanBodyBones.LeftLowerLeg);
-        // rightLowerLeg（右侧小腿）：保存 LeonQTECoordinator.GetPlayerBone(HumanBodyBones) 的返回结果，供当前步骤使用。使用位置：作为 LeonQTECoordinator.IsLeftLegCloserToEnemy(Vector3, Transform, Transform, Transform, Transform) 的参数、LeonQTECoordinator.ResolveLegBiteHitPoint()。
+        // 右侧小腿。
 Transform rightLowerLeg = GetPlayerBone(HumanBodyBones.RightLowerLeg);
-        // leftFoot（左脚）：保存 LeonQTECoordinator.GetPlayerBone(HumanBodyBones) 的返回结果，供当前步骤使用。使用位置：作为 LeonQTECoordinator.IsLeftLegCloserToEnemy(Vector3, Transform, Transform, Transform, Transform) 的参数、LeonQTECoordinator.ResolveLegBiteHitPoint()。
+        // 左脚。
 Transform leftFoot = GetPlayerBone(HumanBodyBones.LeftFoot);
-        // rightFoot（右脚）：保存 LeonQTECoordinator.GetPlayerBone(HumanBodyBones) 的返回结果，供当前步骤使用。使用位置：作为 LeonQTECoordinator.IsLeftLegCloserToEnemy(Vector3, Transform, Transform, Transform, Transform) 的参数、LeonQTECoordinator.ResolveLegBiteHitPoint()。
+        // 右脚。
 Transform rightFoot = GetPlayerBone(HumanBodyBones.RightFoot);
-        // enemyPosition（敌人位置）：使用位置：作为 LeonQTECoordinator.IsLeftLegCloserToEnemy(Vector3, Transform, Transform, Transform, Transform) 的参数、LeonQTECoordinator.ResolveLegBiteHitPoint()。
+        // 敌人位置。
 Vector3 enemyPosition;
         if (participant != null && participant.Root != null)
         {
@@ -1783,9 +1841,9 @@ Vector3 enemyPosition;
             enemyPosition = transform.position + transform.forward;
         }
 
-        // useLeft（是否使用左侧）：保存 LeonQTECoordinator.IsLeftLegCloserToEnemy(Vector3, Transform, Transform, Transform, Transform) 的返回结果，供当前步骤使用。使用位置：LeonQTECoordinator.ResolveLegBiteHitPoint()。
+        // 是否使用左侧。
 bool useLeft = IsLeftLegCloserToEnemy(enemyPosition, leftLowerLeg, rightLowerLeg, leftFoot, rightFoot);
-        // lowerLeg（小腿）：使用位置：作为 Vector3.Lerp(Vector3, Vector3, float) 的参数、LeonQTECoordinator.ResolveLegBiteHitPoint()。
+        // 小腿。
 Transform lowerLeg;
         if (useLeft)
         {
@@ -1796,7 +1854,7 @@ Transform lowerLeg;
             lowerLeg = rightLowerLeg;
         }
 
-        // foot（脚部）：使用位置：作为 Vector3.Lerp(Vector3, Vector3, float) 的参数、LeonQTECoordinator.ResolveLegBiteHitPoint()。
+        // 脚部。
 Transform foot;
         if (useLeft)
         {
@@ -1822,7 +1880,7 @@ Transform foot;
             return foot.position + Vector3.up * 0.12f;
         }
 
-        // side（侧边）：使用位置：LeonQTECoordinator.ResolveLegBiteHitPoint()。
+        // 侧边。
 float side;
         if (useLeft)
         {
@@ -1840,18 +1898,18 @@ float side;
     /// <remarks>静态调用链：上游 LeonQTECoordinator.ResolveFailureBiteHitPoint()；下游（含内部回调体） LeonQTECoordinator.GetPlayerBone(HumanBodyBones)、Vector3.Lerp(Vector3, Vector3, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     private Vector3 ResolveNeckBiteHitPoint()
     {
-        // neck（颈部）：保存 LeonQTECoordinator.GetPlayerBone(HumanBodyBones) 的返回结果，供当前步骤使用。使用位置：LeonQTECoordinator.ResolveNeckBiteHitPoint()。
+        // 颈部。
 Transform neck = GetPlayerBone(HumanBodyBones.Neck);
-        // head（头部）：保存 LeonQTECoordinator.GetPlayerBone(HumanBodyBones) 的返回结果，供当前步骤使用。使用位置：作为 Vector3.Lerp(Vector3, Vector3, float) 的参数、LeonQTECoordinator.ResolveNeckBiteHitPoint()。
+        // 头部。
 Transform head = GetPlayerBone(HumanBodyBones.Head);
-        // upperChest（上部胸部）：保存 LeonQTECoordinator.GetPlayerBone(HumanBodyBones) 的返回结果，供当前步骤使用。使用位置：作为 Vector3.Lerp(Vector3, Vector3, float) 的参数、LeonQTECoordinator.ResolveNeckBiteHitPoint()。
+        // 上部胸部。
 Transform upperChest = GetPlayerBone(HumanBodyBones.UpperChest);
         if (upperChest == null)
         {
             upperChest = GetPlayerBone(HumanBodyBones.Chest);
         }
 
-        // point（点）：使用位置：LeonQTECoordinator.ResolveNeckBiteHitPoint()。
+        // 点。
 Vector3 point;
         if (neck != null)
         {
@@ -1876,7 +1934,7 @@ Vector3 point;
 
         if (participant != null && participant.Root != null)
         {
-            // toEnemy（目标敌人）：使用位置：LeonQTECoordinator.ResolveNeckBiteHitPoint()。
+            // 目标敌人。
 Vector3 toEnemy = participant.Root.position - point;
             if (toEnemy.sqrMagnitude > 0.0001f)
             {
@@ -1889,7 +1947,7 @@ Vector3 toEnemy = participant.Root.position - point;
 
     /// <summary>ResolveFailureBiteHitNormal 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
     /// <remarks>静态调用链：上游 LeonQTECoordinator.CommitBiteDamage(int)；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="hitPoint">中文含义：命中点位置。使用位置：LeonQTECoordinator.ResolveFailureBiteHitNormal(Vector3)。</param>
+    /// <param name="hitPoint">命中点位置。</param>
     private Vector3 ResolveFailureBiteHitNormal(Vector3 hitPoint)
     {
         if (participant == null || participant.Root == null)
@@ -1897,7 +1955,7 @@ Vector3 toEnemy = participant.Root.position - point;
             return transform.forward;
         }
 
-        // normal（表面法线）：使用位置：LeonQTECoordinator.ResolveFailureBiteHitNormal(Vector3)。
+        // 表面法线。
 Vector3 normal = hitPoint - participant.Root.position;
         if (normal.sqrMagnitude <= 0.0001f)
         {
@@ -1909,7 +1967,7 @@ Vector3 normal = hitPoint - participant.Root.position;
 
     /// <summary>GetPlayerBone 的业务处理入口；本方法直接依赖 Animator.GetBoneTransform(HumanBodyBones)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonQTECoordinator.ResolveLegBiteHitPoint()、LeonQTECoordinator.ResolveNeckBiteHitPoint()；下游（含内部回调体） Animator.GetBoneTransform(HumanBodyBones)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="bone">中文含义：骨骼。使用位置：作为 Animator.GetBoneTransform(HumanBodyBones) 的参数。</param>
+    /// <param name="bone">骨骼。</param>
     private Transform GetPlayerBone(HumanBodyBones bone)
     {
         return AnimatorBoneBindings.Resolve(playerAnimator, bone);
@@ -1917,14 +1975,14 @@ Vector3 normal = hitPoint - participant.Root.position;
 
     /// <summary>IsLeftLegCloserToEnemy 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
     /// <remarks>静态调用链：上游 LeonQTECoordinator.ResolveLegBiteHitPoint()；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="enemyPosition">中文含义：敌人位置。使用位置：LeonQTECoordinator.IsLeftLegCloserToEnemy(Vector3, Transform, Transform, Transform, Transform)。</param>
-    /// <param name="leftLowerLeg">中文含义：左侧小腿。使用位置：LeonQTECoordinator.IsLeftLegCloserToEnemy(Vector3, Transform, Transform, Transform, Transform)。</param>
-    /// <param name="rightLowerLeg">中文含义：右侧小腿。使用位置：LeonQTECoordinator.IsLeftLegCloserToEnemy(Vector3, Transform, Transform, Transform, Transform)。</param>
-    /// <param name="leftFoot">中文含义：左脚。使用位置：LeonQTECoordinator.IsLeftLegCloserToEnemy(Vector3, Transform, Transform, Transform, Transform)。</param>
-    /// <param name="rightFoot">中文含义：右脚。使用位置：LeonQTECoordinator.IsLeftLegCloserToEnemy(Vector3, Transform, Transform, Transform, Transform)。</param>
+    /// <param name="enemyPosition">敌人位置。</param>
+    /// <param name="leftLowerLeg">左侧小腿。</param>
+    /// <param name="rightLowerLeg">右侧小腿。</param>
+    /// <param name="leftFoot">左脚。</param>
+    /// <param name="rightFoot">右脚。</param>
     private bool IsLeftLegCloserToEnemy(Vector3 enemyPosition, Transform leftLowerLeg, Transform rightLowerLeg, Transform leftFoot, Transform rightFoot)
     {
-        // leftPoint（左侧点）：使用位置：LeonQTECoordinator.IsLeftLegCloserToEnemy(Vector3, Transform, Transform, Transform, Transform)。
+        // 左侧点。
 Vector3 leftPoint;
         if (leftLowerLeg != null)
         {
@@ -1942,7 +2000,7 @@ Vector3 leftPoint;
             }
         }
 
-        // rightPoint（右侧点）：使用位置：LeonQTECoordinator.IsLeftLegCloserToEnemy(Vector3, Transform, Transform, Transform, Transform)。
+        // 右侧点。
 Vector3 rightPoint;
         if (rightLowerLeg != null)
         {
@@ -1967,7 +2025,7 @@ Vector3 rightPoint;
 
     /// <summary>CommitAssassination 的业务处理入口；本方法直接依赖 Component.GetComponent&lt;VillagerController&gt;()、IEnemyQTEParticipant.CommitAssassinationResult(int, float)、LeonQTECoordinator.ConsumeAssassinationKnifeDurability()、LeonQTECoordinator.ResolveAssassinationDamage(VillagerController)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonQTECoordinator.BeginResult(bool)、LeonQTECoordinator.BeginSingleShotAssassinationResult()、LeonQTECoordinator.CheckAssassinationCommitFallback()、LeonQTECoordinator.ForceReleasePlayerFromResult(int)、LeonQTECoordinator.HandleAssassinationContact(int) 等共 7 处；下游（含内部回调体） Component.GetComponent&lt;VillagerController&gt;()、IEnemyQTEParticipant.CommitAssassinationResult(int, float)、LeonQTECoordinator.ConsumeAssassinationKnifeDurability()、LeonQTECoordinator.ResolveAssassinationDamage(VillagerController)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="sessionId">中文含义：会话编号。使用位置：作为 IEnemyQTEParticipant.CommitAssassinationResult(int, float) 的参数、LeonQTECoordinator.CommitAssassination(int)。</param>
+    /// <param name="sessionId">会话编号。</param>
     private void CommitAssassination(int sessionId)
     {
         if (assassinationCommitted || sessionId != activeSessionId || participant == null || participant.Root == null)
@@ -1975,7 +2033,7 @@ Vector3 rightPoint;
             return;
         }
 
-        // villager（村民）：保存 Component.GetComponent<VillagerController>() 的返回结果，供当前步骤使用。使用位置：作为 LeonQTECoordinator.ResolveAssassinationDamage(VillagerController) 的参数、LeonQTECoordinator.CommitAssassination(int)。
+        // 村民。
 VillagerController villager = participant.Root.GetComponent<VillagerController>();
         if (villager == null || villager.IsDead)
         {
@@ -1988,6 +2046,22 @@ VillagerController villager = participant.Root.GetComponent<VillagerController>(
         if (!participant.CommitAssassinationResult(sessionId, ResolveAssassinationDamage(villager)))
         {
             return;
+        }
+
+        if (villager.missionEnemyType == MissionEnemyType.Sawman)
+        {
+            if (villager.perceptionModule != null)
+            {
+                villager.perceptionModule.MarkPersonallyDetectedPlayer();
+                villager.perceptionModule.BecomeFullyAwareOfPlayer(true);
+            }
+
+            if (participant.IsAlive && nativePair != null)
+            {
+                nativePair.SurvivorReleaseFrame = SawAssassinationSurvivorReleaseFrame;
+                nativePair.SurvivorPlayerExitFrame = SawAssassinationSurvivorPlayerExitFrame;
+                nativePair.HoldEnemyResultPose = false;
+            }
         }
 
         if (TryGetComponent<KnifeCombatModule>(out var knife))
@@ -2003,7 +2077,7 @@ VillagerController villager = participant.Root.GetComponent<VillagerController>(
 
     /// <summary>HandlePlayerActionInterrupted 的业务处理入口；本方法直接依赖 LeonQTECoordinator.Cancel(int, QTECancelReason)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） LeonQTECoordinator.Cancel(int, QTECancelReason)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="transaction">中文含义：事务。使用位置：LeonQTECoordinator.HandlePlayerActionInterrupted(AnimationActionTransaction)。</param>
+    /// <param name="transaction">事务。</param>
     private void HandlePlayerActionInterrupted(AnimationActionTransaction transaction)
     {
         if (transaction.qteSessionId == activeSessionId && IsActive && phase != QTEPhase.Cancelled)
@@ -2014,11 +2088,15 @@ VillagerController villager = participant.Root.GetComponent<VillagerController>(
 
     /// <summary>HandleParticipantInvalidated 的业务处理入口；本方法直接依赖 LeonQTECoordinator.Cancel(int, QTECancelReason)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） LeonQTECoordinator.Cancel(int, QTECancelReason)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="sessionId">中文含义：会话编号。使用位置：作为 LeonQTECoordinator.Cancel(int, QTECancelReason) 的参数、LeonQTECoordinator.HandleParticipantInvalidated(int, QTECancelReason)。</param>
-    /// <param name="reason">中文含义：原因。使用位置：作为 LeonQTECoordinator.Cancel(int, QTECancelReason) 的参数、LeonQTECoordinator.HandleParticipantInvalidated(int, QTECancelReason)。</param>
+    /// <param name="sessionId">会话编号。</param>
+    /// <param name="reason">原因。</param>
     private void HandleParticipantInvalidated(int sessionId, QTECancelReason reason)
     {
-        if (sessionId == activeSessionId && (activeKind == QTEKind.KnifeAssassination || activeKind == QTEKind.GroundFinisher) && pendingResult == QTEResult.Success && reason == QTECancelReason.EnemyDied)
+        bool ignoreEnemyDied = activeKind == QTEKind.KnifeAssassination
+            || activeKind == QTEKind.GroundFinisher
+            || committingFrontGrabKnife
+            || (activeKind == QTEKind.FrontGrab && playingFrontGrabStab);
+        if (sessionId == activeSessionId && ignoreEnemyDied && pendingResult == QTEResult.Success && reason == QTECancelReason.EnemyDied)
         {
             enemyActionCompleted = true;
             return;
@@ -2067,7 +2145,7 @@ VillagerController villager = participant.Root.GetComponent<VillagerController>(
             return;
         }
 
-        // receiverValue33（判空前缓存的玩家运动）：从玩家运动读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonQTECoordinator.RestorePlayerLock()。
+        // 判空前缓存的玩家运动。
 global::LeonActionMotionDriver receiverValue33 = playerMotion;
         if (!global::System.Object.ReferenceEquals(receiverValue33, null))
         {
@@ -2079,7 +2157,7 @@ global::LeonActionMotionDriver receiverValue33 = playerMotion;
 
     /// <summary>IgnorePairCollisions 的业务处理入口；本方法直接依赖 LeonQTECoordinator.CollisionPair.CollisionPair()、List&lt;LeonQTECoordinator.CollisionPair&gt;.Add(LeonQTECoordinator.CollisionPair)、List&lt;LeonQTECoordinator.CollisionPair&gt;.Clear()、Physics.GetIgnoreCollision(Collider, Collider)、Physics.IgnoreCollision(Collider, Collider, bool)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonQTECoordinator.TryStart(QTEKind, IEnemyQTEParticipant, out int)；下游（含内部回调体） LeonQTECoordinator.CollisionPair.CollisionPair()、List&lt;LeonQTECoordinator.CollisionPair&gt;.Add(LeonQTECoordinator.CollisionPair)、List&lt;LeonQTECoordinator.CollisionPair&gt;.Clear()、Physics.GetIgnoreCollision(Collider, Collider)、Physics.IgnoreCollision(Collider, Collider, bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="targetParticipant">中文含义：目标参与者。使用位置：LeonQTECoordinator.IgnorePairCollisions(IEnemyQTEParticipant)。</param>
+    /// <param name="targetParticipant">目标参与者。</param>
     private void IgnorePairCollisions(IEnemyQTEParticipant targetParticipant)
     {
         collisionPairs.Clear();
@@ -2104,7 +2182,7 @@ foreach (var enemyCollider in targetParticipant.Colliders)
                     continue;
                 }
 
-                // wasIgnored（之前是否已忽略）：保存 Physics.GetIgnoreCollision(Collider, Collider) 的返回结果，供当前步骤使用。使用位置：作为 List<LeonQTECoordinator.CollisionPair>.Add(LeonQTECoordinator.CollisionPair) 的参数、LeonQTECoordinator.IgnorePairCollisions(IEnemyQTEParticipant)。
+                // 之前是否已忽略。
 bool wasIgnored = Physics.GetIgnoreCollision(playerCollider, enemyCollider);
                 collisionPairs.Add(new CollisionPair { first = playerCollider, second = enemyCollider, wasIgnored = wasIgnored });
                 if (!wasIgnored)
@@ -2133,27 +2211,122 @@ foreach (var pair in collisionPairs)
 
     /// <summary>ValidatePairing 的业务处理入口；本方法直接依赖 Mathf.Abs(float)、Vector3.Angle(Vector3, Vector3)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonQTECoordinator.CanStart(QTEKind, IEnemyQTEParticipant, out QTECancelReason)、LeonQTECoordinator.HasAnyPromptCandidate()、LeonQTECoordinator.TryGetPromptCandidate(out IEnemyQTEParticipant, out QTEKind)；下游（含内部回调体） Mathf.Abs(float)、Vector3.Angle(Vector3, Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="targetParticipant">中文含义：目标参与者。使用位置：作为 Vector3.Angle(Vector3, Vector3) 的参数、LeonQTECoordinator.ValidatePairing(IEnemyQTEParticipant, QTEKind, out QTECancelReason)。</param>
-    /// <param name="kind">中文含义：种类。使用位置：LeonQTECoordinator.ValidatePairing(IEnemyQTEParticipant, QTEKind, out QTECancelReason)。</param>
-    /// <param name="reason">中文含义：原因。输出参数，由本入口写入并交给调用方。使用位置：LeonQTECoordinator.ValidatePairing(IEnemyQTEParticipant, QTEKind, out QTECancelReason)。</param>
+    /// <param name="targetParticipant">目标参与者。</param>
+    /// <param name="kind">种类。</param>
+    /// <param name="reason">原因。输出参数，由本入口写入并交给调用方。</param>
+    /// <summary>校验背刺（潜行暗杀或站立硬直背刺）的空间距离、背后/后斜侧扇区及防微转滞回扩展区。</summary>
+    internal static bool EvaluateAssassinationGeometry(Vector3 enemyPosition, Vector3 enemyForward,
+        Vector3 playerPosition, Vector3 playerForward, float baseMaxDistance, float maxHeightDifference,
+        float baseRearAngle, float maxPlayerFacingAngle, bool hasTurnLatch, float graceAngleBonus,
+        float graceDistanceBonus, out bool matchedBaseZone)
+    {
+        matchedBaseZone = false;
+        Vector3 enemyToPlayer = playerPosition - enemyPosition;
+        float height = Mathf.Abs(enemyToPlayer.y);
+        enemyToPlayer.y = 0f;
+        float distance = enemyToPlayer.magnitude;
+        if (distance <= 0.001f || height > maxHeightDifference)
+        {
+            return false;
+        }
+
+        Vector3 direction = enemyToPlayer / distance;
+        Vector3 flatEnemyForward = Vector3.ProjectOnPlane(enemyForward, Vector3.up);
+        if (flatEnemyForward.sqrMagnitude <= 0.0001f)
+        {
+            flatEnemyForward = -direction;
+        }
+        else
+        {
+            flatEnemyForward.Normalize();
+        }
+
+        Vector3 flatPlayerForward = Vector3.ProjectOnPlane(playerForward, Vector3.up);
+        if (flatPlayerForward.sqrMagnitude <= 0.0001f)
+        {
+            flatPlayerForward = -direction;
+        }
+        else
+        {
+            flatPlayerForward.Normalize();
+        }
+
+        float enemyBackAngle = Vector3.Angle(flatEnemyForward, -direction);
+        float playerAngle = Vector3.Angle(flatPlayerForward, -direction);
+        if (distance <= baseMaxDistance && enemyBackAngle <= baseRearAngle && playerAngle <= maxPlayerFacingAngle)
+        {
+            matchedBaseZone = true;
+            return true;
+        }
+
+        float enemyFrontFacingAngle = 180f - enemyBackAngle;
+        if (hasTurnLatch && enemyFrontFacingAngle >= 65f)
+        {
+            float extendedDistance = baseMaxDistance + Mathf.Max(0f, graceDistanceBonus);
+            float extendedRearAngle = Mathf.Min(130f, baseRearAngle + Mathf.Max(0f, graceAngleBonus));
+            float extendedPlayerFacingAngle = Mathf.Min(145f, maxPlayerFacingAngle + 15f);
+            if (distance <= extendedDistance && enemyBackAngle <= extendedRearAngle && playerAngle <= extendedPlayerFacingAngle)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private void ClearAssassinationLatch(IEnemyQTEParticipant targetParticipant = null)
+    {
+        if (targetParticipant == null || ReferenceEquals(assassinationLatchTarget, targetParticipant))
+        {
+            assassinationLatchTarget = null;
+            assassinationLatchExpiresAt = 0f;
+            assassinationLatchIsStagger = false;
+        }
+    }
+
     private bool ValidatePairing(IEnemyQTEParticipant targetParticipant, QTEKind kind, out QTECancelReason reason)
     {
-        // enemyToPlayer（从敌人指向玩家的方向向量）：使用位置：作为 Mathf.Abs(float) 的参数、LeonQTECoordinator.ValidatePairing(IEnemyQTEParticipant, QTEKind, out QTECancelReason)。
+        // 从敌人指向玩家的方向向量。
 Vector3 enemyToPlayer = transform.position - targetParticipant.Root.position;
-        // height（高度）：保存 Mathf.Abs(float) 的返回结果，供当前步骤使用。使用位置：LeonQTECoordinator.ValidatePairing(IEnemyQTEParticipant, QTEKind, out QTECancelReason)。
+        // 高度。
 float height = Mathf.Abs(enemyToPlayer.y);
         enemyToPlayer.y = 0f;
-        // distance（距离）：使用位置：LeonQTECoordinator.ValidatePairing(IEnemyQTEParticipant, QTEKind, out QTECancelReason)。
+        // 距离。
 float distance = enemyToPlayer.magnitude;
-        // maximumDistance（最大距离）：使用位置：LeonQTECoordinator.ValidatePairing(IEnemyQTEParticipant, QTEKind, out QTECancelReason)。
+        bool isStaggerBackstab = false;
+        bool hasAssassinationTurnLatch = false;
+        if (kind == QTEKind.KnifeAssassination)
+        {
+            VillagerQTEParticipant assassinationVillager = targetParticipant as VillagerQTEParticipant;
+            if (assassinationVillager != null && assassinationVillager.controller != null)
+            {
+                isStaggerBackstab = assassinationVillager.controller.CanBeStaggerBackstabbedBy(controller);
+            }
+
+            if (ReferenceEquals(assassinationLatchTarget, targetParticipant) && Time.time <= assassinationLatchExpiresAt)
+            {
+                hasAssassinationTurnLatch = true;
+            }
+        }
+
+        // 最大距离。
 float maximumDistance;
         if (kind == QTEKind.GroundFinisher)
         {
             maximumDistance = config.groundFinisherDistance;
+            if (targetParticipant is VillagerQTEParticipant sawTarget && sawTarget.controller != null
+                && sawTarget.controller.missionEnemyType == MissionEnemyType.Sawman)
+            {
+                maximumDistance = Mathf.Max(maximumDistance, 2.25f);
+            }
         }
         else if (kind == QTEKind.KnifeAssassination)
         {
             maximumDistance = config.assassinationStartDistance;
+            if (hasAssassinationTurnLatch)
+            {
+                maximumDistance += Mathf.Max(0f, config.assassinationTurnGraceDistanceBonus);
+            }
         }
         else
         {
@@ -2162,22 +2335,35 @@ float maximumDistance;
 
         if (distance <= 0.001f || distance > maximumDistance)
         {
+            if (kind == QTEKind.KnifeAssassination)
+            {
+                ClearAssassinationLatch(targetParticipant);
+            }
             reason = QTECancelReason.DistanceInvalid;
             return false;
         }
 
         if (height > config.maximumHeightDifference)
         {
+            if (kind == QTEKind.KnifeAssassination)
+            {
+                ClearAssassinationLatch(targetParticipant);
+            }
             reason = QTECancelReason.HeightInvalid;
             return false;
         }
 
-        // direction（方向）：使用位置：作为 Vector3.Angle(Vector3, Vector3) 的参数。
+        // 方向。
 Vector3 direction = enemyToPlayer / distance;
-        // enemyAngle（敌人角度）：保存 Vector3.Angle(Vector3, Vector3) 的返回结果，供当前步骤使用。使用位置：LeonQTECoordinator.ValidatePairing(IEnemyQTEParticipant, QTEKind, out QTECancelReason)。
+        // 敌人角度。
 float enemyAngle = Vector3.Angle(targetParticipant.Root.forward, direction);
-        // playerAngle（玩家角度）：保存 Vector3.Angle(Vector3, Vector3) 的返回结果，供当前步骤使用。使用位置：LeonQTECoordinator.ValidatePairing(IEnemyQTEParticipant, QTEKind, out QTECancelReason)。
+        // 玩家角度。
 float playerAngle = Vector3.Angle(transform.forward, -direction);
+        if (kind == QTEKind.RearBiteNeck && controller != null && controller.IsCrouching)
+        {
+            reason = QTECancelReason.PlayerUnavailable;
+            return false;
+        }
         bool confirmedContact = targetParticipant is VillagerQTEParticipant contactTarget && contactTarget.HasConfirmedGrabContact(controller, kind);
         if (confirmedContact)
         {
@@ -2193,7 +2379,8 @@ float playerAngle = Vector3.Angle(transform.forward, -direction);
         if (kind == QTEKind.RearBiteNeck)
         {
             playerAngle = Vector3.Angle(transform.forward, direction);
-            if (enemyAngle > config.maximumEnemyFacingAngle || playerAngle > config.maximumPlayerFacingAngle)
+            float rearMaxPlayerAngle = Mathf.Min(config.maximumPlayerFacingAngle, 65f);
+            if (enemyAngle > config.maximumEnemyFacingAngle || playerAngle > rearMaxPlayerAngle)
             {
                 reason = QTECancelReason.FacingInvalid;
                 return false;
@@ -2201,12 +2388,35 @@ float playerAngle = Vector3.Angle(transform.forward, -direction);
         }
         else if (kind == QTEKind.KnifeAssassination)
         {
-            // enemyBackAngle（敌人后方角度）：保存 Vector3.Angle(Vector3, Vector3) 的返回结果，供当前步骤使用。使用位置：LeonQTECoordinator.ValidatePairing(IEnemyQTEParticipant, QTEKind, out QTECancelReason)。
-float enemyBackAngle = Vector3.Angle(targetParticipant.Root.forward, -direction);
-            if (enemyBackAngle > config.assassinationRearAngle || playerAngle > config.assassinationPlayerFacingAngle)
+            float baseRearAngle;
+            if (isStaggerBackstab)
             {
+                baseRearAngle = config.staggerBackstabRearAngle;
+            }
+            else
+            {
+                baseRearAngle = config.assassinationRearAngle;
+            }
+
+            bool matchedBaseZone;
+            bool geometryValid = EvaluateAssassinationGeometry(targetParticipant.Root.position,
+                targetParticipant.Root.forward, transform.position, transform.forward,
+                config.assassinationStartDistance, config.maximumHeightDifference,
+                baseRearAngle, config.assassinationPlayerFacingAngle,
+                hasAssassinationTurnLatch, config.assassinationTurnGraceAngleBonus,
+                config.assassinationTurnGraceDistanceBonus, out matchedBaseZone);
+            if (!geometryValid)
+            {
+                ClearAssassinationLatch(targetParticipant);
                 reason = QTECancelReason.FacingInvalid;
                 return false;
+            }
+
+            if (matchedBaseZone && config.assassinationTurnGraceDuration > 0f)
+            {
+                assassinationLatchTarget = targetParticipant;
+                assassinationLatchExpiresAt = Time.time + config.assassinationTurnGraceDuration;
+                assassinationLatchIsStagger = isStaggerBackstab;
             }
         }
         else if (kind == QTEKind.GroundFinisher)
@@ -2221,9 +2431,9 @@ float enemyBackAngle = Vector3.Angle(targetParticipant.Root.forward, -direction)
                 reason = QTECancelReason.FacingInvalid;
                 return false;
             }
-            // 1020 是正面跪姿配对，从背后不能绕过电锯男进入刺击。
+            // 1020 是正面/侧前方跪姿配对，允许电锯人正面及侧前方 100 度范围内跑过去补刀。
             if (targetParticipant is VillagerQTEParticipant saw && saw.controller.missionEnemyType == MissionEnemyType.Sawman
-                && enemyAngle > 65f)
+                && enemyAngle > 100f)
             {
                 reason = QTECancelReason.FacingInvalid;
                 return false;
@@ -2246,8 +2456,8 @@ float enemyBackAngle = Vector3.Angle(targetParticipant.Root.forward, -direction)
 
     /// <summary>IsPairingSpaceBlocked 的业务处理入口；本方法直接依赖 LeonQTECoordinator.ContainsCollider(Collider[], Collider)、Physics.OverlapCapsule(Vector3, Vector3, float, int, QueryTriggerInteraction)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonQTECoordinator.AlignAndEnter(int)；下游（含内部回调体） LeonQTECoordinator.ContainsCollider(Collider[], Collider)、Physics.OverlapCapsule(Vector3, Vector3, float, int, QueryTriggerInteraction)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="playerTargetPosition">中文含义：玩家目标位置。使用位置：LeonQTECoordinator.IsPairingSpaceBlocked(Vector3, IEnemyQTEParticipant)。</param>
-    /// <param name="targetParticipant">中文含义：目标参与者。使用位置：作为 LeonQTECoordinator.ContainsCollider(Collider[], Collider) 的参数。</param>
+    /// <param name="playerTargetPosition">玩家目标位置。</param>
+    /// <param name="targetParticipant">目标参与者。</param>
     private Vector3 ResolvePairingClearanceBase(Vector3 position, IEnemyQTEParticipant targetParticipant)
     {
         // 配对根轨允许数厘米的上下起伏。净空胶囊按附近支撑面抬高，仍检查同一地形网格上的墙体。
@@ -2289,9 +2499,9 @@ float enemyBackAngle = Vector3.Angle(targetParticipant.Root.forward, -direction)
             return 0f;
         }
 
-        // hits（命中结果）：保存 Physics.SphereCastAll(Vector3, float, Vector3, float, int, QueryTriggerInteraction) 的返回结果，供当前步骤使用。使用位置：LeonQTECoordinator.GetSafeSeparationDistance(Vector3, Vector3, float, IEnemyQTEParticipant)。
+        // 命中结果。
 RaycastHit[] hits = Physics.SphereCastAll(origin + Vector3.up * 0.9f, config.clearanceRadius, direction, desiredDistance, config.clearanceMask, QueryTriggerInteraction.Ignore);
-        // safeDistance（安全距离）：使用位置：作为 Mathf.Min(float, float) 的参数、LeonQTECoordinator.GetSafeSeparationDistance(Vector3, Vector3, float, IEnemyQTEParticipant)。
+        // 安全距离。
 float safeDistance = desiredDistance;
         // hit（命中）：每轮从命中结果取得一个元素，仅代表当前这一项。使用位置：作为 LeonQTECoordinator.ContainsCollider(Collider[], Collider) 的参数、作为 Mathf.Max(float, float) 的参数。
 foreach (var hit in hits)
@@ -2326,7 +2536,7 @@ foreach (var hit in hits)
 
     /// <summary>ResolveAssassinationDamage 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
     /// <remarks>静态调用链：上游 LeonQTECoordinator.CommitAssassination(int)；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="villager">中文含义：村民。使用位置：LeonQTECoordinator.ResolveAssassinationDamage(VillagerController)。</param>
+    /// <param name="villager">村民。</param>
     private float ResolveAssassinationDamage(VillagerController villager)
     {
         if (config == null)
@@ -2358,7 +2568,7 @@ foreach (var hit in hits)
             return;
         }
 
-        // stateInfo（当前动画状态信息）：保存 Animator.GetCurrentAnimatorStateInfo(int) 的返回结果，供当前步骤使用。使用位置：LeonQTECoordinator.CheckPlayerRecoveryThreshold()。
+        // 当前动画状态信息。
 AnimatorStateInfo stateInfo = playerAnimator.GetCurrentAnimatorStateInfo(AnimatorLayerID.FullBodyAction);
         if (stateInfo.shortNameHash != HashQTESuccessState && playerAnimator.IsInTransition(AnimatorLayerID.FullBodyAction))
         {
@@ -2385,7 +2595,7 @@ AnimatorStateInfo stateInfo = playerAnimator.GetCurrentAnimatorStateInfo(Animato
             return;
         }
 
-        // fallbackDelay（后备延迟）：使用位置：LeonQTECoordinator.CheckAssassinationCommitFallback()。
+        // 后备延迟。
 float fallbackDelay;
         if (config != null)
         {
@@ -2413,13 +2623,13 @@ float fallbackDelay;
             return;
         }
 
-        // success（是否成功）：使用位置：作为 LeonQTECoordinator.TryGetPlayerResultNormalizedTime(bool, out float) 的参数、LeonQTECoordinator.CheckResultPlayerReleaseFailsafe()。
+        // 是否成功。
 bool success = pendingResult == QTEResult.Success;
-        // normalizedTime（动画归一化播放时间）：使用位置：作为 Debug.LogWarning(object) 的参数、作为 LeonQTECoordinator.TryGetPlayerResultNormalizedTime(bool, out float) 的参数、LeonQTECoordinator.CheckResultPlayerReleaseFailsafe()。
+        // 动画归一化播放时间。
 float normalizedTime;
-        // hasResultState（是否具有结果状态）：保存 LeonQTECoordinator.TryGetPlayerResultNormalizedTime(bool, out float) 的返回结果，供当前步骤使用。使用位置：LeonQTECoordinator.CheckResultPlayerReleaseFailsafe()。
+        // 是否具有结果状态。
 bool hasResultState = TryGetPlayerResultNormalizedTime(success, out normalizedTime);
-        // releaseThreshold（释放阈值）：使用位置：LeonQTECoordinator.CheckResultPlayerReleaseFailsafe()。
+        // 释放阈值。
 float releaseThreshold;
         if (success)
         {
@@ -2430,11 +2640,11 @@ float releaseThreshold;
             releaseThreshold = 0.82f;
         }
 
-        // timeout（超时）：使用位置：LeonQTECoordinator.CheckResultPlayerReleaseFailsafe()。
+        // 超时。
 float timeout;
         if (success)
         {
-            // selectedValue38（分支选出的最大的返回结果）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：LeonQTECoordinator.CheckResultPlayerReleaseFailsafe()。
+            // 分支选出的最大的返回结果。
 float selectedValue38;
             if (config != null)
             {
@@ -2481,7 +2691,7 @@ float selectedValue38;
             return;
         }
 
-        // playerTimeout（玩家超时）：使用位置：作为 Mathf.Max(float, float) 的参数、LeonQTECoordinator.CheckFailureExitFailsafe()。
+        // 玩家超时。
 float playerTimeout;
         if (config != null)
         {
@@ -2492,7 +2702,7 @@ float playerTimeout;
             playerTimeout = 0.35f;
         }
 
-        // enemyTimeout（敌人超时）：使用位置：作为 Mathf.Max(float, float) 的参数、LeonQTECoordinator.CheckFailureExitFailsafe()。
+        // 敌人超时。
 float enemyTimeout;
         if (config != null)
         {
@@ -2520,7 +2730,7 @@ float enemyTimeout;
         }
 
         TryFinishAfterPairExit();
-        // cleanupTimeout（清理超时）：使用位置：LeonQTECoordinator.CheckFailureExitFailsafe()。
+        // 清理超时。
 float cleanupTimeout = Mathf.Max(playerTimeout, enemyTimeout) + 0.25f;
         if (!cleanupRunning && phaseElapsed >= cleanupTimeout)
         {
@@ -2532,8 +2742,8 @@ float cleanupTimeout = Mathf.Max(playerTimeout, enemyTimeout) + 0.25f;
 
     /// <summary>TryGetPlayerResultNormalizedTime 的业务处理入口；本方法直接依赖 Animator.GetCurrentAnimatorStateInfo(int)、Animator.GetNextAnimatorStateInfo(int)、Animator.IsInTransition(int)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonQTECoordinator.CheckResultPlayerReleaseFailsafe()、LeonQTECoordinator.TryFinalizeCommittedAssassination()；下游（含内部回调体） Animator.GetCurrentAnimatorStateInfo(int)、Animator.GetNextAnimatorStateInfo(int)、Animator.IsInTransition(int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="success">中文含义：是否成功。使用位置：LeonQTECoordinator.TryGetPlayerResultNormalizedTime(bool, out float)。</param>
-    /// <param name="normalizedTime">中文含义：动画归一化播放时间。输出参数，由本入口写入并交给调用方。使用位置：LeonQTECoordinator.TryGetPlayerResultNormalizedTime(bool, out float)。</param>
+    /// <param name="success">是否成功。</param>
+    /// <param name="normalizedTime">动画归一化播放时间。输出参数，由本入口写入并交给调用方。</param>
     private bool TryGetPlayerResultNormalizedTime(bool success, out float normalizedTime)
     {
         normalizedTime = 0f;
@@ -2542,7 +2752,7 @@ float cleanupTimeout = Mathf.Max(playerTimeout, enemyTimeout) + 0.25f;
             return false;
         }
 
-        // expectedHash（预期哈希编号）：使用位置：LeonQTECoordinator.TryGetPlayerResultNormalizedTime(bool, out float)。
+        // 预期哈希编号。
 int expectedHash;
         if (success)
         {
@@ -2553,7 +2763,7 @@ int expectedHash;
             expectedHash = HashQTEFailState;
         }
 
-        // stateInfo（当前动画状态信息）：保存 Animator.GetCurrentAnimatorStateInfo(int) 的返回结果，供当前步骤使用。使用位置：LeonQTECoordinator.TryGetPlayerResultNormalizedTime(bool, out float)。
+        // 当前动画状态信息。
 AnimatorStateInfo stateInfo = playerAnimator.GetCurrentAnimatorStateInfo(AnimatorLayerID.FullBodyAction);
         if (stateInfo.shortNameHash != expectedHash && playerAnimator.IsInTransition(AnimatorLayerID.FullBodyAction))
         {
@@ -2571,7 +2781,7 @@ AnimatorStateInfo stateInfo = playerAnimator.GetCurrentAnimatorStateInfo(Animato
 
     /// <summary>ForceReleasePlayerFromResult 的业务处理入口；本方法直接依赖 LeonQTECoordinator.ChangePhase(QTEPhase)、LeonQTECoordinator.CommitAssassination(int)、LeonQTECoordinator.CommitBiteDamage(int)、LeonQTECoordinator.FinishResultMotion()、LeonQTECoordinator.HandleEnemySuccessExit(int)、LeonQTECoordinator.IsCommittedAssassinationSuccess()、LeonQTECoordinator.ReleasePlayer(int) 等共 9 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonQTECoordinator.CheckResultPlayerReleaseFailsafe()；下游（含内部回调体） LeonQTECoordinator.ChangePhase(QTEPhase)、LeonQTECoordinator.CommitAssassination(int)、LeonQTECoordinator.CommitBiteDamage(int)、LeonQTECoordinator.FinishResultMotion()、LeonQTECoordinator.HandleEnemySuccessExit(int)、LeonQTECoordinator.IsCommittedAssassinationSuccess()、LeonQTECoordinator.ReleasePlayer(int) 等共 9 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="sessionId">中文含义：会话编号。使用位置：作为 LeonQTECoordinator.CommitAssassination(int) 的参数、作为 LeonQTECoordinator.CommitBiteDamage(int) 的参数、作为 LeonQTECoordinator.HandleEnemySuccessExit(int) 的参数 等共 5 处。</param>
+    /// <param name="sessionId">会话编号。</param>
     private void ForceReleasePlayerFromResult(int sessionId)
     {
         if (sessionId == 0 || sessionId != activeSessionId || playerReleased)
@@ -2579,7 +2789,7 @@ AnimatorStateInfo stateInfo = playerAnimator.GetCurrentAnimatorStateInfo(Animato
             return;
         }
 
-        // success（是否成功）：使用位置：LeonQTECoordinator.ForceReleasePlayerFromResult(int)。
+        // 是否成功。
 bool success = pendingResult == QTEResult.Success;
         FinishResultMotion();
         if (!success && !damageCommitted)
@@ -2643,7 +2853,7 @@ bool success = pendingResult == QTEResult.Success;
             return;
         }
 
-        // delay（延迟）：使用位置：LeonQTECoordinator.TryFinalizeCommittedAssassination()。
+        // 延迟。
 float delay;
         if (config != null)
         {
@@ -2664,9 +2874,9 @@ float delay;
             return;
         }
 
-        // receiverValue44（判空前缓存的动画协调器）：从动画协调器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonQTECoordinator.TryFinalizeCommittedAssassination()。
+        // 判空前缓存的动画协调器。
 global::LeonAnimationActionCoordinator receiverValue44 = animationCoordinator;
-        // optionalValue45（条件访问得到的力度结束配对动作的返回结果）：保存条件访问的结果，接收者为空时保持默认空值，非空时才执行原成员访问。使用位置：LeonQTECoordinator.TryFinalizeCommittedAssassination()。
+        // 条件访问得到的力度结束配对动作的返回结果。
 bool? optionalValue45;
         if (!global::System.Object.ReferenceEquals(receiverValue44, null))
         {
@@ -2721,7 +2931,7 @@ bool? optionalValue45;
             return;
         }
 
-        // sessionId（会话编号）：使用位置：作为 LeonQTECoordinator.CommitAssassination(int) 的参数、作为 LeonQTECoordinator.HandleEnemySuccessExit(int) 的参数、作为 LeonQTECoordinator.ReleasePlayer(int) 的参数 等共 4 处。
+        // 会话编号。
 int sessionId = activeSessionId;
         if (!assassinationCommitted)
         {
@@ -2758,7 +2968,7 @@ int sessionId = activeSessionId;
 
     /// <summary>ReleasePlayer 的业务处理入口；本方法直接依赖 LeonAnimationActionCoordinator.ForceClearWeaponActionBlockAfterQTE(WeaponType)、LeonAnimationActionCoordinator.ForceFinishQTE(int)、LeonAnimatorDriver.SetMovement(float, float, float, bool)、LeonAnimRig.ExitQTEIK(WeaponType)、LeonController.FinishQTEState(bool)、LeonInputBridge.ExitQTEInput(int)、LeonQTECoordinator.EndAssassinationKnifeVisualIfNeeded() 等共 12 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonQTECoordinator.CheckFailureExitFailsafe()、LeonQTECoordinator.FinishCleanup(QTEResult, QTECancelReason)、LeonQTECoordinator.ForceReleasePlayerFromResult(int)、LeonQTECoordinator.HandlePlayerActionExited(AnimationActionTransaction)、LeonQTECoordinator.HandlePlayerExitTimeout() 等共 8 处；下游（含内部回调体） LeonAnimationActionCoordinator.ForceClearWeaponActionBlockAfterQTE(WeaponType)、LeonAnimationActionCoordinator.ForceFinishQTE(int)、LeonAnimatorDriver.SetMovement(float, float, float, bool)、LeonAnimRig.ExitQTEIK(WeaponType)、LeonController.FinishQTEState(bool)、LeonInputBridge.ExitQTEInput(int)、LeonQTECoordinator.EndAssassinationKnifeVisualIfNeeded() 等共 12 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="sessionId">中文含义：会话编号。使用位置：作为 LeonAnimationActionCoordinator.ForceFinishQTE(int) 的参数、作为 LeonInputBridge.ExitQTEInput(int) 的参数。</param>
+    /// <param name="sessionId">会话编号。</param>
     private void ReleasePlayer(int sessionId)
     {
         if (playerReleased)
@@ -2767,12 +2977,12 @@ int sessionId = activeSessionId;
         }
 
         playerReleased = true;
-        // restoreWeapon（恢复武器）：保存 LeonQTECoordinator.ResolveQTEExitWeapon() 的返回结果，供当前步骤使用。使用位置：作为 LeonAnimationActionCoordinator.ForceClearWeaponActionBlockAfterQTE(WeaponType) 的参数、作为 LeonAnimRig.ExitQTEIK(WeaponType) 的参数、作为 LeonQTECoordinator.RestoreWeaponVisualAfterQTE(WeaponType, bool) 的参数 等共 4 处。
+        // 恢复武器。
 WeaponType restoreWeapon = ResolveQTEExitWeapon();
-        // resumeMovement（是否恢复执行移动）：使用位置：作为 LeonController.FinishQTEState(bool) 的参数。
+        // 是否恢复执行移动。
 bool resumeMovement = pendingResult == QTEResult.Success;
         // 先把基础移动参数恢复为稳定的静止值，再让全身层开始淡出。
-        // receiverValue46（判空前缓存的动画控制器驱动器）：从动画控制器驱动器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonQTECoordinator.ReleasePlayer(int)。
+        // 判空前缓存的动画控制器驱动器。
 global::LeonAnimatorDriver receiverValue46 = // 先把基础移动参数恢复为稳定的静止值，再让全身层开始淡出。
  animatorDriver;
         if (!global::System.Object.ReferenceEquals(receiverValue46, null))
@@ -2780,9 +2990,9 @@ global::LeonAnimatorDriver receiverValue46 = // 先把基础移动参数恢复�
             receiverValue46.SetMovement(0f, 0f, 0f, false);
         }
 
-        // receiverValue47（判空前缓存的动画协调器）：从动画协调器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonQTECoordinator.ReleasePlayer(int)。
+        // 判空前缓存的动画协调器。
 global::LeonAnimationActionCoordinator receiverValue47 = animationCoordinator;
-        // optionalValue48（条件访问得到的力度结束配对动作的返回结果）：保存条件访问的结果，接收者为空时保持默认空值，非空时才执行原成员访问。使用位置：LeonQTECoordinator.ReleasePlayer(int)。
+        // 条件访问得到的力度结束配对动作的返回结果。
 bool? optionalValue48;
         if (!global::System.Object.ReferenceEquals(receiverValue47, null))
         {
@@ -2793,7 +3003,7 @@ bool? optionalValue48;
             optionalValue48 = default;
         }
 
-        // receiverValue49（判空前缓存的动画协调器）：从动画协调器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonQTECoordinator.ReleasePlayer(int)。
+        // 判空前缓存的动画协调器。
 global::LeonAnimationActionCoordinator receiverValue49 = animationCoordinator;
         if (!global::System.Object.ReferenceEquals(receiverValue49, null))
         {
@@ -2801,15 +3011,39 @@ global::LeonAnimationActionCoordinator receiverValue49 = animationCoordinator;
         }
 
         EndAssassinationKnifeVisualIfNeeded();
-        RestoreWeaponVisualAfterQTE(restoreWeapon);
+        bool startedTemporaryKnifeReturn = false;
+        if (!temporaryKnifeCarryReturnActive && pendingResult == QTEResult.Success
+            && controller != null && controller.currentState != LeonState.Dead
+            && (activeKind == QTEKind.GroundFinisher || activeKind == QTEKind.KnifeAssassination)
+            && IsGunWeapon(restoreWeapon) && combat != null
+            && combat.BeginTemporaryKnifeCarryAfterQTE(restoreWeapon, true))
+        {
+            temporaryKnifeCarryReturnActive = true;
+            startedTemporaryKnifeReturn = true;
+        }
+        else if (temporaryKnifeCarryReturnActive)
+        {
+            startedTemporaryKnifeReturn = true;
+        }
+
+        WeaponType exitPresentationWeapon = restoreWeapon;
+        if (startedTemporaryKnifeReturn)
+        {
+            exitPresentationWeapon = WeaponType.Knife;
+        }
+        else
+        {
+            RestoreWeaponVisualAfterQTE(restoreWeapon);
+        }
+
         RestorePlayerLock();
         if (animRig != null && !animRig.IsDead)
         {
-            animRig.ExitQTEIK(restoreWeapon);
+            animRig.ExitQTEIK(exitPresentationWeapon);
         }
 
-        ScheduleWeaponTypeRestore(restoreWeapon);
-        // receiverValue50（判空前缓存的输入桥接）：从输入桥接读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonQTECoordinator.ReleasePlayer(int)。
+        ScheduleWeaponTypeRestore(exitPresentationWeapon);
+        // 判空前缓存的输入桥接。
 global::LeonInputBridge receiverValue50 = inputBridge;
         if (!global::System.Object.ReferenceEquals(receiverValue50, null))
         {
@@ -2824,8 +3058,8 @@ global::LeonInputBridge receiverValue50 = inputBridge;
 
     /// <summary>RestoreWeaponVisualAfterQTE 的业务处理入口；本方法直接依赖 Component.GetComponent&lt;LeonAnimatorDriver&gt;()、Component.GetComponent&lt;LeonWeaponHandler&gt;()、Component.GetComponent&lt;LeonWeaponVisualController&gt;()、LeonAnimatorDriver.SetKnifeMode(bool)、LeonAnimatorDriver.SetWeaponType(WeaponType)、LeonAnimRig.SetWeapon(WeaponType)、LeonQTECoordinator.CanRestoreWeapon(WeaponType) 等共 11 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonQTECoordinator.FinishCleanup(QTEResult, QTECancelReason)、LeonQTECoordinator.ReleasePlayer(int)；下游（含内部回调体） Component.GetComponent&lt;LeonAnimatorDriver&gt;()、Component.GetComponent&lt;LeonWeaponHandler&gt;()、Component.GetComponent&lt;LeonWeaponVisualController&gt;()、LeonAnimatorDriver.SetKnifeMode(bool)、LeonAnimatorDriver.SetWeaponType(WeaponType)、LeonAnimRig.SetWeapon(WeaponType)、LeonQTECoordinator.CanRestoreWeapon(WeaponType) 等共 11 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="weapon">中文含义：当前武器类别。使用位置：作为 LeonAnimatorDriver.SetWeaponType(WeaponType) 的参数、作为 LeonAnimRig.SetWeapon(WeaponType) 的参数、作为 LeonQTECoordinator.CanRestoreWeapon(WeaponType) 的参数 等共 7 处。</param>
-    /// <param name="notify">中文含义：是否通知。使用位置：作为 LeonWeaponHandler.ForceSyncCurrentWeapon(WeaponType, bool) 的参数。</param>
+    /// <param name="weapon">当前武器类别。</param>
+    /// <param name="notify">是否通知。</param>
     private void RestoreWeaponVisualAfterQTE(WeaponType weapon, bool notify = true)
     {
         if (!IsSupportedQTEWeapon(weapon) || !CanRestoreWeapon(weapon))
@@ -2849,14 +3083,14 @@ global::LeonInputBridge receiverValue50 = inputBridge;
             weaponVisualController = GetComponent<LeonWeaponVisualController>();
         }
 
-        // receiverValue51（判空前缓存的武器视觉表现控制器）：从武器视觉表现控制器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonQTECoordinator.RestoreWeaponVisualAfterQTE(WeaponType, bool)。
+        // 判空前缓存的武器视觉表现控制器。
 global::LeonWeaponVisualController receiverValue51 = weaponVisualController;
         if (!global::System.Object.ReferenceEquals(receiverValue51, null))
         {
             receiverValue51.SetEquippedWeapon(weapon);
         }
 
-        // receiverValue52（判空前缓存的当前里昂动画绑定组件）：从动画绑定组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonQTECoordinator.RestoreWeaponVisualAfterQTE(WeaponType, bool)。
+        // 判空前缓存的当前里昂动画绑定组件。
 global::LeonAnimRig receiverValue52 = animRig;
         if (!global::System.Object.ReferenceEquals(receiverValue52, null))
         {
@@ -2887,7 +3121,7 @@ global::LeonAnimRig receiverValue52 = animRig;
     /// <remarks>静态调用链：上游 LeonQTECoordinator.ResolveQTEExitWeapon()、LeonQTECoordinator.TryStart(QTEKind, IEnemyQTEParticipant, out int)；下游（含内部回调体） Component.GetComponent&lt;LeonWeaponVisualController&gt;()、LeonQTECoordinator.CanRestoreWeapon(WeaponType)、LeonQTECoordinator.ResolveOwnedFallbackWeapon()、LeonQTECoordinator.ResolveWeaponFromAnimator()、LeonQTECoordinator.ResolveWeaponFromHandler()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     private WeaponType ResolveCurrentSessionWeapon()
     {
-        // controllerWeapon（控制器武器）：使用位置：作为 LeonQTECoordinator.CanRestoreWeapon(WeaponType) 的参数、LeonQTECoordinator.ResolveCurrentSessionWeapon()。
+        // 控制器武器。
 WeaponType controllerWeapon;
         if (controller != null)
         {
@@ -2903,7 +3137,7 @@ WeaponType controllerWeapon;
             return controllerWeapon;
         }
 
-        // handlerWeapon（处理器武器）：保存 LeonQTECoordinator.ResolveWeaponFromHandler() 的返回结果，供当前步骤使用。使用位置：作为 LeonQTECoordinator.CanRestoreWeapon(WeaponType) 的参数、LeonQTECoordinator.ResolveCurrentSessionWeapon()。
+        // 处理器武器。
 WeaponType handlerWeapon = ResolveWeaponFromHandler();
         if (CanRestoreWeapon(handlerWeapon))
         {
@@ -2915,7 +3149,7 @@ WeaponType handlerWeapon = ResolveWeaponFromHandler();
             weaponVisualController = GetComponent<LeonWeaponVisualController>();
         }
 
-        // visualWeapon（视觉表现武器）：使用位置：作为 LeonQTECoordinator.CanRestoreWeapon(WeaponType) 的参数、LeonQTECoordinator.ResolveCurrentSessionWeapon()。
+        // 视觉表现武器。
 WeaponType visualWeapon;
         if (weaponVisualController != null)
         {
@@ -2926,7 +3160,7 @@ WeaponType visualWeapon;
             visualWeapon = WeaponType.Pistol;
         }
 
-        // rigWeapon（绑定武器）：使用位置：作为 LeonQTECoordinator.CanRestoreWeapon(WeaponType) 的参数、LeonQTECoordinator.ResolveCurrentSessionWeapon()。
+        // 绑定武器。
 WeaponType rigWeapon;
         if (animRig != null)
         {
@@ -2937,7 +3171,7 @@ WeaponType rigWeapon;
             rigWeapon = WeaponType.Pistol;
         }
 
-        // animatorWeapon（动画控制器武器）：保存 LeonQTECoordinator.ResolveWeaponFromAnimator() 的返回结果，供当前步骤使用。使用位置：作为 LeonQTECoordinator.CanRestoreWeapon(WeaponType) 的参数、LeonQTECoordinator.ResolveCurrentSessionWeapon()。
+        // 动画控制器武器。
 WeaponType animatorWeapon = ResolveWeaponFromAnimator();
         if (CanRestoreWeapon(visualWeapon))
         {
@@ -2974,7 +3208,7 @@ WeaponType animatorWeapon = ResolveWeaponFromAnimator();
 
         if (cachedWeaponType)
         {
-            // weaponTypeValue（武器类型值）：保存 Animator.GetFloat(int) 的返回结果，供当前步骤使用。使用位置：LeonQTECoordinator.ResolveWeaponFromAnimator()。
+            // 武器类型值。
 float weaponTypeValue = playerAnimator.GetFloat(HashWeaponType);
             if (weaponTypeValue > 2f)
             {
@@ -2990,9 +3224,9 @@ float weaponTypeValue = playerAnimator.GetFloat(HashWeaponType);
         return WeaponType.Pistol;
     }
 
-    /// <summary>中文含义：缓存武器控制器。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonQTECoordinator.EnsureWeaponParameterCache()。</summary>
+    /// <summary>缓存武器控制器。</summary>
     private RuntimeAnimatorController cachedWeaponController;
-    /// <summary>中文含义：weaponParameterCacheInitialized 表示“武器参数缓存是否已初始化”；cachedKnifeMode 表示“是否缓存小刀模式”；cachedWeaponType 表示“是否缓存武器类型”。使用位置：LeonQTECoordinator.EnsureWeaponParameterCache()。；使用位置：LeonQTECoordinator.EnsureWeaponParameterCache()、LeonQTECoordinator.ResolveWeaponFromAnimator()。；使用位置：LeonQTECoordinator.EnsureWeaponParameterCache()、LeonQTECoordinator.ResolveWeaponFromAnimator()。</summary>
+    /// <summary>weaponParameterCacheInitialized 表示“武器参数缓存是否已初始化”；cachedKnifeMode 表示“是否缓存小刀模式”；cachedWeaponType 表示“是否缓存武器类型”。</summary>
     private bool weaponParameterCacheInitialized, cachedKnifeMode, cachedWeaponType;
     /// <summary>GetPromptCandidates 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
     /// <remarks>静态调用链：上游 LeonQTECoordinator.HasAnyPromptCandidate()、LeonQTECoordinator.TryGetBodyTechniquePromptCandidate(out VillagerQTEParticipant, out int)、LeonQTECoordinator.TryGetPromptCandidate(out IEnemyQTEParticipant, out QTEKind)；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
@@ -3012,7 +3246,7 @@ float weaponTypeValue = playerAnimator.GetFloat(HashWeaponType);
     /// <remarks>静态调用链：上游 LeonQTECoordinator.ResolveWeaponFromAnimator()、LeonQTECoordinator.Start()；下游（含内部回调体） object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     private void EnsureWeaponParameterCache()
     {
-        // current（当前运行时动画控制器控制器）：使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonQTECoordinator.EnsureWeaponParameterCache()。
+        // 当前运行时动画控制器控制器。
 RuntimeAnimatorController current;
         if (playerAnimator != null)
         {
@@ -3071,7 +3305,7 @@ foreach (var parameter in playerAnimator.parameters)
             return WeaponType.Pistol;
         }
 
-        // currentWeaponBase（当前武器基础）：保存 LeonWeaponHandler.GetCurrentWeapon() 的返回结果，供当前步骤使用。使用位置：LeonQTECoordinator.ResolveWeaponFromHandler()。
+        // 当前武器基础。
 WeaponBase currentWeaponBase = weaponHandler.GetCurrentWeapon();
         if (currentWeaponBase != null && currentWeaponBase.data != null)
         {
@@ -3097,7 +3331,7 @@ WeaponBase currentWeaponBase = weaponHandler.GetCurrentWeapon();
             return activeSessionWeapon;
         }
 
-        // currentResolvedWeapon（当前解算后的武器）：保存 LeonQTECoordinator.ResolveCurrentSessionWeapon() 的返回结果，供当前步骤使用。使用位置：作为 LeonQTECoordinator.CanRestoreWeapon(WeaponType) 的参数、LeonQTECoordinator.ResolveQTEExitWeapon()。
+        // 当前解算后的武器。
 WeaponType currentResolvedWeapon = ResolveCurrentSessionWeapon();
         if (CanRestoreWeapon(currentResolvedWeapon))
         {
@@ -3109,7 +3343,7 @@ WeaponType currentResolvedWeapon = ResolveCurrentSessionWeapon();
 
     /// <summary>ScheduleWeaponTypeRestore 的业务处理入口；本方法直接依赖 Component.GetComponent&lt;LeonAnimatorDriver&gt;()、LeonAnimatorDriver.SetWeaponType(WeaponType)、LeonQTECoordinator.CanRestoreWeapon(WeaponType)、LeonQTECoordinator.IsGunWeapon(WeaponType)、object.ReferenceEquals(object, object)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonQTECoordinator.FinishCleanup(QTEResult, QTECancelReason)、LeonQTECoordinator.ReleasePlayer(int)；下游（含内部回调体） Component.GetComponent&lt;LeonAnimatorDriver&gt;()、LeonAnimatorDriver.SetWeaponType(WeaponType)、LeonQTECoordinator.CanRestoreWeapon(WeaponType)、LeonQTECoordinator.IsGunWeapon(WeaponType)、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="weapon">中文含义：当前武器类别。使用位置：作为 LeonAnimatorDriver.SetWeaponType(WeaponType) 的参数、作为 LeonQTECoordinator.CanRestoreWeapon(WeaponType) 的参数、作为 LeonQTECoordinator.IsGunWeapon(WeaponType) 的参数 等共 4 处。</param>
+    /// <param name="weapon">当前武器类别。</param>
     private void ScheduleWeaponTypeRestore(WeaponType weapon)
     {
         if (!IsGunWeapon(weapon) || !CanRestoreWeapon(weapon))
@@ -3127,9 +3361,9 @@ WeaponType currentResolvedWeapon = ResolveCurrentSessionWeapon();
             animatorDriver = GetComponent<LeonAnimatorDriver>();
         }
 
-        // receiverValue59（判空前缓存的动画控制器驱动器）：从动画控制器驱动器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonQTECoordinator.ScheduleWeaponTypeRestore(WeaponType)。
+        // 判空前缓存的动画控制器驱动器。
 global::LeonAnimatorDriver receiverValue59 = animatorDriver;
-        // optionalValue60（条件访问得到的集合武器类型的返回结果）：保存条件访问的结果，接收者为空时保持默认空值，非空时才执行原成员访问。使用位置：LeonQTECoordinator.ScheduleWeaponTypeRestore(WeaponType)。
+        // 条件访问得到的集合武器类型的返回结果。
 bool? optionalValue60;
         if (!global::System.Object.ReferenceEquals(receiverValue59, null))
         {
@@ -3170,7 +3404,7 @@ bool? optionalValue60;
 
     /// <summary>CanRestoreWeapon 的业务处理入口；本方法直接依赖 Component.GetComponent&lt;LeonWeaponHandler&gt;()、LeonQTECoordinator.IsSupportedQTEWeapon(WeaponType)、LeonWeaponHandler.HasWeaponInInventory(WeaponType)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonQTECoordinator.ResolveCurrentSessionWeapon()、LeonQTECoordinator.ResolveOwnedFallbackWeapon()、LeonQTECoordinator.ResolveQTEExitWeapon()、LeonQTECoordinator.RestoreWeaponVisualAfterQTE(WeaponType, bool)、LeonQTECoordinator.ScheduleWeaponTypeRestore(WeaponType)；下游（含内部回调体） Component.GetComponent&lt;LeonWeaponHandler&gt;()、LeonQTECoordinator.IsSupportedQTEWeapon(WeaponType)、LeonWeaponHandler.HasWeaponInInventory(WeaponType)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="weapon">中文含义：当前武器类别。使用位置：作为 LeonQTECoordinator.IsSupportedQTEWeapon(WeaponType) 的参数、作为 LeonWeaponHandler.HasWeaponInInventory(WeaponType) 的参数。</param>
+    /// <param name="weapon">当前武器类别。</param>
     private bool CanRestoreWeapon(WeaponType weapon)
     {
         if (!IsSupportedQTEWeapon(weapon))
@@ -3190,7 +3424,7 @@ bool? optionalValue60;
     /// <remarks>静态调用链：上游 LeonQTECoordinator.ResolveCurrentSessionWeapon()、LeonQTECoordinator.ResolveQTEExitWeapon()；下游（含内部回调体） LeonQTECoordinator.CanRestoreWeapon(WeaponType)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     private WeaponType ResolveOwnedFallbackWeapon()
     {
-        // fallbackOrder（后备顺序）：使用位置：作为 LeonQTECoordinator.CanRestoreWeapon(WeaponType) 的参数、LeonQTECoordinator.ResolveOwnedFallbackWeapon()。
+        // 后备顺序。
 WeaponType[] fallbackOrder =
         {
             WeaponType.Pistol,
@@ -3198,7 +3432,7 @@ WeaponType[] fallbackOrder =
             WeaponType.Rifle,
             WeaponType.Knife
         };
-        // i（当前遍历索引）：使用位置：LeonQTECoordinator.ResolveOwnedFallbackWeapon()。
+        // 当前遍历索引。
 for (int i = 0; i < fallbackOrder.Length; i++)
         {
             if (CanRestoreWeapon(fallbackOrder[i]))
@@ -3212,7 +3446,7 @@ for (int i = 0; i < fallbackOrder.Length; i++)
 
     /// <summary>IsGunWeapon 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
     /// <remarks>静态调用链：上游 LeonQTECoordinator.IsSupportedQTEWeapon(WeaponType)、LeonQTECoordinator.ScheduleWeaponTypeRestore(WeaponType)；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="weapon">中文含义：当前武器类别。使用位置：LeonQTECoordinator.IsGunWeapon(WeaponType)。</param>
+    /// <param name="weapon">当前武器类别。</param>
     private static bool IsGunWeapon(WeaponType weapon)
     {
         return weapon == WeaponType.Pistol || weapon == WeaponType.Rifle || weapon == WeaponType.Shotgun;
@@ -3220,7 +3454,7 @@ for (int i = 0; i < fallbackOrder.Length; i++)
 
     /// <summary>IsSupportedQTEWeapon 的业务处理入口；本方法直接依赖 LeonQTECoordinator.IsGunWeapon(WeaponType)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonQTECoordinator.CanRestoreWeapon(WeaponType)、LeonQTECoordinator.RestoreWeaponVisualAfterQTE(WeaponType, bool)；下游（含内部回调体） LeonQTECoordinator.IsGunWeapon(WeaponType)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="weapon">中文含义：当前武器类别。使用位置：作为 LeonQTECoordinator.IsGunWeapon(WeaponType) 的参数、LeonQTECoordinator.IsSupportedQTEWeapon(WeaponType)。</param>
+    /// <param name="weapon">当前武器类别。</param>
     private static bool IsSupportedQTEWeapon(WeaponType weapon)
     {
         return IsGunWeapon(weapon) || weapon == WeaponType.Knife;
@@ -3242,7 +3476,7 @@ for (int i = 0; i < fallbackOrder.Length; i++)
 
     /// <summary>HandleEnemySuccessExit 的业务处理入口；本方法直接依赖 LeonQTECoordinator.FinishCleanup(QTEResult, QTECancelReason)、LeonQTECoordinator.GetSafeSeparationDistance(Vector3, Vector3, float, IEnemyQTEParticipant)、LeonQTECoordinator.SetParticipantWorldPosition(Transform, Vector3)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonQTECoordinator.ForceReleasePlayerFromResult(int)、LeonQTECoordinator.HandleEnemyExitTimeout()、LeonQTECoordinator.HandleParticipantActionExited(int, EnemyQTEAction, int, bool)、LeonQTECoordinator.HandlePlayerActionExited(AnimationActionTransaction)、LeonQTECoordinator.HandlePlayerExitTimeout() 等共 7 处；下游（含内部回调体） LeonQTECoordinator.FinishCleanup(QTEResult, QTECancelReason)、LeonQTECoordinator.GetSafeSeparationDistance(Vector3, Vector3, float, IEnemyQTEParticipant)、LeonQTECoordinator.SetParticipantWorldPosition(Transform, Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="sessionId">中文含义：会话编号。使用位置：LeonQTECoordinator.HandleEnemySuccessExit(int)。</param>
+    /// <param name="sessionId">会话编号。</param>
     private void HandleEnemySuccessExit(int sessionId)
     {
         if (sessionId != activeSessionId || pendingResult != QTEResult.Success)
@@ -3253,14 +3487,14 @@ for (int i = 0; i < fallbackOrder.Length; i++)
         resultMotionActive = false;
         if (participant != null && participant.Root != null && config != null)
         {
-            // toPlayer（目标玩家）：使用位置：LeonQTECoordinator.HandleEnemySuccessExit(int)。
+            // 目标玩家。
 Vector3 toPlayer = transform.position - participant.Root.position;
             toPlayer.y = 0f;
-            // currentDistance（当前距离）：使用位置：LeonQTECoordinator.HandleEnemySuccessExit(int)。
+            // 当前距离。
 float currentDistance = toPlayer.magnitude;
             if (currentDistance < config.minimumSuccessFinalDistance)
             {
-                // direction（方向）：使用位置：作为 LeonQTECoordinator.GetSafeSeparationDistance(Vector3, Vector3, float, IEnemyQTEParticipant) 的参数、作为 LeonQTECoordinator.SetParticipantWorldPosition(Transform, Vector3) 的参数、LeonQTECoordinator.HandleEnemySuccessExit(int)。
+                // 方向。
 Vector3 direction;
                 if (toPlayer.sqrMagnitude > 0.0001f)
                 {
@@ -3271,9 +3505,9 @@ Vector3 direction;
                     direction = -participant.Root.forward;
                 }
 
-                // needed（需要）：使用位置：作为 LeonQTECoordinator.GetSafeSeparationDistance(Vector3, Vector3, float, IEnemyQTEParticipant) 的参数。
+                // 需要。
 float needed = config.minimumSuccessFinalDistance - currentDistance;
-                // safeNeeded（安全需要）：保存 LeonQTECoordinator.GetSafeSeparationDistance(Vector3, Vector3, float, IEnemyQTEParticipant) 的返回结果，供当前步骤使用。使用位置：作为 LeonQTECoordinator.SetParticipantWorldPosition(Transform, Vector3) 的参数、LeonQTECoordinator.HandleEnemySuccessExit(int)。
+                // 安全需要。
 float safeNeeded = GetSafeSeparationDistance(participant.Root.position, -direction, needed, participant);
                 if (safeNeeded > 0f)
                 {
@@ -3289,7 +3523,7 @@ float safeNeeded = GetSafeSeparationDistance(participant.Root.position, -directi
     /// <remarks>静态调用链：上游 LeonQTECoordinator.Update()；下游（含内部回调体） Animator.GetCurrentAnimatorStateInfo(int)、Debug.LogWarning(object)、LeonAnimationActionCoordinator.ForceFinishQTE(int)、LeonQTECoordinator.HandleEnemySuccessExit(int)、LeonQTECoordinator.IsCommittedAssassinationSuccess()、LeonQTECoordinator.ReleasePlayer(int)、LeonQTECoordinator.RequestEnemyEnd() 等共 8 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     private void HandlePlayerExitTimeout()
     {
-        // stateInfo（当前动画状态信息）：使用位置：作为 Debug.LogWarning(object) 的参数、LeonQTECoordinator.HandlePlayerExitTimeout()。
+        // 当前动画状态信息。
 AnimatorStateInfo stateInfo;
         if (playerAnimator != null)
         {
@@ -3301,9 +3535,9 @@ AnimatorStateInfo stateInfo;
         }
 
         Debug.LogWarning($"[里昂快速反应事件] 会话 {activeSessionId} 玩家恢复点退出超时。" + $"动作类型={expectedPlayerAction}，当前阶段={phase}，" + $"标准化进度={stateInfo.normalizedTime}。执行强制收尾。");
-        // receiverValue63（判空前缓存的动画协调器）：从动画协调器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonQTECoordinator.HandlePlayerExitTimeout()。
+        // 判空前缓存的动画协调器。
 global::LeonAnimationActionCoordinator receiverValue63 = animationCoordinator;
-        // optionalValue64（条件访问得到的力度结束配对动作的返回结果）：保存条件访问的结果，接收者为空时保持默认空值，非空时才执行原成员访问。使用位置：LeonQTECoordinator.HandlePlayerExitTimeout()。
+        // 条件访问得到的力度结束配对动作的返回结果。
 bool? optionalValue64;
         if (!global::System.Object.ReferenceEquals(receiverValue63, null))
         {
@@ -3341,11 +3575,11 @@ bool? optionalValue64;
 
     /// <summary>FinishCleanup 的业务处理入口；本方法直接依赖 Action&lt;QTESessionEndInfo&gt;.Invoke(QTESessionEndInfo)、IEnemyQTEParticipant.Release(int)、LeonAnimationActionCoordinator.ClearQTEAnimationVariant()、LeonAnimationActionCoordinator.ForceClearWeaponActionBlockAfterQTE(WeaponType)、LeonQTECoordinator.ReleasePlayer(int)、LeonQTECoordinator.ResolveQTEExitWeapon()、LeonQTECoordinator.RestorePairCollisions() 等共 13 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonQTECoordinator.Cancel(int, QTECancelReason)、LeonQTECoordinator.CheckFailureExitFailsafe()、LeonQTECoordinator.HandleEnemySuccessExit(int)、LeonQTECoordinator.SeparateAndFinish(int)；下游（含内部回调体） Action&lt;QTESessionEndInfo&gt;.Invoke(QTESessionEndInfo)、IEnemyQTEParticipant.Release(int)、LeonAnimationActionCoordinator.ClearQTEAnimationVariant()、LeonAnimationActionCoordinator.ForceClearWeaponActionBlockAfterQTE(WeaponType)、LeonQTECoordinator.ReleasePlayer(int)、LeonQTECoordinator.ResolveQTEExitWeapon()、LeonQTECoordinator.RestorePairCollisions() 等共 13 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="result">中文含义：当前配对动作结果。使用位置：作为 QTESessionEndInfo.QTESessionEndInfo(int, QTEResult, QTECancelReason, bool) 的参数、LeonQTECoordinator.FinishCleanup(QTEResult, QTECancelReason)。</param>
-    /// <param name="reason">中文含义：原因。使用位置：作为 QTESessionEndInfo.QTESessionEndInfo(int, QTEResult, QTECancelReason, bool) 的参数。</param>
+    /// <param name="result">当前配对动作结果。</param>
+    /// <param name="reason">原因。</param>
     private void FinishCleanup(QTEResult result, QTECancelReason reason)
     {
-        // finishedSessionId（结束会话编号）：使用位置：作为 IEnemyQTEParticipant.Release(int) 的参数、作为 LeonQTECoordinator.ReleasePlayer(int) 的参数、作为 QTESessionEndInfo.QTESessionEndInfo(int, QTEResult, QTECancelReason, bool) 的参数 等共 4 处。
+        // 结束会话编号。
 int finishedSessionId = activeSessionId;
         if (finishedSessionId == 0 || cleanupSessionId == finishedSessionId)
         {
@@ -3370,19 +3604,51 @@ int finishedSessionId = activeSessionId;
         bool blendGrabExit = controller != null && controller.currentState != LeonState.Dead &&
             (activeKind == QTEKind.FrontGrab || activeKind == QTEKind.RearGrab);
         NativePairPlayback assassinationPose = null;
-        if (activeKind == QTEKind.KnifeAssassination && assassinationCommitted &&
-            participant != null && !participant.IsAlive)
+        bool killedByKnifePair = (activeKind == QTEKind.KnifeAssassination && assassinationCommitted)
+            || (activeKind == QTEKind.FrontGrab && playingFrontGrabStab);
+        if (killedByKnifePair && participant != null && !participant.IsAlive)
         {
             assassinationPose = nativePair;
         }
+        bool alignFrontGrabFacing = false;
+        Quaternion alignedFrontGrabRotation = transform.rotation;
+        if (activeKind == QTEKind.FrontGrab && controller != null && controller.currentState != LeonState.Dead && nativePair != null)
+        {
+            if (TryReadPlayerVisualForward(out Vector3 visualForward))
+            {
+                alignFrontGrabFacing = true;
+                alignedFrontGrabRotation = Quaternion.LookRotation(visualForward, Vector3.up);
+            }
+        }
         bool fadeInterruptedPair = result == QTEResult.Cancelled &&
             reason is QTECancelReason.SpaceBlocked or QTECancelReason.AnimationInterrupted or QTECancelReason.SafetyTimeout;
-        StopNativePair(assassinationPose == null && (blendGrabExit || fadeInterruptedPair), lethalNativeFailure);
-        // finishedParticipant（结束参与者）：使用位置：作为 LeonQTECoordinator.UnsubscribeParticipant(IEnemyQTEParticipant) 的参数、LeonQTECoordinator.FinishCleanup(QTEResult, QTECancelReason)。
+        bool blendFinisherOrPairExit = controller != null && controller.currentState != LeonState.Dead
+            && (activeKind == QTEKind.GroundFinisher || activeKind == QTEKind.KnifeAssassination);
+        bool shouldFadeOut = !alignFrontGrabFacing && assassinationPose == null && (blendGrabExit || fadeInterruptedPair || blendFinisherOrPairExit);
+        StopNativePair(shouldFadeOut, lethalNativeFailure);
+        if (alignFrontGrabFacing)
+        {
+            // 先在动画图关闭且恢复正常旋转前，将根朝向与视觉正面同步，防止倒置根角度引起 180° 瞬转。
+            SetPlayerWorldPose(transform.position, alignedFrontGrabRotation);
+            transform.rotation = alignedFrontGrabRotation;
+            if (playerBody != null)
+            {
+                playerBody.rotation = alignedFrontGrabRotation;
+            }
+        }
+        // 结束参与者。
 IEnemyQTEParticipant finishedParticipant = participant;
         if (!playerReleased)
         {
             ReleasePlayer(finishedSessionId);
+        }
+        if (activeKind == QTEKind.RearGrab && controller != null && controller.currentState != LeonState.Dead)
+        {
+            controller.GrantQTEReleaseInvulnerability(0.45f);
+        }
+        if (pendingResult == QTEResult.Success && inputBridge != null)
+        {
+            inputBridge.SyncHeldMovementImmediately();
         }
 
         resultMotionActive = false;
@@ -3399,7 +3665,7 @@ IEnemyQTEParticipant finishedParticipant = participant;
             }
         }
 
-        // receiverValue65（判空前缓存的动画协调器）：从动画协调器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonQTECoordinator.FinishCleanup(QTEResult, QTECancelReason)。
+        // 判空前缓存的动画协调器。
 global::LeonAnimationActionCoordinator receiverValue65 = animationCoordinator;
         if (!global::System.Object.ReferenceEquals(receiverValue65, null))
         {
@@ -3408,24 +3674,37 @@ global::LeonAnimationActionCoordinator receiverValue65 = animationCoordinator;
 
         if (!lethalNativeFailure && (controller == null || controller.currentState != LeonState.Dead))
         {
-            // restoreWeapon（恢复武器）：保存 LeonQTECoordinator.ResolveQTEExitWeapon() 的返回结果，供当前步骤使用。使用位置：作为 LeonAnimationActionCoordinator.ForceClearWeaponActionBlockAfterQTE(WeaponType) 的参数、作为 LeonQTECoordinator.RestoreWeaponVisualAfterQTE(WeaponType, bool) 的参数、作为 LeonQTECoordinator.ScheduleWeaponTypeRestore(WeaponType) 的参数。
+            // 恢复武器。
 WeaponType restoreWeapon = ResolveQTEExitWeapon();
-            RestoreWeaponVisualAfterQTE(restoreWeapon, false);
-            // receiverValue66（判空前缓存的动画协调器）：从动画协调器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonQTECoordinator.FinishCleanup(QTEResult, QTECancelReason)。
+            if (temporaryKnifeCarryReturnActive)
+            {
+                restoreWeapon = WeaponType.Knife;
+            }
+            else
+            {
+                RestoreWeaponVisualAfterQTE(restoreWeapon, false);
+            }
+            // 判空前缓存的动画协调器。
 global::LeonAnimationActionCoordinator receiverValue66 = animationCoordinator;
             if (!global::System.Object.ReferenceEquals(receiverValue66, null))
             {
                 receiverValue66.ForceClearWeaponActionBlockAfterQTE(restoreWeapon);
             }
 
-            ScheduleWeaponTypeRestore(restoreWeapon);
+            if (!temporaryKnifeCarryReturnActive)
+            {
+                ScheduleWeaponTypeRestore(restoreWeapon);
+            }
         }
+
+        temporaryKnifeCarryReturnActive = false;
 
         if (globalOwner == this)
         {
             globalOwner = null;
         }
 
+        ResetFrontGrabEscape();
         participant = null;
         activeSessionId = 0;
         pairedKnife = null;
@@ -3440,6 +3719,7 @@ global::LeonAnimationActionCoordinator receiverValue66 = animationCoordinator;
         }
 
         pendingResult = QTEResult.None;
+        temporaryKnifeCarryReturnActive = false;
         expectedPlayerAction = FullBodyActionType.None;
         expectedEnemyAction = EnemyQTEAction.None;
         plannedRecoveryExit = false;
@@ -3447,10 +3727,11 @@ global::LeonAnimationActionCoordinator receiverValue66 = animationCoordinator;
         enemyEndRequested = false;
         assassinationCommitted = false;
         assassinationCommittedTime = float.NegativeInfinity;
+        assassinationTriggeredFromStagger = false;
         cleanupRunning = false;
         activeRoutine = null;
         lastEndInfo = new QTESessionEndInfo(finishedSessionId, result, reason, damageCommitted);
-        // receiverValue68（判空前缓存的配对动作会话已结束时的通知回调）：从配对动作会话已结束时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonQTECoordinator.FinishCleanup(QTEResult, QTECancelReason)。
+        // 判空前缓存的配对动作会话已结束时的通知回调。
 global::System.Action<global::QTESessionEndInfo> receiverValue68 = OnQTESessionEnded;
         if (!global::System.Object.ReferenceEquals(receiverValue68, null))
         {
@@ -3467,7 +3748,7 @@ global::System.Action<global::QTESessionEndInfo> receiverValue68 = OnQTESessionE
 
     /// <summary>SubscribeParticipant 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
     /// <remarks>静态调用链：上游 LeonQTECoordinator.TryStart(QTEKind, IEnemyQTEParticipant, out int)；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="targetParticipant">中文含义：目标参与者。使用位置：LeonQTECoordinator.SubscribeParticipant(IEnemyQTEParticipant)。</param>
+    /// <param name="targetParticipant">目标参与者。</param>
     private void SubscribeParticipant(IEnemyQTEParticipant targetParticipant)
     {
         targetParticipant.ActionCompleted += HandleParticipantActionCompleted;
@@ -3479,7 +3760,7 @@ global::System.Action<global::QTESessionEndInfo> receiverValue68 = OnQTESessionE
 
     /// <summary>UnsubscribeParticipant 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
     /// <remarks>静态调用链：上游 LeonQTECoordinator.FinishCleanup(QTEResult, QTECancelReason)、LeonQTECoordinator.TryStart(QTEKind, IEnemyQTEParticipant, out int)；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="targetParticipant">中文含义：目标参与者。使用位置：LeonQTECoordinator.UnsubscribeParticipant(IEnemyQTEParticipant)。</param>
+    /// <param name="targetParticipant">目标参与者。</param>
     private void UnsubscribeParticipant(IEnemyQTEParticipant targetParticipant)
     {
         targetParticipant.ActionCompleted -= HandleParticipantActionCompleted;
@@ -3491,12 +3772,12 @@ global::System.Action<global::QTESessionEndInfo> receiverValue68 = OnQTESessionE
 
     /// <summary>ChangePhase 的业务处理入口；本方法直接依赖 Action&lt;int, QTEPhase&gt;.Invoke(int, QTEPhase)、LeonQTECoordinator.PlayQTEAudioForPhase(QTEPhase)、LeonQTECoordinator.PublishProgress()、object.ReferenceEquals(object, object)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonQTECoordinator.AlignAndEnter(int)、LeonQTECoordinator.BeginResult(bool)、LeonQTECoordinator.BeginSingleShotAssassinationResult()、LeonQTECoordinator.Cancel(int, QTECancelReason)、LeonQTECoordinator.ForceReleasePlayerFromResult(int) 等共 10 处；下游（含内部回调体） Action&lt;int, QTEPhase&gt;.Invoke(int, QTEPhase)、LeonQTECoordinator.PlayQTEAudioForPhase(QTEPhase)、LeonQTECoordinator.PublishProgress()、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="nextPhase">中文含义：下一次阶段。使用位置：作为 Action&lt;int, QTEPhase&gt;.Invoke(int, QTEPhase) 的参数、作为 LeonQTECoordinator.PlayQTEAudioForPhase(QTEPhase) 的参数、LeonQTECoordinator.ChangePhase(QTEPhase)。</param>
+    /// <param name="nextPhase">下一次阶段。</param>
     private void ChangePhase(QTEPhase nextPhase)
     {
         phase = nextPhase;
         phaseElapsed = 0f;
-        // receiverValue69（判空前缓存的配对动作阶段变化时的通知回调）：从配对动作阶段变化时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonQTECoordinator.ChangePhase(QTEPhase)。
+        // 判空前缓存的配对动作阶段变化时的通知回调。
 global::System.Action<int, global::QTEPhase> receiverValue69 = OnQTEPhaseChanged;
         if (!global::System.Object.ReferenceEquals(receiverValue69, null))
         {
@@ -3525,9 +3806,14 @@ global::System.Action<int, global::QTEPhase> receiverValue69 = OnQTEPhaseChanged
 
     /// <summary>PlayQTEAudioForPhase 的业务处理入口；本方法直接依赖 LeonQTECoordinator.PlayQTEOneShot(AudioEventData)、LeonQTECoordinator.StartQTEStruggleLoop(AudioEventData)、LeonQTECoordinator.StopQTEStruggleLoop()、object.ReferenceEquals(object, object)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonQTECoordinator.ChangePhase(QTEPhase)；下游（含内部回调体） LeonQTECoordinator.PlayQTEOneShot(AudioEventData)、LeonQTECoordinator.StartQTEStruggleLoop(AudioEventData)、LeonQTECoordinator.StopQTEStruggleLoop()、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="nextPhase">中文含义：下一次阶段。使用位置：LeonQTECoordinator.PlayQTEAudioForPhase(QTEPhase)。</param>
+    /// <param name="nextPhase">下一次阶段。</param>
     private void PlayQTEAudioForPhase(QTEPhase nextPhase)
     {
+        if (playingFrontGrabStab && nextPhase == QTEPhase.SuccessResult)
+        {
+            return;
+        }
+
         if ((nextPhase == QTEPhase.Entering || nextPhase == QTEPhase.WaitingForInput || nextPhase == QTEPhase.SuccessResult)
             && activeKind == QTEKind.FrontGrab && nativePair != null && TryGetComponent<NativeActionAudio>(out var actionAudio)
             && actionAudio.HasPlayerPairTrack(nativePair.PlayerClipName))
@@ -3538,9 +3824,9 @@ global::System.Action<int, global::QTEPhase> receiverValue69 = OnQTEPhaseChanged
         switch (nextPhase)
         {
             case QTEPhase.Entering:
-                // receiverValue70（判空前缓存的生效变体）：从生效变体读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonQTECoordinator.PlayQTEAudioForPhase(QTEPhase)。
+                // 判空前缓存的生效变体。
 global::QTEAnimationVariant receiverValue70 = activeVariant;
-                // optionalValue71（条件访问得到的接收者值70的起始音频事件）：保存条件访问的结果，接收者为空时保持默认空值，非空时才执行原成员访问。使用位置：作为 LeonQTECoordinator.PlayQTEOneShot(AudioEventData) 的参数、LeonQTECoordinator.PlayQTEAudioForPhase(QTEPhase)。
+                // 条件访问得到的接收者值70的起始音频事件。
 global::AudioEventData optionalValue71;
                 if (!global::System.Object.ReferenceEquals(receiverValue70, null))
                 {
@@ -3554,9 +3840,9 @@ global::AudioEventData optionalValue71;
                 PlayQTEOneShot(optionalValue71);
                 break;
             case QTEPhase.WaitingForInput:
-                // receiverValue72（判空前缓存的生效变体）：从生效变体读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonQTECoordinator.PlayQTEAudioForPhase(QTEPhase)。
+                // 判空前缓存的生效变体。
 global::QTEAnimationVariant receiverValue72 = activeVariant;
-                // optionalValue73（条件访问得到的接收者值72的挣脱音频事件）：保存条件访问的结果，接收者为空时保持默认空值，非空时才执行原成员访问。使用位置：作为 LeonQTECoordinator.StartQTEStruggleLoop(AudioEventData) 的参数、LeonQTECoordinator.PlayQTEAudioForPhase(QTEPhase)。
+                // 条件访问得到的接收者值72的挣脱音频事件。
 global::AudioEventData optionalValue73;
                 if (!global::System.Object.ReferenceEquals(receiverValue72, null))
                 {
@@ -3583,9 +3869,9 @@ global::AudioEventData optionalValue73;
                 }
                 break;
             case QTEPhase.FailureResult:
-                // receiverValue74（判空前缓存的生效变体）：从生效变体读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonQTECoordinator.PlayQTEAudioForPhase(QTEPhase)。
+                // 判空前缓存的生效变体。
 global::QTEAnimationVariant receiverValue74 = activeVariant;
-                // optionalValue75（条件访问得到的接收者值74的失败音频事件）：保存条件访问的结果，接收者为空时保持默认空值，非空时才执行原成员访问。使用位置：作为 LeonQTECoordinator.PlayQTEOneShot(AudioEventData) 的参数、LeonQTECoordinator.PlayQTEAudioForPhase(QTEPhase)。
+                // 条件访问得到的接收者值74的失败音频事件。
 global::AudioEventData optionalValue75;
                 if (!global::System.Object.ReferenceEquals(receiverValue74, null))
                 {
@@ -3608,7 +3894,7 @@ global::AudioEventData optionalValue75;
 
     /// <summary>PlayQTEOneShot 的业务处理入口；本方法直接依赖 AudioManager.Play3D(AudioEventData, Vector3)、LeonQTECoordinator.ResolveQTEAudioPosition()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonQTECoordinator.PlayQTEAudioForPhase(QTEPhase)；下游（含内部回调体） AudioManager.Play3D(AudioEventData, Vector3)、LeonQTECoordinator.ResolveQTEAudioPosition()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="eventData">中文含义：事件配置。使用位置：作为 AudioManager.Play3D(AudioEventData, Vector3) 的参数、LeonQTECoordinator.PlayQTEOneShot(AudioEventData)。</param>
+    /// <param name="eventData">事件配置。</param>
     private void PlayQTEOneShot(AudioEventData eventData)
     {
         if (eventData == null || AudioManager.Instance == null)
@@ -3621,7 +3907,7 @@ global::AudioEventData optionalValue75;
 
     /// <summary>StartQTEStruggleLoop 的业务处理入口；本方法直接依赖 AudioManager.Play3D(AudioEventData, Vector3)、LeonQTECoordinator.ResolveQTEAudioPosition()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonQTECoordinator.PlayQTEAudioForPhase(QTEPhase)；下游（含内部回调体） AudioManager.Play3D(AudioEventData, Vector3)、LeonQTECoordinator.ResolveQTEAudioPosition()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="eventData">中文含义：事件配置。使用位置：作为 AudioManager.Play3D(AudioEventData, Vector3) 的参数、LeonQTECoordinator.StartQTEStruggleLoop(AudioEventData)。</param>
+    /// <param name="eventData">事件配置。</param>
     private void StartQTEStruggleLoop(AudioEventData eventData)
     {
         if (eventData == null || AudioManager.Instance == null || qteStruggleLoopHandle.IsValid)
@@ -3683,7 +3969,7 @@ global::AudioEventData optionalValue75;
 
     private void PublishProgress()
     {
-        // receiverValue76（判空前缓存的配对动作进度变化时的通知回调）：从配对动作进度变化时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonQTECoordinator.PublishProgress()。
+        // 判空前缓存的配对动作进度变化时的通知回调。
 global::System.Action<global::QTEProgressInfo> receiverValue76 = OnQTEProgressChanged;
         if (!global::System.Object.ReferenceEquals(receiverValue76, null))
         {
@@ -3703,7 +3989,7 @@ global::System.Action<global::QTEProgressInfo> receiverValue76 = OnQTEProgressCh
 
     /// <summary>MatchesCurrentPlayerAction 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
     /// <remarks>静态调用链：上游 LeonQTECoordinator.HandlePlayerActionCompleted(AnimationActionTransaction)；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="action">中文含义：动作。使用位置：LeonQTECoordinator.MatchesCurrentPlayerAction(FullBodyActionType)。</param>
+    /// <param name="action">动作。</param>
     private bool MatchesCurrentPlayerAction(FullBodyActionType action)
     {
         return action == expectedPlayerAction;
@@ -3711,7 +3997,7 @@ global::System.Action<global::QTEProgressInfo> receiverValue76 = OnQTEProgressCh
 
     /// <summary>MatchesCurrentEnemyAction 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
     /// <remarks>静态调用链：上游 LeonQTECoordinator.HandleParticipantActionCompleted(int, EnemyQTEAction, int)；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="action">中文含义：动作。使用位置：LeonQTECoordinator.MatchesCurrentEnemyAction(EnemyQTEAction)。</param>
+    /// <param name="action">动作。</param>
     private bool MatchesCurrentEnemyAction(EnemyQTEAction action)
     {
         return action == expectedEnemyAction;
@@ -3719,8 +4005,8 @@ global::System.Action<global::QTEProgressInfo> receiverValue76 = OnQTEProgressCh
 
     /// <summary>ContainsCollider 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
     /// <remarks>静态调用链：上游 LeonQTECoordinator.GetSafeSeparationDistance(Vector3, Vector3, float, IEnemyQTEParticipant)、LeonQTECoordinator.IsPairingSpaceBlocked(Vector3, IEnemyQTEParticipant)；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="colliders">中文含义：碰撞体集合。使用位置：LeonQTECoordinator.ContainsCollider(Collider[], Collider)。</param>
-    /// <param name="target">中文含义：目标碰撞体。使用位置：LeonQTECoordinator.ContainsCollider(Collider[], Collider)。</param>
+    /// <param name="colliders">碰撞体集合。</param>
+    /// <param name="target">目标碰撞体。</param>
     private static bool ContainsCollider(Collider[] colliders, Collider target)
     {
         if (colliders == null || target == null)
@@ -3745,8 +4031,8 @@ foreach (var collider in colliders)
     /// 该查询只读取敌人状态，不修改行为树状态。
     /// </summary>
     /// <remarks>静态调用链：上游 LeonQTECoordinator.TryGetPromptPresentation(out Transform, out string)、LeonQTECoordinator.TryStartNearestPrompt(out int)；下游（含内部回调体） LeonQTECoordinator.CanQueryAssassinationPrompt()、LeonQTECoordinator.GetPromptCandidates()、LeonQTECoordinator.ValidatePairing(IEnemyQTEParticipant, QTEKind, out QTECancelReason)、Vector3.Distance(Vector3, Vector3)、VillagerQTEParticipant.CanStart(LeonController, QTEKind, out QTECancelReason)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="target">中文含义：目标索引敌人配对动作参与者。输出参数，由本入口写入并交给调用方。使用位置：LeonQTECoordinator.TryGetPromptCandidate(out IEnemyQTEParticipant, out QTEKind)。</param>
-    /// <param name="kind">中文含义：种类。输出参数，由本入口写入并交给调用方。使用位置：LeonQTECoordinator.TryGetPromptCandidate(out IEnemyQTEParticipant, out QTEKind)。</param>
+    /// <param name="target">目标索引敌人配对动作参与者。输出参数，由本入口写入并交给调用方。</param>
+    /// <param name="kind">种类。输出参数，由本入口写入并交给调用方。</param>
     public bool TryGetPromptCandidate(out IEnemyQTEParticipant target, out QTEKind kind)
     {
         if (UsesNativeInteractionPrompts)
@@ -3767,14 +4053,14 @@ foreach (var collider in colliders)
             return false;
         }
 
-        // candidates（候选集合）：保存 LeonQTECoordinator.GetPromptCandidates() 的返回结果，供当前步骤使用。使用位置：LeonQTECoordinator.TryGetPromptCandidate(out IEnemyQTEParticipant, out QTEKind)。
+        // 候选集合。
 var candidates = GetPromptCandidates();
-        // nearestDistance（最近距离）：使用位置：LeonQTECoordinator.TryGetPromptCandidate(out IEnemyQTEParticipant, out QTEKind)。
+        // 最近距离。
 float nearestDistance = float.MaxValue;
-        // candidateIndex（候选索引）：使用位置：作为 IReadOnlyList<VillagerQTEParticipant>.this[int] 的参数、LeonQTECoordinator.TryGetPromptCandidate(out IEnemyQTEParticipant, out QTEKind)。
+        // 候选索引。
 for (int candidateIndex = 0; candidateIndex < candidates.Count; candidateIndex++)
         {
-            // candidate（候选）：使用位置：作为 LeonQTECoordinator.ValidatePairing(IEnemyQTEParticipant, QTEKind, out QTECancelReason) 的参数、作为 Vector3.Distance(Vector3, Vector3) 的参数、LeonQTECoordinator.TryGetPromptCandidate(out IEnemyQTEParticipant, out QTEKind)。
+            // 候选。
 var candidate = candidates[candidateIndex];
             if (candidate == null || !candidate.IsAvailable)
             {
@@ -3791,7 +4077,7 @@ var candidate = candidates[candidateIndex];
                 continue;
             }
 
-            // distance（距离）：保存 Vector3.Distance(Vector3, Vector3) 的返回结果，供当前步骤使用。使用位置：LeonQTECoordinator.TryGetPromptCandidate(out IEnemyQTEParticipant, out QTEKind)。
+            // 距离。
 float distance = Vector3.Distance(transform.position, candidate.transform.position);
             if (distance >= nearestDistance)
             {
@@ -3807,7 +4093,7 @@ float distance = Vector3.Distance(transform.position, candidate.transform.positi
 
     /// <summary>SetAssassinationKnifeVisualIfNeeded 的业务处理入口；本方法直接依赖 Component.GetComponent&lt;LeonWeaponVisualController&gt;()、LeonWeaponVisualController.BeginAssassinationKnifePose()、LeonWeaponVisualController.SetKnifeModeVisible(bool)、object.ReferenceEquals(object, object)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonQTECoordinator.TryStart(QTEKind, IEnemyQTEParticipant, out int)；下游（含内部回调体） Component.GetComponent&lt;LeonWeaponVisualController&gt;()、LeonWeaponVisualController.BeginAssassinationKnifePose()、LeonWeaponVisualController.SetKnifeModeVisible(bool)、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="kind">中文含义：种类。使用位置：LeonQTECoordinator.SetAssassinationKnifeVisualIfNeeded(QTEKind)。</param>
+    /// <param name="kind">种类。</param>
     private void SetAssassinationKnifeVisualIfNeeded(QTEKind kind)
     {
         if (kind != QTEKind.KnifeAssassination && kind != QTEKind.GroundFinisher)
@@ -3833,14 +4119,14 @@ float distance = Vector3.Distance(transform.position, candidate.transform.positi
             return;
         }
 
-        // receiverValue77（判空前缓存的武器视觉表现控制器）：从武器视觉表现控制器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonQTECoordinator.SetAssassinationKnifeVisualIfNeeded(QTEKind)。
+        // 判空前缓存的武器视觉表现控制器。
 global::LeonWeaponVisualController receiverValue77 = weaponVisualController;
         if (!global::System.Object.ReferenceEquals(receiverValue77, null))
         {
             receiverValue77.SetKnifeModeVisible(true);
         }
 
-        // receiverValue78（判空前缓存的武器视觉表现控制器）：从武器视觉表现控制器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonQTECoordinator.SetAssassinationKnifeVisualIfNeeded(QTEKind)。
+        // 判空前缓存的武器视觉表现控制器。
 global::LeonWeaponVisualController receiverValue78 = weaponVisualController;
         if (!global::System.Object.ReferenceEquals(receiverValue78, null))
         {
@@ -3864,7 +4150,7 @@ global::LeonWeaponVisualController receiverValue78 = weaponVisualController;
         }
 
         // 无论是否仍标记为活动，都执行一次幂等恢复，覆盖中断、死亡和禁用路径。
-        // receiverValue79（判空前缓存的武器视觉表现控制器）：从武器视觉表现控制器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonQTECoordinator.EndAssassinationKnifeVisualIfNeeded()。
+        // 判空前缓存的武器视觉表现控制器。
 global::LeonWeaponVisualController receiverValue79 = // 无论是否仍标记为活动，都执行一次幂等恢复，覆盖中断、死亡和禁用路径。
  weaponVisualController;
         if (!global::System.Object.ReferenceEquals(receiverValue79, null))
@@ -3878,7 +4164,7 @@ global::LeonWeaponVisualController receiverValue79 = // 无论是否仍标记为
         }
 
         assassinationKnifeVisualActive = false;
-        // receiverValue80（判空前缓存的武器视觉表现控制器）：从武器视觉表现控制器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonQTECoordinator.EndAssassinationKnifeVisualIfNeeded()。
+        // 判空前缓存的武器视觉表现控制器。
 global::LeonWeaponVisualController receiverValue80 = weaponVisualController;
         if (!global::System.Object.ReferenceEquals(receiverValue80, null))
         {
@@ -3888,8 +4174,8 @@ global::LeonWeaponVisualController receiverValue80 = weaponVisualController;
 
     /// <summary>TryGetBodyTechniquePromptCandidate 的业务处理入口；本方法直接依赖 LeonQTECoordinator.CanQueryBodyTechniquePrompt()、LeonQTECoordinator.GetPromptCandidates()、Vector3.Distance(Vector3, Vector3)、VillagerQTEParticipant.CanStartBodyTechnique(LeonController, out int, out QTECancelReason)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonQTECoordinator.TryGetPromptPresentation(out Transform, out string)、LeonQTECoordinator.TryStartNearestBodyTechnique(out int)；下游（含内部回调体） LeonQTECoordinator.CanQueryBodyTechniquePrompt()、LeonQTECoordinator.GetPromptCandidates()、Vector3.Distance(Vector3, Vector3)、VillagerQTEParticipant.CanStartBodyTechnique(LeonController, out int, out QTECancelReason)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="target">中文含义：目标村民配对动作参与者。输出参数，由本入口写入并交给调用方。使用位置：LeonQTECoordinator.TryGetBodyTechniquePromptCandidate(out VillagerQTEParticipant, out int)。</param>
-    /// <param name="techniqueIndex">中文含义：体术索引。输出参数，由本入口写入并交给调用方。使用位置：LeonQTECoordinator.TryGetBodyTechniquePromptCandidate(out VillagerQTEParticipant, out int)。</param>
+    /// <param name="target">目标村民配对动作参与者。输出参数，由本入口写入并交给调用方。</param>
+    /// <param name="techniqueIndex">体术索引。输出参数，由本入口写入并交给调用方。</param>
     public bool TryGetBodyTechniquePromptCandidate(out VillagerQTEParticipant target, out int techniqueIndex)
     {
         if (UsesNativeInteractionPrompts)
@@ -3911,14 +4197,14 @@ global::LeonWeaponVisualController receiverValue80 = weaponVisualController;
             return false;
         }
 
-        // candidates（候选集合）：保存 LeonQTECoordinator.GetPromptCandidates() 的返回结果，供当前步骤使用。使用位置：LeonQTECoordinator.TryGetBodyTechniquePromptCandidate(out VillagerQTEParticipant, out int)。
+        // 候选集合。
 var candidates = GetPromptCandidates();
-        // nearestDistance（最近距离）：使用位置：LeonQTECoordinator.TryGetBodyTechniquePromptCandidate(out VillagerQTEParticipant, out int)。
+        // 最近距离。
 float nearestDistance = float.MaxValue;
-        // candidateIndex（候选索引）：使用位置：作为 IReadOnlyList<VillagerQTEParticipant>.this[int] 的参数、LeonQTECoordinator.TryGetBodyTechniquePromptCandidate(out VillagerQTEParticipant, out int)。
+        // 候选索引。
 for (int candidateIndex = 0; candidateIndex < candidates.Count; candidateIndex++)
         {
-            // candidate（候选）：使用位置：作为 Vector3.Distance(Vector3, Vector3) 的参数、LeonQTECoordinator.TryGetBodyTechniquePromptCandidate(out VillagerQTEParticipant, out int)。
+            // 候选。
 var candidate = candidates[candidateIndex];
             if (candidate == null)
             {
@@ -3930,7 +4216,7 @@ var candidate = candidates[candidateIndex];
                 continue;
             }
 
-            // distance（距离）：保存 Vector3.Distance(Vector3, Vector3) 的返回结果，供当前步骤使用。使用位置：LeonQTECoordinator.TryGetBodyTechniquePromptCandidate(out VillagerQTEParticipant, out int)。
+            // 距离。
 float distance = Vector3.Distance(transform.position, candidate.transform.position);
             if (distance >= nearestDistance)
             {
@@ -3947,7 +4233,7 @@ float distance = Vector3.Distance(transform.position, candidate.transform.positi
 
     /// <summary>TryStartNearestBodyTechnique 的业务处理入口；本方法直接依赖 LeonCombat.TryStartQTEBodyTechnique(int, int)、LeonQTECoordinator.ClearBodyTechniqueSession()、LeonQTECoordinator.SetPromptAvailability(bool)、LeonQTECoordinator.TryGetBodyTechniquePromptCandidate(out VillagerQTEParticipant, out int)、VillagerQTEParticipant.CancelBodyTechnique(int)、VillagerQTEParticipant.TryReserveBodyTechnique(int)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonCombat.HandleMelee()、LeonInputBridge.OnInteract(InputAction.CallbackContext)；下游（含内部回调体） LeonCombat.TryStartQTEBodyTechnique(int, int)、LeonQTECoordinator.ClearBodyTechniqueSession()、LeonQTECoordinator.SetPromptAvailability(bool)、LeonQTECoordinator.TryGetBodyTechniquePromptCandidate(out VillagerQTEParticipant, out int)、VillagerQTEParticipant.CancelBodyTechnique(int)、VillagerQTEParticipant.TryReserveBodyTechnique(int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="sessionId">中文含义：会话编号。输出参数，由本入口写入并交给调用方。使用位置：LeonQTECoordinator.TryStartNearestBodyTechnique(out int)。</param>
+    /// <param name="sessionId">会话编号。输出参数，由本入口写入并交给调用方。</param>
     public bool TryStartNearestBodyTechnique(out int sessionId)
     {
         sessionId = 0;
@@ -3999,7 +4285,7 @@ float distance = Vector3.Distance(transform.position, candidate.transform.positi
 
     /// <summary>TryStartNearestPrompt 的业务处理入口；本方法直接依赖 LeonQTECoordinator.TryGetPromptCandidate(out IEnemyQTEParticipant, out QTEKind)、LeonQTECoordinator.TryStart(QTEKind, IEnemyQTEParticipant, out int)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonCombat.HandleMelee()、LeonInputBridge.OnInteract(InputAction.CallbackContext)；下游（含内部回调体） LeonQTECoordinator.TryGetPromptCandidate(out IEnemyQTEParticipant, out QTEKind)、LeonQTECoordinator.TryStart(QTEKind, IEnemyQTEParticipant, out int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="sessionId">中文含义：会话编号。输出参数，由本入口写入并交给调用方。使用位置：作为 LeonQTECoordinator.TryStart(QTEKind, IEnemyQTEParticipant, out int) 的参数、LeonQTECoordinator.TryStartNearestPrompt(out int)。</param>
+    /// <param name="sessionId">会话编号。输出参数，由本入口写入并交给调用方。</param>
     public bool TryStartNearestPrompt(out int sessionId)
     {
         sessionId = 0;
@@ -4013,8 +4299,8 @@ float distance = Vector3.Distance(transform.position, candidate.transform.positi
 
     /// <summary>HandleBodyTechniqueHit 的业务处理入口；本方法直接依赖 LeonQTECoordinator.ClearBodyTechniqueSession()、VillagerQTEParticipant.ApplyBodyTechniqueHit(int, FullBodyActionType, Transform)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） LeonQTECoordinator.ClearBodyTechniqueSession()、VillagerQTEParticipant.ApplyBodyTechniqueHit(int, FullBodyActionType, Transform)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="sessionId">中文含义：会话编号。使用位置：作为 VillagerQTEParticipant.ApplyBodyTechniqueHit(int, FullBodyActionType, Transform) 的参数、LeonQTECoordinator.HandleBodyTechniqueHit(int, FullBodyActionType)。</param>
-    /// <param name="actionType">中文含义：动作类型。使用位置：作为 VillagerQTEParticipant.ApplyBodyTechniqueHit(int, FullBodyActionType, Transform) 的参数。</param>
+    /// <param name="sessionId">会话编号。</param>
+    /// <param name="actionType">动作类型。</param>
     private void HandleBodyTechniqueHit(int sessionId, FullBodyActionType actionType)
     {
         if (sessionId == 0 || sessionId != activeBodyTechniqueSessionId || activeBodyTechniqueTarget == null)
@@ -4052,7 +4338,7 @@ float distance = Vector3.Distance(transform.position, candidate.transform.positi
 
     /// <summary>HandleMeleeActionExited 的业务处理入口；本方法直接依赖 LeonQTECoordinator.CancelBodyTechniqueIfActive()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） LeonQTECoordinator.CancelBodyTechniqueIfActive()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="transaction">中文含义：事务。使用位置：LeonQTECoordinator.HandleMeleeActionExited(AnimationActionTransaction)。</param>
+    /// <param name="transaction">事务。</param>
     private void HandleMeleeActionExited(AnimationActionTransaction transaction)
     {
         if (transaction.qteSessionId == activeBodyTechniqueSessionId)
@@ -4063,7 +4349,7 @@ float distance = Vector3.Distance(transform.position, candidate.transform.positi
 
     /// <summary>HandleMeleeActionInterrupted 的业务处理入口；本方法直接依赖 LeonQTECoordinator.CancelBodyTechniqueIfActive()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） LeonQTECoordinator.CancelBodyTechniqueIfActive()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="transaction">中文含义：事务。使用位置：LeonQTECoordinator.HandleMeleeActionInterrupted(AnimationActionTransaction)。</param>
+    /// <param name="transaction">事务。</param>
     private void HandleMeleeActionInterrupted(AnimationActionTransaction transaction)
     {
         if (transaction.qteSessionId == activeBodyTechniqueSessionId)
@@ -4081,7 +4367,7 @@ float distance = Vector3.Distance(transform.position, candidate.transform.positi
             return;
         }
 
-        // receiverValue81（判空前缓存的生效体术目标）：从生效体术目标读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonQTECoordinator.CancelBodyTechniqueIfActive()。
+        // 判空前缓存的生效体术目标。
 global::VillagerQTEParticipant receiverValue81 = activeBodyTechniqueTarget;
         if (!global::System.Object.ReferenceEquals(receiverValue81, null))
         {
@@ -4143,21 +4429,21 @@ global::VillagerQTEParticipant receiverValue81 = activeBodyTechniqueTarget;
     /// <remarks>静态调用链：上游 LeonQTECoordinator.UpdatePromptAvailability()；下游（含内部回调体） LeonQTECoordinator.CanQueryAssassinationPrompt()、LeonQTECoordinator.CanQueryBodyTechniquePrompt()、LeonQTECoordinator.GetPromptCandidates()、LeonQTECoordinator.ValidatePairing(IEnemyQTEParticipant, QTEKind, out QTECancelReason)、VillagerQTEParticipant.CanStart(LeonController, QTEKind, out QTECancelReason)、VillagerQTEParticipant.CanStartBodyTechnique(LeonController, out int, out QTECancelReason)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     private bool HasAnyPromptCandidate()
     {
-        // canQueryBodyTechnique（是否可以查询体术）：保存 LeonQTECoordinator.CanQueryBodyTechniquePrompt() 的返回结果，供当前步骤使用。使用位置：LeonQTECoordinator.HasAnyPromptCandidate()。
+        // 是否可以查询体术。
 bool canQueryBodyTechnique = CanQueryBodyTechniquePrompt();
-        // canQueryAssassination（是否可以查询暗杀）：保存 LeonQTECoordinator.CanQueryAssassinationPrompt() 的返回结果，供当前步骤使用。使用位置：LeonQTECoordinator.HasAnyPromptCandidate()。
+        // 是否可以查询暗杀。
 bool canQueryAssassination = CanQueryAssassinationPrompt();
         if (!canQueryBodyTechnique && !canQueryAssassination)
         {
             return false;
         }
 
-        // candidates（候选集合）：保存 LeonQTECoordinator.GetPromptCandidates() 的返回结果，供当前步骤使用。使用位置：LeonQTECoordinator.HasAnyPromptCandidate()。
+        // 候选集合。
 var candidates = GetPromptCandidates();
-        // candidateIndex（候选索引）：使用位置：作为 IReadOnlyList<VillagerQTEParticipant>.this[int] 的参数、LeonQTECoordinator.HasAnyPromptCandidate()。
+        // 候选索引。
 for (int candidateIndex = 0; candidateIndex < candidates.Count; candidateIndex++)
         {
-            // candidate（候选）：使用位置：作为 LeonQTECoordinator.ValidatePairing(IEnemyQTEParticipant, QTEKind, out QTECancelReason) 的参数、LeonQTECoordinator.HasAnyPromptCandidate()。
+            // 候选。
 var candidate = candidates[candidateIndex];
             if (candidate == null)
             {
@@ -4182,7 +4468,7 @@ var candidate = candidates[candidateIndex];
     /// <remarks>静态调用链：上游 LeonQTECoordinator.HasAnyPromptCandidate()、LeonQTECoordinator.TryGetPromptCandidate(out IEnemyQTEParticipant, out QTEKind)；下游（含内部回调体） Component.GetComponent&lt;LeonWeaponHandler&gt;()、LeonWeaponHandler.HasUsableKnife()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     private bool CanQueryAssassinationPrompt()
     {
-        // weaponHandler（管理当前装备与武器切换的组件）：使用位置：LeonQTECoordinator.CanQueryAssassinationPrompt()。
+        // 管理当前装备与武器切换的组件。
 LeonWeaponHandler weaponHandler;
         if (controller != null)
         {
@@ -4206,7 +4492,7 @@ LeonWeaponHandler weaponHandler;
 
     /// <summary>SetPromptAvailability 的业务处理入口；本方法直接依赖 Action&lt;bool&gt;.Invoke(bool)、object.ReferenceEquals(object, object)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonQTECoordinator.OnDisable()、LeonQTECoordinator.TryStart(QTEKind, IEnemyQTEParticipant, out int)、LeonQTECoordinator.TryStartNearestBodyTechnique(out int)、LeonQTECoordinator.UpdatePromptAvailability()；下游（含内部回调体） Action&lt;bool&gt;.Invoke(bool)、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="available">中文含义：是否可用。使用位置：作为 Action&lt;bool&gt;.Invoke(bool) 的参数、LeonQTECoordinator.SetPromptAvailability(bool)。</param>
+    /// <param name="available">是否可用。</param>
     private void SetPromptAvailability(bool available)
     {
         if (promptAvailable == available)
@@ -4215,7 +4501,7 @@ LeonWeaponHandler weaponHandler;
         }
 
         promptAvailable = available;
-        // receiverValue85（判空前缓存的配对动作提示可用性变化时的通知回调）：从配对动作提示可用性变化时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonQTECoordinator.SetPromptAvailability(bool)。
+        // 判空前缓存的配对动作提示可用性变化时的通知回调。
 global::System.Action<bool> receiverValue85 = OnQTEPromptAvailabilityChanged;
         if (!global::System.Object.ReferenceEquals(receiverValue85, null))
         {
@@ -4225,7 +4511,7 @@ global::System.Action<bool> receiverValue85 = OnQTEPromptAvailabilityChanged;
 
     /// <summary>Reject 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
     /// <remarks>静态调用链：上游 LeonQTECoordinator.TryStart(QTEKind, IEnemyQTEParticipant, out int)；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="reason">中文含义：原因。使用位置：LeonQTECoordinator.Reject(QTECancelReason)。</param>
+    /// <param name="reason">原因。</param>
     private bool Reject(QTECancelReason reason)
     {
         lastRejectionReason = reason;

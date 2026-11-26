@@ -17,6 +17,10 @@ public partial class LeonInputBridge
         {
             action = escapePressAction;
         }
+        else if (actionName == "KnifeEscape")
+        {
+            action = knifeEscapeAction;
+        }
         if (action == null)
         {
             return string.Empty;

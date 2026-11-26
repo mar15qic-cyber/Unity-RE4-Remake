@@ -17,6 +17,7 @@ MonoBehaviour:
   maxSize: 158
   thickness: 1.4
   lineLength: 12
+  lineSprite: {fileID: 0}
   spreadCurve:
     serializedVersion: 2
     m_Curve:
@@ -41,7 +42,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  baseColor: {r: 0.92, g: 0.92, b: 0.92, a: 0.72}
+  baseColor: {r: 0.85882354, g: 0.85882354, b: 0.85882354, a: 0.8784314}
   hitColor: {r: 1, g: 0.4, b: 0.1, a: 0.9}
   headshotColor: {r: 1, g: 0.9, b: 0.2, a: 1}
   weakspotColor: {r: 0.9, g: 0.1, b: 0.5, a: 1}
@@ -55,7 +56,7 @@ MonoBehaviour:
   aimFadeInSpeed: 9
   aimFadeOutSpeed: 7
   weaponSwitchFadeSpeed: 7
-  dynamicSpread: 1
+  dynamicSpread: 0
   dynamicSpreadSpeed: 14
-  fireBloomAmount: 0.82
+  fireBloomAmount: 0
   fireBloomRecoverySpeed: 1.8

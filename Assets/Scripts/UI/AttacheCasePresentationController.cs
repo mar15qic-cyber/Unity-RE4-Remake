@@ -27,55 +27,55 @@ public class AttacheCasePresentationController : MonoBehaviour
         CloseMiddle
     }
 
-    /// <summary>中文含义：网格。使用位置：作为 AttacheCasePresentationController.UpdateSpaceOverride(Image) 的参数、作为 Mathf.Approximately(float, float) 的参数、作为 Mathf.RoundToInt(float) 的参数 等共 13 处。</summary>
+    /// <summary>网格。</summary>
     [Header("显式引用")]
     [UnityEngine.Serialization.FormerlySerializedAs("网格")]
     [UnityEngine.InspectorName("网格")]
     public InventoryGridView mesh;
-    /// <summary>中文含义：配置。使用位置：作为 Material.Material(Material) 的参数、作为 Mathf.Min(int, int) 的参数、作为 Object.Instantiate&lt;GameObject&gt;(GameObject, Transform) 的参数 等共 11 处。</summary>
+    /// <summary>配置。</summary>
     [UnityEngine.Serialization.FormerlySerializedAs("配置")]
     [UnityEngine.InspectorName("配置")]
     public InventoryPresentationConfiguration configuration;
-    /// <summary>中文含义：打开时长。使用位置：作为 Mathf.Max(float, float) 的参数、AttacheCasePresentationController.PlayOpenLid()、InventorySceneLoader.HideInventoryScene()。</summary>
+    /// <summary>打开时长。</summary>
     [Header("开合时间")]
     [UnityEngine.Serialization.FormerlySerializedAs("打开时长")]
     [UnityEngine.InspectorName("打开时长")]
     public float openDuration = 0.45f;
-    /// <summary>中文含义：关闭时长。使用位置：作为 Mathf.Max(float, float) 的参数、AttacheCasePresentationController.CloseLid()、InventorySceneLoader.HideInventoryScene()。</summary>
+    /// <summary>关闭时长。</summary>
     [UnityEngine.Serialization.FormerlySerializedAs("关闭时长")]
     [UnityEngine.InspectorName("关闭时长")]
     public float closeDuration = 0.3f;
-    /// <summary>中文含义：整理倾角。使用位置：作为 Mathf.Lerp(float, float, float) 的参数。</summary>
+    /// <summary>整理倾角。</summary>
     [Header("透视构图")]
     [UnityEngine.Serialization.FormerlySerializedAs("整理倾角")]
     [UnityEngine.InspectorName("整理倾角")]
     public float arrangeTiltAngle = 18f;
-    /// <summary>中文含义：合箱倾角。使用位置：作为 Mathf.Lerp(float, float, float) 的参数。</summary>
+    /// <summary>合箱倾角。</summary>
     [UnityEngine.Serialization.FormerlySerializedAs("合箱倾角")]
     [UnityEngine.InspectorName("合箱倾角")]
     public float closeCaseTiltAngle = 32f;
-    /// <summary>中文含义：箱盖打开角度。使用位置：作为 Quaternion.Euler(float, float, float) 的参数。</summary>
+    /// <summary>箱盖打开角度。</summary>
     [UnityEngine.Serialization.FormerlySerializedAs("箱盖打开角度")]
     [UnityEngine.InspectorName("箱盖打开角度")]
     public float caseLidOpenAngle = 95f;
-    /// <summary>中文含义：当前状态。使用位置：AttacheCasePresentationController.CloseLid()、AttacheCasePresentationController.ImmediateHide()、AttacheCasePresentationController.Interactive.get 等共 6 处。</summary>
+    /// <summary>当前状态。</summary>
     public PresentationState CurrentState { get; private set; }
-    /// <summary>中文含义：当前展示是否允许交互。使用位置：作为 GameObject.SetActive(bool) 的参数、AttacheCaseProjectionInput.Find(Vector2)、AttacheCaseProjectionInput.OnDrag(PointerEventData) 等共 7 处。</summary>
+    /// <summary>当前展示是否允许交互。</summary>
     public bool Interactive => CurrentState == PresentationState.Interactive;
 
-    /// <summary>中文含义：打开完成。事件通信成员 OpenComplete，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。使用位置：AttacheCasePresentationController.PlayOpenLid()。</summary>
+    /// <summary>打开完成。事件通信成员 OpenComplete，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。</summary>
     public event Action OpenComplete;
-    /// <summary>中文含义：关闭完成。事件通信成员 CloseComplete，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。使用位置：AttacheCasePresentationController.CloseLid()。</summary>
+    /// <summary>关闭完成。事件通信成员 CloseComplete，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。</summary>
     public event Action CloseComplete;
     /// <summary>界面交互与显示模块 PresentationInstance；通过方法参数、返回值及声明成员与调用方通信，静态调用索引记录可解析的直接依赖。</summary>
     [UnityEngine.Scripting.APIUpdating.MovedFrom(true, "", "Assembly-CSharp", "公文包展示控制器+展示实例")]
     class PresentationInstance
     {
-        /// <summary>中文含义：数据。使用位置：AttacheCasePresentationController.Synchronize(IReadOnlyList&lt;GridItem&gt;)。</summary>
+        /// <summary>数据。</summary>
         [UnityEngine.Serialization.FormerlySerializedAs("数据")]
         [UnityEngine.InspectorName("数据")]
         public GridItem data;
-        /// <summary>中文含义：根游戏对象。使用位置：AttacheCasePresentationController.LateUpdate()、AttacheCasePresentationController.Synchronize(IReadOnlyList&lt;GridItem&gt;)。</summary>
+        /// <summary>根游戏对象。</summary>
         [UnityEngine.Serialization.FormerlySerializedAs("根")]
         [UnityEngine.InspectorName("根")]
         public GameObject root;
@@ -83,67 +83,67 @@ public class AttacheCasePresentationController : MonoBehaviour
         [UnityEngine.Serialization.FormerlySerializedAs("中心")]
         [UnityEngine.InspectorName("中心")]
         public Vector3 center;
-        /// <summary>中文含义：尺寸。使用位置：作为 Mathf.Max(float, float) 的参数、AttacheCasePresentationController.LateUpdate()、AttacheCasePresentationController.Synchronize(IReadOnlyList&lt;GridItem&gt;)。</summary>
+        /// <summary>尺寸。</summary>
         [UnityEngine.Serialization.FormerlySerializedAs("尺寸")]
         [UnityEngine.InspectorName("尺寸")]
         public Vector3 size;
-        /// <summary>中文含义：配置。使用位置：AttacheCasePresentationController.LateUpdate()、AttacheCasePresentationController.Synchronize(IReadOnlyList&lt;GridItem&gt;)。</summary>
+        /// <summary>配置。</summary>
         [UnityEngine.Serialization.FormerlySerializedAs("配置")]
         [UnityEngine.InspectorName("配置")]
         public InventoryPresentationConfiguration.ItemPresentation configuration;
     }
 
-    /// <summary>中文含义：表现物品。只读字段，初始化后不由普通写入口替换。使用位置：AttacheCasePresentationController.LateUpdate()、AttacheCasePresentationController.Synchronize(IReadOnlyList&lt;GridItem&gt;)。</summary>
+    /// <summary>表现物品。只读字段，初始化后不由普通写入口替换。</summary>
     readonly Dictionary<GridItem, PresentationInstance> presentationItem = new Dictionary<GridItem, PresentationInstance>();
-    /// <summary>中文含义：恢复列表。只读字段，初始化后不由普通写入口替换。使用位置：AttacheCasePresentationController.Synchronize(IReadOnlyList&lt;GridItem&gt;)。</summary>
+    /// <summary>恢复列表。只读字段，初始化后不由普通写入口替换。</summary>
     readonly List<GridItem> recoveryList = new List<GridItem>();
-    /// <summary>中文含义：对象池。只读字段，初始化后不由普通写入口替换。使用位置：AttacheCasePresentationController.Synchronize(IReadOnlyList&lt;GridItem&gt;)。</summary>
+    /// <summary>对象池。只读字段，初始化后不由普通写入口替换。</summary>
     readonly Dictionary<string, Stack<PresentationInstance>> objectPool = new Dictionary<string, Stack<PresentationInstance>>();
-    /// <summary>中文含义：阶段。使用位置：作为 AttacheCasePresentationController.SetLayer(GameObject) 的参数、作为 Object.Destroy(Object) 的参数、作为 Object.Instantiate&lt;GameObject&gt;(GameObject, Transform) 的参数 等共 16 处。</summary>
+    /// <summary>阶段。</summary>
     GameObject stage;
-    /// <summary>中文含义：公文包身体。使用位置：AttacheCasePresentationController.CreateStage()、AttacheCasePresentationController.UpdateComposition()。</summary>
+    /// <summary>公文包身体。</summary>
     Transform caseBody;
-    /// <summary>中文含义：公文包箱盖。使用位置：AttacheCasePresentationController.CreateStage()、AttacheCasePresentationController.UpdateCaseLid()。</summary>
+    /// <summary>公文包箱盖。</summary>
     Transform caseLid;
     AttacheCaseModelBinding caseModelBinding;
-    /// <summary>中文含义：物品根节点。使用位置：作为 Transform.SetParent(Transform, bool) 的参数、AttacheCasePresentationController.CreateStage()、AttacheCasePresentationController.UpdateCaseLid()。</summary>
+    /// <summary>物品根节点。</summary>
     Transform itemRoot;
-    /// <summary>中文含义：表现摄像机。使用位置：作为 Mathf.RoundToInt(float) 的参数、AttacheCasePresentationController.CreateStage()、AttacheCasePresentationController.MeshRotateScreen(Vector2) 等共 8 处。</summary>
+    /// <summary>表现摄像机。</summary>
     Camera presentationCamera;
-    /// <summary>中文含义：纹理值。使用位置：作为 Object.Destroy(Object) 的参数、AttacheCasePresentationController.LateUpdate()、AttacheCasePresentationController.ReleaseTexture() 等共 4 处。</summary>
+    /// <summary>纹理值。</summary>
     RenderTexture textureValue;
-    /// <summary>中文含义：视图。使用位置：作为 Object.Destroy(Object) 的参数、作为 RectTransformUtility.ScreenPointToLocalPointInRectangle(RectTransform, Vector2, Camera, out Vector2) 的参数、作为 Transform.SetParent(Transform, bool) 的参数 等共 13 处。</summary>
+    /// <summary>视图。</summary>
     RawImage view;
     private bool craftingBackdrop;
-    /// <summary>中文含义：落地点提示。使用位置：作为 AttacheCasePresentationController.UpdateSpaceOverride(Image) 的参数、作为 Object.Destroy(Object) 的参数、AttacheCasePresentationController.CreateStage() 等共 6 处。</summary>
+    /// <summary>落地点提示。</summary>
     Image landPointPrompt;
-    /// <summary>中文含义：拖拽物品。使用位置：AttacheCasePresentationController.BeginDrag(GridItem)、AttacheCasePresentationController.EndDrag()、AttacheCasePresentationController.LateUpdate()。</summary>
+    /// <summary>拖拽物品。</summary>
     GridItem dragItem;
-    /// <summary>中文含义：像素比例。使用位置：作为 Vector2.Vector2(float, float) 的参数、作为 Vector3.Vector3(float, float, float) 的参数、AttacheCasePresentationController.LateUpdate() 等共 7 处。</summary>
+    /// <summary>像素比例。</summary>
     float pixelRatio;
-    /// <summary>中文含义：展开半尺寸。使用位置：作为 GameObject.SetActive(bool) 的参数、作为 Mathf.Lerp(float, float, float) 的参数、作为 Quaternion.Euler(float, float, float) 的参数 等共 5 处。</summary>
+    /// <summary>展开半尺寸。</summary>
     float expandExtent;
-    /// <summary>中文含义：上一次宽度。使用位置：作为 Mathf.Approximately(float, float) 的参数、AttacheCasePresentationController.UpdateComposition()。</summary>
+    /// <summary>上一次宽度。</summary>
     float lastWidth;
-    /// <summary>中文含义：上一次高度。使用位置：作为 Mathf.Approximately(float, float) 的参数、AttacheCasePresentationController.UpdateComposition()。</summary>
+    /// <summary>上一次高度。</summary>
     float lastHeight;
-    /// <summary>中文含义：构图中心。使用位置：作为 Vector3.Vector3(float, float, float) 的参数、AttacheCasePresentationController.UpdateComposition()。</summary>
+    /// <summary>构图中心。</summary>
     float compositionCenter;
-    /// <summary>中文含义：平面网格分组。使用位置：AttacheCasePresentationController.CreateStage()。</summary>
+    /// <summary>平面网格分组。</summary>
     CanvasGroup planeMeshGroup;
-    /// <summary>中文含义：空间单元格线。使用位置：作为 AttacheCasePresentationController.SetLayer(GameObject) 的参数、AttacheCasePresentationController.RebuildSpaceCellLine()。</summary>
+    /// <summary>空间单元格线。</summary>
     GameObject spaceCellLine;
-    /// <summary>中文含义：单元格线网格。使用位置：作为 Object.Destroy(Object) 的参数、AttacheCasePresentationController.OnDestroy()、AttacheCasePresentationController.RebuildSpaceCellLine()。</summary>
+    /// <summary>单元格线网格。</summary>
     Mesh cellLineMesh;
-    /// <summary>中文含义：单元格线材质。使用位置：作为 Object.Destroy(Object) 的参数、AttacheCasePresentationController.OnDestroy()、AttacheCasePresentationController.RebuildSpaceCellLine()。</summary>
+    /// <summary>单元格线材质。</summary>
     Material cellLineMaterial;
-    /// <summary>中文含义：空间材质。只读字段，初始化后不由普通写入口替换。使用位置：AttacheCasePresentationController.OnDestroy()、AttacheCasePresentationController.UpdateSpaceOverride(Image)。</summary>
+    /// <summary>空间材质。只读字段，初始化后不由普通写入口替换。</summary>
     readonly List<Material> spaceMaterial = new List<Material>();
-    /// <summary>中文含义：覆盖映射关系。只读字段，初始化后不由普通写入口替换。使用位置：AttacheCasePresentationController.UpdateSpaceOverride(Image)。</summary>
+    /// <summary>覆盖映射关系。只读字段，初始化后不由普通写入口替换。</summary>
     readonly Dictionary<Image, MeshRenderer> overrideMapping = new Dictionary<Image, MeshRenderer>();
-    /// <summary>中文含义：数量映射关系。只读字段，初始化后不由普通写入口替换。使用位置：AttacheCasePresentationController.CreateCountText(GridItem)、AttacheCasePresentationController.Synchronize(IReadOnlyList&lt;GridItem&gt;)、AttacheCasePresentationController.UpdateCountText(GridItem, RectTransform)。</summary>
+    /// <summary>数量映射关系。只读字段，初始化后不由普通写入口替换。</summary>
     readonly Dictionary<GridItem, Text> countMapping = new Dictionary<GridItem, Text>();
-    /// <summary>中文含义：数量对象池。只读字段，初始化后不由普通写入口替换。使用位置：AttacheCasePresentationController.CreateCountText(GridItem)、AttacheCasePresentationController.Synchronize(IReadOnlyList&lt;GridItem&gt;)。</summary>
+    /// <summary>数量对象池。只读字段，初始化后不由普通写入口替换。</summary>
     readonly Stack<Text> countPool = new Stack<Text>();
     /// <summary>Unity 首次启用后的启动回调；状态处理与资源交接按函数内顺序执行，下游协作见调用链。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
@@ -180,7 +180,7 @@ public class AttacheCasePresentationController : MonoBehaviour
     /// <remarks>静态调用链：上游 AttacheCasePresentationController.Show()；下游（含内部回调体） Action.Invoke()、AttacheCasePresentationController.UpdateCaseLid()、Mathf.Max(float, float)、Mathf.SmoothStep(float, float, float)、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     IEnumerator PlayOpenLid()
     {
-        // time（时间）：使用位置：作为 Mathf.SmoothStep(float, float, float) 的参数、AttacheCasePresentationController.PlayOpenLid()。
+        // 时间。
 float time = 0f;
         while (time < openDuration)
         {
@@ -193,7 +193,7 @@ float time = 0f;
         expandExtent = 1f;
         UpdateCaseLid();
         CurrentState = PresentationState.Interactive;
-        // receiverValue1（判空前缓存的打开完成）：从打开完成读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、AttacheCasePresentationController.PlayOpenLid()。
+        // 判空前缓存的打开完成。
 global::System.Action receiverValue1 = OpenComplete;
         if (!global::System.Object.ReferenceEquals(receiverValue1, null))
         {
@@ -217,7 +217,7 @@ global::System.Action receiverValue1 = OpenComplete;
 
         CurrentState = PresentationState.CloseMiddle;
         EndDrag();
-        // time（时间）：使用位置：作为 Mathf.SmoothStep(float, float, float) 的参数、AttacheCasePresentationController.CloseLid()。
+        // 时间。
 float time = 0f;
         while (time < closeDuration)
         {
@@ -228,7 +228,7 @@ float time = 0f;
         }
 
         ImmediateHide();
-        // receiverValue2（判空前缓存的关闭完成）：从关闭完成读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、AttacheCasePresentationController.CloseLid()。
+        // 判空前缓存的关闭完成。
 global::System.Action receiverValue2 = CloseComplete;
         if (!global::System.Object.ReferenceEquals(receiverValue2, null))
         {
@@ -274,9 +274,9 @@ global::System.Action receiverValue2 = CloseComplete;
 
         if (presentationCamera != null)
         {
-            // angle（角度）：使用位置：作为 Mathf.Cos(float) 的参数、作为 Mathf.Sin(float) 的参数。
+            // 角度。
 float angle = Mathf.Lerp(closeCaseTiltAngle, arrangeTiltAngle, expandExtent) * Mathf.Deg2Rad;
-            // target（目标）：使用位置：作为 Transform.TransformPoint(Vector3) 的参数、AttacheCasePresentationController.UpdateCaseLid()。
+            // 目标。
 Vector3 target = new Vector3(0, compositionCenter, 0);
             presentationCamera.transform.localPosition = target + new Vector3(0, -Mathf.Sin(angle), -Mathf.Cos(angle)) * 20f;
             presentationCamera.transform.LookAt(stage.transform.TransformPoint(target), stage.transform.up);
@@ -300,7 +300,7 @@ Vector3 target = new Vector3(0, compositionCenter, 0);
         caseModelBinding = caseBody.GetComponent<AttacheCaseModelBinding>();
         itemRoot = new GameObject("物品陈列").transform;
         itemRoot.SetParent(stage.transform, false);
-        // cameraObject（摄像机对象）：使用位置：AttacheCasePresentationController.CreateStage()。
+        // 摄像机对象。
 var cameraObject = new GameObject("公文包展示相机", typeof(Camera));
         cameraObject.transform.SetParent(stage.transform, false);
         presentationCamera = cameraObject.GetComponent<Camera>();
@@ -314,12 +314,12 @@ var cameraObject = new GameObject("公文包展示相机", typeof(Camera));
         CreateLight("暖色主光", new Vector3(-4f, 5f, -7f), new Color(1f, 0.89f, 0.72f), 3.4f);
         CreateLight("冷色补光", new Vector3(5f, 1f, -5f), new Color(0.65f, 0.73f, 0.83f), 2.1f);
         SetLayer(stage);
-        // imageObject（图像对象）：使用位置：AttacheCasePresentationController.CreateStage()。
+        // 图像对象。
 var imageObject = new GameObject("三维公文包画面", typeof(RectTransform), typeof(RawImage));
         imageObject.transform.SetParent(mesh.gridArea, false);
         view = imageObject.GetComponent<RawImage>();
         SetCraftingBackdrop(craftingBackdrop);
-        // input（输入数据）：保存 GameObject.AddComponent<AttacheCaseProjectionInput>() 的返回结果，供当前步骤使用。使用位置：AttacheCasePresentationController.CreateStage()。
+        // 输入数据。
 var input = imageObject.AddComponent<AttacheCaseProjectionInput>();
         input.presentation = this;
         input.mesh = mesh;
@@ -332,7 +332,7 @@ var input = imageObject.AddComponent<AttacheCaseProjectionInput>();
         planeMeshGroup.alpha = 0;
         planeMeshGroup.blocksRaycasts = false;
         planeMeshGroup.interactable = false;
-        // hintObject（提示对象）：使用位置：AttacheCasePresentationController.CreateStage()。
+        // 提示对象。
 var hintObject = new GameObject("落点轮廓", typeof(RectTransform), typeof(Image));
         hintObject.transform.SetParent(mesh.gridContainer, false);
         landPointPrompt = hintObject.GetComponent<Image>();
@@ -343,17 +343,17 @@ var hintObject = new GameObject("落点轮廓", typeof(RectTransform), typeof(Im
 
     /// <summary>CreateLight 的业务处理入口；本方法直接依赖 GameObject.GameObject(string, params Type[])、GameObject.GetComponent&lt;Light&gt;()、Transform.SetParent(Transform, bool)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 AttacheCasePresentationController.CreateStage()；下游（含内部回调体） GameObject.GameObject(string, params Type[])、GameObject.GetComponent&lt;Light&gt;()、Transform.SetParent(Transform, bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="name">中文含义：名称。使用位置：作为 GameObject.GameObject(string, params Type[]) 的参数。</param>
-    /// <param name="position">中文含义：位置。使用位置：AttacheCasePresentationController.CreateLight(string, Vector3, Color, float)。</param>
-    /// <param name="colorValue">中文含义：颜色值。使用位置：AttacheCasePresentationController.CreateLight(string, Vector3, Color, float)。</param>
-    /// <param name="brightness">中文含义：亮度。使用位置：AttacheCasePresentationController.CreateLight(string, Vector3, Color, float)。</param>
+    /// <param name="name">名称。</param>
+    /// <param name="position">位置。</param>
+    /// <param name="colorValue">颜色值。</param>
+    /// <param name="brightness">亮度。</param>
     void CreateLight(string name, Vector3 position, Color colorValue, float brightness)
     {
-        // go（当前游戏对象）：使用位置：AttacheCasePresentationController.CreateLight(string, Vector3, Color, float)。
+        // 当前游戏对象。
 var go = new GameObject(name, typeof(Light));
         go.transform.SetParent(stage.transform, false);
         go.transform.localPosition = position;
-        // light（光源）：保存 GameObject.GetComponent<Light>() 的返回结果，供当前步骤使用。使用位置：AttacheCasePresentationController.CreateLight(string, Vector3, Color, float)。
+        // 光源。
 var light = go.GetComponent<Light>();
         light.type = LightType.Point;
         light.range = 22f;
@@ -366,7 +366,7 @@ var light = go.GetComponent<Light>();
 
     /// <summary>SetLayer 的业务处理入口；本方法直接依赖 GameObject.GetComponentsInChildren&lt;Transform&gt;(bool)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 AttacheCasePresentationController.CreateStage()、AttacheCasePresentationController.RebuildSpaceCellLine()、AttacheCasePresentationController.Synchronize(IReadOnlyList&lt;GridItem&gt;)、AttacheCasePresentationController.UpdateSpaceOverride(Image)；下游（含内部回调体） GameObject.GetComponentsInChildren&lt;Transform&gt;(bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="root">中文含义：根游戏对象。使用位置：AttacheCasePresentationController.SetLayer(GameObject)。</param>
+    /// <param name="root">根游戏对象。</param>
     void SetLayer(GameObject root)
     {
         // t（当前变换节点）：每轮从取得组件集合内部子对象集合的返回结果取得一个元素，仅代表当前这一项。使用位置：AttacheCasePresentationController.SetLayer(GameObject)。
@@ -388,34 +388,34 @@ foreach (Transform t in root.GetComponentsInChildren<Transform>(true))
         lastWidth = mesh.TotalWidth;
         lastHeight = mesh.TotalHeight;
         pixelRatio = 10f / lastWidth;
-        // heightValue（高度值）：使用位置：作为 Vector3.Vector3(float, float, float) 的参数、AttacheCasePresentationController.UpdateComposition()。
+        // 高度值。
 float heightValue = lastHeight * pixelRatio;
         caseBody.localScale = new Vector3(1f, heightValue / 6f, 1f);
-        // upperEdge（上部边缘）：使用位置：AttacheCasePresentationController.UpdateComposition()。
+        // 上部边缘。
 float upperEdge = heightValue * 0.42f + 0.7f;
         if (caseModelBinding != null)
         {
             // 原版箱盖向外转动时会靠近展示相机，给投影保留上沿空间。
             upperEdge += heightValue * 0.36f;
         }
-        // lowerEdge（下部边缘）：使用位置：AttacheCasePresentationController.UpdateComposition()。
+        // 下部边缘。
 float lowerEdge = 1.5f;
-        // renderHeight（渲染高度）：使用位置：作为 Mathf.Atan(float) 的参数、作为 Vector2.Vector2(float, float) 的参数、AttacheCasePresentationController.UpdateComposition()。
+        // 渲染高度。
 float renderHeight = heightValue + upperEdge + lowerEdge;
-        // centerHeight（中心高度）：使用位置：作为 Vector2.Vector2(float, float) 的参数、AttacheCasePresentationController.UpdateComposition()。
+        // 中心高度。
 float centerHeight = (upperEdge - lowerEdge) * 0.5f;
         compositionCenter = centerHeight;
         presentationCamera.fieldOfView = 2f * Mathf.Atan(renderHeight * .5f / 20f) * Mathf.Rad2Deg;
         UpdateCaseLid();
         presentationCamera.aspect = 17f / renderHeight;
-        // rt（界面矩形变换）：使用位置：AttacheCasePresentationController.UpdateComposition()。
+        // 界面矩形变换。
 var rt = view.rectTransform;
         rt.anchorMin = rt.anchorMax = rt.pivot = new Vector2(0.5f, 0.5f);
         rt.sizeDelta = new Vector2(17f, renderHeight) / pixelRatio;
         ApplyCaseBackdropPlacement();
-        // widthValue（宽度值）：保存 Mathf.Min(int, int) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.RoundToInt(float) 的参数、作为 RenderTexture.RenderTexture(int, int, int, RenderTextureFormat) 的参数、AttacheCasePresentationController.UpdateComposition()。
+        // 宽度值。
 int widthValue = Mathf.Min(configuration.textureWidth, SystemInfo.maxTextureSize);
-        // heightValue2（高度值2）：保存 Mathf.RoundToInt(float) 的返回结果，供当前步骤使用。使用位置：作为 RenderTexture.RenderTexture(int, int, int, RenderTextureFormat) 的参数、AttacheCasePresentationController.UpdateComposition()。
+        // 高度值2。
 int heightValue2 = Mathf.RoundToInt(widthValue / presentationCamera.aspect);
         if (textureValue == null || textureValue.width != widthValue || textureValue.height != heightValue2)
         {
@@ -433,7 +433,7 @@ int heightValue2 = Mathf.RoundToInt(widthValue / presentationCamera.aspect);
 
     /// <summary>Synchronize 的业务处理入口；本方法直接依赖 AttacheCasePresentationController.CreateCountText(GridItem)、AttacheCasePresentationController.PresentationInstance.PresentationInstance()、AttacheCasePresentationController.SetLayer(GameObject)、Bounds.Bounds(Vector3, Vector3)、Bounds.Encapsulate(Bounds)、Debug.LogError(object, Object)、Dictionary&lt;GridItem, AttacheCasePresentationController.PresentationInstance&gt;.Add(GridItem, AttacheCasePresentationController.PresentationInstance) 等共 26 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 InventoryGridView.RebuildInternal(int, int, IReadOnlyList&lt;GridItem&gt;)；下游（含内部回调体） AttacheCasePresentationController.CreateCountText(GridItem)、AttacheCasePresentationController.PresentationInstance.PresentationInstance()、AttacheCasePresentationController.SetLayer(GameObject)、Bounds.Bounds(Vector3, Vector3)、Bounds.Encapsulate(Bounds)、Debug.LogError(object, Object)、Dictionary&lt;GridItem, AttacheCasePresentationController.PresentationInstance&gt;.Add(GridItem, AttacheCasePresentationController.PresentationInstance) 等共 26 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="data">中文含义：当前背包网格物品集合。使用位置：AttacheCasePresentationController.Synchronize(IReadOnlyList&lt;GridItem&gt;)。</param>
+    /// <param name="data">当前背包网格物品集合。</param>
     public void Synchronize(IReadOnlyList<GridItem> data)
     {
         if (stage == null || data == null)
@@ -445,7 +445,7 @@ int heightValue2 = Mathf.RoundToInt(widthValue / presentationCamera.aspect);
         // pair（当前键值配对）：每轮从表现物品取得一个元素，仅代表当前这一项。使用位置：作为 List<GridItem>.Add(GridItem) 的参数、作为 object.ReferenceEquals(object, object) 的参数。
 foreach (var pair in presentationItem)
         {
-            // exists（是否存在）：使用位置：AttacheCasePresentationController.Synchronize(IReadOnlyList<GridItem>)。
+            // 是否存在。
 bool exists = false;
             // item（当前背包网格物品）：每轮从数据取得一个元素，仅代表当前这一项。使用位置：作为 object.ReferenceEquals(object, object) 的参数。
 foreach (var item in data)
@@ -466,10 +466,10 @@ foreach (var item in data)
         // key（键）：每轮从恢复列表取得一个元素，仅代表当前这一项。使用位置：作为 Dictionary<GridItem, AttacheCasePresentationController.PresentationInstance>.Remove(GridItem) 的参数、作为 Dictionary<GridItem, AttacheCasePresentationController.PresentationInstance>.this[GridItem] 的参数、作为 Dictionary<GridItem, Text>.Remove(GridItem) 的参数 等共 5 处。
 foreach (var key in recoveryList)
         {
-            // instance（实例）：使用位置：作为 Stack<AttacheCasePresentationController.PresentationInstance>.Push(AttacheCasePresentationController.PresentationInstance) 的参数、AttacheCasePresentationController.Synchronize(IReadOnlyList<GridItem>)。
+            // 实例。
 var instance = presentationItem[key];
             instance.root.SetActive(false);
-            // identifier（标识符）：使用位置：作为 Dictionary<string, Stack<AttacheCasePresentationController.PresentationInstance>>.this[string] 的参数、作为 Dictionary<string, Stack<AttacheCasePresentationController.PresentationInstance>>.TryGetValue(string, out Stack<AttacheCasePresentationController.PresentationInstance>) 的参数。
+            // 标识符。
 string identifier = key.item.itemId;
             if (!objectPool.TryGetValue(identifier, out var /* 中文含义：对象池。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ pool))
             {
@@ -494,7 +494,7 @@ foreach (var item in data)
                 continue;
             }
 
-            // config（当前物品表现）：保存 InventoryPresentationConfiguration.Find(string) 的返回结果，供当前步骤使用。使用位置：作为 Object.Instantiate<GameObject>(GameObject, Transform) 的参数、作为 Quaternion.Euler(Vector3) 的参数、AttacheCasePresentationController.Synchronize(IReadOnlyList<GridItem>)。
+            // 当前物品表现。
 var config = configuration.Find(item.item.itemId);
             if (config == null || config.model == null)
             {
@@ -502,7 +502,7 @@ var config = configuration.Find(item.item.itemId);
                 continue;
             }
 
-            // instance（实例）：使用位置：作为 Dictionary<GridItem, AttacheCasePresentationController.PresentationInstance>.Add(GridItem, AttacheCasePresentationController.PresentationInstance) 的参数、AttacheCasePresentationController.Synchronize(IReadOnlyList<GridItem>)。
+            // 实例。
 PresentationInstance instance;
             if (objectPool.TryGetValue(item.item.itemId, out var /* 中文含义：对象池。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ pool) && pool.Count > 0)
             {
@@ -511,19 +511,19 @@ PresentationInstance instance;
             }
             else
             {
-                // root（根游戏对象）：使用位置：作为 AttacheCasePresentationController.SetLayer(GameObject) 的参数、作为 Bounds.Bounds(Vector3, Vector3) 的参数、作为 Object.Instantiate<GameObject>(GameObject, Transform) 的参数 等共 4 处。
+                // 根游戏对象。
 var root = new GameObject("陈列_" + item.item.displayName);
                 root.transform.SetParent(itemRoot, false);
-                // model（模型）：保存 Object.Instantiate<GameObject>(GameObject, Transform) 的返回结果，供当前步骤使用。使用位置：AttacheCasePresentationController.Synchronize(IReadOnlyList<GridItem>)。
+                // 模型。
 var model = Instantiate(config.model, root.transform);
                 model.transform.localPosition = Vector3.zero;
                 model.transform.localRotation = Quaternion.Euler(config.orientation);
                 root.transform.localPosition = Vector3.zero;
-                // renderers（渲染器集合）：保存 GameObject.GetComponentsInChildren<Renderer>() 的返回结果，供当前步骤使用。使用位置：AttacheCasePresentationController.Synchronize(IReadOnlyList<GridItem>)。
+                // 渲染器集合。
 var renderers = model.GetComponentsInChildren<Renderer>();
-                // bounds（包围盒）：使用位置：AttacheCasePresentationController.Synchronize(IReadOnlyList<GridItem>)。
+                // 包围盒。
 Bounds bounds = new Bounds(root.transform.position, Vector3.zero);
-                // firstElement（是否首个元素）：使用位置：AttacheCasePresentationController.Synchronize(IReadOnlyList<GridItem>)。
+                // 是否首个元素。
 bool firstElement = true;
                 // renderer（渲染器）：每轮从渲染器集合取得一个元素，仅代表当前这一项。使用位置：作为 Bounds.Encapsulate(Bounds) 的参数、AttacheCasePresentationController.Synchronize(IReadOnlyList<GridItem>)。
 foreach (var renderer in renderers)
@@ -539,7 +539,7 @@ foreach (var renderer in renderers)
                     }
                 }
 
-                // center（中心）：使用位置：AttacheCasePresentationController.Synchronize(IReadOnlyList<GridItem>)。
+                // 中心。
 Vector3 center = bounds.center - root.transform.position;
                 model.transform.localPosition = -center;
                 instance = new PresentationInstance
@@ -587,11 +587,11 @@ Vector3 center = bounds.center - root.transform.position;
         // pair（当前键值配对）：每轮从表现物品取得一个元素，仅代表当前这一项。使用位置：AttacheCasePresentationController.LateUpdate()。
 foreach (var pair in presentationItem)
         {
-            // item（当前背包网格物品）：使用位置：作为 AttacheCasePresentationController.UpdateCountText(GridItem, RectTransform) 的参数、作为 InventoryGridView.GetItemWidget(GridItem) 的参数、作为 Quaternion.Euler(float, float, float) 的参数 等共 4 处。
+            // 当前背包网格物品。
 var item = pair.Key;
-            // instance（实例）：使用位置：作为 Mathf.Max(float, float) 的参数、AttacheCasePresentationController.LateUpdate()。
+            // 实例。
 var instance = pair.Value;
-            // widget（界面控件）：保存 InventoryGridView.GetItemWidget(GridItem) 的返回结果，供当前步骤使用。使用位置：作为 AttacheCasePresentationController.UpdateCountText(GridItem, RectTransform) 的参数、作为 GameObject.SetActive(bool) 的参数、AttacheCasePresentationController.LateUpdate()。
+            // 界面控件。
 RectTransform widget = mesh.GetItemWidget(item);
             if (widget == null)
             {
@@ -607,7 +607,7 @@ RectTransform widget = mesh.GetItemWidget(item);
 
     /// <summary>BeginDrag 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
     /// <remarks>静态调用链：上游 InventoryUI.OnItemPointerDown(GridItem, Vector2)；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="item">中文含义：当前背包网格物品。使用位置：AttacheCasePresentationController.BeginDrag(GridItem)。</param>
+    /// <param name="item">当前背包网格物品。</param>
     private void PlaceItemModel(PresentationInstance instance, GridItem item, RectTransform widget)
     {
         Vector3 size = instance.size;
@@ -674,9 +674,9 @@ RectTransform widget = mesh.GetItemWidget(item);
 
     /// <summary>PreviewLandPoint 的业务处理入口；本方法直接依赖 Color.Color(float, float, float, float)、GameObject.SetActive(bool)、InventoryGridView.TryGetDropGrid(GridItem, Vector2, Vector2, out int, out int)、InventoryManager.CanCombine(GridItem, GridItem)、InventoryManager.GetItemAt(int, int)、Transform.SetAsLastSibling()、Vector2.Vector2(float, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 InventoryUI.OnItemDrag(GridItem, Vector2)；下游（含内部回调体） Color.Color(float, float, float, float)、GameObject.SetActive(bool)、InventoryGridView.TryGetDropGrid(GridItem, Vector2, Vector2, out int, out int)、InventoryManager.CanCombine(GridItem, GridItem)、InventoryManager.GetItemAt(int, int)、Transform.SetAsLastSibling()、Vector2.Vector2(float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="item">中文含义：当前背包网格物品。使用位置：作为 InventoryGridView.TryGetDropGrid(GridItem, Vector2, Vector2, out int, out int) 的参数、作为 InventoryManager.CanCombine(GridItem, GridItem) 的参数、作为 Vector2.Vector2(float, float) 的参数 等共 4 处。</param>
-    /// <param name="screenPosition">中文含义：屏幕位置。使用位置：作为 InventoryGridView.TryGetDropGrid(GridItem, Vector2, Vector2, out int, out int) 的参数。</param>
-    /// <param name="offset">中文含义：偏移量。使用位置：作为 InventoryGridView.TryGetDropGrid(GridItem, Vector2, Vector2, out int, out int) 的参数。</param>
+    /// <param name="item">当前背包网格物品。</param>
+    /// <param name="screenPosition">屏幕位置。</param>
+    /// <param name="offset">偏移量。</param>
     public void PreviewLandPoint(GridItem item, Vector2 screenPosition, Vector2 offset)
     {
         if (landPointPrompt == null || InventoryManager.Instance == null)
@@ -684,7 +684,7 @@ RectTransform widget = mesh.GetItemWidget(item);
             return;
         }
 
-        // mgr（当前背包管理器）：使用位置：AttacheCasePresentationController.PreviewLandPoint(GridItem, Vector2, Vector2)。
+        // 当前背包管理器。
 var mgr = InventoryManager.Instance;
         if (!mesh.TryGetDropGrid(item, screenPosition, offset, out int /* 中文含义：横向。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ x, out int /* 中文含义：纵向。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ y))
         {
@@ -692,17 +692,17 @@ var mgr = InventoryManager.Instance;
             return;
         }
 
-        // valid（是否有效）：使用位置：AttacheCasePresentationController.PreviewLandPoint(GridItem, Vector2, Vector2)。
+        // 是否有效。
 bool valid = x >= 0 && y >= 0 && x + item.Width <= mgr.CaseWidth && y + item.Height <= mgr.CaseHeight;
         if (valid)
         {
-            // row（行）：使用位置：作为 InventoryManager.GetItemAt(int, int) 的参数、AttacheCasePresentationController.PreviewLandPoint(GridItem, Vector2, Vector2)。
+            // 行。
 for (int row = y; row < y + item.Height; row++)
             {
-                // col（列）：使用位置：作为 InventoryManager.GetItemAt(int, int) 的参数、AttacheCasePresentationController.PreviewLandPoint(GridItem, Vector2, Vector2)。
+                // 列。
 for (int col = x; col < x + item.Width; col++)
                 {
-                    // other（另一个背包网格物品）：保存 InventoryManager.GetItemAt(int, int) 的返回结果，供当前步骤使用。使用位置：作为 InventoryManager.CanCombine(GridItem, GridItem) 的参数、AttacheCasePresentationController.PreviewLandPoint(GridItem, Vector2, Vector2)。
+                    // 另一个背包网格物品。
 var other = mgr.GetItemAt(col, row);
                     if (other != null && other != item && !mgr.CanCombine(item, other))
                     {
@@ -712,13 +712,13 @@ var other = mgr.GetItemAt(col, row);
             }
         }
 
-        // step（步进）：使用位置：作为 Vector2.Vector2(float, float) 的参数。
+        // 步进。
 float step = mesh.CurrentCell + mesh.cellSpacing;
-        // size（尺寸）：使用位置：作为 Vector2.Vector2(float, float) 的参数、AttacheCasePresentationController.PreviewLandPoint(GridItem, Vector2, Vector2)。
+        // 尺寸。
 Vector2 size = new Vector2(item.Width * step - mesh.cellSpacing, item.Height * step - mesh.cellSpacing);
         landPointPrompt.rectTransform.sizeDelta = size;
         landPointPrompt.rectTransform.anchoredPosition = new Vector2(x * step + size.x / 2f - mesh.TotalWidth / 2f, -y * step - size.y / 2f + mesh.TotalHeight / 2f);
-        // assignmentReceiver5（赋值前保存的目标落地点提示）：从落地点提示读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：AttacheCasePresentationController.PreviewLandPoint(GridItem, Vector2, Vector2)。
+        // 赋值前保存的目标落地点提示。
 global::UnityEngine.UI.Image assignmentReceiver5 = landPointPrompt;
         if (valid)
         {
@@ -736,8 +736,8 @@ global::UnityEngine.UI.Image assignmentReceiver5 = landPointPrompt;
     // 鼠标先经过展示相机反投影，再使用原网格规则计算占格。
     /// <summary>ScreenRotateMesh 的业务处理入口；本方法直接依赖 Camera.ViewportPointToRay(Vector3)、Component.GetComponentInParent&lt;Canvas&gt;()、Plane.Plane(Vector3, Vector3)、Plane.Raycast(Ray, out float)、Ray.GetPoint(float)、RectTransformUtility.ScreenPointToLocalPointInRectangle(RectTransform, Vector2, Camera, out Vector2)、Transform.InverseTransformPoint(Vector3) 等共 10 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 AttacheCaseProjectionInput.Find(Vector2)、AttacheCaseProjectionInput.OnPointerClick(PointerEventData)、InventoryGridView.TryScreenPointToLocal(Vector2, out Vector2)；下游（含内部回调体） Camera.ViewportPointToRay(Vector3)、Component.GetComponentInParent&lt;Canvas&gt;()、Plane.Plane(Vector3, Vector3)、Plane.Raycast(Ray, out float)、Ray.GetPoint(float)、RectTransformUtility.ScreenPointToLocalPointInRectangle(RectTransform, Vector2, Camera, out Vector2)、Transform.InverseTransformPoint(Vector3) 等共 10 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="screenPosition">中文含义：屏幕位置。使用位置：作为 RectTransformUtility.ScreenPointToLocalPointInRectangle(RectTransform, Vector2, Camera, out Vector2) 的参数。</param>
-    /// <param name="meshPosition">中文含义：网格位置。输出参数，由本入口写入并交给调用方。使用位置：AttacheCasePresentationController.ScreenRotateMesh(Vector2, out Vector2)。</param>
+    /// <param name="screenPosition">屏幕位置。</param>
+    /// <param name="meshPosition">网格位置。输出参数，由本入口写入并交给调用方。</param>
     public bool ScreenRotateMesh(Vector2 screenPosition, out Vector2 meshPosition)
     {
         meshPosition = Vector2.zero;
@@ -746,9 +746,9 @@ global::UnityEngine.UI.Image assignmentReceiver5 = landPointPrompt;
             return false;
         }
 
-        // canvas（画布）：保存 Component.GetComponentInParent<Canvas>() 的返回结果，供当前步骤使用。使用位置：AttacheCasePresentationController.ScreenRotateMesh(Vector2, out Vector2)。
+        // 画布。
 Canvas canvas = view.GetComponentInParent<Canvas>();
-        // camera（摄像机）：使用位置：作为 RectTransformUtility.ScreenPointToLocalPointInRectangle(RectTransform, Vector2, Camera, out Vector2) 的参数、AttacheCasePresentationController.ScreenRotateMesh(Vector2, out Vector2)。
+        // 摄像机。
 Camera camera;
         if (canvas != null && canvas.renderMode != RenderMode.ScreenSpaceOverlay)
         {
@@ -764,20 +764,20 @@ Camera camera;
             return false;
         }
 
-        // rect（矩形）：使用位置：作为 Vector2.Vector2(float, float) 的参数。
+        // 矩形。
 Rect rect = view.rectTransform.rect;
-        // uv（纹理坐标）：使用位置：作为 Camera.ViewportPointToRay(Vector3) 的参数。
+        // 纹理坐标。
 Vector2 uv = new Vector2((local.x - rect.xMin) / rect.width, (local.y - rect.yMin) / rect.height);
-        // ray（射线）：保存 Camera.ViewportPointToRay(Vector3) 的返回结果，供当前步骤使用。使用位置：作为 Plane.Raycast(Ray, out float) 的参数、作为 Transform.InverseTransformPoint(Vector3) 的参数。
+        // 射线。
 Ray ray = presentationCamera.ViewportPointToRay(uv);
-        // plane（平面）：使用位置：AttacheCasePresentationController.ScreenRotateMesh(Vector2, out Vector2)。
+        // 平面。
 Plane plane = new Plane(stage.transform.forward, stage.transform.TransformPoint(new Vector3(0, 0, -.04f)));
         if (!plane.Raycast(ray, out float /* 中文含义：距离。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ distance))
         {
             return false;
         }
 
-        // point（点）：保存 Transform.InverseTransformPoint(Vector3) 的返回结果，供当前步骤使用。使用位置：作为 Vector2.Vector2(float, float) 的参数。
+        // 点。
 Vector3 point = stage.transform.InverseTransformPoint(ray.GetPoint(distance));
         meshPosition = new Vector2(point.x, point.y) / pixelRatio;
         return true;
@@ -785,20 +785,20 @@ Vector3 point = stage.transform.InverseTransformPoint(ray.GetPoint(distance));
 
     /// <summary>MeshRotateScreen 的业务处理入口；本方法直接依赖 Camera.WorldToViewportPoint(Vector3)、Component.GetComponentInParent&lt;Canvas&gt;()、RectTransformUtility.WorldToScreenPoint(Camera, Vector3)、Transform.TransformPoint(Vector3)、Vector3.Vector3(float, float, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） Camera.WorldToViewportPoint(Vector3)、Component.GetComponentInParent&lt;Canvas&gt;()、RectTransformUtility.WorldToScreenPoint(Camera, Vector3)、Transform.TransformPoint(Vector3)、Vector3.Vector3(float, float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="meshPosition">中文含义：网格位置。使用位置：作为 Vector3.Vector3(float, float, float) 的参数。</param>
+    /// <param name="meshPosition">网格位置。</param>
     public Vector2 MeshRotateScreen(Vector2 meshPosition)
     {
-        // world（世界空间）：保存 Transform.TransformPoint(Vector3) 的返回结果，供当前步骤使用。使用位置：作为 Camera.WorldToViewportPoint(Vector3) 的参数。
+        // 世界空间。
 Vector3 world = stage.transform.TransformPoint(new Vector3(meshPosition.x * pixelRatio, meshPosition.y * pixelRatio, -.04f));
-        // uv（纹理坐标）：保存 Camera.WorldToViewportPoint(Vector3) 的返回结果，供当前步骤使用。使用位置：作为 Vector3.Vector3(float, float, float) 的参数。
+        // 纹理坐标。
 Vector3 uv = presentationCamera.WorldToViewportPoint(world);
-        // rect（矩形）：使用位置：作为 Vector3.Vector3(float, float, float) 的参数。
+        // 矩形。
 Rect rect = view.rectTransform.rect;
-        // point（点）：保存 Transform.TransformPoint(Vector3) 的返回结果，供当前步骤使用。使用位置：作为 RectTransformUtility.WorldToScreenPoint(Camera, Vector3) 的参数。
+        // 点。
 Vector3 point = view.rectTransform.TransformPoint(new Vector3(rect.xMin + uv.x * rect.width, rect.yMin + uv.y * rect.height, 0));
-        // canvas（画布）：保存 Component.GetComponentInParent<Canvas>() 的返回结果，供当前步骤使用。使用位置：AttacheCasePresentationController.MeshRotateScreen(Vector2)。
+        // 画布。
 Canvas canvas = view.GetComponentInParent<Canvas>();
-        // selectedValue8（分支选出的画布的世界空间摄像机）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：作为 RectTransformUtility.WorldToScreenPoint(Camera, Vector3) 的参数、AttacheCasePresentationController.MeshRotateScreen(Vector2)。
+        // 分支选出的画布的世界空间摄像机。
 global::UnityEngine.Camera selectedValue8;
         if (canvas != null && canvas.renderMode != RenderMode.ScreenSpaceOverlay)
         {
@@ -840,31 +840,31 @@ global::UnityEngine.Camera selectedValue8;
             Destroy(cellLineMesh);
         }
 
-        // vertices（顶点集合）：使用位置：作为 AttacheCasePresentationController.AddCellLine(List<Vector3>, List<int>, float, float, float, float) 的参数、作为 Mesh.SetVertices(List<Vector3>) 的参数。
+        // 顶点集合。
 var vertices = new List<Vector3>();
-        // indices（索引集合）：使用位置：作为 AttacheCasePresentationController.AddCellLine(List<Vector3>, List<int>, float, float, float, float) 的参数、作为 Mesh.SetTriangles(List<int>, int) 的参数。
+        // 索引集合。
 var indices = new List<int>();
 
         // 中文含义：width 为“宽度”。；height 为“高度”。
 float width = mesh.TotalWidth * pixelRatio, height = mesh.TotalHeight * pixelRatio;
-        // step（步进）：使用位置：作为 Mathf.Min(float, float) 的参数。
+        // 步进。
 float step = (mesh.CurrentCell + mesh.cellSpacing) * pixelRatio;
-        // columns（列数）：保存 Mathf.RoundToInt(float) 的返回结果，供当前步骤使用。使用位置：AttacheCasePresentationController.RebuildSpaceCellLine()。
+        // 列数。
 int columns = Mathf.RoundToInt((mesh.TotalWidth + mesh.cellSpacing) / (mesh.CurrentCell + mesh.cellSpacing));
-        // rows（行数）：保存 Mathf.RoundToInt(float) 的返回结果，供当前步骤使用。使用位置：AttacheCasePresentationController.RebuildSpaceCellLine()。
+        // 行数。
 int rows = Mathf.RoundToInt((mesh.TotalHeight + mesh.cellSpacing) / (mesh.CurrentCell + mesh.cellSpacing));
-        // i（当前遍历索引）：使用位置：作为 Mathf.Min(float, float) 的参数、AttacheCasePresentationController.RebuildSpaceCellLine()。
+        // 当前遍历索引。
 for (int i = 0; i <= columns; i++)
         {
-            // x（横向）：使用位置：作为 AttacheCasePresentationController.AddCellLine(List<Vector3>, List<int>, float, float, float, float) 的参数。
+            // 横向。
 float x = Mathf.Min(width, i * step) - width * .5f;
             AddCellLine(vertices, indices, x - .008f, -height * .5f, x + .008f, height * .5f);
         }
 
-        // i（当前遍历索引）：使用位置：作为 Mathf.Min(float, float) 的参数、AttacheCasePresentationController.RebuildSpaceCellLine()。
+        // 当前遍历索引。
 for (int i = 0; i <= rows; i++)
         {
-            // y（纵向）：使用位置：作为 AttacheCasePresentationController.AddCellLine(List<Vector3>, List<int>, float, float, float, float) 的参数。
+            // 纵向。
 float y = height * .5f - Mathf.Min(height, i * step);
             AddCellLine(vertices, indices, -width * .5f, y - .008f, width * .5f, y + .008f);
         }
@@ -881,15 +881,15 @@ float y = height * .5f - Mathf.Min(height, i * step);
 
     /// <summary>AddCellLine 的业务处理入口；本方法直接依赖 List&lt;int&gt;.Add(int)、List&lt;Vector3&gt;.Add(Vector3)、Vector3.Vector3(float, float, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 AttacheCasePresentationController.RebuildSpaceCellLine()；下游（含内部回调体） List&lt;int&gt;.Add(int)、List&lt;Vector3&gt;.Add(Vector3)、Vector3.Vector3(float, float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="v">中文含义：当前三维向量集合。使用位置：AttacheCasePresentationController.AddCellLine(List&lt;Vector3&gt;, List&lt;int&gt;, float, float, float, float)。</param>
-    /// <param name="t">中文含义：当前整数集合。使用位置：AttacheCasePresentationController.AddCellLine(List&lt;Vector3&gt;, List&lt;int&gt;, float, float, float, float)。</param>
-    /// <param name="left">中文含义：左侧。使用位置：作为 Vector3.Vector3(float, float, float) 的参数。</param>
-    /// <param name="bottom">中文含义：底部。使用位置：作为 Vector3.Vector3(float, float, float) 的参数。</param>
-    /// <param name="right">中文含义：右侧。使用位置：作为 Vector3.Vector3(float, float, float) 的参数。</param>
-    /// <param name="top">中文含义：顶部。使用位置：作为 Vector3.Vector3(float, float, float) 的参数。</param>
+    /// <param name="v">当前三维向量集合。</param>
+    /// <param name="t">当前整数集合。</param>
+    /// <param name="left">左侧。</param>
+    /// <param name="bottom">底部。</param>
+    /// <param name="right">右侧。</param>
+    /// <param name="top">顶部。</param>
     static void AddCellLine(List<Vector3> v, List<int> t, float left, float bottom, float right, float top)
     {
-        // n（添加格线前已有的顶点数量）：使用位置：作为 List<int>.Add(int) 的参数。
+        // 添加格线前已有的顶点数量。
 int n = v.Count;
         v.Add(new Vector3(left, bottom, -.04f));
         v.Add(new Vector3(left, top, -.04f));
@@ -905,7 +905,7 @@ int n = v.Count;
 
     /// <summary>UpdateSpaceOverride 的业务处理入口；本方法直接依赖 AttacheCasePresentationController.SetLayer(GameObject)、Dictionary&lt;Image, MeshRenderer&gt;.Add(Image, MeshRenderer)、Dictionary&lt;Image, MeshRenderer&gt;.TryGetValue(Image, out MeshRenderer)、GameObject.CreatePrimitive(PrimitiveType)、GameObject.GetComponent&lt;Collider&gt;()、GameObject.GetComponent&lt;MeshRenderer&gt;()、GameObject.SetActive(bool) 等共 14 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 AttacheCasePresentationController.LateUpdate()；下游（含内部回调体） AttacheCasePresentationController.SetLayer(GameObject)、Dictionary&lt;Image, MeshRenderer&gt;.Add(Image, MeshRenderer)、Dictionary&lt;Image, MeshRenderer&gt;.TryGetValue(Image, out MeshRenderer)、GameObject.CreatePrimitive(PrimitiveType)、GameObject.GetComponent&lt;Collider&gt;()、GameObject.GetComponent&lt;MeshRenderer&gt;()、GameObject.SetActive(bool) 等共 14 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="source">中文含义：来源图像组件。使用位置：作为 Dictionary&lt;Image, MeshRenderer&gt;.Add(Image, MeshRenderer) 的参数、作为 Dictionary&lt;Image, MeshRenderer&gt;.TryGetValue(Image, out MeshRenderer) 的参数、作为 GameObject.SetActive(bool) 的参数 等共 5 处。</param>
+    /// <param name="source">来源图像组件。</param>
     void UpdateSpaceOverride(Image source)
     {
         if (source == null)
@@ -915,13 +915,13 @@ int n = v.Count;
 
         if (!overrideMapping.TryGetValue(source, out var /* 中文含义：渲染器。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ renderer))
         {
-            // go（当前游戏对象）：保存 GameObject.CreatePrimitive(PrimitiveType) 的返回结果，供当前步骤使用。使用位置：作为 AttacheCasePresentationController.SetLayer(GameObject) 的参数、作为 Object.Destroy(Object) 的参数、AttacheCasePresentationController.UpdateSpaceOverride(Image)。
+            // 当前游戏对象。
 var go = GameObject.CreatePrimitive(PrimitiveType.Quad);
             go.name = "箱内" + source.name;
             Destroy(go.GetComponent<Collider>());
             go.transform.SetParent(stage.transform, false);
             renderer = go.GetComponent<MeshRenderer>();
-            // material（材质）：使用位置：作为 List<Material>.Add(Material) 的参数、AttacheCasePresentationController.UpdateSpaceOverride(Image)。
+            // 材质。
 global::UnityEngine.Material material;
             if (configuration.overrideMaterial != null)
             {
@@ -945,7 +945,7 @@ global::UnityEngine.Material material;
             return;
         }
 
-        // pos（位置）：使用位置：作为 Vector3.Vector3(float, float, float) 的参数。
+        // 位置。
 Vector2 pos = source.rectTransform.anchoredPosition * pixelRatio;
         renderer.transform.localPosition = new Vector3(pos.x, pos.y, -.055f);
         renderer.transform.localScale = new Vector3(source.rectTransform.rect.width * pixelRatio, source.rectTransform.rect.height * pixelRatio, 1);
@@ -954,10 +954,10 @@ Vector2 pos = source.rectTransform.anchoredPosition * pixelRatio;
 
     /// <summary>CreateCountText 的业务处理入口；本方法直接依赖 GameObject.GameObject(string, params Type[])、GameObject.GetComponent&lt;Text&gt;()、Stack&lt;Text&gt;.Pop()、Transform.SetParent(Transform, bool)、Vector2.Vector2(float, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 AttacheCasePresentationController.Synchronize(IReadOnlyList&lt;GridItem&gt;)；下游（含内部回调体） GameObject.GameObject(string, params Type[])、GameObject.GetComponent&lt;Text&gt;()、Stack&lt;Text&gt;.Pop()、Transform.SetParent(Transform, bool)、Vector2.Vector2(float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="item">中文含义：当前背包网格物品。使用位置：作为 Dictionary&lt;GridItem, Text&gt;.this[GridItem] 的参数。</param>
+    /// <param name="item">当前背包网格物品。</param>
     void CreateCountText(GridItem item)
     {
-        // text（文字）：使用位置：AttacheCasePresentationController.CreateCountText(GridItem)。
+        // 文字。
 Text text;
         if (countPool.Count > 0)
         {
@@ -965,11 +965,11 @@ Text text;
         }
         else
         {
-            // go（当前游戏对象）：使用位置：AttacheCasePresentationController.CreateCountText(GridItem)。
+            // 当前游戏对象。
 var go = new GameObject("三维物品数量", typeof(RectTransform), typeof(Text));
             go.transform.SetParent(view.transform, false);
             text = go.GetComponent<Text>();
-            // assignmentReceiver11（赋值前保存的目标文字）：从文字读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：AttacheCasePresentationController.CreateCountText(GridItem)。
+            // 赋值前保存的目标文字。
 global::UnityEngine.UI.Text assignmentReceiver11 = text;
             if (mesh.visualTheme != null)
             {
@@ -993,8 +993,8 @@ global::UnityEngine.UI.Text assignmentReceiver11 = text;
 
     /// <summary>UpdateCountText 的业务处理入口；本方法直接依赖 Camera.WorldToViewportPoint(Vector3)、Dictionary&lt;GridItem, Text&gt;.TryGetValue(GridItem, out Text)、GameObject.SetActive(bool)、int.ToString()、Transform.TransformPoint(Vector3)、Vector2.Vector2(float, float)、Vector3.Vector3(float, float, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 AttacheCasePresentationController.LateUpdate()；下游（含内部回调体） Camera.WorldToViewportPoint(Vector3)、Dictionary&lt;GridItem, Text&gt;.TryGetValue(GridItem, out Text)、GameObject.SetActive(bool)、int.ToString()、Transform.TransformPoint(Vector3)、Vector2.Vector2(float, float)、Vector3.Vector3(float, float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="item">中文含义：当前背包网格物品。使用位置：作为 Dictionary&lt;GridItem, Text&gt;.TryGetValue(GridItem, out Text) 的参数、作为 GameObject.SetActive(bool) 的参数、AttacheCasePresentationController.UpdateCountText(GridItem, RectTransform)。</param>
-    /// <param name="widget">中文含义：界面控件。使用位置：作为 GameObject.SetActive(bool) 的参数、作为 Vector2.Vector2(float, float) 的参数、AttacheCasePresentationController.UpdateCountText(GridItem, RectTransform)。</param>
+    /// <param name="item">当前背包网格物品。</param>
+    /// <param name="widget">界面控件。</param>
     internal void SetCraftingBackdrop(bool visible)
     {
         craftingBackdrop = visible;
@@ -1041,13 +1041,13 @@ global::UnityEngine.UI.Text assignmentReceiver11 = text;
         }
 
         InventoryGridView.UpdateItemNumber(text, number, numberColor);
-        // corner（角落）：使用位置：作为 Vector3.Vector3(float, float, float) 的参数。
+        // 角落。
 Vector2 corner = widget.anchoredPosition + new Vector2(widget.rect.width * .5f - 4, -widget.rect.height * .5f + 4);
-        // world（世界空间）：保存 Transform.TransformPoint(Vector3) 的返回结果，供当前步骤使用。使用位置：作为 Camera.WorldToViewportPoint(Vector3) 的参数。
+        // 世界空间。
 Vector3 world = stage.transform.TransformPoint(new Vector3(corner.x * pixelRatio, corner.y * pixelRatio, -.04f));
-        // uv（纹理坐标）：保存 Camera.WorldToViewportPoint(Vector3) 的返回结果，供当前步骤使用。使用位置：作为 Vector2.Vector2(float, float) 的参数。
+        // 纹理坐标。
 Vector3 uv = presentationCamera.WorldToViewportPoint(world);
-        // rect（矩形）：使用位置：作为 Vector2.Vector2(float, float) 的参数。
+        // 矩形。
 Rect rect = view.rectTransform.rect;
         text.rectTransform.anchoredPosition = new Vector2(rect.xMin + uv.x * rect.width, rect.yMin + uv.y * rect.height);
     }

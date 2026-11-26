@@ -5,16 +5,16 @@ using UnityEngine;
 [Serializable]
 public sealed class KnifeEnemyAttackSegment
 {
-    /// <summary>中文含义：原始源动作按一百二十赫兹采样。本段使用的手骨；原始源动作按一百二十赫兹采样。使用位置：作为 Animator.GetBoneTransform(HumanBodyBones) 的参数、作为 IEnumerable&lt;KnifeEnemyAttackSegment&gt;.Select&lt;KnifeEnemyAttackSegment, &lt;anonymous type: string hand, float begin, float end, float radius, int samples&gt; &gt;(Func&lt;KnifeEnemyAttackSegment, &lt;anonymous type: string hand, float begin, float end, float radius, int samples&gt; &gt;) 的参数、KnifeContactProfileBuilder.CreateSegment(HumanBodyBones, float, float)。</summary>
+    /// <summary>原始源动作按一百二十赫兹采样。本段使用的手骨；原始源动作按一百二十赫兹采样。</summary>
     [Tooltip("本段使用的手骨；原始源动作按一百二十赫兹采样。")]
     public HumanBodyBones hand;
-    /// <summary>中文含义：开始。使用位置：作为 IEnumerable&lt;KnifeEnemyAttackSegment&gt;.Select&lt;KnifeEnemyAttackSegment, &lt;anonymous type: string hand, float begin, float end, float radius, int samples&gt; &gt;(Func&lt;KnifeEnemyAttackSegment, &lt;anonymous type: string hand, float begin, float end, float radius, int samples&gt; &gt;) 的参数、作为 Mathf.CeilToInt(float) 的参数、作为 Mathf.InverseLerp(float, float, float) 的参数 等共 8 处。</summary>
+    /// <summary>开始。</summary>
     public float begin;
-    /// <summary>中文含义：结束。使用位置：作为 IEnumerable&lt;KnifeEnemyAttackSegment&gt;.Select&lt;KnifeEnemyAttackSegment, &lt;anonymous type: string hand, float begin, float end, float radius, int samples&gt; &gt;(Func&lt;KnifeEnemyAttackSegment, &lt;anonymous type: string hand, float begin, float end, float radius, int samples&gt; &gt;) 的参数、作为 Mathf.CeilToInt(float) 的参数、作为 Mathf.InverseLerp(float, float, float) 的参数 等共 8 处。</summary>
+    /// <summary>结束。</summary>
     public float end;
-    /// <summary>中文含义：半径。使用位置：作为 EnemyCombatModule.TryKnifeSweep(Vector3, Vector3, float, LeonController, out Vector3, out float) 的参数、作为 IEnumerable&lt;KnifeEnemyAttackSegment&gt;.Select&lt;KnifeEnemyAttackSegment, &lt;anonymous type: string hand, float begin, float end, float radius, int samples&gt; &gt;(Func&lt;KnifeEnemyAttackSegment, &lt;anonymous type: string hand, float begin, float end, float radius, int samples&gt; &gt;) 的参数、KnifeContactProfileBuilder.CreateSegment(HumanBodyBones, float, float)。</summary>
+    /// <summary>半径。</summary>
     public float radius = .12f;
-    /// <summary>中文含义：局部点集合。使用位置：作为 IEnumerable&lt;KnifeEnemyAttackSegment&gt;.Select&lt;KnifeEnemyAttackSegment, &lt;anonymous type: string hand, float begin, float end, float radius, int samples&gt; &gt;(Func&lt;KnifeEnemyAttackSegment, &lt;anonymous type: string hand, float begin, float end, float radius, int samples&gt; &gt;) 的参数、作为 Mathf.Clamp(int, int, int) 的参数、作为 Mathf.Min(int, int) 的参数 等共 7 处。</summary>
+    /// <summary>局部点集合。</summary>
     public Vector3[] localPoints = Array.Empty<Vector3>();
     [HideInInspector] public Vector3[] localEndPoints = Array.Empty<Vector3>();
     [HideInInspector] public string contactBonePath;
@@ -22,14 +22,14 @@ public sealed class KnifeEnemyAttackSegment
     [HideInInspector] public Vector3 contactLocalEnd;
     /// <summary>Sample 的业务处理入口；本方法直接依赖 Mathf.Clamp(int, int, int)、Mathf.FloorToInt(float)、Mathf.InverseLerp(float, float, float)、Mathf.Min(int, int)、Vector3.Lerp(Vector3, Vector3, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyCombatModule.LateUpdate()；下游（含内部回调体） Mathf.Clamp(int, int, int)、Mathf.FloorToInt(float)、Mathf.InverseLerp(float, float, float)、Mathf.Min(int, int)、Vector3.Lerp(Vector3, Vector3, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="seconds">中文含义：秒。使用位置：作为 Mathf.InverseLerp(float, float, float) 的参数。</param>
+    /// <param name="seconds">秒。</param>
     public Vector3 Sample(float seconds)
     {
-        // frame（帧）：使用位置：作为 Mathf.FloorToInt(float) 的参数、作为 Vector3.Lerp(Vector3, Vector3, float) 的参数。
+        // 帧。
 float frame = Mathf.InverseLerp(begin, end, seconds) * (localPoints.Length - 1);
-        // first（首个）：保存 Mathf.Clamp(int, int, int) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Min(int, int) 的参数、作为 Vector3.Lerp(Vector3, Vector3, float) 的参数、KnifeEnemyAttackSegment.Sample(float)。
+        // 首个。
 int first = Mathf.Clamp(Mathf.FloorToInt(frame), 0, localPoints.Length - 1);
-        // second（第二）：保存 Mathf.Min(int, int) 的返回结果，供当前步骤使用。使用位置：KnifeEnemyAttackSegment.Sample(float)。
+        // 第二。
 int second = Mathf.Min(first + 1, localPoints.Length - 1);
         return Vector3.Lerp(localPoints[first], localPoints[second], frame - first);
     }
@@ -39,7 +39,9 @@ int second = Mathf.Min(first + 1, localPoints.Length - 1);
 /// <remarks>敌人攻击与接触结算宿主，结合角色当前动作、时序及命中信息提交战斗事实；小刀接触通过既有攻击上下文与招架入口通信。</remarks>
 public sealed partial class EnemyCombatModule
 {
-    /// <summary>中文含义：是否小刀时间轴采样到的。使用位置：EnemyCombatModule.LateUpdate()、EnemyCombatModule.ResetKnifeContactTimeline()。</summary>
+    private readonly HitQueryBuffer knifeContactOcclusionHits = new();
+
+    /// <summary>是否小刀时间轴采样到的。</summary>
     private const float KnifeSweepStep = 1f / 120f;
 
     private struct KnifeSweepFrame
@@ -594,8 +596,10 @@ public sealed partial class EnemyCombatModule
 
         Vector3 start = frame.origin + Vector3.up;
         Vector3 line = contact - start;
-        foreach (RaycastHit hit in Physics.RaycastAll(start, line.normalized, line.magnitude, ~0, QueryTriggerInteraction.Ignore))
+        RaycastHit[] hits = knifeContactOcclusionHits.Raycast(start, line.normalized, line.magnitude, ~0, QueryTriggerInteraction.Ignore, out int hitCount);
+        for (int hitIndex = 0; hitIndex < hitCount; hitIndex++)
         {
+            RaycastHit hit = hits[hitIndex];
             if (hit.collider.transform.IsChildOf(transform) || hit.collider.transform.IsChildOf(player.transform))
             {
                 continue;

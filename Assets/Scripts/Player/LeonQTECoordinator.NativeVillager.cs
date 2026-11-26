@@ -16,8 +16,20 @@ public partial class LeonQTECoordinator
         playback = null;
         if (kind is not (QTEKind.FrontGrab or QTEKind.RearBiteNeck or QTEKind.KnifeAssassination)
             || playerAnimator == null || playerAnimator.isHuman || target.Animator == null || target.Animator.isHuman
-            || target is not VillagerQTEParticipant villager || villager.controller == null
-            || villager.controller.missionEnemyType != MissionEnemyType.Ganado)
+            || target is not VillagerQTEParticipant villager || villager.controller == null)
+        {
+            return false;
+        }
+
+        MissionEnemyType enemyType = villager.controller.missionEnemyType;
+        if (enemyType == MissionEnemyType.Sawman)
+        {
+            if (kind != QTEKind.KnifeAssassination)
+            {
+                return false;
+            }
+        }
+        else if (enemyType != MissionEnemyType.Ganado)
         {
             return false;
         }
@@ -28,19 +40,26 @@ public partial class LeonQTECoordinator
             return false;
         }
 
-        // 主场景男女与持械模板使用不同的原版骨架。
-        string role;
-        switch (animatorController.name)
+        // 主场景男女与持械模板使用不同的原版骨架，电锯人从 SawKnifeFollowUp 读取已烘焙的 SalvadorPair 轨道。
+        string role = string.Empty;
+        if (enemyType == MissionEnemyType.Sawman)
         {
-            case "MainGanado":
-                role = "Ganado";
-                break;
-            case "MainGanadoMale":
-            case "MainGanadoArmed":
-                role = "GanadoMale";
-                break;
-            default:
-                return false;
+            role = "Salvador";
+        }
+        else
+        {
+            switch (animatorController.name)
+            {
+                case "MainGanado":
+                    role = "Ganado";
+                    break;
+                case "MainGanadoMale":
+                case "MainGanadoArmed":
+                    role = "GanadoMale";
+                    break;
+                default:
+                    return false;
+            }
         }
 
         var bank = Resources.Load<ChapterOnePairMotion>(ChapterOnePairMotion.ResourceName);
@@ -49,11 +68,24 @@ public partial class LeonQTECoordinator
             return false;
         }
 
+        ChapterOnePairMotion enemyBank = bank;
+        string enemyPrefix = "GanadoPair_";
+        if (enemyType == MissionEnemyType.Sawman)
+        {
+            enemyBank = Resources.Load<ChapterOnePairMotion>("SawKnifeFollowUp");
+            if (enemyBank == null)
+            {
+                return false;
+            }
+
+            enemyPrefix = "SalvadorPair_";
+        }
+
         if (kind == QTEKind.KnifeAssassination)
         {
             string motion = "1101";
             int end = 295;
-            if (controller.IsCrouching)
+            if (!assassinationTriggeredFromStagger && controller.IsCrouching)
             {
                 motion = "1105";
                 end = 305;
@@ -99,7 +131,7 @@ public partial class LeonQTECoordinator
         {
             stage = default;
             if (!bank.TryGetVillagerTrack("Leon", "LeonPair_" + motion, out var playerTrack)
-                || !bank.TryGetVillagerTrack(role, "GanadoPair_" + motion, out var enemyTrack))
+                || !enemyBank.TryGetVillagerTrack(role, enemyPrefix + motion, out var enemyTrack))
             {
                 return false;
             }

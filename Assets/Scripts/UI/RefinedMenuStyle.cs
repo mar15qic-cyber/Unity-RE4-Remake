@@ -5,14 +5,14 @@ using UnityEngine.UI;
 [UnityEngine.Scripting.APIUpdating.MovedFrom(true, "", "Assembly-CSharp", "精修菜单样式")]
 public static class RefinedMenuStyle
 {
-    /// <summary>中文含义：文字值。使用位置：作为 RefinedMenuStyle.ThinStrip(Transform, string, Vector2, Vector2, Vector2, Color) 的参数、RefinedMenuStyle.ApplySet(Transform, UIVisualTheme)。</summary>
+    /// <summary>文字值。</summary>
     static Color textValue = new Color(.89f, .88f, .83f);
-    /// <summary>中文含义：细线线。使用位置：作为 RefinedMenuStyle.ThinStrip(Transform, string, Vector2, Vector2, Vector2, Color) 的参数、RefinedMenuStyle.ApplySet(Transform, UIVisualTheme)。</summary>
+    /// <summary>细线线。</summary>
     static Color thinLine = new Color(.7f, .73f, .70f, .23f);
     /// <summary>ApplySet 的业务处理入口；本方法直接依赖 Color.Color(float, float, float, float)、Color.Color(float, float, float)、Component.GetComponent&lt;Image&gt;()、Component.GetComponent&lt;MenuRowFeedback&gt;()、Component.GetComponentInParent&lt;Dropdown&gt;(bool)、Component.GetComponentsInChildren&lt;Button&gt;(bool)、Component.GetComponentsInChildren&lt;Dropdown&gt;(bool) 等共 25 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 OptionsTabManager.Initialize()；下游（含内部回调体） Color.Color(float, float, float, float)、Color.Color(float, float, float)、Component.GetComponent&lt;Image&gt;()、Component.GetComponent&lt;MenuRowFeedback&gt;()、Component.GetComponentInParent&lt;Dropdown&gt;(bool)、Component.GetComponentsInChildren&lt;Button&gt;(bool)、Component.GetComponentsInChildren&lt;Dropdown&gt;(bool) 等共 25 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="root">中文含义：根变换节点。使用位置：RefinedMenuStyle.ApplySet(Transform, UIVisualTheme)。</param>
-    /// <param name="theme">中文含义：主题。使用位置：RefinedMenuStyle.ApplySet(Transform, UIVisualTheme)。</param>
+    /// <param name="root">根变换节点。</param>
+    /// <param name="theme">主题。</param>
     public static void ApplySet(Transform root, UIVisualTheme theme)
     {
         if (root == null)
@@ -20,7 +20,7 @@ public static class RefinedMenuStyle
             return;
         }
 
-        // layout（布局）：保存 Transform.Find(string) 的返回结果，供当前步骤使用。使用位置：RefinedMenuStyle.ApplySet(Transform, UIVisualTheme)。
+        // 布局。
 var layout = root.Find("现代选项布局");
         if (layout != null)
         {
@@ -36,7 +36,7 @@ var layout = root.Find("现代选项布局");
         // image（图像）：每轮从取得组件集合内部子对象集合的返回结果取得一个元素，仅代表当前这一项。使用位置：作为 RefinedMenuStyle.AddRowLine(Transform) 的参数、作为 RefinedMenuStyle.ThinStrip(Transform, string, Vector2, Vector2, Vector2, Color) 的参数、RefinedMenuStyle.ApplySet(Transform, UIVisualTheme)。
 foreach (var image in root.GetComponentsInChildren<Image>(true))
         {
-            // name（名称）：使用位置：RefinedMenuStyle.ApplySet(Transform, UIVisualTheme)。
+            // 名称。
 string name = image.name;
             if (name == "顶部栏" || name == "内容区域" || name == "设置列表" || name == "说明区域" || name == "按键滚动视口")
             {
@@ -48,9 +48,9 @@ string name = image.name;
                 image.sprite = null;
                 image.color = Color.clear;
                 AddRowLine(image.transform);
-                // availableValue1（空值判断前缓存的取得组件的返回结果）：从取得组件的返回结果读取一次后保存，供后续分支使用。保存空值判断之前的值，只读取一次，非空时不执行回退分支。使用位置：作为 object.ReferenceEquals(object, object) 的参数、RefinedMenuStyle.ApplySet(Transform, UIVisualTheme)。
+                // 空值判断前缓存的取得组件的返回结果。
 global::MenuRowFeedback availableValue1 = image.GetComponent<MenuRowFeedback>();
-                // feedback（反馈）：使用位置：RefinedMenuStyle.ApplySet(Transform, UIVisualTheme)。
+                // 反馈。
 global::MenuRowFeedback feedback;
                 if (!global::System.Object.ReferenceEquals(availableValue1, null))
                 {
@@ -75,16 +75,16 @@ global::MenuRowFeedback feedback;
         // button（按钮）：每轮从取得组件集合内部子对象集合的返回结果取得一个元素，仅代表当前这一项。使用位置：作为 RefinedMenuStyle.AddRowLine(Transform) 的参数、RefinedMenuStyle.ApplySet(Transform, UIVisualTheme)。
 foreach (var button in root.GetComponentsInChildren<Button>(true))
         {
-            // background（背景）：保存 Component.GetComponent<Image>() 的返回结果，供当前步骤使用。使用位置：RefinedMenuStyle.ApplySet(Transform, UIVisualTheme)。
+            // 背景。
 var background = button.GetComponent<Image>();
             if (background != null)
             {
                 button.targetGraphic = background;
                 background.sprite = null;
                 background.color = Color.clear;
-                // availableValue3（空值判断前缓存的取得组件的返回结果）：从取得组件的返回结果读取一次后保存，供后续分支使用。保存空值判断之前的值，只读取一次，非空时不执行回退分支。使用位置：作为 object.ReferenceEquals(object, object) 的参数、RefinedMenuStyle.ApplySet(Transform, UIVisualTheme)。
+                // 空值判断前缓存的取得组件的返回结果。
 global::MenuRowFeedback availableValue3 = button.GetComponent<MenuRowFeedback>();
-                // feedback（反馈）：使用位置：RefinedMenuStyle.ApplySet(Transform, UIVisualTheme)。
+                // 反馈。
 global::MenuRowFeedback feedback;
                 if (!global::System.Object.ReferenceEquals(availableValue3, null))
                 {
@@ -123,12 +123,12 @@ foreach (var toggle in root.GetComponentsInChildren<Toggle>(true))
                 mark.enabled = false;
             }
 
-            // labelObject（标签对象）：使用位置：RefinedMenuStyle.ApplySet(Transform, UIVisualTheme)。
+            // 标签对象。
 var labelObject = new GameObject("开关状态", typeof(RectTransform), typeof(Text));
             labelObject.transform.SetParent(toggle.transform, false);
-            // label（标签）：保存 GameObject.GetComponent<Text>() 的返回结果，供当前步骤使用。使用位置：作为 UnityEvent<bool>.AddListener(UnityAction<bool>) 的参数、RefinedMenuStyle.ApplySet(Transform, UIVisualTheme)。
+            // 标签。
 var label = labelObject.GetComponent<Text>();
-            // assignmentReceiver5（赋值前保存的目标标签）：从标签读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：RefinedMenuStyle.ApplySet(Transform, UIVisualTheme)。
+            // 赋值前保存的目标标签。
 global::UnityEngine.UI.Text assignmentReceiver5 = label;
             if (theme != null)
             {
@@ -146,7 +146,7 @@ global::UnityEngine.UI.Text assignmentReceiver5 = label;
             label.rectTransform.anchorMin = Vector2.zero;
             label.rectTransform.anchorMax = Vector2.one;
             label.rectTransform.offsetMin = label.rectTransform.offsetMax = Vector2.zero;
-            // assignmentReceiver7（赋值前保存的目标标签）：从标签读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：RefinedMenuStyle.ApplySet(Transform, UIVisualTheme)。
+            // 赋值前保存的目标标签。
 global::UnityEngine.UI.Text assignmentReceiver7 = label;
             if (toggle.isOn)
             {
@@ -159,7 +159,7 @@ global::UnityEngine.UI.Text assignmentReceiver7 = label;
 
             toggle.onValueChanged.AddListener( /* 中文含义：是否值。 */value =>
             {
-                // assignmentReceiver9（赋值前保存的目标标签）：从标签读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 UnityEvent<bool>.AddListener(UnityAction<bool>) 的参数。
+                // 赋值前保存的目标标签。
 global::UnityEngine.UI.Text assignmentReceiver9 = label;
                 if (value)
                 {
@@ -178,7 +178,7 @@ foreach (var slider in root.GetComponentsInChildren<Slider>(true))
         {
             if (slider.handleRect != null)
             {
-                // area（区域）：使用位置：RefinedMenuStyle.ApplySet(Transform, UIVisualTheme)。
+                // 区域。
 var area = slider.handleRect.parent as RectTransform;
                 area.anchorMin = new Vector2(0, .5f);
                 area.anchorMax = new Vector2(1, .5f);
@@ -195,7 +195,7 @@ var area = slider.handleRect.parent as RectTransform;
         // dropdown（下拉框）：每轮从取得组件集合内部子对象集合的返回结果取得一个元素，仅代表当前这一项。使用位置：作为 RefinedMenuStyle.AddRowLine(Transform) 的参数、RefinedMenuStyle.ApplySet(Transform, UIVisualTheme)。
 foreach (var dropdown in root.GetComponentsInChildren<Dropdown>(true))
         {
-            // img（界面图像组件）：保存 Component.GetComponent<Image>() 的返回结果，供当前步骤使用。使用位置：RefinedMenuStyle.ApplySet(Transform, UIVisualTheme)。
+            // 界面图像组件。
 var img = dropdown.GetComponent<Image>();
             img.sprite = null;
             img.color = new Color(.7f, .72f, .70f, .055f);
@@ -206,20 +206,20 @@ var img = dropdown.GetComponent<Image>();
                 dropdown.captionText.color = textValue;
             }
 
-            // arrow（箭头）：保存 Transform.Find(string) 的返回结果，供当前步骤使用。使用位置：作为 Transform.SetParent(Transform, bool) 的参数、RefinedMenuStyle.ApplySet(Transform, UIVisualTheme)。
+            // 箭头。
 var arrow = dropdown.transform.Find("Arrow");
             if (arrow != null)
             {
-                // old（原有图像组件）：保存 Component.GetComponent<Image>() 的返回结果，供当前步骤使用。使用位置：RefinedMenuStyle.ApplySet(Transform, UIVisualTheme)。
+                // 原有图像组件。
 var old = arrow.GetComponent<Image>();
                 if (old != null)
                 {
                     old.enabled = false;
                 }
 
-                // found（找到的）：保存 Transform.Find(string) 的返回结果，供当前步骤使用。使用位置：RefinedMenuStyle.ApplySet(Transform, UIVisualTheme)。
+                // 找到的。
 var found = arrow.Find("展开箭头");
-                // child（子级）：使用位置：RefinedMenuStyle.ApplySet(Transform, UIVisualTheme)。
+                // 子级。
 global::UnityEngine.GameObject child;
                 if (found != null)
                 {
@@ -231,9 +231,9 @@ global::UnityEngine.GameObject child;
                 }
 
                 child.transform.SetParent(arrow, false);
-                // text（文字）：保存 GameObject.GetComponent<Text>() 的返回结果，供当前步骤使用。使用位置：RefinedMenuStyle.ApplySet(Transform, UIVisualTheme)。
+                // 文字。
 var text = child.GetComponent<Text>();
-                // assignmentReceiver12（赋值前保存的目标文字）：从文字读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：RefinedMenuStyle.ApplySet(Transform, UIVisualTheme)。
+                // 赋值前保存的目标文字。
 global::UnityEngine.UI.Text assignmentReceiver12 = text;
                 if (theme != null)
                 {
@@ -249,7 +249,7 @@ global::UnityEngine.UI.Text assignmentReceiver12 = text;
                 text.alignment = TextAnchor.MiddleCenter;
                 text.color = textValue;
                 text.raycastTarget = false;
-                // ar（宽高比）：使用位置：RefinedMenuStyle.ApplySet(Transform, UIVisualTheme)。
+                // 宽高比。
 var ar = text.rectTransform;
                 ar.anchorMin = Vector2.zero;
                 ar.anchorMax = Vector2.one;
@@ -261,7 +261,7 @@ var ar = text.rectTransform;
                 continue;
             }
 
-            // template（模板）：使用位置：RefinedMenuStyle.ApplySet(Transform, UIVisualTheme)。
+            // 模板。
 var template = dropdown.template;
             template.GetComponent<Image>().color = new Color(.045f, .053f, .055f, .99f);
             template.sizeDelta = new Vector2(0, 252);
@@ -272,12 +272,12 @@ foreach (var t in template.GetComponentsInChildren<Text>(true))
                 t.fontSize = 20;
             }
 
-            // item（当前界面矩形变换）：使用位置：RefinedMenuStyle.ApplySet(Transform, UIVisualTheme)。
+            // 当前界面矩形变换。
 var item = template.Find("Viewport/Content/Item") as RectTransform;
             if (item != null)
             {
                 item.sizeDelta = new Vector2(0, 44);
-                // mark（标记）：使用位置：RefinedMenuStyle.ApplySet(Transform, UIVisualTheme)。
+                // 标记。
 var mark = item.Find("Item Checkmark") as RectTransform;
                 if (mark != null)
                 {
@@ -294,7 +294,7 @@ foreach (var scroll in root.GetComponentsInChildren<ScrollRect>(true))
             scroll.decelerationRate = .08f;
             if (scroll.verticalScrollbar != null)
             {
-                // r（当前界面矩形变换）：使用位置：作为 Vector2.Vector2(float, float) 的参数、RefinedMenuStyle.ApplySet(Transform, UIVisualTheme)。
+                // 当前界面矩形变换。
 var r = scroll.verticalScrollbar.transform as RectTransform;
                 r.anchorMin = new Vector2(1, r.anchorMin.y);
                 r.anchorMax = new Vector2(1, r.anchorMax.y);
@@ -332,7 +332,7 @@ foreach (var text in root.GetComponentsInChildren<Text>(true))
             }
         }
 
-        // content（内容）：保存 Transform.Find(string) 的返回结果，供当前步骤使用。使用位置：作为 RefinedMenuStyle.ThinStrip(Transform, string, Vector2, Vector2, Vector2, Color) 的参数、RefinedMenuStyle.ApplySet(Transform, UIVisualTheme)。
+        // 内容。
 var content = root.Find("内容区域");
         if (content != null)
         {
@@ -342,7 +342,7 @@ var content = root.Find("内容区域");
 
     /// <summary>AddRowLine 的业务处理入口；本方法直接依赖 RefinedMenuStyle.ThinStrip(Transform, string, Vector2, Vector2, Vector2, Color)、Vector2.Vector2(float, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 RefinedMenuStyle.ApplySet(Transform, UIVisualTheme)、StorageBoxUI.CreateStorageEntry(GridItem)；下游（含内部回调体） RefinedMenuStyle.ThinStrip(Transform, string, Vector2, Vector2, Vector2, Color)、Vector2.Vector2(float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="row">中文含义：行。使用位置：作为 RefinedMenuStyle.ThinStrip(Transform, string, Vector2, Vector2, Vector2, Color) 的参数。</param>
+    /// <param name="row">行。</param>
     public static void AddRowLine(Transform row)
     {
         ThinStrip(row, "行分隔", Vector2.zero, Vector2.right, new Vector2(0, 1), thinLine);
@@ -350,17 +350,17 @@ var content = root.Find("内容区域");
 
     /// <summary>ThinStrip 的业务处理入口；本方法直接依赖 GameObject.GameObject(string, params Type[])、GameObject.GetComponent&lt;Image&gt;()、Transform.Find(string)、Transform.SetParent(Transform, bool)、Vector2.Vector2(float, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 RefinedMenuStyle.AddRowLine(Transform)、RefinedMenuStyle.ApplySet(Transform, UIVisualTheme)、VillageInterfaceRefinementConfigurator.ConfigurationStored(Scene)；下游（含内部回调体） GameObject.GameObject(string, params Type[])、GameObject.GetComponent&lt;Image&gt;()、Transform.Find(string)、Transform.SetParent(Transform, bool)、Vector2.Vector2(float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="p">中文含义：当前变换节点。使用位置：作为 Transform.SetParent(Transform, bool) 的参数、RefinedMenuStyle.ThinStrip(Transform, string, Vector2, Vector2, Vector2, Color)。</param>
-    /// <param name="name">中文含义：名称。使用位置：作为 GameObject.GameObject(string, params Type[]) 的参数、作为 Transform.Find(string) 的参数。</param>
-    /// <param name="min">中文含义：最小。使用位置：RefinedMenuStyle.ThinStrip(Transform, string, Vector2, Vector2, Vector2, Color)。</param>
-    /// <param name="max">中文含义：最大。使用位置：RefinedMenuStyle.ThinStrip(Transform, string, Vector2, Vector2, Vector2, Color)。</param>
-    /// <param name="size">中文含义：尺寸。使用位置：RefinedMenuStyle.ThinStrip(Transform, string, Vector2, Vector2, Vector2, Color)。</param>
-    /// <param name="color">中文含义：颜色。使用位置：RefinedMenuStyle.ThinStrip(Transform, string, Vector2, Vector2, Vector2, Color)。</param>
+    /// <param name="p">当前变换节点。</param>
+    /// <param name="name">名称。</param>
+    /// <param name="min">最小。</param>
+    /// <param name="max">最大。</param>
+    /// <param name="size">尺寸。</param>
+    /// <param name="color">颜色。</param>
     public static Image ThinStrip(Transform p, string name, Vector2 min, Vector2 max, Vector2 size, Color color)
     {
-        // found（找到的）：保存 Transform.Find(string) 的返回结果，供当前步骤使用。使用位置：RefinedMenuStyle.ThinStrip(Transform, string, Vector2, Vector2, Vector2, Color)。
+        // 找到的。
 var found = p.Find(name);
-        // go（当前游戏对象）：使用位置：RefinedMenuStyle.ThinStrip(Transform, string, Vector2, Vector2, Vector2, Color)。
+        // 当前游戏对象。
 global::UnityEngine.GameObject go;
         if (found != null)
         {
@@ -372,11 +372,11 @@ global::UnityEngine.GameObject go;
         }
 
         go.transform.SetParent(p, false);
-        // image（图像）：保存 GameObject.GetComponent<Image>() 的返回结果，供当前步骤使用。使用位置：RefinedMenuStyle.ThinStrip(Transform, string, Vector2, Vector2, Vector2, Color)。
+        // 图像。
 var image = go.GetComponent<Image>();
         image.color = color;
         image.raycastTarget = false;
-        // r（当前界面矩形变换）：使用位置：RefinedMenuStyle.ThinStrip(Transform, string, Vector2, Vector2, Vector2, Color)。
+        // 当前界面矩形变换。
 var r = image.rectTransform;
         r.anchorMin = min;
         r.anchorMax = max;

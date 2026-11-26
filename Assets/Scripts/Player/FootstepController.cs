@@ -8,38 +8,38 @@ using UnityEngine;
 [DefaultExecutionOrder(10020)]
 public class FootstepController : MonoBehaviour
 {
-    /// <summary>中文含义：脚步地表音效配置资产。使用位置：FootstepController.PlayFootstep()。</summary>
+    /// <summary>脚步地表音效配置资产。</summary>
     [Header("地表配置")]
     [Tooltip("脚步地表音效配置资产")]
     public FootstepSurfaceProfile surfaceProfile;
-    /// <summary>中文含义：向下射线检测距离。使用位置：作为 Physics.Raycast(Vector3, Vector3, out RaycastHit, float, int, QueryTriggerInteraction) 的参数。</summary>
+    /// <summary>向下射线检测距离。</summary>
     [Header("检测设置")]
     [Tooltip("向下射线检测距离")]
     public float rayDistance = 1.5f;
-    /// <summary>中文含义：地表检测层级。使用位置：作为 Physics.Raycast(Vector3, Vector3, out RaycastHit, float, int, QueryTriggerInteraction) 的参数。</summary>
+    /// <summary>地表检测层级。</summary>
     [Tooltip("地表检测层级")]
     public LayerMask groundLayer = ~0;
-    /// <summary>中文含义：脚步音量额外倍率。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>脚步音量额外倍率。</summary>
     [Header("音量倍率")]
     [Tooltip("脚步音量额外倍率")]
     public float volumeMultiplier = 1f;
-    /// <summary>中文含义：是否没有动画事件时，根据角色实际位移自动触发脚步声。没有动画事件时，根据角色实际位移自动触发脚步声。使用位置：FootstepController.Update()。</summary>
+    /// <summary>是否没有动画事件时，根据角色实际位移自动触发脚步声。没有动画事件时，根据角色实际位移自动触发脚步声。</summary>
     [Header("自动触发")]
     [Tooltip("没有动画事件时，根据角色实际位移自动触发脚步声")]
     public bool automaticTrigger = true;
-    /// <summary>中文含义：普通移动时两次脚步声的最短间隔。使用位置：FootstepController.Update()。</summary>
+    /// <summary>普通移动时两次脚步声的最短间隔。</summary>
     [Min(0.05f)]
     [Tooltip("普通移动时两次脚步声的最短间隔")]
     public float walkStepInterval = 0.42f;
-    /// <summary>中文含义：跑步或冲刺时两次脚步声的最短间隔。使用位置：FootstepController.Update()。</summary>
+    /// <summary>跑步或冲刺时两次脚步声的最短间隔。</summary>
     [Min(0.05f)]
     [Tooltip("跑步或冲刺时两次脚步声的最短间隔")]
     public float runStepInterval = 0.28f;
-    /// <summary>中文含义：动画事件与自动触发之间的去重间隔。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>动画事件与自动触发之间的去重间隔。</summary>
     [Min(0f)]
     [Tooltip("动画事件与自动触发之间的去重间隔")]
     public float duplicateGuardInterval = 0.08f;
-    /// <summary>中文含义：里昂玩家控制器。使用位置：FootstepController.PlayFootstep()、FootstepController.Start()、FootstepController.Update()。</summary>
+    /// <summary>里昂玩家控制器。</summary>
     [Header("移动与植被")]
     [Tooltip("实际移动速度超过此值时使用跑步脚步")]
     public float runSpeedThreshold = 2.4f;

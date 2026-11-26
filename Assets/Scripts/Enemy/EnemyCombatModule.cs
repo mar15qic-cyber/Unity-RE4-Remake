@@ -11,30 +11,30 @@ using UnityEngine;
 public sealed class KnifeEnemyAttackProfile
 {
     public const float RootSampleInterval = 1f / 30f;
-    /// <summary>中文含义：是否可招架。使用位置：作为 IEnumerable&lt;int&gt;.Select&lt;int, KnifeEnemyAttackProfile&gt;(Func&lt;int, KnifeEnemyAttackProfile&gt;) 的参数、EnemyCombatModule.CreateKnifeIncomingAttack(int, float, Vector3, Vector3)、KnifeContactProfileBuilder.Bake(GameObject, List&lt;object&gt;)。</summary>
+    /// <summary>是否可招架。</summary>
     [Header("本招式的接触与招架")]
     [UnityEngine.Serialization.FormerlySerializedAs("可招架")]
     [UnityEngine.InspectorName("可招架")]
     [Newtonsoft.Json.JsonProperty("可招架")]
     public bool canParry = true;
-    /// <summary>中文含义：类别。使用位置：作为 IEnumerable&lt;int&gt;.Select&lt;int, KnifeEnemyAttackProfile&gt;(Func&lt;int, KnifeEnemyAttackProfile&gt;) 的参数、EnemyCombatModule.CreateKnifeIncomingAttack(int, float, Vector3, Vector3)、KnifeContactProfileBuilder.Bake(GameObject, List&lt;object&gt;)。</summary>
+    /// <summary>类别。</summary>
     [UnityEngine.Serialization.FormerlySerializedAs("类别")]
     [UnityEngine.InspectorName("类别")]
     [Newtonsoft.Json.JsonProperty("类别")]
     public GameArchitecture.KnifeIncomingAttackCategory category;
-    /// <summary>中文含义：接触归一化点。使用位置：作为 IEnumerable&lt;int&gt;.Select&lt;int, KnifeEnemyAttackProfile&gt;(Func&lt;int, KnifeEnemyAttackProfile&gt;) 的参数、EnemyCombatModule.HandleOnParryWindowOpen()、EnemyCombatModule.UpdateStandingAttackHitFallback() 等共 4 处。</summary>
+    /// <summary>接触归一化点。</summary>
     [Range(.05f, .95f)]
     [UnityEngine.Serialization.FormerlySerializedAs("接触归一化点")]
     [UnityEngine.InspectorName("接触归一化点")]
     [Newtonsoft.Json.JsonProperty("接触归一化点")]
     public float contactNormalizedPoint = .55f;
-    /// <summary>中文含义：提示提前。使用位置：作为 Mathf.Min(float, float) 的参数、EnemyCombatModule.UpdateStandingAttackHitFallback()、KnifeContactProfileBuilder.Bake(GameObject, List&lt;object&gt;)。</summary>
+    /// <summary>提示提前。</summary>
     [Range(0, .5f)]
     [UnityEngine.Serialization.FormerlySerializedAs("提示提前")]
     [UnityEngine.InspectorName("提示提前")]
     [Newtonsoft.Json.JsonProperty("提示提前")]
     public float promptEarly = .18f;
-    /// <summary>中文含义：接触距离。使用位置：作为 IEnumerable&lt;int&gt;.Select&lt;int, KnifeEnemyAttackProfile&gt;(Func&lt;int, KnifeEnemyAttackProfile&gt;) 的参数、EnemyCombatModule.KnifePathAllowed(Vector3, Quaternion, Vector3, Vector3, KnifeEnemyAttackProfile, LeonController)、EnemyCombatModule.TryApplyAttackHit(int) 等共 4 处。</summary>
+    /// <summary>接触距离。</summary>
     [Min(.1f)]
     [UnityEngine.Serialization.FormerlySerializedAs("接触距离")]
     [UnityEngine.InspectorName("接触距离")]
@@ -49,16 +49,16 @@ public sealed class KnifeEnemyAttackProfile
     [Range(0f, 1f)] public float windupLateralReduction;
     [HideInInspector] public Vector3[] planarRootTrajectory = Array.Empty<Vector3>();
     [HideInInspector] public bool usePoseContact;
-    /// <summary>中文含义：接触角度。使用位置：作为 IEnumerable&lt;int&gt;.Select&lt;int, KnifeEnemyAttackProfile&gt;(Func&lt;int, KnifeEnemyAttackProfile&gt;) 的参数、EnemyCombatModule.KnifePathAllowed(Vector3, Quaternion, Vector3, Vector3, KnifeEnemyAttackProfile, LeonController)、EnemyCombatModule.TryApplyAttackHit(int) 等共 4 处。</summary>
+    /// <summary>接触角度。</summary>
     [Range(10, 180)]
     [UnityEngine.Serialization.FormerlySerializedAs("接触角度")]
     [UnityEngine.InspectorName("接触角度")]
     [Newtonsoft.Json.JsonProperty("接触角度")]
     public float contactAngle = 100;
-    /// <summary>中文含义：来源动画片段。使用位置：EnemyCombatModule.LateUpdate()、EnemyCombatModule.UsesKnifeContactTimeline.get、KnifeContactProfileBuilder.Bake(GameObject, List&lt;object&gt;)。</summary>
+    /// <summary>来源动画片段。</summary>
     [Header("逐招标定的接触轨迹；时间使用源片段秒数")]
     public AnimationClip sourceClip;
-    /// <summary>中文含义：接触线段集合。使用位置：EnemyCombatModule.LateUpdate()、EnemyCombatModule.UsesKnifeContactTimeline.get、KnifeContactProfileBuilder.Bake(GameObject, List&lt;object&gt;)。</summary>
+    /// <summary>接触线段集合。</summary>
     public KnifeEnemyAttackSegment[] contactSegments = Array.Empty<KnifeEnemyAttackSegment>();
 }
 
@@ -68,12 +68,12 @@ public sealed class KnifeEnemyAttackProfile
 [UnityEngine.Scripting.APIUpdating.MovedFrom(true, "", "Assembly-CSharp", "敌人战斗模块")]
 public sealed partial class EnemyCombatModule : MonoBehaviour
 {
-    /// <summary>中文含义：宿主。使用位置：作为 EnemyAIManager.CanAcquireAttackReservation(VillagerController) 的参数、作为 EnemyAIManager.ReleaseCombatReservation(VillagerController) 的参数、作为 KnifeCombatModule.CloseIncomingAttackPrompt(VillagerController) 的参数 等共 111 处。</summary>
+    /// <summary>宿主。</summary>
     [Header("角色组装引用")]
     [UnityEngine.Serialization.FormerlySerializedAs("宿主")]
     [UnityEngine.InspectorName("宿主")]
     public VillagerController host;
-    /// <summary>中文含义：小刀攻击配置。使用位置：EnemyCombatModule.ConfigureKnifeAttackProfiles(KnifeEnemyAttackProfile[])、EnemyCombatModule.CurrentKnifeConfiguration.get、EnemyCombatModule.HasKnifeAttackProfiles.get。</summary>
+    /// <summary>小刀攻击配置。</summary>
     [Header("站立攻击对应的招架表现")]
     [SerializeField]
     [UnityEngine.Serialization.FormerlySerializedAs("小刀攻击配置")]
@@ -98,7 +98,7 @@ public sealed partial class EnemyCombatModule : MonoBehaviour
     internal const int ArmedStandingRightLegHitDirection = 8;
     internal const int ArmedFallingLeftLegHitDirection = 9;
     internal const int ArmedFallingRightLegHitDirection = 10;
-    /// <summary>中文含义：是否具有小刀攻击配置档集合。使用位置：KnifeCombatBuilder.BindingEnemy(VillagerController)。</summary>
+    /// <summary>是否具有小刀攻击配置档集合。</summary>
     public bool HasKnifeAttackProfiles
     {
         get
@@ -111,7 +111,7 @@ public sealed partial class EnemyCombatModule : MonoBehaviour
 #if UNITY_EDITOR
     /// <summary>ConfigureKnifeAttackProfiles 的业务处理入口；本方法直接依赖 Array.Clone()、Array.Empty&lt;KnifeEnemyAttackProfile&gt;()、InvalidOperationException.InvalidOperationException(string)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 KnifeCombatBuilder.BindingEnemy(VillagerController)、KnifeContactProfileBuilder.Build()；下游（含内部回调体） Array.Clone()、Array.Empty&lt;KnifeEnemyAttackProfile&gt;()、InvalidOperationException.InvalidOperationException(string)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="profiles">中文含义：配置档集合。使用位置：EnemyCombatModule.ConfigureKnifeAttackProfiles(KnifeEnemyAttackProfile[])。</param>
+    /// <param name="profiles">配置档集合。</param>
     public void ConfigureKnifeAttackProfiles(KnifeEnemyAttackProfile[] profiles)
     {
         if (Application.isPlaying)
@@ -142,12 +142,12 @@ public sealed partial class EnemyCombatModule : MonoBehaviour
         ResetKnifeContactTimeline();
     }
 
-    /// <summary>中文含义：小刀传入攻击编号。使用位置：EnemyCombatModule.BeginAttack()、EnemyCombatModule.BeginCrawlAttack()、EnemyCombatModule.CreateKnifeIncomingAttack(int, float, Vector3, Vector3) 等共 4 处。</summary>
+    /// <summary>小刀传入攻击编号。</summary>
     public long KnifeIncomingAttackId { get; private set; }
 
-    /// <summary>中文含义：当前小刀攻击移动。使用位置：EnemyCombatModule.BeginAttack()、EnemyCombatModule.CurrentKnifeConfiguration.get。</summary>
+    /// <summary>当前小刀攻击移动。</summary>
     private int currentKnifeAttackMove;
-    /// <summary>中文含义：当前小刀配置。使用位置：EnemyCombatModule.CreateKnifeIncomingAttack(int, float, Vector3, Vector3)、EnemyCombatModule.HandleOnParryWindowOpen()、EnemyCombatModule.LateUpdate() 等共 6 处。</summary>
+    /// <summary>当前小刀配置。</summary>
     private KnifeEnemyAttackProfile CurrentKnifeConfiguration
     {
         get
@@ -166,13 +166,13 @@ public sealed partial class EnemyCombatModule : MonoBehaviour
 
     /// <summary>CreateKnifeIncomingAttack 的业务处理入口；本方法直接依赖 KnifeIncomingAttackContext.KnifeIncomingAttackContext()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyCombatModule.HandleOnParryWindowOpen()、EnemyCombatModule.LateUpdate()、EnemyCombatModule.TryApplyAttackHit(int)；下游（含内部回调体） KnifeIncomingAttackContext.KnifeIncomingAttackContext()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="segment">中文含义：线段。使用位置：EnemyCombatModule.CreateKnifeIncomingAttack(int, float, Vector3, Vector3)。</param>
-    /// <param name="damage">中文含义：伤害。使用位置：EnemyCombatModule.CreateKnifeIncomingAttack(int, float, Vector3, Vector3)。</param>
-    /// <param name="contact">中文含义：接触。使用位置：EnemyCombatModule.CreateKnifeIncomingAttack(int, float, Vector3, Vector3)。</param>
-    /// <param name="direction">中文含义：方向。使用位置：EnemyCombatModule.CreateKnifeIncomingAttack(int, float, Vector3, Vector3)。</param>
+    /// <param name="segment">线段。</param>
+    /// <param name="damage">伤害。</param>
+    /// <param name="contact">接触。</param>
+    /// <param name="direction">方向。</param>
     private KnifeIncomingAttackContext CreateKnifeIncomingAttack(int segment, float damage, Vector3 contact, Vector3 direction)
     {
-        // createdValue2（本次新建的小刀传入攻击上下文）：保存本次创建实例，按原先顺序完成逐项初始化后交给后续使用方。使用位置：EnemyCombatModule.CreateKnifeIncomingAttack(int, float, Vector3, Vector3)。
+        // 本次新建的小刀传入攻击上下文。
 global::KnifeIncomingAttackContext createdValue2 = new KnifeIncomingAttackContext();
         createdValue2.attacker = host;
         createdValue2.attackId = KnifeIncomingAttackId;
@@ -196,236 +196,238 @@ global::KnifeIncomingAttackContext createdValue2 = new KnifeIncomingAttackContex
 
     /// <summary>中文含义：战斗模块。</summary>
     private EnemyCombatModule CombatModule => host.combatModule;
-    /// <summary>中文含义：感知模块。使用位置：EnemyCombatModule.BecomeFullyAwareOfPlayer()、EnemyCombatModule.CanSeePlayer()、EnemyCombatModule.HasClearLineToPlayer(bool, float)。</summary>
+    /// <summary>感知模块。</summary>
     private EnemyPerceptionModule PerceptionModule => host.perceptionModule;
-    /// <summary>中文含义：动作协调器。使用位置：EnemyCombatModule.ApplyDeadChainsawDanger()、EnemyCombatModule.ApplyKnifeParryStagger(bool)、EnemyCombatModule.BeginAttack() 等共 9 处。</summary>
+    /// <summary>动作协调器。</summary>
     private EnemyActionCoordinator ActionCoordinator => host.actionCoordinator;
-    /// <summary>中文含义：动画显示器。使用位置：EnemyCombatModule.ApplyKnifeParryStagger(bool)、EnemyCombatModule.BeginAttack()、EnemyCombatModule.BeginCrawl() 等共 20 处。</summary>
+    /// <summary>动画显示器。</summary>
     private EnemyAnimationAdapter AnimationPresenter => host.animationPresenter;
 
-    /// <summary>中文含义：是否爬行姿态。使用位置：EnemyCombatModule.BeginCrawl()、EnemyCombatModule.BeginCrawlAttack()、EnemyCombatModule.CancelStandUpAndResumeCrawl() 等共 7 处。</summary>
+    /// <summary>是否爬行姿态。</summary>
     private bool crawlPose;
-    /// <summary>中文含义：是否内部爬行姿态。使用位置：EnemyContext.IsCrawl.get。</summary>
+    /// <summary>是否内部爬行姿态。</summary>
     public bool IsInCrawlPose => crawlPose;
 
-    /// <summary>中文含义：是否存在待处理的命中。使用位置：作为 EnemyCombatModule.DiagLog(string, string) 的参数、EnemyCombatModule.ApplyKnifeParryStagger(bool)、EnemyCombatModule.BeginHit() 等共 10 处。</summary>
+    /// <summary>是否存在待处理的命中。</summary>
     private bool pendingHit;
-    /// <summary>中文含义：是否读取待处理命中。使用位置：EnemyActionCoordinator.ApprovalAndExecute(ActionRequest, bool)、VillagerController.pendingHit.get。</summary>
+    /// <summary>是否读取待处理命中。</summary>
     internal bool ReadPendingHit => pendingHit;
 
-    /// <summary>中文含义：是否存在待处理的爬行。使用位置：作为 EnemyAnimationAdapter.SetBoolean(int, bool) 的参数、作为 EnemyCombatModule.DiagLog(string, string) 的参数、EnemyCombatModule.ApplyKnifeParryStagger(bool) 等共 19 处。</summary>
+    /// <summary>是否存在待处理的爬行。</summary>
     private bool pendingCrawl;
-    /// <summary>中文含义：是否读取待处理爬行。使用位置：VillagerController.pendingCrawl.get。</summary>
+    /// <summary>是否读取待处理爬行。</summary>
     internal bool ReadPendingCrawl => pendingCrawl;
 
-    /// <summary>中文含义：是否存在待处理的起身。使用位置：作为 EnemyCombatModule.DiagLog(string, string) 的参数、EnemyCombatModule.BeginCrawl()、EnemyCombatModule.CancelStandUpAndResumeCrawl() 等共 12 处。</summary>
+    /// <summary>是否存在待处理的起身。</summary>
     private bool pendingStandUp;
-    /// <summary>中文含义：是否读取待处理起身。使用位置：VillagerController.pendingStandUp.get。</summary>
+    /// <summary>是否读取待处理起身。</summary>
     internal bool ReadPendingStandUp => pendingStandUp;
 
-    /// <summary>中文含义：是否存在待处理的绊倒。使用位置：作为 EnemyAnimationAdapter.SetBoolean(int, bool) 的参数、作为 EnemyCombatModule.DiagLog(string, string) 的参数、EnemyCombatModule.ApplyKnifeParryStagger(bool) 等共 8 处。</summary>
+    /// <summary>是否存在待处理的绊倒。</summary>
     private bool pendingTripOver;
-    /// <summary>中文含义：是否读取待处理绊倒。使用位置：VillagerController.pendingTripOver.get。</summary>
+    /// <summary>是否读取待处理绊倒。</summary>
     internal bool ReadPendingTripOver => pendingTripOver;
 
-    /// <summary>中文含义：是否攻击结束。使用位置：EnemyCombatModule.ApplyKnifeParryStagger(bool)、EnemyCombatModule.BeginAttack()、EnemyCombatModule.BeginCrawlAttack() 等共 11 处。</summary>
+    /// <summary>是否攻击结束。</summary>
     private bool attackFinished;
-    /// <summary>中文含义：是否读取攻击结束。使用位置：KnifeIncomingAttackContext.Valid.get、VillagerController.attackFinished.get。</summary>
+    /// <summary>是否读取攻击结束。</summary>
     internal bool ReadAttackFinished => attackFinished;
 
-    /// <summary>中文含义：是否命中结束。使用位置：EnemyCombatModule.ApplyKnifeParryStagger(bool)、EnemyCombatModule.BeginHit()、EnemyCombatModule.ConsumeHit() 等共 7 处。</summary>
+    /// <summary>是否命中结束。</summary>
     private bool hitFinished;
-    /// <summary>中文含义：是否读取命中结束。使用位置：VillagerController.hitFinished.get。</summary>
+    /// <summary>是否读取命中结束。</summary>
     internal bool ReadHitFinished => hitFinished;
 
-    /// <summary>中文含义：是否起身结束。使用位置：EnemyCombatModule.BeginStandUp()、EnemyCombatModule.CancelStandUpAndResumeCrawl()、EnemyCombatModule.NotifyStandUpStateExited() 等共 4 处。</summary>
+    /// <summary>是否起身结束。</summary>
     private bool standUpFinished;
-    /// <summary>中文含义：是否读取起身结束。使用位置：VillagerController.standUpFinished.get。</summary>
+    /// <summary>是否读取起身结束。</summary>
     internal bool ReadStandUpFinished => standUpFinished;
 
-    /// <summary>中文含义：待处理命中方向。使用位置：作为 EnemyAnimationAdapter.SetIntegerValue(int, int) 的参数、作为 EnemyCombatModule.DiagLog(string, string) 的参数、EnemyCombatModule.ApplyKnifeParryStagger(bool) 等共 5 处。</summary>
+    /// <summary>待处理命中方向。</summary>
     private int pendingHitDirection;
-    /// <summary>中文含义：读取待处理命中方向。使用位置：VillagerController.pendingHitDirection.get。</summary>
+    /// <summary>读取待处理命中方向。</summary>
     internal int ReadPendingHitDirection => pendingHitDirection;
 
-    /// <summary>中文含义：待处理硬直方向。使用位置：作为 EnemyAnimationAdapter.SetIntegerValue(int, int) 的参数、EnemyCombatModule.ApplyKnifeParryStagger(bool)、EnemyCombatModule.ConsumeHit() 等共 5 处。</summary>
+    /// <summary>待处理硬直方向。</summary>
     private int pendingStaggerDirection;
-    /// <summary>中文含义：读取待处理硬直方向。使用位置：VillagerController.pendingStaggerDirection.get。</summary>
+    /// <summary>读取待处理硬直方向。</summary>
     internal int ReadPendingStaggerDirection => pendingStaggerDirection;
 
-    /// <summary>中文含义：待处理硬直级别。使用位置：作为 EnemyAnimationAdapter.SetIntegerValue(int, int) 的参数、EnemyCombatModule.ApplyKnifeParryStagger(bool)、EnemyCombatModule.ConsumeHit() 等共 5 处。</summary>
+    /// <summary>待处理硬直级别。</summary>
     private int pendingStaggerLevel;
-    /// <summary>中文含义：读取待处理硬直级别。使用位置：VillagerController.pendingStaggerLevel.get。</summary>
+    /// <summary>读取待处理硬直级别。</summary>
     internal int ReadPendingStaggerLevel => pendingStaggerLevel;
 
-    /// <summary>中文含义：是否存在待处理的站立硬直。使用位置：EnemyCombatModule.ApplyKnifeParryStagger(bool)、EnemyCombatModule.BeginHit()、EnemyCombatModule.ClearDeathCombatRequest() 等共 6 处。</summary>
+    /// <summary>是否存在待处理的站立硬直。</summary>
     private bool pendingStandingStagger;
-    /// <summary>中文含义：是否读取待处理站立硬直。使用位置：VillagerController.pendingStandingStagger.get。</summary>
+    /// <summary>是否读取待处理站立硬直。</summary>
     internal bool ReadPendingStandingStagger => pendingStandingStagger;
 
-    /// <summary>中文含义：是否存在待处理的站立身体硬直体术。使用位置：作为 EnemyCombatModule.DiagLog(string, string) 的参数、EnemyCombatModule.ApplyKnifeParryStagger(bool)、EnemyCombatModule.BeginHit() 等共 8 处。</summary>
+    /// <summary>是否存在待处理的站立身体硬直体术。</summary>
     private bool pendingStandingStaggerBodyTechnique;
-    /// <summary>中文含义：是否读取待处理站立身体硬直体术。使用位置：VillagerController.pendingStandingStaggerBodyTechnique.get。</summary>
+    /// <summary>是否读取待处理站立身体硬直体术。</summary>
     internal bool ReadPendingStandingStaggerBodyTechnique => pendingStandingStaggerBodyTechnique;
 
-    /// <summary>中文含义：是否当前站立身体硬直体术。使用位置：EnemyCombatModule.BeginHit()、EnemyCombatModule.ClearActionParameters()、EnemyCombatModule.ClearDeathCombatRequest() 等共 8 处。</summary>
+    /// <summary>是否当前站立身体硬直体术。</summary>
     private bool currentStandingStaggerBodyTechnique;
-    /// <summary>中文含义：是否读取当前站立身体硬直体术。使用位置：VillagerController.currentStandingStaggerBodyTechnique.get。</summary>
+    /// <summary>是否读取当前站立身体硬直体术。</summary>
     internal bool ReadCurrentStandingStaggerBodyTechnique => currentStandingStaggerBodyTechnique;
 
-    /// <summary>中文含义：体术窗口结束时间。使用位置：EnemyCombatModule.BeginHit()、EnemyCombatModule.ConsumeHit()、EnemyCombatModule.HandleOnHitComplete() 等共 6 处。</summary>
+    /// <summary>体术窗口结束时间。</summary>
     private float bodyTechniqueWindowEndTime;
-    /// <summary>中文含义：读取体术窗口结束时间。使用位置：VillagerController.bodyTechniqueWindowEndTime.get。</summary>
+    /// <summary>读取体术窗口结束时间。</summary>
     internal float ReadBodyTechniqueWindowEndTime => bodyTechniqueWindowEndTime;
 
-    /// <summary>中文含义：是否延后的站立命中完成。使用位置：EnemyCombatModule.BeginHit()、EnemyCombatModule.ConsumeHit()、EnemyCombatModule.HandleOnHitComplete() 等共 6 处。</summary>
+    /// <summary>是否延后的站立命中完成。</summary>
     private bool deferredStandingHitCompletion;
-    /// <summary>中文含义：是否读取延后的站立命中完成。使用位置：VillagerController.deferredStandingHitCompletion.get。</summary>
+    /// <summary>是否读取延后的站立命中完成。</summary>
     internal bool ReadDeferredStandingHitCompletion => deferredStandingHitCompletion;
 
-    /// <summary>中文含义：上一次攻击时间。使用位置：EnemyCombatModule.BeginAttack()、EnemyCombatModule.BeginCrawlAttack()、EnemyCombatModule.ReadLastAttackTime.get。</summary>
+    /// <summary>上一次攻击时间。</summary>
     private float lastAttackTime = float.NegativeInfinity;
-    /// <summary>中文含义：读取上一次攻击时间。使用位置：VillagerController.lastAttackTime.get。</summary>
+    /// <summary>读取上一次攻击时间。</summary>
     internal float ReadLastAttackTime => lastAttackTime;
 
-    /// <summary>中文含义：累计腿部伤害。使用位置：作为 EnemyCombatModule.DiagLog(string, string) 的参数、作为 Mathf.Min(float, float) 的参数、EnemyCombatModule.CompleteStandUp() 等共 5 处。</summary>
+    /// <summary>累计腿部伤害。</summary>
     private float accumulatedLegDamage;
-    /// <summary>中文含义：读取累计腿部伤害。使用位置：VillagerController.accumulatedLegDamage.get。</summary>
+    /// <summary>读取累计腿部伤害。</summary>
     internal float ReadAccumulatedLegDamage => accumulatedLegDamage;
+    /// <summary>电锯人累计单膝跪地硬直值（按部位加权：腿部 1.6x、头部 1.15x、其余 0.65x）。</summary>
+    private float sawmanKneelDamage;
 
-    /// <summary>中文含义：累计韧性伤害。使用位置：作为 EnemyCombatModule.DiagLog(string, string) 的参数、作为 Mathf.Max(float, float) 的参数、EnemyCombatModule.AdvanceStaggerRestore() 等共 6 处。</summary>
+    /// <summary>累计韧性伤害。</summary>
     private float accumulatedPoiseDamage;
-    /// <summary>中文含义：读取累计韧性伤害。使用位置：VillagerController.accumulatedPoiseDamage.get。</summary>
+    /// <summary>读取累计韧性伤害。</summary>
     internal float ReadAccumulatedPoiseDamage => accumulatedPoiseDamage;
 
-    /// <summary>中文含义：上一次韧性伤害时间。使用位置：EnemyCombatModule.AdvanceStaggerRestore()、EnemyCombatModule.ReadLastPoiseDamageTime.get、EnemyCombatModule.TakeDamage(float, Vector3, HitboxType, Vector3)。</summary>
+    /// <summary>上一次韧性伤害时间。</summary>
     private float lastPoiseDamageTime = float.NegativeInfinity;
-    /// <summary>中文含义：读取上一次韧性伤害时间。使用位置：VillagerController.lastPoiseDamageTime.get。</summary>
+    /// <summary>读取上一次韧性伤害时间。</summary>
     internal float ReadLastPoiseDamageTime => lastPoiseDamageTime;
 
-    /// <summary>中文含义：受击反应免疫直到。使用位置：EnemyCombatModule.ReadHitReactionImmuneUntil.get、EnemyCombatModule.TakeDamage(float, Vector3, HitboxType, Vector3)。</summary>
+    /// <summary>受击反应免疫直到。</summary>
     private float hitReactionImmuneUntil;
-    /// <summary>中文含义：读取受击反应免疫直到。使用位置：VillagerController.hitReactionImmuneUntil.get。</summary>
+    /// <summary>读取受击反应免疫直到。</summary>
     internal float ReadHitReactionImmuneUntil => hitReactionImmuneUntil;
 
-    /// <summary>中文含义：下一次暴击硬直允许的时间。使用位置：EnemyCombatModule.ReadNextCriticalStaggerAllowedTime.get、EnemyCombatModule.ShouldTriggerCriticalStagger(HitboxType, float)。</summary>
+    /// <summary>下一次暴击硬直允许的时间。</summary>
     private float nextCriticalStaggerAllowedTime;
-    /// <summary>中文含义：读取下一次暴击硬直允许的时间。使用位置：VillagerController.nextCriticalStaggerAllowedTime.get。</summary>
+    /// <summary>读取下一次暴击硬直允许的时间。</summary>
     internal float ReadNextCriticalStaggerAllowedTime => nextCriticalStaggerAllowedTime;
 
-    /// <summary>中文含义：是否永久爬行。使用位置：作为 EnemyCombatModule.DiagLog(string, string) 的参数、EnemyCombatModule.CompleteStandUp()、EnemyCombatModule.ReadPermanentCrawl.get 等共 5 处。</summary>
+    /// <summary>是否永久爬行。</summary>
     private bool permanentCrawl;
-    /// <summary>中文含义：是否读取永久爬行。使用位置：VillagerController.permanentCrawl.get。</summary>
+    /// <summary>是否读取永久爬行。</summary>
     internal bool ReadPermanentCrawl => permanentCrawl;
 
-    /// <summary>中文含义：攻击命中遮罩。使用位置：EnemyCombatModule.BeginAttack()、EnemyCombatModule.BeginCrawlAttack()、EnemyCombatModule.LateUpdate() 等共 5 处。</summary>
+    /// <summary>攻击命中遮罩。</summary>
     private int attackHitMask;
-    /// <summary>中文含义：常规挥击命中是否具有恢复窗口。使用位置：EnemyCombatModule.BeginAttack()、EnemyCombatModule.HandleOnAttackComplete()、EnemyCombatModule.HandleOnParryWindowOpen() 等共 6 处。</summary>
+    /// <summary>常规挥击命中是否具有恢复窗口。</summary>
     private bool normalSwingHitHasRecoverWindow;
-    /// <summary>中文含义：读取攻击命中遮罩。使用位置：VillagerController.attackHitMask.get。</summary>
+    /// <summary>读取攻击命中遮罩。</summary>
     internal int ReadAttackHitMask => attackHitMask;
 
-    /// <summary>中文含义：站立招架窗口是否打开。使用位置：EnemyCombatModule.ApplyKnifeParryStagger(bool)、EnemyCombatModule.BeginAttack()、EnemyCombatModule.EndAttack() 等共 7 处。</summary>
+    /// <summary>站立招架窗口是否打开。</summary>
     private bool standingParryWindowOpen;
-    /// <summary>中文含义：读取站立招架窗口是否打开。使用位置：VillagerController.standingParryWindowOpen.get。</summary>
+    /// <summary>读取站立招架窗口是否打开。</summary>
     internal bool ReadStandingParryWindowOpen => standingParryWindowOpen;
 
-    /// <summary>中文含义：强制下一次命中方向。使用位置：EnemyCombatModule.ReadForcedNextHitDirection.get、EnemyCombatModule.TakeDamage(float, Vector3, HitboxType, Vector3)、EnemyCombatModule.TakeHeavyFrontDamage(float, Vector3)。</summary>
+    /// <summary>强制下一次命中方向。</summary>
     private int forcedNextHitDirection = -1;
-    /// <summary>中文含义：读取强制下一次命中方向。使用位置：VillagerController.forcedNextHitDirection.get。</summary>
+    /// <summary>读取强制下一次命中方向。</summary>
     internal int ReadForcedNextHitDirection => forcedNextHitDirection;
 
-    /// <summary>中文含义：硬直恢复开始时间。使用位置：作为 float.IsNegativeInfinity(float) 的参数、作为 Mathf.Clamp01(float) 的参数、EnemyCombatModule.BeginHit() 等共 6 处。</summary>
+    /// <summary>硬直恢复开始时间。</summary>
     private float staggerRecoveryStartedTime = float.NegativeInfinity;
-    /// <summary>中文含义：读取硬直恢复开始时间。使用位置：VillagerController.staggerRecoveryStartedTime.get。</summary>
+    /// <summary>读取硬直恢复开始时间。</summary>
     internal float ReadStaggerRecoveryStartedTime => staggerRecoveryStartedTime;
 
-    /// <summary>中文含义：攻击恢复位置。使用位置：作为 CharacterMotionExecutor.CommitActionPose(Vector3, Quaternion) 的参数、EnemyCombatModule.CaptureAttackRecoveryAnchor()、EnemyCombatModule.ReadAttackRecoveryPosition.get。</summary>
+    /// <summary>攻击恢复位置。</summary>
     private Vector3 attackRecoveryPosition;
-    /// <summary>中文含义：读取攻击恢复位置。使用位置：VillagerController.attackRecoveryPosition.get。</summary>
+    /// <summary>读取攻击恢复位置。</summary>
     internal Vector3 ReadAttackRecoveryPosition => attackRecoveryPosition;
 
-    /// <summary>中文含义：攻击恢复旋转。使用位置：作为 CharacterMotionExecutor.CommitActionPose(Vector3, Quaternion) 的参数、EnemyCombatModule.CaptureAttackRecoveryAnchor()、EnemyCombatModule.ReadAttackRecoveryRotation.get。</summary>
+    /// <summary>攻击恢复旋转。</summary>
     private Quaternion attackRecoveryRotation;
-    /// <summary>中文含义：读取攻击恢复旋转。使用位置：VillagerController.attackRecoveryRotation.get。</summary>
+    /// <summary>读取攻击恢复旋转。</summary>
     internal Quaternion ReadAttackRecoveryRotation => attackRecoveryRotation;
 
-    /// <summary>中文含义：攻击恢复是否仍待处理。使用位置：EnemyCombatModule.AbandonAttackRestore()、EnemyCombatModule.ApplyKnifeParryStagger(bool)、EnemyCombatModule.CaptureAttackRecoveryAnchor() 等共 6 处。</summary>
+    /// <summary>攻击恢复是否仍待处理。</summary>
     private bool attackRecoveryPending;
-    /// <summary>中文含义：读取攻击恢复是否仍待处理。使用位置：VillagerController.attackRecoveryPending.get。</summary>
+    /// <summary>读取攻击恢复是否仍待处理。</summary>
     internal bool ReadAttackRecoveryPending => attackRecoveryPending;
 
-    /// <summary>中文含义：起身稳定化结束点所在。使用位置：EnemyCombatModule.CompleteStandUp()、EnemyCombatModule.ReadStandUpStabilizationEndsAt.get。</summary>
+    /// <summary>起身稳定化结束点所在。</summary>
     private float standUpStabilizationEndsAt;
-    /// <summary>中文含义：读取起身稳定化结束点所在。使用位置：VillagerController.standUpStabilizationEndsAt.get。</summary>
+    /// <summary>读取起身稳定化结束点所在。</summary>
     internal float ReadStandUpStabilizationEndsAt => standUpStabilizationEndsAt;
-    /// <summary>中文含义：是否可以评估爬行战斗动作。使用位置：EnemyCombatModule.CanCrawlAttack()。</summary>
+    /// <summary>是否可以评估爬行战斗动作。</summary>
     private bool CanEvaluateCrawlCombatAction => host.CanEvaluateCrawlCombatAction;
-    /// <summary>中文含义：是否可以评估站立战斗动作。使用位置：EnemyCombatModule.CanAttack()。</summary>
+    /// <summary>是否可以评估站立战斗动作。</summary>
     private bool CanEvaluateStandingCombatAction => host.CanEvaluateStandingCombatAction;
-    /// <summary>中文含义：是否可以日志移动诊断。使用位置：EnemyCombatModule.BeginCrawl()、EnemyCombatModule.BeginHit()、EnemyCombatModule.BeginStandUp() 等共 13 处。</summary>
+    /// <summary>是否可以日志移动诊断。</summary>
     private bool CanLogMovementDiagnostic => host.ArchitectureReadCanLogMovementDiagnostic;
-    /// <summary>中文含义：当前移动模式。使用位置：作为 EnemyCombatModule.DiagLog(string, string) 的参数。</summary>
+    /// <summary>当前移动模式。</summary>
     private EnemyMovementMode CurrentMovementMode => host.ArchitectureReadCurrentMovementMode;
-    /// <summary>中文含义：当前状态。使用位置：EnemyCombatModule.CreateKnifeIncomingAttack(int, float, Vector3, Vector3)、EnemyCombatModule.HandleOnAttackComplete()、EnemyCombatModule.HandleOnAttackFirstHit() 等共 17 处。</summary>
+    /// <summary>当前状态。</summary>
     private VillagerState CurrentState => host.ArchitectureReadCurrentState;
-    /// <summary>中文含义：攻击的哈希编号。使用位置：作为 EnemyAnimationAdapter.SetBoolean(int, bool) 的参数。</summary>
+    /// <summary>攻击的哈希编号。</summary>
     private static int HashATK => VillagerController.ArchitectureReadHashATK;
-    /// <summary>中文含义：攻击01状态的哈希编号。使用位置：EnemyCombatModule.IsStandingAttackAnimation(AnimatorStateInfo)。</summary>
+    /// <summary>攻击01状态的哈希编号。</summary>
     private static int HashAttack01State => VillagerController.ArchitectureReadHashAttack01State;
-    /// <summary>中文含义：攻击02状态的哈希编号。使用位置：EnemyCombatModule.IsStandingAttackAnimation(AnimatorStateInfo)。</summary>
+    /// <summary>攻击02状态的哈希编号。</summary>
     private static int HashAttack02State => VillagerController.ArchitectureReadHashAttack02State;
-    /// <summary>中文含义：攻击03状态的哈希编号。使用位置：EnemyCombatModule.IsStandingAttackAnimation(AnimatorStateInfo)。</summary>
+    /// <summary>攻击03状态的哈希编号。</summary>
     private static int HashAttack03State => VillagerController.ArchitectureReadHashAttack03State;
-    /// <summary>中文含义：攻击索引的哈希编号。使用位置：作为 EnemyAnimationAdapter.SetIntegerValue(int, int) 的参数。</summary>
+    /// <summary>攻击索引的哈希编号。</summary>
     private static int HashAttackIndex => VillagerController.ArchitectureReadHashAttackIndex;
-    /// <summary>中文含义：是否可以绊倒的哈希编号。使用位置：作为 EnemyAnimationAdapter.SetBoolean(int, bool) 的参数。</summary>
+    /// <summary>是否可以绊倒的哈希编号。</summary>
     private static int HashCanTripOver => VillagerController.ArchitectureReadHashCanTripOver;
-    /// <summary>中文含义：命中的哈希编号。使用位置：作为 EnemyAnimationAdapter.SetBoolean(int, bool) 的参数。</summary>
+    /// <summary>命中的哈希编号。</summary>
     private static int HashHIT => VillagerController.ArchitectureReadHashHIT;
-    /// <summary>中文含义：命中方向的哈希编号。使用位置：作为 EnemyAnimationAdapter.SetIntegerValue(int, int) 的参数。</summary>
+    /// <summary>命中方向的哈希编号。</summary>
     private static int HashHitDir => VillagerController.ArchitectureReadHashHitDir;
-    /// <summary>中文含义：命中触发器的哈希编号。使用位置：作为 EnemyAnimationAdapter.ClearTrigger(int) 的参数、作为 EnemyAnimationAdapter.TriggerPresentation(int) 的参数。</summary>
+    /// <summary>命中触发器的哈希编号。</summary>
     private static int HashHitTrigger => VillagerController.ArchitectureReadHashHitTrigger;
-    /// <summary>中文含义：是否爬行的哈希编号。使用位置：作为 EnemyAnimationAdapter.SetBoolean(int, bool) 的参数。</summary>
+    /// <summary>是否爬行的哈希编号。</summary>
     private static int HashIsCrawl => VillagerController.ArchitectureReadHashIsCrawl;
-    /// <summary>中文含义：移动速度的哈希编号。使用位置：作为 EnemyAnimationAdapter.SetFloatValue(int, float) 的参数。</summary>
+    /// <summary>移动速度的哈希编号。</summary>
     private static int HashMoveSpeed => VillagerController.ArchitectureReadHashMoveSpeed;
-    /// <summary>中文含义：搜索模式的哈希编号。使用位置：作为 EnemyAnimationAdapter.SetBoolean(int, bool) 的参数。</summary>
+    /// <summary>搜索模式的哈希编号。</summary>
     private static int HashSearchMode => VillagerController.ArchitectureReadHashSearchMode;
-    /// <summary>中文含义：硬直方向的哈希编号。使用位置：作为 EnemyAnimationAdapter.SetIntegerValue(int, int) 的参数。</summary>
+    /// <summary>硬直方向的哈希编号。</summary>
     private static int HashStaggerDirection => VillagerController.ArchitectureReadHashStaggerDirection;
-    /// <summary>中文含义：硬直级别的哈希编号。使用位置：作为 EnemyAnimationAdapter.SetIntegerValue(int, int) 的参数。</summary>
+    /// <summary>硬直级别的哈希编号。</summary>
     private static int HashStaggerLevel => VillagerController.ArchitectureReadHashStaggerLevel;
-    /// <summary>中文含义：硬直触发器的哈希编号。使用位置：作为 EnemyAnimationAdapter.ClearTrigger(int) 的参数、作为 EnemyAnimationAdapter.TriggerPresentation(int) 的参数。</summary>
+    /// <summary>硬直触发器的哈希编号。</summary>
     private static int HashStaggerTrigger => VillagerController.ArchitectureReadHashStaggerTrigger;
-    /// <summary>中文含义：转向方向的哈希编号。使用位置：作为 EnemyAnimationAdapter.SetIntegerValue(int, int) 的参数。</summary>
+    /// <summary>转向方向的哈希编号。</summary>
     private static int HashTurnDir => VillagerController.ArchitectureReadHashTurnDir;
-    /// <summary>中文含义：是否攻击就绪。使用位置：EnemyCombatModule.CanAttack()、EnemyCombatModule.CanCrawlAttack()。</summary>
+    /// <summary>是否攻击就绪。</summary>
     private bool IsAttackReady => host.IsAttackReady;
-    /// <summary>中文含义：是否死亡。使用位置：作为 EnemyCombatModule.DiagLog(string, string) 的参数、EnemyCombatModule.BeginCrawl()、EnemyCombatModule.BeginHit() 等共 23 处。</summary>
+    /// <summary>是否死亡。</summary>
     private bool IsDead => host.IsDead;
-    /// <summary>中文含义：是否配对动作受控。使用位置：EnemyCombatModule.EndAttack()、EnemyCombatModule.HandleOnAttackComplete()、EnemyCombatModule.HandleOnAttackFirstHit() 等共 13 处。</summary>
+    /// <summary>是否配对动作受控。</summary>
     private bool IsQTEControlled => host.IsQTEControlled;
-    /// <summary>中文含义：玩家。使用位置：作为 EnemyCombatModule.DiagLog(string, string) 的参数、EnemyCombatModule.ApplyDeadChainsawPulse()、EnemyCombatModule.ConsumeHit() 等共 13 处。</summary>
+    /// <summary>玩家。</summary>
     private LeonController Player => host.Player;
-    /// <summary>中文含义：玩家距离。使用位置：作为 ChainsawManAnimationBridge.SelectAttackIndex(float, int) 的参数、作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>玩家距离。</summary>
     private float PlayerDistance => host.PlayerDistance;
-    /// <summary>中文含义：寻路代理。使用位置：EnemyCombatModule.BeginCrawl()、EnemyCombatModule.CancelStandUpAndResumeCrawl()。</summary>
+    /// <summary>寻路代理。</summary>
     private PathAgent agent => host.ArchitectureReadAgent;
-    /// <summary>中文含义：动画控制器。使用位置：作为 Mathf.Abs(float) 的参数、EnemyCombatModule.BeginHit()、EnemyCombatModule.ClearActionParameters() 等共 9 处。</summary>
+    /// <summary>动画控制器。</summary>
     private Animator anim => host.ArchitectureReadAnim;
-    /// <summary>中文含义：攻击接触留白。使用位置：EnemyCombatModule.IsPlayerWithinBodyContactRange()。</summary>
+    /// <summary>攻击接触留白。</summary>
     private float attackContactPadding => host.attackContactPadding;
-    /// <summary>中文含义：攻击伤害。使用位置：作为 ChainsawManAnimationBridge.ResolveAttackDamage(float) 的参数、作为 EnemyCombatModule.CreateKnifeIncomingAttack(int, float, Vector3, Vector3) 的参数、作为 EnemyCombatModule.TryApplyFriendlyFire(Vector3, Vector3, float) 的参数 等共 5 处。</summary>
+    /// <summary>攻击伤害。</summary>
     private float attackDamage => host.attackDamage;
-    /// <summary>中文含义：攻击命中角度。使用位置：EnemyCombatModule.IsFacingPlayerForAttack()、EnemyCombatModule.TryApplyAttackHit(int)。</summary>
+    /// <summary>攻击命中角度。</summary>
     private float attackHitAngle => host.attackHitAngle;
-    /// <summary>中文含义：攻击命中范围。使用位置：作为 Mathf.Max(float, float) 的参数、EnemyCombatModule.TryApplyAttackHit(int)。</summary>
+    /// <summary>攻击命中范围。</summary>
     private float attackHitRange => host.attackHitRange;
-    /// <summary>中文含义：攻击范围极小容差。使用位置：EnemyCombatModule.IsPlayerWithinBodyContactRange()、EnemyCombatModule.KnifePathAllowed(Vector3, Quaternion, Vector3, Vector3, KnifeEnemyAttackProfile, LeonController)、EnemyCombatModule.TryApplyAttackHit(int)。</summary>
+    /// <summary>攻击范围极小容差。</summary>
     private static float attackRangeEpsilon => VillagerController.ArchitectureReadAttackRangeEpsilon;
-    /// <summary>中文含义：攻击起始范围。使用位置：作为 Mathf.Max(float, float) 的参数、EnemyCombatModule.IsPlayerWithinAttackStartRange()。</summary>
+    /// <summary>攻击起始范围。</summary>
     [SerializeField] private float standingWeaponAttackStartRange;
 
     private float attackStartRange => host.attackStartRange;
@@ -448,117 +450,117 @@ global::KnifeIncomingAttackContext createdValue2 = new KnifeIncomingAttackContex
             return attackStartRange;
         }
     }
-    /// <summary>中文含义：警觉记忆持续时间。使用位置：EnemyCombatModule.CanEngagePlayerAtCloseRange()。</summary>
+    /// <summary>警觉记忆持续时间。</summary>
     private float awarenessMemoryDuration => host.awarenessMemoryDuration;
-    /// <summary>中文含义：行为树。使用位置：EnemyCombatModule.EndAttack()、EnemyCombatModule.TakeDamage(float, Vector3, HitboxType, Vector3)。</summary>
+    /// <summary>行为树。</summary>
     private BehaviorTree behaviorTree => host.ArchitectureReadBehaviorTree;
-    /// <summary>中文含义：身体暴击硬直概率。使用位置：EnemyCombatModule.ShouldTriggerCriticalStagger(HitboxType, float)。</summary>
+    /// <summary>身体暴击硬直概率。</summary>
     private float bodyCriticalStaggerChance => host.bodyCriticalStaggerChance;
-    /// <summary>中文含义：缓存玩家。使用位置：EnemyCombatModule.HandleOnParryWindowClose()。</summary>
+    /// <summary>缓存玩家。</summary>
     private LeonController cachedPlayer => host.ArchitectureReadCachedPlayer;
-    /// <summary>中文含义：电锯桥接。使用位置：EnemyCombatModule.ApplyDeadChainsawPulse()、EnemyCombatModule.BeginAttack()、EnemyCombatModule.CreateKnifeIncomingAttack(int, float, Vector3, Vector3) 等共 9 处。</summary>
+    /// <summary>电锯桥接。</summary>
     private ChainsawManAnimationBridge chainsawBridge => host.ArchitectureReadChainsawBridge;
-    /// <summary>中文含义：电锯友方伤害角度。使用位置：EnemyCombatModule.TryApplyFriendlyFire(Vector3, Vector3, float)。</summary>
+    /// <summary>电锯友方伤害角度。</summary>
     private float chainsawFriendlyFireAngle => host.chainsawFriendlyFireAngle;
-    /// <summary>中文含义：电锯友方伤害伤害倍率。使用位置：EnemyCombatModule.TryApplyFriendlyFire(Vector3, Vector3, float)。</summary>
+    /// <summary>电锯友方伤害伤害倍率。</summary>
     private float chainsawFriendlyFireDamageMultiplier => host.chainsawFriendlyFireDamageMultiplier;
-    /// <summary>中文含义：电锯友方伤害高度容差。使用位置：EnemyCombatModule.IsPointInsideDeadChainsawDanger(Vector3, Vector3, float)、EnemyCombatModule.TryApplyFriendlyFire(Vector3, Vector3, float)。</summary>
+    /// <summary>电锯友方伤害高度容差。</summary>
     private float chainsawFriendlyFireHeightTolerance => host.chainsawFriendlyFireHeightTolerance;
-    /// <summary>中文含义：电锯友伤最多命中目标数。使用位置：EnemyCombatModule.TryApplyFriendlyFire(Vector3, Vector3, float)。</summary>
+    /// <summary>电锯友伤最多命中目标数。</summary>
     private int chainsawFriendlyFireMaxTargets => host.chainsawFriendlyFireMaxTargets;
-    /// <summary>中文含义：电锯友方伤害范围。使用位置：EnemyCombatModule.TryApplyFriendlyFire(Vector3, Vector3, float)。</summary>
+    /// <summary>电锯友方伤害范围。</summary>
     private float chainsawFriendlyFireRange => host.chainsawFriendlyFireRange;
-    /// <summary>中文含义：碰撞体控制器。使用位置：EnemyCombatModule.BeginCrawl()、EnemyCombatModule.BeginCrawlAttack()、EnemyCombatModule.CancelStandUpAndResumeCrawl() 等共 9 处。</summary>
+    /// <summary>碰撞体控制器。</summary>
     private EnemyColliderController colliderCtrl => host.ArchitectureReadColliderCtrl;
-    /// <summary>中文含义：是否战斗已接战。使用位置：EnemyCombatModule.EndAttack()。</summary>
+    /// <summary>是否战斗已接战。</summary>
     private bool combatEngaged => host.perceptionModule.ReadCombatEngaged;
-    /// <summary>中文含义：战斗保持退出范围。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>战斗保持退出范围。</summary>
     private float combatHoldExitRange => host.combatHoldExitRange;
-    /// <summary>中文含义：爬行攻击起始角度。使用位置：EnemyCombatModule.IsFacingPlayerForCrawlAttack()。</summary>
+    /// <summary>爬行攻击起始角度。</summary>
     private float crawlAttackStartAngle => host.crawlAttackStartAngle;
-    /// <summary>中文含义：爬行战斗竖直容差。使用位置：EnemyCombatModule.IsPlayerWithinCombatVerticalRange(LeonController)。</summary>
+    /// <summary>爬行战斗竖直容差。</summary>
     private float crawlCombatVerticalTolerance => host.crawlCombatVerticalTolerance;
-    /// <summary>中文含义：暴击硬直冷却。使用位置：EnemyCombatModule.ShouldTriggerCriticalStagger(HitboxType, float)。</summary>
+    /// <summary>暴击硬直冷却。</summary>
     private float criticalStaggerCooldown => host.criticalStaggerCooldown;
-    /// <summary>中文含义：暴击硬直伤害楼层。使用位置：EnemyCombatModule.ShouldTriggerCriticalStagger(HitboxType, float)。</summary>
+    /// <summary>暴击硬直伤害楼层。</summary>
     private float criticalStaggerDamageFloor => host.criticalStaggerDamageFloor;
-    /// <summary>中文含义：是否暴击硬直开放体术。使用位置：EnemyCombatModule.TakeDamage(float, Vector3, HitboxType, Vector3)。</summary>
+    /// <summary>是否暴击硬直开放体术。</summary>
     private bool criticalStaggerOpensBodyTechnique => host.criticalStaggerOpensBodyTechnique;
-    /// <summary>中文含义：当前敌人上下文。使用位置：作为 EnemyCombatModule.DiagLog(string, string) 的参数、EnemyCombatModule.BeginCrawl()、EnemyCombatModule.CancelStandUpAndResumeCrawl() 等共 6 处。</summary>
+    /// <summary>当前敌人上下文。</summary>
     private EnemyContext ctx => host.ArchitectureReadCtx;
-    /// <summary>中文含义：当前生命值。使用位置：作为 EnemyCombatModule.DiagLog(string, string) 的参数、EnemyCombatModule.TakeDamage(float, Vector3, HitboxType, Vector3)、EnemyCombatModule.TryApplyAttackHit(int)。</summary>
+    /// <summary>当前生命值。</summary>
     private float currentHealth => host.currentHealth;
-    /// <summary>中文含义：精英体术窗口。使用位置：EnemyCombatModule.BeginHit()。</summary>
+    /// <summary>精英体术窗口。</summary>
     private float eliteBodyTechniqueWindow => host.eliteBodyTechniqueWindow;
-    /// <summary>中文含义：是否启用电锯友方伤害。使用位置：EnemyCombatModule.TryApplyFriendlyFire(Vector3, Vector3, float)。</summary>
+    /// <summary>是否启用电锯友方伤害。</summary>
     private bool enableChainsawFriendlyFire => host.enableChainsawFriendlyFire;
-    /// <summary>中文含义：是否启用暴击硬直。使用位置：EnemyCombatModule.ShouldTriggerCriticalStagger(HitboxType, float)。</summary>
+    /// <summary>是否启用暴击硬直。</summary>
     private bool enableCriticalStagger => host.enableCriticalStagger;
-    /// <summary>中文含义：是否启用敌人友方伤害。使用位置：EnemyCombatModule.TryApplyFriendlyFire(Vector3, Vector3, float)。</summary>
+    /// <summary>是否启用敌人友方伤害。</summary>
     private bool enableEnemyFriendlyFire => host.enableEnemyFriendlyFire;
-    /// <summary>中文含义：是否启用小刀招架。使用位置：EnemyCombatModule.CreateKnifeIncomingAttack(int, float, Vector3, Vector3)、EnemyCombatModule.HandleOnParryWindowOpen()、EnemyCombatModule.TryApplyAttackHit(int)。</summary>
+    /// <summary>是否启用小刀招架。</summary>
     private bool enableKnifeParry => host.enableKnifeParry;
-    /// <summary>中文含义：敌人友方伤害角度。使用位置：EnemyCombatModule.TryApplyFriendlyFire(Vector3, Vector3, float)。</summary>
+    /// <summary>敌人友方伤害角度。</summary>
     private float enemyFriendlyFireAngle => host.enemyFriendlyFireAngle;
-    /// <summary>中文含义：敌人友方伤害伤害倍率。使用位置：EnemyCombatModule.TryApplyFriendlyFire(Vector3, Vector3, float)。</summary>
+    /// <summary>敌人友方伤害伤害倍率。</summary>
     private float enemyFriendlyFireDamageMultiplier => host.enemyFriendlyFireDamageMultiplier;
-    /// <summary>中文含义：敌人友方伤害高度容差。使用位置：EnemyCombatModule.TryApplyFriendlyFire(Vector3, Vector3, float)。</summary>
+    /// <summary>敌人友方伤害高度容差。</summary>
     private float enemyFriendlyFireHeightTolerance => host.enemyFriendlyFireHeightTolerance;
-    /// <summary>中文含义：单次敌人友伤最多命中的目标数。使用位置：EnemyCombatModule.TryApplyFriendlyFire(Vector3, Vector3, float)。</summary>
+    /// <summary>单次敌人友伤最多命中的目标数。</summary>
     private int enemyFriendlyFireMaxTargets => host.enemyFriendlyFireMaxTargets;
-    /// <summary>中文含义：敌人友方伤害范围。使用位置：EnemyCombatModule.TryApplyFriendlyFire(Vector3, Vector3, float)。</summary>
+    /// <summary>敌人友方伤害范围。</summary>
     private float enemyFriendlyFireRange => host.enemyFriendlyFireRange;
-    /// <summary>中文含义：是否完全察觉所属玩家。使用位置：作为 EnemyCombatModule.DiagLog(string, string) 的参数、EnemyCombatModule.ConsumeHit()。</summary>
+    /// <summary>是否完全察觉所属玩家。</summary>
     private bool fullyAwareOfPlayer => host.perceptionModule.ReadFullyAwareOfPlayer;
-    /// <summary>中文含义：头部暴击硬直概率。使用位置：EnemyCombatModule.ShouldTriggerCriticalStagger(HitboxType, float)。</summary>
+    /// <summary>头部暴击硬直概率。</summary>
     private float headCriticalStaggerChance => host.headCriticalStaggerChance;
-    /// <summary>中文含义：受击反应免疫。使用位置：EnemyCombatModule.TakeDamage(float, Vector3, HitboxType, Vector3)。</summary>
+    /// <summary>受击反应免疫。</summary>
     private float hitReactionImmunity => host.hitReactionImmunity;
-    /// <summary>中文含义：上一次已见时间。使用位置：EnemyCombatModule.CanEngagePlayerAtCloseRange()。</summary>
+    /// <summary>上一次已见时间。</summary>
     private float lastSeenTime => host.perceptionModule.ReadLastSeenTime;
-    /// <summary>中文含义：腿部倒地伤害。使用位置：作为 Mathf.Min(float, float) 的参数。</summary>
+    /// <summary>腿部倒地伤害。</summary>
     private float legCollapseDamage => host.legCollapseDamage;
-    /// <summary>中文含义：最大生命值。使用位置：EnemyCombatModule.TakeDamage(float, Vector3, HitboxType, Vector3)。</summary>
+    /// <summary>最大生命值。</summary>
     private float maxHealth => host.maxHealth;
-    /// <summary>中文含义：任务敌人类型。使用位置：EnemyCombatModule.TryApplyFriendlyFire(Vector3, Vector3, float)、EnemyCombatModule.UsesSawmanHitToughness()。</summary>
+    /// <summary>任务敌人类型。</summary>
     private MissionEnemyType missionEnemyType => host.missionEnemyType;
-    /// <summary>中文含义：常规体术窗口。使用位置：EnemyCombatModule.BeginHit()。</summary>
+    /// <summary>常规体术窗口。</summary>
     private float normalBodyTechniqueWindow => host.normalBodyTechniqueWindow;
-    /// <summary>中文含义：可感知状态。使用位置：作为 EnemyCombatModule.DiagLog(string, string) 的参数。</summary>
+    /// <summary>可感知状态。</summary>
     private VillagerState observableState => host.actionCoordinator.ReadObservableState;
-    /// <summary>中文含义：电锯敌人身体暴击硬直概率倍率。使用位置：EnemyCombatModule.ShouldTriggerCriticalStagger(HitboxType, float)。</summary>
+    /// <summary>电锯敌人身体暴击硬直概率倍率。</summary>
     private float sawmanBodyCriticalStaggerChanceMultiplier => host.sawmanBodyCriticalStaggerChanceMultiplier;
-    /// <summary>中文含义：电锯敌人暴击伤害楼层额外加成。使用位置：EnemyCombatModule.ShouldTriggerCriticalStagger(HitboxType, float)。</summary>
+    /// <summary>电锯敌人暴击伤害楼层额外加成。</summary>
     private float sawmanCriticalDamageFloorBonus => host.sawmanCriticalDamageFloorBonus;
-    /// <summary>中文含义：电锯敌人头部暴击硬直概率倍率。使用位置：EnemyCombatModule.ShouldTriggerCriticalStagger(HitboxType, float)。</summary>
+    /// <summary>电锯敌人头部暴击硬直概率倍率。</summary>
     private float sawmanHeadCriticalStaggerChanceMultiplier => host.sawmanHeadCriticalStaggerChanceMultiplier;
-    /// <summary>中文含义：电锯敌人受击反应阈值倍率。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>电锯敌人受击反应阈值倍率。</summary>
     private float sawmanHitReactionThresholdMultiplier => host.sawmanHitReactionThresholdMultiplier;
-    /// <summary>中文含义：电锯敌人韧性伤害倍率。使用位置：作为 Mathf.Clamp01(float) 的参数。</summary>
+    /// <summary>电锯敌人韧性伤害倍率。</summary>
     private float sawmanPoiseDamageMultiplier => host.sawmanPoiseDamageMultiplier;
-    /// <summary>中文含义：视野范围。使用位置：作为 EnemyCombatModule.HasClearLineToPlayer(bool, float) 的参数。</summary>
+    /// <summary>视野范围。</summary>
     private float sightRange => host.sightRange;
-    /// <summary>中文含义：特殊通行。使用位置：EnemyCombatModule.EndAttack()。</summary>
+    /// <summary>特殊通行。</summary>
     private EnemyWindowTraversal specialTraversal => host.ArchitectureReadSpecialTraversal;
-    /// <summary>中文含义：硬直阈值。使用位置：EnemyCombatModule.ResolveHitReactionThreshold()。</summary>
+    /// <summary>硬直阈值。</summary>
     private float staggerThreshold => host.staggerThreshold;
-    /// <summary>中文含义：是否硬直触发器参数可用。使用位置：EnemyCombatModule.BeginHit()、EnemyCombatModule.ClearActionParameters()、EnemyCombatModule.ConsumeHit()。</summary>
+    /// <summary>是否硬直触发器参数可用。</summary>
     private bool staggerTriggerParameterAvailable => host.animationPresenter.ReadStaggerTriggerParameterAvailable;
-    /// <summary>中文含义：起身稳定化持续时间。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>起身稳定化持续时间。</summary>
     private float standUpStabilizationDuration => host.standUpStabilizationDuration;
-    /// <summary>中文含义：站立攻击动画数量。使用位置：作为 ChainsawManAnimationBridge.SelectAttackIndex(float, int) 的参数、作为 Mathf.Max(int, int) 的参数。</summary>
+    /// <summary>站立攻击动画数量。</summary>
     private int standingAttackAnimationCount => host.standingAttackAnimationCount;
-    /// <summary>中文含义：站立攻击后备命中归一化时间。使用位置：EnemyCombatModule.HandleOnParryWindowOpen()、EnemyCombatModule.UpdateStandingAttackHitFallback()。</summary>
+    /// <summary>站立攻击后备命中归一化时间。</summary>
     private float standingAttackFallbackHitNormalizedTime => host.standingAttackFallbackHitNormalizedTime;
-    /// <summary>中文含义：站立战斗竖直容差。使用位置：EnemyCombatModule.IsPlayerWithinCombatVerticalRange(LeonController)。</summary>
+    /// <summary>站立战斗竖直容差。</summary>
     private float standingCombatVerticalTolerance => host.standingCombatVerticalTolerance;
-    /// <summary>中文含义：是否支持爬行。使用位置：作为 EnemyCombatModule.DiagLog(string, string) 的参数、EnemyCombatModule.BeginCrawl()、EnemyCombatModule.ForceCrawlPoseAfterQTE() 等共 7 处。</summary>
+    /// <summary>是否支持爬行。</summary>
     private bool supportsCrawl => host.supportsCrawl;
-    /// <summary>中文含义：是否支持绊倒。使用位置：EnemyCombatModule.TakeDamage(float, Vector3, HitboxType, Vector3)。</summary>
+    /// <summary>是否支持绊倒。</summary>
     private bool supportsTripOver => host.supportsTripOver;
-    /// <summary>中文含义：是否使用电锯敌人命中韧性。使用位置：EnemyCombatModule.UsesSawmanHitToughness()。</summary>
+    /// <summary>是否使用电锯敌人命中韧性。</summary>
     private bool useSawmanHitToughness => host.useSawmanHitToughness;
-    /// <summary>中文含义：生命模块。使用位置：EnemyCombatModule.TakeDamage(float, Vector3, HitboxType, Vector3)。</summary>
+    /// <summary>生命模块。</summary>
     private CharacterHealthModule HealthModule => host.healthModule;
 
     /// <summary>BecomeFullyAwareOfPlayer 的业务处理入口；本方法直接依赖 EnemyPerceptionModule.BecomeFullyAwareOfPlayer()，调用方通过参数与返回结果交接本次处理。</summary>
@@ -570,7 +572,7 @@ global::KnifeIncomingAttackContext createdValue2 = new KnifeIncomingAttackContex
 
     /// <summary>BeginChase 的业务处理入口；本方法直接依赖 EnemyActionCoordinator.BeginChase(bool)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyCombatModule.ConsumeHit()、EnemyCombatModule.EndAttack()；下游（含内部回调体） EnemyActionCoordinator.BeginChase(bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="notifyCombatEngaged">中文含义：是否通知战斗已接战。使用位置：作为 EnemyActionCoordinator.BeginChase(bool) 的参数。</param>
+    /// <param name="notifyCombatEngaged">是否通知战斗已接战。</param>
     private void BeginChase(bool notifyCombatEngaged = true)
     {
         ActionCoordinator.BeginChase(notifyCombatEngaged);
@@ -592,8 +594,8 @@ global::KnifeIncomingAttackContext createdValue2 = new KnifeIncomingAttackContex
 
     /// <summary>DiagLog 的业务处理入口；本方法直接依赖 VillagerController.ArchitectureInvokeDiagLog(string, string)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyCombatModule.BeginCrawl()、EnemyCombatModule.BeginHit()、EnemyCombatModule.BeginStandUp()、EnemyCombatModule.CancelStandUpAndResumeCrawl()、EnemyCombatModule.CompleteStandUp() 等共 13 处；下游（含内部回调体） VillagerController.ArchitectureInvokeDiagLog(string, string)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="tag">中文含义：标签。使用位置：作为 VillagerController.ArchitectureInvokeDiagLog(string, string) 的参数。</param>
-    /// <param name="msg">中文含义：消息内容。使用位置：作为 VillagerController.ArchitectureInvokeDiagLog(string, string) 的参数。</param>
+    /// <param name="tag">标签。</param>
+    /// <param name="msg">消息内容。</param>
     private void DiagLog(string tag, string msg)
     {
         host.ArchitectureInvokeDiagLog(tag, msg);
@@ -615,8 +617,8 @@ global::KnifeIncomingAttackContext createdValue2 = new KnifeIncomingAttackContex
 
     /// <summary>HasClearLineToPlayer 的业务处理入口；本方法直接依赖 EnemyPerceptionModule.HasClearLineToPlayer(bool, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyCombatModule.CanEngagePlayerAtCloseRange()、EnemyCombatModule.TryApplyAttackHit(int)；下游（含内部回调体） EnemyPerceptionModule.HasClearLineToPlayer(bool, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="requireSightAngle">中文含义：是否需要视野角度。使用位置：作为 EnemyPerceptionModule.HasClearLineToPlayer(bool, float) 的参数。</param>
-    /// <param name="maximumDistance">中文含义：最大距离。使用位置：作为 EnemyPerceptionModule.HasClearLineToPlayer(bool, float) 的参数。</param>
+    /// <param name="requireSightAngle">是否需要视野角度。</param>
+    /// <param name="maximumDistance">最大距离。</param>
     private bool HasClearLineToPlayer(bool requireSightAngle, float maximumDistance)
     {
         return PerceptionModule.HasClearLineToPlayer(requireSightAngle, maximumDistance);
@@ -638,7 +640,7 @@ global::KnifeIncomingAttackContext createdValue2 = new KnifeIncomingAttackContex
 
     /// <summary>PlayVoice 的业务处理入口；本方法直接依赖 EnemyAnimationAdapter.PlayVoice(ZombieVoiceType)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyCombatModule.BeginAttack()、EnemyCombatModule.BeginCrawlAttack()、EnemyCombatModule.TakeDamage(float, Vector3, HitboxType, Vector3)；下游（含内部回调体） EnemyAnimationAdapter.PlayVoice(ZombieVoiceType)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="voiceType">中文含义：语音类型。使用位置：作为 EnemyAnimationAdapter.PlayVoice(ZombieVoiceType) 的参数。</param>
+    /// <param name="voiceType">语音类型。</param>
     private void PlayVoice(ZombieVoiceType voiceType)
     {
         AnimationPresenter.PlayVoice(voiceType);
@@ -660,9 +662,9 @@ global::KnifeIncomingAttackContext createdValue2 = new KnifeIncomingAttackContex
 
     /// <summary>SetMovementMode 的业务处理入口；本方法直接依赖 VillagerController.ArchitectureInvokeSetMovementMode(EnemyMovementMode, string, int)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyCombatModule.ApplyKnifeParryStagger(bool)、EnemyCombatModule.BeginAttack()、EnemyCombatModule.BeginCrawl()、EnemyCombatModule.BeginCrawlAttack()、EnemyCombatModule.BeginHit() 等共 15 处；下游（含内部回调体） VillagerController.ArchitectureInvokeSetMovementMode(EnemyMovementMode, string, int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="movementMode">中文含义：移动模式。使用位置：作为 VillagerController.ArchitectureInvokeSetMovementMode(EnemyMovementMode, string, int) 的参数。</param>
-    /// <param name="source">中文含义：来源。使用位置：作为 VillagerController.ArchitectureInvokeSetMovementMode(EnemyMovementMode, string, int) 的参数。</param>
-    /// <param name="line">中文含义：线。使用位置：作为 VillagerController.ArchitectureInvokeSetMovementMode(EnemyMovementMode, string, int) 的参数。</param>
+    /// <param name="movementMode">移动模式。</param>
+    /// <param name="source">来源。</param>
+    /// <param name="line">线。</param>
     private void SetMovementMode(EnemyMovementMode movementMode, [System.Runtime.CompilerServices.CallerMemberName] string source = "", [System.Runtime.CompilerServices.CallerLineNumber] int line = 0)
     {
         host.ArchitectureInvokeSetMovementMode(movementMode, source, line);
@@ -670,9 +672,9 @@ global::KnifeIncomingAttackContext createdValue2 = new KnifeIncomingAttackContex
 
     /// <summary>SetObservableState 的业务处理入口；本方法直接依赖 EnemyActionCoordinator.SetObservableState(VillagerState, string, int)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyCombatModule.BeginAttack()、EnemyCombatModule.BeginCrawl()、EnemyCombatModule.BeginCrawlAttack()、EnemyCombatModule.BeginHit()、EnemyCombatModule.BeginStandUp() 等共 8 处；下游（含内部回调体） EnemyActionCoordinator.SetObservableState(VillagerState, string, int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="state">中文含义：当前敌人状态。使用位置：作为 EnemyActionCoordinator.SetObservableState(VillagerState, string, int) 的参数。</param>
-    /// <param name="source">中文含义：来源。使用位置：作为 EnemyActionCoordinator.SetObservableState(VillagerState, string, int) 的参数。</param>
-    /// <param name="line">中文含义：线。使用位置：作为 EnemyActionCoordinator.SetObservableState(VillagerState, string, int) 的参数。</param>
+    /// <param name="state">当前敌人状态。</param>
+    /// <param name="source">来源。</param>
+    /// <param name="line">线。</param>
     private void SetObservableState(VillagerState state, [System.Runtime.CompilerServices.CallerMemberName] string source = "", [System.Runtime.CompilerServices.CallerLineNumber] int line = 0)
     {
         ActionCoordinator.SetObservableState(state, source, line);
@@ -687,9 +689,9 @@ global::KnifeIncomingAttackContext createdValue2 = new KnifeIncomingAttackContex
 
     /// <summary>SnapToGround 的业务处理入口；本方法直接依赖 VillagerController.ArchitectureInvokeSnapToGround(float, float, bool)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） VillagerController.ArchitectureInvokeSnapToGround(float, float, bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="probeHeight">中文含义：探测高度。使用位置：作为 VillagerController.ArchitectureInvokeSnapToGround(float, float, bool) 的参数。</param>
-    /// <param name="probeDistance">中文含义：探测距离。使用位置：作为 VillagerController.ArchitectureInvokeSnapToGround(float, float, bool) 的参数。</param>
-    /// <param name="allowLargeDrop">中文含义：是否允许较大掉落。使用位置：作为 VillagerController.ArchitectureInvokeSnapToGround(float, float, bool) 的参数。</param>
+    /// <param name="probeHeight">探测高度。</param>
+    /// <param name="probeDistance">探测距离。</param>
+    /// <param name="allowLargeDrop">是否允许较大掉落。</param>
     private void SnapToGround(float probeHeight, float probeDistance, bool allowLargeDrop)
     {
         host.ArchitectureInvokeSnapToGround(probeHeight, probeDistance, allowLargeDrop);
@@ -711,7 +713,7 @@ global::KnifeIncomingAttackContext createdValue2 = new KnifeIncomingAttackContex
 
     /// <summary>TakeDamage 的业务处理入口；本方法直接依赖 EnemyCombatModule.TakeDamage(float, Vector3, HitboxType)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillagerController.TakeDamage(float)；下游（含内部回调体） EnemyCombatModule.TakeDamage(float, Vector3, HitboxType)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="damage">中文含义：伤害。使用位置：作为 EnemyCombatModule.TakeDamage(float, Vector3, HitboxType) 的参数。</param>
+    /// <param name="damage">伤害。</param>
     internal void TakeDamage(float damage)
     {
         TakeDamage(damage, default, HitboxType.Chest);
@@ -719,8 +721,8 @@ global::KnifeIncomingAttackContext createdValue2 = new KnifeIncomingAttackContex
 
     /// <summary>TakeDamage 的业务处理入口；本方法直接依赖 EnemyCombatModule.TakeDamage(float, Vector3, HitboxType)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillagerController.TakeDamage(float, Vector3)；下游（含内部回调体） EnemyCombatModule.TakeDamage(float, Vector3, HitboxType)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="damage">中文含义：伤害。使用位置：作为 EnemyCombatModule.TakeDamage(float, Vector3, HitboxType) 的参数。</param>
-    /// <param name="hitPoint">中文含义：命中点位置。使用位置：作为 EnemyCombatModule.TakeDamage(float, Vector3, HitboxType) 的参数。</param>
+    /// <param name="damage">伤害。</param>
+    /// <param name="hitPoint">命中点位置。</param>
     internal void TakeDamage(float damage, Vector3 hitPoint)
     {
         TakeDamage(damage, hitPoint, HitboxType.Chest);
@@ -728,9 +730,9 @@ global::KnifeIncomingAttackContext createdValue2 = new KnifeIncomingAttackContex
 
     /// <summary>TakeDamage 的业务处理入口；本方法直接依赖 EnemyCombatModule.TakeDamage(float, Vector3, HitboxType, Vector3)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyCombatModule.TakeDamage(float, Vector3)、EnemyCombatModule.TakeDamage(float)、EnemyCombatModule.TakeHeavyFrontDamage(float, Vector3)、VillagerController.TakeDamage(float, Vector3, HitboxType)；下游（含内部回调体） EnemyCombatModule.TakeDamage(float, Vector3, HitboxType, Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="damage">中文含义：伤害。使用位置：作为 EnemyCombatModule.TakeDamage(float, Vector3, HitboxType, Vector3) 的参数。</param>
-    /// <param name="hitPoint">中文含义：命中点位置。使用位置：作为 EnemyCombatModule.TakeDamage(float, Vector3, HitboxType, Vector3) 的参数。</param>
-    /// <param name="hitboxType">中文含义：命中盒类型。使用位置：作为 EnemyCombatModule.TakeDamage(float, Vector3, HitboxType, Vector3) 的参数。</param>
+    /// <param name="damage">伤害。</param>
+    /// <param name="hitPoint">命中点位置。</param>
+    /// <param name="hitboxType">命中盒类型。</param>
     internal void TakeDamage(float damage, Vector3 hitPoint, HitboxType hitboxType)
     {
         TakeDamage(damage, hitPoint, hitboxType, Vector3.zero);
@@ -738,10 +740,10 @@ global::KnifeIncomingAttackContext createdValue2 = new KnifeIncomingAttackContex
 
     /// <summary>TakeDamage 的业务处理入口；本方法直接依赖 CharacterHealthModule.CommitCompatibleDamage(float)、EnemyActionCoordinator.RevokePreviousAnimationCallback()、EnemyAIManager.ReleaseCombatReservation(VillagerController)、EnemyCombatModule.BecomeFullyAwareOfPlayer()、EnemyCombatModule.BeginDeath()、EnemyCombatModule.DiagLog(string, string)、EnemyCombatModule.PlayVoice(ZombieVoiceType) 等共 15 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyCombatModule.TakeDamage(float, Vector3, HitboxType)、VillagerController.TakeDamage(float, Vector3, HitboxType, Vector3)；下游（含内部回调体） CharacterHealthModule.CommitCompatibleDamage(float)、EnemyActionCoordinator.RevokePreviousAnimationCallback()、EnemyAIManager.ReleaseCombatReservation(VillagerController)、EnemyCombatModule.BecomeFullyAwareOfPlayer()、EnemyCombatModule.BeginDeath()、EnemyCombatModule.DiagLog(string, string)、EnemyCombatModule.PlayVoice(ZombieVoiceType) 等共 15 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="damage">中文含义：伤害。使用位置：作为 CharacterHealthModule.CommitCompatibleDamage(float) 的参数、作为 EnemyCombatModule.DiagLog(string, string) 的参数、作为 EnemyCombatModule.ShouldTriggerCriticalStagger(HitboxType, float) 的参数 等共 4 处。</param>
-    /// <param name="hitPoint">中文含义：命中点位置。使用位置：作为 EnemyCombatModule.ResolveStaggerDirection(Vector3, Vector3) 的参数、作为 EnemyHitbox.ToHitDir(HitboxType, Vector3, Transform) 的参数。</param>
-    /// <param name="hitboxType">中文含义：命中盒类型。使用位置：作为 EnemyCombatModule.DiagLog(string, string) 的参数、作为 EnemyCombatModule.ResolveStaggerLevel(HitboxType, bool) 的参数、作为 EnemyCombatModule.ShouldTriggerCriticalStagger(HitboxType, float) 的参数 等共 5 处。</param>
-    /// <param name="hitNormal">中文含义：命中表面法线。使用位置：作为 EnemyCombatModule.ResolveStaggerDirection(Vector3, Vector3) 的参数。</param>
+    /// <param name="damage">伤害。</param>
+    /// <param name="hitPoint">命中点位置。</param>
+    /// <param name="hitboxType">命中盒类型。</param>
+    /// <param name="hitNormal">命中表面法线。</param>
     internal void TakeDamage(float damage, Vector3 hitPoint, HitboxType hitboxType, Vector3 hitNormal)
     {
         ApplyIncomingDamage(damage, hitPoint, hitboxType, hitNormal, false, out _);
@@ -751,9 +753,9 @@ global::KnifeIncomingAttackContext createdValue2 = new KnifeIncomingAttackContex
         bool deferReaction, out bool collapse)
     {
         collapse = false;
-        // diagHealthBefore（诊断记录中的受击前生命值）：使用位置：作为 EnemyCombatModule.DiagLog(string, string) 的参数。
+        // 诊断记录中的受击前生命值。
 float diagHealthBefore = currentHealth;
-        // diagRatioBefore（诊断比例之前）：使用位置：作为 EnemyCombatModule.DiagLog(string, string) 的参数、EnemyCombatModule.TakeDamage(float, Vector3, HitboxType, Vector3)。
+        // 诊断比例之前。
 float diagRatioBefore;
         if (maxHealth > 0f)
         {
@@ -781,7 +783,7 @@ float diagRatioBefore;
         bool revivedBeforeHit = HealthModule.LifePhase == GameArchitecture.EnemyLifePhase.Revived;
         HealthModule.CommitCompatibleDamage(damage);
         UpdateHealthAnimationParameter();
-        // diagRatioAfter（诊断比例之后）：使用位置：作为 EnemyCombatModule.DiagLog(string, string) 的参数、EnemyCombatModule.TakeDamage(float, Vector3, HitboxType, Vector3)。
+        // 诊断比例之后。
 float diagRatioAfter;
         if (maxHealth > 0f)
         {
@@ -804,7 +806,7 @@ float diagRatioAfter;
                 DiagLog("伤害入口", "致命伤害，进入死亡");
             }
 
-            // receiverValue6（判空前缓存的敌人智能管理器的实例）：从敌人智能管理器的实例读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、EnemyCombatModule.TakeDamage(float, Vector3, HitboxType, Vector3)。
+            // 判空前缓存的敌人智能管理器的实例。
 global::EnemyAIManager receiverValue6 = EnemyAIManager.Instance;
             if (!global::System.Object.ReferenceEquals(receiverValue6, null))
             {
@@ -856,7 +858,7 @@ global::EnemyAIManager receiverValue6 = EnemyAIManager.Instance;
 
         BecomeFullyAwareOfPlayer();
         // 非致命伤根据受击部位播放对应语音
-        // voiceType（语音类型）：使用位置：作为 EnemyCombatModule.PlayVoice(ZombieVoiceType) 的参数。
+        // 语音类型。
 ZombieVoiceType voiceType = hitboxType switch
         {
             HitboxType.Head => ZombieVoiceType.Headshot,
@@ -867,7 +869,7 @@ ZombieVoiceType voiceType = hitboxType switch
         {
             PlayVoice(voiceType);
         }
-        // poiseMultiplier（韧性倍率）：使用位置：EnemyCombatModule.TakeDamage(float, Vector3, HitboxType, Vector3)。
+        // 韧性倍率。
 float poiseMultiplier = hitboxType switch
         {
             HitboxType.Head => 1.4f,
@@ -875,20 +877,41 @@ float poiseMultiplier = hitboxType switch
             HitboxType.LeftArm or HitboxType.RightArm => 0.8f,
             _ => 1f
         };
-        // poiseDamage（韧性伤害）：使用位置：EnemyCombatModule.TakeDamage(float, Vector3, HitboxType, Vector3)。
+        // 韧性伤害。
 float poiseDamage = damage * poiseMultiplier * ResolveHitPoiseResistanceMultiplier();
         accumulatedPoiseDamage += poiseDamage;
         lastPoiseDamageTime = Time.time;
-        // isLegHit（是否腿部命中）：使用位置：作为 EnemyCombatModule.DiagLog(string, string) 的参数、EnemyCombatModule.TakeDamage(float, Vector3, HitboxType, Vector3)。
+        // 是否腿部命中。
 bool isLegHit = hitboxType == HitboxType.LeftLeg || hitboxType == HitboxType.RightLeg;
-        // shouldEnterCrawl（是否应当进入爬行）：使用位置：作为 EnemyCombatModule.DiagLog(string, string) 的参数、EnemyCombatModule.TakeDamage(float, Vector3, HitboxType, Vector3)。
+        // 是否应当进入爬行。
 bool shouldEnterCrawl = false;
-        // shouldTripOver（是否应当绊倒）：使用位置：作为 EnemyCombatModule.DiagLog(string, string) 的参数、EnemyCombatModule.TakeDamage(float, Vector3, HitboxType, Vector3)。
+        // 是否应当绊倒。
 bool shouldTripOver = false;
-        if (isLegHit && supportsCrawl)
+        if (isLegHit && (supportsCrawl || missionEnemyType == MissionEnemyType.Sawman))
         {
             accumulatedLegDamage += damage;
-            // healthRatio（生命比例）：使用位置：EnemyCombatModule.TakeDamage(float, Vector3, HitboxType, Vector3)。
+        }
+        if (missionEnemyType == MissionEnemyType.Sawman)
+        {
+            float kneelContribution;
+            if (isLegHit)
+            {
+                kneelContribution = damage * 1.6f;
+            }
+            else if (hitboxType == HitboxType.Head)
+            {
+                kneelContribution = damage * 1.15f;
+            }
+            else
+            {
+                kneelContribution = damage * 0.65f;
+            }
+            sawmanKneelDamage += kneelContribution;
+        }
+
+        if (isLegHit && supportsCrawl)
+        {
+            // 生命比例。
 float healthRatio;
             if (maxHealth > 0f)
             {
@@ -933,9 +956,9 @@ float healthRatio;
     private void ScheduleDamageReaction(float damage, Vector3 hitPoint, HitboxType hitboxType, Vector3 hitNormal, bool shouldEnterCrawl)
     {
         bool isLegHit = hitboxType == HitboxType.LeftLeg || hitboxType == HitboxType.RightLeg;
-        // resolvedReactionThreshold（解算后的反应阈值）：保存 EnemyCombatModule.ResolveHitReactionThreshold() 的返回结果，供当前步骤使用。使用位置：作为 EnemyCombatModule.DiagLog(string, string) 的参数、EnemyCombatModule.TakeDamage(float, Vector3, HitboxType, Vector3)。
+        // 解算后的反应阈值。
 float resolvedReactionThreshold = ResolveHitReactionThreshold();
-        // shouldReact（是否应当反应）：使用位置：作为 EnemyCombatModule.DiagLog(string, string) 的参数、EnemyCombatModule.TakeDamage(float, Vector3, HitboxType, Vector3)。
+        // 是否应当反应。
 bool shouldReact = shouldEnterCrawl || (Time.time >= hitReactionImmuneUntil && accumulatedPoiseDamage >= resolvedReactionThreshold);
         if (CanLogMovementDiagnostic)
         {
@@ -952,7 +975,7 @@ bool shouldReact = shouldEnterCrawl || (Time.time >= hitReactionImmuneUntil && a
             return;
         }
 
-        // forcedHeavyStagger（是否强制重型硬直）：使用位置：作为 EnemyCombatModule.ResolveStaggerLevel(HitboxType, bool) 的参数、EnemyCombatModule.TakeDamage(float, Vector3, HitboxType, Vector3)。
+        // 是否强制重型硬直。
 bool forcedHeavyStagger = forcedNextHitDirection == 5;
         // criticalStandingStagger（是否暴击站立硬直）：使用位置：EnemyCombatModule.TakeDamage(float, Vector3, HitboxType, Vector3)。
         bool armedStandingHit = standingWeaponAttackStartRange > 0f && !pendingCrawl
@@ -961,6 +984,14 @@ bool forcedHeavyStagger = forcedNextHitDirection == 5;
         bool criticalStandingStagger = !disarm && !forcedHeavyStagger && !pendingCrawl && !isLegHit
             && (!UsesNativeBodyTechnique || hitboxType != HitboxType.Head)
             && ShouldTriggerCriticalStagger(hitboxType, damage);
+        bool sawmanKneelStagger = missionEnemyType == MissionEnemyType.Sawman
+            && !disarm && !forcedHeavyStagger && !pendingCrawl && !IsQTEControlled
+            && (sawmanKneelDamage >= 45f
+                || (isLegHit && (damage >= 22f || accumulatedLegDamage >= 32f)));
+        bool sawmanHeavyStagger = missionEnemyType == MissionEnemyType.Sawman
+            && !sawmanKneelStagger
+            && !disarm && !forcedHeavyStagger && !pendingCrawl && !isLegHit
+            && (criticalStandingStagger || damage >= 45f || hitboxType == HitboxType.Head);
         bool repeatChestHit = hitboxType == HitboxType.Chest && HasUnfinishedStandingHit
             && !shouldEnterCrawl && forcedNextHitDirection < 0 && !IsQTEControlled;
         if (repeatChestHit && (!criticalStandingStagger || pendingStandingStagger))
@@ -972,13 +1003,13 @@ bool forcedHeavyStagger = forcedNextHitDirection == 5;
         }
 
         ClearNativeBodyReaction();
-        // useStandingStagger（是否使用站立硬直）：使用位置：EnemyCombatModule.TakeDamage(float, Vector3, HitboxType, Vector3)。
-bool useStandingStagger = forcedHeavyStagger || criticalStandingStagger;
+        // 是否使用站立硬直。
+bool useStandingStagger = !sawmanKneelStagger && (forcedHeavyStagger || criticalStandingStagger || sawmanHeavyStagger);
         pendingStandingStagger = useStandingStagger;
         if (useStandingStagger)
         {
             pendingHitDirection = 0;
-            if (forcedHeavyStagger)
+            if (forcedHeavyStagger || (sawmanHeavyStagger && (hitboxType == HitboxType.Head || damage >= 45f)))
             {
                 pendingStaggerDirection = 0;
             }
@@ -987,12 +1018,25 @@ bool useStandingStagger = forcedHeavyStagger || criticalStandingStagger;
                 pendingStaggerDirection = ResolveStaggerDirection(hitNormal, hitPoint);
             }
 
-            pendingStaggerLevel = ResolveStaggerLevel(hitboxType, forcedHeavyStagger);
-            pendingStandingStaggerBodyTechnique = !UsesNativeBodyTechnique && (!criticalStandingStagger || criticalStaggerOpensBodyTechnique);
+            pendingStaggerLevel = ResolveStaggerLevel(hitboxType, forcedHeavyStagger || sawmanHeavyStagger);
+            pendingStandingStaggerBodyTechnique = !UsesNativeBodyTechnique && (sawmanHeavyStagger || !criticalStandingStagger || criticalStaggerOpensBodyTechnique);
         }
         else
         {
-            if (forcedNextHitDirection >= 0)
+            if (sawmanKneelStagger)
+            {
+                accumulatedLegDamage = 0f;
+                sawmanKneelDamage = 0f;
+                if (hitboxType == HitboxType.RightLeg)
+                {
+                    pendingHitDirection = NativeRightKneelHitDirection;
+                }
+                else
+                {
+                    pendingHitDirection = NativeLeftKneelHitDirection;
+                }
+            }
+            else if (forcedNextHitDirection >= 0)
             {
                 pendingHitDirection = forcedNextHitDirection;
             }
@@ -1057,7 +1101,7 @@ bool useStandingStagger = forcedHeavyStagger || criticalStandingStagger;
         accumulatedPoiseDamage = 0f;
         ActionCoordinator.RevokePreviousAnimationCallback();
         hitReactionImmuneUntil = Time.time + hitReactionImmunity;
-        // receiverValue10（判空前缓存的敌人智能管理器的实例）：从敌人智能管理器的实例读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、EnemyCombatModule.TakeDamage(float, Vector3, HitboxType, Vector3)。
+        // 判空前缓存的敌人智能管理器的实例。
 global::EnemyAIManager receiverValue10 = EnemyAIManager.Instance;
         if (!global::System.Object.ReferenceEquals(receiverValue10, null))
         {
@@ -1072,10 +1116,79 @@ global::EnemyAIManager receiverValue10 = EnemyAIManager.Instance;
 
     /// <summary>TakeBodyTechniqueDamage 的业务处理入口；本方法直接依赖 EnemyAnimationAdapter.AllowLowerOnceVoiceBypassCooldown()、EnemyCombatModule.TakeHeavyFrontDamage(float, Vector3)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillagerController.TakeBodyTechniqueDamage(float, Vector3)；下游（含内部回调体） EnemyAnimationAdapter.AllowLowerOnceVoiceBypassCooldown()、EnemyCombatModule.TakeHeavyFrontDamage(float, Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="damage">中文含义：伤害。使用位置：作为 EnemyCombatModule.TakeHeavyFrontDamage(float, Vector3) 的参数。</param>
-    /// <param name="hitPoint">中文含义：命中点位置。使用位置：作为 EnemyCombatModule.TakeHeavyFrontDamage(float, Vector3) 的参数。</param>
+    /// <param name="damage">伤害。</param>
+    /// <param name="hitPoint">命中点位置。</param>
+    private int cachedKneelStateForBodyTechnique;
+    private float cachedKneelStateTime = float.NegativeInfinity;
+    private bool pendingSawKneelExitCrossfade;
+
+    internal int ReadCurrentKneelState()
+    {
+        if (currentNativeBodyReaction == NativeBodyReaction.LeftKneel)
+        {
+            return 1;
+        }
+
+        if (currentNativeBodyReaction == NativeBodyReaction.RightKneel)
+        {
+            return 2;
+        }
+
+        return AnimationPresenter.ReadActiveKneelStateFromAnimator();
+    }
+
+    internal int CaptureBodyTechniqueKneelState()
+    {
+        int captured = ReadCurrentKneelState();
+        if (captured > 0)
+        {
+            cachedKneelStateForBodyTechnique = captured;
+            cachedKneelStateTime = Time.time;
+        }
+
+        return captured;
+    }
+
+    internal int ConsumeCachedBodyTechniqueKneelState()
+    {
+        int live = ReadCurrentKneelState();
+        if (live > 0)
+        {
+            cachedKneelStateForBodyTechnique = 0;
+            cachedKneelStateTime = float.NegativeInfinity;
+            return live;
+        }
+
+        if (cachedKneelStateForBodyTechnique > 0 && Time.time - cachedKneelStateTime <= 1.2f)
+        {
+            int captured = cachedKneelStateForBodyTechnique;
+            cachedKneelStateForBodyTechnique = 0;
+            cachedKneelStateTime = float.NegativeInfinity;
+            return captured;
+        }
+
+        cachedKneelStateForBodyTechnique = 0;
+        cachedKneelStateTime = float.NegativeInfinity;
+        return 0;
+    }
+
     internal void TakeBodyTechniqueDamage(float damage, Vector3 hitPoint)
     {
+        int capturedKneel = ReadCurrentKneelState();
+        cachedKneelStateForBodyTechnique = capturedKneel;
+        if (capturedKneel > 0)
+        {
+            cachedKneelStateTime = Time.time;
+            if (missionEnemyType == MissionEnemyType.Sawman)
+            {
+                pendingSawKneelExitCrossfade = true;
+            }
+        }
+        else
+        {
+            cachedKneelStateTime = float.NegativeInfinity;
+        }
+
         // 体术命中的受击语音不允许被全局语音间隔吞掉：
         // 踢击总发生在敌人攻击/吼叫刚结束之后，1.5 秒冷却几乎必然拦截
         AnimationPresenter.AllowLowerOnceVoiceBypassCooldown();
@@ -1084,10 +1197,24 @@ global::EnemyAIManager receiverValue10 = EnemyAIManager.Instance;
 
     /// <summary>TakeHeavyFrontDamage 的业务处理入口；本方法直接依赖 EnemyCombatModule.TakeDamage(float, Vector3, HitboxType)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyCombatModule.TakeBodyTechniqueDamage(float, Vector3)、VillagerController.TakeHeavyFrontDamage(float, Vector3)；下游（含内部回调体） EnemyCombatModule.TakeDamage(float, Vector3, HitboxType)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="damage">中文含义：伤害。使用位置：作为 EnemyCombatModule.TakeDamage(float, Vector3, HitboxType) 的参数。</param>
-    /// <param name="hitPoint">中文含义：命中点位置。使用位置：作为 EnemyCombatModule.TakeDamage(float, Vector3, HitboxType) 的参数。</param>
+    /// <param name="damage">伤害。</param>
+    /// <param name="hitPoint">命中点位置。</param>
     internal void TakeHeavyFrontDamage(float damage, Vector3 hitPoint)
     {
+        if (cachedKneelStateForBodyTechnique == 0 || Time.time - cachedKneelStateTime > 0.05f)
+        {
+            int capturedKneel = ReadCurrentKneelState();
+            if (capturedKneel > 0)
+            {
+                cachedKneelStateForBodyTechnique = capturedKneel;
+                cachedKneelStateTime = Time.time;
+                if (missionEnemyType == MissionEnemyType.Sawman)
+                {
+                    pendingSawKneelExitCrossfade = true;
+                }
+            }
+        }
+
         forcedNextHitDirection = 5;
         try
         {
@@ -1101,8 +1228,8 @@ global::EnemyAIManager receiverValue10 = EnemyAIManager.Instance;
 
     /// <summary>ResolveStaggerLevel 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
     /// <remarks>静态调用链：上游 EnemyCombatModule.TakeDamage(float, Vector3, HitboxType, Vector3)、VillagerController.ResolveStaggerLevel(HitboxType, bool)；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="hitboxType">中文含义：命中盒类型。使用位置：EnemyCombatModule.ResolveStaggerLevel(HitboxType, bool)。</param>
-    /// <param name="forcedHeavyStagger">中文含义：是否强制重型硬直。使用位置：EnemyCombatModule.ResolveStaggerLevel(HitboxType, bool)。</param>
+    /// <param name="hitboxType">命中盒类型。</param>
+    /// <param name="forcedHeavyStagger">是否强制重型硬直。</param>
     internal int ResolveStaggerLevel(HitboxType hitboxType, bool forcedHeavyStagger)
     {
         if (forcedHeavyStagger)
@@ -1122,11 +1249,11 @@ global::EnemyAIManager receiverValue10 = EnemyAIManager.Instance;
 
     /// <summary>ShouldTriggerCriticalStagger 的业务处理入口；本方法直接依赖 EnemyCombatModule.UsesSawmanHitToughness()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyCombatModule.TakeDamage(float, Vector3, HitboxType, Vector3)、VillagerController.ShouldTriggerCriticalStagger(HitboxType, float)；下游（含内部回调体） EnemyCombatModule.UsesSawmanHitToughness()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="hitboxType">中文含义：命中盒类型。使用位置：EnemyCombatModule.ShouldTriggerCriticalStagger(HitboxType, float)。</param>
-    /// <param name="damage">中文含义：伤害。使用位置：EnemyCombatModule.ShouldTriggerCriticalStagger(HitboxType, float)。</param>
+    /// <param name="hitboxType">命中盒类型。</param>
+    /// <param name="damage">伤害。</param>
     internal bool ShouldTriggerCriticalStagger(HitboxType hitboxType, float damage)
     {
-        // resolvedDamageFloor（解算后的伤害楼层）：使用位置：EnemyCombatModule.ShouldTriggerCriticalStagger(HitboxType, float)。
+        // 解算后的伤害楼层。
 float resolvedDamageFloor = criticalStaggerDamageFloor;
         if (UsesSawmanHitToughness())
         {
@@ -1138,7 +1265,7 @@ float resolvedDamageFloor = criticalStaggerDamageFloor;
             return false;
         }
 
-        // chance（概率）：使用位置：EnemyCombatModule.ShouldTriggerCriticalStagger(HitboxType, float)。
+        // 概率。
 float chance;
         if (hitboxType == HitboxType.Head)
         {
@@ -1158,9 +1285,9 @@ float chance;
 
         if (UsesSawmanHitToughness())
         {
-            // previousValue14（复合赋值前保存的概率）：从概率读取一次后保存，供后续分支使用。在右侧分支前保存复合赋值原值，保持原读取顺序。使用位置：EnemyCombatModule.ShouldTriggerCriticalStagger(HitboxType, float)。
+            // 复合赋值前保存的概率。
 float previousValue14 = chance;
-            // selectedValue15（分支选出的电锯敌人头部暴击硬直概率倍率）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：EnemyCombatModule.ShouldTriggerCriticalStagger(HitboxType, float)。
+            // 分支选出的电锯敌人头部暴击硬直概率倍率。
 float selectedValue15;
             if (hitboxType == HitboxType.Head)
             {
@@ -1208,7 +1335,7 @@ float selectedValue15;
     /// <remarks>静态调用链：上游 EnemyCombatModule.TakeDamage(float, Vector3, HitboxType, Vector3)、VillagerController.ResolveHitReactionThreshold()；下游（含内部回调体） EnemyCombatModule.UsesSawmanHitToughness()、Mathf.Max(float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     internal float ResolveHitReactionThreshold()
     {
-        // multiplier（倍率）：使用位置：EnemyCombatModule.ResolveHitReactionThreshold()。
+        // 倍率。
 float multiplier;
         if (UsesSawmanHitToughness())
         {
@@ -1224,11 +1351,11 @@ float multiplier;
 
     /// <summary>ResolveStaggerDirection 的业务处理入口；本方法直接依赖 Mathf.Abs(float)、Transform.InverseTransformDirection(Vector3)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyCombatModule.TakeDamage(float, Vector3, HitboxType, Vector3)、VillagerController.ResolveStaggerDirection(Vector3, Vector3)；下游（含内部回调体） Mathf.Abs(float)、Transform.InverseTransformDirection(Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="hitNormal">中文含义：命中表面法线。使用位置：EnemyCombatModule.ResolveStaggerDirection(Vector3, Vector3)。</param>
-    /// <param name="hitPoint">中文含义：命中点位置。使用位置：EnemyCombatModule.ResolveStaggerDirection(Vector3, Vector3)。</param>
+    /// <param name="hitNormal">命中表面法线。</param>
+    /// <param name="hitPoint">命中点位置。</param>
     internal int ResolveStaggerDirection(Vector3 hitNormal, Vector3 hitPoint)
     {
-        // worldDirection（世界空间方向）：使用位置：作为 Transform.InverseTransformDirection(Vector3) 的参数、EnemyCombatModule.ResolveStaggerDirection(Vector3, Vector3)。
+        // 世界空间方向。
 Vector3 worldDirection = hitNormal;
         worldDirection.y = 0f;
         if (worldDirection.sqrMagnitude <= 0.0001f && hitPoint != default)
@@ -1242,7 +1369,7 @@ Vector3 worldDirection = hitNormal;
             worldDirection = transform.forward;
         }
 
-        // localDirection（局部方向）：保存 Transform.InverseTransformDirection(Vector3) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Abs(float) 的参数、EnemyCombatModule.ResolveStaggerDirection(Vector3, Vector3)。
+        // 局部方向。
 Vector3 localDirection = transform.InverseTransformDirection(worldDirection.normalized);
         if (Mathf.Abs(localDirection.z) >= Mathf.Abs(localDirection.x))
         {
@@ -1315,6 +1442,13 @@ Vector3 localDirection = transform.InverseTransformDirection(worldDirection.norm
 
     /// <summary>BeginHit 的业务处理入口；本方法直接依赖 EnemyAIManager.ReleaseCombatReservation(VillagerController)、EnemyAnimationAdapter.SetBoolean(int, bool)、EnemyAnimationAdapter.SetIntegerValue(int, int)、EnemyAnimationAdapter.TriggerPresentation(int)、EnemyCombatModule.DiagLog(string, string)、EnemyCombatModule.SetMovementMode(EnemyMovementMode, string, int)、EnemyCombatModule.SetObservableState(VillagerState, string, int) 等共 11 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyActionCoordinator.ApprovalAndExecute(ActionRequest, bool)；下游（含内部回调体） EnemyAIManager.ReleaseCombatReservation(VillagerController)、EnemyAnimationAdapter.SetBoolean(int, bool)、EnemyAnimationAdapter.SetIntegerValue(int, int)、EnemyAnimationAdapter.TriggerPresentation(int)、EnemyCombatModule.DiagLog(string, string)、EnemyCombatModule.SetMovementMode(EnemyMovementMode, string, int)、EnemyCombatModule.SetObservableState(VillagerState, string, int) 等共 11 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
+    private bool skipNextStaggerTriggerPresentation;
+
+    private bool IsAnimatorInStaggerState()
+    {
+        return AnimationPresenter.IsInStaggerState();
+    }
+
     internal void BeginHit()
     {
         if (!pendingHit || IsDead)
@@ -1327,6 +1461,11 @@ Vector3 localDirection = transform.InverseTransformDirection(worldDirection.norm
             return;
         }
 
+        bool consumeSkipStaggerTrigger = skipNextStaggerTriggerPresentation;
+        skipNextStaggerTriggerPresentation = false;
+        bool consumeSawKneelExitCrossfade = pendingSawKneelExitCrossfade;
+        pendingSawKneelExitCrossfade = false;
+
         if (CanLogMovementDiagnostic)
         {
             DiagLog("BeginHit", $"进入: pendingCrawl={pendingCrawl}, pendingTripOver={pendingTripOver}, HitDir={pendingHitDirection}");
@@ -1334,7 +1473,7 @@ Vector3 localDirection = transform.InverseTransformDirection(worldDirection.norm
 
         staggerRecoveryStartedTime = float.NegativeInfinity;
         StopAndClearMovement();
-        // receiverValue20（判空前缓存的敌人智能管理器的实例）：从敌人智能管理器的实例读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、EnemyCombatModule.BeginHit()。
+        // 判空前缓存的敌人智能管理器的实例。
 global::EnemyAIManager receiverValue20 = EnemyAIManager.Instance;
         if (!global::System.Object.ReferenceEquals(receiverValue20, null))
         {
@@ -1348,7 +1487,7 @@ global::EnemyAIManager receiverValue20 = EnemyAIManager.Instance;
         currentStandingStaggerBodyTechnique = pendingStandingStagger && pendingStandingStaggerBodyTechnique;
         if (currentStandingStaggerBodyTechnique)
         {
-            // window（窗口）：使用位置：作为 Mathf.Max(float, float) 的参数、EnemyCombatModule.BeginHit()。
+            // 窗口。
 float window;
             if (UsesSawmanHitToughness())
             {
@@ -1367,11 +1506,19 @@ float window;
         }
 
         deferredStandingHitCompletion = false;
-        // selectedValue23（分支选出的敌人移动模式的完全已停止）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：作为 EnemyCombatModule.SetMovementMode(EnemyMovementMode, string, int) 的参数、EnemyCombatModule.BeginHit()。
+        // 分支选出的敌人移动模式的完全已停止。
 global::EnemyMovementMode selectedValue23;
         if (pendingStandingStagger)
         {
-            selectedValue23 = EnemyMovementMode.FullyStopped;
+            // 重冲击与体术兜底硬直需要保留动作根位移与外部击退，避免原地踏步。
+            if (pendingHitDirection == 5 || pendingStaggerLevel >= 2)
+            {
+                selectedValue23 = EnemyMovementMode.ActionRootMotion;
+            }
+            else
+            {
+                selectedValue23 = EnemyMovementMode.FullyStopped;
+            }
         }
         else
         {
@@ -1401,14 +1548,26 @@ global::EnemyMovementMode selectedValue23;
             AnimationPresenter.SetBoolean(HashATK, false);
             AnimationPresenter.SetBoolean(HashHIT, true);
             bool nativeReactionPresented = AnimationPresenter.TryPresentNativeBodyReaction(currentNativeBodyReaction);
-            if (!nativeReactionPresented && pendingStandingStagger && staggerTriggerParameterAvailable)
+            bool alreadyInStagger = consumeSkipStaggerTrigger && IsAnimatorInStaggerState();
+            if (!nativeReactionPresented && consumeSawKneelExitCrossfade && pendingStandingStagger && anim != null
+                && missionEnemyType == MissionEnemyType.Sawman)
             {
-                AnimationPresenter.TriggerPresentation(HashStaggerTrigger);
+                AnimationPresenter.CrossFadeStaggerStateImmediate("Base Layer.Stagger.Stagger_Heavy_Front", 0.22f, 0f, false);
+            }
+            else if (!nativeReactionPresented && pendingStandingStagger && staggerTriggerParameterAvailable)
+            {
+                if (!alreadyInStagger)
+                {
+                    AnimationPresenter.TriggerPresentation(HashStaggerTrigger);
+                }
             }
             else if (!nativeReactionPresented && pendingStandingStagger)
             {
                 AnimationPresenter.SetIntegerValue(HashHitDir, 5);
-                AnimationPresenter.TriggerPresentation(HashHitTrigger);
+                if (!alreadyInStagger)
+                {
+                    AnimationPresenter.TriggerPresentation(HashHitTrigger);
+                }
             }
             else if (!nativeReactionPresented)
             {
@@ -1437,7 +1596,7 @@ global::EnemyMovementMode selectedValue23;
             DiagLog("ConsumeHit", $"进入: pendingCrawl={pendingCrawl}, fullyAware={fullyAwareOfPlayer}, " + $"Player={Player != null}, inCombatHoldRange={Player != null && IsPlayerWithinCombatHoldRange()}");
         }
 
-        // shouldBlendStandingStaggerRecovery（是否应当混合站立硬直恢复）：使用位置：EnemyCombatModule.ConsumeHit()。
+        // 是否应当混合站立硬直恢复。
 bool shouldBlendStandingStaggerRecovery = pendingStandingStagger;
         ClearNativeBodyReaction();
         pendingHit = false;
@@ -1486,6 +1645,78 @@ bool shouldBlendStandingStaggerRecovery = pendingStandingStagger;
         }
     }
 
+    internal void BeginPairedSurvivorStagger(float blendSeconds = 0.14f)
+    {
+        if (IsDead)
+        {
+            return;
+        }
+
+        staggerRecoveryStartedTime = float.NegativeInfinity;
+        StopAndClearMovement();
+        global::EnemyAIManager aiManager = EnemyAIManager.Instance;
+        if (!global::System.Object.ReferenceEquals(aiManager, null))
+        {
+            aiManager.ReleaseCombatReservation(host);
+        }
+
+        ClearNativeBodyReaction();
+        pendingCrawl = false;
+        pendingTripOver = false;
+        pendingStandingStagger = true;
+        pendingStandingStaggerBodyTechnique = false;
+        currentStandingStaggerBodyTechnique = false;
+        bodyTechniqueWindowEndTime = 0f;
+        deferredStandingHitCompletion = false;
+        pendingHitDirection = 0;
+        pendingStaggerDirection = 0;
+        pendingStaggerLevel = 1;
+        pendingHit = true;
+        hitFinished = false;
+        skipNextStaggerTriggerPresentation = true;
+        SetObservableState(VillagerState.Staggered);
+        SetMovementMode(EnemyMovementMode.ActionRootMotion);
+        ApplyPairedSurvivorStaggerAnimator(true, Mathf.Max(0.05f, blendSeconds), 0.04f, true);
+    }
+
+    internal void MaintainPairedSurvivorStaggerState(bool restoreAnimatorIfIdle)
+    {
+        if (IsDead || !HasUnfinishedStandingHit)
+        {
+            return;
+        }
+
+        SetObservableState(VillagerState.Staggered);
+        SetMovementMode(EnemyMovementMode.ActionRootMotion);
+        skipNextStaggerTriggerPresentation = true;
+        bool needCrossfade = restoreAnimatorIfIdle && !IsAnimatorInStaggerState();
+        ApplyPairedSurvivorStaggerAnimator(needCrossfade, 0.08f, 0.14f, false);
+    }
+
+    private void ApplyPairedSurvivorStaggerAnimator(bool crossfadeStagger, float blendSeconds, float normalizedOffset, bool updateNow)
+    {
+        if (anim == null)
+        {
+            return;
+        }
+
+        AnimationPresenter.SetIntegerValue(HashHitDir, 0);
+        if (staggerTriggerParameterAvailable)
+        {
+            AnimationPresenter.SetIntegerValue(HashStaggerDirection, 0);
+            AnimationPresenter.SetIntegerValue(HashStaggerLevel, 1);
+        }
+
+        AnimationPresenter.SetBoolean(HashIsCrawl, false);
+        AnimationPresenter.SetBoolean(HashCanTripOver, false);
+        AnimationPresenter.SetBoolean(HashATK, false);
+        AnimationPresenter.SetBoolean(HashHIT, true);
+        if (crossfadeStagger)
+        {
+            AnimationPresenter.CrossFadeStaggerStateImmediate("Base Layer.Stagger.Stagger_Body_Front", blendSeconds, normalizedOffset, updateNow);
+        }
+    }
+
     /// <summary>BeginCrawl 的业务处理入口；本方法直接依赖 EnemyAIManager.ReleaseCombatReservation(VillagerController)、EnemyAnimationAdapter.SetBoolean(int, bool)、EnemyColliderController.SetCrawl()、EnemyColliderController.SetDisabled()、EnemyColliderController.SetStanding()、EnemyCombatModule.DiagLog(string, string)、EnemyCombatModule.SetMovementMode(EnemyMovementMode, string, int) 等共 11 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyActionCoordinator.ApprovalAndExecute(ActionRequest, bool)；下游（含内部回调体） EnemyAIManager.ReleaseCombatReservation(VillagerController)、EnemyAnimationAdapter.SetBoolean(int, bool)、EnemyColliderController.SetCrawl()、EnemyColliderController.SetDisabled()、EnemyColliderController.SetStanding()、EnemyCombatModule.DiagLog(string, string)、EnemyCombatModule.SetMovementMode(EnemyMovementMode, string, int) 等共 11 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     internal void BeginCrawl()
@@ -1497,7 +1728,7 @@ bool shouldBlendStandingStaggerRecovery = pendingStandingStagger;
                 DiagLog("BeginCrawl", "跳过: IsDead=true");
             }
 
-            // receiverValue24（判空前缓存的碰撞体控制器）：从碰撞体控制器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、EnemyCombatModule.BeginCrawl()。
+            // 判空前缓存的碰撞体控制器。
 global::EnemyColliderController receiverValue24 = colliderCtrl;
             if (!global::System.Object.ReferenceEquals(receiverValue24, null))
             {
@@ -1523,7 +1754,7 @@ global::EnemyColliderController receiverValue24 = colliderCtrl;
             }
 
             AnimationPresenter.SetBoolean(HashIsCrawl, false);
-            // receiverValue25（判空前缓存的碰撞体控制器）：从碰撞体控制器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、EnemyCombatModule.BeginCrawl()。
+            // 判空前缓存的碰撞体控制器。
 global::EnemyColliderController receiverValue25 = colliderCtrl;
             if (!global::System.Object.ReferenceEquals(receiverValue25, null))
             {
@@ -1539,7 +1770,7 @@ global::EnemyColliderController receiverValue25 = colliderCtrl;
         }
 
         pendingCrawl = true;
-        // receiverValue26（判空前缓存的敌人智能管理器的实例）：从敌人智能管理器的实例读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、EnemyCombatModule.BeginCrawl()。
+        // 判空前缓存的敌人智能管理器的实例。
 global::EnemyAIManager receiverValue26 = EnemyAIManager.Instance;
         if (!global::System.Object.ReferenceEquals(receiverValue26, null))
         {
@@ -1552,7 +1783,7 @@ global::EnemyAIManager receiverValue26 = EnemyAIManager.Instance;
         host.ResetCrawlOrientationCache();
         crawlPose = true;
         ctx.HasCrawlMoveIntent = true;
-        // receiverValue27（判空前缓存的碰撞体控制器）：从碰撞体控制器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、EnemyCombatModule.BeginCrawl()。
+        // 判空前缓存的碰撞体控制器。
 global::EnemyColliderController receiverValue27 = colliderCtrl;
         if (!global::System.Object.ReferenceEquals(receiverValue27, null))
         {
@@ -1593,7 +1824,7 @@ global::EnemyColliderController receiverValue27 = colliderCtrl;
 
         pendingCrawl = false;
         pendingStandUp = true;
-        // receiverValue28（判空前缓存的敌人智能管理器的实例）：从敌人智能管理器的实例读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、EnemyCombatModule.RequestStandUp()。
+        // 判空前缓存的敌人智能管理器的实例。
 global::EnemyAIManager receiverValue28 = EnemyAIManager.Instance;
         if (!global::System.Object.ReferenceEquals(receiverValue28, null))
         {
@@ -1656,7 +1887,7 @@ global::EnemyAIManager receiverValue28 = EnemyAIManager.Instance;
 
         pendingStandUp = false;
         accumulatedLegDamage = Mathf.Min(accumulatedLegDamage, legCollapseDamage * 0.25f);
-        // receiverValue29（判空前缓存的碰撞体控制器）：从碰撞体控制器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、EnemyCombatModule.CompleteStandUp()。
+        // 判空前缓存的碰撞体控制器。
 global::EnemyColliderController receiverValue29 = colliderCtrl;
         if (!global::System.Object.ReferenceEquals(receiverValue29, null))
         {
@@ -1690,7 +1921,7 @@ global::EnemyColliderController receiverValue29 = colliderCtrl;
         SetObservableState(VillagerState.Crawl);
         SetMovementMode(EnemyMovementMode.CrawlCodeDriven);
         host.ResetCrawlOrientationCache();
-        // receiverValue30（判空前缓存的碰撞体控制器）：从碰撞体控制器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、EnemyCombatModule.CancelStandUpAndResumeCrawl()。
+        // 判空前缓存的碰撞体控制器。
 global::EnemyColliderController receiverValue30 = colliderCtrl;
         if (!global::System.Object.ReferenceEquals(receiverValue30, null))
         {
@@ -1728,7 +1959,7 @@ global::EnemyColliderController receiverValue30 = colliderCtrl;
         SetObservableState(VillagerState.Crawl);
         SetMovementMode(EnemyMovementMode.CrawlCodeDriven);
         host.ResetCrawlOrientationCache();
-        // receiverValue31（判空前缓存的碰撞体控制器）：从碰撞体控制器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、EnemyCombatModule.ForceCrawlPoseAfterQTE()。
+        // 判空前缓存的碰撞体控制器。
 global::EnemyColliderController receiverValue31 = colliderCtrl;
         if (!global::System.Object.ReferenceEquals(receiverValue31, null))
         {
@@ -1806,6 +2037,11 @@ global::EnemyColliderController receiverValue31 = colliderCtrl;
         currentKnifeAttackMove = attackIndex;
         ResetKnifeContactTimeline();
         AnimationPresenter.SetBoolean(HashATK, true);
+        if (siegeAttackDoor == null && PerceptionModule != null)
+        {
+            PerceptionModule.MarkPersonallyDetectedPlayer();
+        }
+
         PlayVoice(ZombieVoiceType.Attack);
         return true;
     }
@@ -1824,7 +2060,7 @@ global::EnemyColliderController receiverValue31 = colliderCtrl;
         StopAndClearMovement();
         pendingCrawl = true;
         crawlPose = true;
-        // receiverValue33（判空前缓存的碰撞体控制器）：从碰撞体控制器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、EnemyCombatModule.BeginCrawlAttack()。
+        // 判空前缓存的碰撞体控制器。
 global::EnemyColliderController receiverValue33 = colliderCtrl;
         if (!global::System.Object.ReferenceEquals(receiverValue33, null))
         {
@@ -1840,6 +2076,11 @@ global::EnemyColliderController receiverValue33 = colliderCtrl;
         AnimationPresenter.SetFloatValue(HashMoveSpeed, 0f);
         AnimationPresenter.SetBoolean(HashIsCrawl, true);
         AnimationPresenter.SetBoolean(HashATK, true);
+        if (siegeAttackDoor == null && PerceptionModule != null)
+        {
+            PerceptionModule.MarkPersonallyDetectedPlayer();
+        }
+
         PlayVoice(ZombieVoiceType.Attack);
         return true;
     }
@@ -1910,7 +2151,7 @@ global::EnemyColliderController receiverValue33 = colliderCtrl;
     {
         AnimationPresenter.SetBoolean(HashATK, false);
         SetMovementMode(EnemyMovementMode.FullyStopped);
-        // receiverValue34（判空前缓存的敌人智能管理器的实例）：从敌人智能管理器的实例读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、EnemyCombatModule.EndCrawlAttack()。
+        // 判空前缓存的敌人智能管理器的实例。
 global::EnemyAIManager receiverValue34 = EnemyAIManager.Instance;
         if (!global::System.Object.ReferenceEquals(receiverValue34, null))
         {
@@ -1967,7 +2208,7 @@ global::EnemyAIManager receiverValue34 = EnemyAIManager.Instance;
     /// <remarks>静态调用链：上游 EnemyCombatModule.CanCrawlAttack()、EnemyCombatModule.CanEngagePlayerAtCloseRange()、VillagerController.IsPlayerWithinBodyContactRange()；下游（含内部回调体） EnemyColliderController.GetHorizontalReach(Vector3)、EnemyCombatModule.GetHorizontalVectorToPlayerBody(LeonController)、EnemyCombatModule.IsPlayerWithinCombatVerticalRange(LeonController)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     internal bool IsPlayerWithinBodyContactRange()
     {
-        // player（玩家）：使用位置：作为 EnemyCombatModule.GetHorizontalVectorToPlayerBody(LeonController) 的参数、作为 EnemyCombatModule.IsPlayerWithinCombatVerticalRange(LeonController) 的参数、EnemyCombatModule.IsPlayerWithinBodyContactRange()。
+        // 玩家。
 LeonController player = Player;
         if (player == null)
         {
@@ -1979,16 +2220,16 @@ LeonController player = Player;
             return false;
         }
 
-        // toPlayer（目标玩家）：保存 EnemyCombatModule.GetHorizontalVectorToPlayerBody(LeonController) 的返回结果，供当前步骤使用。使用位置：作为 EnemyColliderController.GetHorizontalReach(Vector3) 的参数、EnemyCombatModule.IsPlayerWithinBodyContactRange()。
+        // 目标玩家。
 Vector3 toPlayer = GetHorizontalVectorToPlayerBody(player);
-        // distance（距离）：使用位置：作为 EnemyColliderController.GetHorizontalReach(Vector3) 的参数、EnemyCombatModule.IsPlayerWithinBodyContactRange()。
+        // 距离。
 float distance = toPlayer.magnitude;
         if (distance <= 0.001f)
         {
             return true;
         }
 
-        // bodyReach（身体抵达）：使用位置：EnemyCombatModule.IsPlayerWithinBodyContactRange()。
+        // 身体抵达。
 float bodyReach;
         if (colliderCtrl != null)
         {
@@ -2035,7 +2276,7 @@ float bodyReach;
     /// <remarks>静态调用链：上游 EnemyCombatModule.CanAttack()、EnemyCombatModule.CanCrawlAttack()、EnemyCombatModule.CanEngagePlayerAtCloseRange()、VillagerController.IsPlayerWithinAttackStartRange()；下游（含内部回调体） EnemyCombatModule.GetHorizontalVectorToPlayerBody(LeonController)、EnemyCombatModule.IsPlayerWithinCombatVerticalRange(LeonController)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     internal bool IsPlayerWithinAttackStartRange()
     {
-        // player（玩家）：使用位置：作为 EnemyCombatModule.GetHorizontalVectorToPlayerBody(LeonController) 的参数、作为 EnemyCombatModule.IsPlayerWithinCombatVerticalRange(LeonController) 的参数、EnemyCombatModule.IsPlayerWithinAttackStartRange()。
+        // 玩家。
 LeonController player = Player;
         if (player == null)
         {
@@ -2065,7 +2306,7 @@ LeonController player = Player;
     /// <remarks>静态调用链：上游 EnemyCombatModule.ConsumeHit()、VillagerController.IsPlayerWithinCombatHoldRange()；下游（含内部回调体） EnemyCombatModule.GetHorizontalVectorToPlayerBody(LeonController)、EnemyCombatModule.IsPlayerWithinCombatVerticalRange(LeonController)、Mathf.Max(float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     internal bool IsPlayerWithinCombatHoldRange()
     {
-        // player（玩家）：使用位置：作为 EnemyCombatModule.GetHorizontalVectorToPlayerBody(LeonController) 的参数、作为 EnemyCombatModule.IsPlayerWithinCombatVerticalRange(LeonController) 的参数、EnemyCombatModule.IsPlayerWithinCombatHoldRange()。
+        // 玩家。
 LeonController player = Player;
         if (player == null)
         {
@@ -2088,7 +2329,7 @@ LeonController player = Player;
 
     /// <summary>IsPlayerWithinCombatVerticalRange 的业务处理入口；本方法直接依赖 Component.TryGetComponent&lt;EnemyWindowTraversal&gt;(out EnemyWindowTraversal)、Component.TryGetComponent&lt;LeonWindowTraversal&gt;(out LeonWindowTraversal)、EnemyWindowTraversal.TryGetPlatformRegionState(string, out bool)、HouseThreeRegionNavigation.TreadRegion(Vector3)、LeonWindowTraversal.TryGetEnemyPlatformRegionState(string, out bool)、Mathf.Abs(float)、Mathf.Max(float, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyCombatModule.IsPlayerWithinAttackStartRange()、EnemyCombatModule.IsPlayerWithinBodyContactRange()、EnemyCombatModule.IsPlayerWithinCombatHoldRange()、VillagerController.IsPlayerWithinCombatVerticalRange(LeonController)；下游（含内部回调体） Component.TryGetComponent&lt;EnemyWindowTraversal&gt;(out EnemyWindowTraversal)、Component.TryGetComponent&lt;LeonWindowTraversal&gt;(out LeonWindowTraversal)、EnemyWindowTraversal.TryGetPlatformRegionState(string, out bool)、HouseThreeRegionNavigation.TreadRegion(Vector3)、LeonWindowTraversal.TryGetEnemyPlatformRegionState(string, out bool)、Mathf.Abs(float)、Mathf.Max(float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="player">中文含义：玩家。使用位置：作为 HouseThreeRegionNavigation.TreadRegion(Vector3) 的参数、作为 Mathf.Abs(float) 的参数、EnemyCombatModule.IsPlayerWithinCombatVerticalRange(LeonController)。</param>
+    /// <param name="player">玩家。</param>
     internal bool IsPlayerWithinCombatVerticalRange(LeonController player)
     {
         if (player == null)
@@ -2096,13 +2337,13 @@ LeonController player = Player;
             return false;
         }
 
-        // region（区域）：使用位置：作为 EnemyWindowTraversal.TryGetPlatformRegionState(string, out bool) 的参数、作为 LeonWindowTraversal.TryGetEnemyPlatformRegionState(string, out bool) 的参数、EnemyCombatModule.IsPlayerWithinCombatVerticalRange(LeonController)。
+        // 区域。
 var region = HouseThreeRegionNavigation.Current;
         if (region != null)
         {
-            // enemyAtPlatform（是否敌人所在平台）：使用位置：EnemyCombatModule.IsPlayerWithinCombatVerticalRange(LeonController)。
+            // 是否敌人所在平台。
 bool enemyAtPlatform = region.TreadRegion(transform.position) == VillageTraversalRegion.SecondFloorOuterPlatform;
-            // playerAtPlatform（是否玩家所在平台）：使用位置：EnemyCombatModule.IsPlayerWithinCombatVerticalRange(LeonController)。
+            // 是否玩家所在平台。
 bool playerAtPlatform = region.TreadRegion(player.transform.position) == VillageTraversalRegion.SecondFloorOuterPlatform;
             if (TryGetComponent<EnemyWindowTraversal>(out var /* 中文含义：敌人通行。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ enemyTraversal) && enemyTraversal.TryGetPlatformRegionState(region.outerPlatformIdentifier, out var /* 中文含义：是否敌人归属。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ enemyOwnership))
             {
@@ -2120,7 +2361,7 @@ bool playerAtPlatform = region.TreadRegion(player.transform.position) == Village
             }
         }
 
-        // tolerance（容差）：使用位置：作为 Mathf.Max(float, float) 的参数、EnemyCombatModule.IsPlayerWithinCombatVerticalRange(LeonController)。
+        // 容差。
 float tolerance;
         if (pendingCrawl || CurrentState == VillagerState.Crawl || CurrentState == VillagerState.CrawlAttack)
         {
@@ -2147,14 +2388,14 @@ float tolerance;
     /// <remarks>静态调用链：上游 VillagerController.IsFacingPlayerForAttack()；下游（含内部回调体） Vector3.Angle(Vector3, Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     internal bool IsFacingPlayerForAttack()
     {
-        // player（玩家）：使用位置：EnemyCombatModule.IsFacingPlayerForAttack()。
+        // 玩家。
 LeonController player = Player;
         if (player == null)
         {
             return false;
         }
 
-        // direction（方向）：使用位置：作为 Vector3.Angle(Vector3, Vector3) 的参数、EnemyCombatModule.IsFacingPlayerForAttack()。
+        // 方向。
 Vector3 direction = player.transform.position - transform.position;
         direction.y = 0f;
         return direction.sqrMagnitude > 0.001f && Vector3.Angle(transform.forward, direction) <= attackHitAngle * 0.5f;
@@ -2164,14 +2405,14 @@ Vector3 direction = player.transform.position - transform.position;
     /// <remarks>静态调用链：上游 EnemyCombatModule.CanCrawlAttack()、VillagerController.IsFacingPlayerForCrawlAttack()；下游（含内部回调体） Vector3.Angle(Vector3, Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     internal bool IsFacingPlayerForCrawlAttack()
     {
-        // player（玩家）：使用位置：EnemyCombatModule.IsFacingPlayerForCrawlAttack()。
+        // 玩家。
 LeonController player = Player;
         if (player == null)
         {
             return false;
         }
 
-        // direction（方向）：使用位置：作为 Vector3.Angle(Vector3, Vector3) 的参数、EnemyCombatModule.IsFacingPlayerForCrawlAttack()。
+        // 方向。
 Vector3 direction = player.transform.position - transform.position;
         direction.y = 0f;
         if (direction.sqrMagnitude <= 0.001f)
@@ -2184,26 +2425,26 @@ Vector3 direction = player.transform.position - transform.position;
 
     /// <summary>GetHorizontalVectorToPlayerBody 的业务处理入口；本方法直接依赖 Component.GetComponentsInChildren&lt;Collider&gt;()、Mathf.Clamp(float, float, float)、Transform.IsChildOf(Transform)、Vector3.Vector3(float, float, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyCombatModule.IsPlayerWithinAttackStartRange()、EnemyCombatModule.IsPlayerWithinBodyContactRange()、EnemyCombatModule.IsPlayerWithinCombatHoldRange()、EnemyCombatModule.TryApplyAttackHit(int)、VillagerController.GetHorizontalVectorToPlayerBody(LeonController)；下游（含内部回调体） Component.GetComponentsInChildren&lt;Collider&gt;()、Mathf.Clamp(float, float, float)、Transform.IsChildOf(Transform)、Vector3.Vector3(float, float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="player">中文含义：玩家。使用位置：EnemyCombatModule.GetHorizontalVectorToPlayerBody(LeonController)。</param>
+    /// <param name="player">玩家。</param>
     internal Vector3 GetHorizontalVectorToPlayerBody(LeonController player)
     {
-        // fallback（后备）：使用位置：EnemyCombatModule.GetHorizontalVectorToPlayerBody(LeonController)。
+        // 后备。
 Vector3 fallback = player.transform.position - transform.position;
         fallback.y = 0f;
-        // playerColliders（玩家碰撞体集合）：保存 Component.GetComponentsInChildren<Collider>() 的返回结果，供当前步骤使用。使用位置：EnemyCombatModule.GetHorizontalVectorToPlayerBody(LeonController)。
+        // 玩家碰撞体集合。
 Collider[] playerColliders = player.GetComponentsInChildren<Collider>();
         if (playerColliders == null || playerColliders.Length == 0)
         {
             return fallback;
         }
 
-        // origin（原点）：使用位置：作为 Mathf.Clamp(float, float, float) 的参数、作为 Vector3.Vector3(float, float, float) 的参数、EnemyCombatModule.GetHorizontalVectorToPlayerBody(LeonController)。
+        // 原点。
 Vector3 origin = transform.position;
-        // nearestDistance（最近距离）：使用位置：EnemyCombatModule.GetHorizontalVectorToPlayerBody(LeonController)。
+        // 最近距离。
 float nearestDistance = float.MaxValue;
-        // nearestVector（最近向量）：使用位置：EnemyCombatModule.GetHorizontalVectorToPlayerBody(LeonController)。
+        // 最近向量。
 Vector3 nearestVector = fallback;
-        // found（是否已找到）：使用位置：EnemyCombatModule.GetHorizontalVectorToPlayerBody(LeonController)。
+        // 是否已找到。
 bool found = false;
         // playerCollider（玩家碰撞体）：每轮从玩家碰撞体集合取得一个元素，仅代表当前这一项。使用位置：EnemyCombatModule.GetHorizontalVectorToPlayerBody(LeonController)。
 foreach (Collider playerCollider in playerColliders)
@@ -2213,14 +2454,14 @@ foreach (Collider playerCollider in playerColliders)
                 continue;
             }
 
-            // bounds（包围盒）：使用位置：作为 Mathf.Clamp(float, float, float) 的参数。
+            // 包围盒。
 Bounds bounds = playerCollider.bounds;
-            // closestPoint（最近点）：使用位置：EnemyCombatModule.GetHorizontalVectorToPlayerBody(LeonController)。
+            // 最近点。
 Vector3 closestPoint = new Vector3(Mathf.Clamp(origin.x, bounds.min.x, bounds.max.x), origin.y, Mathf.Clamp(origin.z, bounds.min.z, bounds.max.z));
-            // horizontalVector（水平向量）：使用位置：EnemyCombatModule.GetHorizontalVectorToPlayerBody(LeonController)。
+            // 水平向量。
 Vector3 horizontalVector = closestPoint - origin;
             horizontalVector.y = 0f;
-            // distance（距离）：使用位置：EnemyCombatModule.GetHorizontalVectorToPlayerBody(LeonController)。
+            // 距离。
 float distance = horizontalVector.magnitude;
             if (distance >= nearestDistance)
             {
@@ -2244,10 +2485,10 @@ float distance = horizontalVector.magnitude;
 
     /// <summary>ResolveFallbackHitboxType 的业务处理入口；本方法直接依赖 Mathf.Abs(float)、Transform.InverseTransformPoint(Vector3)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillagerController.ResolveFallbackHitboxType(Vector3)；下游（含内部回调体） Mathf.Abs(float)、Transform.InverseTransformPoint(Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="hitPoint">中文含义：命中点位置。使用位置：作为 Transform.InverseTransformPoint(Vector3) 的参数。</param>
+    /// <param name="hitPoint">命中点位置。</param>
     internal HitboxType ResolveFallbackHitboxType(Vector3 hitPoint)
     {
-        // localPoint（局部坐标点）：保存 Transform.InverseTransformPoint(Vector3) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Abs(float) 的参数、EnemyCombatModule.ResolveFallbackHitboxType(Vector3)。
+        // 局部坐标点。
 Vector3 localPoint = transform.InverseTransformPoint(hitPoint);
         if (localPoint.y >= 1.42f)
         {
@@ -2610,15 +2851,15 @@ LeonController player = Player;
             return;
         }
 
-        // combat（战斗）：保存 Component.GetComponent<LeonCombat>() 的返回结果，供当前步骤使用。使用位置：EnemyCombatModule.HandleOnParryWindowOpen()。
+        // 战斗。
 var combat = player.GetComponent<LeonCombat>();
         if (combat != null && combat.knifeModule != null && combat.knifeModule.Ready)
         {
-            // incomingAttack（传入攻击）：保存 EnemyCombatModule.CreateKnifeIncomingAttack(int, float, Vector3, Vector3) 的返回结果，供当前步骤使用。使用位置：作为 KnifeCombatModule.RegisterIncomingAttackPrompt(KnifeIncomingAttackContext) 的参数、EnemyCombatModule.HandleOnParryWindowOpen()。
+            // 传入攻击。
 var incomingAttack = CreateKnifeIncomingAttack(0, attackDamage, transform.position + Vector3.up, transform.forward);
-            // state（当前动画状态信息）：保存 Animator.GetCurrentAnimatorStateInfo(int) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.Max(float, float) 的参数、EnemyCombatModule.HandleOnParryWindowOpen()。
+            // 当前动画状态信息。
 var state = anim.GetCurrentAnimatorStateInfo(0);
-            // marker（标记）：使用位置：作为 Mathf.Max(float, float) 的参数、EnemyCombatModule.HandleOnParryWindowOpen()。
+            // 标记。
 float marker;
             if (CurrentKnifeConfiguration != null)
             {
@@ -2634,7 +2875,7 @@ float marker;
         }
         else
         {
-            // receiverValue41（判空前缓存的战斗）：从战斗读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、EnemyCombatModule.HandleOnParryWindowOpen()。
+            // 判空前缓存的战斗。
 global::LeonCombat receiverValue41 = combat;
             if (!global::System.Object.ReferenceEquals(receiverValue41, null))
             {
@@ -2647,20 +2888,20 @@ global::LeonCombat receiverValue41 = combat;
     /// <remarks>静态调用链：上游 EnemyActionCoordinator.ReceiveAnimationNotification(ActionHandle, string)、EnemyCombatModule.ApplyKnifeParryStagger(bool)、EnemyCombatModule.EndAttack()、EnemyCombatModule.HandleOnAttackComplete()、EnemyCombatModule.TryApplyAttackHit(int) 等共 7 处；下游（含内部回调体） Component.GetComponent&lt;LeonCombat&gt;()、KnifeCombatModule.CloseIncomingAttackPrompt(VillagerController)、LeonCombat.CloseParryOpportunity(VillagerController)、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     internal void HandleOnParryWindowClose()
     {
-        // player（玩家）：使用位置：EnemyCombatModule.HandleOnParryWindowClose()。
+        // 玩家。
 LeonController player = cachedPlayer;
         if (player == null)
         {
             return;
         }
 
-        // combat（战斗）：保存 Component.GetComponent<LeonCombat>() 的返回结果，供当前步骤使用。使用位置：EnemyCombatModule.HandleOnParryWindowClose()。
+        // 战斗。
 var combat = player.GetComponent<LeonCombat>();
-        // receiverValue42（判空前缓存的战斗）：从战斗读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、EnemyCombatModule.HandleOnParryWindowClose()。
+        // 判空前缓存的战斗。
 global::LeonCombat receiverValue42 = combat;
         if (!global::System.Object.ReferenceEquals(receiverValue42, null))
         {
-            // receiverValue43（判空前缓存的接收者值42的小刀战斗模块）：从接收者值42的小刀战斗模块读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、EnemyCombatModule.HandleOnParryWindowClose()。
+            // 判空前缓存的接收者值42的小刀战斗模块。
 global::KnifeCombatModule receiverValue43 = receiverValue42.knifeModule;
             if (!global::System.Object.ReferenceEquals(receiverValue43, null))
             {
@@ -2668,7 +2909,7 @@ global::KnifeCombatModule receiverValue43 = receiverValue42.knifeModule;
             }
         }
 
-        // receiverValue44（判空前缓存的战斗）：从战斗读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、EnemyCombatModule.HandleOnParryWindowClose()。
+        // 判空前缓存的战斗。
 global::LeonCombat receiverValue44 = combat;
         if (!global::System.Object.ReferenceEquals(receiverValue44, null))
         {
@@ -2702,7 +2943,7 @@ global::LeonCombat receiverValue44 = combat;
 
     /// <summary>TryApplyAttackHit 的业务处理入口；本方法直接依赖 ChainsawManAnimationBridge.GetChainsawDamageForward()、ChainsawManAnimationBridge.GetChainsawDamageOrigin()、ChainsawManAnimationBridge.PlayChainsawHit()、ChainsawManAnimationBridge.ResolveAttackDamage(float)、Component.GetComponent&lt;LeonCombat&gt;()、EnemyCombatModule.ApplyKnifeParryStagger(bool)、EnemyCombatModule.CreateKnifeIncomingAttack(int, float, Vector3, Vector3) 等共 19 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyCombatModule.HandleOnAttackFirstHit()、EnemyCombatModule.HandleOnAttackHit()、EnemyCombatModule.HandleOnAttackSecondHit()、EnemyCombatModule.UpdateStandingAttackHitFallback()、VillagerController.TryApplyAttackHit(int)；下游（含内部回调体） ChainsawManAnimationBridge.GetChainsawDamageForward()、ChainsawManAnimationBridge.GetChainsawDamageOrigin()、ChainsawManAnimationBridge.PlayChainsawHit()、ChainsawManAnimationBridge.ResolveAttackDamage(float)、Component.GetComponent&lt;LeonCombat&gt;()、EnemyCombatModule.ApplyKnifeParryStagger(bool)、EnemyCombatModule.CreateKnifeIncomingAttack(int, float, Vector3, Vector3) 等共 19 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="hitIndex">中文含义：命中索引。使用位置：作为 Mathf.Clamp(int, int, int) 的参数。</param>
+    /// <param name="hitIndex">命中索引。</param>
     internal void TryApplyAttackHit(int hitIndex)
     {
         if (UsesKnifeContactTimeline)
@@ -2711,9 +2952,9 @@ global::LeonCombat receiverValue44 = combat;
             return;
         }
 
-        // safeHitIndex（安全命中索引）：保存 Mathf.Clamp(int, int, int) 的返回结果，供当前步骤使用。使用位置：作为 EnemyCombatModule.CreateKnifeIncomingAttack(int, float, Vector3, Vector3) 的参数、EnemyCombatModule.TryApplyAttackHit(int)。
+        // 安全命中索引。
 int safeHitIndex = Mathf.Clamp(hitIndex, 0, 30);
-        // hitMask（命中遮罩）：使用位置：EnemyCombatModule.TryApplyAttackHit(int)。
+        // 命中遮罩。
 int hitMask = 1 << safeHitIndex;
         bool nativeSawContact = UsesNativeSawContact;
         if (currentHealth <= 0 || (!nativeSawContact && (attackHitMask & hitMask) != 0))
@@ -2743,7 +2984,7 @@ int hitMask = 1 << safeHitIndex;
 
         HandleOnParryWindowClose();
         standingParryWindowOpen = false;
-        // origin（原点）：使用位置：作为 EnemyCombatModule.TryApplyFriendlyFire(Vector3, Vector3, float) 的参数、作为 LeonCombat.TryResolveParry(VillagerController, Vector3, Vector3) 的参数、作为 LeonController.TakeDamageFrom(float, Vector3, Vector3) 的参数 等共 5 处。
+        // 原点。
 Vector3 origin;
         if (chainsawBridge != null)
         {
@@ -2754,7 +2995,7 @@ Vector3 origin;
             origin = transform.position + Vector3.up;
         }
 
-        // attackForward（攻击前向）：使用位置：作为 EnemyCombatModule.CreateKnifeIncomingAttack(int, float, Vector3, Vector3) 的参数、作为 EnemyCombatModule.TryApplyFriendlyFire(Vector3, Vector3, float) 的参数、作为 LeonCombat.TryResolveParry(VillagerController, Vector3, Vector3) 的参数 等共 5 处。
+        // 攻击前向。
 Vector3 attackForward;
         if (chainsawBridge != null)
         {
@@ -2765,7 +3006,7 @@ Vector3 attackForward;
             attackForward = transform.forward;
         }
 
-        // resolvedDamage（解算后的伤害）：使用位置：作为 EnemyCombatModule.CreateKnifeIncomingAttack(int, float, Vector3, Vector3) 的参数、作为 EnemyCombatModule.TryApplyFriendlyFire(Vector3, Vector3, float) 的参数、作为 LeonController.TakeDamageFrom(float, Vector3, Vector3) 的参数 等共 4 处。
+        // 解算后的伤害。
 float resolvedDamage;
         if (chainsawBridge != null)
         {
@@ -2801,7 +3042,7 @@ global::KnifeEnemyAttackProfile normalConfiguration;
             normalConfiguration = null;
         }
 
-        // currentRange（当前范围）：使用位置：EnemyCombatModule.TryApplyAttackHit(int)。
+        // 当前范围。
 float currentRange;
         if (normalConfiguration != null)
         {
@@ -2812,7 +3053,7 @@ float currentRange;
             currentRange = attackHitRange;
         }
 
-        // currentAngle（当前角度）：使用位置：EnemyCombatModule.TryApplyAttackHit(int)。
+        // 当前角度。
 float currentAngle;
         if (normalConfiguration != null)
         {
@@ -2823,17 +3064,17 @@ float currentAngle;
             currentAngle = attackHitAngle;
         }
 
-        // appliedHit（是否已应用命中）：使用位置：EnemyCombatModule.TryApplyAttackHit(int)。
+        // 是否已应用命中。
 bool appliedHit = false;
-        // player（玩家）：使用位置：作为 EnemyCombatModule.GetHorizontalVectorToPlayerBody(LeonController) 的参数、EnemyCombatModule.TryApplyAttackHit(int)。
+        // 玩家。
 LeonController player = Player;
         if (player != null)
         {
-            // target（目标）：使用位置：作为 LeonController.TakeDamageFrom(float, Vector3, Vector3) 的参数、作为 Vector3.Lerp(Vector3, Vector3, float) 的参数。
+            // 目标。
 Vector3 target = player.transform.position + Vector3.up;
-            // bodyDirection（身体方向）：保存 EnemyCombatModule.GetHorizontalVectorToPlayerBody(LeonController) 的返回结果，供当前步骤使用。使用位置：EnemyCombatModule.TryApplyAttackHit(int)。
+            // 身体方向。
 Vector3 bodyDirection = GetHorizontalVectorToPlayerBody(player);
-            // facingDirection（朝向方向）：使用位置：作为 Vector3.Angle(Vector3, Vector3) 的参数、EnemyCombatModule.TryApplyAttackHit(int)。
+            // 朝向方向。
 Vector3 facingDirection = player.transform.position - transform.position;
             facingDirection.y = 0f;
             if (facingDirection.sqrMagnitude <= 0.001f)
@@ -2841,17 +3082,17 @@ Vector3 facingDirection = player.transform.position - transform.position;
                 facingDirection = bodyDirection;
             }
 
-            // isWithinHitRange（是否内部命中范围）：使用位置：EnemyCombatModule.TryApplyAttackHit(int)。
+            // 是否内部命中范围。
 bool isWithinHitRange = bodyDirection.magnitude <= currentRange + attackRangeEpsilon;
-            // isWithinHitAngle（是否内部命中角度）：使用位置：EnemyCombatModule.TryApplyAttackHit(int)。
+            // 是否内部命中角度。
 bool isWithinHitAngle = facingDirection.sqrMagnitude <= 0.001f || Vector3.Angle(attackForward, facingDirection) <= currentAngle * 0.5f;
-            // hasClearAttackLine（是否具有清除攻击线）：保存 EnemyCombatModule.HasClearLineToPlayer(bool, float) 的返回结果，供当前步骤使用。使用位置：EnemyCombatModule.TryApplyAttackHit(int)。
+            // 是否具有清除攻击线。
 bool hasClearAttackLine = HasClearLineToPlayer(false, Mathf.Max(attackHitRange + 0.5f, PlayerDistance + 0.1f));
             if (isWithinHitRange && isWithinHitAngle && hasClearAttackLine)
             {
-                // receiverValue51（判空前缓存的取得组件的返回结果）：从取得组件的返回结果读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、EnemyCombatModule.TryApplyAttackHit(int)。
+                // 判空前缓存的取得组件的返回结果。
 global::LeonCombat receiverValue51 = player.GetComponent<LeonCombat>();
-                // newKnife（新小刀）：使用位置：EnemyCombatModule.TryApplyAttackHit(int)。
+                // 新小刀。
 global::KnifeCombatModule newKnife;
                 if (!global::System.Object.ReferenceEquals(receiverValue51, null))
                 {
@@ -2869,13 +3110,13 @@ global::KnifeCombatModule newKnife;
                 }
                 else
                 {
-                    // parryResult（招架结果）：使用位置：作为 EnemyCombatModule.ApplyKnifeParryStagger(bool) 的参数、EnemyCombatModule.TryApplyAttackHit(int)。
+                    // 招架结果。
 KnifeParryResult parryResult;
                     if (enableKnifeParry && chainsawBridge == null)
                     {
-                        // receiverValue53（判空前缓存的取得组件的返回结果）：从取得组件的返回结果读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、EnemyCombatModule.TryApplyAttackHit(int)。
+                        // 判空前缓存的取得组件的返回结果。
 global::LeonCombat receiverValue53 = player.GetComponent<LeonCombat>();
-                        // availableValue55（空值判断前缓存的尝试解算招架的返回结果）：保存空值判断之前的值，只读取一次，非空时不执行回退分支。使用位置：EnemyCombatModule.TryApplyAttackHit(int)。
+                        // 空值判断前缓存的尝试解算招架的返回结果。
 global::KnifeParryResult? availableValue55;
                         if (!global::System.Object.ReferenceEquals(receiverValue53, null))
                         {
@@ -2925,7 +3166,7 @@ global::KnifeParryResult? availableValue55;
 
         if (appliedHit)
         {
-            // receiverValue58（判空前缓存的电锯桥接）：从电锯桥接读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、EnemyCombatModule.TryApplyAttackHit(int)。
+            // 判空前缓存的电锯桥接。
 global::ChainsawManAnimationBridge receiverValue58 = chainsawBridge;
             if (!global::System.Object.ReferenceEquals(receiverValue58, null))
             {
@@ -2938,7 +3179,7 @@ global::ChainsawManAnimationBridge receiverValue58 = chainsawBridge;
 
     /// <summary>ApplyKnifeParryStagger 的业务处理入口；本方法直接依赖 EnemyActionCoordinator.RequestAction(ActionKind, string, bool)、EnemyAIManager.ReleaseCombatReservation(VillagerController)、EnemyAnimationAdapter.SetBoolean(int, bool)、EnemyCombatModule.HandleOnParryWindowClose()、EnemyCombatModule.SetMovementMode(EnemyMovementMode, string, int)、EnemyCombatModule.StopAndClearMovement()、object.ReferenceEquals(object, object)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyCombatModule.TryApplyAttackHit(int)、KnifeCombatModule.ResolveIncomingAttack(KnifeIncomingAttackContext)、VillagerController.ApplyKnifeParryStagger(bool)；下游（含内部回调体） EnemyActionCoordinator.RequestAction(ActionKind, string, bool)、EnemyAIManager.ReleaseCombatReservation(VillagerController)、EnemyAnimationAdapter.SetBoolean(int, bool)、EnemyCombatModule.HandleOnParryWindowClose()、EnemyCombatModule.SetMovementMode(EnemyMovementMode, string, int)、EnemyCombatModule.StopAndClearMovement()、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="perfect">中文含义：是否完美。使用位置：EnemyCombatModule.ApplyKnifeParryStagger(bool)。</param>
+    /// <param name="perfect">是否完美。</param>
     internal void ApplyKnifeParryStagger(bool perfect)
     {
         standingParryWindowOpen = false;
@@ -2969,7 +3210,7 @@ global::ChainsawManAnimationBridge receiverValue58 = chainsawBridge;
         pendingHitDirection = 5;
         accumulatedPoiseDamage = 0f;
         AnimationPresenter.SetBoolean(HashATK, false);
-        // receiverValue60（判空前缓存的敌人智能管理器的实例）：从敌人智能管理器的实例读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、EnemyCombatModule.ApplyKnifeParryStagger(bool)。
+        // 判空前缓存的敌人智能管理器的实例。
 global::EnemyAIManager receiverValue60 = EnemyAIManager.Instance;
         if (!global::System.Object.ReferenceEquals(receiverValue60, null))
         {
@@ -3002,7 +3243,7 @@ global::EnemyAIManager receiverValue60 = EnemyAIManager.Instance;
             return;
         }
 
-        // stateInfo（当前动画状态信息）：保存 Animator.GetCurrentAnimatorStateInfo(int) 的返回结果，供当前步骤使用。使用位置：作为 EnemyCombatModule.IsStandingAttackAnimation(AnimatorStateInfo) 的参数、EnemyCombatModule.UpdateStandingAttackHitFallback()。
+        // 当前动画状态信息。
 AnimatorStateInfo stateInfo = anim.GetCurrentAnimatorStateInfo(0);
         if (!IsStandingAttackAnimation(stateInfo) && anim.IsInTransition(0))
         {
@@ -3014,7 +3255,7 @@ AnimatorStateInfo stateInfo = anim.GetCurrentAnimatorStateInfo(0);
             return;
         }
 
-        // contactPoint（接触点）：使用位置：EnemyCombatModule.UpdateStandingAttackHitFallback()。
+        // 接触点。
 float contactPoint;
         if (CurrentKnifeConfiguration != null)
         {
@@ -3025,11 +3266,11 @@ float contactPoint;
             contactPoint = standingAttackFallbackHitNormalizedTime;
         }
 
-        // argumentValue64（按原顺序缓存的实参0.05f）：从0.05f读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 Mathf.Max(float, float) 的参数。
+        // 按原顺序缓存的实参0.05f。
 float argumentValue64 = 0.05f;
-        // leftOperand63（计算前缓存的左侧接触点）：从接触点读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 Mathf.Max(float, float) 的参数。
+        // 计算前缓存的左侧接触点。
 float leftOperand63 = contactPoint;
-        // selectedValue62（分支选出的当前小刀配置的提示提前）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：作为 Mathf.Max(float, float) 的参数、EnemyCombatModule.UpdateStandingAttackHitFallback()。
+        // 分支选出的当前小刀配置的提示提前。
 float selectedValue62;
         if (CurrentKnifeConfiguration != null)
         {
@@ -3040,7 +3281,7 @@ float selectedValue62;
             selectedValue62 = .18f;
         }
 
-        // parryOpenTime（招架打开时间）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：EnemyCombatModule.UpdateStandingAttackHitFallback()。
+        // 招架打开时间。
 float parryOpenTime = Mathf.Max(argumentValue64, leftOperand63 - (selectedValue62));
         if (!standingParryWindowOpen && stateInfo.normalizedTime >= parryOpenTime && stateInfo.normalizedTime < contactPoint)
         {
@@ -3059,7 +3300,7 @@ float parryOpenTime = Mathf.Max(argumentValue64, leftOperand63 - (selectedValue6
 
     /// <summary>IsStandingAttackAnimation 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
     /// <remarks>静态调用链：上游 EnemyCombatModule.LateUpdate()、EnemyCombatModule.UpdateStandingAttackHitFallback()、VillagerController.IsStandingAttackAnimation(AnimatorStateInfo)；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="stateInfo">中文含义：当前动画状态信息。使用位置：EnemyCombatModule.IsStandingAttackAnimation(AnimatorStateInfo)。</param>
+    /// <param name="stateInfo">当前动画状态信息。</param>
     internal static bool IsStandingAttackAnimation(AnimatorStateInfo stateInfo)
     {
         return stateInfo.shortNameHash == HashAttack01State || stateInfo.shortNameHash == HashAttack02State || stateInfo.shortNameHash == HashAttack03State;
@@ -3067,14 +3308,14 @@ float parryOpenTime = Mathf.Max(argumentValue64, leftOperand63 - (selectedValue6
 
     /// <summary>TryApplyFriendlyFire 的业务处理入口；本方法直接依赖 EnemyHitEffectManager.PlayBloodEffect(Vector3, Vector3, HitboxType)、Mathf.Abs(float)、Object.FindObjectsByType&lt;VillagerController&gt;(FindObjectsInactive, FindObjectsSortMode)、object.ReferenceEquals(object, object)、Vector3.Angle(Vector3, Vector3)、Vector3.Normalize()、VillagerController.TakeHeavyFrontDamage(float, Vector3)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyCombatModule.LateUpdate()、EnemyCombatModule.TryApplyAttackHit(int)、VillagerController.TryApplyFriendlyFire(Vector3, Vector3, float)；下游（含内部回调体） EnemyHitEffectManager.PlayBloodEffect(Vector3, Vector3, HitboxType)、Mathf.Abs(float)、Object.FindObjectsByType&lt;VillagerController&gt;(FindObjectsInactive, FindObjectsSortMode)、object.ReferenceEquals(object, object)、Vector3.Angle(Vector3, Vector3)、Vector3.Normalize()、VillagerController.TakeHeavyFrontDamage(float, Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="origin">中文含义：原点。使用位置：EnemyCombatModule.TryApplyFriendlyFire(Vector3, Vector3, float)。</param>
-    /// <param name="forward">中文含义：前向。使用位置：作为 Vector3.Angle(Vector3, Vector3) 的参数、EnemyCombatModule.TryApplyFriendlyFire(Vector3, Vector3, float)。</param>
-    /// <param name="baseDamage">中文含义：基础伤害。使用位置：EnemyCombatModule.TryApplyFriendlyFire(Vector3, Vector3, float)。</param>
+    /// <param name="origin">原点。</param>
+    /// <param name="forward">前向。</param>
+    /// <param name="baseDamage">基础伤害。</param>
     internal bool TryApplyFriendlyFire(Vector3 origin, Vector3 forward, float baseDamage)
     {
-        // useChainsawTuning（是否使用电锯调参）：使用位置：EnemyCombatModule.TryApplyFriendlyFire(Vector3, Vector3, float)。
+        // 是否使用电锯调参。
 bool useChainsawTuning = enableChainsawFriendlyFire && chainsawBridge != null && missionEnemyType == MissionEnemyType.Sawman;
-        // enabled（是否启用）：使用位置：EnemyCombatModule.TryApplyFriendlyFire(Vector3, Vector3, float)。
+        // 是否启用。
 bool enabled;
         if (useChainsawTuning)
         {
@@ -3085,7 +3326,7 @@ bool enabled;
             enabled = enableEnemyFriendlyFire;
         }
 
-        // range（范围）：使用位置：EnemyCombatModule.TryApplyFriendlyFire(Vector3, Vector3, float)。
+        // 范围。
 float range;
         if (useChainsawTuning)
         {
@@ -3096,7 +3337,7 @@ float range;
             range = enemyFriendlyFireRange;
         }
 
-        // angle（角度）：使用位置：EnemyCombatModule.TryApplyFriendlyFire(Vector3, Vector3, float)。
+        // 角度。
 float angle;
         if (useChainsawTuning)
         {
@@ -3107,7 +3348,7 @@ float angle;
             angle = enemyFriendlyFireAngle;
         }
 
-        // damageMultiplier（伤害倍率）：使用位置：EnemyCombatModule.TryApplyFriendlyFire(Vector3, Vector3, float)。
+        // 伤害倍率。
 float damageMultiplier;
         if (useChainsawTuning)
         {
@@ -3118,7 +3359,7 @@ float damageMultiplier;
             damageMultiplier = enemyFriendlyFireDamageMultiplier;
         }
 
-        // maxTargets（最大目标数）：使用位置：EnemyCombatModule.TryApplyFriendlyFire(Vector3, Vector3, float)。
+        // 最大目标数。
 int maxTargets;
         if (useChainsawTuning)
         {
@@ -3129,7 +3370,7 @@ int maxTargets;
             maxTargets = enemyFriendlyFireMaxTargets;
         }
 
-        // heightTolerance（高度容差）：使用位置：EnemyCombatModule.TryApplyFriendlyFire(Vector3, Vector3, float)。
+        // 高度容差。
 float heightTolerance;
         if (useChainsawTuning)
         {
@@ -3152,17 +3393,17 @@ float heightTolerance;
         }
 
         forward.Normalize();
-        // rangeSqr（范围平方）：使用位置：EnemyCombatModule.TryApplyFriendlyFire(Vector3, Vector3, float)。
+        // 范围平方。
 float rangeSqr = range * range;
-        // halfAngle（一半角度）：使用位置：EnemyCombatModule.TryApplyFriendlyFire(Vector3, Vector3, float)。
+        // 一半角度。
 float halfAngle = angle * 0.5f;
-        // damage（伤害）：使用位置：作为 VillagerController.TakeHeavyFrontDamage(float, Vector3) 的参数。
+        // 伤害。
 float damage = baseDamage * damageMultiplier;
-        // applied（是否已应用）：使用位置：EnemyCombatModule.TryApplyFriendlyFire(Vector3, Vector3, float)。
+        // 是否已应用。
 bool applied = false;
-        // appliedCount（已应用数量）：使用位置：EnemyCombatModule.TryApplyFriendlyFire(Vector3, Vector3, float)。
+        // 已应用数量。
 int appliedCount = 0;
-        // candidates（候选集合）：保存 Object.FindObjectsByType<VillagerController>(FindObjectsInactive, FindObjectsSortMode) 的返回结果，供当前步骤使用。使用位置：EnemyCombatModule.TryApplyFriendlyFire(Vector3, Vector3, float)。
+        // 候选集合。
 VillagerController[] candidates = FindObjectsByType<VillagerController>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
         // candidate（候选）：每轮从候选集合取得一个元素，仅代表当前这一项。使用位置：EnemyCombatModule.TryApplyFriendlyFire(Vector3, Vector3, float)。
 foreach (var candidate in candidates)
@@ -3172,11 +3413,11 @@ foreach (var candidate in candidates)
                 continue;
             }
 
-            // hitPoint（命中点位置）：使用位置：作为 EnemyHitEffectManager.PlayBloodEffect(Vector3, Vector3, HitboxType) 的参数、作为 VillagerController.TakeHeavyFrontDamage(float, Vector3) 的参数、EnemyCombatModule.TryApplyFriendlyFire(Vector3, Vector3, float)。
+            // 命中点位置。
 Vector3 hitPoint = candidate.transform.position + Vector3.up * 1.1f;
-            // offset（偏移量）：使用位置：作为 Mathf.Abs(float) 的参数、EnemyCombatModule.TryApplyFriendlyFire(Vector3, Vector3, float)。
+            // 偏移量。
 Vector3 offset = hitPoint - origin;
-            // height（高度）：保存 Mathf.Abs(float) 的返回结果，供当前步骤使用。使用位置：EnemyCombatModule.TryApplyFriendlyFire(Vector3, Vector3, float)。
+            // 高度。
 float height = Mathf.Abs(offset.y);
             offset.y = 0f;
             if (height > heightTolerance || offset.sqrMagnitude <= 0.0001f || offset.sqrMagnitude > rangeSqr)
@@ -3184,7 +3425,7 @@ float height = Mathf.Abs(offset.y);
                 continue;
             }
 
-            // direction（方向）：使用位置：作为 EnemyHitEffectManager.PlayBloodEffect(Vector3, Vector3, HitboxType) 的参数、作为 Vector3.Angle(Vector3, Vector3) 的参数。
+            // 方向。
 Vector3 direction = offset.normalized;
             if (Vector3.Angle(forward, direction) > halfAngle)
             {
@@ -3197,7 +3438,7 @@ Vector3 direction = offset.normalized;
             {
                 heldWeapon.PlayHitAudio(hitPoint);
             }
-            // receiverValue71（判空前缓存的敌人命中效果管理器的实例）：从敌人命中效果管理器的实例读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、EnemyCombatModule.TryApplyFriendlyFire(Vector3, Vector3, float)。
+            // 判空前缓存的敌人命中效果管理器的实例。
 global::EnemyHitEffectManager receiverValue71 = EnemyHitEffectManager.Instance;
             if (!global::System.Object.ReferenceEquals(receiverValue71, null))
             {
@@ -3255,7 +3496,7 @@ global::EnemyHitEffectManager receiverValue71 = EnemyHitEffectManager.Instance;
             return 1f;
         }
 
-        // ratio（比例）：保存 Mathf.Clamp01(float) 的返回结果，供当前步骤使用。使用位置：作为 Mathf.SmoothStep(float, float, float) 的参数、EnemyCombatModule.CalculateStaggerRestoreMultiplier()。
+        // 比例。
 float ratio = Mathf.Clamp01((Time.time - staggerRecoveryStartedTime - host.staggerRecoveryMovementDelay) / Mathf.Max(0.1f, host.staggerRecoveryAccelerationDuration));
         if (ratio >= 1f)
         {
@@ -3269,11 +3510,11 @@ float ratio = Mathf.Clamp01((Time.time - staggerRecoveryStartedTime - host.stagg
     /// <remarks>静态调用链：上游 EnemyCombatModule.BeginDeathContinuousDamage()；下游（含内部回调体） EnemyCombatModule.ApplyDeadChainsawPulse()、Mathf.Max(float, float)、WaitForSeconds.WaitForSeconds(float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     private IEnumerator ApplyDeadChainsawDanger()
     {
-        // endTime（结束时间）：使用位置：EnemyCombatModule.ApplyDeadChainsawDanger()。
+        // 结束时间。
 float endTime = Time.time + deadChainsawDangerDuration;
-        // wait（等待）：使用位置：EnemyCombatModule.ApplyDeadChainsawDanger()。
+        // 等待。
 WaitForSeconds wait = new WaitForSeconds(Mathf.Max(0.05f, deadChainsawDamageInterval));
-        // identity（身份标识）：使用位置：EnemyCombatModule.ApplyDeadChainsawDanger()。
+        // 身份标识。
 var identity = ActionCoordinator.Identity;
         while (Time.time < endTime && isActiveAndEnabled && host.isActiveAndEnabled && identity == ActionCoordinator.Identity)
         {
@@ -3291,14 +3532,14 @@ var identity = ActionCoordinator.Identity;
             return;
         }
 
-        // origin（原点）：保存 ChainsawManAnimationBridge.GetChainsawDamageOrigin() 的返回结果，供当前步骤使用。使用位置：作为 EnemyCombatModule.IsPointInsideDeadChainsawDanger(Vector3, Vector3, float) 的参数、作为 LeonController.TakeDamageFrom(float, Vector3, Vector3) 的参数、EnemyCombatModule.ApplyDeadChainsawPulse()。
+        // 原点。
 Vector3 origin = chainsawBridge.GetChainsawDamageOrigin();
-        // radiusSqr（半径平方）：使用位置：作为 EnemyCombatModule.IsPointInsideDeadChainsawDanger(Vector3, Vector3, float) 的参数。
+        // 半径平方。
 float radiusSqr = deadChainsawDangerRadius * deadChainsawDangerRadius;
-        // damage（伤害）：使用位置：作为 LeonController.TakeDamageFrom(float, Vector3, Vector3) 的参数、作为 VillagerController.TakeHeavyFrontDamage(float, Vector3) 的参数。
+        // 伤害。
 float damage = attackDamage * deadChainsawDamageMultiplier;
         deadChainsawHitPlayers.Clear();
-        // player（玩家）：使用位置：作为 EnemyCombatModule.IsPointInsideDeadChainsawDanger(Vector3, Vector3, float) 的参数、作为 HashSet<LeonController>.Add(LeonController) 的参数、作为 LeonController.TakeDamageFrom(float, Vector3, Vector3) 的参数 等共 4 处。
+        // 玩家。
 LeonController player = Player;
         if (player != null && player.currentState != LeonState.Dead && IsPointInsideDeadChainsawDanger(player.transform.position + Vector3.up, origin, radiusSqr))
         {
@@ -3307,7 +3548,7 @@ LeonController player = Player;
         }
 
         deadChainsawHitEnemies.Clear();
-        // candidates（候选集合）：保存 Object.FindObjectsByType<VillagerController>(FindObjectsInactive, FindObjectsSortMode) 的返回结果，供当前步骤使用。使用位置：EnemyCombatModule.ApplyDeadChainsawPulse()。
+        // 候选集合。
 VillagerController[] candidates = FindObjectsByType<VillagerController>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
         // candidate（候选）：每轮从候选集合取得一个元素，仅代表当前这一项。使用位置：作为 HashSet<VillagerController>.Add(VillagerController) 的参数、作为 HashSet<VillagerController>.Contains(VillagerController) 的参数、EnemyCombatModule.ApplyDeadChainsawPulse()。
 foreach (var candidate in candidates)
@@ -3317,7 +3558,7 @@ foreach (var candidate in candidates)
                 continue;
             }
 
-            // hitPoint（命中点位置）：使用位置：作为 EnemyCombatModule.IsPointInsideDeadChainsawDanger(Vector3, Vector3, float) 的参数、作为 EnemyHitEffectManager.PlayBloodEffect(Vector3, Vector3, HitboxType) 的参数、作为 VillagerController.TakeHeavyFrontDamage(float, Vector3) 的参数 等共 4 处。
+            // 命中点位置。
 Vector3 hitPoint = candidate.transform.position + Vector3.up;
             if (!IsPointInsideDeadChainsawDanger(hitPoint, origin, radiusSqr))
             {
@@ -3327,14 +3568,14 @@ Vector3 hitPoint = candidate.transform.position + Vector3.up;
             deadChainsawHitEnemies.Add(candidate);
             // 受击者在确认硬直或死亡后自行接管移动。
             candidate.TakeHeavyFrontDamage(damage, hitPoint);
-            // normal（表面法线）：使用位置：作为 EnemyHitEffectManager.PlayBloodEffect(Vector3, Vector3, HitboxType) 的参数、EnemyCombatModule.ApplyDeadChainsawPulse()。
+            // 表面法线。
 Vector3 normal = hitPoint - origin;
             if (normal.sqrMagnitude <= 0.0001f)
             {
                 normal = -transform.forward;
             }
 
-            // receiverValue72（判空前缓存的敌人命中效果管理器的实例）：从敌人命中效果管理器的实例读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、EnemyCombatModule.ApplyDeadChainsawPulse()。
+            // 判空前缓存的敌人命中效果管理器的实例。
 global::EnemyHitEffectManager receiverValue72 = EnemyHitEffectManager.Instance;
             if (!global::System.Object.ReferenceEquals(receiverValue72, null))
             {
@@ -3345,12 +3586,12 @@ global::EnemyHitEffectManager receiverValue72 = EnemyHitEffectManager.Instance;
 
     /// <summary>IsPointInsideDeadChainsawDanger 的业务处理入口；本方法直接依赖 Mathf.Abs(float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyCombatModule.ApplyDeadChainsawPulse()；下游（含内部回调体） Mathf.Abs(float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="point">中文含义：点。使用位置：EnemyCombatModule.IsPointInsideDeadChainsawDanger(Vector3, Vector3, float)。</param>
-    /// <param name="origin">中文含义：原点。使用位置：EnemyCombatModule.IsPointInsideDeadChainsawDanger(Vector3, Vector3, float)。</param>
-    /// <param name="radiusSqr">中文含义：半径平方。使用位置：EnemyCombatModule.IsPointInsideDeadChainsawDanger(Vector3, Vector3, float)。</param>
+    /// <param name="point">点。</param>
+    /// <param name="origin">原点。</param>
+    /// <param name="radiusSqr">半径平方。</param>
     private bool IsPointInsideDeadChainsawDanger(Vector3 point, Vector3 origin, float radiusSqr)
     {
-        // offset（偏移量）：使用位置：作为 Mathf.Abs(float) 的参数、EnemyCombatModule.IsPointInsideDeadChainsawDanger(Vector3, Vector3, float)。
+        // 偏移量。
 Vector3 offset = point - origin;
         if (Mathf.Abs(offset.y) > chainsawFriendlyFireHeightTolerance)
         {
@@ -3361,11 +3602,11 @@ Vector3 offset = point - origin;
         return offset.sqrMagnitude <= radiusSqr;
     }
 
-    /// <summary>中文含义：死亡电锯命中玩家集合。只读字段，初始化后不由普通写入口替换。使用位置：EnemyCombatModule.ApplyDeadChainsawPulse()。</summary>
+    /// <summary>死亡电锯命中玩家集合。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly HashSet<LeonController> deadChainsawHitPlayers = new HashSet<LeonController>();
-    /// <summary>中文含义：死亡电锯命中敌人集合。只读字段，初始化后不由普通写入口替换。使用位置：EnemyCombatModule.ApplyDeadChainsawPulse()。</summary>
+    /// <summary>死亡电锯命中敌人集合。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly HashSet<VillagerController> deadChainsawHitEnemies = new HashSet<VillagerController>();
-    /// <summary>中文含义：死亡后方伤害协程。使用位置：作为 MonoBehaviour.StopCoroutine(Coroutine) 的参数、EnemyCombatModule.BeginDeathContinuousDamage()、EnemyCombatModule.StopContinuousDamage()。</summary>
+    /// <summary>死亡后方伤害协程。</summary>
     private Coroutine deadBackDamageCoroutine;
     /// <summary>BeginDeathContinuousDamage 的业务处理入口；本方法直接依赖 EnemyCombatModule.ApplyDeadChainsawDanger()、MonoBehaviour.StartCoroutine(IEnumerator)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 EnemyActionCoordinator.BeginDeath()；下游（含内部回调体） EnemyCombatModule.ApplyDeadChainsawDanger()、MonoBehaviour.StartCoroutine(IEnumerator)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
@@ -3406,12 +3647,12 @@ Vector3 offset = point - origin;
         StopContinuousDamage();
     }
 
-    /// <summary>中文含义：死亡电锯危险持续时间。使用位置：EnemyCombatModule.ApplyDeadChainsawDanger()。</summary>
+    /// <summary>死亡电锯危险持续时间。</summary>
     private float deadChainsawDangerDuration => host.deadChainsawDangerDuration;
-    /// <summary>中文含义：死亡电锯伤害间隔。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>死亡电锯伤害间隔。</summary>
     private float deadChainsawDamageInterval => host.deadChainsawDamageInterval;
-    /// <summary>中文含义：死亡电锯危险半径。使用位置：EnemyCombatModule.ApplyDeadChainsawPulse()。</summary>
+    /// <summary>死亡电锯危险半径。</summary>
     private float deadChainsawDangerRadius => host.deadChainsawDangerRadius;
-    /// <summary>中文含义：死亡电锯伤害倍率。使用位置：EnemyCombatModule.ApplyDeadChainsawPulse()。</summary>
+    /// <summary>死亡电锯伤害倍率。</summary>
     private float deadChainsawDamageMultiplier => host.deadChainsawDamageMultiplier;
 }

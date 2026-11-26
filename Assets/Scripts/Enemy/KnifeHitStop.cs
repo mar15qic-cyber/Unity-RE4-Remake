@@ -5,18 +5,18 @@ using UnityEngine;
 [UnityEngine.Scripting.APIUpdating.MovedFrom(true, "", "Assembly-CSharp", "小刀受击停顿")]
 public sealed class KnifeHitStop : MonoBehaviour
 {
-    /// <summary>中文含义：动画器。使用位置：KnifeCombatBuilder.BindingEnemy(VillagerController)、KnifeHitStop.Pause(float)、KnifeHitStop.Restore() 等共 4 处。</summary>
+    /// <summary>动画器。</summary>
     [Header("动画引用")]
     [UnityEngine.Serialization.FormerlySerializedAs("动画器")]
     [UnityEngine.InspectorName("动画器")]
     public Animator animator;
-    /// <summary>中文含义：结束时间。使用位置：作为 Math.Max(double, double) 的参数、KnifeHitStop.IsHitStop.get、KnifeHitStop.Pause(float) 等共 4 处。</summary>
+    /// <summary>结束时间。</summary>
     private double endTime;
-    /// <summary>中文含义：原始速度。使用位置：KnifeHitStop.Pause(float)、KnifeHitStop.Restore()。</summary>
+    /// <summary>原始速度。</summary>
     private float originalSpeed;
-    /// <summary>中文含义：是否具有冻结。使用位置：KnifeHitStop.IsHitStop.get、KnifeHitStop.Pause(float)、KnifeHitStop.Restore() 等共 4 处。</summary>
+    /// <summary>是否具有冻结。</summary>
     private bool hasFreeze;
-    /// <summary>中文含义：是否命中顿帧。使用位置：CharacterMotionExecutor.CommitPose(MotionControlToken, Vector3, Quaternion, bool)、KnifeHitStop.Update()、VillagerController.Update()。</summary>
+    /// <summary>是否命中顿帧。</summary>
     public bool IsHitStop => hasFreeze && Time.timeAsDouble < endTime;
 
     /// <summary>Unity 首次启用后的启动回调；状态处理与资源交接按函数内顺序执行，下游协作见调用链。</summary>
@@ -31,7 +31,7 @@ public sealed class KnifeHitStop : MonoBehaviour
 
     /// <summary>Pause 的业务处理入口；本方法直接依赖 Math.Max(double, double)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 KnifeCombatModule.ResolveIncomingAttack(KnifeIncomingAttackContext)；下游（含内部回调体） Math.Max(double, double)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="seconds">中文含义：秒。使用位置：作为 Math.Max(double, double) 的参数。</param>
+    /// <param name="seconds">秒。</param>
     public void Pause(float seconds)
     {
         if (!isActiveAndEnabled || animator == null)

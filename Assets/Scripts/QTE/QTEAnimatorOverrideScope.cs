@@ -8,21 +8,21 @@ using UnityEngine;
 /// </summary>
 public sealed class QTEAnimatorOverrideScope
 {
-    /// <summary>中文含义：动画控制器。使用位置：QTEAnimatorOverrideScope.Apply(Animator, AnimationClip, AnimationClip, AnimationClip, AnimationClip)、QTEAnimatorOverrideScope.Clear()。</summary>
+    /// <summary>动画控制器。</summary>
     private Animator animator;
-    /// <summary>中文含义：原始控制器。使用位置：作为 AnimatorOverrideController.AnimatorOverrideController(RuntimeAnimatorController) 的参数、QTEAnimatorOverrideScope.Apply(Animator, AnimationClip, AnimationClip, AnimationClip, AnimationClip)、QTEAnimatorOverrideScope.Clear()。</summary>
+    /// <summary>原始控制器。</summary>
     private RuntimeAnimatorController originalController;
-    /// <summary>中文含义：覆盖控制器。使用位置：QTEAnimatorOverrideScope.Apply(Animator, AnimationClip, AnimationClip, AnimationClip, AnimationClip)、QTEAnimatorOverrideScope.Clear()。</summary>
+    /// <summary>覆盖控制器。</summary>
     private AnimatorOverrideController overrideController;
-    /// <summary>中文含义：是否已应用。使用位置：QTEAnimatorOverrideScope.Apply(Animator, AnimationClip, AnimationClip, AnimationClip, AnimationClip)、QTEAnimatorOverrideScope.Clear()。</summary>
+    /// <summary>是否已应用。</summary>
     private bool applied;
     /// <summary>Apply 的业务处理入口；本方法直接依赖 AnimatorOverrideController.AnimatorOverrideController(RuntimeAnimatorController)、AnimatorOverrideController.GetOverrides(List&lt;KeyValuePair&lt;AnimationClip, AnimationClip&gt; &gt;)、List&lt;KeyValuePair&lt;AnimationClip, AnimationClip&gt; &gt;.List()、QTEAnimatorOverrideScope.Clear()、QTEAnimatorOverrideScope.IsEnterClip(string)、QTEAnimatorOverrideScope.IsFailureClip(string)、QTEAnimatorOverrideScope.IsHoldClip(string) 等共 9 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonAnimationActionCoordinator.ApplyQTEAnimationVariant(QTEAnimationVariant)、VillagerQTEParticipant.ApplyAnimationVariant(QTEAnimationVariant)；下游（含内部回调体） AnimatorOverrideController.AnimatorOverrideController(RuntimeAnimatorController)、AnimatorOverrideController.GetOverrides(List&lt;KeyValuePair&lt;AnimationClip, AnimationClip&gt; &gt;)、List&lt;KeyValuePair&lt;AnimationClip, AnimationClip&gt; &gt;.List()、QTEAnimatorOverrideScope.Clear()、QTEAnimatorOverrideScope.IsEnterClip(string)、QTEAnimatorOverrideScope.IsFailureClip(string)、QTEAnimatorOverrideScope.IsHoldClip(string) 等共 9 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="target">中文含义：目标动画控制器。使用位置：QTEAnimatorOverrideScope.Apply(Animator, AnimationClip, AnimationClip, AnimationClip, AnimationClip)。</param>
-    /// <param name="enter">中文含义：进入。使用位置：QTEAnimatorOverrideScope.Apply(Animator, AnimationClip, AnimationClip, AnimationClip, AnimationClip)。</param>
-    /// <param name="hold">中文含义：保持。使用位置：QTEAnimatorOverrideScope.Apply(Animator, AnimationClip, AnimationClip, AnimationClip, AnimationClip)。</param>
-    /// <param name="success">中文含义：成功。使用位置：QTEAnimatorOverrideScope.Apply(Animator, AnimationClip, AnimationClip, AnimationClip, AnimationClip)。</param>
-    /// <param name="failure">中文含义：失败。使用位置：QTEAnimatorOverrideScope.Apply(Animator, AnimationClip, AnimationClip, AnimationClip, AnimationClip)。</param>
+    /// <param name="target">目标动画控制器。</param>
+    /// <param name="enter">进入。</param>
+    /// <param name="hold">保持。</param>
+    /// <param name="success">成功。</param>
+    /// <param name="failure">失败。</param>
     public bool Apply(Animator target, AnimationClip enter, AnimationClip hold, AnimationClip success, AnimationClip failure)
     {
         Clear();
@@ -33,7 +33,7 @@ public sealed class QTEAnimatorOverrideScope
 
         animator = target;
         originalController = target.runtimeAnimatorController;
-        // overrides（覆盖项）：使用位置：作为 AnimatorOverrideController.GetOverrides(List<KeyValuePair<AnimationClip, AnimationClip>>) 的参数、QTEAnimatorOverrideScope.Apply(Animator, AnimationClip, AnimationClip, AnimationClip, AnimationClip)。
+        // 覆盖项。
 var overrides = new List<KeyValuePair<AnimationClip, AnimationClip>>();
         if (originalController is AnimatorOverrideController inherited)
         {
@@ -46,18 +46,18 @@ var overrides = new List<KeyValuePair<AnimationClip, AnimationClip>>();
             overrideController = new AnimatorOverrideController(originalController);
             overrideController.GetOverrides(overrides);
         }
-        // enterFound（进入是否已找到）：使用位置：QTEAnimatorOverrideScope.Apply(Animator, AnimationClip, AnimationClip, AnimationClip, AnimationClip)。
+        // 进入是否已找到。
 bool enterFound = false;
-        // holdFound（保持是否已找到）：使用位置：QTEAnimatorOverrideScope.Apply(Animator, AnimationClip, AnimationClip, AnimationClip, AnimationClip)。
+        // 保持是否已找到。
 bool holdFound = false;
-        // successFound（成功是否已找到）：使用位置：QTEAnimatorOverrideScope.Apply(Animator, AnimationClip, AnimationClip, AnimationClip, AnimationClip)。
+        // 成功是否已找到。
 bool successFound = false;
-        // failureFound（失败是否已找到）：使用位置：QTEAnimatorOverrideScope.Apply(Animator, AnimationClip, AnimationClip, AnimationClip, AnimationClip)。
+        // 失败是否已找到。
 bool failureFound = false;
         // pair（当前键值配对）：每轮从覆盖项取得一个元素，仅代表当前这一项。使用位置：QTEAnimatorOverrideScope.Apply(Animator, AnimationClip, AnimationClip, AnimationClip, AnimationClip)。
 foreach (var pair in overrides)
         {
-            // original（原始）：使用位置：作为 AnimatorOverrideController.this[AnimationClip] 的参数、QTEAnimatorOverrideScope.Apply(Animator, AnimationClip, AnimationClip, AnimationClip, AnimationClip)。
+            // 原始。
 AnimationClip original = pair.Key;
             if (original == null)
             {
@@ -125,7 +125,7 @@ AnimationClip original = pair.Key;
 
     /// <summary>IsEnterClip 的业务处理入口；本方法直接依赖 string.Contains(string)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 QTEAnimatorOverrideScope.Apply(Animator, AnimationClip, AnimationClip, AnimationClip, AnimationClip)；下游（含内部回调体） string.Contains(string)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="name">中文含义：名称。使用位置：QTEAnimatorOverrideScope.IsEnterClip(string)。</param>
+    /// <param name="name">名称。</param>
     private static bool IsEnterClip(string name)
     {
         return name.EndsWith("_进入", System.StringComparison.Ordinal);
@@ -133,7 +133,7 @@ AnimationClip original = pair.Key;
 
     /// <summary>IsHoldClip 的业务处理入口；本方法直接依赖 string.Contains(string)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 QTEAnimatorOverrideScope.Apply(Animator, AnimationClip, AnimationClip, AnimationClip, AnimationClip)；下游（含内部回调体） string.Contains(string)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="name">中文含义：名称。使用位置：QTEAnimatorOverrideScope.IsHoldClip(string)。</param>
+    /// <param name="name">名称。</param>
     private static bool IsHoldClip(string name)
     {
         return name.EndsWith("_挣扎", System.StringComparison.Ordinal);
@@ -141,7 +141,7 @@ AnimationClip original = pair.Key;
 
     /// <summary>IsSuccessClip 的业务处理入口；本方法直接依赖 string.Contains(string)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 QTEAnimatorOverrideScope.Apply(Animator, AnimationClip, AnimationClip, AnimationClip, AnimationClip)；下游（含内部回调体） string.Contains(string)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="name">中文含义：名称。使用位置：QTEAnimatorOverrideScope.IsSuccessClip(string)。</param>
+    /// <param name="name">名称。</param>
     private static bool IsSuccessClip(string name)
     {
         return name.EndsWith("推开_原地驱动", System.StringComparison.Ordinal);
@@ -149,7 +149,7 @@ AnimationClip original = pair.Key;
 
     /// <summary>IsFailureClip 的业务处理入口；本方法直接依赖 string.Contains(string)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 QTEAnimatorOverrideScope.Apply(Animator, AnimationClip, AnimationClip, AnimationClip, AnimationClip)；下游（含内部回调体） string.Contains(string)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="name">中文含义：名称。使用位置：QTEAnimatorOverrideScope.IsFailureClip(string)。</param>
+    /// <param name="name">名称。</param>
     private static bool IsFailureClip(string name)
     {
         return name.EndsWith("_咬颈_原地驱动", System.StringComparison.Ordinal);

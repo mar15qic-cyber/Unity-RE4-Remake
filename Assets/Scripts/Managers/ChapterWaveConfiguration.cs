@@ -5,16 +5,16 @@ using UnityEngine;
 [UnityEngine.Scripting.APIUpdating.MovedFrom(true, "", "Assembly-CSharp", "章节波次配置")]
 public sealed class ChapterWaveConfiguration : ScriptableObject
 {
-    /// <summary>中文含义：村民敌人目标。使用位置：ChapterWaveConfiguration.NormalKillTarget.get、ChapterWaveConfiguration.Validate(out string)。</summary>
+    /// <summary>村民敌人目标。</summary>
     [Header("任务目标")]
     [Min(1)]
     [SerializeField]
     private int ganadoTarget = 15;
-    /// <summary>中文含义：电锯敌人目标。使用位置：ChapterWaveConfiguration.ChainsawKillTarget.get、ChapterWaveConfiguration.Validate(out string)。</summary>
+    /// <summary>电锯敌人目标。</summary>
     [Min(1)]
     [SerializeField]
     private int sawmanTarget = 2;
-    /// <summary>中文含义：生存持续时间。使用位置：作为 float.IsInfinity(float) 的参数、ChapterWaveConfiguration.SurvivalSeconds.get、ChapterWaveConfiguration.Validate(out string)。</summary>
+    /// <summary>生存持续时间。</summary>
     [Min(1f)]
     [SerializeField]
     private float survivalDuration = 360f;
@@ -39,52 +39,52 @@ public sealed class ChapterWaveConfiguration : ScriptableObject
         public Vector3 position;
         public Bounds excludedPlayerArea;
     }
-    /// <summary>中文含义：首个波次村民敌人。使用位置：ChapterWaveConfiguration.FirstWaveNormalCount.get、ChapterWaveConfiguration.Validate(out string)。</summary>
+    /// <summary>首个波次村民敌人。</summary>
     [Header("固定三波")]
     [Min(1)]
     [SerializeField]
     private int firstWaveGanado = 7;
-    /// <summary>中文含义：首个波次电锯敌人。使用位置：ChapterWaveConfiguration.FirstWaveChainsawCount.get、ChapterWaveConfiguration.Validate(out string)。</summary>
+    /// <summary>首个波次电锯敌人。</summary>
     [Min(0)]
     [SerializeField]
     private int firstWaveSawman = 0;
-    /// <summary>中文含义：第二波次村民敌人。使用位置：ChapterWaveConfiguration.OrdinalTwoWaveNormalCount.get、ChapterWaveConfiguration.Validate(out string)。</summary>
+    /// <summary>第二波次村民敌人。</summary>
     [Min(0)]
     [SerializeField]
     private int secondWaveGanado = 5;
-    /// <summary>中文含义：第二波次电锯敌人。使用位置：ChapterWaveConfiguration.OrdinalTwoWaveChainsawCount.get、ChapterWaveConfiguration.Validate(out string)。</summary>
+    /// <summary>第二波次电锯敌人。</summary>
     [Min(0)]
     [SerializeField]
     private int secondWaveSawman = 1;
-    /// <summary>中文含义：第三波次村民敌人。使用位置：ChapterWaveConfiguration.OrdinalThreeWaveNormalCount.get、ChapterWaveConfiguration.Validate(out string)。</summary>
+    /// <summary>第三波次村民敌人。</summary>
     [Min(0)]
     [SerializeField]
     private int thirdWaveGanado = 5;
-    /// <summary>中文含义：第三波次电锯敌人。使用位置：ChapterWaveConfiguration.OrdinalThreeWaveChainsawCount.get、ChapterWaveConfiguration.Validate(out string)。</summary>
+    /// <summary>第三波次电锯敌人。</summary>
     [Min(0)]
     [SerializeField]
     private int thirdWaveSawman = 1;
-    /// <summary>中文含义：下一次波次剩余比例。使用位置：ChapterWaveConfiguration.AdvanceRemainingRatio.get、ChapterWaveConfiguration.Validate(out string)。</summary>
+    /// <summary>下一次波次剩余比例。</summary>
     [Range(0.05f, 0.95f)]
     [SerializeField]
     private float nextWaveRemainingRatio = 0.3f;
-    /// <summary>中文含义：第二波次延迟。使用位置：作为 float.IsInfinity(float) 的参数、ChapterWaveConfiguration.SubsequentWaveDelay.get、ChapterWaveConfiguration.Validate(out string)。</summary>
+    /// <summary>第二波次延迟。</summary>
     [Min(0f)]
     [SerializeField]
     private float secondWaveDelay = 2f;
-    /// <summary>中文含义：波次生成间隔。使用位置：作为 float.IsInfinity(float) 的参数、ChapterWaveConfiguration.GenerateInterval.get、ChapterWaveConfiguration.Validate(out string)。</summary>
+    /// <summary>波次生成间隔。</summary>
     [Min(0f)]
     [SerializeField]
     private float waveSpawnInterval = 0.12f;
-    /// <summary>中文含义：生成重试延迟。使用位置：作为 float.IsInfinity(float) 的参数、ChapterWaveConfiguration.RetryInterval.get、ChapterWaveConfiguration.Validate(out string)。</summary>
+    /// <summary>生成重试延迟。</summary>
     [Min(0.1f)]
     [SerializeField]
     private float spawnRetryDelay = 1f;
-    /// <summary>中文含义：常规击杀目标。使用位置：ChapterOneMissionManager.ganadoTarget.get。</summary>
+    /// <summary>常规击杀目标。</summary>
     internal int NormalKillTarget => ganadoTarget;
-    /// <summary>中文含义：电锯击杀目标。使用位置：ChapterOneMissionManager.sawmanTarget.get。</summary>
+    /// <summary>电锯击杀目标。</summary>
     internal int ChainsawKillTarget => sawmanTarget;
-    /// <summary>中文含义：生存秒。使用位置：ChapterOneMissionManager.survivalDuration.get。</summary>
+    /// <summary>生存秒。</summary>
     internal float SurvivalSeconds => survivalDuration;
     internal int BellKillTarget => bellKillTarget;
     internal float BellSurvivalSeconds => bellSurvivalDuration;
@@ -115,30 +115,30 @@ public sealed class ChapterWaveConfiguration : ScriptableObject
             farmEntranceSeconds >= 1f && float.IsFinite(farmEntranceSeconds) &&
             entranceSawmanHealth >= 1f && float.IsFinite(entranceSawmanHealth);
     }
-    /// <summary>中文含义：首个波次常规数量。使用位置：ChapterOneMissionManager.firstWaveGanado.get。</summary>
+    /// <summary>首个波次常规数量。</summary>
     internal int FirstWaveNormalCount => firstWaveGanado;
-    /// <summary>中文含义：首个波次电锯数量。使用位置：ChapterOneMissionManager.firstWaveSawman.get。</summary>
+    /// <summary>首个波次电锯数量。</summary>
     internal int FirstWaveChainsawCount => firstWaveSawman;
-    /// <summary>中文含义：序数第二波次常规数量。使用位置：ChapterOneMissionManager.secondWaveGanado.get。</summary>
+    /// <summary>序数第二波次常规数量。</summary>
     internal int OrdinalTwoWaveNormalCount => secondWaveGanado;
-    /// <summary>中文含义：序数第二波次电锯数量。使用位置：ChapterOneMissionManager.secondWaveSawman.get。</summary>
+    /// <summary>序数第二波次电锯数量。</summary>
     internal int OrdinalTwoWaveChainsawCount => secondWaveSawman;
-    /// <summary>中文含义：序数第三波次常规数量。使用位置：ChapterOneMissionManager.thirdWaveGanado.get。</summary>
+    /// <summary>序数第三波次常规数量。</summary>
     internal int OrdinalThreeWaveNormalCount => thirdWaveGanado;
-    /// <summary>中文含义：序数第三波次电锯数量。使用位置：ChapterOneMissionManager.thirdWaveSawman.get。</summary>
+    /// <summary>序数第三波次电锯数量。</summary>
     internal int OrdinalThreeWaveChainsawCount => thirdWaveSawman;
-    /// <summary>中文含义：推进剩余比例。使用位置：ChapterOneMissionManager.nextWaveRemainingRatio.get。</summary>
+    /// <summary>推进剩余比例。</summary>
     internal float AdvanceRemainingRatio => nextWaveRemainingRatio;
-    /// <summary>中文含义：后续波次延迟。使用位置：ChapterOneMissionManager.secondWaveDelay.get。</summary>
+    /// <summary>后续波次延迟。</summary>
     internal float SubsequentWaveDelay => secondWaveDelay;
-    /// <summary>中文含义：生成间隔。使用位置：ChapterOneMissionManager.waveSpawnInterval.get。</summary>
+    /// <summary>生成间隔。</summary>
     internal float GenerateInterval => waveSpawnInterval;
-    /// <summary>中文含义：重试间隔。使用位置：ChapterOneMissionManager.spawnRetryDelay.get。</summary>
+    /// <summary>重试间隔。</summary>
     internal float RetryInterval => spawnRetryDelay;
 
     /// <summary>Validate 的业务处理入口；本方法直接依赖 float.IsInfinity(float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 SceneStartupEntry.ConfigurationError()；下游（含内部回调体） float.IsInfinity(float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="field">中文含义：字段。输出参数，由本入口写入并交给调用方。使用位置：ChapterWaveConfiguration.Validate(out string)。</param>
+    /// <param name="field">字段。输出参数，由本入口写入并交给调用方。</param>
     public bool Validate(out string field)
     {
         field = null;

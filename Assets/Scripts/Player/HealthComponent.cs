@@ -8,11 +8,11 @@ using System;
 /// <remarks>玩家生命状态拥有者，接收伤害、治疗和上限变化，提交当前生命后同步通知生命变化与死亡；玩家外壳和 UI 读取已提交结果。</remarks>
 public class HealthComponent : MonoBehaviour
 {
-    /// <summary>中文含义：最大生命值。使用位置：作为 Action&lt;float, float&gt;.Invoke(float, float) 的参数、作为 Mathf.Min(float, float) 的参数、HealthComponent.HealthRatio.get 等共 7 处。</summary>
+    /// <summary>最大生命值。</summary>
     [Header("数值")]
     [HideInInspector]
     public float maxHealth = 100f;
-    /// <summary>中文含义：当前生命值。使用位置：作为 Action&lt;float, float&gt;.Invoke(float, float) 的参数、作为 Mathf.Max(float, float) 的参数、作为 Mathf.Min(float, float) 的参数 等共 10 处。</summary>
+    /// <summary>当前生命值。</summary>
     private float currentHealth;
     /// <summary>中文含义：当前生命值。当前血量</summary>
     public float CurrentHealth => currentHealth;
@@ -45,13 +45,13 @@ public class HealthComponent : MonoBehaviour
     public event Action OnDeath;
     /// <summary>初始化为满血（由 LeonController.Start 调用）</summary>
     /// <remarks>静态调用链：上游 LeonController.Start()、PerformanceSamplingEntry.Tick()；下游（含内部回调体） Action&lt;float, float&gt;.Invoke(float, float)、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="max">中文含义：最大。使用位置：HealthComponent.Initialize(float)。</param>
+    /// <param name="max">最大。</param>
     public void Initialize(float max)
     {
         InitialMaximum = max;
         maxHealth = max;
         currentHealth = maxHealth;
-        // receiverValue2（判空前缓存的生命变化时的通知回调）：从生命变化时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、HealthComponent.Initialize(float)。
+        // 判空前缓存的生命变化时的通知回调。
 global::System.Action<float, float> receiverValue2 = OnHealthChanged;
         if (!global::System.Object.ReferenceEquals(receiverValue2, null))
         {
@@ -61,7 +61,7 @@ global::System.Action<float, float> receiverValue2 = OnHealthChanged;
 
     /// <summary>治疗</summary>
     /// <remarks>静态调用链：上游 LeonController.Heal(float)、PerformanceSamplingEntry.Tick()；下游（含内部回调体） Action&lt;float, float&gt;.Invoke(float, float)、Mathf.Min(float, float)、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="amount">中文含义：大小。使用位置：作为 Mathf.Min(float, float) 的参数。</param>
+    /// <param name="amount">大小。</param>
     public void Heal(float amount)
     {
         if (IsDead)
@@ -70,7 +70,7 @@ global::System.Action<float, float> receiverValue2 = OnHealthChanged;
         }
 
         currentHealth = Mathf.Min(maxHealth, currentHealth + amount);
-        // receiverValue3（判空前缓存的生命变化时的通知回调）：从生命变化时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、HealthComponent.Heal(float)。
+        // 判空前缓存的生命变化时的通知回调。
 global::System.Action<float, float> receiverValue3 = OnHealthChanged;
         if (!global::System.Object.ReferenceEquals(receiverValue3, null))
         {
@@ -80,7 +80,7 @@ global::System.Action<float, float> receiverValue3 = OnHealthChanged;
 
     /// <summary>永久提高生命上限，当前生命值保持不变</summary>
     /// <remarks>静态调用链：上游 LeonController.IItemUseTarget.IncreaseHealthMaximum(float)；下游（含内部回调体） Action&lt;float, float&gt;.Invoke(float, float)、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="amount">中文含义：大小。使用位置：HealthComponent.IncreaseMaxHealth(float)。</param>
+    /// <param name="amount">大小。</param>
     public void IncreaseMaxHealth(float amount)
     {
         if (IsDead || amount <= 0f)
@@ -89,7 +89,7 @@ global::System.Action<float, float> receiverValue3 = OnHealthChanged;
         }
 
         maxHealth += amount;
-        // receiverValue4（判空前缓存的生命变化时的通知回调）：从生命变化时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、HealthComponent.IncreaseMaxHealth(float)。
+        // 判空前缓存的生命变化时的通知回调。
 global::System.Action<float, float> receiverValue4 = OnHealthChanged;
         if (!global::System.Object.ReferenceEquals(receiverValue4, null))
         {
@@ -99,7 +99,7 @@ global::System.Action<float, float> receiverValue4 = OnHealthChanged;
 
     /// <summary>受到伤害，返回实际造成的伤害值</summary>
     /// <remarks>静态调用链：上游 LeonController.ApplyDamage(float, Vector3, LeonHitDirection)、LeonController.TryApplyQTEFailureDamage(int, float, Vector3, Vector3)；下游（含内部回调体） Action.Invoke()、Action&lt;float, float&gt;.Invoke(float, float)、Mathf.Max(float, float)、Mathf.Min(float, float)、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="damage">中文含义：伤害。使用位置：作为 Mathf.Max(float, float) 的参数、作为 Mathf.Min(float, float) 的参数。</param>
+    /// <param name="damage">伤害。</param>
     public float TakeDamage(float damage)
     {
         if (IsDead)
@@ -107,10 +107,10 @@ global::System.Action<float, float> receiverValue4 = OnHealthChanged;
             return 0f;
         }
 
-        // actual（实际）：保存 Mathf.Min(float, float) 的返回结果，供当前步骤使用。使用位置：HealthComponent.TakeDamage(float)。
+        // 实际。
 float actual = Mathf.Min(damage, currentHealth);
         currentHealth = Mathf.Max(0, currentHealth - damage);
-        // receiverValue5（判空前缓存的生命变化时的通知回调）：从生命变化时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、HealthComponent.TakeDamage(float)。
+        // 判空前缓存的生命变化时的通知回调。
 global::System.Action<float, float> receiverValue5 = OnHealthChanged;
         if (!global::System.Object.ReferenceEquals(receiverValue5, null))
         {
@@ -119,7 +119,7 @@ global::System.Action<float, float> receiverValue5 = OnHealthChanged;
 
         if (currentHealth <= 0)
         {
-            // receiverValue6（判空前缓存的死亡时的通知回调）：从死亡时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、HealthComponent.TakeDamage(float)。
+            // 判空前缓存的死亡时的通知回调。
 global::System.Action receiverValue6 = OnDeath;
             if (!global::System.Object.ReferenceEquals(receiverValue6, null))
             {
@@ -135,7 +135,7 @@ global::System.Action receiverValue6 = OnDeath;
     public void ResetHealth()
     {
         currentHealth = maxHealth;
-        // receiverValue7（判空前缓存的生命变化时的通知回调）：从生命变化时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、HealthComponent.ResetHealth()。
+        // 判空前缓存的生命变化时的通知回调。
 global::System.Action<float, float> receiverValue7 = OnHealthChanged;
         if (!global::System.Object.ReferenceEquals(receiverValue7, null))
         {

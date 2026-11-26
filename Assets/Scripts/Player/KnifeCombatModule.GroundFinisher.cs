@@ -16,6 +16,41 @@ public sealed partial class KnifeCombatModule
         return inventory.SelectKnifeWithDurability(Mathf.Max(1, configuration.finisherConsumption));
     }
 
+    // 正面擒抱反制允许任意未损坏的小刀（哪怕残余耐久不足单次消耗，也在反制刺击后正常耗尽断刀）。
+    internal GridItem SelectFrontGrabEscapeKnife()
+    {
+        if (inventory == null || configuration == null)
+        {
+            return null;
+        }
+        return inventory.SelectKnifeWithDurability(1);
+    }
+
+    private bool CanPayFrontGrabEscape(GridItem knife)
+    {
+        if (knife == null || knife.item == null || !knife.item.usesDurability || configuration == null)
+        {
+            return false;
+        }
+        int remaining = knife.currentDurability;
+        if (remaining < 0)
+        {
+            remaining = knife.item.maxDurability;
+        }
+        return remaining >= 1;
+    }
+
+    internal bool TryReadFrontGrabKnifeDamage(GridItem knife, out float damage)
+    {
+        damage = 0f;
+        if (weapon == null || weapon.knife == null || weapon.knife.data == null || !CanPayFrontGrabEscape(knife))
+        {
+            return false;
+        }
+        damage = weapon.knife.data.baseDamage * InventoryManager.GetKnifeDamageScale(knife);
+        return damage > 0f;
+    }
+
     private bool CanPayGroundFinisher(GridItem knife)
     {
         if (knife == null || knife.item == null || !knife.item.usesDurability || configuration == null)
@@ -52,6 +87,17 @@ public sealed partial class KnifeCombatModule
             return false;
         }
         return true;
+    }
+
+    internal bool TryReadPairedKnifeDamage(GridItem knife, out float damage)
+    {
+        damage = 0f;
+        if (weapon == null || weapon.knife == null || weapon.knife.data == null || !CanPayGroundFinisher(knife))
+        {
+            return false;
+        }
+        damage = weapon.knife.data.baseDamage * InventoryManager.GetKnifeDamageScale(knife);
+        return damage > 0f;
     }
 
     internal bool TryCommitFinisherCost(GridItem knife)

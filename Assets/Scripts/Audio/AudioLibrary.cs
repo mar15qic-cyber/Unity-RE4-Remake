@@ -12,20 +12,20 @@ public class AudioLibrary : ScriptableObject
     [System.Serializable]
     public class Entry
     {
-        /// <summary>中文含义：事件名称（业务脚本通过此名称查找）。使用位置：作为 Dictionary&lt;string, AudioEventData&gt;.ContainsKey(string) 的参数、作为 Dictionary&lt;string, AudioEventData&gt;.this[string] 的参数、作为 EditorGUILayout.LabelField(string, string, params GUILayoutOption[]) 的参数 等共 5 处。</summary>
+        /// <summary>事件名称（业务脚本通过此名称查找）。</summary>
         [Tooltip("事件名称（业务脚本通过此名称查找）")]
         public string name;
-        /// <summary>中文含义：对应的音效事件数据。使用位置：作为 AudioLibraryEditor.PlayPreview(AudioEventData) 的参数、作为 EditorGUILayout.LabelField(string, string, params GUILayoutOption[]) 的参数、AudioLibrary.Initialize() 等共 7 处。</summary>
+        /// <summary>对应的音效事件数据。</summary>
         [Tooltip("对应的音效事件数据")]
         public AudioEventData eventData;
     }
 
-    /// <summary>中文含义：所有音效事件条目。使用位置：作为 Mathf.Clamp(int, int, int) 的参数、AudioLibrary.Initialize()、AudioLibrary.ResetRuntimeState() 等共 6 处。</summary>
+    /// <summary>所有音效事件条目。</summary>
     [Header("事件列表")]
     [Tooltip("所有音效事件条目")]
     public List<Entry> entries = new List<Entry>();
     // 运行时查找字典
-    /// <summary>中文含义：查找表。使用位置：AudioLibrary.GetEvent(string)、AudioLibrary.Initialize()。</summary>
+    /// <summary>查找表。</summary>
     private Dictionary<string, AudioEventData> lookup;
     /// <summary>
     /// 初始化查找字典
@@ -39,10 +39,10 @@ public class AudioLibrary : ScriptableObject
             return;
         }
 
-        // i（当前遍历索引）：使用位置：作为 List<AudioLibrary.Entry>.this[int] 的参数、AudioLibrary.Initialize()。
+        // 当前遍历索引。
 for (int i = 0; i < entries.Count; i++)
         {
-            // entry（当前入口）：使用位置：作为 Dictionary<string, AudioEventData>.ContainsKey(string) 的参数、作为 Dictionary<string, AudioEventData>.this[string] 的参数、作为 string.IsNullOrEmpty(string) 的参数 等共 4 处。
+            // 当前入口。
 var entry = entries[i];
             if (entry == null || string.IsNullOrEmpty(entry.name) || entry.eventData == null)
             {
@@ -67,7 +67,7 @@ var entry = entries[i];
             return;
         }
 
-        // i（当前遍历索引）：使用位置：作为 List<AudioLibrary.Entry>.this[int] 的参数、AudioLibrary.ResetRuntimeState()。
+        // 当前遍历索引。
 for (int i = 0; i < entries.Count; i++)
         {
             if (entries[i] != null && entries[i].eventData != null)
@@ -81,7 +81,7 @@ for (int i = 0; i < entries.Count; i++)
     /// 根据事件名称查找音效事件数据
     /// </summary>
     /// <remarks>静态调用链：上游 AudioLibrary.HasEvent(string)、AudioManager.Play(string)、AudioManager.Play3D(string, Vector3)、ChainsawManAnimationBridge.ResolveAudioEvent(AudioEventData, string)；下游（含内部回调体） AudioLibrary.Initialize()、Dictionary&lt;string, AudioEventData&gt;.TryGetValue(string, out AudioEventData)、string.IsNullOrEmpty(string)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="eventName">中文含义：事件名称。使用位置：作为 Dictionary&lt;string, AudioEventData&gt;.TryGetValue(string, out AudioEventData) 的参数、作为 string.IsNullOrEmpty(string) 的参数。</param>
+    /// <param name="eventName">事件名称。</param>
     public AudioEventData GetEvent(string eventName)
     {
         if (string.IsNullOrEmpty(eventName))
@@ -102,7 +102,7 @@ for (int i = 0; i < entries.Count; i++)
     /// 检查是否包含指定事件
     /// </summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） AudioLibrary.GetEvent(string)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="eventName">中文含义：事件名称。使用位置：作为 AudioLibrary.GetEvent(string) 的参数。</param>
+    /// <param name="eventName">事件名称。</param>
     public bool HasEvent(string eventName)
     {
         return GetEvent(eventName) != null;

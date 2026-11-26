@@ -5,25 +5,25 @@ using UnityEngine.UI;
 /// <summary>第一章任务常驻进度界面。</summary>
 public class MissionProgressHUD : MonoBehaviour
 {
-    /// <summary>中文含义：根节点分组。使用位置：MissionProgressHUD.BuildInterface()、MissionProgressHUD.Hide()、MissionProgressHUD.UpdateView(MissionProgressSnapshot)。</summary>
+    /// <summary>根节点分组。</summary>
     [Header("界面引用")]
     public CanvasGroup rootGroup;
-    /// <summary>中文含义：标题文字。使用位置：作为 MissionProgressHUD.SetLine(RectTransform, float, float) 的参数、MissionProgressHUD.BuildInterface()。</summary>
+    /// <summary>标题文字。</summary>
     public Text titleText;
-    /// <summary>中文含义：计时器文字。使用位置：作为 MissionProgressHUD.SetLine(RectTransform, float, float) 的参数、MissionProgressHUD.BuildInterface()、MissionProgressHUD.UpdateView(MissionProgressSnapshot)。</summary>
+    /// <summary>计时器文字。</summary>
     public Text timerText;
-    /// <summary>中文含义：村民敌人进度文字。使用位置：作为 MissionProgressHUD.SetLine(RectTransform, float, float) 的参数、MissionProgressHUD.BuildInterface()、MissionProgressHUD.UpdateView(MissionProgressSnapshot)。</summary>
+    /// <summary>村民敌人进度文字。</summary>
     public Text ganadoProgressText;
-    /// <summary>中文含义：电锯敌人进度文字。使用位置：作为 MissionProgressHUD.SetLine(RectTransform, float, float) 的参数、MissionProgressHUD.BuildInterface()、MissionProgressHUD.UpdateView(MissionProgressSnapshot)。</summary>
+    /// <summary>电锯敌人进度文字。</summary>
     public Text sawmanProgressText;
-    /// <summary>中文含义：接口字体。使用位置：MissionProgressHUD.BuildInterface()、MissionProgressHUD.CreateText(string, Transform, string, int, FontStyle)。</summary>
+    /// <summary>接口字体。</summary>
     [Header("字体")]
     public Font interfaceFont;
-    /// <summary>中文含义：任务管理器。使用位置：作为 MissionProgressHUD.UpdateView(MissionProgressSnapshot) 的参数、MissionProgressHUD.BindingCurrentSession(ChapterOneMissionManager, GameManager)、MissionProgressHUD.ConnectPresentation() 等共 4 处。</summary>
+    /// <summary>任务管理器。</summary>
     private ChapterOneMissionManager missionManager;
-    /// <summary>中文含义：游戏管理器。使用位置：MissionProgressHUD.BindingCurrentSession(ChapterOneMissionManager, GameManager)、MissionProgressHUD.ConnectPresentation()、MissionProgressHUD.Unbind()。</summary>
+    /// <summary>游戏管理器。</summary>
     private GameManager gameManager;
-    /// <summary>中文含义：是否接口已构建。使用位置：MissionProgressHUD.BuildInterface()、MissionProgressHUD.UpdateView(MissionProgressSnapshot)。</summary>
+    /// <summary>是否接口已构建。</summary>
     private bool interfaceBuilt;
     private bool siegeAnnounced;
     private Text siegeTitle;
@@ -43,8 +43,8 @@ public class MissionProgressHUD : MonoBehaviour
     void OnDisable() => Unbind();
     /// <summary>BindingCurrentSession 的业务处理入口；本方法直接依赖 MissionProgressHUD.ConnectPresentation()、MissionProgressHUD.Unbind()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 SceneStartupEntry.Start()；下游（含内部回调体） MissionProgressHUD.ConnectPresentation()、MissionProgressHUD.Unbind()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="mission">中文含义：任务。使用位置：MissionProgressHUD.BindingCurrentSession(ChapterOneMissionManager, GameManager)。</param>
-    /// <param name="match">中文含义：对局。使用位置：MissionProgressHUD.BindingCurrentSession(ChapterOneMissionManager, GameManager)。</param>
+    /// <param name="mission">任务。</param>
+    /// <param name="match">对局。</param>
     internal void BindingCurrentSession(ChapterOneMissionManager mission, GameManager match)
     {
         Unbind();
@@ -125,7 +125,13 @@ public class MissionProgressHUD : MonoBehaviour
 
     /// <summary>UpdateView 的业务处理入口；本方法直接依赖 Mathf.CeilToInt(float)、MissionProgressHUD.BuildInterface()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 MissionProgressHUD.ConnectPresentation()；下游（含内部回调体） Mathf.CeilToInt(float)、MissionProgressHUD.BuildInterface()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="progress">中文含义：进度。使用位置：作为 Mathf.CeilToInt(float) 的参数、MissionProgressHUD.UpdateView(MissionProgressSnapshot)。</param>
+    /// <param name="progress">进度。</param>
+    private int lastRemainingSeconds = int.MinValue;
+    private int lastGanadoKills = -1;
+    private int lastGanadoTarget = -1;
+    private int lastSawmanKills = -1;
+    private int lastSawmanTarget = -1;
+
     void UpdateView(MissionProgressSnapshot progress)
     {
         if (!interfaceBuilt)
@@ -151,7 +157,7 @@ public class MissionProgressHUD : MonoBehaviour
 
         if (rootGroup != null)
         {
-            // assignmentReceiver1（赋值前保存的目标根节点分组）：从根节点分组读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：MissionProgressHUD.UpdateView(MissionProgressSnapshot)。
+            // 赋值前保存的目标根节点分组。
 global::UnityEngine.CanvasGroup assignmentReceiver1 = rootGroup;
             if (progress.IsCompleted ||
                 (missionManager != null && missionManager.UsesBellEnding && (!progress.IsRunning || missionManager.IsBellEnding)))
@@ -164,34 +170,28 @@ global::UnityEngine.CanvasGroup assignmentReceiver1 = rootGroup;
             }
         }
 
-        // remaining（剩余）：保存 Mathf.CeilToInt(float) 的返回结果，供当前步骤使用。使用位置：MissionProgressHUD.UpdateView(MissionProgressSnapshot)。
-int remaining = Mathf.CeilToInt(progress.RemainingSeconds);
-        // minutes（分钟）：使用位置：MissionProgressHUD.UpdateView(MissionProgressSnapshot)。
-int minutes = remaining / 60;
-        // seconds（秒）：使用位置：MissionProgressHUD.UpdateView(MissionProgressSnapshot)。
-int seconds = remaining % 60;
-        if (timerText != null)
+        // 剩余。
+        int remaining = Mathf.CeilToInt(progress.RemainingSeconds);
+        if (timerText != null && remaining != lastRemainingSeconds)
         {
+            lastRemainingSeconds = remaining;
+            int minutes = remaining / 60;
+            int seconds = remaining % 60;
             timerText.text = $"生存倒计时  {minutes:00}:{seconds:00}";
         }
 
-        bool showCombinedKills = missionManager != null && missionManager.UsesBellEnding;
-        if (ganadoProgressText != null)
+        if (ganadoProgressText != null && (lastGanadoKills != progress.GanadoKills || lastGanadoTarget != progress.GanadoTarget))
         {
-            if (showCombinedKills)
-            {
-                ganadoProgressText.text = $"击杀敌人  {progress.GanadoKills + progress.SawmanKills}/{missionManager.BellKillTarget}";
-            }
-            else
-            {
-                ganadoProgressText.text = $"普通敌人  {progress.GanadoKills}/{progress.GanadoTarget}";
-            }
+            lastGanadoKills = progress.GanadoKills;
+            lastGanadoTarget = progress.GanadoTarget;
+            ganadoProgressText.text = $"普通敌人  {lastGanadoKills}/{lastGanadoTarget}";
         }
 
-        if (sawmanProgressText != null)
+        if (sawmanProgressText != null && (lastSawmanKills != progress.SawmanKills || lastSawmanTarget != progress.SawmanTarget))
         {
-            sawmanProgressText.enabled = !showCombinedKills;
-            sawmanProgressText.text = $"电锯敌人  {progress.SawmanKills}/{progress.SawmanTarget}";
+            lastSawmanKills = progress.SawmanKills;
+            lastSawmanTarget = progress.SawmanTarget;
+            sawmanProgressText.text = $"电锯敌人  {lastSawmanKills}/{lastSawmanTarget}";
         }
     }
 
@@ -238,16 +238,16 @@ int seconds = remaining % 60;
             interfaceFont = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
         }
 
-        // rootRect（根节点矩形）：使用位置：作为 MissionProgressHUD.CreateText(string, Transform, string, int, FontStyle) 的参数、MissionProgressHUD.BuildInterface()。
+        // 根节点矩形。
 RectTransform rootRect;
         if (rootGroup == null)
         {
-            // root（根游戏对象）：使用位置：MissionProgressHUD.BuildInterface()。
+            // 根游戏对象。
 GameObject root = new GameObject("第一章任务进度", typeof(RectTransform), typeof(Image), typeof(CanvasGroup));
             root.transform.SetParent(transform, false);
             rootRect = root.GetComponent<RectTransform>();
             rootGroup = root.GetComponent<CanvasGroup>();
-            // background（背景）：保存 GameObject.GetComponent<Image>() 的返回结果，供当前步骤使用。使用位置：MissionProgressHUD.BuildInterface()。
+            // 背景。
 Image background = root.GetComponent<Image>();
             background.color = new Color(0.015f, 0.02f, 0.025f, 0.72f);
             background.raycastTarget = false;
@@ -293,17 +293,17 @@ Image background = root.GetComponent<Image>();
 
     /// <summary>CreateText 的业务处理入口；本方法直接依赖 GameObject.GameObject(string, params Type[])、GameObject.GetComponent&lt;Text&gt;()、Transform.SetParent(Transform, bool)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 MissionProgressHUD.BuildInterface()；下游（含内部回调体） GameObject.GameObject(string, params Type[])、GameObject.GetComponent&lt;Text&gt;()、Transform.SetParent(Transform, bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="objectName">中文含义：对象名称。使用位置：作为 GameObject.GameObject(string, params Type[]) 的参数。</param>
-    /// <param name="parent">中文含义：父级。使用位置：作为 Transform.SetParent(Transform, bool) 的参数。</param>
-    /// <param name="value">中文含义：值。使用位置：MissionProgressHUD.CreateText(string, Transform, string, int, FontStyle)。</param>
-    /// <param name="size">中文含义：尺寸。使用位置：MissionProgressHUD.CreateText(string, Transform, string, int, FontStyle)。</param>
-    /// <param name="style">中文含义：样式。使用位置：MissionProgressHUD.CreateText(string, Transform, string, int, FontStyle)。</param>
+    /// <param name="objectName">对象名称。</param>
+    /// <param name="parent">父级。</param>
+    /// <param name="value">值。</param>
+    /// <param name="size">尺寸。</param>
+    /// <param name="style">样式。</param>
     Text CreateText(string objectName, Transform parent, string value, int size, FontStyle style)
     {
-        // textObject（文字对象）：使用位置：MissionProgressHUD.CreateText(string, Transform, string, int, FontStyle)。
+        // 文字对象。
 GameObject textObject = new GameObject(objectName, typeof(RectTransform), typeof(Text));
         textObject.transform.SetParent(parent, false);
-        // text（文字）：保存 GameObject.GetComponent<Text>() 的返回结果，供当前步骤使用。使用位置：MissionProgressHUD.CreateText(string, Transform, string, int, FontStyle)。
+        // 文字。
 Text text = textObject.GetComponent<Text>();
         text.font = interfaceFont;
         text.text = value;
@@ -317,9 +317,9 @@ Text text = textObject.GetComponent<Text>();
 
     /// <summary>SetLine 的业务处理入口；本方法直接依赖 Vector2.Vector2(float, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 MissionProgressHUD.BuildInterface()；下游（含内部回调体） Vector2.Vector2(float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="rect">中文含义：矩形。使用位置：MissionProgressHUD.SetLine(RectTransform, float, float)。</param>
-    /// <param name="minimumY">中文含义：最小纵向。使用位置：作为 Vector2.Vector2(float, float) 的参数。</param>
-    /// <param name="maximumY">中文含义：最大纵向。使用位置：作为 Vector2.Vector2(float, float) 的参数。</param>
+    /// <param name="rect">矩形。</param>
+    /// <param name="minimumY">最小纵向。</param>
+    /// <param name="maximumY">最大纵向。</param>
     static void SetLine(RectTransform rect, float minimumY, float maximumY)
     {
         rect.anchorMin = new Vector2(0f, minimumY);

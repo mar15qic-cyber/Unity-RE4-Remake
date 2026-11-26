@@ -11,14 +11,14 @@ using Pathfinding;
 [RequireComponent(typeof(Collider))]
 public partial class DoorController : MonoBehaviour, IInteractable
 {
-    /// <summary>中文含义：场景门集合。只读字段，初始化后不由普通写入口替换。使用位置：DoorController.CopyActiveSceneDoors(List&lt;DoorController&gt;)、DoorController.IsInsideOpenPassage(Vector3, float)、DoorController.OnDisable() 等共 8 处。</summary>
+    /// <summary>场景门集合。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly List<DoorController> sceneDoors = new();
-    /// <summary>中文含义：门叶铰链轴节点，旋转此节点来开关门。使用位置：作为 Quaternion.Inverse(Quaternion) 的参数、DoorController.CheckDirectionClear(int)、DoorController.GetOpenLeafInteriorScore(BoxCollider, int, int) 等共 7 处。</summary>
+    /// <summary>门叶铰链轴节点，旋转此节点来开关门。</summary>
     [Header("引用")]
     [Tooltip("门叶铰链轴节点，旋转此节点来开关门")]
     [SerializeField]
     private Transform hingePivot;
-    /// <summary>中文含义：门叶物理碰撞体（随门旋转，关闭时阻挡通行）。使用位置：DoorController.CheckDirectionClear(int)、DoorController.ContainsPassageGeometry(Vector3, float)、DoorController.EnsurePassageGeometry() 等共 5 处。</summary>
+    /// <summary>门叶物理碰撞体（随门旋转，关闭时阻挡通行）。</summary>
     [Tooltip("门叶物理碰撞体（随门旋转，关闭时阻挡通行）")]
     [SerializeField]
     private Collider physicalCollider;
@@ -26,7 +26,7 @@ public partial class DoorController : MonoBehaviour, IInteractable
     [Tooltip("交互触发碰撞体（供 InteractionSystem 计算距离）")]
     [SerializeField]
     private Collider interactTrigger;
-    /// <summary>中文含义：开门角度（度）。使用位置：作为 Quaternion.AngleAxis(float, Vector3) 的参数、DoorController.HandleAnimationEnd()、DoorController.Update()。</summary>
+    /// <summary>开门角度（度）。</summary>
     [Header("动画参数")]
     [Tooltip("开门角度（度）")]
     [SerializeField]
@@ -43,99 +43,99 @@ public partial class DoorController : MonoBehaviour, IInteractable
     [Tooltip("开门速度倍率（1=正常，ChapelDoor 用 0.83 实现更慢动作）")]
     [SerializeField]
     private float openSpeedMultiplier = 1f;
-    /// <summary>中文含义：交互有效距离（米）。使用位置：DoorController.InteractRange.get。</summary>
+    /// <summary>交互有效距离（米）。</summary>
     [Header("交互")]
     [Tooltip("交互有效距离（米）")]
     [SerializeField, Min(0.25f)]
     private float interactRange = 1.2f;
     [SerializeField, Tooltip("关闭时允许里昂向门叶走动并推开，开启后仍可手动关门。")]
     private bool openOnPlayerContact;
-    /// <summary>中文含义：智能路线侧向留白。直线路线穿过门洞时允许偏离门洞中心的额外宽度，避免把整扇门的无限平面当作通道。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>智能路线侧向留白。直线路线穿过门洞时允许偏离门洞中心的额外宽度，避免把整扇门的无限平面当作通道。</summary>
     [Header("敌人门洞路由")]
     [Tooltip("直线路线穿过门洞时允许偏离门洞中心的额外宽度，避免把整扇门的无限平面当作通道。")]
     [SerializeField, Min(0f)]
     private float aiRouteLateralPadding = 0.35f;
-    /// <summary>中文含义：验证门两侧导航区域时，取样点离门洞中心的距离。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>验证门两侧导航区域时，取样点离门洞中心的距离。</summary>
     [Tooltip("验证门两侧导航区域时，取样点离门洞中心的距离。")]
     [SerializeField, Min(0.1f)]
     private float aiRouteSideProbeDistance = 0.85f;
-    /// <summary>中文含义：构建追击区域时，从寻路图中切除门洞节点的法线深度。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>构建追击区域时，从寻路图中切除门洞节点的法线深度。</summary>
     [Tooltip("构建追击区域时，从寻路图中切除门洞节点的法线深度。")]
     [SerializeField, Min(0.25f)]
     private float topologyCutDepth = 1.1f;
-    /// <summary>中文含义：构建追击区域时，在门洞有效宽度外增加的切口宽度。使用位置：DoorController.TopologyCutPadding.get。</summary>
+    /// <summary>构建追击区域时，在门洞有效宽度外增加的切口宽度。</summary>
     [Tooltip("构建追击区域时，在门洞有效宽度外增加的切口宽度。")]
     [SerializeField, Min(0.1f)]
     private float topologyCutPadding = 0.45f;
-    /// <summary>中文含义：门洞两侧区域节点相对门洞中心允许的高度差。使用位置：DoorController.TopologyVerticalTolerance.get。</summary>
+    /// <summary>门洞两侧区域节点相对门洞中心允许的高度差。</summary>
     [Tooltip("门洞两侧区域节点相对门洞中心允许的高度差。")]
     [SerializeField, Min(0.5f)]
     private float topologyVerticalTolerance = 2.2f;
-    /// <summary>中文含义：是否仅用于兼容旧门逻辑。默认关闭时，门叶始终摆向室内侧。仅用于兼容旧门逻辑。默认关闭时，门叶始终摆向室内侧。使用位置：DoorController.DetermineOpenDirection()。</summary>
+    /// <summary>是否仅用于兼容旧门逻辑。默认关闭时，门叶始终摆向室内侧。仅用于兼容旧门逻辑。默认关闭时，门叶始终摆向室内侧。</summary>
     [Header("开门方向")]
     [Tooltip("仅用于兼容旧门逻辑。默认关闭时，门叶始终摆向室内侧。")]
     [SerializeField]
     private bool useAutomaticOpenDirection;
-    /// <summary>中文含义：打开村庄建筑木门时播放的音效事件。使用位置：作为 AudioManager.Play3D(AudioEventData, Vector3) 的参数、DoorController.PlayOpenAudio()。</summary>
+    /// <summary>打开村庄建筑木门时播放的音效事件。</summary>
     [Header("音效")]
     [Tooltip("打开村庄建筑木门时播放的音效事件")]
     [SerializeField]
     private AudioEventData openAudioEvent;
     [SerializeField, Tooltip("门实际关闭时播放的空间音效")]
     private AudioEventData closeAudioEvent;
-    /// <summary>中文含义：门开合进度，0=关闭 1=完全打开。使用位置：DoorController.HandleAnimationEnd()、DoorController.Update()。</summary>
+    /// <summary>门开合进度，0=关闭 1=完全打开。</summary>
     [Header("运行时（由 AnimationClip 驱动，请勿手动修改）")]
     [Tooltip("门开合进度，0=关闭 1=完全打开")]
     [SerializeField]
     private float doorOpenProgress = 0f;
-    /// <summary>中文含义：占用。使用位置：DoorController.OnDisable()、DoorController.OnEnable()、DoorController.ReleaseTraversal(TraversalToken, ReleaseReason) 等共 5 处。</summary>
+    /// <summary>占用。</summary>
     private DoorwayTraversalOccupancy occupancy;
-    /// <summary>中文含义：通行占用。使用位置：作为 RequestContext.RequestContext(string, ObjectIdentity, ObjectIdentity, long) 的参数、VillagerController.CleanupPursuitIngressWaiters()、VillagerController.IsPursuitIngressDirectionAvailable(DoorController, int) 等共 10 处。</summary>
+    /// <summary>通行占用。</summary>
     internal DoorwayTraversalOccupancy TraversalOccupancy => occupancy;
 
     /// <summary>TraversalValid 的业务处理入口；本方法直接依赖 DoorwayTraversalOccupancy.TraversalValid(TraversalToken)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） DoorwayTraversalOccupancy.TraversalValid(TraversalToken)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="token">中文含义：凭证。使用位置：作为 DoorwayTraversalOccupancy.TraversalValid(TraversalToken) 的参数。</param>
+    /// <param name="token">凭证。</param>
     public bool TraversalValid(GameArchitecture.TraversalToken token) => isActiveAndEnabled && occupancy != null && occupancy.TraversalValid(token);
     /// <summary>ReleaseTraversal 的业务处理入口；本方法直接依赖 DoorwayTraversalOccupancy.ReleaseTraversal(TraversalToken, ReleaseReason)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillagerController.UnregisterPursuitIngressWaiter()；下游（含内部回调体） DoorwayTraversalOccupancy.ReleaseTraversal(TraversalToken, ReleaseReason)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="token">中文含义：凭证。使用位置：作为 DoorwayTraversalOccupancy.ReleaseTraversal(TraversalToken, ReleaseReason) 的参数。</param>
-    /// <param name="reason">中文含义：原因。使用位置：作为 DoorwayTraversalOccupancy.ReleaseTraversal(TraversalToken, ReleaseReason) 的参数。</param>
+    /// <param name="token">凭证。</param>
+    /// <param name="reason">原因。</param>
     public bool ReleaseTraversal(GameArchitecture.TraversalToken token, GameArchitecture.ReleaseReason reason) => occupancy != null && occupancy.ReleaseTraversal(token, reason);
-    /// <summary>中文含义：动画控制器。使用位置：DoorController.Awake()、DoorController.Interact()、DoorController.SetOpen(bool) 等共 6 处。</summary>
+    /// <summary>动画控制器。</summary>
     private Animator animator;
-    /// <summary>中文含义：初始铰链世界旋转。使用位置：DoorController.CheckDirectionClear(int)、DoorController.GetOpenLeafInteriorScore(BoxCollider, int, int)、DoorController.HandleAnimationEnd() 等共 5 处。</summary>
+    /// <summary>初始铰链世界旋转。</summary>
     private Quaternion initialHingeWorldRotation;
-    /// <summary>中文含义：打开方向。使用位置：作为 Animator.SetInteger(int, int) 的参数、作为 Debug.Log(object, Object) 的参数、作为 DoorController.CheckDirectionClear(int) 的参数 等共 6 处。</summary>
+    /// <summary>打开方向。</summary>
     private int openDirection = 1;
-    /// <summary>中文含义：是否打开。使用位置：作为 Animator.SetBool(int, bool) 的参数、作为 DoorController.SetOpen(bool) 的参数、DoorController.GetPromptText() 等共 12 处。</summary>
+    /// <summary>是否打开。</summary>
     private bool isOpen;
-    /// <summary>中文含义：是否动画播放。使用位置：DoorController.CanInteract(Transform)、DoorController.Interact()、DoorController.IsPassageReady.get 等共 6 处。</summary>
+    /// <summary>是否动画播放。</summary>
     private bool isAnimating;
-    /// <summary>中文含义：打开音频句柄。使用位置：作为 AudioManager.Stop(AudioPlayHandle) 的参数、DoorController.PlayOpenAudio()。</summary>
+    /// <summary>打开音频句柄。</summary>
     private AudioPlayHandle openAudioHandle;
-    /// <summary>中文含义：通道中心。使用位置：DoorController.ContainsPassageGeometry(Vector3, float)、DoorController.EnsurePassageGeometry()、DoorController.PassageCenter.get。</summary>
+    /// <summary>通道中心。</summary>
     private Vector3 passageCenter;
-    /// <summary>中文含义：通道常规。使用位置：作为 DoorController.FlattenDirection(Vector3, Vector3) 的参数、作为 Vector3.Dot(Vector3, Vector3) 的参数、作为 Vector3.Vector3(float, float, float) 的参数 等共 5 处。</summary>
+    /// <summary>通道常规。</summary>
     private Vector3 passageNormal;
-    /// <summary>中文含义：通道切线。使用位置：作为 DoorController.FlattenDirection(Vector3, Vector3) 的参数、作为 Vector3.Dot(Vector3, Vector3) 的参数、作为 Vector3.Project(Vector3, Vector3) 的参数 等共 5 处。</summary>
+    /// <summary>通道切线。</summary>
     private Vector3 passageTangent;
-    /// <summary>中文含义：通道一半宽度。使用位置：DoorController.ContainsPassageGeometry(Vector3, float)、DoorController.EnsurePassageGeometry()、DoorController.PassageHalfWidth.get。</summary>
+    /// <summary>通道一半宽度。</summary>
     private float passageHalfWidth;
-    /// <summary>中文含义：通道几何是否就绪。使用位置：DoorController.EnsurePassageGeometry()。</summary>
+    /// <summary>通道几何是否就绪。</summary>
     private bool passageGeometryReady;
-    /// <summary>中文含义：是否打开哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。使用位置：作为 Animator.SetBool(int, bool) 的参数。</summary>
+    /// <summary>是否打开哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly int IsOpenHash = Animator.StringToHash("isOpen");
-    /// <summary>中文含义：打开方向哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。使用位置：作为 Animator.SetInteger(int, int) 的参数。</summary>
+    /// <summary>打开方向哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly int OpenDirHash = Animator.StringToHash("openDirection");
     /// <summary>中文含义：交互范围。</summary>
     public float InteractRange => interactRange;
-    /// <summary>中文含义：是否打开。使用位置：VillagerController.ShouldDeferCurrentIngressDoorBlocker(Collider)、VillagerController.TryGetPursuitIngressDestination(Vector3, out Vector3)。</summary>
+    /// <summary>是否打开。</summary>
     public bool IsOpen => isOpen || siegeBroken;
-    /// <summary>中文含义：是否通道就绪。使用位置：VillagerController.TryGetPursuitIngressDestination(Vector3, out Vector3)。</summary>
+    /// <summary>是否通道就绪。</summary>
     public bool IsPassageReady => siegeBroken || !siegeLatched && isOpen && !isAnimating;
 
-    /// <summary>中文含义：通道中心。使用位置：作为 AstarPath.GetNearest(Vector3, NearestNodeConstraint) 的参数、作为 DoorwayTraversalOccupancy.HorizontalDistance(Vector3, Vector3) 的参数、作为 Mathf.Abs(float) 的参数 等共 27 处。</summary>
+    /// <summary>通道中心。</summary>
     public Vector3 PassageCenter
     {
         get
@@ -145,7 +145,7 @@ public partial class DoorController : MonoBehaviour, IInteractable
         }
     }
 
-    /// <summary>中文含义：通道常规。使用位置：作为 AstarPath.GetNearest(Vector3, NearestNodeConstraint) 的参数、作为 Vector3.Dot(Vector3, Vector3) 的参数、DoorController.ConnectsSeparateNavigationAreas(Vector3, Vector3, float) 等共 11 处。</summary>
+    /// <summary>通道常规。</summary>
     public Vector3 PassageNormal
     {
         get
@@ -155,7 +155,7 @@ public partial class DoorController : MonoBehaviour, IInteractable
         }
     }
 
-    /// <summary>中文含义：通道切线。使用位置：作为 Vector3.Dot(Vector3, Vector3) 的参数、VillagerController.TryGetPursuitIngressDestination(Vector3, out Vector3)。</summary>
+    /// <summary>通道切线。</summary>
     public Vector3 PassageTangent
     {
         get
@@ -165,7 +165,7 @@ public partial class DoorController : MonoBehaviour, IInteractable
         }
     }
 
-    /// <summary>中文含义：通道一半宽度。使用位置：作为 Mathf.Max(float, float) 的参数、DoorController.DoesRouteCrossFinitePassage(Vector3, Vector3, float, float)、PursuitNavigationTopology.FindDoorSideRegion(DoorController, int) 等共 7 处。</summary>
+    /// <summary>通道一半宽度。</summary>
     public float PassageHalfWidth
     {
         get
@@ -175,11 +175,11 @@ public partial class DoorController : MonoBehaviour, IInteractable
         }
     }
 
-    /// <summary>中文含义：拓扑切口深度。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>拓扑切口深度。</summary>
     public float TopologyCutDepth => Mathf.Max(1.1f, topologyCutDepth);
-    /// <summary>中文含义：拓扑切口留白。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>拓扑切口留白。</summary>
     public float TopologyCutPadding => topologyCutPadding;
-    /// <summary>中文含义：拓扑竖直容差。使用位置：作为 Mathf.Max(float, float) 的参数。</summary>
+    /// <summary>拓扑竖直容差。</summary>
     public float TopologyVerticalTolerance => topologyVerticalTolerance;
 
     /// <summary>Unity 组件初始化回调；状态处理与资源交接按函数内顺序执行，下游协作见调用链。</summary>
@@ -212,7 +212,7 @@ public partial class DoorController : MonoBehaviour, IInteractable
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） DoorwayTraversalOccupancy.ClearValue()、InteractionSystem.Unregister(IInteractable)、List&lt;DoorController&gt;.Remove(DoorController)、object.ReferenceEquals(object, object)、PursuitNavigationTopology.Invalidate()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     void OnDisable()
     {
-        // receiverValue1（判空前缓存的占用）：从占用读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、DoorController.OnDisable()。
+        // 判空前缓存的占用。
 global::DoorwayTraversalOccupancy receiverValue1 = occupancy;
         if (!global::System.Object.ReferenceEquals(receiverValue1, null))
         {
@@ -226,7 +226,7 @@ global::DoorwayTraversalOccupancy receiverValue1 = occupancy;
 
     /// <summary>CopyActiveSceneDoors 的业务处理入口；本方法直接依赖 List&lt;DoorController&gt;.Add(DoorController)、List&lt;DoorController&gt;.Clear()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 PursuitNavigationTopology.Build(AstarPath)；下游（含内部回调体） List&lt;DoorController&gt;.Add(DoorController)、List&lt;DoorController&gt;.Clear()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="results">中文含义：结果集合。使用位置：DoorController.CopyActiveSceneDoors(List&lt;DoorController&gt;)。</param>
+    /// <param name="results">结果集合。</param>
     public static void CopyActiveSceneDoors(List<DoorController> results)
     {
         if (results == null)
@@ -235,10 +235,10 @@ global::DoorwayTraversalOccupancy receiverValue1 = occupancy;
         }
 
         results.Clear();
-        // index（当前元素索引）：使用位置：作为 List<DoorController>.this[int] 的参数、DoorController.CopyActiveSceneDoors(List<DoorController>)。
+        // 当前元素索引。
 for (int index = 0; index < sceneDoors.Count; index++)
         {
-            // door（门）：使用位置：作为 List<DoorController>.Add(DoorController) 的参数、DoorController.CopyActiveSceneDoors(List<DoorController>)。
+            // 门。
 DoorController door = sceneDoors[index];
             if (door != null && door.isActiveAndEnabled)
             {
@@ -360,9 +360,9 @@ DoorController door = sceneDoors[index];
             return;
         }
 
-        // stateInfo（当前动画状态信息）：保存 Animator.GetCurrentAnimatorStateInfo(int) 的返回结果，供当前步骤使用。使用位置：DoorController.Update()。
+        // 当前动画状态信息。
 var stateInfo = animator.GetCurrentAnimatorStateInfo(0);
-        // wasAnimating（之前是否动画播放）：使用位置：DoorController.Update()。
+        // 之前是否动画播放。
 bool wasAnimating = isAnimating;
         isAnimating = stateInfo.IsName("Opening") || stateInfo.IsName("Closing");
         if (wasAnimating && !isAnimating)
@@ -372,7 +372,7 @@ bool wasAnimating = isAnimating;
 
         if (isAnimating)
         {
-            // angle（角度）：使用位置：作为 Quaternion.AngleAxis(float, Vector3) 的参数。
+            // 角度。
 float angle = doorOpenProgress * openAngle * openDirection;
             hingePivot.rotation = Quaternion.AngleAxis(angle, Vector3.up) * initialHingeWorldRotation;
         }
@@ -386,7 +386,7 @@ float angle = doorOpenProgress * openAngle * openDirection;
     {
         if (isOpen)
         {
-            // angle（角度）：使用位置：作为 Quaternion.AngleAxis(float, Vector3) 的参数。
+            // 角度。
 float angle = openAngle * openDirection;
             hingePivot.rotation = Quaternion.AngleAxis(angle, Vector3.up) * initialHingeWorldRotation;
             doorOpenProgress = 1f;
@@ -432,7 +432,7 @@ float angle = openAngle * openDirection;
         if (!useAutomaticOpenDirection)
         {
             openDirection = ResolveInteriorOpenDirection();
-            // interiorClear（是否室内清除）：保存 DoorController.CheckDirectionClear(int) 的返回结果，供当前步骤使用。使用位置：DoorController.DetermineOpenDirection()。
+            // 是否室内清除。
 bool interiorClear = CheckDirectionClear(openDirection);
             if (!interiorClear)
             {
@@ -443,9 +443,9 @@ bool interiorClear = CheckDirectionClear(openDirection);
             return;
         }
 
-        // positiveClear（是否正向清除）：保存 DoorController.CheckDirectionClear(int) 的返回结果，供当前步骤使用。使用位置：作为 Debug.Log(object, Object) 的参数、DoorController.DetermineOpenDirection()。
+        // 是否正向清除。
 bool positiveClear = CheckDirectionClear(1);
-        // negativeClear（是否负值清除）：保存 DoorController.CheckDirectionClear(int) 的返回结果，供当前步骤使用。使用位置：作为 Debug.Log(object, Object) 的参数、DoorController.DetermineOpenDirection()。
+        // 是否负值清除。
 bool negativeClear = CheckDirectionClear(-1);
         if (positiveClear)
         {
@@ -472,11 +472,11 @@ bool negativeClear = CheckDirectionClear(-1);
             return 1;
         }
 
-        // interiorSide（室内侧边）：保存 DoorController.ResolveInteriorPassageSide() 的返回结果，供当前步骤使用。使用位置：作为 DoorController.GetOpenLeafInteriorScore(BoxCollider, int, int) 的参数。
+        // 室内侧边。
 int interiorSide = ResolveInteriorPassageSide();
-        // positiveScore（正向分值）：保存 DoorController.GetOpenLeafInteriorScore(BoxCollider, int, int) 的返回结果，供当前步骤使用。使用位置：DoorController.ResolveInteriorOpenDirection()。
+        // 正向分值。
 float positiveScore = GetOpenLeafInteriorScore(boxCollider, 1, interiorSide);
-        // negativeScore（负值分值）：保存 DoorController.GetOpenLeafInteriorScore(BoxCollider, int, int) 的返回结果，供当前步骤使用。使用位置：DoorController.ResolveInteriorOpenDirection()。
+        // 负值分值。
 float negativeScore = GetOpenLeafInteriorScore(boxCollider, -1, interiorSide);
         // 两种旋转在特殊模型上可能投影相同，此时保持模型默认正方向。
         if (positiveScore >= negativeScore)
@@ -493,9 +493,9 @@ float negativeScore = GetOpenLeafInteriorScore(boxCollider, -1, interiorSide);
     /// <remarks>静态调用链：上游 DoorController.ResolveInteriorOpenDirection()；下游（含内部回调体） Vector3.Dot(Vector3, Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     private int ResolveInteriorPassageSide()
     {
-        // interiorDirection（室内方向）：使用位置：作为 Vector3.Dot(Vector3, Vector3) 的参数、DoorController.ResolveInteriorPassageSide()。
+        // 室内方向。
 Vector3 interiorDirection = transform.up;
-        // route（路线）：使用位置：DoorController.ResolveInteriorPassageSide()。
+        // 路线。
 HouseThreeTraversalGeometry route = HouseThreeTraversalGeometry.Active;
         if (route != null && route.IsReady && route.entranceDoor == this)
         {
@@ -520,20 +520,20 @@ HouseThreeTraversalGeometry route = HouseThreeTraversalGeometry.Active;
 
     /// <summary>GetOpenLeafInteriorScore 的业务处理入口；本方法直接依赖 Quaternion.AngleAxis(float, Vector3)、Transform.InverseTransformPoint(Vector3)、Transform.TransformPoint(Vector3)、Vector3.Dot(Vector3, Vector3)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 DoorController.ResolveInteriorOpenDirection()；下游（含内部回调体） Quaternion.AngleAxis(float, Vector3)、Transform.InverseTransformPoint(Vector3)、Transform.TransformPoint(Vector3)、Vector3.Dot(Vector3, Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="boxCollider">中文含义：盒形碰撞体。使用位置：作为 Transform.TransformPoint(Vector3) 的参数、DoorController.GetOpenLeafInteriorScore(BoxCollider, int, int)。</param>
-    /// <param name="direction">中文含义：方向。使用位置：作为 Quaternion.AngleAxis(float, Vector3) 的参数。</param>
-    /// <param name="interiorSide">中文含义：室内侧边。使用位置：DoorController.GetOpenLeafInteriorScore(BoxCollider, int, int)。</param>
+    /// <param name="boxCollider">盒形碰撞体。</param>
+    /// <param name="direction">方向。</param>
+    /// <param name="interiorSide">室内侧边。</param>
     private float GetOpenLeafInteriorScore(BoxCollider boxCollider, int direction, int interiorSide)
     {
-        // closedCenter（已关闭中心）：保存 Transform.TransformPoint(Vector3) 的返回结果，供当前步骤使用。使用位置：作为 Transform.InverseTransformPoint(Vector3) 的参数。
+        // 已关闭中心。
 Vector3 closedCenter = boxCollider.transform.TransformPoint(boxCollider.center);
-        // centerInHinge（中心内部铰链）：保存 Transform.InverseTransformPoint(Vector3) 的返回结果，供当前步骤使用。使用位置：DoorController.GetOpenLeafInteriorScore(BoxCollider, int, int)。
+        // 中心内部铰链。
 Vector3 centerInHinge = hingePivot.InverseTransformPoint(closedCenter);
-        // openRotation（打开旋转）：使用位置：DoorController.GetOpenLeafInteriorScore(BoxCollider, int, int)。
+        // 打开旋转。
 Quaternion openRotation = Quaternion.AngleAxis(openAngle * direction, Vector3.up) * initialHingeWorldRotation;
-        // openCenter（打开中心）：使用位置：DoorController.GetOpenLeafInteriorScore(BoxCollider, int, int)。
+        // 打开中心。
 Vector3 openCenter = hingePivot.position + openRotation * centerInHinge;
-        // offset（偏移量）：使用位置：作为 Vector3.Dot(Vector3, Vector3) 的参数、DoorController.GetOpenLeafInteriorScore(BoxCollider, int, int)。
+        // 偏移量。
 Vector3 offset = openCenter - PassageCenter;
         offset.y = 0f;
         return Vector3.Dot(offset, PassageNormal) * interiorSide;
@@ -541,7 +541,7 @@ Vector3 offset = openCenter - PassageCenter;
 
     /// <summary>CheckDirectionClear 的业务处理入口；本方法直接依赖 DoorController.AbsVector(Vector3)、Physics.OverlapBox(Vector3, Vector3, Quaternion)、Quaternion.AngleAxis(float, Vector3)、Quaternion.Inverse(Quaternion)、Transform.InverseTransformPoint(Vector3)、Transform.IsChildOf(Transform)、Transform.TransformPoint(Vector3) 等共 8 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 DoorController.DetermineOpenDirection()；下游（含内部回调体） DoorController.AbsVector(Vector3)、Physics.OverlapBox(Vector3, Vector3, Quaternion)、Quaternion.AngleAxis(float, Vector3)、Quaternion.Inverse(Quaternion)、Transform.InverseTransformPoint(Vector3)、Transform.IsChildOf(Transform)、Transform.TransformPoint(Vector3) 等共 8 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="direction">中文含义：方向。使用位置：作为 Quaternion.AngleAxis(float, Vector3) 的参数。</param>
+    /// <param name="direction">方向。</param>
     bool CheckDirectionClear(int direction)
     {
         if (physicalCollider == null || hingePivot == null)
@@ -549,31 +549,31 @@ Vector3 offset = openCenter - PassageCenter;
             return true;
         }
 
-        // boxCollider（盒形碰撞体）：使用位置：作为 DoorController.AbsVector(Vector3) 的参数、作为 Transform.TransformPoint(Vector3) 的参数、作为 Vector3.Scale(Vector3, Vector3) 的参数 等共 4 处。
+        // 盒形碰撞体。
 BoxCollider boxCollider = physicalCollider as BoxCollider;
         if (boxCollider == null)
         {
             return true;
         }
 
-        // closedCenter（已关闭中心）：保存 Transform.TransformPoint(Vector3) 的返回结果，供当前步骤使用。使用位置：作为 Transform.InverseTransformPoint(Vector3) 的参数。
+        // 已关闭中心。
 Vector3 closedCenter = boxCollider.transform.TransformPoint(boxCollider.center);
-        // centerInHinge（中心内部铰链）：保存 Transform.InverseTransformPoint(Vector3) 的返回结果，供当前步骤使用。使用位置：DoorController.CheckDirectionClear(int)。
+        // 中心内部铰链。
 Vector3 centerInHinge = hingePivot.InverseTransformPoint(closedCenter);
-        // colliderRotationInHinge（碰撞体旋转内部铰链）：使用位置：DoorController.CheckDirectionClear(int)。
+        // 碰撞体旋转内部铰链。
 Quaternion colliderRotationInHinge = Quaternion.Inverse(hingePivot.rotation) * boxCollider.transform.rotation;
-        // testHingeRotation（验证铰链旋转）：使用位置：DoorController.CheckDirectionClear(int)。
+        // 验证铰链旋转。
 Quaternion testHingeRotation = Quaternion.AngleAxis(openAngle * direction, Vector3.up) * initialHingeWorldRotation;
-        // checkCenter（检查中心）：使用位置：作为 Physics.OverlapBox(Vector3, Vector3, Quaternion) 的参数。
+        // 检查中心。
 Vector3 checkCenter = hingePivot.position + testHingeRotation * centerInHinge;
-        // checkRotation（检查旋转）：使用位置：作为 Physics.OverlapBox(Vector3, Vector3, Quaternion) 的参数。
+        // 检查旋转。
 Quaternion checkRotation = testHingeRotation * colliderRotationInHinge;
-        // halfExtents（一半半尺寸）：保存 Vector3.Scale(Vector3, Vector3) 的返回结果，供当前步骤使用。使用位置：作为 Physics.OverlapBox(Vector3, Vector3, Quaternion) 的参数。
+        // 一半半尺寸。
 Vector3 halfExtents = Vector3.Scale(boxCollider.size * 0.5f, AbsVector(boxCollider.transform.lossyScale));
-        // colWasEnabled（列之前是否启用）：使用位置：DoorController.CheckDirectionClear(int)。
+        // 列之前是否启用。
 bool colWasEnabled = physicalCollider.enabled;
         physicalCollider.enabled = false;
-        // overlaps（重叠结果）：保存 Physics.OverlapBox(Vector3, Vector3, Quaternion) 的返回结果，供当前步骤使用。使用位置：DoorController.CheckDirectionClear(int)。
+        // 重叠结果。
 Collider[] overlaps = Physics.OverlapBox(checkCenter, halfExtents, checkRotation);
         physicalCollider.enabled = colWasEnabled;
         // col（列）：每轮从重叠结果取得一个元素，仅代表当前这一项。使用位置：DoorController.CheckDirectionClear(int)。
@@ -597,7 +597,7 @@ foreach (var col in overlaps)
 
     /// <summary>AbsVector 的业务处理入口；本方法直接依赖 Mathf.Abs(float)、Vector3.Vector3(float, float, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 DoorController.CheckDirectionClear(int)；下游（含内部回调体） Mathf.Abs(float)、Vector3.Vector3(float, float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="value">中文含义：值。使用位置：作为 Mathf.Abs(float) 的参数。</param>
+    /// <param name="value">值。</param>
     private static Vector3 AbsVector(Vector3 value)
     {
         return new Vector3(Mathf.Abs(value.x), Mathf.Abs(value.y), Mathf.Abs(value.z));
@@ -622,14 +622,14 @@ foreach (var col in overlaps)
             return true;
         }
 
-        // player（玩家）：使用位置：DoorController.IsPlayerBlocked()。
+        // 玩家。
 var player = LeonController.Instance;
         if (player == null)
         {
             return true;
         }
 
-        // animRig（当前里昂动画绑定组件）：保存 Component.GetComponent<LeonAnimRig>() 的返回结果，供当前步骤使用。使用位置：DoorController.IsPlayerBlocked()。
+        // 当前里昂动画绑定组件。
 var animRig = player.GetComponent<LeonAnimRig>();
         if (animRig != null && animRig.IsDead)
         {
@@ -689,11 +689,11 @@ var animRig = player.GetComponent<LeonAnimRig>();
 
     /// <summary>TryOpenNearestForAI 的业务处理入口；本方法直接依赖 DoorController.TryOpenForAI(Transform)、Vector3.Angle(Vector3, Vector3)、Vector3.Normalize()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillagerController.TryOpenDoorOnPath(Vector3)；下游（含内部回调体） DoorController.TryOpenForAI(Transform)、Vector3.Angle(Vector3, Vector3)、Vector3.Normalize()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="position">中文含义：位置。使用位置：DoorController.TryOpenNearestForAI(Vector3, Vector3, float, float, Transform)。</param>
-    /// <param name="forward">中文含义：前向。使用位置：DoorController.TryOpenNearestForAI(Vector3, Vector3, float, float, Transform)。</param>
-    /// <param name="radius">中文含义：半径。使用位置：DoorController.TryOpenNearestForAI(Vector3, Vector3, float, float, Transform)。</param>
-    /// <param name="facingAngle">中文含义：朝向角度。使用位置：DoorController.TryOpenNearestForAI(Vector3, Vector3, float, float, Transform)。</param>
-    /// <param name="opener">中文含义：开门者。使用位置：作为 DoorController.TryOpenForAI(Transform) 的参数、DoorController.TryOpenNearestForAI(Vector3, Vector3, float, float, Transform)。</param>
+    /// <param name="position">位置。</param>
+    /// <param name="forward">前向。</param>
+    /// <param name="radius">半径。</param>
+    /// <param name="facingAngle">朝向角度。</param>
+    /// <param name="opener">开门者。</param>
     public static bool TryOpenNearestForAI(Vector3 position, Vector3 forward, float radius, float facingAngle, Transform opener)
     {
         if (radius <= 0f)
@@ -701,11 +701,11 @@ var animRig = player.GetComponent<LeonAnimRig>();
             return false;
         }
 
-        // bestDoor（最佳门）：使用位置：DoorController.TryOpenNearestForAI(Vector3, Vector3, float, float, Transform)。
+        // 最佳门。
 DoorController bestDoor = null;
-        // bestDistanceSqr（最佳距离平方）：使用位置：DoorController.TryOpenNearestForAI(Vector3, Vector3, float, float, Transform)。
+        // 最佳距离平方。
 float bestDistanceSqr = radius * radius;
-        // flatForward（平面前向）：使用位置：作为 Vector3.Angle(Vector3, Vector3) 的参数、DoorController.TryOpenNearestForAI(Vector3, Vector3, float, float, Transform)。
+        // 平面前向。
 Vector3 flatForward = forward;
         flatForward.y = 0f;
         if (flatForward.sqrMagnitude <= 0.0001f && opener != null)
@@ -727,10 +727,10 @@ foreach (DoorController door in sceneDoors)
                 continue;
             }
 
-            // offset（偏移量）：使用位置：作为 Vector3.Angle(Vector3, Vector3) 的参数、DoorController.TryOpenNearestForAI(Vector3, Vector3, float, float, Transform)。
+            // 偏移量。
 Vector3 offset = door.PassageCenter - position;
             offset.y = 0f;
-            // distanceSqr（距离平方）：使用位置：DoorController.TryOpenNearestForAI(Vector3, Vector3, float, float, Transform)。
+            // 距离平方。
 float distanceSqr = offset.sqrMagnitude;
             if (distanceSqr > bestDistanceSqr)
             {
@@ -751,8 +751,8 @@ float distanceSqr = offset.sqrMagnitude;
 
     /// <summary>IsInsideOpenPassage 的业务处理入口；本方法直接依赖 DoorController.ContainsPassageGeometry(Vector3, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillagerController.HasContinuousNavigationGround(Vector3)、VillagerController.IsInsideTraversalBottleneck(Vector3)、VillagerController.IsNavigationTorsoClear(Vector3)、VillagerController.RequiresDirectNavigationTraversalToPlayer()、VillagerController.RequiresNavigationTraversalToPlayer() 等共 8 处；下游（含内部回调体） DoorController.ContainsPassageGeometry(Vector3, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="point">中文含义：点。使用位置：作为 DoorController.ContainsPassageGeometry(Vector3, float) 的参数。</param>
-    /// <param name="radius">中文含义：半径。使用位置：作为 DoorController.ContainsPassageGeometry(Vector3, float) 的参数。</param>
+    /// <param name="point">点。</param>
+    /// <param name="radius">半径。</param>
     public static bool IsInsideOpenPassage(Vector3 point, float radius)
     {
         // door（门）：每轮从场景门集合取得一个元素，仅代表当前这一项。使用位置：DoorController.IsInsideOpenPassage(Vector3, float)。
@@ -777,9 +777,9 @@ foreach (DoorController door in sceneDoors)
     /// 追击阶段的路由，不改变门的开关状态；实际靠近后仍由敌人开门逻辑处理。
     /// </summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） DoorController.TryFindPassageTowardDestination(Vector3, Vector3, out DoorController)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="source">中文含义：来源。使用位置：作为 DoorController.TryFindPassageTowardDestination(Vector3, Vector3, out DoorController) 的参数。</param>
-    /// <param name="destination">中文含义：目的地。使用位置：作为 DoorController.TryFindPassageTowardDestination(Vector3, Vector3, out DoorController) 的参数、DoorController.TryGetPassageTowardDestination(Vector3, Vector3, out Vector3)。</param>
-    /// <param name="passageDestination">中文含义：通道目的地。输出参数，由本入口写入并交给调用方。使用位置：DoorController.TryGetPassageTowardDestination(Vector3, Vector3, out Vector3)。</param>
+    /// <param name="source">来源。</param>
+    /// <param name="destination">目的地。</param>
+    /// <param name="passageDestination">通道目的地。输出参数，由本入口写入并交给调用方。</param>
     public static bool TryGetPassageTowardDestination(Vector3 source, Vector3 destination, out Vector3 passageDestination)
     {
         passageDestination = destination;
@@ -798,9 +798,9 @@ foreach (DoorController door in sceneDoors)
     /// 敌人、目标所在的不同导航区域相连，才允许将追击改为穿门阶段。
     /// </summary>
     /// <remarks>静态调用链：上游 DoorController.TryGetPassageTowardDestination(Vector3, Vector3, out Vector3)、EnemyAIManager.IsFormationSlotOnPlayerSide(Vector3, Vector3)、VillagerController.TryGetSameLevelPursuitIngressDestination(Vector3, out Vector3)；下游（含内部回调体） DoorController.TryFindPassageTowardDestination(Vector3, Vector3, out DoorController, out int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="source">中文含义：来源。使用位置：作为 DoorController.TryFindPassageTowardDestination(Vector3, Vector3, out DoorController, out int) 的参数。</param>
-    /// <param name="destination">中文含义：目的地。使用位置：作为 DoorController.TryFindPassageTowardDestination(Vector3, Vector3, out DoorController, out int) 的参数。</param>
-    /// <param name="passageDoor">中文含义：通道门。输出参数，由本入口写入并交给调用方。使用位置：作为 DoorController.TryFindPassageTowardDestination(Vector3, Vector3, out DoorController, out int) 的参数。</param>
+    /// <param name="source">来源。</param>
+    /// <param name="destination">目的地。</param>
+    /// <param name="passageDoor">通道门。输出参数，由本入口写入并交给调用方。</param>
     public static bool TryFindPassageTowardDestination(Vector3 source, Vector3 destination, out DoorController passageDoor)
     {
         return TryFindPassageTowardDestination(source, destination, out passageDoor, out _);
@@ -811,10 +811,10 @@ foreach (DoorController door in sceneDoors)
     /// 哪一侧。只要区域拓扑能够识别两端，就不再退回直线穿门猜测。
     /// </summary>
     /// <remarks>静态调用链：上游 DoorController.TryFindPassageTowardDestination(Vector3, Vector3, out DoorController)、DoorController.TryResolveOpenPassageDirection(Vector3, Vector3, float, out Vector3)、VillagerController.TryGetSameLevelPursuitIngressDestination(Vector3, out Vector3)；下游（含内部回调体） DoorController.IsPassageRequiredForRoute(Vector3, Vector3, float, float)、Mathf.Abs(float)、Mathf.Sign(float)、PursuitNavigationTopology.TryFindFirstPortal(Vector3, Vector3, out DoorController, out int)、PursuitNavigationTopology.TryResolveRegions(Vector3, Vector3, out int, out int)、Vector3.Dot(Vector3, Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="source">中文含义：来源。使用位置：作为 DoorController.IsPassageRequiredForRoute(Vector3, Vector3, float, float) 的参数、作为 PursuitNavigationTopology.TryFindFirstPortal(Vector3, Vector3, out DoorController, out int) 的参数、作为 PursuitNavigationTopology.TryResolveRegions(Vector3, Vector3, out int, out int) 的参数 等共 5 处。</param>
-    /// <param name="destination">中文含义：目的地。使用位置：作为 DoorController.IsPassageRequiredForRoute(Vector3, Vector3, float, float) 的参数、作为 PursuitNavigationTopology.TryFindFirstPortal(Vector3, Vector3, out DoorController, out int) 的参数、作为 PursuitNavigationTopology.TryResolveRegions(Vector3, Vector3, out int, out int) 的参数 等共 5 处。</param>
-    /// <param name="passageDoor">中文含义：通道门。输出参数，由本入口写入并交给调用方。使用位置：作为 PursuitNavigationTopology.TryFindFirstPortal(Vector3, Vector3, out DoorController, out int) 的参数、作为 Vector3.Dot(Vector3, Vector3) 的参数、DoorController.TryFindPassageTowardDestination(Vector3, Vector3, out DoorController, out int)。</param>
-    /// <param name="sourceSideSign">中文含义：来源侧边符号。输出参数，由本入口写入并交给调用方。使用位置：作为 PursuitNavigationTopology.TryFindFirstPortal(Vector3, Vector3, out DoorController, out int) 的参数、DoorController.TryFindPassageTowardDestination(Vector3, Vector3, out DoorController, out int)。</param>
+    /// <param name="source">来源。</param>
+    /// <param name="destination">目的地。</param>
+    /// <param name="passageDoor">通道门。输出参数，由本入口写入并交给调用方。</param>
+    /// <param name="sourceSideSign">来源侧边符号。输出参数，由本入口写入并交给调用方。</param>
     public static bool TryFindPassageTowardDestination(Vector3 source, Vector3 destination, out DoorController passageDoor, out int sourceSideSign)
     {
         passageDoor = null;
@@ -831,13 +831,13 @@ foreach (DoorController door in sceneDoors)
 
         // 寻路图尚未完成扫描时保留旧判定作为启动阶段兼容回退。
         // 一旦区域拓扑可用，这段逻辑不再参与普通追击决策。
-        // bestDoor（最佳门）：使用位置：DoorController.TryFindPassageTowardDestination(Vector3, Vector3, out DoorController, out int)。
+        // 最佳门。
 DoorController bestDoor = null;
-        // bestTargetDistanceSqr（最佳目标距离平方）：使用位置：作为 Mathf.Abs(float) 的参数、DoorController.TryFindPassageTowardDestination(Vector3, Vector3, out DoorController, out int)。
+        // 最佳目标距离平方。
 float bestTargetDistanceSqr = float.PositiveInfinity;
-        // bestSourceDistanceSqr（最佳来源距离平方）：使用位置：DoorController.TryFindPassageTowardDestination(Vector3, Vector3, out DoorController, out int)。
+        // 最佳来源距离平方。
 float bestSourceDistanceSqr = float.PositiveInfinity;
-        // sideTolerance（侧边容差）：使用位置：DoorController.TryFindPassageTowardDestination(Vector3, Vector3, out DoorController, out int)。
+        // 侧边容差。
 const float sideTolerance = 0.12f;
         // door（门）：每轮从场景门集合取得一个元素，仅代表当前这一项。使用位置：DoorController.TryFindPassageTowardDestination(Vector3, Vector3, out DoorController, out int)。
 foreach (DoorController door in sceneDoors)
@@ -847,13 +847,13 @@ foreach (DoorController door in sceneDoors)
                 continue;
             }
 
-            // center（中心）：使用位置：作为 Vector3.Dot(Vector3, Vector3) 的参数、DoorController.TryFindPassageTowardDestination(Vector3, Vector3, out DoorController, out int)。
+            // 中心。
 Vector3 center = door.PassageCenter;
-            // normal（表面法线）：使用位置：作为 Vector3.Dot(Vector3, Vector3) 的参数。
+            // 表面法线。
 Vector3 normal = door.PassageNormal;
-            // sourceSide（来源侧边）：保存 Vector3.Dot(Vector3, Vector3) 的返回结果，供当前步骤使用。使用位置：作为 DoorController.IsPassageRequiredForRoute(Vector3, Vector3, float, float) 的参数、作为 Mathf.Abs(float) 的参数、作为 Mathf.Sign(float) 的参数。
+            // 来源侧边。
 float sourceSide = Vector3.Dot(source - center, normal);
-            // destinationSide（目的地侧边）：保存 Vector3.Dot(Vector3, Vector3) 的返回结果，供当前步骤使用。使用位置：作为 DoorController.IsPassageRequiredForRoute(Vector3, Vector3, float, float) 的参数、作为 Mathf.Abs(float) 的参数、作为 Mathf.Sign(float) 的参数。
+            // 目的地侧边。
 float destinationSide = Vector3.Dot(destination - center, normal);
             if (Mathf.Abs(sourceSide) <= sideTolerance || Mathf.Abs(destinationSide) <= sideTolerance || Mathf.Sign(sourceSide) == Mathf.Sign(destinationSide))
             {
@@ -865,15 +865,15 @@ float destinationSide = Vector3.Dot(destination - center, normal);
                 continue;
             }
 
-            // destinationOffset（目的地偏移量）：使用位置：DoorController.TryFindPassageTowardDestination(Vector3, Vector3, out DoorController, out int)。
+            // 目的地偏移量。
 Vector3 destinationOffset = destination - center;
             destinationOffset.y = 0f;
-            // targetDistanceSqr（目标距离平方）：使用位置：作为 Mathf.Abs(float) 的参数、DoorController.TryFindPassageTowardDestination(Vector3, Vector3, out DoorController, out int)。
+            // 目标距离平方。
 float targetDistanceSqr = destinationOffset.sqrMagnitude;
-            // sourceOffset（来源偏移量）：使用位置：DoorController.TryFindPassageTowardDestination(Vector3, Vector3, out DoorController, out int)。
+            // 来源偏移量。
 Vector3 sourceOffset = source - center;
             sourceOffset.y = 0f;
-            // sourceDistanceSqr（来源距离平方）：使用位置：DoorController.TryFindPassageTowardDestination(Vector3, Vector3, out DoorController, out int)。
+            // 来源距离平方。
 float sourceDistanceSqr = sourceOffset.sqrMagnitude;
             if (targetDistanceSqr > bestTargetDistanceSqr + 0.01f || (Mathf.Abs(targetDistanceSqr - bestTargetDistanceSqr) <= 0.01f && sourceDistanceSqr >= bestSourceDistanceSqr))
             {
@@ -890,7 +890,7 @@ float sourceDistanceSqr = sourceOffset.sqrMagnitude;
         passageDoor = bestDoor;
         if (passageDoor != null)
         {
-            // side（侧边）：保存 Vector3.Dot(Vector3, Vector3) 的返回结果，供当前步骤使用。使用位置：DoorController.TryFindPassageTowardDestination(Vector3, Vector3, out DoorController, out int)。
+            // 侧边。
 float side = Vector3.Dot(source - passageDoor.PassageCenter, passageDoor.PassageNormal);
             if (side >= 0f)
             {
@@ -910,10 +910,10 @@ float side = Vector3.Dot(source - passageDoor.PassageCenter, passageDoor.Passage
     /// 恰好落在门法线两侧，也不会被错误吸附到无关房屋的门前。
     /// </summary>
     /// <remarks>静态调用链：上游 DoorController.TryFindPassageTowardDestination(Vector3, Vector3, out DoorController, out int)；下游（含内部回调体） DoorController.ConnectsSeparateNavigationAreas(Vector3, Vector3, float)、DoorController.DoesRouteCrossFinitePassage(Vector3, Vector3, float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="source">中文含义：来源。使用位置：作为 DoorController.ConnectsSeparateNavigationAreas(Vector3, Vector3, float) 的参数、作为 DoorController.DoesRouteCrossFinitePassage(Vector3, Vector3, float, float) 的参数。</param>
-    /// <param name="destination">中文含义：目的地。使用位置：作为 DoorController.ConnectsSeparateNavigationAreas(Vector3, Vector3, float) 的参数、作为 DoorController.DoesRouteCrossFinitePassage(Vector3, Vector3, float, float) 的参数。</param>
-    /// <param name="sourceSide">中文含义：来源侧边。使用位置：作为 DoorController.ConnectsSeparateNavigationAreas(Vector3, Vector3, float) 的参数、作为 DoorController.DoesRouteCrossFinitePassage(Vector3, Vector3, float, float) 的参数。</param>
-    /// <param name="destinationSide">中文含义：目的地侧边。使用位置：作为 DoorController.DoesRouteCrossFinitePassage(Vector3, Vector3, float, float) 的参数。</param>
+    /// <param name="source">来源。</param>
+    /// <param name="destination">目的地。</param>
+    /// <param name="sourceSide">来源侧边。</param>
+    /// <param name="destinationSide">目的地侧边。</param>
     private bool IsPassageRequiredForRoute(Vector3 source, Vector3 destination, float sourceSide, float destinationSide)
     {
         if (DoesRouteCrossFinitePassage(source, destination, sourceSide, destinationSide))
@@ -926,36 +926,36 @@ float side = Vector3.Dot(source - passageDoor.PassageCenter, passageDoor.Passage
 
     /// <summary>DoesRouteCrossFinitePassage 的业务处理入口；本方法直接依赖 Mathf.Abs(float)、Mathf.Clamp01(float)、Mathf.Max(float, float)、Vector3.Dot(Vector3, Vector3)、Vector3.Lerp(Vector3, Vector3, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 DoorController.IsPassageRequiredForRoute(Vector3, Vector3, float, float)；下游（含内部回调体） Mathf.Abs(float)、Mathf.Clamp01(float)、Mathf.Max(float, float)、Vector3.Dot(Vector3, Vector3)、Vector3.Lerp(Vector3, Vector3, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="source">中文含义：来源。使用位置：作为 Vector3.Lerp(Vector3, Vector3, float) 的参数。</param>
-    /// <param name="destination">中文含义：目的地。使用位置：作为 Vector3.Lerp(Vector3, Vector3, float) 的参数。</param>
-    /// <param name="sourceSide">中文含义：来源侧边。使用位置：作为 Mathf.Clamp01(float) 的参数、DoorController.DoesRouteCrossFinitePassage(Vector3, Vector3, float, float)。</param>
-    /// <param name="destinationSide">中文含义：目的地侧边。使用位置：DoorController.DoesRouteCrossFinitePassage(Vector3, Vector3, float, float)。</param>
+    /// <param name="source">来源。</param>
+    /// <param name="destination">目的地。</param>
+    /// <param name="sourceSide">来源侧边。</param>
+    /// <param name="destinationSide">目的地侧边。</param>
     private bool DoesRouteCrossFinitePassage(Vector3 source, Vector3 destination, float sourceSide, float destinationSide)
     {
-        // sideDelta（侧边增量）：使用位置：作为 Mathf.Abs(float) 的参数、作为 Mathf.Clamp01(float) 的参数。
+        // 侧边增量。
 float sideDelta = sourceSide - destinationSide;
         if (Mathf.Abs(sideDelta) <= 0.0001f)
         {
             return false;
         }
 
-        // crossingRatio（跨越比例）：保存 Mathf.Clamp01(float) 的返回结果，供当前步骤使用。使用位置：作为 Vector3.Lerp(Vector3, Vector3, float) 的参数。
+        // 跨越比例。
 float crossingRatio = Mathf.Clamp01(sourceSide / sideDelta);
-        // crossingPoint（跨越点）：保存 Vector3.Lerp(Vector3, Vector3, float) 的返回结果，供当前步骤使用。使用位置：DoorController.DoesRouteCrossFinitePassage(Vector3, Vector3, float, float)。
+        // 跨越点。
 Vector3 crossingPoint = Vector3.Lerp(source, destination, crossingRatio);
-        // offset（偏移量）：使用位置：作为 Vector3.Dot(Vector3, Vector3) 的参数、DoorController.DoesRouteCrossFinitePassage(Vector3, Vector3, float, float)。
+        // 偏移量。
 Vector3 offset = crossingPoint - PassageCenter;
         offset.y = 0f;
-        // lateralDistance（侧向距离）：保存 Mathf.Abs(float) 的返回结果，供当前步骤使用。使用位置：DoorController.DoesRouteCrossFinitePassage(Vector3, Vector3, float, float)。
+        // 侧向距离。
 float lateralDistance = Mathf.Abs(Vector3.Dot(offset, PassageTangent));
         return lateralDistance <= PassageHalfWidth + Mathf.Max(0f, aiRouteLateralPadding);
     }
 
     /// <summary>ConnectsSeparateNavigationAreas 的业务处理入口；本方法直接依赖 AstarPath.GetNearest(Vector3, NearestNodeConstraint)、Mathf.Max(float, float)、Mathf.Sign(float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 DoorController.IsPassageRequiredForRoute(Vector3, Vector3, float, float)；下游（含内部回调体） AstarPath.GetNearest(Vector3, NearestNodeConstraint)、Mathf.Max(float, float)、Mathf.Sign(float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="source">中文含义：来源。使用位置：作为 AstarPath.GetNearest(Vector3, NearestNodeConstraint) 的参数。</param>
-    /// <param name="destination">中文含义：目的地。使用位置：作为 AstarPath.GetNearest(Vector3, NearestNodeConstraint) 的参数。</param>
-    /// <param name="sourceSide">中文含义：来源侧边。使用位置：作为 Mathf.Sign(float) 的参数。</param>
+    /// <param name="source">来源。</param>
+    /// <param name="destination">目的地。</param>
+    /// <param name="sourceSide">来源侧边。</param>
     private bool ConnectsSeparateNavigationAreas(Vector3 source, Vector3 destination, float sourceSide)
     {
         if (AstarPath.active == null)
@@ -963,26 +963,26 @@ float lateralDistance = Mathf.Abs(Vector3.Dot(offset, PassageTangent));
             return false;
         }
 
-        // sourceInfo（来源信息）：保存 AstarPath.GetNearest(Vector3, NearestNodeConstraint) 的返回结果，供当前步骤使用。使用位置：DoorController.ConnectsSeparateNavigationAreas(Vector3, Vector3, float)。
+        // 来源信息。
 NNInfo sourceInfo = AstarPath.active.GetNearest(source, NearestNodeConstraint.Walkable);
-        // destinationInfo（目的地信息）：保存 AstarPath.GetNearest(Vector3, NearestNodeConstraint) 的返回结果，供当前步骤使用。使用位置：DoorController.ConnectsSeparateNavigationAreas(Vector3, Vector3, float)。
+        // 目的地信息。
 NNInfo destinationInfo = AstarPath.active.GetNearest(destination, NearestNodeConstraint.Walkable);
         if (sourceInfo.node == null || destinationInfo.node == null || sourceInfo.node.Area == destinationInfo.node.Area)
         {
             return false;
         }
 
-        // probeDistance（探测距离）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：DoorController.ConnectsSeparateNavigationAreas(Vector3, Vector3, float)。
+        // 探测距离。
 float probeDistance = Mathf.Max(0.1f, aiRouteSideProbeDistance);
-        // sourceDirection（来源方向）：保存 Mathf.Sign(float) 的返回结果，供当前步骤使用。使用位置：DoorController.ConnectsSeparateNavigationAreas(Vector3, Vector3, float)。
+        // 来源方向。
 float sourceDirection = Mathf.Sign(sourceSide);
-        // sourceProbe（来源探测）：使用位置：作为 AstarPath.GetNearest(Vector3, NearestNodeConstraint) 的参数。
+        // 来源探测。
 Vector3 sourceProbe = PassageCenter + PassageNormal * sourceDirection * probeDistance;
-        // destinationProbe（目的地探测）：使用位置：作为 AstarPath.GetNearest(Vector3, NearestNodeConstraint) 的参数。
+        // 目的地探测。
 Vector3 destinationProbe = PassageCenter - PassageNormal * sourceDirection * probeDistance;
-        // sourceProbeInfo（来源探测信息）：保存 AstarPath.GetNearest(Vector3, NearestNodeConstraint) 的返回结果，供当前步骤使用。使用位置：DoorController.ConnectsSeparateNavigationAreas(Vector3, Vector3, float)。
+        // 来源探测信息。
 NNInfo sourceProbeInfo = AstarPath.active.GetNearest(sourceProbe, NearestNodeConstraint.Walkable);
-        // destinationProbeInfo（目的地探测信息）：保存 AstarPath.GetNearest(Vector3, NearestNodeConstraint) 的返回结果，供当前步骤使用。使用位置：DoorController.ConnectsSeparateNavigationAreas(Vector3, Vector3, float)。
+        // 目的地探测信息。
 NNInfo destinationProbeInfo = AstarPath.active.GetNearest(destinationProbe, NearestNodeConstraint.Walkable);
         return sourceProbeInfo.node != null && destinationProbeInfo.node != null && sourceProbeInfo.node.Area == sourceInfo.node.Area && destinationProbeInfo.node.Area == destinationInfo.node.Area;
     }
@@ -992,12 +992,12 @@ NNInfo destinationProbeInfo = AstarPath.active.GetNearest(destinationProbe, Near
     /// 再由敌人判断自己是否位于该门的另一侧，避免远处敌人被分派到别的门。
     /// </summary>
     /// <remarks>静态调用链：上游 VillagerController.TryGetPursuitIngressDestination(Vector3, out Vector3)；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="destination">中文含义：目的地。使用位置：DoorController.TryFindNearestPassageToDestination(Vector3, out DoorController)。</param>
-    /// <param name="passageDoor">中文含义：通道门。输出参数，由本入口写入并交给调用方。使用位置：DoorController.TryFindNearestPassageToDestination(Vector3, out DoorController)。</param>
+    /// <param name="destination">目的地。</param>
+    /// <param name="passageDoor">通道门。输出参数，由本入口写入并交给调用方。</param>
     public static bool TryFindNearestPassageToDestination(Vector3 destination, out DoorController passageDoor)
     {
         passageDoor = null;
-        // bestDistanceSqr（最佳距离平方）：使用位置：DoorController.TryFindNearestPassageToDestination(Vector3, out DoorController)。
+        // 最佳距离平方。
 float bestDistanceSqr = float.PositiveInfinity;
         // door（门）：每轮从场景门集合取得一个元素，仅代表当前这一项。使用位置：DoorController.TryFindNearestPassageToDestination(Vector3, out DoorController)。
 foreach (DoorController door in sceneDoors)
@@ -1007,10 +1007,10 @@ foreach (DoorController door in sceneDoors)
                 continue;
             }
 
-            // offset（偏移量）：使用位置：DoorController.TryFindNearestPassageToDestination(Vector3, out DoorController)。
+            // 偏移量。
 Vector3 offset = destination - door.PassageCenter;
             offset.y = 0f;
-            // distanceSqr（距离平方）：使用位置：DoorController.TryFindNearestPassageToDestination(Vector3, out DoorController)。
+            // 距离平方。
 float distanceSqr = offset.sqrMagnitude;
             if (distanceSqr >= bestDistanceSqr)
             {
@@ -1026,7 +1026,7 @@ float distanceSqr = offset.sqrMagnitude;
 
     /// <summary>IsOpenDoorCollider 的业务处理入口；本方法直接依赖 Component.GetComponentInParent&lt;DoorController&gt;()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillagerController.ShouldIgnoreMovementCollider(Collider, Vector3, bool)；下游（含内部回调体） Component.GetComponentInParent&lt;DoorController&gt;()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="collider">中文含义：碰撞体。使用位置：DoorController.IsOpenDoorCollider(Collider)。</param>
+    /// <param name="collider">碰撞体。</param>
     public static bool IsOpenDoorCollider(Collider collider)
     {
         if (collider == null)
@@ -1034,17 +1034,17 @@ float distanceSqr = offset.sqrMagnitude;
             return false;
         }
 
-        // door（门）：保存 Component.GetComponentInParent<DoorController>() 的返回结果，供当前步骤使用。使用位置：DoorController.IsOpenDoorCollider(Collider)。
+        // 门。
 DoorController door = collider.GetComponentInParent<DoorController>();
         return door != null && door.isOpen;
     }
 
     /// <summary>TryResolveOpenPassageDirection 的业务处理入口；本方法直接依赖 DoorController.ContainsPassageGeometry(Vector3, float)、DoorController.TryFindPassageTowardDestination(Vector3, Vector3, out DoorController, out int)、Mathf.Max(float, float)、Vector3.Normalize()、Vector3.Project(Vector3, Vector3)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 VillagerController.ResolveStandingPathDirection()；下游（含内部回调体） DoorController.ContainsPassageGeometry(Vector3, float)、DoorController.TryFindPassageTowardDestination(Vector3, Vector3, out DoorController, out int)、Mathf.Max(float, float)、Vector3.Normalize()、Vector3.Project(Vector3, Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="position">中文含义：位置。使用位置：作为 DoorController.ContainsPassageGeometry(Vector3, float) 的参数、作为 DoorController.TryFindPassageTowardDestination(Vector3, Vector3, out DoorController, out int) 的参数、DoorController.TryResolveOpenPassageDirection(Vector3, Vector3, float, out Vector3)。</param>
-    /// <param name="destination">中文含义：目的地。使用位置：作为 DoorController.TryFindPassageTowardDestination(Vector3, Vector3, out DoorController, out int) 的参数。</param>
-    /// <param name="captureDistance">中文含义：捕获距离。使用位置：作为 Mathf.Max(float, float) 的参数。</param>
-    /// <param name="direction">中文含义：方向。输出参数，由本入口写入并交给调用方。使用位置：DoorController.TryResolveOpenPassageDirection(Vector3, Vector3, float, out Vector3)。</param>
+    /// <param name="position">位置。</param>
+    /// <param name="destination">目的地。</param>
+    /// <param name="captureDistance">捕获距离。</param>
+    /// <param name="direction">方向。输出参数，由本入口写入并交给调用方。</param>
     public static bool TryResolveOpenPassageDirection(Vector3 position, Vector3 destination, float captureDistance, out Vector3 direction)
     {
         direction = Vector3.zero;
@@ -1055,9 +1055,9 @@ DoorController door = collider.GetComponentInParent<DoorController>();
             return false;
         }
 
-        // nearestDoor（最近门）：使用位置：作为 Vector3.Project(Vector3, Vector3) 的参数、DoorController.TryResolveOpenPassageDirection(Vector3, Vector3, float, out Vector3)。
+        // 最近门。
 DoorController nearestDoor = null;
-        // nearestDistanceSqr（最近距离平方）：保存 Mathf.Max(float, float) 的返回结果，供当前步骤使用。使用位置：DoorController.TryResolveOpenPassageDirection(Vector3, Vector3, float, out Vector3)。
+        // 最近距离平方。
 float nearestDistanceSqr = Mathf.Max(0.25f, captureDistance * captureDistance);
         // door（门）：每轮从场景门集合取得一个元素，仅代表当前这一项。使用位置：DoorController.TryResolveOpenPassageDirection(Vector3, Vector3, float, out Vector3)。
 foreach (DoorController door in sceneDoors)
@@ -1067,10 +1067,10 @@ foreach (DoorController door in sceneDoors)
                 continue;
             }
 
-            // offset（偏移量）：使用位置：DoorController.TryResolveOpenPassageDirection(Vector3, Vector3, float, out Vector3)。
+            // 偏移量。
 Vector3 offset = door.PassageCenter - position;
             offset.y = 0f;
-            // distanceSqr（距离平方）：使用位置：DoorController.TryResolveOpenPassageDirection(Vector3, Vector3, float, out Vector3)。
+            // 距离平方。
 float distanceSqr = offset.sqrMagnitude;
             if (distanceSqr >= nearestDistanceSqr || !door.ContainsPassageGeometry(position, Mathf.Max(0.8f, captureDistance)))
             {
@@ -1086,12 +1086,12 @@ float distanceSqr = offset.sqrMagnitude;
             return false;
         }
 
-        // normal（表面法线）：使用位置：DoorController.TryResolveOpenPassageDirection(Vector3, Vector3, float, out Vector3)。
+        // 表面法线。
 Vector3 normal = nearestDoor.PassageNormal * -sourceSide;
-        // toCenter（目标中心）：使用位置：作为 Vector3.Project(Vector3, Vector3) 的参数、DoorController.TryResolveOpenPassageDirection(Vector3, Vector3, float, out Vector3)。
+        // 目标中心。
 Vector3 toCenter = nearestDoor.PassageCenter - position;
         toCenter.y = 0f;
-        // lateralCorrection（侧向校正量）：保存 Vector3.Project(Vector3, Vector3) 的返回结果，供当前步骤使用。使用位置：DoorController.TryResolveOpenPassageDirection(Vector3, Vector3, float, out Vector3)。
+        // 侧向校正量。
 Vector3 lateralCorrection = Vector3.Project(toCenter, nearestDoor.passageTangent);
         direction = normal + lateralCorrection * 1.5f;
         direction.y = 0f;
@@ -1106,17 +1106,17 @@ Vector3 lateralCorrection = Vector3.Project(toCenter, nearestDoor.passageTangent
 
     /// <summary>ContainsPassageGeometry 的业务处理入口；本方法直接依赖 DoorController.EnsurePassageGeometry()、Mathf.Abs(float)、Mathf.Max(float, float)、Transform.TransformPoint(Vector3)、Transform.TransformVector(Vector3)、Vector3.Dot(Vector3, Vector3)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 DoorController.IsInsideOpenPassage(Vector3, float)、DoorController.TryResolveOpenPassageDirection(Vector3, Vector3, float, out Vector3)、StrictAstarGraphBaker.IsNearDoorPassage(Vector3, float)；下游（含内部回调体） DoorController.EnsurePassageGeometry()、Mathf.Abs(float)、Mathf.Max(float, float)、Transform.TransformPoint(Vector3)、Transform.TransformVector(Vector3)、Vector3.Dot(Vector3, Vector3)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="point">中文含义：点。使用位置：作为 Mathf.Abs(float) 的参数、DoorController.ContainsPassageGeometry(Vector3, float)。</param>
-    /// <param name="halfDepth">中文含义：一半深度。使用位置：作为 Mathf.Max(float, float) 的参数。</param>
+    /// <param name="point">点。</param>
+    /// <param name="halfDepth">一半深度。</param>
     public bool ContainsPassageGeometry(Vector3 point, float halfDepth)
     {
         EnsurePassageGeometry();
-        // offset（偏移量）：使用位置：作为 Vector3.Dot(Vector3, Vector3) 的参数、DoorController.ContainsPassageGeometry(Vector3, float)。
+        // 偏移量。
 Vector3 offset = point - passageCenter;
         // 门洞只约束本高度层，不能把屋顶上的角色当作楼下门洞的通行者。
-        // centerHeight（中心高度）：使用位置：作为 Mathf.Abs(float) 的参数、DoorController.ContainsPassageGeometry(Vector3, float)。
+        // 中心高度。
 float centerHeight = passageCenter.y + 1f;
-        // halfHeight（一半高度）：使用位置：DoorController.ContainsPassageGeometry(Vector3, float)。
+        // 一半高度。
 float halfHeight = 1.25f;
         if (physicalCollider is BoxCollider /* 中文含义：箱体。由当前模式匹配、解构或 out 调用取得，供后续分支使用。 */ box)
         {
@@ -1130,9 +1130,9 @@ float halfHeight = 1.25f;
         }
 
         offset.y = 0f;
-        // lateralDistance（侧向距离）：保存 Mathf.Abs(float) 的返回结果，供当前步骤使用。使用位置：DoorController.ContainsPassageGeometry(Vector3, float)。
+        // 侧向距离。
 float lateralDistance = Mathf.Abs(Vector3.Dot(offset, passageTangent));
-        // depthDistance（深度距离）：保存 Mathf.Abs(float) 的返回结果，供当前步骤使用。使用位置：DoorController.ContainsPassageGeometry(Vector3, float)。
+        // 深度距离。
 float depthDistance = Mathf.Abs(Vector3.Dot(offset, passageNormal));
         return lateralDistance <= passageHalfWidth && depthDistance <= Mathf.Max(0.1f, halfDepth);
     }
@@ -1158,21 +1158,21 @@ float depthDistance = Mathf.Abs(Vector3.Dot(offset, passageNormal));
 
         passageCenter = boxCollider.transform.TransformPoint(boxCollider.center);
         passageCenter.y = transform.position.y;
-        // axes（坐标轴）：使用位置：作为 Vector3.Dot(Vector3, Vector3) 的参数、DoorController.EnsurePassageGeometry()。
+        // 坐标轴。
 Vector3[] axes =
         {
             boxCollider.transform.TransformVector(Vector3.right * boxCollider.size.x),
             boxCollider.transform.TransformVector(Vector3.up * boxCollider.size.y),
             boxCollider.transform.TransformVector(Vector3.forward * boxCollider.size.z)
         };
-        // verticalAxis（竖直轴）：使用位置：DoorController.EnsurePassageGeometry()。
+        // 竖直轴。
 int verticalAxis = 0;
-        // strongestVertical（最强竖直）：使用位置：DoorController.EnsurePassageGeometry()。
+        // 最强竖直。
 float strongestVertical = -1f;
-        // i（当前遍历索引）：使用位置：DoorController.EnsurePassageGeometry()。
+        // 当前遍历索引。
 for (int i = 0; i < axes.Length; i++)
         {
-            // verticalStrength（竖直强度）：保存 Mathf.Abs(float) 的返回结果，供当前步骤使用。使用位置：DoorController.EnsurePassageGeometry()。
+            // 竖直强度。
 float verticalStrength = Mathf.Abs(Vector3.Dot(axes[i].normalized, Vector3.up));
             if (verticalStrength <= strongestVertical)
             {
@@ -1183,13 +1183,13 @@ float verticalStrength = Mathf.Abs(Vector3.Dot(axes[i].normalized, Vector3.up));
             verticalAxis = i;
         }
 
-        // firstHorizontal（首个水平）：使用位置：DoorController.EnsurePassageGeometry()。
+        // 首个水平。
 Vector3 firstHorizontal = axes[(verticalAxis + 1) % axes.Length];
-        // secondHorizontal（第二水平）：使用位置：DoorController.EnsurePassageGeometry()。
+        // 第二水平。
 Vector3 secondHorizontal = axes[(verticalAxis + 2) % axes.Length];
         firstHorizontal.y = 0f;
         secondHorizontal.y = 0f;
-        // widthAxis（宽度轴）：使用位置：作为 DoorController.FlattenDirection(Vector3, Vector3) 的参数、作为 Mathf.Max(float, float) 的参数、DoorController.EnsurePassageGeometry()。
+        // 宽度轴。
 Vector3 widthAxis;
         if (firstHorizontal.sqrMagnitude >= secondHorizontal.sqrMagnitude)
         {
@@ -1200,7 +1200,7 @@ Vector3 widthAxis;
             widthAxis = secondHorizontal;
         }
 
-        // depthAxis（深度轴）：使用位置：作为 DoorController.FlattenDirection(Vector3, Vector3) 的参数、DoorController.EnsurePassageGeometry()。
+        // 深度轴。
 Vector3 depthAxis;
         if (firstHorizontal.sqrMagnitude < secondHorizontal.sqrMagnitude)
         {
@@ -1218,8 +1218,8 @@ Vector3 depthAxis;
 
     /// <summary>FlattenDirection 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
     /// <remarks>静态调用链：上游 DoorController.EnsurePassageGeometry()；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="direction">中文含义：方向。使用位置：DoorController.FlattenDirection(Vector3, Vector3)。</param>
-    /// <param name="fallback">中文含义：后备。使用位置：DoorController.FlattenDirection(Vector3, Vector3)。</param>
+    /// <param name="direction">方向。</param>
+    /// <param name="fallback">后备。</param>
     private static Vector3 FlattenDirection(Vector3 direction, Vector3 fallback)
     {
         direction.y = 0f;
@@ -1241,7 +1241,7 @@ Vector3 depthAxis;
 
     /// <summary>SetOpen 的业务处理入口；本方法直接依赖 Animator.SetBool(int, bool)、DoorController.PlayOpenAudio()、EnemyAIManager.NotifyEnvironmentalDisturbance(Vector3, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 DoorController.Interact()、DoorController.TryOpenForAI(Transform)；下游（含内部回调体） Animator.SetBool(int, bool)、DoorController.PlayOpenAudio()、EnemyAIManager.NotifyEnvironmentalDisturbance(Vector3, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="open">中文含义：是否打开。使用位置：DoorController.SetOpen(bool)。</param>
+    /// <param name="open">是否打开。</param>
     private void SetOpen(bool open)
     {
         if (siegeLatched || siegeBroken || isOpen == open)
@@ -1254,7 +1254,7 @@ Vector3 depthAxis;
         PlayDoorAudio(open);
         if (isOpen)
         {
-            // manager（当前敌人智能管理器）：使用位置：作为 EnemyAIManager.NotifyEnvironmentalDisturbance(Vector3, float) 的参数、DoorController.SetOpen(bool)。
+            // 当前敌人智能管理器。
 EnemyAIManager manager = EnemyAIManager.Instance;
             if (manager != null)
             {

@@ -13,48 +13,48 @@ public class InventoryManager : Singleton<InventoryManager>, IManualSingleton
     [System.Serializable]
     public class InitialInventoryEntry
     {
-        /// <summary>中文含义：当前物品数据配置。使用位置：InventoryManager.ResetForNewRun()。</summary>
+        /// <summary>当前物品数据配置。</summary>
         public ItemData item;
-        /// <summary>中文含义：资源集合路径。使用位置：作为 Resources.Load&lt;ItemData&gt;(string) 的参数、作为 string.IsNullOrWhiteSpace(string) 的参数。</summary>
+        /// <summary>资源集合路径。</summary>
         public string resourcesPath;
-        /// <summary>中文含义：数量。使用位置：作为 InventoryManager.AddItem(ItemData, int) 的参数、InventoryManager.ResetForNewRun()。</summary>
+        /// <summary>数量。</summary>
         public int count = 1;
     }
 
-    /// <summary>中文含义：本局玩家。使用位置：作为 ItemUseService.RequestUse(RequestContext, InventoryRulesModel, GridItem, IItemUseTarget) 的参数、SceneStartupEntry.ConfigurationError()。</summary>
+    /// <summary>本局玩家。</summary>
     [Header("本局玩家")]
     [UnityEngine.Serialization.FormerlySerializedAs("本局玩家")]
     [UnityEngine.InspectorName("本局玩家")]
     public LeonController currentSessionPlayer;
-    /// <summary>中文含义：公文包宽度。使用位置：作为 InventoryRulesModel.Initialize(int, int, ItemData[]) 的参数。</summary>
+    /// <summary>公文包宽度。</summary>
     [Header("公文包尺寸")]
     public int caseWidth = 10;
-    /// <summary>中文含义：公文包高度。使用位置：作为 InventoryRulesModel.Initialize(int, int, ItemData[]) 的参数。</summary>
+    /// <summary>公文包高度。</summary>
     public int caseHeight = 6;
-    /// <summary>中文含义：是否启用后自动加入演示所需的枪械和基础弹药。启用后自动加入演示所需的枪械和基础弹药。使用位置：InventoryManager.ResetForNewRun()。</summary>
+    /// <summary>是否启用后自动加入演示所需的枪械和基础弹药。启用后自动加入演示所需的枪械和基础弹药。</summary>
     [Header("初始装备")]
     [Tooltip("启用后自动加入演示所需的枪械和基础弹药。")]
     public bool includeDefaultDemoLoadout = true;
-    /// <summary>中文含义：物品引用为空时会尝试使用资源路径加载。可在检视面板继续追加初始物品；物品引用为空时会尝试使用资源路径加载。使用位置：InventoryManager.ResetForNewRun()。</summary>
+    /// <summary>物品引用为空时会尝试使用资源路径加载。可在检视面板继续追加初始物品；物品引用为空时会尝试使用资源路径加载。</summary>
     [Tooltip("可在检视面板继续追加初始物品；物品引用为空时会尝试使用资源路径加载。")]
     public List<InitialInventoryEntry> initialItems = new List<InitialInventoryEntry>();
-    /// <summary>中文含义：使用物品音效。使用位置：作为 AudioManager.PlaySfx(string) 的参数。</summary>
+    /// <summary>使用物品音效。</summary>
     [Header("音效")]
     public string useItemSfx = "item_use";
     private bool deferringHealAudio;
     private string presentationAudioEvent;
     /// <summary>中文含义：拾取音效。</summary>
     public string pickupSfx = "item_pickup";
-    /// <summary>中文含义：模型。使用位置：作为 ItemUseService.BeginStored(InventoryRulesModel, GridItem, int) 的参数、作为 ItemUseService.RequestUse(RequestContext, InventoryRulesModel, GridItem, IItemUseTarget) 的参数、作为 StorageRulesModel.CommitTransferToStorage(GridItem, InventoryRulesModel) 的参数 等共 39 处。</summary>
+    /// <summary>模型。</summary>
     public InventoryRulesModel Model { get; } = new InventoryRulesModel();
 
-    /// <summary>中文含义：使用服务。只读字段，初始化后不由普通写入口替换。使用位置：作为 RequestContext.RequestContext(string, ObjectIdentity, ObjectIdentity, long) 的参数、InventoryManager.UseItemAt(int, int)。</summary>
+    /// <summary>使用服务。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly ItemUseService useService = new ItemUseService();
-    /// <summary>中文含义：运行版本。使用位置：作为 ObjectIdentity.ObjectIdentity(int, long) 的参数。</summary>
+    /// <summary>运行版本。</summary>
     internal int RunVersion => Model.RunVersion;
-    /// <summary>中文含义：公文包宽度。使用位置：作为 InventoryGridView.Rebuild(int, int, IReadOnlyList&lt;GridItem&gt;) 的参数、AttacheCasePresentationController.PreviewLandPoint(GridItem, Vector2, Vector2)、AttacheCaseProjectionInput.Find(Vector2)。</summary>
+    /// <summary>公文包宽度。</summary>
     public int CaseWidth => Model.CaseWidth;
-    /// <summary>中文含义：公文包高度。使用位置：作为 InventoryGridView.Rebuild(int, int, IReadOnlyList&lt;GridItem&gt;) 的参数、AttacheCasePresentationController.PreviewLandPoint(GridItem, Vector2, Vector2)、AttacheCaseProjectionInput.Find(Vector2)。</summary>
+    /// <summary>公文包高度。</summary>
     public int CaseHeight => Model.CaseHeight;
 
     public event System.Action OnInventoryChanged { add => Model.OnInventoryChanged += value; remove => Model.OnInventoryChanged -= value; }
@@ -71,7 +71,7 @@ public class InventoryManager : Singleton<InventoryManager>, IManualSingleton
             return;
         }
 
-        // receiverValue1（判空前缓存的音频管理器的实例）：从音频管理器的实例读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、InventoryManager.PlayUseAudioEffect()。
+        // 判空前缓存的音频管理器的实例。
 global::AudioManager receiverValue1 = AudioManager.Instance;
         if (!global::System.Object.ReferenceEquals(receiverValue1, null))
         {
@@ -87,7 +87,7 @@ global::AudioManager receiverValue1 = AudioManager.Instance;
 
     /// <summary>RecordDiagnostics 的业务处理入口；本方法直接依赖 Debug.LogWarning(object, Object)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） Debug.LogWarning(object, Object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="content">中文含义：内容。使用位置：作为 Debug.LogWarning(object, Object) 的参数。</param>
+    /// <param name="content">内容。</param>
     void RecordDiagnostics(string content) => Debug.LogWarning("[背包] " + content, this);
     /// <summary>实现基类的 OnDestroy 重写入口；框架调用后按本方法分支执行，并通过下游成员完成协作。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） Singleton&lt;InventoryManager&gt;.OnDestroy()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
@@ -121,17 +121,17 @@ global::AudioManager receiverValue1 = AudioManager.Instance;
         }
         else
         {
-            // i（当前遍历索引）：使用位置：作为 List<InventoryManager.InitialInventoryEntry>.this[int] 的参数、InventoryManager.ResetForNewRun()。
+            // 当前遍历索引。
 for (int i = 0; i < initialItems.Count; i++)
             {
-                // entry（当前初始背包入口）：使用位置：作为 InventoryManager.AddItem(ItemData, int) 的参数、作为 Resources.Load<ItemData>(string) 的参数、作为 string.IsNullOrWhiteSpace(string) 的参数 等共 4 处。
+                // 当前初始背包入口。
 InitialInventoryEntry entry = initialItems[i];
                 if (entry == null || entry.count <= 0)
                 {
                     continue;
                 }
 
-                // item（当前物品数据配置）：使用位置：作为 InventoryManager.AddItem(ItemData, int) 的参数、作为 InventoryManager.HasItem(string, int) 的参数、InventoryManager.ResetForNewRun()。
+                // 当前物品数据配置。
 ItemData item = entry.item;
                 if (item == null && !string.IsNullOrWhiteSpace(entry.resourcesPath))
                 {
@@ -150,9 +150,9 @@ ItemData item = entry.item;
 
     /// <summary>EnsureInitialItem 的业务处理入口；本方法直接依赖 Debug.LogWarning(object, Object)、InventoryManager.AddItem(ItemData, int)、InventoryManager.HasItem(string, int)、Resources.Load&lt;ItemData&gt;(string)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 InventoryManager.ResetForNewRun()；下游（含内部回调体） Debug.LogWarning(object, Object)、InventoryManager.AddItem(ItemData, int)、InventoryManager.HasItem(string, int)、Resources.Load&lt;ItemData&gt;(string)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="itemId">中文含义：物品编号。使用位置：作为 InventoryManager.HasItem(string, int) 的参数。</param>
-    /// <param name="resourcesPath">中文含义：资源集合路径。使用位置：作为 Debug.LogWarning(object, Object) 的参数、作为 Resources.Load&lt;ItemData&gt;(string) 的参数。</param>
-    /// <param name="count">中文含义：数量。使用位置：作为 InventoryManager.AddItem(ItemData, int) 的参数。</param>
+    /// <param name="itemId">物品编号。</param>
+    /// <param name="resourcesPath">资源集合路径。</param>
+    /// <param name="count">数量。</param>
     void EnsureInitialItem(string itemId, string resourcesPath, int count)
     {
         if (HasItem(itemId))
@@ -160,7 +160,7 @@ ItemData item = entry.item;
             return;
         }
 
-        // item（当前物品数据配置）：保存 Resources.Load<ItemData>(string) 的返回结果，供当前步骤使用。使用位置：作为 Debug.LogWarning(object, Object) 的参数、作为 InventoryManager.AddItem(ItemData, int) 的参数、InventoryManager.EnsureInitialItem(string, string, int)。
+        // 当前物品数据配置。
 ItemData item = Resources.Load<ItemData>(resourcesPath);
         if (item == null)
         {
@@ -176,34 +176,34 @@ ItemData item = Resources.Load<ItemData>(resourcesPath);
 
     /// <summary>GetItemAt 的业务处理入口；本方法直接依赖 InventoryRulesModel.GetItemAt(int, int)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 AttacheCasePresentationController.PreviewLandPoint(GridItem, Vector2, Vector2)、AttacheCaseProjectionInput.Find(Vector2)、InventoryUI.OnCellClicked(int, int)、InventoryUI.OnItemPointerUp(GridItem, Vector2)、InventoryUI.RefreshGridInternal()；下游（含内部回调体） InventoryRulesModel.GetItemAt(int, int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="x">中文含义：横向。使用位置：作为 InventoryRulesModel.GetItemAt(int, int) 的参数。</param>
-    /// <param name="y">中文含义：纵向。使用位置：作为 InventoryRulesModel.GetItemAt(int, int) 的参数。</param>
+    /// <param name="x">横向。</param>
+    /// <param name="y">纵向。</param>
     public GridItem GetItemAt(int x, int y) => Model.GetItemAt(x, y);
     /// <summary>AddItem 的业务处理入口；本方法直接依赖 InventoryRulesModel.AddItem(ItemData, int)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 InventoryManager.EnsureInitialItem(string, string, int)、InventoryManager.ResetForNewRun()、ItemPickup.Pickup()、PerformanceSamplingEntry.Tick()；下游（含内部回调体） InventoryRulesModel.AddItem(ItemData, int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="item">中文含义：当前物品数据配置。使用位置：作为 InventoryRulesModel.AddItem(ItemData, int) 的参数。</param>
-    /// <param name="count">中文含义：数量。使用位置：作为 InventoryRulesModel.AddItem(ItemData, int) 的参数。</param>
+    /// <param name="item">当前物品数据配置。</param>
+    /// <param name="count">数量。</param>
     public bool AddItem(ItemData item, int count = 1) => Model.AddItem(item, count);
     /// <summary>HasAcquiredThisRun 的业务处理入口；本方法直接依赖 InventoryRulesModel.HasAcquiredThisRun(string)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 ItemPickup.Pickup()；下游（含内部回调体） InventoryRulesModel.HasAcquiredThisRun(string)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="itemId">中文含义：物品编号。使用位置：作为 InventoryRulesModel.HasAcquiredThisRun(string) 的参数。</param>
+    /// <param name="itemId">物品编号。</param>
     public bool HasAcquiredThisRun(string itemId) => Model.HasAcquiredThisRun(itemId);
     /// <summary>MoveItem 的业务处理入口；本方法直接依赖 InventoryRulesModel.MoveItem(GridItem, int, int)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 PerformanceSamplingEntry.Drive(int, double)；下游（含内部回调体） InventoryRulesModel.MoveItem(GridItem, int, int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="item">中文含义：当前背包网格物品。使用位置：作为 InventoryRulesModel.MoveItem(GridItem, int, int) 的参数。</param>
-    /// <param name="newX">中文含义：新横向。使用位置：作为 InventoryRulesModel.MoveItem(GridItem, int, int) 的参数。</param>
-    /// <param name="newY">中文含义：新纵向。使用位置：作为 InventoryRulesModel.MoveItem(GridItem, int, int) 的参数。</param>
+    /// <param name="item">当前背包网格物品。</param>
+    /// <param name="newX">新横向。</param>
+    /// <param name="newY">新纵向。</param>
     public bool MoveItem(GridItem item, int newX, int newY) => Model.MoveItem(item, newX, newY);
     /// <summary>MoveItemNear 的业务处理入口；本方法直接依赖 InventoryRulesModel.MoveItemNear(GridItem, int, int, int)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 InventoryUI.OnItemPointerUp(GridItem, Vector2)；下游（含内部回调体） InventoryRulesModel.MoveItemNear(GridItem, int, int, int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="item">中文含义：当前背包网格物品。使用位置：作为 InventoryRulesModel.MoveItemNear(GridItem, int, int, int) 的参数。</param>
-    /// <param name="preferredX">中文含义：优先横向。使用位置：作为 InventoryRulesModel.MoveItemNear(GridItem, int, int, int) 的参数。</param>
-    /// <param name="preferredY">中文含义：优先纵向。使用位置：作为 InventoryRulesModel.MoveItemNear(GridItem, int, int, int) 的参数。</param>
-    /// <param name="snapRadius">中文含义：吸附半径。使用位置：作为 InventoryRulesModel.MoveItemNear(GridItem, int, int, int) 的参数。</param>
+    /// <param name="item">当前背包网格物品。</param>
+    /// <param name="preferredX">优先横向。</param>
+    /// <param name="preferredY">优先纵向。</param>
+    /// <param name="snapRadius">吸附半径。</param>
     public bool MoveItemNear(GridItem item, int preferredX, int preferredY, int snapRadius = 1) => Model.MoveItemNear(item, preferredX, preferredY, snapRadius);
     /// <summary>RotateItem 的业务处理入口；本方法直接依赖 InventoryRulesModel.RotateItem(GridItem)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 InventoryUI.RotateSelectedItem()、PerformanceSamplingEntry.Drive(int, double)；下游（含内部回调体） InventoryRulesModel.RotateItem(GridItem)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="item">中文含义：当前背包网格物品。使用位置：作为 InventoryRulesModel.RotateItem(GridItem) 的参数。</param>
+    /// <param name="item">当前背包网格物品。</param>
     public bool RotateItem(GridItem item) => Model.RotateItem(item);
     /// <summary>Sort 的业务处理入口；本方法直接依赖 InventoryRulesModel.Sort()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonInputBridge.OnSort(InputAction.CallbackContext)、PerformanceSamplingEntry.Drive(int, double)；下游（含内部回调体） InventoryRulesModel.Sort()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
@@ -222,18 +222,18 @@ ItemData item = Resources.Load<ItemData>(resourcesPath);
     }
     /// <summary>CanUseItem 的业务处理入口；本方法直接依赖 InventoryRulesModel.CanUseItem(ItemData)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 InventoryUI.ShowContextMenu(GridItem, Vector2)、InventoryUI.ShowDescription(GridItem)；下游（含内部回调体） InventoryRulesModel.CanUseItem(ItemData)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="item">中文含义：当前物品数据配置。使用位置：作为 InventoryRulesModel.CanUseItem(ItemData) 的参数。</param>
+    /// <param name="item">当前物品数据配置。</param>
     public bool CanUseItem(ItemData item) => Model.CanUseItem(item);
     /// <summary>CanCombine 的业务处理入口；本方法直接依赖 InventoryRulesModel.CanCombine(GridItem, GridItem)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 AttacheCasePresentationController.PreviewLandPoint(GridItem, Vector2, Vector2)；下游（含内部回调体） InventoryRulesModel.CanCombine(GridItem, GridItem)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="first">中文含义：第一个背包网格物品。使用位置：作为 InventoryRulesModel.CanCombine(GridItem, GridItem) 的参数。</param>
-    /// <param name="second">中文含义：第二个背包网格物品。使用位置：作为 InventoryRulesModel.CanCombine(GridItem, GridItem) 的参数。</param>
+    /// <param name="first">第一个背包网格物品。</param>
+    /// <param name="second">第二个背包网格物品。</param>
     public bool CanCombine(GridItem first, GridItem second) => Model.CanCombine(first, second);
     /// <summary>TryCombine 的业务处理入口；本方法直接依赖 InventoryRulesModel.TryCombine(GridItem, GridItem, out ItemData)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 InventoryUI.OnItemPointerUp(GridItem, Vector2)；下游（含内部回调体） InventoryRulesModel.TryCombine(GridItem, GridItem, out ItemData)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="first">中文含义：第一个背包网格物品。使用位置：作为 InventoryRulesModel.TryCombine(GridItem, GridItem, out ItemData) 的参数。</param>
-    /// <param name="second">中文含义：第二个背包网格物品。使用位置：作为 InventoryRulesModel.TryCombine(GridItem, GridItem, out ItemData) 的参数。</param>
-    /// <param name="result">中文含义：当前物品数据配置。输出参数，由本入口写入并交给调用方。使用位置：作为 InventoryRulesModel.TryCombine(GridItem, GridItem, out ItemData) 的参数。</param>
+    /// <param name="first">第一个背包网格物品。</param>
+    /// <param name="second">第二个背包网格物品。</param>
+    /// <param name="result">当前物品数据配置。输出参数，由本入口写入并交给调用方。</param>
     public bool TryCombine(GridItem first, GridItem second, out ItemData result)
     {
         string previous = presentationAudioEvent;
@@ -252,12 +252,12 @@ ItemData item = Resources.Load<ItemData>(resourcesPath);
     public List<ItemData> GetCraftingRecipes() => Model.GetCraftingRecipes();
     /// <summary>CanCraft 的业务处理入口；本方法直接依赖 InventoryRulesModel.CanCraft(ItemData)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 InventoryCraftingPanel.CreateRecipeWidget(ItemData, InventoryManager)、InventoryCraftingPanel.ShowRecipeDetails(ItemData, InventoryManager)；下游（含内部回调体） InventoryRulesModel.CanCraft(ItemData)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="result">中文含义：当前物品数据配置。使用位置：作为 InventoryRulesModel.CanCraft(ItemData) 的参数。</param>
+    /// <param name="result">当前物品数据配置。</param>
     public bool CanCraft(ItemData result) => Model.CanCraft(result);
     /// <summary>TryCraft 的业务处理入口；本方法直接依赖 InventoryRulesModel.TryCraft(ItemData, out int)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 InventoryCraftingPanel.CraftSelectedRecipe()；下游（含内部回调体） InventoryRulesModel.TryCraft(ItemData, out int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="result">中文含义：当前物品数据配置。使用位置：作为 InventoryRulesModel.TryCraft(ItemData, out int) 的参数。</param>
-    /// <param name="craftedCount">中文含义：合成后的数量。输出参数，由本入口写入并交给调用方。使用位置：作为 InventoryRulesModel.TryCraft(ItemData, out int) 的参数。</param>
+    /// <param name="result">当前物品数据配置。</param>
+    /// <param name="craftedCount">合成后的数量。输出参数，由本入口写入并交给调用方。</param>
     public bool TryCraft(ItemData result, out int craftedCount)
     {
         string previous = presentationAudioEvent;
@@ -273,44 +273,44 @@ ItemData item = Resources.Load<ItemData>(resourcesPath);
     }
     /// <summary>GetCraftingRequirementText 的业务处理入口；本方法直接依赖 InventoryRulesModel.GetCraftingRequirementText(ItemData)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 InventoryCraftingPanel.CreateRecipeWidget(ItemData, InventoryManager)、InventoryCraftingPanel.ShowRecipeDetails(ItemData, InventoryManager)；下游（含内部回调体） InventoryRulesModel.GetCraftingRequirementText(ItemData)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="result">中文含义：当前物品数据配置。使用位置：作为 InventoryRulesModel.GetCraftingRequirementText(ItemData) 的参数。</param>
+    /// <param name="result">当前物品数据配置。</param>
     public string GetCraftingRequirementText(ItemData result) => Model.GetCraftingRequirementText(result);
     /// <summary>GetCraftingHint 的业务处理入口；本方法直接依赖 InventoryRulesModel.GetCraftingHint(ItemData)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 InventoryUI.ShowDescription(GridItem)；下游（含内部回调体） InventoryRulesModel.GetCraftingHint(ItemData)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="ingredient">中文含义：合成材料。使用位置：作为 InventoryRulesModel.GetCraftingHint(ItemData) 的参数。</param>
+    /// <param name="ingredient">合成材料。</param>
     public string GetCraftingHint(ItemData ingredient) => Model.GetCraftingHint(ingredient);
     /// <summary>DiscardItemAt 的业务处理入口；本方法直接依赖 InventoryRulesModel.DiscardItemAt(int, int)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 InventoryUI.HandleContextDiscardButtonClicked()；下游（含内部回调体） InventoryRulesModel.DiscardItemAt(int, int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="x">中文含义：横向。使用位置：作为 InventoryRulesModel.DiscardItemAt(int, int) 的参数。</param>
-    /// <param name="y">中文含义：纵向。使用位置：作为 InventoryRulesModel.DiscardItemAt(int, int) 的参数。</param>
+    /// <param name="x">横向。</param>
+    /// <param name="y">纵向。</param>
     public void DiscardItemAt(int x, int y) => Model.DiscardItemAt(x, y);
     /// <summary>RemoveItem 的业务处理入口；本方法直接依赖 InventoryRulesModel.RemoveItem(string, int)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonWeaponHandler.ConsumeReserveAmmo(WeaponType, int)；下游（含内部回调体） InventoryRulesModel.RemoveItem(string, int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="itemId">中文含义：物品编号。使用位置：作为 InventoryRulesModel.RemoveItem(string, int) 的参数。</param>
-    /// <param name="count">中文含义：数量。使用位置：作为 InventoryRulesModel.RemoveItem(string, int) 的参数。</param>
+    /// <param name="itemId">物品编号。</param>
+    /// <param name="count">数量。</param>
     public bool RemoveItem(string itemId, int count = 1) => Model.RemoveItem(itemId, count);
     /// <summary>GetItemCount 的业务处理入口；本方法直接依赖 InventoryRulesModel.GetItemCount(string)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonWeaponHandler.GetReserveAmmo(WeaponType)、WeaponWheelUI.ResolveCount(WeaponWheelUI.WeaponSlot)；下游（含内部回调体） InventoryRulesModel.GetItemCount(string)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="itemId">中文含义：物品编号。使用位置：作为 InventoryRulesModel.GetItemCount(string) 的参数。</param>
+    /// <param name="itemId">物品编号。</param>
     public int GetItemCount(string itemId) => Model.GetItemCount(itemId);
     /// <summary>HasItem 的业务处理入口；本方法直接依赖 InventoryRulesModel.HasItem(string, int)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 InventoryManager.EnsureInitialItem(string, string, int)、InventoryManager.ResetForNewRun()、LeonWeaponHandler.HasWeaponInInventory(WeaponType)、LeonWeaponVisualController.HasOwnedLongGun(WeaponType)；下游（含内部回调体） InventoryRulesModel.HasItem(string, int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="itemId">中文含义：物品编号。使用位置：作为 InventoryRulesModel.HasItem(string, int) 的参数。</param>
-    /// <param name="count">中文含义：数量。使用位置：作为 InventoryRulesModel.HasItem(string, int) 的参数。</param>
+    /// <param name="itemId">物品编号。</param>
+    /// <param name="count">数量。</param>
     public bool HasItem(string itemId, int count = 1) => Model.HasItem(itemId, count);
     /// <summary>GetFirstItem 的业务处理入口；本方法直接依赖 InventoryRulesModel.GetFirstItem(string)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 CombatHUD.UpdateKnifeDurability()；下游（含内部回调体） InventoryRulesModel.GetFirstItem(string)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="itemId">中文含义：物品编号。使用位置：作为 InventoryRulesModel.GetFirstItem(string) 的参数。</param>
+    /// <param name="itemId">物品编号。</param>
     public GridItem GetFirstItem(string itemId) => Model.GetFirstItem(itemId);
     /// <summary>HasUsableDurability 的业务处理入口；本方法直接依赖 InventoryRulesModel.HasUsableDurability(string)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 KnifeCombatModule.ValidKnife.get、LeonWeaponHandler.HasUsableKnife()；下游（含内部回调体） InventoryRulesModel.HasUsableDurability(string)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="itemId">中文含义：物品编号。使用位置：作为 InventoryRulesModel.HasUsableDurability(string) 的参数。</param>
+    /// <param name="itemId">物品编号。</param>
     public bool HasUsableDurability(string itemId) => Model.HasUsableDurability(itemId);
     /// <summary>TryConsumeDurability 的业务处理入口；本方法直接依赖 InventoryRulesModel.TryConsumeDurability(string, int, out bool)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 KnifeCombatModule.DeductDurability(int)、LeonCombat.ConsumeKnifeDurability(int)、LeonQTECoordinator.ConsumeAssassinationKnifeDurability()；下游（含内部回调体） InventoryRulesModel.TryConsumeDurability(string, int, out bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="itemId">中文含义：物品编号。使用位置：作为 InventoryRulesModel.TryConsumeDurability(string, int, out bool) 的参数。</param>
-    /// <param name="amount">中文含义：大小。使用位置：作为 InventoryRulesModel.TryConsumeDurability(string, int, out bool) 的参数。</param>
-    /// <param name="broken">中文含义：是否损坏。输出参数，由本入口写入并交给调用方。使用位置：作为 InventoryRulesModel.TryConsumeDurability(string, int, out bool) 的参数。</param>
+    /// <param name="itemId">物品编号。</param>
+    /// <param name="amount">大小。</param>
+    /// <param name="broken">是否损坏。输出参数，由本入口写入并交给调用方。</param>
     public bool TryConsumeDurability(string itemId, int amount, out bool broken) => Model.TryConsumeDurability(itemId, amount, out broken);
 
     internal const string KitchenKnifeId = "kitchen_knife";
@@ -412,22 +412,22 @@ ItemData item = Resources.Load<ItemData>(resourcesPath);
     public string Serialize() => Model.Serialize();
     /// <summary>Deserialize 的业务处理入口；本方法直接依赖 InventoryRulesModel.Deserialize(string)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） InventoryRulesModel.Deserialize(string)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="json">中文含义：序列化文本。使用位置：作为 InventoryRulesModel.Deserialize(string) 的参数。</param>
+    /// <param name="json">序列化文本。</param>
     public void Deserialize(string json) => Model.Deserialize(json);
     /// <summary>UseItemAt 的业务处理入口；本方法直接依赖 InventoryManager.PlayUseAudioEffect()、InventoryRulesModel.GetItemAt(int, int)、InventoryRulesModel.NotificationViewRefresh()、ItemUseService.NewUseId()、ItemUseService.RequestUse(RequestContext, InventoryRulesModel, GridItem, IItemUseTarget)、Object.GetInstanceID()、ObjectIdentity.ObjectIdentity(int, long) 等共 8 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 InventoryUI.UseItem(GridItem)；下游（含内部回调体） InventoryManager.PlayUseAudioEffect()、InventoryRulesModel.GetItemAt(int, int)、InventoryRulesModel.NotificationViewRefresh()、ItemUseService.NewUseId()、ItemUseService.RequestUse(RequestContext, InventoryRulesModel, GridItem, IItemUseTarget)、Object.GetInstanceID()、ObjectIdentity.ObjectIdentity(int, long) 等共 8 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="x">中文含义：横向。使用位置：作为 InventoryRulesModel.GetItemAt(int, int) 的参数。</param>
-    /// <param name="y">中文含义：纵向。使用位置：作为 InventoryRulesModel.GetItemAt(int, int) 的参数。</param>
+    /// <param name="x">横向。</param>
+    /// <param name="y">纵向。</param>
     public void UseItemAt(int x, int y)
     {
-        // itemValue（物品值）：保存 InventoryRulesModel.GetItemAt(int, int) 的返回结果，供当前步骤使用。使用位置：作为 ItemUseService.RequestUse(RequestContext, InventoryRulesModel, GridItem, IItemUseTarget) 的参数、InventoryManager.UseItemAt(int, int)。
+        // 物品值。
 var itemValue = Model.GetItemAt(x, y);
         if (itemValue == null || (itemValue.item.itemType != ItemType.Healing && itemValue.item.itemType != ItemType.Ammo))
         {
             return;
         }
 
-        // identity（身份标识）：使用位置：作为 RequestContext.RequestContext(string, ObjectIdentity, ObjectIdentity, long) 的参数。
+        // 身份标识。
 var identity = new GameArchitecture.ObjectIdentity(GetInstanceID(), RunVersion);
         // result（当前物品使用结果）：保存 ItemUseService.RequestUse(RequestContext, InventoryRulesModel, GridItem, IItemUseTarget) 的返回结果，供当前步骤使用。使用位置：InventoryManager.UseItemAt(int, int)。
         var request = new GameArchitecture.RequestContext("背包使用", identity, identity, useService.NewUseId());

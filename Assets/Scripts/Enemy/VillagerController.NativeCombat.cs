@@ -148,7 +148,7 @@ public partial class VillagerController
                 position.y = targetY;
             }
             combatAppliedLift = Mathf.Max(0f, position.y - supportY);
-            onSupport = authoredLift <= .01f && Mathf.Abs(position.y - floorY) <= .02f;
+            onSupport = authoredLift <= .01f && Mathf.Abs(position.y - floorY) <= .12f;
         }
         else
         {
@@ -208,10 +208,11 @@ public partial class VillagerController
         int samples = Mathf.Max(1, Mathf.CeilToInt(planar.magnitude / sampleSpacing));
         float supportHeight = origin.y;
         Vector3 supported = origin;
+        Vector3 preferredDirection = planar.normalized;
         for (int sample = 1; sample <= samples; sample++)
         {
             Vector3 point = origin + planar * (sample / (float)samples);
-            if (!TryReadSupportedFootprint(point, supportHeight, maximumGroundStepUp, maximumGroundDrop, out float height))
+            if (!TryReadSupportedFootprint(point, supportHeight, maximumGroundStepUp, maximumGroundDrop, out float height, preferredDirection))
             {
                 if (DoorController.IsInsideOpenPassage(point, .20f) || PlantNearHouseThreeTread(point)
                     && TryResolveSupportedNavigationPosition(point, supportHeight, out _))
@@ -241,31 +242,57 @@ public partial class VillagerController
         return TryReadSupportedFootprint(position, position.y, maximumGroundStepUp, maximumGroundDrop, out _);
     }
 
-    private bool TryReadSupportedFootprint(Vector3 point, float height, float rise, float drop, out float support)
+    private static readonly Vector3 DiagonalSeamAxisA = new Vector3(0.70710677f, 0f, 0.70710677f);
+    private static readonly Vector3 DiagonalSeamAxisB = new Vector3(0.70710677f, 0f, -0.70710677f);
+
+    private bool TryReadSupportedFootprint(Vector3 point, float height, float rise, float drop, out float support,
+        Vector3 preferredAxis = default)
     {
-        bool centerHit = TryReadPhysicalGround(point, height, rise, drop, out float centerHeight);
+        var navigation = HouseThreeRegionNavigation.Current;
+        Vector3 regionProbe = new Vector3(point.x, height, point.z);
+        bool onSecondFloorOuterPlatform = navigation != null
+            && navigation.TreadRegion(regionProbe) == VillageTraversalRegion.SecondFloorOuterPlatform;
+        float effectiveRise = rise;
+        if (onSecondFloorOuterPlatform && effectiveRise < .22f)
+        {
+            effectiveRise = .22f;
+        }
+
+        bool centerHit = TryReadPhysicalGround(point, height, effectiveRise, drop, out float centerHeight);
         support = centerHeight;
         if (centerHit && centerHeight >= height - .12f)
         {
             return true;
         }
 
-        var navigation = HouseThreeRegionNavigation.Current;
-        point.y = height;
-        if (navigation == null || navigation.TreadRegion(point) != VillageTraversalRegion.SecondFloorOuterPlatform)
+        if (!onSecondFloorOuterPlatform)
         {
             return centerHit;
         }
 
-        // 板缝宽度按两边踏面之间的实际距离计算。中心偏向一边时，两侧所需的探测距离不同。
-        if (TryReadSupportedSeam(navigation, point, Vector3.right, height, out float seamHeight)
-            || TryReadSupportedSeam(navigation, point, Vector3.forward, height, out seamHeight))
+        point.y = height;
+        float seamHeight = 0f;
+        bool foundSeam = false;
+        Vector3 planarPreferred = Vector3.ProjectOnPlane(preferredAxis, Vector3.up);
+        if (planarPreferred.sqrMagnitude > 0.0001f)
         {
-            if (seamHeight >= height - drop && seamHeight <= height + rise && (!centerHit || seamHeight > centerHeight))
-            {
-                support = seamHeight;
-                return true;
-            }
+            foundSeam = TryReadSupportedSeam(navigation, point, planarPreferred.normalized, height, out seamHeight);
+        }
+
+        // 板缝宽度按两边踏面之间的实际距离计算；同步探测世界正交与 45° 对角轴，避免斜向木板接缝卡脚。
+        if (!foundSeam)
+        {
+            foundSeam = TryReadSupportedSeam(navigation, point, Vector3.right, height, out seamHeight)
+                || TryReadSupportedSeam(navigation, point, Vector3.forward, height, out seamHeight)
+                || TryReadSupportedSeam(navigation, point, DiagonalSeamAxisA, height, out seamHeight)
+                || TryReadSupportedSeam(navigation, point, DiagonalSeamAxisB, height, out seamHeight);
+        }
+
+        if (foundSeam && seamHeight >= height - drop && seamHeight <= height + effectiveRise
+            && (!centerHit || seamHeight > centerHeight))
+        {
+            support = seamHeight;
+            return true;
         }
         return centerHit;
     }

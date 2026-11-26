@@ -9,18 +9,18 @@ using System.Collections.Generic;
 /// </summary>
 public class LeonAnimSetup : MonoBehaviour
 {
-    /// <summary>中文含义：待机。使用位置：作为 LeonAnimSetup.OverrideClip(string, AnimationClip) 的参数、LeonAnimSetup.ApplyOverrides()。</summary>
+    /// <summary>待机。</summary>
     [Header("Animation Clips (from PistolAnimsetPro.fbx)")]
     public AnimationClip idle;
-    /// <summary>中文含义：行走前向。使用位置：作为 LeonAnimSetup.OverrideClip(string, AnimationClip) 的参数、LeonAnimSetup.ApplyOverrides()。</summary>
+    /// <summary>行走前向。</summary>
     public AnimationClip walkForward;
-    /// <summary>中文含义：行走后方。使用位置：作为 LeonAnimSetup.OverrideClip(string, AnimationClip) 的参数、LeonAnimSetup.ApplyOverrides()。</summary>
+    /// <summary>行走后方。</summary>
     public AnimationClip walkBack;
-    /// <summary>中文含义：行走左侧。使用位置：作为 LeonAnimSetup.OverrideClip(string, AnimationClip) 的参数、LeonAnimSetup.ApplyOverrides()。</summary>
+    /// <summary>行走左侧。</summary>
     public AnimationClip walkLeft;
-    /// <summary>中文含义：行走右侧。使用位置：作为 LeonAnimSetup.OverrideClip(string, AnimationClip) 的参数、LeonAnimSetup.ApplyOverrides()。</summary>
+    /// <summary>行走右侧。</summary>
     public AnimationClip walkRight;
-    /// <summary>中文含义：运行前向。使用位置：作为 LeonAnimSetup.OverrideClip(string, AnimationClip) 的参数、LeonAnimSetup.ApplyOverrides()。</summary>
+    /// <summary>运行前向。</summary>
     public AnimationClip runForward;
     /// <summary>中文含义：运行后方。</summary>
     public AnimationClip runBack;
@@ -28,17 +28,17 @@ public class LeonAnimSetup : MonoBehaviour
     public AnimationClip runLeft;
     /// <summary>中文含义：运行右侧。</summary>
     public AnimationClip runRight;
-    /// <summary>中文含义：瞄准待机。使用位置：作为 LeonAnimSetup.OverrideClip(string, AnimationClip) 的参数、LeonAnimSetup.ApplyOverrides()。</summary>
+    /// <summary>瞄准待机。</summary>
     public AnimationClip aimIdle;
-    /// <summary>中文含义：射击。使用位置：作为 LeonAnimSetup.OverrideClip(string, AnimationClip) 的参数、LeonAnimSetup.ApplyOverrides()。</summary>
+    /// <summary>射击。</summary>
     public AnimationClip shoot;
-    /// <summary>中文含义：换弹。使用位置：作为 LeonAnimSetup.OverrideClip(string, AnimationClip) 的参数、LeonAnimSetup.ApplyOverrides()。</summary>
+    /// <summary>换弹。</summary>
     public AnimationClip reload;
-    /// <summary>中文含义：近战。使用位置：作为 LeonAnimSetup.OverrideClip(string, AnimationClip) 的参数、LeonAnimSetup.ApplyOverrides()。</summary>
+    /// <summary>近战。</summary>
     public AnimationClip melee;
-    /// <summary>中文含义：动画控制器。使用位置：作为 AnimatorOverrideController.AnimatorOverrideController(RuntimeAnimatorController) 的参数、LeonAnimSetup.ApplyOverrides()、LeonAnimSetup.Start()。</summary>
+    /// <summary>动画控制器。</summary>
     private Animator anim;
-    /// <summary>中文含义：覆盖控制器。使用位置：LeonAnimSetup.ApplyOverrides()、LeonAnimSetup.OverrideClip(string, AnimationClip)。</summary>
+    /// <summary>覆盖控制器。</summary>
     private AnimatorOverrideController overrideController;
     /// <summary>Unity 首次启用后的启动回调；状态处理与资源交接按函数内顺序执行，下游协作见调用链。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） Component.GetComponent&lt;Animator&gt;()、Debug.LogError(object)、LeonAnimSetup.ApplyOverrides()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
@@ -70,7 +70,7 @@ public class LeonAnimSetup : MonoBehaviour
         overrideController = new AnimatorOverrideController(anim.runtimeAnimatorController);
         anim.runtimeAnimatorController = overrideController;
         // Map assigned clips to known animation names
-        // overrides（覆盖项）：使用位置：作为 AnimatorOverrideController.GetOverrides(List<KeyValuePair<AnimationClip, AnimationClip>>) 的参数、作为 Debug.Log(object) 的参数。
+        // 覆盖项。
 var overrides = new System.Collections.Generic.List<KeyValuePair<AnimationClip, AnimationClip>>();
         overrideController.GetOverrides(overrides);
         // Try to override clips by name
@@ -129,8 +129,8 @@ var overrides = new System.Collections.Generic.List<KeyValuePair<AnimationClip, 
 
     /// <summary>OverrideClip 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
     /// <remarks>静态调用链：上游 LeonAnimSetup.ApplyOverrides()；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="name">中文含义：名称。使用位置：作为 AnimatorOverrideController.this[string] 的参数。</param>
-    /// <param name="clip">中文含义：动画片段。使用位置：LeonAnimSetup.OverrideClip(string, AnimationClip)。</param>
+    /// <param name="name">名称。</param>
+    /// <param name="clip">动画片段。</param>
     void OverrideClip(string name, AnimationClip clip)
     {
         if (overrideController[name] != null)

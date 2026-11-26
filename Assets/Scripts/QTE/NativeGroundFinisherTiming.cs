@@ -38,7 +38,7 @@ internal readonly struct NativeGroundFinisherTiming
         if (motion.EndsWith("SawKneel1020", StringComparison.Ordinal))
         {
             // 1020 的 DirectDamage、ReleaseJack 与 CameraSwitch 来自双方各自的源轨。
-            timing = new NativeGroundFinisherTiming(35, 140, 100, 56, false);
+            timing = new NativeGroundFinisherTiming(35, 140, 108, 28, true);
             return true;
         }
         if (motion.EndsWith("Ground1035", StringComparison.Ordinal))

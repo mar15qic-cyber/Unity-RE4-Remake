@@ -7,45 +7,48 @@ using UnityEngine;
 [RequireComponent(typeof(Collider))]
 public class ItemPickup : MonoBehaviour, IInteractable
 {
-    /// <summary>中文含义：当前物品数据配置。物品数据，为空时可通过 itemId 从 Resources 加载。使用位置：作为 InventoryManager.AddItem(ItemData, int) 的参数、作为 InventoryManager.HasAcquiredThisRun(string) 的参数、作为 ItemInspectionUI.Show(ItemData) 的参数 等共 10 处。</summary>
+    /// <summary>当前物品数据配置。物品数据，为空时可通过 itemId 从 Resources 加载。</summary>
     [Header("物品")]
     [Tooltip("物品数据，为空时可通过 itemId 从 Resources 加载")]
     public ItemData item;
-    /// <summary>中文含义：拾取数量。使用位置：作为 InventoryManager.AddItem(ItemData, int) 的参数、DropManager.SpawnItemPickup(ItemData, int, Vector3)。</summary>
+    /// <summary>拾取数量。</summary>
     [Tooltip("拾取数量")]
     public int count = 1;
-    /// <summary>中文含义：物品编号。itemId（用于运行时从 Resources/Items 加载）。使用位置：作为 Debug.LogWarning(object) 的参数、作为 Resources.Load&lt;ItemData&gt;(string) 的参数、作为 string.IsNullOrEmpty(string) 的参数 等共 5 处。</summary>
+    /// <summary>物品编号。itemId（用于运行时从 Resources/Items 加载）。</summary>
     [Tooltip("itemId（用于运行时从 Resources/Items 加载）")]
     public string itemId;
-    /// <summary>中文含义：模型覆盖。覆盖 ItemData 中的世界模型预制体（留空则使用 ItemData 中的设定）。使用位置：ItemPickup.Start()、VillageInterfaceRefinementConfigurator.ApplyScene()。</summary>
+    /// <summary>模型覆盖。覆盖 ItemData 中的世界模型预制体（留空则使用 ItemData 中的设定）。</summary>
     [Header("模型")]
     [Tooltip("覆盖 ItemData 中的世界模型预制体（留空则使用 ItemData 中的设定）")]
     public GameObject modelOverride;
-    /// <summary>中文含义：拾取交互距离。使用位置：ItemPickup.InteractRange.get。</summary>
+    /// <summary>拾取交互距离。</summary>
     [Header("拾取")]
     [Tooltip("拾取交互距离")]
     public float pickupRange = 2f;
-    /// <summary>中文含义：旋转速度。使用位置：作为 Mathf.Repeat(float, float) 的参数。</summary>
+    /// <summary>旋转速度。</summary>
     [Tooltip("旋转速度")]
     public float rotateSpeed = 90f;
-    /// <summary>中文含义：上下浮动幅度。使用位置：ItemPickup.Update()。</summary>
+    /// <summary>上下浮动幅度。</summary>
     [Tooltip("上下浮动幅度")]
     public float bobAmplitude = 0.1f;
-    /// <summary>中文含义：上下浮动速度。使用位置：作为 Mathf.Sin(float) 的参数。</summary>
+    /// <summary>上下浮动速度。</summary>
     [Tooltip("上下浮动速度")]
     public float bobSpeed = 2f;
-    /// <summary>中文含义：拾取音效。使用位置：作为 AudioManager.PlaySfx(string) 的参数。</summary>
+    /// <summary>拾取音效。</summary>
     [Header("音效")]
     public string pickupSfx = "item_pickup";
-    /// <summary>中文含义：显示轴心。使用位置：作为 Transform.SetParent(Transform, bool) 的参数、ItemPickup.CreateDisplayPivot()、ItemPickup.Update()。</summary>
+    /// <summary>显示轴心。</summary>
+    private string promptItemName;
+    private string cachedPickupPrompt;
+
     private Transform displayPivot;
-    /// <summary>中文含义：显示起始位置。使用位置：作为 Transform.TransformPoint(Vector3) 的参数、ItemPickup.CreateDisplayPivot()。</summary>
+    /// <summary>显示起始位置。</summary>
     private Vector3 displayStartPosition;
-    /// <summary>中文含义：显示起始旋转。使用位置：ItemPickup.CreateDisplayPivot()、ItemPickup.Update()。</summary>
+    /// <summary>显示起始旋转。</summary>
     private Quaternion displayStartRotation;
-    /// <summary>中文含义：显示角度。使用位置：作为 Mathf.Repeat(float, float) 的参数、作为 Quaternion.AngleAxis(float, Vector3) 的参数、ItemPickup.Update()。</summary>
+    /// <summary>显示角度。</summary>
     private float displayAngle;
-    /// <summary>中文含义：是否已拾取向上。使用位置：ItemPickup.CanInteract(Transform)、ItemPickup.Pickup()、ItemPickup.Update()。</summary>
+    /// <summary>是否已拾取向上。</summary>
     private bool pickedUp;
     private bool inventoryFull;
     private bool groundedDrop;
@@ -79,7 +82,7 @@ public class ItemPickup : MonoBehaviour, IInteractable
             item = Resources.Load<ItemData>($"Items/{itemId}");
         }
 
-        // col（列）：保存 Component.GetComponent<Collider>() 的返回结果，供当前步骤使用。使用位置：ItemPickup.Start()。
+        // 列。
 var col = GetComponent<Collider>();
         if (col != null)
         {
@@ -87,9 +90,9 @@ var col = GetComponent<Collider>();
         }
 
         // 模型替换：如有真实模型预制体，替换占位几何体
-        // availableValue1（空值判断前缓存的模型覆盖）：从模型覆盖读取一次后保存，供后续分支使用。保存空值判断之前的值，只读取一次，非空时不执行回退分支。使用位置：作为 object.ReferenceEquals(object, object) 的参数、ItemPickup.Start()。
+        // 空值判断前缓存的模型覆盖。
 global::UnityEngine.GameObject availableValue1 = modelOverride;
-        // modelPrefab（模型预制件）：使用位置：作为 Object.Instantiate<GameObject>(GameObject, Transform) 的参数、ItemPickup.Start()。
+        // 模型预制件。
 GameObject modelPrefab;
         if (!global::System.Object.ReferenceEquals(availableValue1, null))
         {
@@ -97,7 +100,7 @@ GameObject modelPrefab;
         }
         else
         {
-            // selectedValue2（分支选出的物品的世界空间模型预制件）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：ItemPickup.Start()。
+            // 分支选出的物品的世界空间模型预制件。
 global::UnityEngine.GameObject selectedValue2;
             if (item != null)
             {
@@ -114,9 +117,9 @@ global::UnityEngine.GameObject selectedValue2;
         if (modelPrefab != null)
         {
             // 移除占位 MeshFilter + MeshRenderer（保留 Collider 用于交互检测）
-            // mf（网格过滤器）：保存 Component.GetComponent<MeshFilter>() 的返回结果，供当前步骤使用。使用位置：作为 Object.Destroy(Object) 的参数、ItemPickup.Start()。
+            // 网格过滤器。
 var mf = GetComponent<MeshFilter>();
-            // mr（网格渲染器）：保存 Component.GetComponent<MeshRenderer>() 的返回结果，供当前步骤使用。使用位置：作为 Object.Destroy(Object) 的参数、ItemPickup.Start()。
+            // 网格渲染器。
 var mr = GetComponent<MeshRenderer>();
             if (mf != null)
             {
@@ -131,7 +134,7 @@ var mr = GetComponent<MeshRenderer>();
             }
 
             // 实例化真实模型作为子物体
-            // existingModel（已有模型）：保存 Transform.Find(string) 的返回结果，供当前步骤使用。使用位置：作为 Object.Destroy(Object) 的参数、ItemPickup.Start()。
+            // 已有模型。
 Transform existingModel = transform.Find("Model");
             if (existingModel != null && modelOverride == null)
             {
@@ -149,7 +152,7 @@ foreach (Transform child in transform)
                 }
             }
 
-            // model（模型）：使用位置：ItemPickup.Start()。
+            // 模型。
 global::UnityEngine.GameObject model;
             if (existingModel != null)
             {
@@ -163,7 +166,7 @@ global::UnityEngine.GameObject model;
             model.name = "Model";
             if (existingModel == null)
             {
-                // assignmentReceiver5（赋值前保存的目标模型的变换）：从模型的变换读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：ItemPickup.Start()。
+                // 赋值前保存的目标模型的变换。
 global::UnityEngine.Transform assignmentReceiver5 = model.transform;
                 if (item != null)
                 {
@@ -174,9 +177,9 @@ global::UnityEngine.Transform assignmentReceiver5 = model.transform;
                     assignmentReceiver5.localPosition = Vector3.zero;
                 }
 
-                // assignmentReceiver7（赋值前保存的目标模型的变换）：从模型的变换读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：ItemPickup.Start()。
+                // 赋值前保存的目标模型的变换。
 global::UnityEngine.Transform assignmentReceiver7 = model.transform;
-                // selectedValue8（分支选出的物品的模型旋转）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：作为 Quaternion.Euler(Vector3) 的参数、ItemPickup.Start()。
+                // 分支选出的物品的模型旋转。
 global::UnityEngine.Vector3 selectedValue8;
                 if (item != null)
                 {
@@ -188,7 +191,7 @@ global::UnityEngine.Vector3 selectedValue8;
                 }
 
                 assignmentReceiver7.localRotation = Quaternion.Euler(selectedValue8);
-                // assignmentReceiver9（赋值前保存的目标模型的变换）：从模型的变换读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：ItemPickup.Start()。
+                // 赋值前保存的目标模型的变换。
 global::UnityEngine.Transform assignmentReceiver9 = model.transform;
                 if (item != null)
                 {
@@ -280,7 +283,7 @@ foreach (var c in model.GetComponentsInChildren<Collider>())
         }
 
         displayAngle = Mathf.Repeat(displayAngle + rotateSpeed * Time.deltaTime, 360f);
-        // bob（上下起伏）：使用位置：ItemPickup.Update()。
+        // 上下起伏。
 float bob = Mathf.Sin(Time.time * bobSpeed) * bobAmplitude;
         displayPivot.rotation = Quaternion.AngleAxis(displayAngle, Vector3.up) * displayStartRotation;
         displayPivot.position = transform.TransformPoint(displayStartPosition) + Vector3.up * bob;
@@ -292,11 +295,11 @@ float bob = Mathf.Sin(Time.time * bobSpeed) * bobAmplitude;
     {
         // 只驱动展示模型，交互根与碰撞体始终留在地图摆放位置。
         // 使用渲染中心作为转轴，避免偏离原点的模型绕旧位置公转。
-        // renderers（渲染器集合）：保存 Component.GetComponentsInChildren<Renderer>() 的返回结果，供当前步骤使用。使用位置：ItemPickup.CreateDisplayPivot()。
+        // 渲染器集合。
 Renderer[] renderers = GetComponentsInChildren<Renderer>();
-        // hasBounds（是否具有包围盒）：使用位置：ItemPickup.CreateDisplayPivot()。
+        // 是否具有包围盒。
 bool hasBounds = false;
-        // bounds（包围盒）：使用位置：ItemPickup.CreateDisplayPivot()。
+        // 包围盒。
 Bounds bounds = default;
         // renderer（渲染器）：每轮从渲染器集合取得一个元素，仅代表当前这一项。使用位置：作为 Bounds.Encapsulate(Bounds) 的参数、ItemPickup.CreateDisplayPivot()。
 foreach (Renderer renderer in renderers)
@@ -322,7 +325,7 @@ foreach (Renderer renderer in renderers)
             return;
         }
 
-        // pivotObject（轴心对象）：使用位置：ItemPickup.CreateDisplayPivot()。
+        // 轴心对象。
 GameObject pivotObject = new GameObject("拾取物展示转轴");
         displayPivot = pivotObject.transform;
         displayPivot.SetParent(transform, false);
@@ -330,7 +333,7 @@ GameObject pivotObject = new GameObject("拾取物展示转轴");
         displayStartPosition = displayPivot.localPosition;
         displayStartRotation = displayPivot.rotation;
         // 子级上的模型和图集保持编辑器中设置的世界位置。
-        // visualRoots（视觉表现根节点集合）：使用位置：ItemPickup.CreateDisplayPivot()。
+        // 视觉表现根节点集合。
 var visualRoots = new System.Collections.Generic.HashSet<Transform>();
         // renderer（渲染器）：每轮从渲染器集合取得一个元素，仅代表当前这一项。使用位置：ItemPickup.CreateDisplayPivot()。
 foreach (Renderer renderer in renderers)
@@ -342,18 +345,18 @@ foreach (Renderer renderer in renderers)
 
             if (renderer.transform == transform)
             {
-                // source（来源网格过滤器）：保存 Component.GetComponent<MeshFilter>() 的返回结果，供当前步骤使用。使用位置：ItemPickup.CreateDisplayPivot()。
+                // 来源网格过滤器。
 MeshFilter source = GetComponent<MeshFilter>();
                 if (source == null || !(renderer is MeshRenderer))
                 {
                     continue;
                 }
 
-                // visual（视觉表现）：使用位置：作为 HashSet<Transform>.Add(Transform) 的参数、ItemPickup.CreateDisplayPivot()。
+                // 视觉表现。
 GameObject visual = new GameObject("拾取物展示模型");
                 visual.transform.SetParent(transform, false);
                 visual.AddComponent<MeshFilter>().sharedMesh = source.sharedMesh;
-                // copy（副本）：保存 GameObject.AddComponent<MeshRenderer>() 的返回结果，供当前步骤使用。使用位置：ItemPickup.CreateDisplayPivot()。
+                // 副本。
 MeshRenderer copy = visual.AddComponent<MeshRenderer>();
                 copy.sharedMaterials = renderer.sharedMaterials;
                 copy.shadowCastingMode = renderer.shadowCastingMode;
@@ -363,7 +366,7 @@ MeshRenderer copy = visual.AddComponent<MeshRenderer>();
                 continue;
             }
 
-            // root（根变换节点）：使用位置：作为 HashSet<Transform>.Add(Transform) 的参数、ItemPickup.CreateDisplayPivot()。
+            // 根变换节点。
 Transform root = renderer.transform;
             while (root.parent != transform && root.parent != null)
             {
@@ -423,18 +426,19 @@ foreach (Transform visualRoot in visualRoots)
         {
             return "公文包空间不足";
         }
-        // selectedValue11（分支选出的物品的显示名称）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：ItemPickup.GetPromptText()。
-string selectedValue11;
+        string itemName = itemId;
         if (item != null)
         {
-            selectedValue11 = item.displayName;
-        }
-        else
-        {
-            selectedValue11 = itemId;
+            itemName = item.displayName;
         }
 
-        return $"拾取 {(selectedValue11)}";
+        if (cachedPickupPrompt == null || promptItemName != itemName)
+        {
+            promptItemName = itemName;
+            cachedPickupPrompt = "拾取 " + itemName;
+        }
+
+        return cachedPickupPrompt;
     }
 
     /// <summary>Pickup 的业务处理入口；本方法直接依赖 AudioManager.PlaySfx(string)、Debug.LogWarning(object)、InventoryManager.AddItem(ItemData, int)、InventoryManager.HasAcquiredThisRun(string)、ItemInspectionUI.Show(ItemData)、Object.Destroy(Object)、object.ReferenceEquals(object, object)，调用方通过参数与返回结果交接本次处理。</summary>
@@ -458,11 +462,11 @@ string selectedValue11;
             return false;
         }
 
-        // inventory（背包）：使用位置：ItemPickup.Pickup()。
+        // 背包。
 InventoryManager inventory = InventoryManager.Instance;
         // firstAcquisition（是否首个获取）：使用位置：ItemPickup.Pickup()。
         bool newlyAcquired = !inventory.HasAcquiredThisRun(item.itemId);
-        // success（是否成功）：保存 InventoryManager.AddItem(ItemData, int) 的返回结果，供当前步骤使用。使用位置：ItemPickup.Pickup()。
+        // 是否成功。
         bool success = inventory.AddItem(item, count);
         if (!success && count == 1 && item.itemType == ItemType.Weapon && item.itemId == "shotgun")
         {
@@ -477,7 +481,7 @@ InventoryManager inventory = InventoryManager.Instance;
         if (success)
         {
             pickedUp = true;
-            // receiverValue12（判空前缓存的音频管理器的实例）：从音频管理器的实例读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、ItemPickup.Pickup()。
+            // 判空前缓存的音频管理器的实例。
 global::AudioManager receiverValue12 = AudioManager.Instance;
             if (!global::System.Object.ReferenceEquals(receiverValue12, null))
             {

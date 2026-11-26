@@ -162,6 +162,146 @@ public sealed class EnemyTacticalCombatTests
         Assert.That(retry[left], Is.GreaterThan(Time.time));
     }
 
+    [Test]
+    public void SecondFloorConcurrentAttackSpaceRelaxesMinimumAngle()
+    {
+        GameObject playerObj = CreateObject("测试玩家占位");
+        playerObj.transform.position = Arena;
+        LeonController player = playerObj.AddComponent<LeonController>();
+        typeof(EnemyAIManager).GetProperty(nameof(EnemyAIManager.PlayerTarget), InstanceFields).SetValue(manager, player);
+
+        VillagerController firstAttacker = CreateEnemy(Arena + Vector3.forward * 1.5f);
+        VillagerController secondAttacker = CreateEnemy(Arena + (Vector3.forward + Vector3.right * 0.9f).normalized * 1.5f);
+        manager.RegisterEnemy(firstAttacker);
+        manager.RegisterEnemy(secondAttacker);
+
+        var attackers = (HashSet<VillagerController>)ReadField("attackingEnemies");
+        attackers.Add(firstAttacker);
+
+        // 平常地面夹角小于 75 度时禁止并发，确保原有平地约束保持不变。
+        MethodInfo angleCheck = typeof(EnemyAIManager).GetMethod("HasConcurrentAttackDirectionSpace", InstanceFields);
+        Assert.That(angleCheck.Invoke(manager, new object[] { secondAttacker }), Is.False);
+
+        // 二楼外平台区域放宽并发攻击角度到 35 度，避免窄桥或屋顶被迫退化成单人轮流进攻。
+        GameObject navObject = CreateObject("二楼导航区域测试");
+        HouseThreeRegionNavigation nav = navObject.AddComponent<HouseThreeRegionNavigation>();
+        nav.outerPlatformIdentifier = "二楼外平台";
+        typeof(HouseThreeRegionNavigation).GetProperty(nameof(HouseThreeRegionNavigation.Current))
+            .SetValue(null, nav);
+        GameObject volumeObj = CreateObject("二楼外平台边界");
+        volumeObj.transform.position = Arena;
+        Transform[] corners = new Transform[4];
+        Vector3[] offsets =
+        {
+            new Vector3(-5f, 0f, -5f),
+            new Vector3(5f, 0f, -5f),
+            new Vector3(5f, 0f, 5f),
+            new Vector3(-5f, 0f, 5f)
+        };
+        for (int i = 0; i < 4; i++)
+        {
+            GameObject corner = CreateObject("角点_" + i);
+            corner.transform.position = Arena + offsets[i];
+            corners[i] = corner.transform;
+        }
+        EnemyNavigationElevatedWalkableVolume volume = volumeObj.AddComponent<EnemyNavigationElevatedWalkableVolume>();
+        volume.regionId = "二楼外平台";
+        volume.useBoundaryPolygon = true;
+        volume.boundaryPoints = corners;
+        volume.boundaryVerticalTolerance = 2f;
+        Physics.SyncTransforms();
+
+        try
+        {
+            Assert.That(angleCheck.Invoke(manager, new object[] { secondAttacker }), Is.True);
+        }
+        finally
+        {
+            typeof(HouseThreeRegionNavigation).GetProperty(nameof(HouseThreeRegionNavigation.Current))
+                .SetValue(null, null);
+        }
+    }
+
+    [Test]
+    public void OuterPlatformWindowExclusionZoneUsesTrueExteriorDirection()
+    {
+        GameObject navObject = CreateObject("窗口外侧禁区测试");
+        HouseThreeRegionNavigation nav = navObject.AddComponent<HouseThreeRegionNavigation>();
+        nav.outerPlatformIdentifier = "二楼外平台";
+
+        GameObject floorObj = CreateObject("测试阳台地面");
+        floorObj.transform.position = Arena - Vector3.up * 0.25f;
+        BoxCollider floor = floorObj.AddComponent<BoxCollider>();
+        floor.size = new Vector3(12f, 0.5f, 12f);
+
+        GameObject winObj = CreateObject("测试窗口_反向外侧");
+        winObj.transform.position = Arena + Vector3.up * 1.68f;
+        winObj.transform.rotation = Quaternion.LookRotation(Vector3.right, Vector3.up);
+        WindowTraversalPoint point = winObj.AddComponent<WindowTraversalPoint>();
+        point.approachOffset = 0.9f;
+        point.landingOffset = 0.9f;
+        EnemyWindowTraversalRoute route = winObj.AddComponent<EnemyWindowTraversalRoute>();
+        route.windowPoint = point;
+        route.platformRegionId = "二楼外平台";
+        route.platformSideSign = -1;
+        Physics.SyncTransforms();
+
+        var activeRoutesField = typeof(EnemyWindowTraversalRoute).GetField("activeRoutes", BindingFlags.Static | BindingFlags.NonPublic);
+        var activeRoutes = (List<EnemyWindowTraversalRoute>)activeRoutesField.GetValue(null);
+        activeRoutes.Add(route);
+        try
+        {
+            // platformSideSign = -1 时，真实窗外落脚点应在 -forward，不能误判到室内 +forward。
+            float horizontalOffset = point.wallThickness * 0.5f + point.approachOffset;
+            Vector3 trueExterior = Arena + Vector3.left * horizontalOffset;
+            Vector3 trueInterior = Arena + Vector3.right * horizontalOffset;
+            MethodInfo exclusionCheck = typeof(HouseThreeRegionNavigation).GetMethod("IsInsideOuterPlatformWindowExclusionZone", InstanceFields);
+            Assert.That((bool)exclusionCheck.Invoke(nav, new object[] { trueExterior, 1.35f }), Is.True);
+            Assert.That((bool)exclusionCheck.Invoke(nav, new object[] { trueInterior, 1.35f }), Is.False);
+        }
+        finally
+        {
+            activeRoutes.Remove(route);
+        }
+    }
+
+    [Test]
+    public void DirectPressureSelectionHonorsTwoConcurrentPursuers()
+    {
+        GameObject playerObj = CreateObject("双压迫测试玩家");
+        playerObj.transform.position = Arena;
+        LeonController player = playerObj.AddComponent<LeonController>();
+        typeof(EnemyAIManager).GetProperty(nameof(EnemyAIManager.PlayerTarget), InstanceFields).SetValue(manager, player);
+
+        manager.directPressureEnemyCount = 2;
+        VillagerController first = CreateEnemy(Arena + Vector3.forward * 2f);
+        VillagerController second = CreateEnemy(Arena + Vector3.forward * 3f);
+        VillagerController third = CreateEnemy(Arena + Vector3.forward * 5f);
+        FieldInfo engagedField = typeof(EnemyPerceptionModule).GetField("combatEngaged", InstanceFields);
+        FieldInfo releasedField = typeof(EnemyAIManager).GetNestedType("EnemyTactics", InstanceFields).GetField("released", InstanceFields);
+        VillagerController[] group = { first, second, third };
+        manager.RegisterEnemy(first);
+        manager.RegisterEnemy(second);
+        manager.RegisterEnemy(third);
+        var tactics = (IDictionary)ReadField("tactics");
+        for (int i = 0; i < group.Length; i++)
+        {
+            VillagerController enemy = group[i];
+            enemy.transform.position = Arena + Vector3.forward * (2f + i * 1.5f);
+            typeof(VillagerController).GetField("ctx", InstanceFields).SetValue(enemy, new EnemyContext(enemy.healthModule, enemy.combatModule));
+            typeof(VillagerController).GetField("agent", InstanceFields).SetValue(enemy, enemy.GetComponent<PathAgent>());
+            typeof(VillagerController).GetField("anim", InstanceFields).SetValue(enemy, enemy.GetComponentInChildren<Animator>());
+            engagedField.SetValue(enemy.perceptionModule, true);
+            releasedField.SetValue(tactics[enemy], true);
+        }
+
+        Invoke("SelectRearPursuer");
+        var direct = (HashSet<VillagerController>)ReadField("directPressureEnemies");
+        Assert.That(direct.Count, Is.EqualTo(2));
+        Assert.That(direct.Contains(first), Is.True);
+        Assert.That(direct.Contains(second), Is.True);
+    }
+
     private VillagerController CreateEnemy(Vector3 position)
     {
         var prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/RE4ChapterOneAnimationLoop/Generated/MainGanadoArmed.prefab");

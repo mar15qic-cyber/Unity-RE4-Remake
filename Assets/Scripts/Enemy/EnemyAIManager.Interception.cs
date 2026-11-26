@@ -23,6 +23,86 @@ public partial class EnemyAIManager
         public readonly List<InterceptionOffer> offers = new();
     }
 
+    private sealed class InterceptionDistanceComparer : IComparer<VillagerController>
+    {
+        public InterceptionPlan plan;
+
+        public int Compare(VillagerController first, VillagerController second)
+        {
+            return EstimateDistanceToInterception(first, plan).CompareTo(EstimateDistanceToInterception(second, plan));
+        }
+    }
+
+    private sealed class InterceptionProbeContext
+    {
+        private readonly EnemyAIManager owner;
+        public readonly Vector3[] singleTarget = new Vector3[1];
+        public readonly Vector3[] targets = new Vector3[2];
+        public readonly int[] sides = new int[2];
+        public readonly OnPathDelegate callback;
+        public InterceptionPlan plan;
+        public VillagerController enemy;
+        public Vector3 origin;
+        public int count;
+        public MultiTargetPath request;
+        public ushort pathId;
+        public int enemyRegistration;
+
+        public InterceptionProbeContext(EnemyAIManager owner)
+        {
+            this.owner = owner;
+            callback = OnCompleted;
+        }
+
+        private void OnCompleted(Pathfinding.Path result)
+        {
+            if (!ReferenceEquals(request, result) || result.pathID != pathId)
+            {
+                return;
+            }
+
+            try
+            {
+                if (owner != null)
+                {
+                    owner.ReadInterceptionProbe(this, request);
+                }
+            }
+            finally
+            {
+                request = null;
+                plan = null;
+                enemy = null;
+            }
+        }
+    }
+
+    private const int InterceptionProbeCapacity = 8;
+    private readonly InterceptionDistanceComparer interceptionComparer = new();
+    private readonly List<Vector3> interceptionRoute = new(32);
+    private InterceptionProbeContext[] interceptionProbes;
+
+    private InterceptionProbeContext RentInterceptionProbe()
+    {
+        if (interceptionProbes == null)
+        {
+            interceptionProbes = new InterceptionProbeContext[InterceptionProbeCapacity];
+            for (int index = 0; index < interceptionProbes.Length; index++)
+            {
+                interceptionProbes[index] = new InterceptionProbeContext(this);
+            }
+        }
+
+        foreach (InterceptionProbeContext probe in interceptionProbes)
+        {
+            if (probe.request == null)
+            {
+                return probe;
+            }
+        }
+        return null;
+    }
+
     private struct InterceptionOffer
     {
         public VillagerController enemy;
@@ -319,8 +399,9 @@ public partial class EnemyAIManager
             }
         }
 
-        interceptionCandidates.Sort((first, second) =>
-            EstimateDistanceToInterception(first, plan).CompareTo(EstimateDistanceToInterception(second, plan)));
+        interceptionComparer.plan = plan;
+        interceptionCandidates.Sort(interceptionComparer);
+        interceptionComparer.plan = null;
         int probeCount = Mathf.Min(MaximumInterceptionProbes, interceptionCandidates.Count);
         if (probeCount == 0)
         {
@@ -333,8 +414,14 @@ public partial class EnemyAIManager
         for (int index = 0; index < probeCount; index++)
         {
             VillagerController enemy = interceptionCandidates[index];
-            var targets = new List<Vector3>(2);
-            var sides = new List<int>(2);
+            InterceptionProbeContext probe = RentInterceptionProbe();
+            if (probe == null)
+            {
+                CompleteInterceptionProbe(plan);
+                continue;
+            }
+
+            int count = 0;
             for (int side = 0; side < 2; side++)
             {
                 if (!plan.available[side] || !enemy.TryResolveReachableNavigationPoint(plan.points[side], out var projected) ||
@@ -345,19 +432,31 @@ public partial class EnemyAIManager
                     continue;
                 }
 
-                targets.Add(projected);
-                sides.Add(side);
+                probe.targets[count] = projected;
+                probe.sides[count] = side;
+                count++;
             }
 
-            if (targets.Count == 0)
+            if (count == 0)
             {
                 CompleteInterceptionProbe(plan);
                 continue;
             }
 
-            Vector3 origin = enemy.transform.position;
-            MultiTargetPath request = MultiTargetPath.Construct(origin, targets.ToArray(), null,
-                path => ReadInterceptionProbe(plan, enemy, origin, (MultiTargetPath)path, sides));
+            Vector3[] targets = probe.targets;
+            if (count == 1)
+            {
+                probe.singleTarget[0] = targets[0];
+                targets = probe.singleTarget;
+            }
+            probe.plan = plan;
+            probe.enemy = enemy;
+            probe.enemyRegistration = enemy.CrowdRegistrationVersion;
+            probe.origin = enemy.transform.position;
+            probe.count = count;
+            MultiTargetPath request = MultiTargetPath.Construct(probe.origin, targets, null, probe.callback);
+            probe.request = request;
+            probe.pathId = request.pathID;
             AstarPath.StartPath(request);
         }
     }
@@ -376,22 +475,23 @@ public partial class EnemyAIManager
         return distance;
     }
 
-    private void ReadInterceptionProbe(InterceptionPlan plan, VillagerController enemy, Vector3 origin,
-        MultiTargetPath path, List<int> sides)
+    private void ReadInterceptionProbe(InterceptionProbeContext probe, MultiTargetPath path)
     {
-        if (this == null || !isActiveAndEnabled || pendingInterception != plan)
+        InterceptionPlan plan = probe.plan;
+        VillagerController enemy = probe.enemy;
+        if (!isActiveAndEnabled || pendingInterception != plan)
         {
             return;
         }
 
-        if (!path.error && CanIntercept(enemy))
+        if (!path.error && CanIntercept(enemy) && enemy.CrowdRegistrationVersion == probe.enemyRegistration)
         {
-            for (int index = 0; index < sides.Count; index++)
+            for (int index = 0; index < probe.count; index++)
             {
-                int side = sides[index];
+                int side = probe.sides[index];
                 Vector3 destination = path.targetPoints[index];
                 if (path.vectorPaths[index] == null ||
-                    !TryMeasureWalkableRoute(path.vectorPaths[index], origin, destination, plan.origin, out float length))
+                    !TryMeasureWalkableRoute(path.vectorPaths[index], probe.origin, destination, plan.origin, out float length))
                 {
                     continue;
                 }
@@ -414,7 +514,7 @@ public partial class EnemyAIManager
         CompleteInterceptionProbe(plan);
     }
 
-    private static bool TryMeasureWalkableRoute(IReadOnlyList<Vector3> nodes, Vector3 origin,
+    private bool TryMeasureWalkableRoute(IReadOnlyList<Vector3> nodes, Vector3 origin,
         Vector3 destination, Vector3 playerPosition, out float length)
     {
         length = 0f;
@@ -424,7 +524,9 @@ public partial class EnemyAIManager
             return false;
         }
 
-        var route = new List<Vector3>(nodes.Count + 2) { origin };
+        List<Vector3> route = interceptionRoute;
+        route.Clear();
+        route.Add(origin);
         // 用可直接通过的最远路段计算距离，消除大三角形节点中心造成的折返。
         int firstCandidate = 0;
         while (firstCandidate <= nodes.Count)

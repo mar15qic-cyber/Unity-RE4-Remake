@@ -9,17 +9,17 @@ using System;
 /// </summary>
 public partial class LeonWeaponVisualController : MonoBehaviour
 {
-    /// <summary>中文含义：战斗小刀配置。使用位置：作为 Quaternion.Slerp(Quaternion, Quaternion, float) 的参数、LeonWeaponVisualController.ApplyKnifeGripAfterPose()、LeonWeaponVisualController.EndCombatKnifeGripPose() 等共 5 处。</summary>
+    /// <summary>战斗小刀配置。</summary>
     private KnifeCombatConfiguration combatKnifeConfiguration;
-    /// <summary>中文含义：combatBladeBase 表示“战斗刀刃基础”；combatRightHand 表示“战斗右手”。使用位置：作为 Transform.InverseTransformPoint(Vector3) 的参数、LeonWeaponVisualController.ApplyKnifeGripAfterPose()、LeonWeaponVisualController.EndCombatKnifeGripPose() 等共 6 处。；使用位置：作为 Quaternion.Inverse(Quaternion) 的参数、LeonWeaponVisualController.ApplyKnifeGripAfterPose()、LeonWeaponVisualController.SetCombatKnifeGripPose(KnifeCombatConfiguration, bool, float) 等共 5 处。</summary>
+    /// <summary>combatBladeBase 表示“战斗刀刃基础”；combatRightHand 表示“战斗右手”。</summary>
     private Transform combatBladeBase, combatRightHand;
-    /// <summary>中文含义：combatKnifeOriginalPosition 表示“战斗小刀原始位置”；combatKnifeHandInnerPosition 表示“战斗小刀手部内部位置”。使用位置：LeonWeaponVisualController.EndCombatKnifeGripPose()、LeonWeaponVisualController.Start()。；使用位置：作为 Vector3.Lerp(Vector3, Vector3, float) 的参数、LeonWeaponVisualController.ApplyKnifeGripAfterPose()、LeonWeaponVisualController.Start() 等共 4 处。</summary>
+    /// <summary>combatKnifeOriginalPosition 表示“战斗小刀原始位置”；combatKnifeHandInnerPosition 表示“战斗小刀手部内部位置”。</summary>
     private Vector3 combatKnifeOriginalPosition, combatKnifeHandInnerPosition;
-    /// <summary>中文含义：combatKnifeOriginalRotation 表示“战斗小刀原始旋转”；combatKnifeHandInnerRotation 表示“战斗小刀手部内部旋转”。使用位置：LeonWeaponVisualController.EndCombatKnifeGripPose()、LeonWeaponVisualController.Start()。；使用位置：作为 Quaternion.Slerp(Quaternion, Quaternion, float) 的参数、LeonWeaponVisualController.Start()。</summary>
+    /// <summary>combatKnifeOriginalRotation 表示“战斗小刀原始旋转”；combatKnifeHandInnerRotation 表示“战斗小刀手部内部旋转”。</summary>
     private Quaternion combatKnifeOriginalRotation, combatKnifeHandInnerRotation;
-    /// <summary>中文含义：combatGripPoseWeight 表示“战斗握持姿态权重”；combatGripPoseTarget 表示“战斗握持姿态目标”；combatGripPoseBlend 表示“战斗握持姿态混合”。使用位置：作为 Mathf.MoveTowards(float, float, float) 的参数、作为 Quaternion.Slerp(Quaternion, Quaternion, float) 的参数、作为 Vector3.Lerp(Vector3, Vector3, float) 的参数 等共 5 处。；使用位置：作为 Mathf.MoveTowards(float, float, float) 的参数、LeonWeaponVisualController.EndCombatKnifeGripPose()、LeonWeaponVisualController.SetCombatKnifeGripPose(KnifeCombatConfiguration, bool, float)。；使用位置：作为 Mathf.MoveTowards(float, float, float) 的参数、LeonWeaponVisualController.SetCombatKnifeGripPose(KnifeCombatConfiguration, bool, float)。</summary>
+    /// <summary>combatGripPoseWeight 表示“战斗握持姿态权重”；combatGripPoseTarget 表示“战斗握持姿态目标”；combatGripPoseBlend 表示“战斗握持姿态混合”。</summary>
     private float combatGripPoseWeight, combatGripPoseTarget, combatGripPoseBlend = .08f;
-    /// <summary>中文含义：战斗手指骨骼。使用位置：LeonWeaponVisualController.Start()、LeonWeaponVisualController.UpdateCombatKnifeGripPose()。</summary>
+    /// <summary>战斗手指骨骼。</summary>
     private Transform[] combatFingerBone;
     /// <summary>ApplyKnifeGripAfterPose 的业务处理入口；本方法直接依赖 Quaternion.Slerp(Quaternion, Quaternion, float)、Transform.TransformPoint(Vector3)、Vector3.Lerp(Vector3, Vector3, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonAnimatorDriver.LateUpdate()；下游（含内部回调体） Quaternion.Slerp(Quaternion, Quaternion, float)、Transform.TransformPoint(Vector3)、Vector3.Lerp(Vector3, Vector3, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
@@ -30,7 +30,7 @@ public partial class LeonWeaponVisualController : MonoBehaviour
             return;
         }
 
-        // position（位置）：使用位置：作为 Vector3.Lerp(Vector3, Vector3, float) 的参数。
+        // 位置。
 Vector3 position = combatKnifeConfiguration.combinedGripCenter + combatKnifeConfiguration.combinedRotation * (combatKnifeHandInnerPosition - combatKnifeConfiguration.originalGripCenter);
         combatBladeBase.position = combatRightHand.TransformPoint(Vector3.Lerp(combatKnifeHandInnerPosition, position, combatGripPoseWeight));
         combatBladeBase.rotation = combatRightHand.rotation * Quaternion.Slerp(combatKnifeHandInnerRotation, combatKnifeConfiguration.combinedRotation * combatKnifeHandInnerRotation, combatGripPoseWeight);
@@ -38,9 +38,9 @@ Vector3 position = combatKnifeConfiguration.combinedGripCenter + combatKnifeConf
 
     /// <summary>SetCombatKnifeGripPose 的业务处理入口；本方法直接依赖 Mathf.Max(float, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 KnifeCombatModule.CommitCurrentAnimation()；下游（含内部回调体） Mathf.Max(float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="configuration">中文含义：配置。使用位置：LeonWeaponVisualController.SetCombatKnifeGripPose(KnifeCombatConfiguration, bool, float)。</param>
-    /// <param name="originalGripPose">中文含义：是否原始握持姿态。使用位置：LeonWeaponVisualController.SetCombatKnifeGripPose(KnifeCombatConfiguration, bool, float)。</param>
-    /// <param name="blend">中文含义：混合。使用位置：作为 Mathf.Max(float, float) 的参数。</param>
+    /// <param name="configuration">配置。</param>
+    /// <param name="originalGripPose">是否原始握持姿态。</param>
+    /// <param name="blend">混合。</param>
     public void SetCombatKnifeGripPose(KnifeCombatConfiguration configuration, bool originalGripPose, float blend)
     {
         if (combatBladeBase == null || combatRightHand == null)
@@ -84,7 +84,7 @@ Vector3 position = combatKnifeConfiguration.combinedGripCenter + combatKnifeConf
         }
 
         combatGripPoseWeight = Mathf.MoveTowards(combatGripPoseWeight, combatGripPoseTarget, Time.deltaTime / combatGripPoseBlend);
-        // positionValue（位置值）：使用位置：作为 Vector3.Lerp(Vector3, Vector3, float) 的参数。
+        // 位置值。
 var positionValue = combatKnifeConfiguration.combinedGripCenter + combatKnifeConfiguration.combinedRotation * (combatKnifeHandInnerPosition - combatKnifeConfiguration.originalGripCenter);
         combatBladeBase.position = combatRightHand.TransformPoint(Vector3.Lerp(combatKnifeHandInnerPosition, positionValue, combatGripPoseWeight));
         combatBladeBase.rotation = combatRightHand.rotation * Quaternion.Slerp(combatKnifeHandInnerRotation, combatKnifeConfiguration.combinedRotation * combatKnifeHandInnerRotation, combatGripPoseWeight);
@@ -93,7 +93,7 @@ var positionValue = combatKnifeConfiguration.combinedGripCenter + combatKnifeCon
             // bone（骨骼）：每轮从战斗手指骨骼取得一个元素，仅代表当前这一项。使用位置：作为 Quaternion.Slerp(Quaternion, Quaternion, float) 的参数、LeonWeaponVisualController.UpdateCombatKnifeGripPose()。
 foreach (var bone in combatFingerBone)
             {
-                // index（当前元素索引）：使用位置：LeonWeaponVisualController.UpdateCombatKnifeGripPose()。
+                // 当前元素索引。
 for (int index = 0; index < combatKnifeConfiguration.fingerBoneName.Length && index < combatKnifeConfiguration.fingerBoneRotation.Length; index++)
                 {
                     if (bone.name == combatKnifeConfiguration.fingerBoneName[index])
@@ -106,120 +106,120 @@ for (int index = 0; index < combatKnifeConfiguration.fingerBoneName.Length && in
         }
     }
 
-    /// <summary>中文含义：当前玩家动画动作协调器。使用位置：LeonWeaponVisualController.BindCoordinatorEvents()、LeonWeaponVisualController.Start()、LeonWeaponVisualController.UnbindCoordinatorEvents()。</summary>
+    /// <summary>当前玩家动画动作协调器。</summary>
     [Header("组件引用")]
     [SerializeField]
     private LeonAnimationActionCoordinator coordinator;
-    /// <summary>中文含义：里昂玩家控制器。使用位置：作为 LeonWeaponVisualController.SetEquippedWeapon(WeaponType) 的参数、LeonWeaponVisualController.CanProcessVisuals()、LeonWeaponVisualController.Start()。</summary>
+    /// <summary>里昂玩家控制器。</summary>
     [SerializeField]
     private LeonController controller;
-    /// <summary>中文含义：纯视觉对象（SetActive控制）。使用位置：作为 LeonWeaponVisualController.FindCommonVisualRoot(GameObject[], Renderer[]) 的参数、LeonWeaponVisualController.SetWeaponVisible(WeaponType, bool)。</summary>
+    /// <summary>纯视觉对象（SetActive控制）。</summary>
     [Header("手枪视觉绑定")]
     [Tooltip("纯视觉对象（SetActive控制）")]
     [SerializeField]
     private GameObject[] pistolVisualObjects;
-    /// <summary>中文含义：手枪视觉表现渲染器集合。Renderer（enabled控制，与必要组件共享GameObject）。使用位置：作为 LeonWeaponVisualController.FindCommonVisualRoot(GameObject[], Renderer[]) 的参数、LeonWeaponVisualController.SetWeaponVisible(WeaponType, bool)。</summary>
+    /// <summary>手枪视觉表现渲染器集合。Renderer（enabled控制，与必要组件共享GameObject）。</summary>
     [Tooltip("Renderer（enabled控制，与必要组件共享GameObject）")]
     [SerializeField]
     private Renderer[] pistolVisualRenderers;
-    /// <summary>中文含义：纯视觉对象（SetActive控制）。使用位置：作为 LeonWeaponVisualController.FindCommonVisualRoot(GameObject[], Renderer[]) 的参数、LeonWeaponVisualController.SetWeaponVisible(WeaponType, bool)。</summary>
+    /// <summary>纯视觉对象（SetActive控制）。</summary>
     [Header("步枪视觉绑定")]
     [Tooltip("纯视觉对象（SetActive控制）")]
     [SerializeField]
     private GameObject[] rifleVisualObjects;
-    /// <summary>中文含义：步枪视觉表现渲染器集合。Renderer（enabled控制，与必要组件共享GameObject）。使用位置：作为 LeonWeaponVisualController.FindCommonVisualRoot(GameObject[], Renderer[]) 的参数、LeonWeaponVisualController.SetWeaponVisible(WeaponType, bool)。</summary>
+    /// <summary>步枪视觉表现渲染器集合。Renderer（enabled控制，与必要组件共享GameObject）。</summary>
     [Tooltip("Renderer（enabled控制，与必要组件共享GameObject）")]
     [SerializeField]
     private Renderer[] rifleVisualRenderers;
-    /// <summary>中文含义：纯视觉对象（SetActive控制）。使用位置：作为 LeonWeaponVisualController.FindCommonVisualRoot(GameObject[], Renderer[]) 的参数、LeonWeaponVisualController.SetWeaponVisible(WeaponType, bool)。</summary>
+    /// <summary>纯视觉对象（SetActive控制）。</summary>
     [Header("霰弹枪视觉绑定")]
     [Tooltip("纯视觉对象（SetActive控制）")]
     [SerializeField]
     private GameObject[] shotgunVisualObjects;
-    /// <summary>中文含义：霰弹枪视觉表现渲染器集合。Renderer（enabled控制，与必要组件共享GameObject）。使用位置：作为 LeonWeaponVisualController.FindCommonVisualRoot(GameObject[], Renderer[]) 的参数、LeonWeaponVisualController.SetWeaponVisible(WeaponType, bool)。</summary>
+    /// <summary>霰弹枪视觉表现渲染器集合。Renderer（enabled控制，与必要组件共享GameObject）。</summary>
     [Tooltip("Renderer（enabled控制，与必要组件共享GameObject）")]
     [SerializeField]
     private Renderer[] shotgunVisualRenderers;
-    /// <summary>中文含义：背部步枪Renderer（enabled控制）。使用位置：LeonWeaponVisualController.SetBackRifleVisible(bool)。</summary>
+    /// <summary>背部步枪Renderer（enabled控制）。</summary>
     [Header("背部步枪视觉绑定")]
     [Tooltip("背部步枪Renderer（enabled控制）")]
     [SerializeField]
     private Renderer[] rifleBackRenderers;
-    /// <summary>中文含义：背部霰弹枪Renderer（enabled控制）。使用位置：LeonWeaponVisualController.SetBackShotgunVisible(bool)。</summary>
+    /// <summary>背部霰弹枪Renderer（enabled控制）。</summary>
     [Header("背部霰弹枪视觉绑定")]
     [Tooltip("背部霰弹枪Renderer（enabled控制）")]
     [SerializeField]
     private Renderer[] shotgunBackRenderers;
-    /// <summary>中文含义：手持手枪时隐藏，切换到其他枪械时显示。使用位置：LeonWeaponVisualController.SetHolsteredPistolVisible(bool)。</summary>
+    /// <summary>手持手枪时隐藏，切换到其他枪械时显示。</summary>
     [Header("腰间待机手枪视觉绑定")]
     [Tooltip("手持手枪时隐藏，切换到其他枪械时显示")]
     public Renderer[] holsteredPistolRenderers;
-    /// <summary>中文含义：小刀纯视觉对象。使用位置：作为 LeonWeaponVisualController.FindCommonVisualRoot(GameObject[], Renderer[]) 的参数、LeonWeaponVisualController.SetKnifeVisible(bool)。</summary>
+    /// <summary>小刀纯视觉对象。</summary>
     [Header("小刀视觉绑定")]
     [Tooltip("小刀纯视觉对象")]
     [SerializeField]
     private GameObject[] knifeVisualObjects;
-    /// <summary>中文含义：小刀渲染器。使用位置：作为 LeonWeaponVisualController.FindCommonVisualRoot(GameObject[], Renderer[]) 的参数、LeonWeaponVisualController.SetKnifeVisible(bool)。</summary>
+    /// <summary>小刀渲染器。</summary>
     [Tooltip("小刀渲染器")]
     [SerializeField]
     private Renderer[] knifeVisualRenderers;
-    /// <summary>中文含义：掏刀动作进行到此比例后显示小刀。使用位置：LeonWeaponVisualController.OnWeaponActionProgress(AnimationActionTransaction, float)。</summary>
+    /// <summary>掏刀动作进行到此比例后显示小刀。</summary>
     [Header("小刀显隐时机")]
     [Tooltip("掏刀动作进行到此比例后显示小刀")]
     [Range(0f, 0.8f)]
     [SerializeField]
     private float knifeTakeRevealNormalizedTime = 0.12f;
-    /// <summary>中文含义：收刀动作进行到此比例后隐藏小刀。使用位置：LeonWeaponVisualController.OnWeaponActionProgress(AnimationActionTransaction, float)。</summary>
+    /// <summary>收刀动作进行到此比例后隐藏小刀。</summary>
     [Tooltip("收刀动作进行到此比例后隐藏小刀")]
     [Range(0.2f, 1f)]
     [SerializeField]
     private float knifeHideConcealNormalizedTime = 0.52f;
-    /// <summary>中文含义：留空时从小刀视觉绑定查找。整把刀的公共视觉根节点，必须位于右手骨骼下；留空时从小刀视觉绑定查找。使用位置：LeonWeaponVisualController.BeginAssassinationKnifePose()。</summary>
+    /// <summary>留空时从小刀视觉绑定查找。整把刀的公共视觉根节点，必须位于右手骨骼下；留空时从小刀视觉绑定查找。</summary>
     [Header("暗杀专用刀姿态")]
     [Tooltip("整把刀的公共视觉根节点，必须位于右手骨骼下；留空时从小刀视觉绑定查找")]
     public Transform assassinationKnifePoseRoot;
-    /// <summary>中文含义：刀柄握持中心在公共视觉根节点中的局部坐标。使用位置：作为 Transform.TransformVector(Vector3) 的参数。</summary>
+    /// <summary>刀柄握持中心在公共视觉根节点中的局部坐标。</summary>
     [Tooltip("刀柄握持中心在公共视觉根节点中的局部坐标")]
     public Vector3 assassinationKnifeGripLocalPosition = new Vector3(0.60403f, -1.3868f, 0.0044f);
-    /// <summary>中文含义：刀柄握持中心在右手骨骼中的局部坐标。使用位置：作为 Transform.TransformPoint(Vector3) 的参数。</summary>
+    /// <summary>刀柄握持中心在右手骨骼中的局部坐标。</summary>
     [Tooltip("刀柄握持中心在右手骨骼中的局部坐标")]
     public Vector3 assassinationKnifeHandGripLocalPosition = new Vector3(0.01556f, 0.07819f, 0.02582f);
-    /// <summary>中文含义：整把刀相对右手的刺杀旋转，刀刃朝向喉部。使用位置：作为 Quaternion.Euler(Vector3) 的参数。</summary>
+    /// <summary>整把刀相对右手的刺杀旋转，刀刃朝向喉部。</summary>
     [Tooltip("整把刀相对右手的刺杀旋转，刀刃朝向喉部")]
     public Vector3 assassinationKnifeHandLocalEulerAngles = new Vector3(0f, 85.42607f, 78.72514f);
-    /// <summary>中文含义：暗杀右手。使用位置：作为 Transform.IsChildOf(Transform) 的参数、LeonWeaponVisualController.ApplyAssassinationKnifePose()、LeonWeaponVisualController.BeginAssassinationKnifePose() 等共 4 处。</summary>
+    /// <summary>暗杀右手。</summary>
     private Transform assassinationRightHand;
-    /// <summary>中文含义：生效暗杀小刀姿态根节点。使用位置：LeonWeaponVisualController.ApplyAssassinationKnifePose()、LeonWeaponVisualController.BeginAssassinationKnifePose()、LeonWeaponVisualController.EndAssassinationKnifePose()。</summary>
+    /// <summary>生效暗杀小刀姿态根节点。</summary>
     private Transform activeAssassinationKnifePoseRoot;
-    /// <summary>中文含义：暗杀小刀原始位置。使用位置：LeonWeaponVisualController.BeginAssassinationKnifePose()、LeonWeaponVisualController.EndAssassinationKnifePose()。</summary>
+    /// <summary>暗杀小刀原始位置。</summary>
     private Vector3 assassinationKnifeOriginalPosition;
-    /// <summary>中文含义：暗杀小刀原始旋转。使用位置：LeonWeaponVisualController.BeginAssassinationKnifePose()、LeonWeaponVisualController.EndAssassinationKnifePose()。</summary>
+    /// <summary>暗杀小刀原始旋转。</summary>
     private Quaternion assassinationKnifeOriginalRotation;
-    /// <summary>中文含义：暗杀小刀姿态是否生效。使用位置：LeonWeaponVisualController.ApplyKnifeGripAfterPose()、LeonWeaponVisualController.BeginAssassinationKnifePose()、LeonWeaponVisualController.EndAssassinationKnifePose() 等共 5 处。</summary>
+    /// <summary>暗杀小刀姿态是否生效。</summary>
     private bool assassinationKnifePoseActive;
-    /// <summary>中文含义：尚未切换过长枪时，背部默认显示的武器。使用位置：LeonWeaponVisualController.ResolveBackLongGun()、LeonWeaponVisualController.Start()。</summary>
+    /// <summary>尚未切换过长枪时，背部默认显示的武器。</summary>
     [Header("背部长枪互斥状态")]
     [Tooltip("尚未切换过长枪时，背部默认显示的武器")]
     [SerializeField]
     private WeaponType defaultBackLongGun = WeaponType.Shotgun;
-    /// <summary>中文含义：后方长枪。使用位置：LeonWeaponVisualController.RefreshBackLongGunVisualsForHolsteredWeapon(WeaponType)、LeonWeaponVisualController.ResolveBackLongGun()、LeonWeaponVisualController.Start()。</summary>
+    /// <summary>后方长枪。</summary>
     [SerializeField]
     private WeaponType backLongGun = WeaponType.Shotgun;
-    /// <summary>中文含义：当前武器。使用位置：作为 LeonWeaponVisualController.RefreshBackLongGunVisualsForHolsteredWeapon(WeaponType) 的参数、作为 LeonWeaponVisualController.SetWeaponVisible(WeaponType, bool) 的参数、LeonWeaponVisualController.CurrentEquippedWeapon.get 等共 9 处。</summary>
+    /// <summary>当前武器。</summary>
     [Header("状态")]
     [SerializeField]
     private WeaponType currentWeapon = WeaponType.Pistol;
-    /// <summary>中文含义：当前视觉表现动作事务编号。使用位置：LeonWeaponVisualController.FinishKnifeEquip()、LeonWeaponVisualController.OnEquipCompleted(AnimationActionTransaction)、LeonWeaponVisualController.OnWeaponInterrupted(AnimationActionTransaction) 等共 4 处。</summary>
+    /// <summary>当前视觉表现动作事务编号。</summary>
     private int currentVisualTxId = -1;
-    /// <summary>中文含义：已隐藏依据配对动作会话编号。使用位置：LeonWeaponVisualController.OnQTEWeaponVisibilityRequested(int, bool)。</summary>
+    /// <summary>已隐藏依据配对动作会话编号。</summary>
     private int hiddenByQTESessionId = -1;
-    /// <summary>中文含义：是否已绑定事件。使用位置：LeonWeaponVisualController.BindCoordinatorEvents()、LeonWeaponVisualController.UnbindCoordinatorEvents()。</summary>
+    /// <summary>是否已绑定事件。</summary>
     private bool eventsBound;
-    /// <summary>中文含义：背包数据与操作宿主。使用位置：LeonWeaponVisualController.BindInventoryEvents()、LeonWeaponVisualController.HasOwnedLongGun(WeaponType)、LeonWeaponVisualController.Start() 等共 4 处。</summary>
+    /// <summary>背包数据与操作宿主。</summary>
     private InventoryManager inventoryManager;
-    /// <summary>中文含义：背包是否已绑定事件。使用位置：LeonWeaponVisualController.BindInventoryEvents()、LeonWeaponVisualController.UnbindInventoryEvents()。</summary>
+    /// <summary>背包是否已绑定事件。</summary>
     private bool inventoryEventsBound;
-    /// <summary>中文含义：小刀模式是否可见。使用位置：作为 LeonWeaponVisualController.SetKnifeVisible(bool) 的参数、作为 LeonWeaponVisualController.SetWeaponVisible(WeaponType, bool) 的参数、LeonWeaponVisualController.OnHolsterCompleted(AnimationActionTransaction) 等共 7 处。</summary>
+    /// <summary>小刀模式是否可见。</summary>
     private ItemData presentedKnife;
     private GameObject spareKnifeVisual;
     private GameObject loadedSparePrefab;
@@ -295,20 +295,20 @@ for (int index = 0; index < combatKnifeConfiguration.fingerBoneName.Length && in
     private bool knifeModeVisible;
     private bool nativePistolHolsterBound;
     internal bool IsCombatKnifeVisible => knifeModeVisible;
-    /// <summary>中文含义：后方长枪是否已初始化。使用位置：LeonWeaponVisualController.RefreshBackLongGunVisualsForHolsteredWeapon(WeaponType)、LeonWeaponVisualController.ResolveBackLongGun()、LeonWeaponVisualController.Start()。</summary>
+    /// <summary>后方长枪是否已初始化。</summary>
     private bool backLongGunInitialized;
-    /// <summary>中文含义：小刀时序动作事务编号。使用位置：LeonWeaponVisualController.OnWeaponActionProgress(AnimationActionTransaction, float)、LeonWeaponVisualController.ResetKnifeTiming()。</summary>
+    /// <summary>小刀时序动作事务编号。</summary>
     private int knifeTimingTxId = -1;
-    /// <summary>中文含义：小刀时序动作。使用位置：LeonWeaponVisualController.OnWeaponActionProgress(AnimationActionTransaction, float)、LeonWeaponVisualController.ResetKnifeTiming()。</summary>
+    /// <summary>小刀时序动作。</summary>
     private WeaponActionType knifeTimingAction = WeaponActionType.None;
-    /// <summary>中文含义：是否小刀时序已应用。使用位置：LeonWeaponVisualController.OnWeaponActionProgress(AnimationActionTransaction, float)、LeonWeaponVisualController.ResetKnifeTiming()。</summary>
+    /// <summary>是否小刀时序已应用。</summary>
     private bool knifeTimingApplied;
-    /// <summary>中文含义：当前已装备武器。使用位置：LeonQTECoordinator.ResolveCurrentSessionWeapon()。</summary>
+    /// <summary>当前已装备武器。</summary>
     public WeaponType CurrentEquippedWeapon => currentWeapon;
 
     /// <summary>GetWeaponVisualRoot 的业务处理入口；本方法直接依赖 LeonWeaponVisualController.FindCommonVisualRoot(GameObject[], Renderer[])，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 KnifeCombatBuilder.BakeTrajectory(LeonController, KnifeCombatConfiguration)、KnifeCombatBuilder.BindingPlayer(LeonController, KnifeCombatConfiguration, AnimatorController)、KnifeCombatModule.Start()、LeonFingerIKController.FindWeaponRoot(WeaponType)、LeonKnifeAnimationPreview.PreviewCharacter.PreviewCharacter() 等共 8 处；下游（含内部回调体） LeonWeaponVisualController.FindCommonVisualRoot(GameObject[], Renderer[])。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="weapon">中文含义：当前武器类别。使用位置：LeonWeaponVisualController.GetWeaponVisualRoot(WeaponType)。</param>
+    /// <param name="weapon">当前武器类别。</param>
     public Transform GetWeaponVisualRoot(WeaponType weapon)
     {
         switch (weapon)
@@ -328,11 +328,11 @@ for (int index = 0; index < combatKnifeConfiguration.fingerBoneName.Length && in
 
     /// <summary>FindCommonVisualRoot 的业务处理入口；本方法直接依赖 LeonWeaponVisualController.FindCommonAncestor(Transform, Transform)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonWeaponVisualController.GetWeaponVisualRoot(WeaponType)；下游（含内部回调体） LeonWeaponVisualController.FindCommonAncestor(Transform, Transform)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="objects">中文含义：对象集合。使用位置：LeonWeaponVisualController.FindCommonVisualRoot(GameObject[], Renderer[])。</param>
-    /// <param name="renderers">中文含义：渲染器集合。使用位置：LeonWeaponVisualController.FindCommonVisualRoot(GameObject[], Renderer[])。</param>
+    /// <param name="objects">对象集合。</param>
+    /// <param name="renderers">渲染器集合。</param>
     private static Transform FindCommonVisualRoot(GameObject[] objects, Renderer[] renderers)
     {
-        // common（通用）：使用位置：作为 LeonWeaponVisualController.FindCommonAncestor(Transform, Transform) 的参数、LeonWeaponVisualController.FindCommonVisualRoot(GameObject[], Renderer[])。
+        // 通用。
 Transform common = null;
         if (objects != null)
         {
@@ -381,8 +381,8 @@ foreach (Renderer visualRenderer in renderers)
 
     /// <summary>FindCommonAncestor 的业务处理入口；本方法直接依赖 Transform.IsChildOf(Transform)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonWeaponVisualController.FindCommonVisualRoot(GameObject[], Renderer[])；下游（含内部回调体） Transform.IsChildOf(Transform)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="first">中文含义：第一个变换节点。使用位置：LeonWeaponVisualController.FindCommonAncestor(Transform, Transform)。</param>
-    /// <param name="second">中文含义：第二个变换节点。使用位置：LeonWeaponVisualController.FindCommonAncestor(Transform, Transform)。</param>
+    /// <param name="first">第一个变换节点。</param>
+    /// <param name="second">第二个变换节点。</param>
     private static Transform FindCommonAncestor(Transform first, Transform second)
     {
         if (first == null || second == null)
@@ -390,7 +390,7 @@ foreach (Renderer visualRenderer in renderers)
             return null;
         }
 
-        // candidate（候选）：使用位置：作为 Transform.IsChildOf(Transform) 的参数、LeonWeaponVisualController.FindCommonAncestor(Transform, Transform)。
+        // 候选。
 Transform candidate = first;
         while (candidate != null)
         {
@@ -424,7 +424,7 @@ Transform candidate = first;
             inventoryManager = InventoryManager.Instance;
         }
 
-        // animator（动画控制器）：保存 Component.GetComponent<Animator>() 的返回结果，供当前步骤使用。使用位置：LeonWeaponVisualController.Start()。
+        // 动画控制器。
 Animator animator = GetComponent<Animator>();
         assassinationRightHand = AnimatorBoneBindings.Resolve(animator, HumanBodyBones.RightHand);
 
@@ -556,7 +556,7 @@ Animator animator = GetComponent<Animator>();
 
     /// <summary>初始化指定武器可见</summary>
     /// <remarks>静态调用链：上游 LeonController.InitPipeline()；下游（含内部回调体） LeonWeaponVisualController.CanProcessVisuals()、LeonWeaponVisualController.SetEquippedWeapon(WeaponType)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="weapon">中文含义：当前武器类别。使用位置：作为 LeonWeaponVisualController.SetEquippedWeapon(WeaponType) 的参数。</param>
+    /// <param name="weapon">当前武器类别。</param>
     public void Initialize(WeaponType weapon)
     {
         if (!CanProcessVisuals())
@@ -571,7 +571,7 @@ Animator animator = GetComponent<Animator>();
     /// 设置常驻装备的视觉状态。小刀属于正式武器模式，不经过枪械收拔事务。
     /// </summary>
     /// <remarks>静态调用链：上游 LeonQTECoordinator.RestoreWeaponVisualAfterQTE(WeaponType, bool)、LeonWeaponHandler.ForceSyncCurrentWeapon(WeaponType, bool)、LeonWeaponVisualController.FinishKnifeEquip()、LeonWeaponVisualController.Initialize(WeaponType)、LeonWeaponVisualController.SetTraversalWeaponVisible(bool)；下游（含内部回调体） LeonWeaponVisualController.CanProcessVisuals()、LeonWeaponVisualController.RefreshBackLongGunVisuals()、LeonWeaponVisualController.RefreshHolsteredPistolVisual()、LeonWeaponVisualController.SetKnifeVisible(bool)、LeonWeaponVisualController.SetWeaponVisible(WeaponType, bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="weapon">中文含义：当前武器类别。使用位置：作为 LeonWeaponVisualController.SetWeaponVisible(WeaponType, bool) 的参数、LeonWeaponVisualController.SetEquippedWeapon(WeaponType)。</param>
+    /// <param name="weapon">当前武器类别。</param>
     public void SetEquippedWeapon(WeaponType weapon)
     {
         if (!CanProcessVisuals())
@@ -594,7 +594,7 @@ Animator animator = GetComponent<Animator>();
     /// 不修改弹药、武器槽位或武器切换事务。
     /// </summary>
     /// <remarks>静态调用链：上游 LeonHighDropLanding.BeginDrop()、LeonHighDropLanding.FinishDrop()、LeonWindowTraversal.FinishTraversal(bool)、LeonWindowTraversal.ReleaseNormalTraversalGameplay()、LeonWindowTraversal.TryStartTraversal(WindowTraversalPoint)；下游（含内部回调体） LeonWeaponVisualController.CanProcessVisuals()、LeonWeaponVisualController.SetEquippedWeapon(WeaponType)、LeonWeaponVisualController.SetKnifeVisible(bool)、LeonWeaponVisualController.SetWeaponVisible(WeaponType, bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="visible">中文含义：是否可见。使用位置：LeonWeaponVisualController.SetTraversalWeaponVisible(bool)。</param>
+    /// <param name="visible">是否可见。</param>
     public void SetTraversalWeaponVisible(bool visible)
     {
         if (!CanProcessVisuals())
@@ -619,7 +619,7 @@ Animator animator = GetComponent<Animator>();
     /// 不改变当前枪械类型、弹药或枪械切换事务。
     /// </summary>
     /// <remarks>静态调用链：上游 KnifeCombatModule.EndTransaction(bool)、KnifeCombatModule.PrepareTransaction(bool)、LeonCombat.ApplyGuardPose()、LeonCombat.ClearParryState(bool)、LeonCombat.HandleParry() 等共 10 处；下游（含内部回调体） LeonWeaponVisualController.CanProcessVisuals()、LeonWeaponVisualController.RefreshBackLongGunVisuals()、LeonWeaponVisualController.SetKnifeVisible(bool)、LeonWeaponVisualController.SetWeaponVisible(WeaponType, bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="visible">中文含义：是否可见。使用位置：作为 LeonWeaponVisualController.SetKnifeVisible(bool) 的参数、作为 LeonWeaponVisualController.SetWeaponVisible(WeaponType, bool) 的参数、LeonWeaponVisualController.SetKnifeModeVisible(bool)。</param>
+    /// <param name="visible">是否可见。</param>
     public void SetKnifeModeVisible(bool visible)
     {
         if (!CanProcessVisuals())
@@ -648,7 +648,7 @@ Animator animator = GetComponent<Animator>();
             return;
         }
 
-        // root（根变换节点）：使用位置：LeonWeaponVisualController.BeginAssassinationKnifePose()。
+        // 根变换节点。
 Transform root;
         if (assassinationKnifePoseRoot != null)
         {
@@ -692,7 +692,7 @@ Transform root;
             return;
         }
 
-        // root（根变换节点）：使用位置：LeonWeaponVisualController.ApplyAssassinationKnifePose()。
+        // 根变换节点。
 Transform root = activeAssassinationKnifePoseRoot;
         root.rotation = assassinationRightHand.rotation * Quaternion.Euler(assassinationKnifeHandLocalEulerAngles);
         // 先旋转，再补偿模型原点到刀柄中心的距离，保证刀柄始终留在掌心。
@@ -735,7 +735,7 @@ Transform root = activeAssassinationKnifePoseRoot;
     /// 收刀动作结束后，为下一把枪的掏枪动画准备视觉状态。
     /// </summary>
     /// <remarks>静态调用链：上游 LeonWeaponHandler.OnKnifeTransitionExited(AnimationActionTransaction)；下游（含内部回调体） LeonWeaponVisualController.CanProcessVisuals()、LeonWeaponVisualController.IsGunWeapon(WeaponType)、LeonWeaponVisualController.RefreshBackLongGunVisuals()、LeonWeaponVisualController.RefreshHolsteredPistolVisual()、LeonWeaponVisualController.ResetKnifeTiming()、LeonWeaponVisualController.SetKnifeVisible(bool)、LeonWeaponVisualController.SetWeaponVisible(WeaponType, bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="weapon">中文含义：当前武器类别。使用位置：作为 LeonWeaponVisualController.IsGunWeapon(WeaponType) 的参数、作为 LeonWeaponVisualController.SetWeaponVisible(WeaponType, bool) 的参数、LeonWeaponVisualController.PrepareGunEquipAfterKnifeHide(WeaponType)。</param>
+    /// <param name="weapon">当前武器类别。</param>
     public void PrepareGunEquipAfterKnifeHide(WeaponType weapon)
     {
         if (!CanProcessVisuals())
@@ -759,7 +759,7 @@ Transform root = activeAssassinationKnifePoseRoot;
 
     /// <summary>TryBindOrValidateVisualTransaction 的业务处理入口；本方法直接依赖 LeonWeaponVisualController.ResetKnifeTiming()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonWeaponVisualController.OnEquipCompleted(AnimationActionTransaction)、LeonWeaponVisualController.OnHolsterCompleted(AnimationActionTransaction)、LeonWeaponVisualController.OnVisualMarker(AnimationActionTransaction, VisualMarker)、LeonWeaponVisualController.OnWeaponActionProgress(AnimationActionTransaction, float)、LeonWeaponVisualController.OnWeaponInterrupted(AnimationActionTransaction)；下游（含内部回调体） LeonWeaponVisualController.ResetKnifeTiming()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="tx">中文含义：动画动作事务。使用位置：LeonWeaponVisualController.TryBindOrValidateVisualTransaction(AnimationActionTransaction)。</param>
+    /// <param name="tx">动画动作事务。</param>
     private bool TryBindOrValidateVisualTransaction(AnimationActionTransaction tx)
     {
         if (!tx.isWeaponSwitch)
@@ -797,7 +797,7 @@ Transform root = activeAssassinationKnifePoseRoot;
 
     /// <summary>OnHolsterCompleted 的业务处理入口；本方法直接依赖 LeonWeaponVisualController.CanProcessVisuals()、LeonWeaponVisualController.RefreshHolsteredPistolVisual()、LeonWeaponVisualController.SetWeaponVisible(WeaponType, bool)、LeonWeaponVisualController.TryBindOrValidateVisualTransaction(AnimationActionTransaction)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） LeonWeaponVisualController.CanProcessVisuals()、LeonWeaponVisualController.RefreshHolsteredPistolVisual()、LeonWeaponVisualController.SetWeaponVisible(WeaponType, bool)、LeonWeaponVisualController.TryBindOrValidateVisualTransaction(AnimationActionTransaction)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="tx">中文含义：动画动作事务。使用位置：作为 LeonWeaponVisualController.TryBindOrValidateVisualTransaction(AnimationActionTransaction) 的参数、LeonWeaponVisualController.OnHolsterCompleted(AnimationActionTransaction)。</param>
+    /// <param name="tx">动画动作事务。</param>
     private void OnHolsterCompleted(AnimationActionTransaction tx)
     {
         if (!CanProcessVisuals())
@@ -823,7 +823,7 @@ Transform root = activeAssassinationKnifePoseRoot;
 
     /// <summary>OnEquipCompleted 的业务处理入口；本方法直接依赖 LeonWeaponVisualController.CanProcessVisuals()、LeonWeaponVisualController.RefreshBackLongGunVisuals()、LeonWeaponVisualController.ResetKnifeTiming()、LeonWeaponVisualController.SetWeaponVisible(WeaponType, bool)、LeonWeaponVisualController.TryBindOrValidateVisualTransaction(AnimationActionTransaction)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） LeonWeaponVisualController.CanProcessVisuals()、LeonWeaponVisualController.RefreshBackLongGunVisuals()、LeonWeaponVisualController.ResetKnifeTiming()、LeonWeaponVisualController.SetWeaponVisible(WeaponType, bool)、LeonWeaponVisualController.TryBindOrValidateVisualTransaction(AnimationActionTransaction)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="tx">中文含义：动画动作事务。使用位置：作为 LeonWeaponVisualController.TryBindOrValidateVisualTransaction(AnimationActionTransaction) 的参数。</param>
+    /// <param name="tx">动画动作事务。</param>
     private void OnEquipCompleted(AnimationActionTransaction tx)
     {
         if (!CanProcessVisuals())
@@ -847,7 +847,7 @@ Transform root = activeAssassinationKnifePoseRoot;
 
     /// <summary>OnWeaponInterrupted 的业务处理入口；本方法直接依赖 LeonWeaponVisualController.CanProcessVisuals()、LeonWeaponVisualController.RefreshBackLongGunVisuals()、LeonWeaponVisualController.ResetKnifeTiming()、LeonWeaponVisualController.SetWeaponVisible(WeaponType, bool)、LeonWeaponVisualController.TryBindOrValidateVisualTransaction(AnimationActionTransaction)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） LeonWeaponVisualController.CanProcessVisuals()、LeonWeaponVisualController.RefreshBackLongGunVisuals()、LeonWeaponVisualController.ResetKnifeTiming()、LeonWeaponVisualController.SetWeaponVisible(WeaponType, bool)、LeonWeaponVisualController.TryBindOrValidateVisualTransaction(AnimationActionTransaction)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="tx">中文含义：动画动作事务。使用位置：作为 LeonWeaponVisualController.TryBindOrValidateVisualTransaction(AnimationActionTransaction) 的参数、LeonWeaponVisualController.OnWeaponInterrupted(AnimationActionTransaction)。</param>
+    /// <param name="tx">动画动作事务。</param>
     private void OnWeaponInterrupted(AnimationActionTransaction tx)
     {
         if (!CanProcessVisuals())
@@ -878,8 +878,8 @@ Transform root = activeAssassinationKnifePoseRoot;
 
     /// <summary>OnWeaponActionProgress 的业务处理入口；本方法直接依赖 LeonWeaponVisualController.CanProcessVisuals()、LeonWeaponVisualController.SetKnifeVisible(bool)、LeonWeaponVisualController.SetWeaponVisible(WeaponType, bool)、LeonWeaponVisualController.TryBindOrValidateVisualTransaction(AnimationActionTransaction)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） LeonWeaponVisualController.CanProcessVisuals()、LeonWeaponVisualController.SetKnifeVisible(bool)、LeonWeaponVisualController.SetWeaponVisible(WeaponType, bool)、LeonWeaponVisualController.TryBindOrValidateVisualTransaction(AnimationActionTransaction)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="tx">中文含义：动画动作事务。使用位置：作为 LeonWeaponVisualController.TryBindOrValidateVisualTransaction(AnimationActionTransaction) 的参数、LeonWeaponVisualController.OnWeaponActionProgress(AnimationActionTransaction, float)。</param>
-    /// <param name="normalizedTime">中文含义：动画归一化播放时间。使用位置：LeonWeaponVisualController.OnWeaponActionProgress(AnimationActionTransaction, float)。</param>
+    /// <param name="tx">动画动作事务。</param>
+    /// <param name="normalizedTime">动画归一化播放时间。</param>
     private void OnWeaponActionProgress(AnimationActionTransaction tx, float normalizedTime)
     {
         if (!CanProcessVisuals() || !tx.isWeaponSwitch)
@@ -937,8 +937,8 @@ Transform root = activeAssassinationKnifePoseRoot;
 
     /// <summary>OnVisualMarker 的业务处理入口；本方法直接依赖 LeonWeaponVisualController.CanProcessVisuals()、LeonWeaponVisualController.RefreshBackLongGunVisuals()、LeonWeaponVisualController.RefreshBackLongGunVisualsForHolsteredWeapon(WeaponType)、LeonWeaponVisualController.SetBackRifleVisible(bool)、LeonWeaponVisualController.SetBackShotgunVisible(bool)、LeonWeaponVisualController.SetHolsteredPistolVisible(bool)、LeonWeaponVisualController.SetWeaponVisible(WeaponType, bool) 等共 8 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） LeonWeaponVisualController.CanProcessVisuals()、LeonWeaponVisualController.RefreshBackLongGunVisuals()、LeonWeaponVisualController.RefreshBackLongGunVisualsForHolsteredWeapon(WeaponType)、LeonWeaponVisualController.SetBackRifleVisible(bool)、LeonWeaponVisualController.SetBackShotgunVisible(bool)、LeonWeaponVisualController.SetHolsteredPistolVisible(bool)、LeonWeaponVisualController.SetWeaponVisible(WeaponType, bool) 等共 8 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="tx">中文含义：动画动作事务。使用位置：作为 LeonWeaponVisualController.TryBindOrValidateVisualTransaction(AnimationActionTransaction) 的参数、LeonWeaponVisualController.OnVisualMarker(AnimationActionTransaction, VisualMarker)。</param>
-    /// <param name="marker">中文含义：标记。使用位置：LeonWeaponVisualController.OnVisualMarker(AnimationActionTransaction, VisualMarker)。</param>
+    /// <param name="tx">动画动作事务。</param>
+    /// <param name="marker">标记。</param>
     private void OnVisualMarker(AnimationActionTransaction tx, VisualMarker marker)
     {
         if (!CanProcessVisuals())
@@ -988,8 +988,8 @@ Transform root = activeAssassinationKnifePoseRoot;
 
     /// <summary>OnQTEWeaponVisibilityRequested 的业务处理入口；本方法直接依赖 LeonWeaponVisualController.CanProcessVisuals()、LeonWeaponVisualController.RefreshBackLongGunVisuals()、LeonWeaponVisualController.SetWeaponVisible(WeaponType, bool)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） LeonWeaponVisualController.CanProcessVisuals()、LeonWeaponVisualController.RefreshBackLongGunVisuals()、LeonWeaponVisualController.SetWeaponVisible(WeaponType, bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="sessionId">中文含义：会话编号。使用位置：LeonWeaponVisualController.OnQTEWeaponVisibilityRequested(int, bool)。</param>
-    /// <param name="visible">中文含义：是否可见。使用位置：LeonWeaponVisualController.OnQTEWeaponVisibilityRequested(int, bool)。</param>
+    /// <param name="sessionId">会话编号。</param>
+    /// <param name="visible">是否可见。</param>
     private void OnQTEWeaponVisibilityRequested(int sessionId, bool visible)
     {
         if (!CanProcessVisuals() || sessionId <= 0)
@@ -1034,7 +1034,7 @@ Transform root = activeAssassinationKnifePoseRoot;
 
     /// <summary>HasOwnedLongGun 的业务处理入口；本方法直接依赖 InventoryManager.HasItem(string, int)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonWeaponVisualController.RefreshBackLongGunVisualsForHolsteredWeapon(WeaponType)、LeonWeaponVisualController.ResolveBackLongGun()；下游（含内部回调体） InventoryManager.HasItem(string, int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="weapon">中文含义：当前武器类别。使用位置：LeonWeaponVisualController.HasOwnedLongGun(WeaponType)。</param>
+    /// <param name="weapon">当前武器类别。</param>
     private bool HasOwnedLongGun(WeaponType weapon)
     {
         if (inventoryManager == null)
@@ -1059,9 +1059,9 @@ Transform root = activeAssassinationKnifePoseRoot;
     /// <remarks>静态调用链：上游 LeonWeaponVisualController.RefreshBackLongGunVisuals()；下游（含内部回调体） LeonWeaponVisualController.HasOwnedLongGun(WeaponType)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     private WeaponType? ResolveBackLongGun()
     {
-        // hasRifle（是否具有步枪）：保存 LeonWeaponVisualController.HasOwnedLongGun(WeaponType) 的返回结果，供当前步骤使用。使用位置：LeonWeaponVisualController.ResolveBackLongGun()。
+        // 是否具有步枪。
 bool hasRifle = HasOwnedLongGun(WeaponType.Rifle);
-        // hasShotgun（是否具有霰弹枪）：保存 LeonWeaponVisualController.HasOwnedLongGun(WeaponType) 的返回结果，供当前步骤使用。使用位置：LeonWeaponVisualController.ResolveBackLongGun()。
+        // 是否具有霰弹枪。
 bool hasShotgun = HasOwnedLongGun(WeaponType.Shotgun);
         if (!hasRifle && !hasShotgun)
         {
@@ -1123,7 +1123,7 @@ bool hasShotgun = HasOwnedLongGun(WeaponType.Shotgun);
             return WeaponType.Shotgun;
         }
 
-        // selectedValue10（分支选出的武器类型的霰弹枪）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：LeonWeaponVisualController.ResolveBackLongGun()。
+        // 分支选出的武器类型的霰弹枪。
 global::WeaponType selectedValue10;
         if (hasShotgun)
         {
@@ -1154,7 +1154,7 @@ global::WeaponType selectedValue10;
                 && inventoryManager != null && inventoryManager.HasItem("pistol"));
             return;
         }
-        // shouldShow（是否应当显示）：使用位置：作为 LeonWeaponVisualController.SetHolsteredPistolVisible(bool) 的参数。
+        // 是否应当显示。
 bool shouldShow = currentWeapon == WeaponType.Rifle || currentWeapon == WeaponType.Shotgun;
         SetHolsteredPistolVisible(shouldShow);
     }
@@ -1172,7 +1172,7 @@ bool shouldShow = currentWeapon == WeaponType.Rifle || currentWeapon == WeaponTy
 
     /// <summary>RefreshBackLongGunVisualsForHolsteredWeapon 的业务处理入口；本方法直接依赖 LeonWeaponVisualController.HasOwnedLongGun(WeaponType)、LeonWeaponVisualController.RefreshBackLongGunVisuals()、LeonWeaponVisualController.SetExclusiveBackLongGun(WeaponType?)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonWeaponVisualController.OnVisualMarker(AnimationActionTransaction, VisualMarker)；下游（含内部回调体） LeonWeaponVisualController.HasOwnedLongGun(WeaponType)、LeonWeaponVisualController.RefreshBackLongGunVisuals()、LeonWeaponVisualController.SetExclusiveBackLongGun(WeaponType?)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="holsteredWeapon">中文含义：已收起武器。使用位置：作为 LeonWeaponVisualController.HasOwnedLongGun(WeaponType) 的参数、作为 LeonWeaponVisualController.SetExclusiveBackLongGun(WeaponType?) 的参数、LeonWeaponVisualController.RefreshBackLongGunVisualsForHolsteredWeapon(WeaponType)。</param>
+    /// <param name="holsteredWeapon">已收起武器。</param>
     private void RefreshBackLongGunVisualsForHolsteredWeapon(WeaponType holsteredWeapon, WeaponType pendingWeapon)
     {
         if ((holsteredWeapon != WeaponType.Rifle && holsteredWeapon != WeaponType.Shotgun) || !HasOwnedLongGun(holsteredWeapon))
@@ -1194,7 +1194,7 @@ bool shouldShow = currentWeapon == WeaponType.Rifle || currentWeapon == WeaponTy
 
     /// <summary>SetExclusiveBackLongGun 的业务处理入口；本方法直接依赖 LeonWeaponVisualController.SetBackRifleVisible(bool)、LeonWeaponVisualController.SetBackShotgunVisible(bool)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonWeaponVisualController.RefreshBackLongGunVisuals()、LeonWeaponVisualController.RefreshBackLongGunVisualsForHolsteredWeapon(WeaponType)；下游（含内部回调体） LeonWeaponVisualController.SetBackRifleVisible(bool)、LeonWeaponVisualController.SetBackShotgunVisible(bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="weapon">中文含义：当前可空的武器类别。使用位置：作为 LeonWeaponVisualController.SetBackRifleVisible(bool) 的参数、作为 LeonWeaponVisualController.SetBackShotgunVisible(bool) 的参数。</param>
+    /// <param name="weapon">当前可空的武器类别。</param>
     private void SetExclusiveBackLongGun(WeaponType? weapon)
     {
         SetBackRifleVisible(weapon == WeaponType.Rifle);
@@ -1212,13 +1212,13 @@ bool shouldShow = currentWeapon == WeaponType.Rifle || currentWeapon == WeaponTy
 
     /// <summary>SetWeaponVisible 的业务处理入口；本方法直接依赖 GameObject.SetActive(bool)、LeonWeaponVisualController.SetKnifeVisible(bool)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonWeaponVisualController.OnEquipCompleted(AnimationActionTransaction)、LeonWeaponVisualController.OnHolsterCompleted(AnimationActionTransaction)、LeonWeaponVisualController.OnQTEWeaponVisibilityRequested(int, bool)、LeonWeaponVisualController.OnVisualMarker(AnimationActionTransaction, VisualMarker)、LeonWeaponVisualController.OnWeaponActionProgress(AnimationActionTransaction, float) 等共 10 处；下游（含内部回调体） GameObject.SetActive(bool)、LeonWeaponVisualController.SetKnifeVisible(bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="type">中文含义：当前武器类别。使用位置：LeonWeaponVisualController.SetWeaponVisible(WeaponType, bool)。</param>
-    /// <param name="visible">中文含义：是否可见。使用位置：作为 GameObject.SetActive(bool) 的参数、作为 LeonWeaponVisualController.SetKnifeVisible(bool) 的参数、LeonWeaponVisualController.SetWeaponVisible(WeaponType, bool)。</param>
+    /// <param name="type">当前武器类别。</param>
+    /// <param name="visible">是否可见。</param>
     private void SetWeaponVisible(WeaponType type, bool visible)
     {
-        // objects（对象集合）：使用位置：LeonWeaponVisualController.SetWeaponVisible(WeaponType, bool)。
+        // 对象集合。
 GameObject[] objects;
-        // renderers（渲染器集合）：使用位置：LeonWeaponVisualController.SetWeaponVisible(WeaponType, bool)。
+        // 渲染器集合。
 Renderer[] renderers;
         if (type == WeaponType.Pistol)
         {
@@ -1272,7 +1272,7 @@ foreach (var r in renderers)
 
     /// <summary>SetKnifeVisible 的业务处理入口；本方法直接依赖 GameObject.SetActive(bool)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonWeaponVisualController.OnWeaponActionProgress(AnimationActionTransaction, float)、LeonWeaponVisualController.PrepareGunEquipAfterKnifeHide(WeaponType)、LeonWeaponVisualController.SetEquippedWeapon(WeaponType)、LeonWeaponVisualController.SetKnifeModeVisible(bool)、LeonWeaponVisualController.SetTraversalWeaponVisible(bool) 等共 6 处；下游（含内部回调体） GameObject.SetActive(bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="visible">中文含义：是否可见。使用位置：作为 GameObject.SetActive(bool) 的参数、LeonWeaponVisualController.SetKnifeVisible(bool)。</param>
+    /// <param name="visible">是否可见。</param>
     private void SetKnifeVisible(bool visible)
     {
         if (nativePairKnifeActive)
@@ -1320,7 +1320,7 @@ foreach (var rendererItem in knifeVisualRenderers)
 
     /// <summary>SetBackRifleVisible 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
     /// <remarks>静态调用链：上游 LeonWeaponVisualController.OnVisualMarker(AnimationActionTransaction, VisualMarker)、LeonWeaponVisualController.SetExclusiveBackLongGun(WeaponType?)；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="visible">中文含义：是否可见。使用位置：LeonWeaponVisualController.SetBackRifleVisible(bool)。</param>
+    /// <param name="visible">是否可见。</param>
     private void SetBackRifleVisible(bool visible)
     {
         if (rifleBackRenderers == null)
@@ -1340,7 +1340,7 @@ foreach (var r in rifleBackRenderers)
 
     /// <summary>SetBackShotgunVisible 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
     /// <remarks>静态调用链：上游 LeonWeaponVisualController.OnVisualMarker(AnimationActionTransaction, VisualMarker)、LeonWeaponVisualController.SetExclusiveBackLongGun(WeaponType?)；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="visible">中文含义：是否可见。使用位置：LeonWeaponVisualController.SetBackShotgunVisible(bool)。</param>
+    /// <param name="visible">是否可见。</param>
     private void SetBackShotgunVisible(bool visible)
     {
         if (shotgunBackRenderers == null)
@@ -1360,7 +1360,7 @@ foreach (var r in shotgunBackRenderers)
 
     /// <summary>SetHolsteredPistolVisible 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
     /// <remarks>静态调用链：上游 LeonWeaponVisualController.OnVisualMarker(AnimationActionTransaction, VisualMarker)、LeonWeaponVisualController.RefreshHolsteredPistolVisual()；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="visible">中文含义：是否可见。使用位置：LeonWeaponVisualController.SetHolsteredPistolVisible(bool)。</param>
+    /// <param name="visible">是否可见。</param>
     private void SetHolsteredPistolVisible(bool visible)
     {
         if (!nativePistolHolsterBound && UsesNativePistolVisual)
@@ -1401,7 +1401,7 @@ foreach (var rendererItem in holsteredPistolRenderers)
 
     /// <summary>IsGunWeapon 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
     /// <remarks>静态调用链：上游 LeonWeaponVisualController.PrepareGunEquipAfterKnifeHide(WeaponType)；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="weapon">中文含义：当前武器类别。使用位置：LeonWeaponVisualController.IsGunWeapon(WeaponType)。</param>
+    /// <param name="weapon">当前武器类别。</param>
     private static bool IsGunWeapon(WeaponType weapon)
     {
         return weapon == WeaponType.Pistol || weapon == WeaponType.Rifle || weapon == WeaponType.Shotgun;

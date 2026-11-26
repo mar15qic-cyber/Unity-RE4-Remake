@@ -4,12 +4,12 @@ using UnityEngine;
 [UnityEngine.Scripting.APIUpdating.MovedFrom(true, "", "Assembly-CSharp", "村庄日间应用")]
 public class VillageDaylightApplier : MonoBehaviour
 {
-    /// <summary>中文含义：配置。使用位置：InterfaceReworkBuilder.ConfigurationTitle()、VillageDaylightApplier.Start()、VillageInterfaceRefinementConfigurator.ApplyScene()。</summary>
+    /// <summary>配置。</summary>
     [Header("共享日间配置")]
     [UnityEngine.Serialization.FormerlySerializedAs("配置")]
     [UnityEngine.InspectorName("配置")]
     public VillageDaylightConfiguration configuration;
-    /// <summary>中文含义：日光。使用位置：作为 VillageDaylightConfiguration.Apply(Light) 的参数、InterfaceReworkBuilder.ConfigurationTitle()、VillageInterfaceRefinementConfigurator.ApplyScene()。</summary>
+    /// <summary>日光。</summary>
     [UnityEngine.Serialization.FormerlySerializedAs("日光")]
     [UnityEngine.InspectorName("日光")]
     public Light sunlight;

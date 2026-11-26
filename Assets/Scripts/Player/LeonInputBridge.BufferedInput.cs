@@ -2,35 +2,213 @@ using UnityEngine;
 
 public partial class LeonInputBridge
 {
-    private enum GameplayIntentKind { Shoot, Reload, Interact, QuickSlot, Count }
-    private const double GameplayInputLifetime = .22;
-    private const double ThrustFollowUpInputLifetime = .9;
+    private enum GameplayIntentKind
+    {
+        Shoot,
+        Reload,
+        Interact,
+        QuickSlot,
+        Crouch,
+        Parry,
+        Count
+    }
+
+    private const double GameplayInputLifetime = 0.28;
+    private const double PickupBufferedInputLifetime = 1.5;
+    private const double ThrustFollowUpInputLifetime = 0.9;
     private const double ConfirmedBodyReactionLifetime = 1.6;
 
     private struct GameplayIntent
     {
         internal bool pending;
         internal double pressedAt;
+        internal long sequence;
         internal InteractionPromptSnapshot target;
         internal WeaponType weapon;
         internal int slot;
+        internal int pickupTransactionId;
         internal bool thrustPickup;
         internal bool thrustQuickSlot;
     }
 
     private readonly GameplayIntent[] gameplayIntents = new GameplayIntent[(int)GameplayIntentKind.Count];
+    private long nextIntentSequence;
     private bool restoreHeldAim;
     private bool restoreHeldGuard;
+    private int pickupInputTransaction;
+    private bool pickupInputReleased;
+    private bool pendingPickupAim;
+    private bool isReplayingIntents;
+
+    internal bool HasAimIntentForReplay
+    {
+        get
+        {
+            if (restoreHeldAim)
+            {
+                return true;
+            }
+
+            if (aimMode == 1)
+            {
+                return aimToggleActive;
+            }
+
+            return IsEffectiveAimPressed();
+        }
+    }
+
+    private void ClearPickupBufferState()
+    {
+        pickupInputTransaction = 0;
+        pickupInputReleased = false;
+        pendingPickupAim = false;
+    }
 
     private void ClearGameplayIntents()
     {
         System.Array.Clear(gameplayIntents, 0, gameplayIntents.Length);
+        ClearPickupBufferState();
         restoreHeldAim = true;
         restoreHeldGuard = true;
     }
 
+    private void DiscardGameplayIntent(GameplayIntentKind kind)
+    {
+        int channel = (int)kind;
+        if (channel >= 0 && channel < gameplayIntents.Length)
+        {
+            gameplayIntents[channel] = default;
+        }
+    }
+
+    private bool BufferPickupAim(bool aim)
+    {
+        if (actions == null || !actions.IsItemPickupActive)
+        {
+            return false;
+        }
+
+        if (CanUseGameplayInput())
+        {
+            int transactionId = actions.CurrentFullBodyTransactionId;
+            if (pickupInputTransaction != transactionId)
+            {
+                ClearPickupBufferState();
+                pickupInputTransaction = transactionId;
+            }
+
+            if (!pickupInputReleased)
+            {
+                pendingPickupAim = aim;
+                restoreHeldAim = aim;
+            }
+        }
+
+        return true;
+    }
+
+    internal bool HasBufferedPickupInput(int transactionId)
+    {
+        if (transactionId == 0)
+        {
+            return false;
+        }
+
+        if (pickupInputTransaction == transactionId && pendingPickupAim)
+        {
+            return true;
+        }
+
+        for (int index = 0; index < gameplayIntents.Length; index++)
+        {
+            if (gameplayIntents[index].pending && gameplayIntents[index].pickupTransactionId == transactionId)
+            {
+                return true;
+            }
+        }
+
+        if (aimMode == 0 && IsEffectiveAimPressed())
+        {
+            return true;
+        }
+
+        if (IsEffectiveGuardPressed())
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    internal void ReleaseBufferedPickupInput(int transactionId)
+    {
+        if (transactionId == 0)
+        {
+            return;
+        }
+
+        if (pickupInputTransaction == transactionId)
+        {
+            pickupInputReleased = true;
+        }
+
+        for (int index = 0; index < gameplayIntents.Length; index++)
+        {
+            if (gameplayIntents[index].pending && gameplayIntents[index].pickupTransactionId == transactionId)
+            {
+                gameplayIntents[index].pickupTransactionId = 0;
+            }
+        }
+
+        NotifyActionWindowOpened();
+    }
+
+    internal void DiscardPendingPickupInput(int transactionId)
+    {
+        if (transactionId == 0)
+        {
+            return;
+        }
+
+        if (pickupInputTransaction == transactionId)
+        {
+            ClearPickupBufferState();
+            restoreHeldAim = false;
+            restoreHeldGuard = false;
+        }
+
+        for (int index = 0; index < gameplayIntents.Length; index++)
+        {
+            if (gameplayIntents[index].pending && gameplayIntents[index].pickupTransactionId == transactionId)
+            {
+                gameplayIntents[index] = default;
+            }
+        }
+    }
+
+    internal void NotifyActionWindowOpened()
+    {
+        if (!isActiveAndEnabled || isReplayingIntents)
+        {
+            return;
+        }
+
+        RestoreMovementInput();
+        ReplayGameplayIntents();
+    }
+
     private bool GameplayActionRecovering(GameplayIntentKind kind)
     {
+        if (actions != null && actions.IsItemPickupActive)
+        {
+            int activePickupTx = actions.CurrentFullBodyTransactionId;
+            if (pickupInputTransaction == 0 || pickupInputTransaction != activePickupTx || !pickupInputReleased)
+            {
+                return true;
+            }
+        }
+
         if (kind == GameplayIntentKind.Shoot && combat != null && combat.knifeModule != null
             && combat.knifeModule.Active)
         {
@@ -38,14 +216,60 @@ public partial class LeonInputBridge
             return false;
         }
 
+        if (kind == GameplayIntentKind.Parry && combat != null && combat.knifeModule != null
+            && combat.knifeModule.Active)
+        {
+            // 小刀连段期间按住格挡由小刀模块自己的取消窗口处理。
+            return false;
+        }
+
         if (actions == null || combat == null || !combat.CanAct() || actions.HasActiveFullBodyAction)
         {
             return true;
         }
-        if (kind is GameplayIntentKind.Shoot or GameplayIntentKind.Reload)
+
+        if (kind == GameplayIntentKind.Shoot || kind == GameplayIntentKind.Reload || kind == GameplayIntentKind.QuickSlot)
         {
-            return actions.HasPendingWeaponSwitch || actions.WaitingForWeaponExit || actions.IsWeaponSwitchInProgress;
+            if (actions.HasPendingWeaponSwitch || actions.WaitingForWeaponExit || actions.IsWeaponSwitchInProgress)
+            {
+                return true;
+            }
         }
+
+        if (kind == GameplayIntentKind.Reload)
+        {
+            if (driver != null && driver.WeaponActionLayerWeight > 0.05f)
+            {
+                return true;
+            }
+        }
+
+        if (kind == GameplayIntentKind.QuickSlot)
+        {
+            if (controller != null && (controller.currentState == LeonState.Shooting || controller.currentState == LeonState.Reloading))
+            {
+                return true;
+            }
+
+            if (driver != null && (driver.NativeW870FireCycleActive || driver.WeaponActionLayerWeight > 0.05f))
+            {
+                return true;
+            }
+        }
+
+        if (kind == GameplayIntentKind.Parry)
+        {
+            if (combat.IsFireBlockedByWeaponAction())
+            {
+                return true;
+            }
+
+            if (controller != null && controller.currentState == LeonState.Reloading)
+            {
+                return true;
+            }
+        }
+
         return false;
     }
 
@@ -58,17 +282,32 @@ public partial class LeonInputBridge
             return;
         }
 
+        int activePickupTx = 0;
+        if (actions.IsItemPickupActive)
+        {
+            activePickupTx = actions.CurrentFullBodyTransactionId;
+            if (pickupInputTransaction != activePickupTx)
+            {
+                ClearPickupBufferState();
+                pickupInputTransaction = activePickupTx;
+            }
+        }
+
         var intent = new GameplayIntent
         {
             pending = true,
             pressedAt = pressedAt,
+            sequence = ++nextIntentSequence,
             slot = slot,
-            weapon = controller.currentWeapon
+            weapon = controller.currentWeapon,
+            pickupTransactionId = activePickupTx
         };
+
         if (actions.HasPendingWeaponSwitch)
         {
             intent.weapon = actions.PendingWeaponType;
         }
+
         if (qteCoordinator != null && qteCoordinator.UsesNativeInteractionPrompts)
         {
             bool recovering = GameplayActionRecovering(kind);
@@ -96,53 +335,137 @@ public partial class LeonInputBridge
         if (!TryConsumeGameplayIntent(kind, intent, false)
             && intent.target.Kind != InteractionPromptKind.WindowLadderPush)
         {
+            ClearMutuallyExclusiveIntents(kind);
             gameplayIntents[channel] = intent;
+        }
+    }
+
+    private void ClearMutuallyExclusiveIntents(GameplayIntentKind incomingKind)
+    {
+        for (int index = 0; index < gameplayIntents.Length; index++)
+        {
+            if (index == (int)incomingKind)
+            {
+                continue;
+            }
+
+            if (!gameplayIntents[index].pending)
+            {
+                continue;
+            }
+
+            // 互斥主动动作只保留玩家最新有效意图，避免恢复帧先后触发两个冲突动作。
+            gameplayIntents[index] = default;
         }
     }
 
     private void ReplayGameplayIntents()
     {
-        if (playerMap == null || !playerMap.enabled || !CanUsePickupInput())
+        if (isReplayingIntents)
+        {
+            return;
+        }
+
+        if (playerMap == null || !playerMap.enabled || !CanUseGameplayInput())
         {
             ClearGameplayIntents();
             return;
         }
 
-        if (restoreHeldAim && !GameplayActionRecovering(GameplayIntentKind.Shoot)
-            && aimAction != null && aimAction.enabled)
+        isReplayingIntents = true;
+        try
         {
-            restoreHeldAim = false;
-            if (aimMode == 0)
+            bool pickupHolding = actions != null && actions.IsItemPickupActive
+                && (pickupInputTransaction == 0
+                    || pickupInputTransaction != actions.CurrentFullBodyTransactionId
+                    || !pickupInputReleased);
+
+            if (!pickupHolding && restoreHeldAim && !GameplayActionRecovering(GameplayIntentKind.Shoot))
             {
-                combat.HandleAim(aimAction.IsPressed());
+                restoreHeldAim = false;
+                if (aimMode == 1)
+                {
+                    if (pendingPickupAim || aimToggleActive)
+                    {
+                        pendingPickupAim = false;
+                        combat.HandleAim(aimToggleActive);
+                    }
+                }
+                else
+                {
+                    bool aimHeld = IsEffectiveAimPressed();
+                    pendingPickupAim = false;
+                    combat.HandleAim(aimHeld);
+                }
+            }
+
+            if (!pickupHolding)
+            {
+                RestoreHeldGuardInput();
+            }
+
+            double now = Time.timeAsDouble;
+            int bestIndex = -1;
+            long bestSequence = -1;
+            for (int index = 0; index < gameplayIntents.Length; index++)
+            {
+                GameplayIntent intent = gameplayIntents[index];
+                if (!intent.pending)
+                {
+                    continue;
+                }
+
+                bool pendingBody = intent.target.Kind == InteractionPromptKind.BodyTechnique && !intent.target.CanExecute;
+                bool activePickupBound = intent.pickupTransactionId != 0
+                    && actions != null
+                    && actions.IsItemPickupActive
+                    && actions.CurrentFullBodyTransactionId == intent.pickupTransactionId;
+                double lifetime = GameplayInputLifetime;
+                if (pendingBody)
+                {
+                    // 按下时已确定硬直归属。保留至该反应首个可接帧，敌人换动作即失效。
+                    lifetime = ConfirmedBodyReactionLifetime;
+                }
+                else if (activePickupBound)
+                {
+                    lifetime = PickupBufferedInputLifetime;
+                }
+                else if (intent.thrustPickup || intent.thrustQuickSlot)
+                {
+                    lifetime = ThrustFollowUpInputLifetime;
+                }
+
+                if (now - intent.pressedAt > lifetime || (pendingBody && !CanKeepBodyIntent(intent.target)))
+                {
+                    gameplayIntents[index] = default;
+                    continue;
+                }
+
+                if (intent.sequence > bestSequence)
+                {
+                    bestSequence = intent.sequence;
+                    bestIndex = index;
+                }
+            }
+
+            if (bestIndex >= 0)
+            {
+                GameplayIntent chosen = gameplayIntents[bestIndex];
+                if (TryConsumeGameplayIntent((GameplayIntentKind)bestIndex, chosen, true))
+                {
+                    gameplayIntents[bestIndex] = default;
+                }
+            }
+
+            if (pickupInputTransaction != 0 && pickupInputReleased
+                && (actions == null || !actions.IsItemPickupActive))
+            {
+                ClearPickupBufferState();
             }
         }
-
-        RestoreHeldGuardInput();
-        double now = Time.timeAsDouble;
-        for (int index = 0; index < gameplayIntents.Length; index++)
+        finally
         {
-            GameplayIntent intent = gameplayIntents[index];
-            if (!intent.pending)
-            {
-                continue;
-            }
-            bool pendingBody = intent.target.Kind == InteractionPromptKind.BodyTechnique && !intent.target.CanExecute;
-            double lifetime = GameplayInputLifetime;
-            if (pendingBody)
-            {
-                // 按下时已确定硬直归属。保留至该反应首个可接帧，敌人换动作即失效。
-                lifetime = ConfirmedBodyReactionLifetime;
-            }
-            else if (intent.thrustPickup || intent.thrustQuickSlot)
-            {
-                lifetime = ThrustFollowUpInputLifetime;
-            }
-            if (now - intent.pressedAt > lifetime || pendingBody && !CanKeepBodyIntent(intent.target)
-                || TryConsumeGameplayIntent((GameplayIntentKind)index, intent, true))
-            {
-                gameplayIntents[index] = default;
-            }
+            isReplayingIntents = false;
         }
     }
 
@@ -159,11 +482,18 @@ public partial class LeonInputBridge
         {
             return;
         }
-        if (!parryAction.IsPressed() || combat.knifeModule.GuardHold)
+
+        if (!IsEffectiveGuardPressed() || combat.knifeModule.GuardHold)
         {
             restoreHeldGuard = false;
             return;
         }
+
+        if (actions != null && actions.HasActiveFullBodyAction)
+        {
+            return;
+        }
+
         if (combat.knifeModule.CanResumeHeldGuard && (!controller.IsCrouching || controller.TrySetCrouching(false)))
         {
             restoreHeldGuard = false;
@@ -173,7 +503,7 @@ public partial class LeonInputBridge
 
     private bool TryConsumeGameplayIntent(GameplayIntentKind kind, GameplayIntent intent, bool replay)
     {
-        if (!CanUsePickupInput() || combat == null)
+        if (!CanUseGameplayInput() || combat == null)
         {
             return true;
         }
@@ -186,11 +516,13 @@ public partial class LeonInputBridge
             }
             return true;
         }
+
         if (intent.thrustPickup && (actions.IsHitTransactionActive || controller.currentState == LeonState.Staggered
             || controller.currentState == LeonState.Traversing || controller.currentState == LeonState.QTE))
         {
             return true;
         }
+
         if (intent.target.Kind != InteractionPromptKind.None && !intent.target.IsValid)
         {
             return true;
@@ -198,7 +530,11 @@ public partial class LeonInputBridge
 
         if (GameplayActionRecovering(kind))
         {
-            restoreHeldAim = true;
+            if (kind == GameplayIntentKind.Shoot)
+            {
+                restoreHeldAim = true;
+            }
+
             if (intent.target.Kind != InteractionPromptKind.BodyTechnique)
             {
                 return false;
@@ -230,7 +566,11 @@ public partial class LeonInputBridge
             case GameplayIntentKind.Shoot:
                 if (!replay || controller.currentWeapon == intent.weapon)
                 {
-                    combat.CommitAttackInput(intent.pressedAt);
+                    if (!combat.TryCommitAttackInput(intent.pressedAt))
+                    {
+                        return false;
+                    }
+
                     if (replay && shootAction != null && !shootAction.IsPressed())
                     {
                         combat.CommitAttackReleased(Time.timeAsDouble);
@@ -240,7 +580,10 @@ public partial class LeonInputBridge
             case GameplayIntentKind.Reload:
                 if (!replay || controller.currentWeapon == intent.weapon)
                 {
-                    combat.HandleReload();
+                    if (!combat.TryHandleReload())
+                    {
+                        return false;
+                    }
                 }
                 break;
             case GameplayIntentKind.QuickSlot:
@@ -249,15 +592,35 @@ public partial class LeonInputBridge
                     weaponWheel.SelectDirectly(intent.slot);
                 }
                 break;
+            case GameplayIntentKind.Crouch:
+                if (!controller.ToggleCrouch())
+                {
+                    return false;
+                }
+                break;
+            case GameplayIntentKind.Parry:
+                if (controller.IsCrouching && !controller.TrySetCrouching(false))
+                {
+                    restoreHeldGuard = true;
+                    return false;
+                }
+
+                restoreHeldGuard = true;
+                combat.CommitGuardInput(true, intent.pressedAt);
+                break;
             case GameplayIntentKind.Interact:
-                if (!replay && (qteCoordinator == null || !qteCoordinator.UsesNativeInteractionPrompts)
-                    && (qteCoordinator == null || !qteCoordinator.TryStartNearestBodyTechnique(out _)
-                        && !qteCoordinator.TryStartNearestPrompt(out _)))
+                if (qteCoordinator != null && qteCoordinator.UsesNativeInteractionPrompts)
+                {
+                    qteCoordinator.TryExecuteSnapshotInteraction();
+                }
+                else if (qteCoordinator == null || (!qteCoordinator.TryStartNearestBodyTechnique(out _)
+                    && !qteCoordinator.TryStartNearestPrompt(out _)))
                 {
                     InteractionSystem.InteractNearby(controller.transform);
                 }
                 break;
         }
+
         return true;
     }
 }

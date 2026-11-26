@@ -9,78 +9,78 @@ using System.Collections.Generic;
 /// </summary>
 public class OptionsMenu : MonoBehaviour
 {
-    /// <summary>中文含义：界面视觉主题配置。使用位置：InterfaceReworkBuilder.ConfigurationOtherInterface()、OptionsMenu.EnsureEnhancedMenu()。</summary>
+    /// <summary>界面视觉主题配置。</summary>
     [Header("统一视觉主题")]
     public UIVisualTheme visualTheme;
-    /// <summary>中文含义：面板。使用位置：OptionsMenu.EnsureEnhancedMenu()、OptionsMenu.FinishHide()、OptionsMenu.HideImmediate() 等共 7 处。</summary>
+    /// <summary>面板。</summary>
     [Header("面板引用")]
     public GameObject panel;
-    /// <summary>中文含义：画布组。使用位置：OptionsMenu.EnsureEnhancedMenu()、OptionsMenu.FadeIn()、OptionsMenu.FadeOut() 等共 5 处。</summary>
+    /// <summary>画布组。</summary>
     public CanvasGroup canvasGroup;
-    /// <summary>中文含义：背景音乐滑块。使用位置：OptionsMenu.Initialize()、OptionsMenu.LoadVolumeSettings()、OptionsMenu.OnSfxChanged(float)。</summary>
+    /// <summary>背景音乐滑块。</summary>
     [Header("音量")]
     public Slider bgmSlider;
-    /// <summary>中文含义：音效滑块。使用位置：OptionsMenu.Initialize()、OptionsMenu.LoadVolumeSettings()、OptionsMenu.OnBgmChanged(float)。</summary>
+    /// <summary>音效滑块。</summary>
     public Slider sfxSlider;
-    /// <summary>中文含义：背景音乐值文字。使用位置：OptionsMenu.UpdateVolumeTexts(float, float)。</summary>
+    /// <summary>背景音乐值文字。</summary>
     public Text bgmValueText;
-    /// <summary>中文含义：音效值文字。使用位置：OptionsMenu.UpdateVolumeTexts(float, float)。</summary>
+    /// <summary>音效值文字。</summary>
     public Text sfxValueText;
-    /// <summary>中文含义：全屏切换。使用位置：OptionsMenu.Initialize()、OptionsMenu.LoadDisplaySettings()。</summary>
+    /// <summary>全屏切换。</summary>
     [Header("画面")]
     public Toggle fullscreenToggle;
-    /// <summary>中文含义：分辨率下拉框。使用位置：OptionsMenu.Initialize()、OptionsMenu.LoadDisplaySettings()。</summary>
+    /// <summary>分辨率下拉框。</summary>
     public Dropdown resolutionDropdown;
     /// <summary>中文含义：分辨率标签。</summary>
     public Text resolutionLabel;
-    /// <summary>中文含义：控件集合文字。使用位置：OptionsMenu.LoadControlsText()。</summary>
+    /// <summary>控件集合文字。</summary>
     [Header("操作说明")]
     public Text controlsText;
-    /// <summary>中文含义：后方按钮。使用位置：OptionsMenu.Initialize()。</summary>
+    /// <summary>后方按钮。</summary>
     [Header("按钮")]
     public Button backButton;
-    /// <summary>中文含义：留空时会在本对象上自动补齐。优先复用完整的音量、画面和操控设置页面；留空时会在本对象上自动补齐。使用位置：OptionsMenu.EnsureEnhancedMenu()、OptionsMenu.Hide()、OptionsMenu.Show() 等共 4 处。</summary>
+    /// <summary>留空时会在本对象上自动补齐。优先复用完整的音量、画面和操控设置页面；留空时会在本对象上自动补齐。</summary>
     [Header("三分页设置页面")]
     [Tooltip("优先复用完整的音量、画面和操控设置页面；留空时会在本对象上自动补齐。")]
     public OptionsTabManager enhancedMenu;
-    /// <summary>中文含义：是否使用增强的菜单。使用位置：OptionsMenu.Show()。</summary>
+    /// <summary>是否使用增强的菜单。</summary>
     public bool useEnhancedMenu = true;
-    /// <summary>中文含义：设置页签、返回、恢复默认、瞄准模式及按键绑定按钮。使用位置：OptionsMenu.EnsureEnhancedMenu()。</summary>
+    /// <summary>设置页签、返回、恢复默认、瞄准模式及按键绑定按钮。</summary>
     [Header("统一视觉素材")]
     [Tooltip("设置页签、返回、恢复默认、瞄准模式及按键绑定按钮")]
     public Sprite buttonSprite;
-    /// <summary>中文含义：音量和镜头灵敏度滑块轨道。使用位置：OptionsMenu.EnsureEnhancedMenu()。</summary>
+    /// <summary>音量和镜头灵敏度滑块轨道。</summary>
     [Tooltip("音量和镜头灵敏度滑块轨道")]
     public Sprite sliderTrackSprite;
-    /// <summary>中文含义：音量和镜头灵敏度滑块方块。使用位置：OptionsMenu.EnsureEnhancedMenu()。</summary>
+    /// <summary>音量和镜头灵敏度滑块方块。</summary>
     [Tooltip("音量和镜头灵敏度滑块方块")]
     public Sprite sliderKnobSprite;
-    /// <summary>中文含义：声音开启状态的图标。音量大于零时显示。使用位置：OptionsMenu.EnsureEnhancedMenu()。</summary>
+    /// <summary>声音开启状态的图标。音量大于零时显示。</summary>
     [Tooltip("音量大于零时显示")]
     public Sprite soundOnIcon;
-    /// <summary>中文含义：声音关闭状态的图标。音量等于零时显示。使用位置：OptionsMenu.EnsureEnhancedMenu()。</summary>
+    /// <summary>声音关闭状态的图标。音量等于零时显示。</summary>
     [Tooltip("音量等于零时显示")]
     public Sprite soundOffIcon;
-    /// <summary>中文含义：勾选框启用状态的图片。勾选项启用时显示。使用位置：OptionsMenu.EnsureEnhancedMenu()。</summary>
+    /// <summary>勾选框启用状态的图片。勾选项启用时显示。</summary>
     [Tooltip("勾选项启用时显示")]
     public Sprite tickBoxOnSprite;
-    /// <summary>中文含义：勾选框关闭状态的图片。勾选项关闭时显示。使用位置：OptionsMenu.EnsureEnhancedMenu()。</summary>
+    /// <summary>勾选框关闭状态的图片。勾选项关闭时显示。</summary>
     [Tooltip("勾选项关闭时显示")]
     public Sprite tickBoxOffSprite;
     /// <summary>中文含义：已关闭时的通知回调。关闭选项菜单后的回调</summary>
     [HideInInspector]
     public System.Action onClosed;
-    /// <summary>中文含义：可用分辨率集合。使用位置：OptionsMenu.LoadDisplaySettings()、OptionsMenu.OnResolutionChanged(int)。</summary>
+    /// <summary>可用分辨率集合。</summary>
     private Resolution[] availableResolutions;
-    /// <summary>中文含义：界面淡入淡出的持续时间。使用位置：OptionsMenu.FadeIn()、OptionsMenu.FadeOut()。</summary>
+    /// <summary>界面淡入淡出的持续时间。</summary>
     private float fadeDuration = 0.25f;
-    /// <summary>中文含义：是否已初始化。使用位置：OptionsMenu.Initialize()。</summary>
+    /// <summary>是否已初始化。</summary>
     private bool initialized;
-    /// <summary>中文含义：是否可见。使用位置：OptionsMenu.Hide()、OptionsMenu.OnEnhancedMenuClosed()、OptionsMenu.Show() 等共 4 处。</summary>
+    /// <summary>是否可见。</summary>
     private bool isVisible;
-    /// <summary>中文含义：是否隐藏中。使用位置：OptionsMenu.FinishHide()、OptionsMenu.Hide()、OptionsMenu.OnEnhancedMenuClosed() 等共 4 处。</summary>
+    /// <summary>是否隐藏中。</summary>
     private bool hiding;
-    /// <summary>中文含义：音量服务。使用位置：OptionsMenu.LoadVolumeSettings()、OptionsMenu.OnBgmChanged(float)、OptionsMenu.OnSfxChanged(float) 等共 6 处。</summary>
+    /// <summary>音量服务。</summary>
     private IAudioVolumeService volumeService;
     /// <summary>Unity 组件初始化回调；状态处理与资源交接按函数内顺序执行，下游协作见调用链。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） OptionsMenu.Initialize()、OptionsMenu.TryBindAudioService()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
@@ -215,7 +215,7 @@ public class OptionsMenu : MonoBehaviour
         hiding = false;
 
         panel.transform.SetAsLastSibling();
-        // panelRect（面板矩形）：保存 GameObject.GetComponent<RectTransform>() 的返回结果，供当前步骤使用。使用位置：OptionsMenu.Show()。
+        // 面板矩形。
 RectTransform panelRect = panel.GetComponent<RectTransform>();
         if (panelRect != null)
         {
@@ -278,7 +278,7 @@ RectTransform panelRect = panel.GetComponent<RectTransform>();
             yield break;
         }
 
-        // elapsed（已用）：使用位置：OptionsMenu.FadeIn()。
+        // 已用。
 float elapsed = 0f;
         canvasGroup.alpha = 0f;
         canvasGroup.interactable = true;
@@ -286,7 +286,7 @@ float elapsed = 0f;
         while (elapsed < fadeDuration)
         {
             elapsed += Time.unscaledDeltaTime;
-            // t（当前界面动画的归一化进度）：使用位置：作为 Mathf.Lerp(float, float, float) 的参数、作为 Mathf.Pow(float, float) 的参数、OptionsMenu.FadeIn()。
+            // 当前界面动画的归一化进度。
 float t = elapsed / fadeDuration;
             t = 1f - Mathf.Pow(1f - t, 3f);
             canvasGroup.alpha = Mathf.Lerp(0f, 1f, t);
@@ -306,14 +306,14 @@ float t = elapsed / fadeDuration;
             yield break;
         }
 
-        // elapsed（已用）：使用位置：OptionsMenu.FadeOut()。
+        // 已用。
 float elapsed = 0f;
         canvasGroup.interactable = false;
         canvasGroup.blocksRaycasts = false;
         while (elapsed < fadeDuration)
         {
             elapsed += Time.unscaledDeltaTime;
-            // t（当前界面动画的归一化进度）：使用位置：作为 Mathf.Lerp(float, float, float) 的参数、作为 Mathf.Pow(float, float) 的参数、OptionsMenu.FadeOut()。
+            // 当前界面动画的归一化进度。
 float t = elapsed / fadeDuration;
             t = 1f - Mathf.Pow(1f - t, 3f);
             canvasGroup.alpha = Mathf.Lerp(1f, 0f, t);
@@ -333,7 +333,7 @@ float t = elapsed / fadeDuration;
         }
 
         hiding = false;
-        // receiverValue2（判空前缓存的已关闭时的通知回调）：从已关闭时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、OptionsMenu.FinishHide()。
+        // 判空前缓存的已关闭时的通知回调。
 global::System.Action receiverValue2 = onClosed;
         if (!global::System.Object.ReferenceEquals(receiverValue2, null))
         {
@@ -361,7 +361,7 @@ global::System.Action receiverValue2 = onClosed;
         }
 
         enhancedMenu.visualTheme = visualTheme;
-        // assignmentReceiver3（赋值前保存的目标留空时会在本对象上自动补齐）：从增强的菜单读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：OptionsMenu.EnsureEnhancedMenu()。
+        // 赋值前保存的目标留空时会在本对象上自动补齐。
 global::OptionsTabManager assignmentReceiver3 = enhancedMenu;
         if (panel != null)
         {
@@ -408,11 +408,11 @@ global::OptionsTabManager assignmentReceiver3 = enhancedMenu;
             enhancedMenu.tickBoxOffSprite = tickBoxOffSprite;
         }
 
-        // themeBinder（主题绑定器）：保存 Component.GetComponentInParent<UIThemeBinder>() 的返回结果，供当前步骤使用。使用位置：OptionsMenu.EnsureEnhancedMenu()。
+        // 主题绑定器。
 UIThemeBinder themeBinder = GetComponentInParent<UIThemeBinder>();
         if (themeBinder != null && themeBinder.theme != null)
         {
-            // theme（主题）：使用位置：OptionsMenu.EnsureEnhancedMenu()。
+            // 主题。
 UIVisualTheme theme = themeBinder.theme;
             if (enhancedMenu.panelSprite == null)
             {
@@ -440,7 +440,7 @@ UIVisualTheme theme = themeBinder.theme;
     {
         isVisible = false;
         hiding = false;
-        // receiverValue5（判空前缓存的已关闭时的通知回调）：从已关闭时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、OptionsMenu.OnEnhancedMenuClosed()。
+        // 判空前缓存的已关闭时的通知回调。
 global::System.Action receiverValue5 = onClosed;
         if (!global::System.Object.ReferenceEquals(receiverValue5, null))
         {
@@ -471,7 +471,7 @@ global::System.Action receiverValue5 = onClosed;
     void LoadVolumeSettings()
     {
         TryBindAudioService();
-        // bgm（背景音乐）：使用位置：作为 OptionsMenu.UpdateVolumeTexts(float, float) 的参数、作为 Slider.SetValueWithoutNotify(float) 的参数、OptionsMenu.LoadVolumeSettings()。
+        // 背景音乐。
 float bgm;
         if (volumeService != null)
         {
@@ -482,7 +482,7 @@ float bgm;
             bgm = 0.8f;
         }
 
-        // sfx（音效）：使用位置：作为 OptionsMenu.UpdateVolumeTexts(float, float) 的参数、作为 Slider.SetValueWithoutNotify(float) 的参数、OptionsMenu.LoadVolumeSettings()。
+        // 音效。
 float sfx;
         if (volumeService != null)
         {
@@ -508,20 +508,20 @@ float sfx;
 
     /// <summary>OnBgmChanged 的业务处理入口；本方法直接依赖 IAudioVolumeService.SetCategoryVolume(AudioCategory, float)、object.ReferenceEquals(object, object)、OptionsMenu.TryBindAudioService()、OptionsMenu.UpdateVolumeTexts(float, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） IAudioVolumeService.SetCategoryVolume(AudioCategory, float)、object.ReferenceEquals(object, object)、OptionsMenu.TryBindAudioService()、OptionsMenu.UpdateVolumeTexts(float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="value">中文含义：值。使用位置：作为 IAudioVolumeService.SetCategoryVolume(AudioCategory, float) 的参数、OptionsMenu.OnBgmChanged(float)。</param>
+    /// <param name="value">值。</param>
     void OnBgmChanged(float value)
     {
         TryBindAudioService();
-        // receiverValue8（判空前缓存的音量服务）：从音量服务读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、OptionsMenu.OnBgmChanged(float)。
+        // 判空前缓存的音量服务。
 global::IAudioVolumeService receiverValue8 = volumeService;
         if (!global::System.Object.ReferenceEquals(receiverValue8, null))
         {
             receiverValue8.SetCategoryVolume(AudioCategory.BGM, value);
         }
 
-        // argumentValue10（按原顺序缓存的实参值）：从值读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 OptionsMenu.UpdateVolumeTexts(float, float) 的参数。
+        // 按原顺序缓存的实参值。
 float argumentValue10 = value;
-        // selectedValue9（分支选出的音效滑块的值）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：作为 OptionsMenu.UpdateVolumeTexts(float, float) 的参数、OptionsMenu.OnBgmChanged(float)。
+        // 分支选出的音效滑块的值。
 float selectedValue9;
         if (sfxSlider != null)
         {
@@ -537,18 +537,18 @@ float selectedValue9;
 
     /// <summary>OnSfxChanged 的业务处理入口；本方法直接依赖 IAudioVolumeService.SetCategoryVolume(AudioCategory, float)、object.ReferenceEquals(object, object)、OptionsMenu.TryBindAudioService()、OptionsMenu.UpdateVolumeTexts(float, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） IAudioVolumeService.SetCategoryVolume(AudioCategory, float)、object.ReferenceEquals(object, object)、OptionsMenu.TryBindAudioService()、OptionsMenu.UpdateVolumeTexts(float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="value">中文含义：值。使用位置：作为 IAudioVolumeService.SetCategoryVolume(AudioCategory, float) 的参数、作为 OptionsMenu.UpdateVolumeTexts(float, float) 的参数。</param>
+    /// <param name="value">值。</param>
     void OnSfxChanged(float value)
     {
         TryBindAudioService();
-        // receiverValue11（判空前缓存的音量服务）：从音量服务读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、OptionsMenu.OnSfxChanged(float)。
+        // 判空前缓存的音量服务。
 global::IAudioVolumeService receiverValue11 = volumeService;
         if (!global::System.Object.ReferenceEquals(receiverValue11, null))
         {
             receiverValue11.SetCategoryVolume(AudioCategory.SFX, value);
         }
 
-        // selectedValue12（分支选出的背景音乐滑块的值）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：作为 OptionsMenu.UpdateVolumeTexts(float, float) 的参数、OptionsMenu.OnSfxChanged(float)。
+        // 分支选出的背景音乐滑块的值。
 float selectedValue12;
         if (bgmSlider != null)
         {
@@ -564,8 +564,8 @@ float selectedValue12;
 
     /// <summary>UpdateVolumeTexts 的业务处理入口；本方法直接依赖 Mathf.RoundToInt(float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 OptionsMenu.LoadVolumeSettings()、OptionsMenu.OnBgmChanged(float)、OptionsMenu.OnSfxChanged(float)；下游（含内部回调体） Mathf.RoundToInt(float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="bgm">中文含义：背景音乐。使用位置：作为 Mathf.RoundToInt(float) 的参数。</param>
-    /// <param name="sfx">中文含义：音效。使用位置：作为 Mathf.RoundToInt(float) 的参数。</param>
+    /// <param name="bgm">背景音乐。</param>
+    /// <param name="sfx">音效。</param>
     void UpdateVolumeTexts(float bgm, float sfx)
     {
         if (bgmValueText != null)
@@ -586,7 +586,7 @@ float selectedValue12;
     void LoadDisplaySettings()
     {
         // 全屏
-        // isFull（是否完整）：使用位置：作为 SettingsApplicationAdapter.ApplyFullScreen(bool) 的参数、作为 Toggle.SetIsOnWithoutNotify(bool) 的参数。
+        // 是否完整。
 bool isFull = GameSettingsData.ReadInteger("Fullscreen", 1) == 1;
         if (fullscreenToggle != null)
         {
@@ -599,18 +599,18 @@ bool isFull = GameSettingsData.ReadInteger("Fullscreen", 1) == 1;
         if (resolutionDropdown != null)
         {
             resolutionDropdown.ClearOptions();
-            // options（选项集合）：使用位置：作为 Dropdown.AddOptions(List<string>) 的参数、OptionsMenu.LoadDisplaySettings()。
+            // 选项集合。
 List<string> options = new List<string>();
-            // currentIndex（当前索引）：使用位置：作为 Dropdown.SetValueWithoutNotify(int) 的参数、OptionsMenu.LoadDisplaySettings()。
+            // 当前索引。
 int currentIndex = 0;
-            // i（当前遍历索引）：使用位置：OptionsMenu.LoadDisplaySettings()。
+            // 当前遍历索引。
 for (int i = 0; i < availableResolutions.Length; i++)
             {
-                // r（当前分辨率）：使用位置：作为 Mathf.RoundToInt(float) 的参数、OptionsMenu.LoadDisplaySettings()。
+                // 当前分辨率。
 var r = availableResolutions[i];
-                // leftOperand14（计算前缓存的左侧文本选择）：按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：OptionsMenu.LoadDisplaySettings()。
+                // 计算前缓存的左侧文本选择。
 string leftOperand14 = r.width + " x " + r.height;
-                // selectedValue13（分支选出的轮次目标整数的返回结果）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：OptionsMenu.LoadDisplaySettings()。
+                // 分支选出的轮次目标整数的返回结果。
 string selectedValue13;
                 if (r.refreshRateRatio.value > 0)
                 {
@@ -621,7 +621,7 @@ string selectedValue13;
                     selectedValue13 = "";
                 }
 
-                // label（标签）：使用位置：作为 List<string>.Add(string) 的参数。
+                // 标签。
 string label = leftOperand14 + (selectedValue13);
                 options.Add(label);
                 if (r.width == Screen.currentResolution.width && r.height == Screen.currentResolution.height)
@@ -637,7 +637,7 @@ string label = leftOperand14 + (selectedValue13);
 
     /// <summary>OnFullscreenToggled 的业务处理入口；本方法直接依赖 SettingsApplicationAdapter.ModifyFullScreen(bool)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） SettingsApplicationAdapter.ModifyFullScreen(bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="isFull">中文含义：是否完整。使用位置：作为 SettingsApplicationAdapter.ModifyFullScreen(bool) 的参数。</param>
+    /// <param name="isFull">是否完整。</param>
     void OnFullscreenToggled(bool isFull)
     {
         SettingsApplicationAdapter.ModifyFullScreen(isFull);
@@ -645,7 +645,7 @@ string label = leftOperand14 + (selectedValue13);
 
     /// <summary>OnResolutionChanged 的业务处理入口；本方法直接依赖 SettingsApplicationAdapter.ModifyResolution(int, int, bool, bool)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） SettingsApplicationAdapter.ModifyResolution(int, int, bool, bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="index">中文含义：索引。使用位置：OptionsMenu.OnResolutionChanged(int)。</param>
+    /// <param name="index">索引。</param>
     void OnResolutionChanged(int index)
     {
         if (availableResolutions == null || index >= availableResolutions.Length)
@@ -653,7 +653,7 @@ string label = leftOperand14 + (selectedValue13);
             return;
         }
 
-        // res（资源）：使用位置：作为 SettingsApplicationAdapter.ModifyResolution(int, int, bool, bool) 的参数。
+        // 资源。
 var res = availableResolutions[index];
         SettingsApplicationAdapter.ModifyResolution(res.width, res.height, Screen.fullScreen, true);
     }
@@ -678,7 +678,7 @@ var res = availableResolutions[index];
     /// <remarks>静态调用链：上游 OptionsMenu.Hide()；下游（含内部回调体） GameSettingsData.SaveValue()、IAudioVolumeService.SaveVolumeSettings()、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     void SaveAllSettings()
     {
-        // receiverValue15（判空前缓存的音量服务）：从音量服务读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、OptionsMenu.SaveAllSettings()。
+        // 判空前缓存的音量服务。
 global::IAudioVolumeService receiverValue15 = volumeService;
         if (!global::System.Object.ReferenceEquals(receiverValue15, null))
         {

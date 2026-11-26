@@ -36,9 +36,10 @@ public partial class VillagerQTEParticipant
         return true;
     }
 
-    // 电锯男只开放正面重硬直已入态的中段；轻受击和恢复混合均不提供提示。
+    // 电锯男仅在真实的单膝跪地硬直姿势下开放跪姿小刀补刀（SawKneel1020）；站立硬直仅开放体术。
     private int sawKnifeHitSession;
-    private static readonly int SawHeavyFront = Animator.StringToHash("Base Layer.Stagger.Stagger_Heavy_Front");
+    private static readonly int SawKneelLeft = Animator.StringToHash("Base Layer.HitReact.Hit_NativeKneelLeft");
+    private static readonly int SawKneelRight = Animator.StringToHash("Base Layer.HitReact.Hit_NativeKneelRight");
 
     internal bool TryReadGroundFinisher(out string motion)
     {
@@ -56,8 +57,21 @@ public partial class VillagerQTEParticipant
             {
                 return false;
             }
-            var state = animator.GetCurrentAnimatorStateInfo(0);
-            if (state.fullPathHash != SawHeavyFront || state.normalizedTime < .15f || state.normalizedTime >= .7f)
+            AnimatorStateInfo state = animator.GetCurrentAnimatorStateInfo(0);
+            int hash = state.fullPathHash;
+            bool isLeftKneel = hash == SawKneelLeft;
+            bool isRightKneel = hash == SawKneelRight;
+            if (!isLeftKneel && !isRightKneel)
+            {
+                return false;
+            }
+
+            float maxNormalizedTime = 0.74f;
+            if (isRightKneel)
+            {
+                maxNormalizedTime = 0.76f;
+            }
+            if (state.normalizedTime < 0.09f || state.normalizedTime > maxNormalizedTime)
             {
                 return false;
             }

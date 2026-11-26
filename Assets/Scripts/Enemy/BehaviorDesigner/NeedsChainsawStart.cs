@@ -7,7 +7,7 @@ namespace EnemyBehaviorTasks
     [TaskDescription("ChainsawMan 专属：判断是否需要启动电锯。")]
     public class NeedsChainsawStart : EnemyConditionalTaskBase
     {
-        /// <summary>中文含义：桥接。使用位置：NeedsChainsawStart.OnAwake()、NeedsChainsawStart.OnUpdate()。</summary>
+        /// <summary>桥接。</summary>
         private ChainsawManAnimationBridge bridge;
         /// <summary>实现基类的 OnAwake 重写入口；框架调用后按本方法分支执行，并通过下游成员完成协作。</summary>
         /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） EnemyConditionalTaskBase.OnAwake()、GameObject.GetComponent&lt;ChainsawManAnimationBridge&gt;()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
@@ -49,7 +49,7 @@ namespace EnemyBehaviorTasks
     [TaskDescription("电锯村民专属：判断是否需要处理一次入战威慑。")]
     public class NeedsChainsawIntroTaunt : EnemyConditionalTaskBase
     {
-        /// <summary>中文含义：桥接。使用位置：NeedsChainsawIntroTaunt.OnAwake()、NeedsChainsawIntroTaunt.OnUpdate()。</summary>
+        /// <summary>桥接。</summary>
         private ChainsawManAnimationBridge bridge;
         /// <summary>实现基类的 OnAwake 重写入口；框架调用后按本方法分支执行，并通过下游成员完成协作。</summary>
         /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） EnemyConditionalTaskBase.OnAwake()、GameObject.GetComponent&lt;ChainsawManAnimationBridge&gt;()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>

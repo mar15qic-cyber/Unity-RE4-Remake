@@ -7,17 +7,17 @@ using UnityEngine.UI;
 /// </summary>
 public class FixOptionsPanelControls : MonoBehaviour
 {
-    /// <summary>中文含义：选项集合分页管理器。使用位置：作为 FixOptionsPanelControls.FixPanelLayout(GameObject) 的参数、作为 FixOptionsPanelControls.FixSlider(Slider, string) 的参数、作为 FixOptionsPanelControls.FixToggle(Toggle, string) 的参数 等共 7 处。</summary>
+    /// <summary>选项集合分页管理器。</summary>
     [Header("面板引用")]
     public OptionsTabManager optionsTabManager;
-    /// <summary>中文含义：是否修正事件起始。使用位置：FixOptionsPanelControls.Start()。</summary>
+    /// <summary>是否修正事件起始。</summary>
     [Header("修复设置")]
     public bool fixOnStart = true;
-    /// <summary>中文含义：是否修正滑块集合。使用位置：FixOptionsPanelControls.FixAllControls()。</summary>
+    /// <summary>是否修正滑块集合。</summary>
     public bool fixSliders = true;
-    /// <summary>中文含义：是否修正开关集合。使用位置：FixOptionsPanelControls.FixAllControls()。</summary>
+    /// <summary>是否修正开关集合。</summary>
     public bool fixToggles = true;
-    /// <summary>中文含义：是否修正布局。使用位置：FixOptionsPanelControls.FixAllControls()。</summary>
+    /// <summary>是否修正布局。</summary>
     public bool fixLayout = true;
     /// <summary>Unity 首次启用后的启动回调；状态处理与资源交接按函数内顺序执行，下游协作见调用链。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） FixOptionsPanelControls.FixAllControls()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
@@ -107,8 +107,8 @@ public class FixOptionsPanelControls : MonoBehaviour
     /// 修复单个Slider控件
     /// </summary>
     /// <remarks>静态调用链：上游 FixOptionsPanelControls.FixSliders()；下游（含内部回调体） Component.GetComponent&lt;RectTransform&gt;()、Debug.Log(object)、FixOptionsPanelControls.FixSliderChildObjects(Slider)、Vector2.Vector2(float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="slider">中文含义：滑块。使用位置：作为 FixOptionsPanelControls.FixSliderChildObjects(Slider) 的参数、FixOptionsPanelControls.FixSlider(Slider, string)。</param>
-    /// <param name="sliderName">中文含义：滑块名称。使用位置：作为 Debug.Log(object) 的参数。</param>
+    /// <param name="slider">滑块。</param>
+    /// <param name="sliderName">滑块名称。</param>
     private void FixSlider(Slider slider, string sliderName)
     {
         if (slider == null)
@@ -120,7 +120,7 @@ public class FixOptionsPanelControls : MonoBehaviour
         // 确保Slider可交互
         slider.interactable = true;
         // 修复RectTransform
-        // sliderRect（滑块矩形）：保存 Component.GetComponent<RectTransform>() 的返回结果，供当前步骤使用。使用位置：FixOptionsPanelControls.FixSlider(Slider, string)。
+        // 滑块矩形。
 RectTransform sliderRect = slider.GetComponent<RectTransform>();
         if (sliderRect != null)
         {
@@ -140,10 +140,10 @@ RectTransform sliderRect = slider.GetComponent<RectTransform>();
     /// 修复Slider的子对象结构
     /// </summary>
     /// <remarks>静态调用链：上游 FixOptionsPanelControls.FixSlider(Slider, string)；下游（含内部回调体） Color.Color(float, float, float, float)、Component.GetComponent&lt;Image&gt;()、Component.GetComponent&lt;RectTransform&gt;()、GameObject.AddComponent&lt;Image&gt;()、GameObject.AddComponent&lt;RectTransform&gt;()、GameObject.GameObject(string)、Transform.Find(string) 等共 9 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="slider">中文含义：滑块。使用位置：FixOptionsPanelControls.FixSliderChildObjects(Slider)。</param>
+    /// <param name="slider">滑块。</param>
     private void FixSliderChildObjects(Slider slider)
     {
-        // sliderRect（滑块矩形）：保存 Component.GetComponent<RectTransform>() 的返回结果，供当前步骤使用。使用位置：作为 Transform.SetParent(Transform, bool) 的参数、FixOptionsPanelControls.FixSliderChildObjects(Slider)。
+        // 滑块矩形。
 RectTransform sliderRect = slider.GetComponent<RectTransform>();
         if (sliderRect == null)
         {
@@ -151,17 +151,17 @@ RectTransform sliderRect = slider.GetComponent<RectTransform>();
         }
 
         // 确保有Background子对象
-        // backgroundTransform（背景变换）：保存 Transform.Find(string) 的返回结果，供当前步骤使用。使用位置：FixOptionsPanelControls.FixSliderChildObjects(Slider)。
+        // 背景变换。
 Transform backgroundTransform = sliderRect.Find("Background");
         if (backgroundTransform == null)
         {
-            // background（背景）：使用位置：FixOptionsPanelControls.FixSliderChildObjects(Slider)。
+            // 背景。
 GameObject background = new GameObject("Background");
             background.transform.SetParent(sliderRect, false);
             backgroundTransform = background.transform;
         }
 
-        // backgroundRect（背景矩形）：保存 Component.GetComponent<RectTransform>() 的返回结果，供当前步骤使用。使用位置：FixOptionsPanelControls.FixSliderChildObjects(Slider)。
+        // 背景矩形。
 RectTransform backgroundRect = backgroundTransform.GetComponent<RectTransform>();
         if (backgroundRect == null)
         {
@@ -173,7 +173,7 @@ RectTransform backgroundRect = backgroundTransform.GetComponent<RectTransform>()
         backgroundRect.anchorMax = Vector2.one;
         backgroundRect.sizeDelta = Vector2.zero;
         backgroundRect.anchoredPosition = Vector2.zero;
-        // backgroundImage（背景图像）：保存 Component.GetComponent<Image>() 的返回结果，供当前步骤使用。使用位置：FixOptionsPanelControls.FixSliderChildObjects(Slider)。
+        // 背景图像。
 Image backgroundImage = backgroundTransform.GetComponent<Image>();
         if (backgroundImage == null)
         {
@@ -182,17 +182,17 @@ Image backgroundImage = backgroundTransform.GetComponent<Image>();
 
         backgroundImage.color = new Color(0.2f, 0.2f, 0.2f, 0.8f);
         // 确保有Fill Area子对象
-        // fillAreaTransform（填充区域变换）：保存 Transform.Find(string) 的返回结果，供当前步骤使用。使用位置：作为 Transform.SetParent(Transform, bool) 的参数、FixOptionsPanelControls.FixSliderChildObjects(Slider)。
+        // 填充区域变换。
 Transform fillAreaTransform = sliderRect.Find("Fill Area");
         if (fillAreaTransform == null)
         {
-            // fillArea（填充区域）：使用位置：FixOptionsPanelControls.FixSliderChildObjects(Slider)。
+            // 填充区域。
 GameObject fillArea = new GameObject("Fill Area");
             fillArea.transform.SetParent(sliderRect, false);
             fillAreaTransform = fillArea.transform;
         }
 
-        // fillAreaRect（填充区域矩形）：保存 Component.GetComponent<RectTransform>() 的返回结果，供当前步骤使用。使用位置：FixOptionsPanelControls.FixSliderChildObjects(Slider)。
+        // 填充区域矩形。
 RectTransform fillAreaRect = fillAreaTransform.GetComponent<RectTransform>();
         if (fillAreaRect == null)
         {
@@ -205,17 +205,17 @@ RectTransform fillAreaRect = fillAreaTransform.GetComponent<RectTransform>();
         fillAreaRect.sizeDelta = Vector2.zero;
         fillAreaRect.anchoredPosition = Vector2.zero;
         // 确保Fill Area有Fill子对象
-        // fillTransform（填充变换）：保存 Transform.Find(string) 的返回结果，供当前步骤使用。使用位置：FixOptionsPanelControls.FixSliderChildObjects(Slider)。
+        // 填充变换。
 Transform fillTransform = fillAreaTransform.Find("Fill");
         if (fillTransform == null)
         {
-            // fill（填充）：使用位置：FixOptionsPanelControls.FixSliderChildObjects(Slider)。
+            // 填充。
 GameObject fill = new GameObject("Fill");
             fill.transform.SetParent(fillAreaTransform, false);
             fillTransform = fill.transform;
         }
 
-        // fillRect（填充矩形）：保存 Component.GetComponent<RectTransform>() 的返回结果，供当前步骤使用。使用位置：FixOptionsPanelControls.FixSliderChildObjects(Slider)。
+        // 填充矩形。
 RectTransform fillRect = fillTransform.GetComponent<RectTransform>();
         if (fillRect == null)
         {
@@ -227,7 +227,7 @@ RectTransform fillRect = fillTransform.GetComponent<RectTransform>();
         fillRect.anchorMax = new Vector2(0, 1);
         fillRect.sizeDelta = Vector2.zero;
         fillRect.anchoredPosition = Vector2.zero;
-        // fillImage（填充图像）：保存 Component.GetComponent<Image>() 的返回结果，供当前步骤使用。使用位置：FixOptionsPanelControls.FixSliderChildObjects(Slider)。
+        // 填充图像。
 Image fillImage = fillTransform.GetComponent<Image>();
         if (fillImage == null)
         {
@@ -238,17 +238,17 @@ Image fillImage = fillTransform.GetComponent<Image>();
         // 设置Slider的fillRect引用
         slider.fillRect = fillRect;
         // 确保有Handle Slide Area子对象
-        // handleAreaTransform（句柄区域变换）：保存 Transform.Find(string) 的返回结果，供当前步骤使用。使用位置：作为 Transform.SetParent(Transform, bool) 的参数、FixOptionsPanelControls.FixSliderChildObjects(Slider)。
+        // 句柄区域变换。
 Transform handleAreaTransform = sliderRect.Find("Handle Slide Area");
         if (handleAreaTransform == null)
         {
-            // handleArea（句柄区域）：使用位置：FixOptionsPanelControls.FixSliderChildObjects(Slider)。
+            // 句柄区域。
 GameObject handleArea = new GameObject("Handle Slide Area");
             handleArea.transform.SetParent(sliderRect, false);
             handleAreaTransform = handleArea.transform;
         }
 
-        // handleAreaRect（句柄区域矩形）：保存 Component.GetComponent<RectTransform>() 的返回结果，供当前步骤使用。使用位置：FixOptionsPanelControls.FixSliderChildObjects(Slider)。
+        // 句柄区域矩形。
 RectTransform handleAreaRect = handleAreaTransform.GetComponent<RectTransform>();
         if (handleAreaRect == null)
         {
@@ -261,17 +261,17 @@ RectTransform handleAreaRect = handleAreaTransform.GetComponent<RectTransform>()
         handleAreaRect.sizeDelta = Vector2.zero;
         handleAreaRect.anchoredPosition = Vector2.zero;
         // 确保Handle Slide Area有Handle子对象
-        // handleTransform（句柄变换）：保存 Transform.Find(string) 的返回结果，供当前步骤使用。使用位置：FixOptionsPanelControls.FixSliderChildObjects(Slider)。
+        // 句柄变换。
 Transform handleTransform = handleAreaTransform.Find("Handle");
         if (handleTransform == null)
         {
-            // handle（句柄）：使用位置：FixOptionsPanelControls.FixSliderChildObjects(Slider)。
+            // 句柄。
 GameObject handle = new GameObject("Handle");
             handle.transform.SetParent(handleAreaTransform, false);
             handleTransform = handle.transform;
         }
 
-        // handleRect（句柄矩形）：保存 Component.GetComponent<RectTransform>() 的返回结果，供当前步骤使用。使用位置：FixOptionsPanelControls.FixSliderChildObjects(Slider)。
+        // 句柄矩形。
 RectTransform handleRect = handleTransform.GetComponent<RectTransform>();
         if (handleRect == null)
         {
@@ -283,7 +283,7 @@ RectTransform handleRect = handleTransform.GetComponent<RectTransform>();
         handleRect.anchorMax = new Vector2(0, 0.5f);
         handleRect.sizeDelta = new Vector2(20, 0);
         handleRect.anchoredPosition = Vector2.zero;
-        // handleImage（句柄图像）：保存 Component.GetComponent<Image>() 的返回结果，供当前步骤使用。使用位置：FixOptionsPanelControls.FixSliderChildObjects(Slider)。
+        // 句柄图像。
 Image handleImage = handleTransform.GetComponent<Image>();
         if (handleImage == null)
         {
@@ -319,8 +319,8 @@ Image handleImage = handleTransform.GetComponent<Image>();
     /// 修复单个Toggle控件
     /// </summary>
     /// <remarks>静态调用链：上游 FixOptionsPanelControls.FixToggles()；下游（含内部回调体） Color.Color(float, float, float, float)、Component.GetComponent&lt;Image&gt;()、Component.GetComponent&lt;RectTransform&gt;()、Debug.Log(object)、GameObject.AddComponent&lt;Image&gt;()、GameObject.AddComponent&lt;RectTransform&gt;()、GameObject.GameObject(string) 等共 10 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="toggle">中文含义：切换。使用位置：作为 Transform.SetParent(Transform, bool) 的参数、FixOptionsPanelControls.FixToggle(Toggle, string)。</param>
-    /// <param name="toggleName">中文含义：切换名称。使用位置：作为 Debug.Log(object) 的参数。</param>
+    /// <param name="toggle">切换。</param>
+    /// <param name="toggleName">切换名称。</param>
     private void FixToggle(Toggle toggle, string toggleName)
     {
         if (toggle == null)
@@ -332,7 +332,7 @@ Image handleImage = handleTransform.GetComponent<Image>();
         // 确保Toggle可交互
         toggle.interactable = true;
         // 修复RectTransform
-        // toggleRect（切换矩形）：保存 Component.GetComponent<RectTransform>() 的返回结果，供当前步骤使用。使用位置：FixOptionsPanelControls.FixToggle(Toggle, string)。
+        // 切换矩形。
 RectTransform toggleRect = toggle.GetComponent<RectTransform>();
         if (toggleRect != null)
         {
@@ -345,7 +345,7 @@ RectTransform toggleRect = toggle.GetComponent<RectTransform>();
         }
 
         // 修复Toggle的背景
-        // toggleBackground（切换背景）：保存 Component.GetComponent<Image>() 的返回结果，供当前步骤使用。使用位置：FixOptionsPanelControls.FixToggle(Toggle, string)。
+        // 切换背景。
 Image toggleBackground = toggle.GetComponent<Image>();
         if (toggleBackground == null)
         {
@@ -354,17 +354,17 @@ Image toggleBackground = toggle.GetComponent<Image>();
 
         toggleBackground.color = new Color(0.1f, 0.1f, 0.1f, 0.8f);
         // 确保有Checkmark子对象
-        // checkmarkTransform（勾选标记变换）：保存 Transform.Find(string) 的返回结果，供当前步骤使用。使用位置：FixOptionsPanelControls.FixToggle(Toggle, string)。
+        // 勾选标记变换。
 Transform checkmarkTransform = toggle.transform.Find("Checkmark");
         if (checkmarkTransform == null)
         {
-            // checkmark（勾选标记）：使用位置：FixOptionsPanelControls.FixToggle(Toggle, string)。
+            // 勾选标记。
 GameObject checkmark = new GameObject("Checkmark");
             checkmark.transform.SetParent(toggle.transform, false);
             checkmarkTransform = checkmark.transform;
         }
 
-        // checkmarkRect（勾选标记矩形）：保存 Component.GetComponent<RectTransform>() 的返回结果，供当前步骤使用。使用位置：FixOptionsPanelControls.FixToggle(Toggle, string)。
+        // 勾选标记矩形。
 RectTransform checkmarkRect = checkmarkTransform.GetComponent<RectTransform>();
         if (checkmarkRect == null)
         {
@@ -376,7 +376,7 @@ RectTransform checkmarkRect = checkmarkTransform.GetComponent<RectTransform>();
         checkmarkRect.anchorMax = new Vector2(0.9f, 0.9f);
         checkmarkRect.sizeDelta = Vector2.zero;
         checkmarkRect.anchoredPosition = Vector2.zero;
-        // checkmarkImage（勾选标记图像）：保存 Component.GetComponent<Image>() 的返回结果，供当前步骤使用。使用位置：FixOptionsPanelControls.FixToggle(Toggle, string)。
+        // 勾选标记图像。
 Image checkmarkImage = checkmarkTransform.GetComponent<Image>();
         if (checkmarkImage == null)
         {
@@ -418,7 +418,7 @@ Image checkmarkImage = checkmarkTransform.GetComponent<Image>();
     /// 修复面板布局
     /// </summary>
     /// <remarks>静态调用链：上游 FixOptionsPanelControls.FixLayout()；下游（含内部回调体） GameObject.AddComponent&lt;RectTransform&gt;()、GameObject.AddComponent&lt;VerticalLayoutGroup&gt;()、GameObject.GetComponent&lt;RectTransform&gt;()、GameObject.GetComponent&lt;VerticalLayoutGroup&gt;()、RectOffset.RectOffset(int, int, int, int)、Vector2.Vector2(float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="panel">中文含义：面板。使用位置：FixOptionsPanelControls.FixPanelLayout(GameObject)。</param>
+    /// <param name="panel">面板。</param>
     private void FixPanelLayout(GameObject panel)
     {
         if (panel == null)
@@ -427,7 +427,7 @@ Image checkmarkImage = checkmarkTransform.GetComponent<Image>();
         }
 
         // 确保有RectTransform
-        // panelRect（面板矩形）：保存 GameObject.GetComponent<RectTransform>() 的返回结果，供当前步骤使用。使用位置：FixOptionsPanelControls.FixPanelLayout(GameObject)。
+        // 面板矩形。
 RectTransform panelRect = panel.GetComponent<RectTransform>();
         if (panelRect == null)
         {
@@ -437,7 +437,7 @@ RectTransform panelRect = panel.GetComponent<RectTransform>();
         // 设置面板尺寸
         panelRect.sizeDelta = new Vector2(800, 600);
         // 添加垂直布局组
-        // layoutGroup（布局分组）：保存 GameObject.GetComponent<VerticalLayoutGroup>() 的返回结果，供当前步骤使用。使用位置：FixOptionsPanelControls.FixPanelLayout(GameObject)。
+        // 布局分组。
 VerticalLayoutGroup layoutGroup = panel.GetComponent<VerticalLayoutGroup>();
         if (layoutGroup == null)
         {

@@ -113,41 +113,41 @@ public enum FullBodyTransactionPhase
 /// </summary>
 public struct AnimationActionTransaction
 {
-    /// <summary>中文含义：事务编号。使用位置：作为 ActionHandle.ActionHandle(ObjectIdentity, long) 的参数、作为 Debug.LogError(object) 的参数、作为 LeonAnimationActionCoordinator.CompleteReloadAfterBusinessCommit(int) 的参数 等共 49 处。</summary>
+    /// <summary>事务编号。</summary>
     public int transactionId;
-    /// <summary>中文含义：武器动作类型。使用位置：作为 Debug.LogError(object) 的参数、作为 LeonAnimationActionCoordinator.ValidateVisualMarker(VisualMarker, WeaponActionType, WeaponTransactionPhase) 的参数、作为 LeonAnimatorDriver.BeginWeaponAction(WeaponActionType) 的参数 等共 20 处。</summary>
+    /// <summary>武器动作类型。</summary>
     public WeaponActionType weaponActionType;
-    /// <summary>中文含义：全身动作类型。使用位置：作为 Action&lt;int, FullBodyActionType&gt;.Invoke(int, FullBodyActionType) 的参数、作为 LeonAnimationActionCoordinator.IsKnifeAction(FullBodyActionType) 的参数、作为 LeonAnimationActionCoordinator.IsLegalQTETransition(FullBodyActionType, FullBodyActionType) 的参数 等共 33 处。</summary>
+    /// <summary>全身动作类型。</summary>
     public FullBodyActionType fullBodyActionType;
-    /// <summary>中文含义：来源武器类型。使用位置：作为 LeonAnimRig.InterruptWeaponActionIK(WeaponType) 的参数、作为 LeonWeaponHandler.CancelReload(WeaponType) 的参数、LeonAnimationActionCoordinator.GetCurrentWeaponForIK() 等共 6 处。</summary>
+    /// <summary>来源武器类型。</summary>
     public WeaponType sourceWeaponType;
-    /// <summary>中文含义：待处理武器类型。使用位置：作为 LeonAnimationActionCoordinator.IsGunWeapon(WeaponType) 的参数、作为 LeonAnimationActionCoordinator.IsLongGunWeapon(WeaponType) 的参数、作为 LeonAnimRig.BeginEquipIK(WeaponType) 的参数 等共 14 处。</summary>
+    /// <summary>待处理武器类型。</summary>
     public WeaponType pendingWeaponType;
-    /// <summary>中文含义：是否武器切换。使用位置：LeonAnimationActionCoordinator.GetCurrentWeaponForIK()、LeonAnimationActionCoordinator.HandleWeaponExited(Animator, WeaponActionType, int, bool)、LeonAnimationActionCoordinator.InterruptWeaponTransactionForFullBody() 等共 11 处。</summary>
+    /// <summary>是否武器切换。</summary>
     public bool isWeaponSwitch;
-    /// <summary>中文含义：是否已取消。使用位置：LeonAnimationActionCoordinator.AdvanceIndependentKnifeTransaction(int, KnifeActionConfiguration, float, float)、LeonAnimationActionCoordinator.AdvanceMeleeAction(FullBodyActionType)、LeonAnimationActionCoordinator.AdvanceQTEPhase(int, FullBodyActionType) 等共 27 处。</summary>
+    /// <summary>是否已取消。</summary>
     public bool cancelled;
-    /// <summary>中文含义：是否已完成。使用位置：LeonAnimationActionCoordinator.AdvanceMeleeAction(FullBodyActionType)、LeonAnimationActionCoordinator.AdvanceQTEPhase(int, FullBodyActionType)、LeonAnimationActionCoordinator.AdvanceTraversalAction(FullBodyActionType, float, float) 等共 13 处。</summary>
+    /// <summary>是否已完成。</summary>
     public bool completed;
-    /// <summary>中文含义：状态进入序号。使用位置：作为 Debug.LogError(object) 的参数、LeonAnimationActionCoordinator.AdvanceQTEPhase(int, FullBodyActionType)、LeonAnimationActionCoordinator.AdvanceTraversalAction(FullBodyActionType, float, float) 等共 17 处。</summary>
+    /// <summary>状态进入序号。</summary>
     public int stateEntrySequence;
-    /// <summary>中文含义：入口是否已绑定。使用位置：LeonAnimationActionCoordinator.AdvanceMeleeAction(FullBodyActionType)、LeonAnimationActionCoordinator.AdvanceQTEPhase(int, FullBodyActionType)、LeonAnimationActionCoordinator.AdvanceTraversalAction(FullBodyActionType, float, float) 等共 23 处。</summary>
+    /// <summary>入口是否已绑定。</summary>
     public bool entryBound;
-    /// <summary>中文含义：阶段。使用位置：作为 LeonAnimationActionCoordinator.ValidateVisualMarker(VisualMarker, WeaponActionType, WeaponTransactionPhase) 的参数、LeonAnimationActionCoordinator.AsKnifeInterruptReload()、LeonAnimationActionCoordinator.CompleteReloadAfterBusinessCommit(int) 等共 18 处。</summary>
+    /// <summary>阶段。</summary>
     public WeaponTransactionPhase phase;
-    /// <summary>中文含义：是否视觉表现提交完成。使用位置：LeonAnimationActionCoordinator.ContinueEquipAfterKnifeHide(int)、LeonAnimationActionCoordinator.ContinueEquipAfterWeaponCommit(int)、LeonAnimationActionCoordinator.ContinueKnifeTakeAfterWeaponCommit(int) 等共 7 处。</summary>
+    /// <summary>是否视觉表现提交完成。</summary>
     public bool visualCommitDone;
-    /// <summary>中文含义：收起进入序号。使用位置：LeonAnimationActionCoordinator.ContinueEquipAfterWeaponCommit(int)、LeonAnimationActionCoordinator.ContinueKnifeTakeAfterWeaponCommit(int)、LeonAnimationActionCoordinator.HandleWeaponExited(Animator, WeaponActionType, int, bool)。</summary>
+    /// <summary>收起进入序号。</summary>
     public int holsterEntrySequence;
-    /// <summary>中文含义：配对动作会话编号。使用位置：作为 Action&lt;int, FullBodyActionType&gt;.Invoke(int, FullBodyActionType) 的参数、作为 LeonAnimationActionCoordinator.RestoreQTEWeaponVisual(int) 的参数、LeonAnimationActionCoordinator.AdvanceQTEPhase(int, FullBodyActionType) 等共 18 处。</summary>
+    /// <summary>配对动作会话编号。</summary>
     public int qteSessionId;
-    /// <summary>中文含义：全身阶段。使用位置：LeonAnimationActionCoordinator.AdvanceQTEPhase(int, FullBodyActionType)、LeonAnimationActionCoordinator.AdvanceTraversalAction(FullBodyActionType, float, float)、LeonAnimationActionCoordinator.CancelQTE(int) 等共 20 处。</summary>
+    /// <summary>全身阶段。</summary>
     public FullBodyTransactionPhase fullBodyPhase;
-    /// <summary>中文含义：退出中的全身动作类型。使用位置：LeonAnimationActionCoordinator.AdvanceQTEPhase(int, FullBodyActionType)、LeonAnimationActionCoordinator.AdvanceTraversalAction(FullBodyActionType, float, float)、LeonAnimationActionCoordinator.HandleFullBodyExited(Animator, FullBodyActionType, int, bool) 等共 7 处。</summary>
+    /// <summary>退出中的全身动作类型。</summary>
     public FullBodyActionType outgoingFullBodyActionType;
-    /// <summary>中文含义：退出中的状态进入序号。使用位置：LeonAnimationActionCoordinator.AdvanceQTEPhase(int, FullBodyActionType)、LeonAnimationActionCoordinator.AdvanceTraversalAction(FullBodyActionType, float, float)、LeonAnimationActionCoordinator.HandleFullBodyExited(Animator, FullBodyActionType, int, bool) 等共 7 处。</summary>
+    /// <summary>退出中的状态进入序号。</summary>
     public int outgoingStateEntrySequence;
-    /// <summary>中文含义：是否计划的退出。使用位置：LeonAnimationActionCoordinator.ForceFinishQTE(int)、LeonAnimationActionCoordinator.HandleFullBodyCompleted(Animator, FullBodyActionType, int)、LeonAnimationActionCoordinator.HandleFullBodyInterrupted(Animator, FullBodyActionType, int) 等共 4 处。</summary>
+    /// <summary>是否计划的退出。</summary>
     public bool plannedExit;
 }
 
@@ -159,119 +159,119 @@ public struct AnimationActionTransaction
 /// <remarks>玩家武器通道与全身通道的事务拥有者，审批动作冲突并分配事务编号；动画标记必须匹配当前事务，取消与完成沿同一资源交接链执行。</remarks>
 public partial class LeonAnimationActionCoordinator : MonoBehaviour
 {
-    /// <summary>中文含义：里昂动画控制器驱动器。使用位置：LeonAnimationActionCoordinator.AdvanceIndependentKnifeTransaction(int, KnifeActionConfiguration, float, float)、LeonAnimationActionCoordinator.AdvanceMeleeAction(FullBodyActionType)、LeonAnimationActionCoordinator.AdvanceQTEPhase(int, FullBodyActionType) 等共 34 处。</summary>
+    /// <summary>里昂动画控制器驱动器。</summary>
     [SerializeField]
     private LeonAnimatorDriver driver;
-    /// <summary>中文含义：动画控制器。使用位置：作为 QTEAnimatorOverrideScope.Apply(Animator, AnimationClip, AnimationClip, AnimationClip, AnimationClip) 的参数、LeonAnimationActionCoordinator.ApplyQTEAnimationVariant(QTEAnimationVariant)、LeonAnimationActionCoordinator.IsFromThisAnimator(Animator) 等共 7 处。</summary>
+    /// <summary>动画控制器。</summary>
     [SerializeField]
     private Animator animator;
-    /// <summary>中文含义：当前里昂动画绑定组件。使用位置：作为 LeonAnimRig.ExitHitIK(WeaponType) 的参数、LeonAnimationActionCoordinator.AsKnifeInterruptReload()、LeonAnimationActionCoordinator.ContinueEquipAfterKnifeHide(int) 等共 22 处。</summary>
+    /// <summary>当前里昂动画绑定组件。</summary>
     [SerializeField]
     private LeonAnimRig animRig;
-    /// <summary>中文含义：动作运动执行器。使用位置：作为 LeonActionMotionDriver.CommitNormalOrientation(MotionControlToken, Quaternion) 的参数、作为 LeonActionMotionDriver.StopHorizontalSpeed(MotionControlToken) 的参数、LeonAnimationActionCoordinator.CommitKnifeAssistOrientation(Quaternion) 等共 11 处。</summary>
+    /// <summary>动作运动执行器。</summary>
     [SerializeField]
     private LeonActionMotionDriver actionMotionDriver;
     // 分离的事务存储
-    /// <summary>中文含义：武器动作事务。使用位置：作为 Action&lt;AnimationActionTransaction, float&gt;.Invoke(AnimationActionTransaction, float) 的参数、作为 Action&lt;AnimationActionTransaction, VisualMarker&gt;.Invoke(AnimationActionTransaction, VisualMarker) 的参数、作为 Action&lt;AnimationActionTransaction&gt;.Invoke(AnimationActionTransaction) 的参数 等共 32 处。</summary>
+    /// <summary>武器动作事务。</summary>
     private AnimationActionTransaction weaponTx;
-    /// <summary>中文含义：全身动作事务。使用位置：作为 Action&lt;AnimationActionTransaction&gt;.Invoke(AnimationActionTransaction) 的参数、作为 LeonAnimationActionCoordinator.IsKnifeAction(FullBodyActionType) 的参数、作为 LeonAnimationActionCoordinator.IsLegalQTETransition(FullBodyActionType, FullBodyActionType) 的参数 等共 39 处。</summary>
+    /// <summary>全身动作事务。</summary>
     private AnimationActionTransaction fullBodyTx;
-    /// <summary>中文含义：是否具有生效武器动作事务。使用位置：作为 PlayerActionConflictRules.Check(ActionKind, bool, bool, bool, bool, bool, bool) 的参数、LeonAnimationActionCoordinator.AsKnifeInterruptReload()、LeonAnimationActionCoordinator.CompleteReloadAfterBusinessCommit(int) 等共 21 处。</summary>
+    /// <summary>是否具有生效武器动作事务。</summary>
     private bool hasActiveWeaponTx;
-    /// <summary>中文含义：是否具有生效全身动作事务。使用位置：作为 PlayerActionConflictRules.Check(ActionKind, bool, bool, bool, bool, bool, bool) 的参数、LeonAnimationActionCoordinator.AdvanceIndependentKnifeTransaction(int, KnifeActionConfiguration, float, float)、LeonAnimationActionCoordinator.AdvanceMeleeAction(FullBodyActionType) 等共 31 处。</summary>
+    /// <summary>是否具有生效全身动作事务。</summary>
     private bool hasActiveFullBodyTx;
-    /// <summary>中文含义：是否等待武器退出。使用位置：作为 PlayerActionConflictRules.Check(ActionKind, bool, bool, bool, bool, bool, bool) 的参数、LeonAnimationActionCoordinator.AsKnifeInterruptReload()、LeonAnimationActionCoordinator.ForceClearWeaponActionBlockAfterQTE(WeaponType) 等共 8 处。</summary>
+    /// <summary>是否等待武器退出。</summary>
     private bool waitingForWeaponExit;
-    /// <summary>中文含义：是否存在待处理的武器切换。使用位置：作为 PlayerActionConflictRules.Check(ActionKind, bool, bool, bool, bool, bool, bool) 的参数、LeonAnimationActionCoordinator.AsKnifeInterruptReload()、LeonAnimationActionCoordinator.ContinueEquipAfterKnifeHide(int) 等共 12 处。</summary>
+    /// <summary>是否存在待处理的武器切换。</summary>
     private bool hasPendingWeaponSwitch;
-    /// <summary>中文含义：待处理武器类型。使用位置：作为 LeonAnimationActionCoordinator.IsGunWeapon(WeaponType) 的参数、作为 LeonAnimatorDriver.CommitInjuredWeaponSwitchPresentation(WeaponType) 的参数、作为 LeonAnimatorDriver.SetWeaponType(WeaponType) 的参数 等共 8 处。</summary>
+    /// <summary>待处理武器类型。</summary>
     private WeaponType pendingWeaponType;
-    /// <summary>中文含义：下一次动作事务编号。使用位置：作为 RequestContext.RequestContext(string, ObjectIdentity, ObjectIdentity, long) 的参数、LeonAnimationActionCoordinator.RequestAutomaticDrop()、LeonAnimationActionCoordinator.RequestHit(LeonHitDirection) 等共 9 处。</summary>
+    /// <summary>下一次动作事务编号。</summary>
     private int nextTxId = 1;
-    /// <summary>中文含义：是否已经死亡。使用位置：作为 PlayerActionConflictRules.Check(ActionKind, bool, bool, bool, bool, bool, bool) 的参数、LeonAnimationActionCoordinator.AdvanceIndependentKnifeTransaction(int, KnifeActionConfiguration, float, float)、LeonAnimationActionCoordinator.AdvanceMeleeAction(FullBodyActionType) 等共 28 处。</summary>
+    /// <summary>是否已经死亡。</summary>
     private bool isDead;
-    /// <summary>中文含义：是否死亡事件已发送。使用位置：LeonAnimationActionCoordinator.RequestDeath()。</summary>
+    /// <summary>是否死亡事件已发送。</summary>
     private bool deathEventSent;
-    /// <summary>中文含义：是否死亡动画完成已发送。使用位置：LeonAnimationActionCoordinator.HandleFullBodyCompleted(Animator, FullBodyActionType, int)、LeonAnimationActionCoordinator.OnDisable()、LeonAnimationActionCoordinator.RequestDeath()。</summary>
+    /// <summary>是否死亡动画完成已发送。</summary>
     private bool deathAnimationCompletionSent;
-    /// <summary>中文含义：死亡状态进入序号。使用位置：LeonAnimationActionCoordinator.HandleFullBodyCompleted(Animator, FullBodyActionType, int)、LeonAnimationActionCoordinator.HandleFullBodyEntered(Animator, FullBodyActionType, int)、LeonAnimationActionCoordinator.OnDisable() 等共 4 处。</summary>
+    /// <summary>死亡状态进入序号。</summary>
     private int deathStateEntrySequence;
-    /// <summary>中文含义：配对动作武器已隐藏会话编号。使用位置：LeonAnimationActionCoordinator.RequestQTE(int)、LeonAnimationActionCoordinator.RestoreQTEWeaponVisual(int)。</summary>
+    /// <summary>配对动作武器已隐藏会话编号。</summary>
     private int qteWeaponHiddenSessionId = -1;
-    /// <summary>中文含义：配对动作动画覆盖。只读字段，初始化后不由普通写入口替换。使用位置：LeonAnimationActionCoordinator.ApplyQTEAnimationVariant(QTEAnimationVariant)、LeonAnimationActionCoordinator.OnDisable()、LeonAnimationActionCoordinator.TryClearQTEAnimationVariantAfterFullBodyExit()。</summary>
+    /// <summary>配对动作动画覆盖。只读字段，初始化后不由普通写入口替换。</summary>
     private readonly QTEAnimatorOverrideScope qteAnimationOverride = new QTEAnimatorOverrideScope();
-    /// <summary>中文含义：配对动作动画覆盖清除是否仍待处理。使用位置：LeonAnimationActionCoordinator.ApplyQTEAnimationVariant(QTEAnimationVariant)、LeonAnimationActionCoordinator.ClearQTEAnimationVariant()、LeonAnimationActionCoordinator.OnDisable() 等共 4 处。</summary>
+    /// <summary>配对动作动画覆盖清除是否仍待处理。</summary>
     private bool qteAnimationOverrideClearPending;
     // 视觉标记去重（按事务）
-    /// <summary>中文含义：视觉表现标记动作事务编号。使用位置：LeonAnimationActionCoordinator.NotifyVisualMarker(Animator, VisualMarker)、LeonAnimationActionCoordinator.OnDisable()、LeonAnimationActionCoordinator.ResetVisualMarkers(int)。</summary>
+    /// <summary>视觉表现标记动作事务编号。</summary>
     private int visualMarkerTxId = -1;
-    /// <summary>中文含义：已处理标记集合。使用位置：LeonAnimationActionCoordinator.HandleWeaponProgress(Animator, WeaponActionType, int, float)、LeonAnimationActionCoordinator.NotifyVisualMarker(Animator, VisualMarker)、LeonAnimationActionCoordinator.OnDisable() 等共 4 处。</summary>
+    /// <summary>已处理标记集合。</summary>
     private HashSet<VisualMarker> processedMarkers = new HashSet<VisualMarker>();
     // 驱动器验证缓存
-    /// <summary>中文含义：是否驱动器检查完成。使用位置：LeonAnimationActionCoordinator.Start()、LeonAnimationActionCoordinator.ValidateDriver()。</summary>
+    /// <summary>是否驱动器检查完成。</summary>
     [NonSerialized]
     private bool driverCheckDone;
-    /// <summary>中文含义：是否驱动器检查结果。使用位置：LeonAnimationActionCoordinator.ValidateDriver()。</summary>
+    /// <summary>是否驱动器检查结果。</summary>
     [NonSerialized]
     private bool driverCheckResult;
     // ================================================================
     // 事件
     // ================================================================
-    /// <summary>中文含义：换弹动画已完成时的通知回调。事件通信成员 OnReloadAnimationCompleted，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。使用位置：LeonAnimationActionCoordinator.HandleWeaponCompleted(Animator, WeaponActionType, int)、LeonCombat.BindCoordinatorEvents()、LeonCombat.UnbindCoordinatorEvents()。</summary>
+    /// <summary>换弹动画已完成时的通知回调。事件通信成员 OnReloadAnimationCompleted，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。</summary>
     public event Action<AnimationActionTransaction> OnReloadAnimationCompleted;
-    /// <summary>中文含义：收起动画已完成时的通知回调。事件通信成员 OnHolsterAnimationCompleted，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。使用位置：LeonAnimationActionCoordinator.HandleWeaponCompleted(Animator, WeaponActionType, int)、LeonWeaponHandler.BindCoordinatorEvents()、LeonWeaponHandler.UnbindCoordinatorEvents() 等共 5 处。</summary>
+    /// <summary>收起动画已完成时的通知回调。事件通信成员 OnHolsterAnimationCompleted，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。</summary>
     public event Action<AnimationActionTransaction> OnHolsterAnimationCompleted;
-    /// <summary>中文含义：装备动画已完成时的通知回调。事件通信成员 OnEquipAnimationCompleted，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。使用位置：LeonAnimationActionCoordinator.HandleWeaponExited(Animator, WeaponActionType, int, bool)、LeonWeaponHandler.BindCoordinatorEvents()、LeonWeaponHandler.UnbindCoordinatorEvents() 等共 5 处。</summary>
+    /// <summary>装备动画已完成时的通知回调。事件通信成员 OnEquipAnimationCompleted，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。</summary>
     public event Action<AnimationActionTransaction> OnEquipAnimationCompleted;
-    /// <summary>中文含义：武器动作已中断时的通知回调。事件通信成员 OnWeaponActionInterrupted，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。使用位置：LeonAnimationActionCoordinator.AsKnifeInterruptReload()、LeonAnimationActionCoordinator.ForceClearWeaponActionBlockAfterQTE(WeaponType)、LeonAnimationActionCoordinator.HandleWeaponInterrupted(Animator, WeaponActionType, int) 等共 12 处。</summary>
+    /// <summary>武器动作已中断时的通知回调。事件通信成员 OnWeaponActionInterrupted，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。</summary>
     public event Action<AnimationActionTransaction> OnWeaponActionInterrupted;
-    /// <summary>中文含义：武器动作进度时的通知回调。事件通信成员 OnWeaponActionProgress，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。使用位置：LeonAnimationActionCoordinator.HandleWeaponProgress(Animator, WeaponActionType, int, float)、LeonWeaponVisualController.BindCoordinatorEvents()、LeonWeaponVisualController.UnbindCoordinatorEvents()。</summary>
+    /// <summary>武器动作进度时的通知回调。事件通信成员 OnWeaponActionProgress，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。</summary>
     public event Action<AnimationActionTransaction, float> OnWeaponActionProgress;
-    /// <summary>中文含义：小刀过渡已退出时的通知回调。事件通信成员 OnKnifeTransitionExited，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。使用位置：LeonAnimationActionCoordinator.HandleWeaponExited(Animator, WeaponActionType, int, bool)、LeonWeaponHandler.BindCoordinatorEvents()、LeonWeaponHandler.UnbindCoordinatorEvents()。</summary>
+    /// <summary>小刀过渡已退出时的通知回调。事件通信成员 OnKnifeTransitionExited，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。</summary>
     public event Action<AnimationActionTransaction> OnKnifeTransitionExited;
 
     internal bool IsKnifeEquipWaitingForReveal => hasActiveWeaponTx && weaponTx.isWeaponSwitch
         && weaponTx.sourceWeaponType == WeaponType.Knife && weaponTx.weaponActionType == WeaponActionType.Equip
         && (visualMarkerTxId != weaponTx.transactionId || !processedMarkers.Contains(VisualMarker.EquipVisualReveal));
-    /// <summary>中文含义：小刀过渡已中断时的通知回调。事件通信成员 OnKnifeTransitionInterrupted，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。使用位置：LeonAnimationActionCoordinator.HandleWeaponExited(Animator, WeaponActionType, int, bool)、LeonAnimationActionCoordinator.HandleWeaponInterrupted(Animator, WeaponActionType, int)。</summary>
+    /// <summary>小刀过渡已中断时的通知回调。事件通信成员 OnKnifeTransitionInterrupted，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。</summary>
     public event Action<AnimationActionTransaction> OnKnifeTransitionInterrupted;
-    /// <summary>中文含义：命中动画已完成时的通知回调。事件通信成员 OnHitAnimationCompleted，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。使用位置：LeonAnimationActionCoordinator.HandleFullBodyExited(Animator, FullBodyActionType, int, bool)、LeonCombat.BindCoordinatorEvents()、LeonCombat.UnbindCoordinatorEvents()。</summary>
+    /// <summary>命中动画已完成时的通知回调。事件通信成员 OnHitAnimationCompleted，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。</summary>
     public event Action<AnimationActionTransaction> OnHitAnimationCompleted;
-    /// <summary>中文含义：全身动作中断时的通知回调。事件通信成员 OnFullBodyActionInterrupted，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。使用位置：LeonAnimationActionCoordinator.CancelTraversal()、LeonAnimationActionCoordinator.HandleFullBodyInterrupted(Animator, FullBodyActionType, int)、LeonAnimationActionCoordinator.RequestDeath() 等共 4 处。</summary>
+    /// <summary>全身动作中断时的通知回调。事件通信成员 OnFullBodyActionInterrupted，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。</summary>
     public event Action<AnimationActionTransaction> OnFullBodyActionInterrupted;
-    /// <summary>中文含义：配对动作动作进入时的通知回调。事件通信成员 OnQTEActionEntered，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。使用位置：LeonAnimationActionCoordinator.HandleFullBodyEntered(Animator, FullBodyActionType, int)。</summary>
+    /// <summary>配对动作动作进入时的通知回调。事件通信成员 OnQTEActionEntered，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。</summary>
     public event Action<AnimationActionTransaction> OnQTEActionEntered;
-    /// <summary>中文含义：配对动作动作完成时的通知回调。事件通信成员 OnQTEActionCompleted，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。使用位置：LeonAnimationActionCoordinator.HandleFullBodyCompleted(Animator, FullBodyActionType, int)、LeonQTECoordinator.BindEvents()、LeonQTECoordinator.UnbindEvents()。</summary>
+    /// <summary>配对动作动作完成时的通知回调。事件通信成员 OnQTEActionCompleted，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。</summary>
     public event Action<AnimationActionTransaction> OnQTEActionCompleted;
-    /// <summary>中文含义：配对动作动作退出时的通知回调。事件通信成员 OnQTEActionExited，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。使用位置：LeonAnimationActionCoordinator.ForceFinishQTE(int)、LeonAnimationActionCoordinator.HandleFullBodyExited(Animator, FullBodyActionType, int, bool)、LeonQTECoordinator.BindEvents() 等共 4 处。</summary>
+    /// <summary>配对动作动作退出时的通知回调。事件通信成员 OnQTEActionExited，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。</summary>
     public event Action<AnimationActionTransaction> OnQTEActionExited;
-    /// <summary>中文含义：配对动作动作中断时的通知回调。事件通信成员 OnQTEActionInterrupted，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。使用位置：LeonAnimationActionCoordinator.CancelQTE(int)、LeonAnimationActionCoordinator.HandleFullBodyInterrupted(Animator, FullBodyActionType, int)、LeonAnimationActionCoordinator.RequestDeath() 等共 5 处。</summary>
+    /// <summary>配对动作动作中断时的通知回调。事件通信成员 OnQTEActionInterrupted，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。</summary>
     public event Action<AnimationActionTransaction> OnQTEActionInterrupted;
-    /// <summary>中文含义：近战动作已进入时的通知回调。事件通信成员 OnMeleeActionEntered，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。使用位置：LeonAnimationActionCoordinator.HandleFullBodyEntered(Animator, FullBodyActionType, int)。</summary>
+    /// <summary>近战动作已进入时的通知回调。事件通信成员 OnMeleeActionEntered，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。</summary>
     public event Action<AnimationActionTransaction> OnMeleeActionEntered;
-    /// <summary>中文含义：近战动作已完成时的通知回调。事件通信成员 OnMeleeActionCompleted，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。使用位置：LeonAnimationActionCoordinator.HandleFullBodyCompleted(Animator, FullBodyActionType, int)、LeonCombat.BindCoordinatorEvents()、LeonCombat.UnbindCoordinatorEvents()。</summary>
+    /// <summary>近战动作已完成时的通知回调。事件通信成员 OnMeleeActionCompleted，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。</summary>
     public event Action<AnimationActionTransaction> OnMeleeActionCompleted;
-    /// <summary>中文含义：近战动作已退出时的通知回调。事件通信成员 OnMeleeActionExited，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。使用位置：LeonAnimationActionCoordinator.HandleFullBodyExited(Animator, FullBodyActionType, int, bool)、LeonCombat.BindCoordinatorEvents()、LeonCombat.UnbindCoordinatorEvents() 等共 5 处。</summary>
+    /// <summary>近战动作已退出时的通知回调。事件通信成员 OnMeleeActionExited，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。</summary>
     public event Action<AnimationActionTransaction> OnMeleeActionExited;
-    /// <summary>中文含义：近战动作已中断时的通知回调。事件通信成员 OnMeleeActionInterrupted，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。使用位置：KnifeCombatModule.BindingEvent()、KnifeCombatModule.OnDisable()、LeonAnimationActionCoordinator.HandleFullBodyInterrupted(Animator, FullBodyActionType, int) 等共 8 处。</summary>
+    /// <summary>近战动作已中断时的通知回调。事件通信成员 OnMeleeActionInterrupted，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。</summary>
     public event Action<AnimationActionTransaction> OnMeleeActionInterrupted;
-    /// <summary>中文含义：近战命中窗口时的通知回调。事件通信成员 OnMeleeHitWindow，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。使用位置：LeonAnimationActionCoordinator.HandleMeleeHitWindow(Animator, FullBodyActionType)、LeonCombat.BindCoordinatorEvents()、LeonCombat.UnbindCoordinatorEvents()。</summary>
+    /// <summary>近战命中窗口时的通知回调。事件通信成员 OnMeleeHitWindow，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。</summary>
     public event Action<AnimationActionTransaction> OnMeleeHitWindow;
-    /// <summary>中文含义：通行动作进入时的通知回调。事件通信成员 OnTraversalActionEntered，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。使用位置：LeonAnimationActionCoordinator.HandleFullBodyEntered(Animator, FullBodyActionType, int)、LeonWindowTraversal.BindEvents()、LeonWindowTraversal.UnbindEvents()。</summary>
+    /// <summary>通行动作进入时的通知回调。事件通信成员 OnTraversalActionEntered，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。</summary>
     public event Action<AnimationActionTransaction> OnTraversalActionEntered;
-    /// <summary>中文含义：通行动作完成时的通知回调。事件通信成员 OnTraversalActionCompleted，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。使用位置：LeonAnimationActionCoordinator.HandleFullBodyCompleted(Animator, FullBodyActionType, int)、LeonHighDropLanding.BindEvents()、LeonHighDropLanding.UnbindEvents() 等共 5 处。</summary>
+    /// <summary>通行动作完成时的通知回调。事件通信成员 OnTraversalActionCompleted，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。</summary>
     public event Action<AnimationActionTransaction> OnTraversalActionCompleted;
-    /// <summary>中文含义：通行动作退出时的通知回调。事件通信成员 OnTraversalActionExited，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。使用位置：LeonAnimationActionCoordinator.HandleFullBodyExited(Animator, FullBodyActionType, int, bool)、LeonHighDropLanding.BindEvents()、LeonHighDropLanding.UnbindEvents() 等共 5 处。</summary>
+    /// <summary>通行动作退出时的通知回调。事件通信成员 OnTraversalActionExited，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。</summary>
     public event Action<AnimationActionTransaction> OnTraversalActionExited;
-    /// <summary>中文含义：通行动作中断时的通知回调。事件通信成员 OnTraversalActionInterrupted，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。使用位置：LeonAnimationActionCoordinator.CancelTraversal()、LeonAnimationActionCoordinator.HandleFullBodyInterrupted(Animator, FullBodyActionType, int)、LeonAnimationActionCoordinator.RequestDeath() 等共 7 处。</summary>
+    /// <summary>通行动作中断时的通知回调。事件通信成员 OnTraversalActionInterrupted，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。</summary>
     public event Action<AnimationActionTransaction> OnTraversalActionInterrupted;
-    /// <summary>中文含义：配对动作武器可见性请求的时的通知回调。事件通信成员 OnQTEWeaponVisibilityRequested，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。使用位置：LeonAnimationActionCoordinator.RequestQTE(int)、LeonAnimationActionCoordinator.RestoreQTEWeaponVisual(int)、LeonWeaponVisualController.BindCoordinatorEvents() 等共 4 处。</summary>
+    /// <summary>配对动作武器可见性请求的时的通知回调。事件通信成员 OnQTEWeaponVisibilityRequested，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。</summary>
     public event Action<int, bool> OnQTEWeaponVisibilityRequested;
-    /// <summary>中文含义：死亡已进入时的通知回调。事件通信成员 OnDeathEntered，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。使用位置：KnifeCombatModule.BindingEvent()、KnifeCombatModule.OnDisable()、LeonAnimationActionCoordinator.RequestDeath() 等共 5 处。</summary>
+    /// <summary>死亡已进入时的通知回调。事件通信成员 OnDeathEntered，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。</summary>
     public event Action OnDeathEntered;
-    /// <summary>中文含义：死亡动画已完成时的通知回调。事件通信成员 OnDeathAnimationCompleted，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。使用位置：LeonAnimationActionCoordinator.HandleFullBodyCompleted(Animator, FullBodyActionType, int)、LeonController.InitPipeline()、LeonController.OnDestroy()。</summary>
+    /// <summary>死亡动画已完成时的通知回调。事件通信成员 OnDeathAnimationCompleted，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。</summary>
     public event Action OnDeathAnimationCompleted;
-    /// <summary>中文含义：视觉表现标记时的通知回调。事件通信成员 OnVisualMarker，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。使用位置：LeonAnimationActionCoordinator.NotifyVisualMarker(Animator, VisualMarker)、LeonWeaponVisualController.BindCoordinatorEvents()、LeonWeaponVisualController.UnbindCoordinatorEvents()。</summary>
+    /// <summary>视觉表现标记时的通知回调。事件通信成员 OnVisualMarker，订阅方接收拥有者已提交的通知；注册与退订见实际调用位置。</summary>
     public event Action<AnimationActionTransaction, VisualMarker> OnVisualMarker;
     /// <summary>中文含义：换弹已退出时的通知回调。换弹状态完全退出到Empty后触发</summary>
     public event Action<AnimationActionTransaction> OnReloadExited;
@@ -336,7 +336,7 @@ public partial class LeonAnimationActionCoordinator : MonoBehaviour
         {
             weaponTx.cancelled = true;
             weaponTx.phase = WeaponTransactionPhase.Cancelled;
-            // receiverValue1（判空前缓存的武器动作已中断时的通知回调）：从武器动作已中断时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.OnDisable()。
+            // 判空前缓存的武器动作已中断时的通知回调。
 global::System.Action<global::AnimationActionTransaction> receiverValue1 = OnWeaponActionInterrupted;
             if (!global::System.Object.ReferenceEquals(receiverValue1, null))
             {
@@ -357,14 +357,14 @@ global::System.Action<global::AnimationActionTransaction> receiverValue1 = OnWea
         }
 
         hasActiveFullBodyTx = false;
-        // receiverValue2（判空前缓存的里昂动画控制器驱动器）：从驱动组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.OnDisable()。
+        // 判空前缓存的里昂动画控制器驱动器。
 global::LeonAnimatorDriver receiverValue2 = driver;
         if (!global::System.Object.ReferenceEquals(receiverValue2, null))
         {
             receiverValue2.EndFullBodyAction();
         }
 
-        // receiverValue3（判空前缓存的里昂动画控制器驱动器）：从驱动组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.OnDisable()。
+        // 判空前缓存的里昂动画控制器驱动器。
 global::LeonAnimatorDriver receiverValue3 = driver;
         if (!global::System.Object.ReferenceEquals(receiverValue3, null))
         {
@@ -372,7 +372,7 @@ global::LeonAnimatorDriver receiverValue3 = driver;
         }
 
         // 管线失效时清除待处理受伤目标，避免永久挂起
-        // receiverValue4（判空前缓存的里昂动画控制器驱动器）：从驱动组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.OnDisable()。
+        // 判空前缓存的里昂动画控制器驱动器。
 global::LeonAnimatorDriver receiverValue4 = // 管线失效时清除待处理受伤目标，避免永久挂起
  driver;
         if (!global::System.Object.ReferenceEquals(receiverValue4, null))
@@ -380,7 +380,7 @@ global::LeonAnimatorDriver receiverValue4 = // 管线失效时清除待处理受
             receiverValue4.ClearPendingInjuredTransition();
         }
 
-        // receiverValue5（判空前缓存的动作运动执行器）：从动作运动执行器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.OnDisable()。
+        // 判空前缓存的动作运动执行器。
 global::LeonActionMotionDriver receiverValue5 = actionMotionDriver;
         if (!global::System.Object.ReferenceEquals(receiverValue5, null))
         {
@@ -388,7 +388,7 @@ global::LeonActionMotionDriver receiverValue5 = actionMotionDriver;
         }
 
         // 协调器禁用时立即中断所有反向动力学事务，避免重新启用后继承旧权重。
-        // receiverValue6（判空前缓存的当前里昂动画绑定组件）：从动画绑定组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.OnDisable()。
+        // 判空前缓存的当前里昂动画绑定组件。
 global::LeonAnimRig receiverValue6 = // 协调器禁用时立即中断所有反向动力学事务，避免重新启用后继承旧权重。
  animRig;
         if (!global::System.Object.ReferenceEquals(receiverValue6, null))
@@ -406,7 +406,7 @@ global::LeonAnimRig receiverValue6 = // 协调器禁用时立即中断所有反�
         {
             playerWeaponAction = PlayerWeaponPhase.None;
             playerFullBodyAction = PlayerFullBodyPhase.None;
-            // receiverValue7（判空前缓存的玩家移动）：从玩家移动读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.OnDisable()。
+            // 判空前缓存的玩家移动。
 global::LeonLocomotion receiverValue7 = playerMovement;
             if (!global::System.Object.ReferenceEquals(receiverValue7, null))
             {
@@ -423,7 +423,7 @@ global::LeonLocomotion receiverValue7 = playerMovement;
     // ================================================================
     /// <summary>IsFromThisAnimator 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
     /// <remarks>静态调用链：上游 LeonAnimationActionCoordinator.HandleFullBodyCompleted(Animator, FullBodyActionType, int)、LeonAnimationActionCoordinator.HandleFullBodyEntered(Animator, FullBodyActionType, int)、LeonAnimationActionCoordinator.HandleFullBodyExited(Animator, FullBodyActionType, int, bool)、LeonAnimationActionCoordinator.HandleFullBodyInterrupted(Animator, FullBodyActionType, int)、LeonAnimationActionCoordinator.HandleMeleeHitWindow(Animator, FullBodyActionType) 等共 11 处；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="source">中文含义：来源动画控制器。使用位置：LeonAnimationActionCoordinator.IsFromThisAnimator(Animator)。</param>
+    /// <param name="source">来源动画控制器。</param>
     private bool IsFromThisAnimator(Animator source) => source != null && source == animator;
     /// <summary>ValidateDriver 的业务处理入口；本方法直接依赖 Debug.LogError(object)、LeonAnimatorDriver.ValidateAnimatorContract()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonAnimationActionCoordinator.ContinueEquipAfterKnifeHide(int)、LeonAnimationActionCoordinator.ContinueEquipAfterWeaponCommit(int)、LeonAnimationActionCoordinator.ContinueKnifeTakeAfterWeaponCommit(int)、LeonAnimationActionCoordinator.RequestAutomaticDrop()、LeonAnimationActionCoordinator.RequestHit(LeonHitDirection) 等共 12 处；下游（含内部回调体） Debug.LogError(object)、LeonAnimatorDriver.ValidateAnimatorContract()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
@@ -472,9 +472,9 @@ global::LeonLocomotion receiverValue7 = playerMovement;
     // ================================================================
     /// <summary>HandleWeaponEntered 的业务处理入口；本方法直接依赖 LeonAnimationActionCoordinator.IsFromThisAnimator(Animator)、LeonAnimRig.BeginEquipIK(WeaponType)、object.ReferenceEquals(object, object)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） LeonAnimationActionCoordinator.IsFromThisAnimator(Animator)、LeonAnimRig.BeginEquipIK(WeaponType)、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="src">中文含义：当前动画控制器。使用位置：作为 LeonAnimationActionCoordinator.IsFromThisAnimator(Animator) 的参数。</param>
-    /// <param name="type">中文含义：当前武器动作类型。使用位置：LeonAnimationActionCoordinator.HandleWeaponEntered(Animator, WeaponActionType, int)。</param>
-    /// <param name="seq">中文含义：序号。使用位置：LeonAnimationActionCoordinator.HandleWeaponEntered(Animator, WeaponActionType, int)。</param>
+    /// <param name="src">当前动画控制器。</param>
+    /// <param name="type">当前武器动作类型。</param>
+    /// <param name="seq">序号。</param>
     private void HandleWeaponEntered(Animator src, WeaponActionType type, int seq)
     {
         if (!IsFromThisAnimator(src) || isDead || !hasActiveWeaponTx)
@@ -488,7 +488,7 @@ global::LeonLocomotion receiverValue7 = playerMovement;
             weaponTx.stateEntrySequence = seq;
             weaponTx.entryBound = true;
             weaponTx.phase = WeaponTransactionPhase.PlayingEquip;
-            // receiverValue8（判空前缓存的当前里昂动画绑定组件）：从动画绑定组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.HandleWeaponEntered(Animator, WeaponActionType, int)。
+            // 判空前缓存的当前里昂动画绑定组件。
 global::LeonAnimRig receiverValue8 = animRig;
             if (!global::System.Object.ReferenceEquals(receiverValue8, null))
             {
@@ -511,7 +511,7 @@ global::LeonAnimRig receiverValue8 = animRig;
             weaponTx.stateEntrySequence = seq;
             weaponTx.entryBound = true;
             weaponTx.phase = WeaponTransactionPhase.PlayingEquip;
-            // receiverValue9（判空前缓存的当前里昂动画绑定组件）：从动画绑定组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.HandleWeaponEntered(Animator, WeaponActionType, int)。
+            // 判空前缓存的当前里昂动画绑定组件。
 global::LeonAnimRig receiverValue9 = animRig;
             if (!global::System.Object.ReferenceEquals(receiverValue9, null))
             {
@@ -548,10 +548,10 @@ global::LeonAnimRig receiverValue9 = animRig;
 
     /// <summary>HandleWeaponProgress 的业务处理入口；本方法直接依赖 Action&lt;AnimationActionTransaction, float&gt;.Invoke(AnimationActionTransaction, float)、HashSet&lt;VisualMarker&gt;.Contains(VisualMarker)、LeonAnimationActionCoordinator.IsFromThisAnimator(Animator)、LeonAnimationActionCoordinator.IsLongGunWeapon(WeaponType)、LeonAnimationActionCoordinator.NotifyVisualMarker(Animator, VisualMarker)、LeonAnimRig.UpdateKnifeTransitionIK(WeaponActionType, float)、object.ReferenceEquals(object, object)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） Action&lt;AnimationActionTransaction, float&gt;.Invoke(AnimationActionTransaction, float)、HashSet&lt;VisualMarker&gt;.Contains(VisualMarker)、LeonAnimationActionCoordinator.IsFromThisAnimator(Animator)、LeonAnimationActionCoordinator.IsLongGunWeapon(WeaponType)、LeonAnimationActionCoordinator.NotifyVisualMarker(Animator, VisualMarker)、LeonAnimRig.UpdateKnifeTransitionIK(WeaponActionType, float)、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="src">中文含义：当前动画控制器。使用位置：作为 LeonAnimationActionCoordinator.IsFromThisAnimator(Animator) 的参数、作为 LeonAnimationActionCoordinator.NotifyVisualMarker(Animator, VisualMarker) 的参数。</param>
-    /// <param name="type">中文含义：当前武器动作类型。使用位置：作为 LeonAnimRig.UpdateKnifeTransitionIK(WeaponActionType, float) 的参数、LeonAnimationActionCoordinator.HandleWeaponProgress(Animator, WeaponActionType, int, float)。</param>
-    /// <param name="seq">中文含义：序号。使用位置：LeonAnimationActionCoordinator.HandleWeaponProgress(Animator, WeaponActionType, int, float)。</param>
-    /// <param name="normalizedTime">中文含义：动画归一化播放时间。使用位置：作为 Action&lt;AnimationActionTransaction, float&gt;.Invoke(AnimationActionTransaction, float) 的参数、作为 LeonAnimRig.UpdateKnifeTransitionIK(WeaponActionType, float) 的参数、LeonAnimationActionCoordinator.HandleWeaponProgress(Animator, WeaponActionType, int, float)。</param>
+    /// <param name="src">当前动画控制器。</param>
+    /// <param name="type">当前武器动作类型。</param>
+    /// <param name="seq">序号。</param>
+    /// <param name="normalizedTime">动画归一化播放时间。</param>
     private void HandleWeaponProgress(Animator src, WeaponActionType type, int seq, float normalizedTime)
     {
         if (!IsFromThisAnimator(src) || isDead || !hasActiveWeaponTx)
@@ -569,14 +569,14 @@ global::LeonAnimRig receiverValue9 = animRig;
             return;
         }
 
-        // receiverValue10（判空前缓存的当前里昂动画绑定组件）：从动画绑定组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.HandleWeaponProgress(Animator, WeaponActionType, int, float)。
+        // 判空前缓存的当前里昂动画绑定组件。
 global::LeonAnimRig receiverValue10 = animRig;
         if (!global::System.Object.ReferenceEquals(receiverValue10, null))
         {
             receiverValue10.UpdateKnifeTransitionIK(type, normalizedTime);
         }
 
-        // receiverValue11（判空前缓存的武器动作进度时的通知回调）：从武器动作进度时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.HandleWeaponProgress(Animator, WeaponActionType, int, float)。
+        // 判空前缓存的武器动作进度时的通知回调。
 global::System.Action<global::AnimationActionTransaction, float> receiverValue11 = OnWeaponActionProgress;
         if (!global::System.Object.ReferenceEquals(receiverValue11, null))
         {
@@ -704,9 +704,9 @@ global::System.Action<global::AnimationActionTransaction, float> receiverValue11
 
     /// <summary>HandleWeaponCompleted 的业务处理入口；本方法直接依赖 Action&lt;AnimationActionTransaction&gt;.Invoke(AnimationActionTransaction)、LeonAnimationActionCoordinator.IsFromThisAnimator(Animator)、LeonAnimatorDriver.EndWeaponAction()、object.ReferenceEquals(object, object)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） Action&lt;AnimationActionTransaction&gt;.Invoke(AnimationActionTransaction)、LeonAnimationActionCoordinator.IsFromThisAnimator(Animator)、LeonAnimatorDriver.EndWeaponAction()、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="src">中文含义：当前动画控制器。使用位置：作为 LeonAnimationActionCoordinator.IsFromThisAnimator(Animator) 的参数。</param>
-    /// <param name="type">中文含义：当前武器动作类型。使用位置：LeonAnimationActionCoordinator.HandleWeaponCompleted(Animator, WeaponActionType, int)。</param>
-    /// <param name="seq">中文含义：序号。使用位置：LeonAnimationActionCoordinator.HandleWeaponCompleted(Animator, WeaponActionType, int)。</param>
+    /// <param name="src">当前动画控制器。</param>
+    /// <param name="type">当前武器动作类型。</param>
+    /// <param name="seq">序号。</param>
     private void HandleWeaponCompleted(Animator src, WeaponActionType type, int seq)
     {
         if (!IsFromThisAnimator(src) || isDead || !hasActiveWeaponTx)
@@ -735,7 +735,7 @@ global::System.Action<global::AnimationActionTransaction, float> receiverValue11
         {
             case WeaponActionType.Reload:
                 weaponTx.phase = WeaponTransactionPhase.AwaitingReloadCommit;
-                // receiverValue12（判空前缓存的换弹动画已完成时的通知回调）：从换弹动画已完成时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.HandleWeaponCompleted(Animator, WeaponActionType, int)。
+                // 判空前缓存的换弹动画已完成时的通知回调。
 global::System.Action<global::AnimationActionTransaction> receiverValue12 = OnReloadAnimationCompleted;
                 if (!global::System.Object.ReferenceEquals(receiverValue12, null))
                 {
@@ -746,7 +746,7 @@ global::System.Action<global::AnimationActionTransaction> receiverValue12 = OnRe
             case WeaponActionType.Holster:
                 NotifyVisualMarker(src, VisualMarker.HolsterVisualCommit);
                 weaponTx.phase = WeaponTransactionPhase.AwaitingWeaponCommit;
-                // receiverValue13（判空前缓存的收起动画已完成时的通知回调）：从收起动画已完成时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.HandleWeaponCompleted(Animator, WeaponActionType, int)。
+                // 判空前缓存的收起动画已完成时的通知回调。
 global::System.Action<global::AnimationActionTransaction> receiverValue13 = OnHolsterAnimationCompleted;
                 if (!global::System.Object.ReferenceEquals(receiverValue13, null))
                 {
@@ -764,7 +764,7 @@ global::System.Action<global::AnimationActionTransaction> receiverValue13 = OnHo
                 break;
             case WeaponActionType.KnifeTake:
             case WeaponActionType.KnifeHide:
-                // receiverValue14（判空前缓存的里昂动画控制器驱动器）：从驱动组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.HandleWeaponCompleted(Animator, WeaponActionType, int)。
+                // 判空前缓存的里昂动画控制器驱动器。
 global::LeonAnimatorDriver receiverValue14 = driver;
                 if (!global::System.Object.ReferenceEquals(receiverValue14, null))
                 {
@@ -778,9 +778,9 @@ global::LeonAnimatorDriver receiverValue14 = driver;
 
     /// <summary>HandleWeaponInterrupted 的业务处理入口；本方法直接依赖 Action&lt;AnimationActionTransaction&gt;.Invoke(AnimationActionTransaction)、LeonAnimationActionCoordinator.IsFromThisAnimator(Animator)、object.ReferenceEquals(object, object)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） Action&lt;AnimationActionTransaction&gt;.Invoke(AnimationActionTransaction)、LeonAnimationActionCoordinator.IsFromThisAnimator(Animator)、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="src">中文含义：当前动画控制器。使用位置：作为 LeonAnimationActionCoordinator.IsFromThisAnimator(Animator) 的参数。</param>
-    /// <param name="type">中文含义：当前武器动作类型。使用位置：LeonAnimationActionCoordinator.HandleWeaponInterrupted(Animator, WeaponActionType, int)。</param>
-    /// <param name="seq">中文含义：序号。使用位置：LeonAnimationActionCoordinator.HandleWeaponInterrupted(Animator, WeaponActionType, int)。</param>
+    /// <param name="src">当前动画控制器。</param>
+    /// <param name="type">当前武器动作类型。</param>
+    /// <param name="seq">序号。</param>
     private void HandleWeaponInterrupted(Animator src, WeaponActionType type, int seq)
     {
         if (!IsFromThisAnimator(src) || isDead || !hasActiveWeaponTx)
@@ -801,7 +801,7 @@ global::LeonAnimatorDriver receiverValue14 = driver;
         weaponTx.cancelled = true;
         weaponTx.phase = WeaponTransactionPhase.Cancelled;
         hasActiveWeaponTx = false;
-        // receiverValue15（判空前缓存的武器动作已中断时的通知回调）：从武器动作已中断时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.HandleWeaponInterrupted(Animator, WeaponActionType, int)。
+        // 判空前缓存的武器动作已中断时的通知回调。
 global::System.Action<global::AnimationActionTransaction> receiverValue15 = OnWeaponActionInterrupted;
         if (!global::System.Object.ReferenceEquals(receiverValue15, null))
         {
@@ -810,7 +810,7 @@ global::System.Action<global::AnimationActionTransaction> receiverValue15 = OnWe
 
         if (type == WeaponActionType.KnifeTake || type == WeaponActionType.KnifeHide)
         {
-            // receiverValue16（判空前缓存的小刀过渡已中断时的通知回调）：从小刀过渡已中断时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.HandleWeaponInterrupted(Animator, WeaponActionType, int)。
+            // 判空前缓存的小刀过渡已中断时的通知回调。
 global::System.Action<global::AnimationActionTransaction> receiverValue16 = OnKnifeTransitionInterrupted;
             if (!global::System.Object.ReferenceEquals(receiverValue16, null))
             {
@@ -821,9 +821,9 @@ global::System.Action<global::AnimationActionTransaction> receiverValue16 = OnKn
 
     /// <summary>HandleWeaponExited 的业务处理入口；本方法直接依赖 Action&lt;AnimationActionTransaction&gt;.Invoke(AnimationActionTransaction)、LeonAnimationActionCoordinator.GetCurrentWeaponForIK()、LeonAnimationActionCoordinator.IsFromThisAnimator(Animator)、LeonAnimationActionCoordinator.IsGunWeapon(WeaponType)、LeonAnimatorDriver.FinalizeWeaponActionLayer()、LeonAnimRig.CompleteWeaponActionIK(WeaponType)、object.ReferenceEquals(object, object)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） Action&lt;AnimationActionTransaction&gt;.Invoke(AnimationActionTransaction)、LeonAnimationActionCoordinator.GetCurrentWeaponForIK()、LeonAnimationActionCoordinator.IsFromThisAnimator(Animator)、LeonAnimationActionCoordinator.IsGunWeapon(WeaponType)、LeonAnimatorDriver.FinalizeWeaponActionLayer()、LeonAnimRig.CompleteWeaponActionIK(WeaponType)、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="src">中文含义：当前动画控制器。使用位置：作为 LeonAnimationActionCoordinator.IsFromThisAnimator(Animator) 的参数。</param>
-    /// <param name="type">中文含义：当前武器动作类型。使用位置：LeonAnimationActionCoordinator.HandleWeaponExited(Animator, WeaponActionType, int, bool)。</param>
-    /// <param name="seq">中文含义：序号。使用位置：LeonAnimationActionCoordinator.HandleWeaponExited(Animator, WeaponActionType, int, bool)。</param>
+    /// <param name="src">当前动画控制器。</param>
+    /// <param name="type">当前武器动作类型。</param>
+    /// <param name="seq">序号。</param>
     /// <param name="wasCompleted">中文含义：之前是否已完成。</param>
     private void HandleWeaponExited(Animator src, WeaponActionType type, int seq, bool wasCompleted)
     {
@@ -868,7 +868,7 @@ global::System.Action<global::AnimationActionTransaction> receiverValue16 = OnKn
             waitingForWeaponExit = false;
             if (hasPendingWeaponSwitch && IsGunWeapon(weaponTx.pendingWeaponType))
             {
-                // visualCommitted（是否视觉表现已提交）：使用位置：LeonAnimationActionCoordinator.HandleWeaponExited(Animator, WeaponActionType, int, bool)。
+                // 是否视觉表现已提交。
 bool visualCommitted = weaponTx.visualCommitDone;
                 weaponTx.weaponActionType = WeaponActionType.Equip;
                 weaponTx.entryBound = false;
@@ -901,21 +901,21 @@ bool visualCommitted = weaponTx.visualCommitDone;
             case WeaponTransactionPhase.WaitingForReloadExit:
                 hasActiveWeaponTx = false;
                 weaponTx.phase = WeaponTransactionPhase.Completed;
-                // receiverValue17（判空前缓存的里昂动画控制器驱动器）：从驱动组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.HandleWeaponExited(Animator, WeaponActionType, int, bool)。
+                // 判空前缓存的里昂动画控制器驱动器。
 global::LeonAnimatorDriver receiverValue17 = driver;
                 if (!global::System.Object.ReferenceEquals(receiverValue17, null))
                 {
                     receiverValue17.FinalizeWeaponActionLayer();
                 }
 
-                // receiverValue18（判空前缓存的当前里昂动画绑定组件）：从动画绑定组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.HandleWeaponExited(Animator, WeaponActionType, int, bool)。
+                // 判空前缓存的当前里昂动画绑定组件。
 global::LeonAnimRig receiverValue18 = animRig;
                 if (!global::System.Object.ReferenceEquals(receiverValue18, null))
                 {
                     receiverValue18.CompleteWeaponActionIK(GetCurrentWeaponForIK());
                 }
 
-                // receiverValue19（判空前缓存的换弹已退出时的通知回调）：从换弹已退出时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.HandleWeaponExited(Animator, WeaponActionType, int, bool)。
+                // 判空前缓存的换弹已退出时的通知回调。
 global::System.Action<global::AnimationActionTransaction> receiverValue19 = OnReloadExited;
                 if (!global::System.Object.ReferenceEquals(receiverValue19, null))
                 {
@@ -927,21 +927,21 @@ global::System.Action<global::AnimationActionTransaction> receiverValue19 = OnRe
                 hasActiveWeaponTx = false;
                 hasPendingWeaponSwitch = false;
                 weaponTx.phase = WeaponTransactionPhase.Completed;
-                // receiverValue20（判空前缓存的里昂动画控制器驱动器）：从驱动组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.HandleWeaponExited(Animator, WeaponActionType, int, bool)。
+                // 判空前缓存的里昂动画控制器驱动器。
 global::LeonAnimatorDriver receiverValue20 = driver;
                 if (!global::System.Object.ReferenceEquals(receiverValue20, null))
                 {
                     receiverValue20.FinalizeWeaponActionLayer();
                 }
 
-                // receiverValue21（判空前缓存的当前里昂动画绑定组件）：从动画绑定组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.HandleWeaponExited(Animator, WeaponActionType, int, bool)。
+                // 判空前缓存的当前里昂动画绑定组件。
 global::LeonAnimRig receiverValue21 = animRig;
                 if (!global::System.Object.ReferenceEquals(receiverValue21, null))
                 {
                     receiverValue21.CompleteWeaponActionIK(GetCurrentWeaponForIK());
                 }
 
-                // receiverValue22（判空前缓存的装备动画已完成时的通知回调）：从装备动画已完成时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.HandleWeaponExited(Animator, WeaponActionType, int, bool)。
+                // 判空前缓存的装备动画已完成时的通知回调。
 global::System.Action<global::AnimationActionTransaction> receiverValue22 = OnEquipAnimationCompleted;
                 if (!global::System.Object.ReferenceEquals(receiverValue22, null))
                 {
@@ -953,7 +953,7 @@ global::System.Action<global::AnimationActionTransaction> receiverValue22 = OnEq
                 if (weaponTx.isWeaponSwitch && weaponTx.weaponActionType == WeaponActionType.KnifeHide)
                 {
                     weaponTx.phase = WeaponTransactionPhase.AwaitingKnifeHideCommit;
-                    // receiverValue23（判空前缓存的小刀过渡已退出时的通知回调）：从小刀过渡已退出时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.HandleWeaponExited(Animator, WeaponActionType, int, bool)。
+                    // 判空前缓存的小刀过渡已退出时的通知回调。
 global::System.Action<global::AnimationActionTransaction> receiverValue23 = OnKnifeTransitionExited;
                     if (!global::System.Object.ReferenceEquals(receiverValue23, null))
                     {
@@ -966,14 +966,14 @@ global::System.Action<global::AnimationActionTransaction> receiverValue23 = OnKn
                 hasActiveWeaponTx = false;
                 hasPendingWeaponSwitch = false;
                 weaponTx.phase = WeaponTransactionPhase.Completed;
-                // receiverValue24（判空前缓存的里昂动画控制器驱动器）：从驱动组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.HandleWeaponExited(Animator, WeaponActionType, int, bool)。
+                // 判空前缓存的里昂动画控制器驱动器。
 global::LeonAnimatorDriver receiverValue24 = driver;
                 if (!global::System.Object.ReferenceEquals(receiverValue24, null))
                 {
                     receiverValue24.FinalizeWeaponActionLayer();
                 }
 
-                // receiverValue25（判空前缓存的小刀过渡已退出时的通知回调）：从小刀过渡已退出时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.HandleWeaponExited(Animator, WeaponActionType, int, bool)。
+                // 判空前缓存的小刀过渡已退出时的通知回调。
 global::System.Action<global::AnimationActionTransaction> receiverValue25 = OnKnifeTransitionExited;
                 if (!global::System.Object.ReferenceEquals(receiverValue25, null))
                 {
@@ -986,7 +986,7 @@ global::System.Action<global::AnimationActionTransaction> receiverValue25 = OnKn
                 hasActiveWeaponTx = false;
                 waitingForWeaponExit = false;
                 hasPendingWeaponSwitch = false;
-                // receiverValue26（判空前缓存的里昂动画控制器驱动器）：从驱动组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.HandleWeaponExited(Animator, WeaponActionType, int, bool)。
+                // 判空前缓存的里昂动画控制器驱动器。
 global::LeonAnimatorDriver receiverValue26 = driver;
                 if (!global::System.Object.ReferenceEquals(receiverValue26, null))
                 {
@@ -995,7 +995,7 @@ global::LeonAnimatorDriver receiverValue26 = driver;
 
                 if (type == WeaponActionType.KnifeTake || type == WeaponActionType.KnifeHide)
                 {
-                    // receiverValue27（判空前缓存的小刀过渡已中断时的通知回调）：从小刀过渡已中断时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.HandleWeaponExited(Animator, WeaponActionType, int, bool)。
+                    // 判空前缓存的小刀过渡已中断时的通知回调。
 global::System.Action<global::AnimationActionTransaction> receiverValue27 = OnKnifeTransitionInterrupted;
                     if (!global::System.Object.ReferenceEquals(receiverValue27, null))
                     {
@@ -1007,7 +1007,7 @@ global::System.Action<global::AnimationActionTransaction> receiverValue27 = OnKn
             default:
                 hasActiveWeaponTx = false;
                 waitingForWeaponExit = false;
-                // receiverValue28（判空前缓存的里昂动画控制器驱动器）：从驱动组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.HandleWeaponExited(Animator, WeaponActionType, int, bool)。
+                // 判空前缓存的里昂动画控制器驱动器。
 global::LeonAnimatorDriver receiverValue28 = driver;
                 if (!global::System.Object.ReferenceEquals(receiverValue28, null))
                 {
@@ -1023,9 +1023,9 @@ global::LeonAnimatorDriver receiverValue28 = driver;
     // ================================================================
     /// <summary>HandleFullBodyEntered 的业务处理入口；本方法直接依赖 Action&lt;AnimationActionTransaction&gt;.Invoke(AnimationActionTransaction)、LeonAnimationActionCoordinator.IsFromThisAnimator(Animator)、LeonAnimationActionCoordinator.IsMeleeAction(FullBodyActionType)、LeonAnimationActionCoordinator.IsQTEAction(FullBodyActionType)、LeonAnimationActionCoordinator.IsTraversalAction(FullBodyActionType)、object.ReferenceEquals(object, object)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） Action&lt;AnimationActionTransaction&gt;.Invoke(AnimationActionTransaction)、LeonAnimationActionCoordinator.IsFromThisAnimator(Animator)、LeonAnimationActionCoordinator.IsMeleeAction(FullBodyActionType)、LeonAnimationActionCoordinator.IsQTEAction(FullBodyActionType)、LeonAnimationActionCoordinator.IsTraversalAction(FullBodyActionType)、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="src">中文含义：当前动画控制器。使用位置：作为 LeonAnimationActionCoordinator.IsFromThisAnimator(Animator) 的参数。</param>
-    /// <param name="type">中文含义：当前全身动作类型。使用位置：作为 LeonAnimationActionCoordinator.IsMeleeAction(FullBodyActionType) 的参数、作为 LeonAnimationActionCoordinator.IsQTEAction(FullBodyActionType) 的参数、作为 LeonAnimationActionCoordinator.IsTraversalAction(FullBodyActionType) 的参数 等共 4 处。</param>
-    /// <param name="seq">中文含义：序号。使用位置：LeonAnimationActionCoordinator.HandleFullBodyEntered(Animator, FullBodyActionType, int)。</param>
+    /// <param name="src">当前动画控制器。</param>
+    /// <param name="type">当前全身动作类型。</param>
+    /// <param name="seq">序号。</param>
     private void HandleFullBodyEntered(Animator src, FullBodyActionType type, int seq)
     {
         if (!IsFromThisAnimator(src))
@@ -1058,7 +1058,7 @@ global::LeonAnimatorDriver receiverValue28 = driver;
         fullBodyTx.entryBound = true;
         if (IsQTEAction(type))
         {
-            // receiverValue29（判空前缓存的配对动作动作进入时的通知回调）：从配对动作动作进入时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.HandleFullBodyEntered(Animator, FullBodyActionType, int)。
+            // 判空前缓存的配对动作动作进入时的通知回调。
 global::System.Action<global::AnimationActionTransaction> receiverValue29 = OnQTEActionEntered;
             if (!global::System.Object.ReferenceEquals(receiverValue29, null))
             {
@@ -1067,7 +1067,7 @@ global::System.Action<global::AnimationActionTransaction> receiverValue29 = OnQT
         }
         else if (IsMeleeAction(type))
         {
-            // receiverValue30（判空前缓存的近战动作已进入时的通知回调）：从近战动作已进入时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.HandleFullBodyEntered(Animator, FullBodyActionType, int)。
+            // 判空前缓存的近战动作已进入时的通知回调。
 global::System.Action<global::AnimationActionTransaction> receiverValue30 = OnMeleeActionEntered;
             if (!global::System.Object.ReferenceEquals(receiverValue30, null))
             {
@@ -1076,7 +1076,7 @@ global::System.Action<global::AnimationActionTransaction> receiverValue30 = OnMe
         }
         else if (IsTraversalAction(type))
         {
-            // receiverValue31（判空前缓存的通行动作进入时的通知回调）：从通行动作进入时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.HandleFullBodyEntered(Animator, FullBodyActionType, int)。
+            // 判空前缓存的通行动作进入时的通知回调。
 global::System.Action<global::AnimationActionTransaction> receiverValue31 = OnTraversalActionEntered;
             if (!global::System.Object.ReferenceEquals(receiverValue31, null))
             {
@@ -1087,9 +1087,9 @@ global::System.Action<global::AnimationActionTransaction> receiverValue31 = OnTr
 
     /// <summary>HandleFullBodyCompleted 的业务处理入口；本方法直接依赖 Action.Invoke()、Action&lt;AnimationActionTransaction&gt;.Invoke(AnimationActionTransaction)、LeonActionMotionDriver.EndDeathMotion()、LeonAnimationActionCoordinator.IsFromThisAnimator(Animator)、LeonAnimationActionCoordinator.IsMeleeAction(FullBodyActionType)、LeonAnimationActionCoordinator.IsQTEAction(FullBodyActionType)、LeonAnimationActionCoordinator.IsTraversalAction(FullBodyActionType) 等共 11 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） Action.Invoke()、Action&lt;AnimationActionTransaction&gt;.Invoke(AnimationActionTransaction)、LeonActionMotionDriver.EndDeathMotion()、LeonAnimationActionCoordinator.IsFromThisAnimator(Animator)、LeonAnimationActionCoordinator.IsMeleeAction(FullBodyActionType)、LeonAnimationActionCoordinator.IsQTEAction(FullBodyActionType)、LeonAnimationActionCoordinator.IsTraversalAction(FullBodyActionType) 等共 11 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="src">中文含义：当前动画控制器。使用位置：作为 LeonAnimationActionCoordinator.IsFromThisAnimator(Animator) 的参数。</param>
-    /// <param name="type">中文含义：当前全身动作类型。使用位置：作为 LeonAnimationActionCoordinator.IsMeleeAction(FullBodyActionType) 的参数、作为 LeonAnimationActionCoordinator.IsQTEAction(FullBodyActionType) 的参数、作为 LeonAnimationActionCoordinator.IsTraversalAction(FullBodyActionType) 的参数 等共 4 处。</param>
-    /// <param name="seq">中文含义：序号。使用位置：LeonAnimationActionCoordinator.HandleFullBodyCompleted(Animator, FullBodyActionType, int)。</param>
+    /// <param name="src">当前动画控制器。</param>
+    /// <param name="type">当前全身动作类型。</param>
+    /// <param name="seq">序号。</param>
     private void HandleFullBodyCompleted(Animator src, FullBodyActionType type, int seq)
     {
         if (!IsFromThisAnimator(src))
@@ -1105,14 +1105,14 @@ global::System.Action<global::AnimationActionTransaction> receiverValue31 = OnTr
             }
 
             deathAnimationCompletionSent = true;
-            // receiverValue32（判空前缓存的动作运动执行器）：从动作运动执行器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.HandleFullBodyCompleted(Animator, FullBodyActionType, int)。
+            // 判空前缓存的动作运动执行器。
 global::LeonActionMotionDriver receiverValue32 = actionMotionDriver;
             if (!global::System.Object.ReferenceEquals(receiverValue32, null))
             {
                 receiverValue32.EndDeathMotion();
             }
 
-            // receiverValue33（判空前缓存的死亡动画已完成时的通知回调）：从死亡动画已完成时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.HandleFullBodyCompleted(Animator, FullBodyActionType, int)。
+            // 判空前缓存的死亡动画已完成时的通知回调。
 global::System.Action receiverValue33 = OnDeathAnimationCompleted;
             if (!global::System.Object.ReferenceEquals(receiverValue33, null))
             {
@@ -1153,7 +1153,7 @@ global::System.Action receiverValue33 = OnDeathAnimationCompleted;
             fullBodyTx.fullBodyPhase = FullBodyTransactionPhase.WaitingForHitExit;
             // 固定顺序：先开始待处理受伤层过渡（与受击开始退出同一帧），
             // 再请求全身受击状态退出，实现图层权重交接。
-            // receiverValue34（判空前缓存的里昂动画控制器驱动器）：从驱动组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.HandleFullBodyCompleted(Animator, FullBodyActionType, int)。
+            // 判空前缓存的里昂动画控制器驱动器。
 global::LeonAnimatorDriver receiverValue34 = // 固定顺序：先开始待处理受伤层过渡（与受击开始退出同一帧），
  // 再请求全身受击状态退出，实现图层权重交接。
             driver;
@@ -1162,7 +1162,7 @@ global::LeonAnimatorDriver receiverValue34 = // 固定顺序：先开始待处�
                 receiverValue34.BeginPendingInjuredTransition();
             }
 
-            // receiverValue35（判空前缓存的里昂动画控制器驱动器）：从驱动组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.HandleFullBodyCompleted(Animator, FullBodyActionType, int)。
+            // 判空前缓存的里昂动画控制器驱动器。
 global::LeonAnimatorDriver receiverValue35 = driver;
             if (!global::System.Object.ReferenceEquals(receiverValue35, null))
             {
@@ -1171,7 +1171,7 @@ global::LeonAnimatorDriver receiverValue35 = driver;
         }
         else if (IsQTEAction(type))
         {
-            // receiverValue36（判空前缓存的配对动作动作完成时的通知回调）：从配对动作动作完成时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.HandleFullBodyCompleted(Animator, FullBodyActionType, int)。
+            // 判空前缓存的配对动作动作完成时的通知回调。
 global::System.Action<global::AnimationActionTransaction> receiverValue36 = OnQTEActionCompleted;
             if (!global::System.Object.ReferenceEquals(receiverValue36, null))
             {
@@ -1180,7 +1180,7 @@ global::System.Action<global::AnimationActionTransaction> receiverValue36 = OnQT
         }
         else if (IsMeleeAction(type))
         {
-            // receiverValue37（判空前缓存的近战动作已完成时的通知回调）：从近战动作已完成时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.HandleFullBodyCompleted(Animator, FullBodyActionType, int)。
+            // 判空前缓存的近战动作已完成时的通知回调。
 global::System.Action<global::AnimationActionTransaction> receiverValue37 = OnMeleeActionCompleted;
             if (!global::System.Object.ReferenceEquals(receiverValue37, null))
             {
@@ -1193,7 +1193,7 @@ global::System.Action<global::AnimationActionTransaction> receiverValue37 = OnMe
             if (type == FullBodyActionType.WindowDropLand || type == FullBodyActionType.WindowClimbThrough ||
                 type == FullBodyActionType.VillageGateOpen)
             {
-                // receiverValue38（判空前缓存的里昂动画控制器驱动器）：从驱动组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.HandleFullBodyCompleted(Animator, FullBodyActionType, int)。
+                // 判空前缓存的里昂动画控制器驱动器。
 global::LeonAnimatorDriver receiverValue38 = driver;
                 if (!global::System.Object.ReferenceEquals(receiverValue38, null))
                 {
@@ -1202,7 +1202,7 @@ global::LeonAnimatorDriver receiverValue38 = driver;
             }
             else
             {
-                // receiverValue39（判空前缓存的里昂动画控制器驱动器）：从驱动组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.HandleFullBodyCompleted(Animator, FullBodyActionType, int)。
+                // 判空前缓存的里昂动画控制器驱动器。
 global::LeonAnimatorDriver receiverValue39 = driver;
                 if (!global::System.Object.ReferenceEquals(receiverValue39, null))
                 {
@@ -1210,7 +1210,7 @@ global::LeonAnimatorDriver receiverValue39 = driver;
                 }
             }
 
-            // receiverValue40（判空前缓存的通行动作完成时的通知回调）：从通行动作完成时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.HandleFullBodyCompleted(Animator, FullBodyActionType, int)。
+            // 判空前缓存的通行动作完成时的通知回调。
 global::System.Action<global::AnimationActionTransaction> receiverValue40 = OnTraversalActionCompleted;
             if (!global::System.Object.ReferenceEquals(receiverValue40, null))
             {
@@ -1221,9 +1221,9 @@ global::System.Action<global::AnimationActionTransaction> receiverValue40 = OnTr
 
     /// <summary>HandleFullBodyInterrupted 的业务处理入口；本方法直接依赖 Action&lt;AnimationActionTransaction&gt;.Invoke(AnimationActionTransaction)、LeonAnimationActionCoordinator.IsFromThisAnimator(Animator)、LeonAnimationActionCoordinator.IsMeleeAction(FullBodyActionType)、LeonAnimationActionCoordinator.IsQTEAction(FullBodyActionType)、LeonAnimationActionCoordinator.IsTraversalAction(FullBodyActionType)、LeonAnimatorDriver.BeginPendingInjuredTransition()、object.ReferenceEquals(object, object)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） Action&lt;AnimationActionTransaction&gt;.Invoke(AnimationActionTransaction)、LeonAnimationActionCoordinator.IsFromThisAnimator(Animator)、LeonAnimationActionCoordinator.IsMeleeAction(FullBodyActionType)、LeonAnimationActionCoordinator.IsQTEAction(FullBodyActionType)、LeonAnimationActionCoordinator.IsTraversalAction(FullBodyActionType)、LeonAnimatorDriver.BeginPendingInjuredTransition()、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="src">中文含义：当前动画控制器。使用位置：作为 LeonAnimationActionCoordinator.IsFromThisAnimator(Animator) 的参数。</param>
-    /// <param name="type">中文含义：当前全身动作类型。使用位置：作为 LeonAnimationActionCoordinator.IsMeleeAction(FullBodyActionType) 的参数、作为 LeonAnimationActionCoordinator.IsQTEAction(FullBodyActionType) 的参数、作为 LeonAnimationActionCoordinator.IsTraversalAction(FullBodyActionType) 的参数 等共 4 处。</param>
-    /// <param name="seq">中文含义：序号。使用位置：LeonAnimationActionCoordinator.HandleFullBodyInterrupted(Animator, FullBodyActionType, int)。</param>
+    /// <param name="src">当前动画控制器。</param>
+    /// <param name="type">当前全身动作类型。</param>
+    /// <param name="seq">序号。</param>
     private void HandleFullBodyInterrupted(Animator src, FullBodyActionType type, int seq)
     {
         if (!IsFromThisAnimator(src) || isDead || !hasActiveFullBodyTx)
@@ -1258,7 +1258,7 @@ global::System.Action<global::AnimationActionTransaction> receiverValue40 = OnTr
         {
             // 受击被意外中断时消费待处理受伤目标，
             // 由其以受击恢复专用时长执行交接，不能永久挂起。
-            // receiverValue41（判空前缓存的里昂动画控制器驱动器）：从驱动组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.HandleFullBodyInterrupted(Animator, FullBodyActionType, int)。
+            // 判空前缓存的里昂动画控制器驱动器。
 global::LeonAnimatorDriver receiverValue41 = // 受击被意外中断时消费待处理受伤目标，
  // 由其以受击恢复专用时长执行交接，不能永久挂起。
             driver;
@@ -1268,7 +1268,7 @@ global::LeonAnimatorDriver receiverValue41 = // 受击被意外中断时消费�
             }
         }
 
-        // receiverValue42（判空前缓存的全身动作中断时的通知回调）：从全身动作中断时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.HandleFullBodyInterrupted(Animator, FullBodyActionType, int)。
+        // 判空前缓存的全身动作中断时的通知回调。
 global::System.Action<global::AnimationActionTransaction> receiverValue42 = OnFullBodyActionInterrupted;
         if (!global::System.Object.ReferenceEquals(receiverValue42, null))
         {
@@ -1277,7 +1277,7 @@ global::System.Action<global::AnimationActionTransaction> receiverValue42 = OnFu
 
         if (IsQTEAction(type))
         {
-            // receiverValue43（判空前缓存的配对动作动作中断时的通知回调）：从配对动作动作中断时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.HandleFullBodyInterrupted(Animator, FullBodyActionType, int)。
+            // 判空前缓存的配对动作动作中断时的通知回调。
 global::System.Action<global::AnimationActionTransaction> receiverValue43 = OnQTEActionInterrupted;
             if (!global::System.Object.ReferenceEquals(receiverValue43, null))
             {
@@ -1286,7 +1286,7 @@ global::System.Action<global::AnimationActionTransaction> receiverValue43 = OnQT
         }
         else if (IsMeleeAction(type))
         {
-            // receiverValue44（判空前缓存的近战动作已中断时的通知回调）：从近战动作已中断时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.HandleFullBodyInterrupted(Animator, FullBodyActionType, int)。
+            // 判空前缓存的近战动作已中断时的通知回调。
 global::System.Action<global::AnimationActionTransaction> receiverValue44 = OnMeleeActionInterrupted;
             if (!global::System.Object.ReferenceEquals(receiverValue44, null))
             {
@@ -1295,7 +1295,7 @@ global::System.Action<global::AnimationActionTransaction> receiverValue44 = OnMe
         }
         else if (IsTraversalAction(type))
         {
-            // receiverValue45（判空前缓存的通行动作中断时的通知回调）：从通行动作中断时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.HandleFullBodyInterrupted(Animator, FullBodyActionType, int)。
+            // 判空前缓存的通行动作中断时的通知回调。
 global::System.Action<global::AnimationActionTransaction> receiverValue45 = OnTraversalActionInterrupted;
             if (!global::System.Object.ReferenceEquals(receiverValue45, null))
             {
@@ -1306,9 +1306,9 @@ global::System.Action<global::AnimationActionTransaction> receiverValue45 = OnTr
 
     /// <summary>HandleFullBodyExited 的业务处理入口；本方法直接依赖 Action&lt;AnimationActionTransaction&gt;.Invoke(AnimationActionTransaction)、LeonActionMotionDriver.EndHitMotion()、LeonAnimationActionCoordinator.IsFromThisAnimator(Animator)、LeonAnimationActionCoordinator.IsKnifeAction(FullBodyActionType)、LeonAnimationActionCoordinator.IsMeleeAction(FullBodyActionType)、LeonAnimationActionCoordinator.IsQTEAction(FullBodyActionType)、LeonAnimationActionCoordinator.IsTraversalAction(FullBodyActionType) 等共 13 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） Action&lt;AnimationActionTransaction&gt;.Invoke(AnimationActionTransaction)、LeonActionMotionDriver.EndHitMotion()、LeonAnimationActionCoordinator.IsFromThisAnimator(Animator)、LeonAnimationActionCoordinator.IsKnifeAction(FullBodyActionType)、LeonAnimationActionCoordinator.IsMeleeAction(FullBodyActionType)、LeonAnimationActionCoordinator.IsQTEAction(FullBodyActionType)、LeonAnimationActionCoordinator.IsTraversalAction(FullBodyActionType) 等共 13 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="src">中文含义：当前动画控制器。使用位置：作为 LeonAnimationActionCoordinator.IsFromThisAnimator(Animator) 的参数。</param>
-    /// <param name="type">中文含义：当前全身动作类型。使用位置：作为 LeonAnimationActionCoordinator.IsKnifeAction(FullBodyActionType) 的参数、作为 LeonAnimationActionCoordinator.IsMeleeAction(FullBodyActionType) 的参数、作为 LeonAnimationActionCoordinator.IsQTEAction(FullBodyActionType) 的参数 等共 5 处。</param>
-    /// <param name="seq">中文含义：序号。使用位置：LeonAnimationActionCoordinator.HandleFullBodyExited(Animator, FullBodyActionType, int, bool)。</param>
+    /// <param name="src">当前动画控制器。</param>
+    /// <param name="type">当前全身动作类型。</param>
+    /// <param name="seq">序号。</param>
     /// <param name="wasCompleted">中文含义：之前是否已完成。</param>
     private void HandleFullBodyExited(Animator src, FullBodyActionType type, int seq, bool wasCompleted)
     {
@@ -1336,21 +1336,21 @@ global::System.Action<global::AnimationActionTransaction> receiverValue45 = OnTr
         {
             hasActiveFullBodyTx = false;
             fullBodyTx.fullBodyPhase = FullBodyTransactionPhase.Completed;
-            // receiverValue46（判空前缓存的里昂动画控制器驱动器）：从驱动组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.HandleFullBodyExited(Animator, FullBodyActionType, int, bool)。
+            // 判空前缓存的里昂动画控制器驱动器。
 global::LeonAnimatorDriver receiverValue46 = driver;
             if (!global::System.Object.ReferenceEquals(receiverValue46, null))
             {
                 receiverValue46.FinalizeFullBodyActionLayer();
             }
 
-            // receiverValue47（判空前缓存的动作运动执行器）：从动作运动执行器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.HandleFullBodyExited(Animator, FullBodyActionType, int, bool)。
+            // 判空前缓存的动作运动执行器。
 global::LeonActionMotionDriver receiverValue47 = actionMotionDriver;
             if (!global::System.Object.ReferenceEquals(receiverValue47, null))
             {
                 receiverValue47.EndHitMotion();
             }
 
-            // receiverValue48（判空前缓存的命中动画已完成时的通知回调）：从命中动画已完成时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.HandleFullBodyExited(Animator, FullBodyActionType, int, bool)。
+            // 判空前缓存的命中动画已完成时的通知回调。
 global::System.Action<global::AnimationActionTransaction> receiverValue48 = OnHitAnimationCompleted;
             if (!global::System.Object.ReferenceEquals(receiverValue48, null))
             {
@@ -1369,7 +1369,7 @@ global::System.Action<global::AnimationActionTransaction> receiverValue48 = OnHi
         if (IsQTEAction(type) && (fullBodyTx.fullBodyPhase == FullBodyTransactionPhase.WaitingForQTEExit || fullBodyTx.fullBodyPhase == FullBodyTransactionPhase.Cancelled))
         {
             hasActiveFullBodyTx = false;
-            // assignmentReceiver49（赋值前保存的目标动画动作事务）：按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：LeonAnimationActionCoordinator.HandleFullBodyExited(Animator, FullBodyActionType, int, bool)。
+            // 赋值前保存的目标动画动作事务。
 ref global::AnimationActionTransaction assignmentReceiver49 = ref fullBodyTx;
             if (fullBodyTx.cancelled)
             {
@@ -1380,7 +1380,7 @@ ref global::AnimationActionTransaction assignmentReceiver49 = ref fullBodyTx;
                 assignmentReceiver49.fullBodyPhase = FullBodyTransactionPhase.Completed;
             }
 
-            // receiverValue51（判空前缓存的里昂动画控制器驱动器）：从驱动组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.HandleFullBodyExited(Animator, FullBodyActionType, int, bool)。
+            // 判空前缓存的里昂动画控制器驱动器。
 global::LeonAnimatorDriver receiverValue51 = driver;
             if (!global::System.Object.ReferenceEquals(receiverValue51, null))
             {
@@ -1388,7 +1388,7 @@ global::LeonAnimatorDriver receiverValue51 = driver;
             }
 
             RestoreQTEWeaponVisual(fullBodyTx.qteSessionId);
-            // receiverValue52（判空前缓存的配对动作动作退出时的通知回调）：从配对动作动作退出时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.HandleFullBodyExited(Animator, FullBodyActionType, int, bool)。
+            // 判空前缓存的配对动作动作退出时的通知回调。
 global::System.Action<global::AnimationActionTransaction> receiverValue52 = OnQTEActionExited;
             if (!global::System.Object.ReferenceEquals(receiverValue52, null))
             {
@@ -1401,7 +1401,7 @@ global::System.Action<global::AnimationActionTransaction> receiverValue52 = OnQT
         if (IsMeleeAction(type) && (fullBodyTx.fullBodyPhase == FullBodyTransactionPhase.WaitingForMeleeExit || fullBodyTx.fullBodyPhase == FullBodyTransactionPhase.Cancelled))
         {
             hasActiveFullBodyTx = false;
-            // assignmentReceiver53（赋值前保存的目标动画动作事务）：按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：LeonAnimationActionCoordinator.HandleFullBodyExited(Animator, FullBodyActionType, int, bool)。
+            // 赋值前保存的目标动画动作事务。
 ref global::AnimationActionTransaction assignmentReceiver53 = ref fullBodyTx;
             if (fullBodyTx.cancelled)
             {
@@ -1412,7 +1412,7 @@ ref global::AnimationActionTransaction assignmentReceiver53 = ref fullBodyTx;
                 assignmentReceiver53.fullBodyPhase = FullBodyTransactionPhase.Completed;
             }
 
-            // receiverValue55（判空前缓存的里昂动画控制器驱动器）：从驱动组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.HandleFullBodyExited(Animator, FullBodyActionType, int, bool)。
+            // 判空前缓存的里昂动画控制器驱动器。
 global::LeonAnimatorDriver receiverValue55 = driver;
             if (!global::System.Object.ReferenceEquals(receiverValue55, null))
             {
@@ -1421,7 +1421,7 @@ global::LeonAnimatorDriver receiverValue55 = driver;
 
             if (IsKnifeAction(type))
             {
-                // receiverValue56（判空前缓存的当前里昂动画绑定组件）：从动画绑定组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.HandleFullBodyExited(Animator, FullBodyActionType, int, bool)。
+                // 判空前缓存的当前里昂动画绑定组件。
 global::LeonAnimRig receiverValue56 = animRig;
                 if (!global::System.Object.ReferenceEquals(receiverValue56, null))
                 {
@@ -1429,7 +1429,7 @@ global::LeonAnimRig receiverValue56 = animRig;
                 }
             }
 
-            // receiverValue57（判空前缓存的近战动作已退出时的通知回调）：从近战动作已退出时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.HandleFullBodyExited(Animator, FullBodyActionType, int, bool)。
+            // 判空前缓存的近战动作已退出时的通知回调。
 global::System.Action<global::AnimationActionTransaction> receiverValue57 = OnMeleeActionExited;
             if (!global::System.Object.ReferenceEquals(receiverValue57, null))
             {
@@ -1442,7 +1442,7 @@ global::System.Action<global::AnimationActionTransaction> receiverValue57 = OnMe
         if (IsTraversalAction(type) && (fullBodyTx.fullBodyPhase == FullBodyTransactionPhase.WaitingForTraversalExit || fullBodyTx.fullBodyPhase == FullBodyTransactionPhase.Cancelled))
         {
             hasActiveFullBodyTx = false;
-            // assignmentReceiver58（赋值前保存的目标动画动作事务）：按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：LeonAnimationActionCoordinator.HandleFullBodyExited(Animator, FullBodyActionType, int, bool)。
+            // 赋值前保存的目标动画动作事务。
 ref global::AnimationActionTransaction assignmentReceiver58 = ref fullBodyTx;
             if (fullBodyTx.cancelled)
             {
@@ -1453,21 +1453,21 @@ ref global::AnimationActionTransaction assignmentReceiver58 = ref fullBodyTx;
                 assignmentReceiver58.fullBodyPhase = FullBodyTransactionPhase.Completed;
             }
 
-            // receiverValue60（判空前缓存的里昂动画控制器驱动器）：从驱动组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.HandleFullBodyExited(Animator, FullBodyActionType, int, bool)。
+            // 判空前缓存的里昂动画控制器驱动器。
 global::LeonAnimatorDriver receiverValue60 = driver;
             if (!global::System.Object.ReferenceEquals(receiverValue60, null))
             {
                 receiverValue60.ReleaseTraversalLandingBasePose();
             }
 
-            // receiverValue61（判空前缓存的里昂动画控制器驱动器）：从驱动组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.HandleFullBodyExited(Animator, FullBodyActionType, int, bool)。
+            // 判空前缓存的里昂动画控制器驱动器。
 global::LeonAnimatorDriver receiverValue61 = driver;
             if (!global::System.Object.ReferenceEquals(receiverValue61, null))
             {
                 receiverValue61.FinalizeFullBodyActionLayer();
             }
 
-            // receiverValue62（判空前缓存的通行动作退出时的通知回调）：从通行动作退出时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.HandleFullBodyExited(Animator, FullBodyActionType, int, bool)。
+            // 判空前缓存的通行动作退出时的通知回调。
 global::System.Action<global::AnimationActionTransaction> receiverValue62 = OnTraversalActionExited;
             if (!global::System.Object.ReferenceEquals(receiverValue62, null))
             {
@@ -1478,8 +1478,8 @@ global::System.Action<global::AnimationActionTransaction> receiverValue62 = OnTr
 
     /// <summary>HandleMeleeHitWindow 的业务处理入口；本方法直接依赖 Action&lt;AnimationActionTransaction&gt;.Invoke(AnimationActionTransaction)、LeonAnimationActionCoordinator.IsFromThisAnimator(Animator)、LeonAnimationActionCoordinator.IsMeleeAttackAction(FullBodyActionType)、object.ReferenceEquals(object, object)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） Action&lt;AnimationActionTransaction&gt;.Invoke(AnimationActionTransaction)、LeonAnimationActionCoordinator.IsFromThisAnimator(Animator)、LeonAnimationActionCoordinator.IsMeleeAttackAction(FullBodyActionType)、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="source">中文含义：来源动画控制器。使用位置：作为 LeonAnimationActionCoordinator.IsFromThisAnimator(Animator) 的参数。</param>
-    /// <param name="actionType">中文含义：动作类型。使用位置：作为 LeonAnimationActionCoordinator.IsMeleeAttackAction(FullBodyActionType) 的参数、LeonAnimationActionCoordinator.HandleMeleeHitWindow(Animator, FullBodyActionType)。</param>
+    /// <param name="source">来源动画控制器。</param>
+    /// <param name="actionType">动作类型。</param>
     private void HandleMeleeHitWindow(Animator source, FullBodyActionType actionType)
     {
         if (!IsFromThisAnimator(source) || isDead || !hasActiveFullBodyTx || fullBodyTx.cancelled || !fullBodyTx.entryBound || fullBodyTx.fullBodyActionType != actionType || !IsMeleeAttackAction(actionType))
@@ -1487,7 +1487,7 @@ global::System.Action<global::AnimationActionTransaction> receiverValue62 = OnTr
             return;
         }
 
-        // receiverValue63（判空前缓存的近战命中窗口时的通知回调）：从近战命中窗口时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.HandleMeleeHitWindow(Animator, FullBodyActionType)。
+        // 判空前缓存的近战命中窗口时的通知回调。
 global::System.Action<global::AnimationActionTransaction> receiverValue63 = OnMeleeHitWindow;
         if (!global::System.Object.ReferenceEquals(receiverValue63, null))
         {
@@ -1498,21 +1498,21 @@ global::System.Action<global::AnimationActionTransaction> receiverValue63 = OnMe
     // ================================================================
     // 请求接口
     // ================================================================
-    /// <summary>中文含义：玩家租用版本。使用位置：作为 ObjectIdentity.ObjectIdentity(int, long) 的参数、LeonAnimationActionCoordinator.OnEnable()。</summary>
+    /// <summary>玩家租用版本。</summary>
     private long playerLeaseVersion;
-    /// <summary>中文含义：玩家身份标识。使用位置：作为 ActionHandle.ActionHandle(ObjectIdentity, long) 的参数、作为 RequestContext.RequestContext(string, ObjectIdentity, ObjectIdentity, long) 的参数、LeonAnimationActionCoordinator.RequestWeaponAction(ActionRequest, WeaponType, WeaponType)。</summary>
+    /// <summary>玩家身份标识。</summary>
     public ObjectIdentity PlayerIdentity => new ObjectIdentity(GetInstanceID(), playerLeaseVersion);
 
     /// <summary>CreateActionRequest 的业务处理入口；本方法直接依赖 ActionRequest.ActionRequest(RequestContext, ActionKind, ActionHandle)、RequestContext.RequestContext(string, ObjectIdentity, ObjectIdentity, long)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonCombat.HandleReload()、LeonWeaponHandler.SwitchTo(WeaponType)；下游（含内部回调体） ActionRequest.ActionRequest(RequestContext, ActionKind, ActionHandle)、RequestContext.RequestContext(string, ObjectIdentity, ObjectIdentity, long)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="source">中文含义：来源。使用位置：作为 RequestContext.RequestContext(string, ObjectIdentity, ObjectIdentity, long) 的参数。</param>
-    /// <param name="action">中文含义：动作。使用位置：作为 ActionRequest.ActionRequest(RequestContext, ActionKind, ActionHandle) 的参数。</param>
+    /// <param name="source">来源。</param>
+    /// <param name="action">动作。</param>
     public ActionRequest CreateActionRequest(string source, ActionKind action) => new ActionRequest(new RequestContext(source, PlayerIdentity, PlayerIdentity, nextTxId), action);
     /// <summary>RequestWeaponAction 的业务处理入口；本方法直接依赖 ActionHandle.ActionHandle(ObjectIdentity, long)、ActionResult.Accept(ActionHandle)、ActionResult.Reject(RejectionReason)、LeonAnimationActionCoordinator.CheckActionConflict(ActionKind)、LeonAnimationActionCoordinator.RequestReload(WeaponType)、LeonAnimationActionCoordinator.RequestWeaponSwitch(WeaponType, WeaponType)、LeonAnimationActionCoordinator.ValidateDriver()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonCombat.HandleReload()、LeonWeaponHandler.SwitchTo(WeaponType)；下游（含内部回调体） ActionHandle.ActionHandle(ObjectIdentity, long)、ActionResult.Accept(ActionHandle)、ActionResult.Reject(RejectionReason)、LeonAnimationActionCoordinator.CheckActionConflict(ActionKind)、LeonAnimationActionCoordinator.RequestReload(WeaponType)、LeonAnimationActionCoordinator.RequestWeaponSwitch(WeaponType, WeaponType)、LeonAnimationActionCoordinator.ValidateDriver()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="request">中文含义：请求。使用位置：作为 LeonAnimationActionCoordinator.CheckActionConflict(ActionKind) 的参数、LeonAnimationActionCoordinator.RequestWeaponAction(ActionRequest, WeaponType, WeaponType)。</param>
-    /// <param name="currentWeapon">中文含义：当前武器。使用位置：作为 LeonAnimationActionCoordinator.RequestReload(WeaponType) 的参数、作为 LeonAnimationActionCoordinator.RequestWeaponSwitch(WeaponType, WeaponType) 的参数。</param>
-    /// <param name="targetWeapon">中文含义：目标武器。使用位置：作为 LeonAnimationActionCoordinator.RequestWeaponSwitch(WeaponType, WeaponType) 的参数。</param>
+    /// <param name="request">请求。</param>
+    /// <param name="currentWeapon">当前武器。</param>
+    /// <param name="targetWeapon">目标武器。</param>
     public ActionResult RequestWeaponAction(ActionRequest request, WeaponType currentWeapon, WeaponType targetWeapon = WeaponType.Pistol)
     {
         if (!request.Context.Valid || request.Context.Target != PlayerIdentity)
@@ -1525,7 +1525,7 @@ global::System.Action<global::AnimationActionTransaction> receiverValue63 = OnMe
             return ActionResult.Reject(RejectionReason.ParameterInvalid);
         }
 
-        // reason（原因）：保存 LeonAnimationActionCoordinator.CheckActionConflict(ActionKind) 的返回结果，供当前步骤使用。使用位置：作为 ActionResult.Reject(RejectionReason) 的参数、LeonAnimationActionCoordinator.RequestWeaponAction(ActionRequest, WeaponType, WeaponType)。
+        // 原因。
 var reason = CheckActionConflict(request.Action);
         if (reason != RejectionReason.None)
         {
@@ -1537,7 +1537,7 @@ var reason = CheckActionConflict(request.Action);
             return ActionResult.Reject(RejectionReason.NotYetReady);
         }
 
-        // accept（是否接受）：使用位置：LeonAnimationActionCoordinator.RequestWeaponAction(ActionRequest, WeaponType, WeaponType)。
+        // 是否接受。
 bool accept;
         if (request.Action == ActionKind.Reload)
         {
@@ -1560,11 +1560,11 @@ bool accept;
 
     /// <summary>CheckActionConflict 的业务处理入口；本方法直接依赖 LeonAnimationActionCoordinator.IsMeleeAction(FullBodyActionType)、PlayerActionConflictRules.Check(ActionKind, bool, bool, bool, bool, bool, bool)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonAnimationActionCoordinator.RequestAutomaticDrop()、LeonAnimationActionCoordinator.RequestHit(LeonHitDirection)、LeonAnimationActionCoordinator.RequestIndependentKnifeTransaction()、LeonAnimationActionCoordinator.RequestMeleeAction(FullBodyActionType, int)、LeonAnimationActionCoordinator.RequestQTE(int) 等共 9 处；下游（含内部回调体） LeonAnimationActionCoordinator.IsMeleeAction(FullBodyActionType)、PlayerActionConflictRules.Check(ActionKind, bool, bool, bool, bool, bool, bool)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="request">中文含义：请求。使用位置：作为 PlayerActionConflictRules.Check(ActionKind, bool, bool, bool, bool, bool, bool) 的参数。</param>
+    /// <param name="request">请求。</param>
     private RejectionReason CheckActionConflict(ActionKind request) => PlayerActionConflictRules.Check(request, isDead, hasActiveWeaponTx, hasActiveFullBodyTx, IsMeleeAction(fullBodyTx.fullBodyActionType), waitingForWeaponExit, hasPendingWeaponSwitch);
     /// <summary>RequestReload 的业务处理入口；本方法直接依赖 AnimationActionTransaction.AnimationActionTransaction()、LeonAnimationActionCoordinator.CheckActionConflict(ActionKind)、LeonAnimationActionCoordinator.ResetVisualMarkers(int)、LeonAnimationActionCoordinator.ValidateDriver()、LeonAnimatorDriver.BeginWeaponAction(WeaponActionType)、LeonAnimRig.BeginReloadIK(WeaponType)、object.ReferenceEquals(object, object)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonAnimationActionCoordinator.RequestWeaponAction(ActionRequest, WeaponType, WeaponType)；下游（含内部回调体） AnimationActionTransaction.AnimationActionTransaction()、LeonAnimationActionCoordinator.CheckActionConflict(ActionKind)、LeonAnimationActionCoordinator.ResetVisualMarkers(int)、LeonAnimationActionCoordinator.ValidateDriver()、LeonAnimatorDriver.BeginWeaponAction(WeaponActionType)、LeonAnimRig.BeginReloadIK(WeaponType)、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="currentWeaponType">中文含义：当前武器类型。使用位置：作为 LeonAnimRig.BeginReloadIK(WeaponType) 的参数、LeonAnimationActionCoordinator.RequestReload(WeaponType)。</param>
+    /// <param name="currentWeaponType">当前武器类型。</param>
     public bool RequestReload(WeaponType currentWeaponType)
     {
         if (!ValidateDriver() || CheckActionConflict(ActionKind.Reload) != RejectionReason.None)
@@ -1583,7 +1583,7 @@ bool accept;
         ResetVisualMarkers(weaponTx.transactionId);
         driver.BeginWeaponAction(WeaponActionType.Reload);
         BeginNativeW870Reload();
-        // receiverValue66（判空前缓存的当前里昂动画绑定组件）：从动画绑定组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.RequestReload(WeaponType)。
+        // 判空前缓存的当前里昂动画绑定组件。
 global::LeonAnimRig receiverValue66 = animRig;
         if (!global::System.Object.ReferenceEquals(receiverValue66, null))
         {
@@ -1595,7 +1595,7 @@ global::LeonAnimRig receiverValue66 = animRig;
 
     /// <summary>CompleteReloadAfterBusinessCommit 的业务处理入口；本方法直接依赖 LeonAnimatorDriver.EndWeaponAction()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonCombat.OnReloadAnimCompleted(AnimationActionTransaction)、LeonCombat.TryCompleteShotgunShellReload(int)；下游（含内部回调体） LeonAnimatorDriver.EndWeaponAction()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="transactionId">中文含义：事务编号。使用位置：LeonAnimationActionCoordinator.CompleteReloadAfterBusinessCommit(int)。</param>
+    /// <param name="transactionId">事务编号。</param>
     public bool CompleteReloadAfterBusinessCommit(int transactionId)
     {
         if (isDead)
@@ -1636,8 +1636,8 @@ global::LeonAnimRig receiverValue66 = animRig;
 
     /// <summary>RequestWeaponSwitch 的业务处理入口；本方法直接依赖 AnimationActionTransaction.AnimationActionTransaction()、LeonAnimationActionCoordinator.CheckActionConflict(ActionKind)、LeonAnimationActionCoordinator.IsGunWeapon(WeaponType)、LeonAnimationActionCoordinator.ResetVisualMarkers(int)、LeonAnimationActionCoordinator.ValidateDriver()、LeonAnimatorDriver.BeginWeaponAction(WeaponActionType)、LeonAnimatorDriver.PrepareInjuredWeaponSwitch(WeaponType) 等共 11 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonAnimationActionCoordinator.RequestWeaponAction(ActionRequest, WeaponType, WeaponType)；下游（含内部回调体） AnimationActionTransaction.AnimationActionTransaction()、LeonAnimationActionCoordinator.CheckActionConflict(ActionKind)、LeonAnimationActionCoordinator.IsGunWeapon(WeaponType)、LeonAnimationActionCoordinator.ResetVisualMarkers(int)、LeonAnimationActionCoordinator.ValidateDriver()、LeonAnimatorDriver.BeginWeaponAction(WeaponActionType)、LeonAnimatorDriver.PrepareInjuredWeaponSwitch(WeaponType) 等共 11 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="currentWeapon">中文含义：当前武器。使用位置：作为 LeonAnimationActionCoordinator.IsGunWeapon(WeaponType) 的参数、作为 LeonAnimRig.BeginWeaponSwitchIK(WeaponType, WeaponType) 的参数、LeonAnimationActionCoordinator.RequestWeaponSwitch(WeaponType, WeaponType)。</param>
-    /// <param name="targetWeapon">中文含义：目标武器。使用位置：作为 LeonAnimationActionCoordinator.IsGunWeapon(WeaponType) 的参数、作为 LeonAnimatorDriver.PrepareInjuredWeaponSwitch(WeaponType) 的参数、作为 LeonAnimRig.BeginWeaponSwitchIK(WeaponType, WeaponType) 的参数 等共 4 处。</param>
+    /// <param name="currentWeapon">当前武器。</param>
+    /// <param name="targetWeapon">目标武器。</param>
     public bool RequestWeaponSwitch(WeaponType currentWeapon, WeaponType targetWeapon)
     {
         if (!ValidateDriver() || CheckActionConflict(ActionKind.SwitchWeapon) != RejectionReason.None)
@@ -1645,9 +1645,9 @@ global::LeonAnimRig receiverValue66 = animRig;
             return false;
         }
 
-        // currentIsGun（当前是否枪械）：保存 LeonAnimationActionCoordinator.IsGunWeapon(WeaponType) 的返回结果，供当前步骤使用。使用位置：LeonAnimationActionCoordinator.RequestWeaponSwitch(WeaponType, WeaponType)。
+        // 当前是否枪械。
 bool currentIsGun = IsGunWeapon(currentWeapon);
-        // targetIsGun（目标是否枪械）：保存 LeonAnimationActionCoordinator.IsGunWeapon(WeaponType) 的返回结果，供当前步骤使用。使用位置：LeonAnimationActionCoordinator.RequestWeaponSwitch(WeaponType, WeaponType)。
+        // 目标是否枪械。
 bool targetIsGun = IsGunWeapon(targetWeapon);
         if (!currentIsGun && currentWeapon != WeaponType.Knife)
         {
@@ -1668,7 +1668,7 @@ bool targetIsGun = IsGunWeapon(targetWeapon);
         hasPendingWeaponSwitch = true;
         // 请求切枪只记录目标受伤显示模式，Holster 期间保持旧模式
         driver.PrepareInjuredWeaponSwitch(targetWeapon);
-        // createdValue67（本次新建的动画动作事务）：保存本次创建实例，按原先顺序完成逐项初始化后交给后续使用方。使用位置：LeonAnimationActionCoordinator.RequestWeaponSwitch(WeaponType, WeaponType)。
+        // 本次新建的动画动作事务。
 global::AnimationActionTransaction createdValue67 = new AnimationActionTransaction();
         createdValue67.transactionId = nextTxId++;
         if (currentWeapon == WeaponType.Knife)
@@ -1690,7 +1690,7 @@ global::AnimationActionTransaction createdValue67 = new AnimationActionTransacti
         driver.BeginWeaponAction(weaponTx.weaponActionType);
         if (currentIsGun)
         {
-            // receiverValue69（判空前缓存的当前里昂动画绑定组件）：从动画绑定组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.RequestWeaponSwitch(WeaponType, WeaponType)。
+            // 判空前缓存的当前里昂动画绑定组件。
 global::LeonAnimRig receiverValue69 = animRig;
             if (!global::System.Object.ReferenceEquals(receiverValue69, null))
             {
@@ -1700,7 +1700,7 @@ global::LeonAnimRig receiverValue69 = animRig;
         else
         {
             driver.SetKnifeMode(false);
-            // receiverValue70（判空前缓存的当前里昂动画绑定组件）：从动画绑定组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.RequestWeaponSwitch(WeaponType, WeaponType)。
+            // 判空前缓存的当前里昂动画绑定组件。
 global::LeonAnimRig receiverValue70 = animRig;
             if (!global::System.Object.ReferenceEquals(receiverValue70, null))
             {
@@ -1713,7 +1713,7 @@ global::LeonAnimRig receiverValue70 = animRig;
 
     /// <summary>ContinueKnifeTakeAfterWeaponCommit 的业务处理入口；本方法直接依赖 LeonAnimationActionCoordinator.ValidateDriver()、LeonAnimatorDriver.BeginWeaponAction(WeaponActionType)、LeonAnimatorDriver.CommitInjuredWeaponSwitchPresentation(WeaponType)、LeonAnimatorDriver.EnsureWeaponActionLayerFullWeight()、LeonAnimatorDriver.SetKnifeMode(bool)、LeonAnimRig.BeginKnifeEquipIK()、object.ReferenceEquals(object, object)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonWeaponHandler.OnHolsterAnimCompleted(AnimationActionTransaction)；下游（含内部回调体） LeonAnimationActionCoordinator.ValidateDriver()、LeonAnimatorDriver.BeginWeaponAction(WeaponActionType)、LeonAnimatorDriver.CommitInjuredWeaponSwitchPresentation(WeaponType)、LeonAnimatorDriver.EnsureWeaponActionLayerFullWeight()、LeonAnimatorDriver.SetKnifeMode(bool)、LeonAnimRig.BeginKnifeEquipIK()、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="transactionId">中文含义：事务编号。使用位置：LeonAnimationActionCoordinator.ContinueKnifeTakeAfterWeaponCommit(int)。</param>
+    /// <param name="transactionId">事务编号。</param>
     public bool ContinueKnifeTakeAfterWeaponCommit(int transactionId)
     {
         if (!ValidateDriver() || isDead)
@@ -1749,7 +1749,7 @@ global::LeonAnimRig receiverValue70 = animRig;
         driver.SetKnifeMode(true);
         // 同帧立即切换两个受伤层（小刀 → 全身受伤表演）
         driver.CommitInjuredWeaponSwitchPresentation(WeaponType.Knife);
-        // receiverValue71（判空前缓存的当前里昂动画绑定组件）：从动画绑定组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.ContinueKnifeTakeAfterWeaponCommit(int)。
+        // 判空前缓存的当前里昂动画绑定组件。
 global::LeonAnimRig receiverValue71 = animRig;
         if (!global::System.Object.ReferenceEquals(receiverValue71, null))
         {
@@ -1762,7 +1762,7 @@ global::LeonAnimRig receiverValue71 = animRig;
 
     /// <summary>ContinueEquipAfterKnifeHide 的业务处理入口；本方法直接依赖 LeonAnimationActionCoordinator.IsGunWeapon(WeaponType)、LeonAnimationActionCoordinator.ValidateDriver()、LeonAnimatorDriver.CommitInjuredWeaponSwitchPresentation(WeaponType)、LeonAnimatorDriver.EnsureWeaponActionLayerFullWeight()、LeonAnimatorDriver.SetWeaponType(WeaponType)、LeonAnimatorDriver.TransitionToEquip()、LeonAnimRig.CommitWeaponSwitchIK(WeaponType) 等共 8 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonWeaponHandler.OnKnifeTransitionExited(AnimationActionTransaction)；下游（含内部回调体） LeonAnimationActionCoordinator.IsGunWeapon(WeaponType)、LeonAnimationActionCoordinator.ValidateDriver()、LeonAnimatorDriver.CommitInjuredWeaponSwitchPresentation(WeaponType)、LeonAnimatorDriver.EnsureWeaponActionLayerFullWeight()、LeonAnimatorDriver.SetWeaponType(WeaponType)、LeonAnimatorDriver.TransitionToEquip()、LeonAnimRig.CommitWeaponSwitchIK(WeaponType) 等共 8 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="transactionId">中文含义：事务编号。使用位置：LeonAnimationActionCoordinator.ContinueEquipAfterKnifeHide(int)。</param>
+    /// <param name="transactionId">事务编号。</param>
     public bool ContinueEquipAfterKnifeHide(int transactionId)
     {
         if (!ValidateDriver() || isDead)
@@ -1802,7 +1802,7 @@ global::LeonAnimRig receiverValue71 = animRig;
         driver.SetWeaponType(pendingWeaponType);
         // 同帧立即切换两个受伤层
         driver.CommitInjuredWeaponSwitchPresentation(pendingWeaponType);
-        // receiverValue72（判空前缓存的当前里昂动画绑定组件）：从动画绑定组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.ContinueEquipAfterKnifeHide(int)。
+        // 判空前缓存的当前里昂动画绑定组件。
 global::LeonAnimRig receiverValue72 = animRig;
         if (!global::System.Object.ReferenceEquals(receiverValue72, null))
         {
@@ -1815,7 +1815,7 @@ global::LeonAnimRig receiverValue72 = animRig;
 
     /// <summary>ContinueEquipAfterWeaponCommit 的业务处理入口；本方法直接依赖 LeonAnimationActionCoordinator.IsGunWeapon(WeaponType)、LeonAnimationActionCoordinator.ValidateDriver()、LeonAnimatorDriver.CommitInjuredWeaponSwitchPresentation(WeaponType)、LeonAnimatorDriver.EnsureWeaponActionLayerFullWeight()、LeonAnimatorDriver.SetWeaponType(WeaponType)、LeonAnimatorDriver.TransitionToEquip()、LeonAnimRig.CommitWeaponSwitchIK(WeaponType) 等共 8 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonWeaponHandler.OnHolsterAnimCompleted(AnimationActionTransaction)；下游（含内部回调体） LeonAnimationActionCoordinator.IsGunWeapon(WeaponType)、LeonAnimationActionCoordinator.ValidateDriver()、LeonAnimatorDriver.CommitInjuredWeaponSwitchPresentation(WeaponType)、LeonAnimatorDriver.EnsureWeaponActionLayerFullWeight()、LeonAnimatorDriver.SetWeaponType(WeaponType)、LeonAnimatorDriver.TransitionToEquip()、LeonAnimRig.CommitWeaponSwitchIK(WeaponType) 等共 8 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="transactionId">中文含义：事务编号。使用位置：LeonAnimationActionCoordinator.ContinueEquipAfterWeaponCommit(int)。</param>
+    /// <param name="transactionId">事务编号。</param>
     public bool ContinueEquipAfterWeaponCommit(int transactionId)
     {
         if (!ValidateDriver() || isDead)
@@ -1863,7 +1863,7 @@ global::LeonAnimRig receiverValue72 = animRig;
         driver.SetWeaponType(pendingWeaponType);
         // 10. 同帧立即切换两个受伤层（不使用混合）
         driver.CommitInjuredWeaponSwitchPresentation(pendingWeaponType);
-        // receiverValue73（判空前缓存的当前里昂动画绑定组件）：从动画绑定组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.ContinueEquipAfterWeaponCommit(int)。
+        // 判空前缓存的当前里昂动画绑定组件。
 global::LeonAnimRig receiverValue73 = animRig;
         if (!global::System.Object.ReferenceEquals(receiverValue73, null))
         {
@@ -1877,7 +1877,7 @@ global::LeonAnimRig receiverValue73 = animRig;
 
     /// <summary>RequestHit 的业务处理入口；本方法直接依赖 AnimationActionTransaction.AnimationActionTransaction()、LeonActionMotionDriver.BeginHitMotion()、LeonAnimationActionCoordinator.CheckActionConflict(ActionKind)、LeonAnimationActionCoordinator.InterruptWeaponTransactionForFullBody()、LeonAnimationActionCoordinator.TryInterruptMeleeForPriority(out FullBodyActionType, out int)、LeonAnimationActionCoordinator.ValidateDriver()、LeonAnimatorDriver.BeginHit(LeonHitDirection) 等共 9 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonCombat.HandleHit(LeonHitDirection)；下游（含内部回调体） AnimationActionTransaction.AnimationActionTransaction()、LeonActionMotionDriver.BeginHitMotion()、LeonAnimationActionCoordinator.CheckActionConflict(ActionKind)、LeonAnimationActionCoordinator.InterruptWeaponTransactionForFullBody()、LeonAnimationActionCoordinator.TryInterruptMeleeForPriority(out FullBodyActionType, out int)、LeonAnimationActionCoordinator.ValidateDriver()、LeonAnimatorDriver.BeginHit(LeonHitDirection) 等共 9 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="direction">中文含义：方向。使用位置：作为 LeonAnimatorDriver.BeginHit(LeonHitDirection) 的参数。</param>
+    /// <param name="direction">方向。</param>
     public bool RequestHit(LeonHitDirection direction)
     {
         if (hasActiveFullBodyTx && IsEnvironmentalAction(fullBodyTx.fullBodyActionType))
@@ -1905,6 +1905,7 @@ global::LeonAnimRig receiverValue73 = animRig;
         }
 
         InterruptWeaponTransactionForFullBody();
+        FlushPendingQTEAnimationVariantClear();
         fullBodyTx = new AnimationActionTransaction
         {
             transactionId = nextTxId++,
@@ -1915,14 +1916,14 @@ global::LeonAnimRig receiverValue73 = animRig;
         };
         hasActiveFullBodyTx = true;
         driver.BeginHit(direction);
-        // receiverValue74（判空前缓存的动作运动执行器）：从动作运动执行器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.RequestHit(LeonHitDirection)。
+        // 判空前缓存的动作运动执行器。
 global::LeonActionMotionDriver receiverValue74 = actionMotionDriver;
         if (!global::System.Object.ReferenceEquals(receiverValue74, null))
         {
             receiverValue74.BeginHitMotion();
         }
 
-        // receiverValue75（判空前缓存的当前里昂动画绑定组件）：从动画绑定组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.RequestHit(LeonHitDirection)。
+        // 判空前缓存的当前里昂动画绑定组件。
 global::LeonAnimRig receiverValue75 = animRig;
         if (!global::System.Object.ReferenceEquals(receiverValue75, null))
         {
@@ -2063,7 +2064,7 @@ global::LeonAnimRig receiverValue75 = animRig;
         return RequestTraversal(FullBodyActionType.ItemPickup);
     }
 
-    internal void CompleteItemPickup(int transactionId)
+    internal void CompleteItemPickup(int transactionId, bool earlyCancel = false)
     {
         if (isDead || !IsItemPickupActive || fullBodyTx.transactionId != transactionId
             || !fullBodyTx.entryBound || fullBodyTx.completed || fullBodyTx.cancelled)
@@ -2076,7 +2077,7 @@ global::LeonAnimRig receiverValue75 = animRig;
         var completed = fullBodyTx;
         hasActiveFullBodyTx = false;
         fullBodyTx = default;
-        driver.EndTraversalLanding();
+        driver.EndTraversalLanding(earlyCancel);
         var pickupCompleted = OnTraversalActionCompleted;
         if (pickupCompleted != null)
         {
@@ -2147,9 +2148,9 @@ global::LeonAnimRig receiverValue75 = animRig;
     /// 旧状态退出通知通过离场序号过滤，不会被误判为中断。
     /// </summary>
     /// <remarks>静态调用链：上游 LeonHighDropLanding.UpdateActiveDrop()、LeonWindowTraversal.BeginAutomaticDrop()、LeonWindowTraversal.RequestLandingAction()；下游（含内部回调体） LeonAnimationActionCoordinator.IsTraversalAction(FullBodyActionType)、LeonAnimatorDriver.AdvanceFullBodyAction(FullBodyActionType, float, float)、LeonAnimatorDriver.PrepareTraversalLandingBasePose()、LeonAnimatorDriver.ReleaseTraversalLandingBasePose()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="nextAction">中文含义：下一次动作。使用位置：作为 LeonAnimationActionCoordinator.IsTraversalAction(FullBodyActionType) 的参数、作为 LeonAnimatorDriver.AdvanceFullBodyAction(FullBodyActionType, float, float) 的参数、LeonAnimationActionCoordinator.AdvanceTraversalAction(FullBodyActionType, float, float)。</param>
-    /// <param name="transitionDuration">中文含义：过渡时长。使用位置：作为 LeonAnimatorDriver.AdvanceFullBodyAction(FullBodyActionType, float, float) 的参数。</param>
-    /// <param name="normalizedTime">中文含义：动画归一化播放时间。使用位置：作为 LeonAnimatorDriver.AdvanceFullBodyAction(FullBodyActionType, float, float) 的参数。</param>
+    /// <param name="nextAction">下一次动作。</param>
+    /// <param name="transitionDuration">过渡时长。</param>
+    /// <param name="normalizedTime">动画归一化播放时间。</param>
     public bool AdvanceTraversalAction(FullBodyActionType nextAction, float transitionDuration, float normalizedTime = 0f)
     {
         if (isDead || !hasActiveFullBodyTx || !IsTraversalAction(nextAction) || !IsTraversalAction(fullBodyTx.fullBodyActionType) || !fullBodyTx.entryBound || fullBodyTx.cancelled)
@@ -2157,16 +2158,16 @@ global::LeonAnimRig receiverValue75 = animRig;
             return false;
         }
 
-        // preparesLanding（是否准备的落地）：使用位置：LeonAnimationActionCoordinator.AdvanceTraversalAction(FullBodyActionType, float, float)。
+        // 是否准备的落地。
 bool preparesLanding = nextAction == FullBodyActionType.WindowDropLand;
         if (preparesLanding)
         {
             driver.PrepareTraversalLandingBasePose();
         }
 
-        // previousAction（前一次动作）：使用位置：LeonAnimationActionCoordinator.AdvanceTraversalAction(FullBodyActionType, float, float)。
+        // 前一次动作。
 FullBodyActionType previousAction = fullBodyTx.fullBodyActionType;
-        // previousSequence（前一次序号）：使用位置：LeonAnimationActionCoordinator.AdvanceTraversalAction(FullBodyActionType, float, float)。
+        // 前一次序号。
 int previousSequence = fullBodyTx.stateEntrySequence;
         fullBodyTx.outgoingFullBodyActionType = previousAction;
         fullBodyTx.outgoingStateEntrySequence = previousSequence;
@@ -2204,14 +2205,14 @@ int previousSequence = fullBodyTx.stateEntrySequence;
 
         fullBodyTx.cancelled = true;
         fullBodyTx.fullBodyPhase = FullBodyTransactionPhase.Cancelled;
-        // receiverValue76（判空前缓存的全身动作中断时的通知回调）：从全身动作中断时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.CancelTraversal()。
+        // 判空前缓存的全身动作中断时的通知回调。
 global::System.Action<global::AnimationActionTransaction> receiverValue76 = OnFullBodyActionInterrupted;
         if (!global::System.Object.ReferenceEquals(receiverValue76, null))
         {
             receiverValue76.Invoke(fullBodyTx);
         }
 
-        // receiverValue77（判空前缓存的通行动作中断时的通知回调）：从通行动作中断时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.CancelTraversal()。
+        // 判空前缓存的通行动作中断时的通知回调。
 global::System.Action<global::AnimationActionTransaction> receiverValue77 = OnTraversalActionInterrupted;
         if (!global::System.Object.ReferenceEquals(receiverValue77, null))
         {
@@ -2219,21 +2220,21 @@ global::System.Action<global::AnimationActionTransaction> receiverValue77 = OnTr
         }
 
         hasActiveFullBodyTx = false;
-        // receiverValue78（判空前缓存的里昂动画控制器驱动器）：从驱动组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.CancelTraversal()。
+        // 判空前缓存的里昂动画控制器驱动器。
 global::LeonAnimatorDriver receiverValue78 = driver;
         if (!global::System.Object.ReferenceEquals(receiverValue78, null))
         {
             receiverValue78.EndFullBodyAction();
         }
 
-        // receiverValue79（判空前缓存的里昂动画控制器驱动器）：从驱动组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.CancelTraversal()。
+        // 判空前缓存的里昂动画控制器驱动器。
 global::LeonAnimatorDriver receiverValue79 = driver;
         if (!global::System.Object.ReferenceEquals(receiverValue79, null))
         {
             receiverValue79.ReleaseTraversalLandingBasePose();
         }
 
-        // receiverValue80（判空前缓存的里昂动画控制器驱动器）：从驱动组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.CancelTraversal()。
+        // 判空前缓存的里昂动画控制器驱动器。
 global::LeonAnimatorDriver receiverValue80 = driver;
         if (!global::System.Object.ReferenceEquals(receiverValue80, null))
         {
@@ -2262,7 +2263,7 @@ global::LeonAnimatorDriver receiverValue80 = driver;
             fullBodyPhase = FullBodyTransactionPhase.PlayingMelee
         };
         hasActiveFullBodyTx = true;
-        // receiverValue81（判空前缓存的当前里昂动画绑定组件）：从动画绑定组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.RequestIndependentKnifeTransaction()。
+        // 判空前缓存的当前里昂动画绑定组件。
 global::LeonAnimRig receiverValue81 = animRig;
         if (!global::System.Object.ReferenceEquals(receiverValue81, null))
         {
@@ -2274,10 +2275,10 @@ global::LeonAnimRig receiverValue81 = animRig;
 
     /// <summary>AdvanceIndependentKnifeTransaction 的业务处理入口；本方法直接依赖 LeonAnimationActionCoordinator.IsKnifeAction(FullBodyActionType)、LeonAnimatorDriver.PlayIndependentKnifeClip(KnifeActionConfiguration, float, float)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 KnifeCombatModule.CommitCurrentAnimation()；下游（含内部回调体） LeonAnimationActionCoordinator.IsKnifeAction(FullBodyActionType)、LeonAnimatorDriver.PlayIndependentKnifeClip(KnifeActionConfiguration, float, float)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="id">中文含义：编号。使用位置：LeonAnimationActionCoordinator.AdvanceIndependentKnifeTransaction(int, KnifeActionConfiguration, float, float)。</param>
-    /// <param name="clip">中文含义：动画片段。使用位置：作为 LeonAnimatorDriver.PlayIndependentKnifeClip(KnifeActionConfiguration, float, float) 的参数。</param>
-    /// <param name="blend">中文含义：混合。使用位置：作为 LeonAnimatorDriver.PlayIndependentKnifeClip(KnifeActionConfiguration, float, float) 的参数。</param>
-    /// <param name="offset">中文含义：偏移量。使用位置：作为 LeonAnimatorDriver.PlayIndependentKnifeClip(KnifeActionConfiguration, float, float) 的参数。</param>
+    /// <param name="id">编号。</param>
+    /// <param name="clip">动画片段。</param>
+    /// <param name="blend">混合。</param>
+    /// <param name="offset">偏移量。</param>
     public bool AdvanceIndependentKnifeTransaction(int id, KnifeActionConfiguration clip, float blend, float offset)
     {
         return !isDead && hasActiveFullBodyTx && !fullBodyTx.cancelled && fullBodyTx.transactionId == id && IsKnifeAction(fullBodyTx.fullBodyActionType) && driver.PlayIndependentKnifeClip(clip, blend, offset);
@@ -2285,7 +2286,7 @@ global::LeonAnimRig receiverValue81 = animRig;
 
     /// <summary>EndIndependentKnifeTransaction 的业务处理入口；本方法直接依赖 LeonAnimationActionCoordinator.IsKnifeAction(FullBodyActionType)、LeonAnimatorDriver.EndIndependentKnifeClip()、LeonAnimRig.EndKnifeActionIK()、object.ReferenceEquals(object, object)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 KnifeCombatModule.EndTransaction(bool)；下游（含内部回调体） LeonAnimationActionCoordinator.IsKnifeAction(FullBodyActionType)、LeonAnimatorDriver.EndIndependentKnifeClip()、LeonAnimRig.EndKnifeActionIK()、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="id">中文含义：编号。使用位置：LeonAnimationActionCoordinator.EndIndependentKnifeTransaction(int)。</param>
+    /// <param name="id">编号。</param>
     public void EndIndependentKnifeTransaction(int id, bool releasedThrust = false)
     {
         if (!hasActiveFullBodyTx || fullBodyTx.transactionId != id || !IsKnifeAction(fullBodyTx.fullBodyActionType))
@@ -2295,14 +2296,14 @@ global::LeonAnimRig receiverValue81 = animRig;
 
         hasActiveFullBodyTx = false;
         fullBodyTx = default;
-        // receiverValue82（判空前缓存的里昂动画控制器驱动器）：从驱动组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.EndIndependentKnifeTransaction(int)。
+        // 判空前缓存的里昂动画控制器驱动器。
 global::LeonAnimatorDriver receiverValue82 = driver;
         if (!global::System.Object.ReferenceEquals(receiverValue82, null))
         {
             receiverValue82.EndIndependentKnifeClip(releasedThrust);
         }
 
-        // receiverValue83（判空前缓存的当前里昂动画绑定组件）：从动画绑定组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.EndIndependentKnifeTransaction(int)。
+        // 判空前缓存的当前里昂动画绑定组件。
 global::LeonAnimRig receiverValue83 = animRig;
         if (!global::System.Object.ReferenceEquals(receiverValue83, null))
         {
@@ -2342,35 +2343,35 @@ global::LeonAnimRig receiverValue83 = animRig;
 
         if (hasActiveWeaponTx)
         {
-            // hasCancel（是否具有取消）：使用位置：作为 Action<AnimationActionTransaction>.Invoke(AnimationActionTransaction) 的参数、作为 LeonAnimRig.InterruptWeaponActionIK(WeaponType) 的参数、LeonAnimationActionCoordinator.AsKnifeInterruptReload()。
+            // 是否具有取消。
 var hasCancel = weaponTx;
             hasCancel.cancelled = true;
             hasCancel.phase = WeaponTransactionPhase.Cancelled;
             hasActiveWeaponTx = false;
             waitingForWeaponExit = false;
             weaponTx = default;
-            // receiverValue84（判空前缓存的武器动作已中断时的通知回调）：从武器动作已中断时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.AsKnifeInterruptReload()。
+            // 判空前缓存的武器动作已中断时的通知回调。
 global::System.Action<global::AnimationActionTransaction> receiverValue84 = OnWeaponActionInterrupted;
             if (!global::System.Object.ReferenceEquals(receiverValue84, null))
             {
                 receiverValue84.Invoke(hasCancel);
             }
 
-            // receiverValue85（判空前缓存的里昂动画控制器驱动器）：从驱动组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.AsKnifeInterruptReload()。
+            // 判空前缓存的里昂动画控制器驱动器。
 global::LeonAnimatorDriver receiverValue85 = driver;
             if (!global::System.Object.ReferenceEquals(receiverValue85, null))
             {
                 receiverValue85.EndWeaponAction();
             }
 
-            // receiverValue86（判空前缓存的里昂动画控制器驱动器）：从驱动组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.AsKnifeInterruptReload()。
+            // 判空前缓存的里昂动画控制器驱动器。
 global::LeonAnimatorDriver receiverValue86 = driver;
             if (!global::System.Object.ReferenceEquals(receiverValue86, null))
             {
                 receiverValue86.FinalizeWeaponActionLayer();
             }
 
-            // receiverValue87（判空前缓存的当前里昂动画绑定组件）：从动画绑定组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.AsKnifeInterruptReload()。
+            // 判空前缓存的当前里昂动画绑定组件。
 global::LeonAnimRig receiverValue87 = animRig;
             if (!global::System.Object.ReferenceEquals(receiverValue87, null))
             {
@@ -2383,8 +2384,8 @@ global::LeonAnimRig receiverValue87 = animRig;
 
     /// <summary>RequestMeleeAction 的业务处理入口；本方法直接依赖 AnimationActionTransaction.AnimationActionTransaction()、LeonAnimationActionCoordinator.CheckActionConflict(ActionKind)、LeonAnimationActionCoordinator.IsKnifeAction(FullBodyActionType)、LeonAnimationActionCoordinator.IsMeleeAction(FullBodyActionType)、LeonAnimationActionCoordinator.ValidateDriver()、LeonAnimatorDriver.BeginFullBodyAction(FullBodyActionType)、LeonAnimRig.BeginKnifeActionIK() 等共 9 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonCombat.StartMeleeAction(FullBodyActionType, int)；下游（含内部回调体） AnimationActionTransaction.AnimationActionTransaction()、LeonAnimationActionCoordinator.CheckActionConflict(ActionKind)、LeonAnimationActionCoordinator.IsKnifeAction(FullBodyActionType)、LeonAnimationActionCoordinator.IsMeleeAction(FullBodyActionType)、LeonAnimationActionCoordinator.ValidateDriver()、LeonAnimatorDriver.BeginFullBodyAction(FullBodyActionType)、LeonAnimRig.BeginKnifeActionIK() 等共 9 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="actionType">中文含义：动作类型。使用位置：作为 LeonAnimationActionCoordinator.IsKnifeAction(FullBodyActionType) 的参数、作为 LeonAnimationActionCoordinator.IsMeleeAction(FullBodyActionType) 的参数、作为 LeonAnimatorDriver.BeginFullBodyAction(FullBodyActionType) 的参数 等共 4 处。</param>
-    /// <param name="qteSessionId">中文含义：配对动作会话编号。使用位置：LeonAnimationActionCoordinator.RequestMeleeAction(FullBodyActionType, int)。</param>
+    /// <param name="actionType">动作类型。</param>
+    /// <param name="qteSessionId">配对动作会话编号。</param>
     public bool RequestMeleeAction(FullBodyActionType actionType, int qteSessionId = 0, float normalizedStart = 0f)
     {
         if (!IsMeleeAction(actionType) || !ValidateDriver() || CheckActionConflict(ActionKind.Melee) != RejectionReason.None)
@@ -2402,7 +2403,7 @@ global::LeonAnimRig receiverValue87 = animRig;
         hasActiveFullBodyTx = true;
         if (IsKnifeAction(actionType))
         {
-            // receiverValue88（判空前缓存的当前里昂动画绑定组件）：从动画绑定组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.RequestMeleeAction(FullBodyActionType, int)。
+            // 判空前缓存的当前里昂动画绑定组件。
 global::LeonAnimRig receiverValue88 = animRig;
             if (!global::System.Object.ReferenceEquals(receiverValue88, null))
             {
@@ -2417,7 +2418,7 @@ global::LeonAnimRig receiverValue88 = animRig;
 
         if (IsKnifeAction(actionType))
         {
-            // receiverValue89（判空前缓存的当前里昂动画绑定组件）：从动画绑定组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.RequestMeleeAction(FullBodyActionType, int)。
+            // 判空前缓存的当前里昂动画绑定组件。
 global::LeonAnimRig receiverValue89 = animRig;
             if (!global::System.Object.ReferenceEquals(receiverValue89, null))
             {
@@ -2434,7 +2435,7 @@ global::LeonAnimRig receiverValue89 = animRig;
     /// 在当前动作正常完成后，无空状态间隔地推进到下一个近战动作。
     /// </summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） LeonAnimationActionCoordinator.IsMeleeAction(FullBodyActionType)、LeonAnimationActionCoordinator.PrepareMeleeTransition(FullBodyActionType)、LeonAnimatorDriver.BeginFullBodyAction(FullBodyActionType)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="nextAction">中文含义：下一次动作。使用位置：作为 LeonAnimationActionCoordinator.IsMeleeAction(FullBodyActionType) 的参数、作为 LeonAnimationActionCoordinator.PrepareMeleeTransition(FullBodyActionType) 的参数、作为 LeonAnimatorDriver.BeginFullBodyAction(FullBodyActionType) 的参数。</param>
+    /// <param name="nextAction">下一次动作。</param>
     public bool AdvanceMeleeAction(FullBodyActionType nextAction)
     {
         if (isDead || !hasActiveFullBodyTx || !IsMeleeAction(nextAction) || !IsMeleeAction(fullBodyTx.fullBodyActionType) || !fullBodyTx.entryBound || !fullBodyTx.completed || fullBodyTx.cancelled)
@@ -2462,7 +2463,7 @@ global::LeonAnimRig receiverValue89 = animRig;
 
     /// <summary>PrepareMeleeTransition 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
     /// <remarks>静态调用链：上游 LeonAnimationActionCoordinator.AdvanceMeleeAction(FullBodyActionType)；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="nextAction">中文含义：下一次动作。使用位置：LeonAnimationActionCoordinator.PrepareMeleeTransition(FullBodyActionType)。</param>
+    /// <param name="nextAction">下一次动作。</param>
     private void PrepareMeleeTransition(FullBodyActionType nextAction)
     {
         fullBodyTx.outgoingFullBodyActionType = fullBodyTx.fullBodyActionType;
@@ -2478,7 +2479,7 @@ global::LeonAnimRig receiverValue89 = animRig;
     /// 建立正面抓取全身事务。四个阶段共用同一事务编号和快速反应会话编号。
     /// </summary>
     /// <remarks>静态调用链：上游 LeonQTECoordinator.AlignAndEnter(int)；下游（含内部回调体） Action&lt;int, bool&gt;.Invoke(int, bool)、AnimationActionTransaction.AnimationActionTransaction()、LeonAnimationActionCoordinator.CheckActionConflict(ActionKind)、LeonAnimationActionCoordinator.InterruptWeaponTransactionForFullBody()、LeonAnimationActionCoordinator.TryInterruptMeleeForPriority(out FullBodyActionType, out int)、LeonAnimationActionCoordinator.ValidateDriver()、LeonAnimatorDriver.BeginFullBodyAction(FullBodyActionType) 等共 9 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="qteSessionId">中文含义：配对动作会话编号。使用位置：作为 Action&lt;int, bool&gt;.Invoke(int, bool) 的参数、LeonAnimationActionCoordinator.RequestQTE(int)。</param>
+    /// <param name="qteSessionId">配对动作会话编号。</param>
     public bool RequestQTE(int qteSessionId) => RequestQTE(qteSessionId, true);
 
     internal bool RequestQTE(int qteSessionId, bool useControllerPose)
@@ -2494,6 +2495,7 @@ global::LeonAnimRig receiverValue89 = animRig;
         }
 
         InterruptWeaponTransactionForFullBody();
+        FlushPendingQTEAnimationVariantClear();
         fullBodyTx = new AnimationActionTransaction
         {
             transactionId = nextTxId++,
@@ -2512,14 +2514,14 @@ global::LeonAnimRig receiverValue89 = animRig;
         }
 
         qteWeaponHiddenSessionId = qteSessionId;
-        // receiverValue90（判空前缓存的配对动作武器可见性请求的时的通知回调）：从配对动作武器可见性请求的时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.RequestQTE(int)。
+        // 判空前缓存的配对动作武器可见性请求的时的通知回调。
 global::System.Action<int, bool> receiverValue90 = OnQTEWeaponVisibilityRequested;
         if (!global::System.Object.ReferenceEquals(receiverValue90, null))
         {
             receiverValue90.Invoke(qteSessionId, false);
         }
 
-        // receiverValue91（判空前缓存的当前里昂动画绑定组件）：从动画绑定组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.RequestQTE(int)。
+        // 判空前缓存的当前里昂动画绑定组件。
 global::LeonAnimRig receiverValue91 = animRig;
         if (!global::System.Object.ReferenceEquals(receiverValue91, null))
         {
@@ -2533,7 +2535,7 @@ global::LeonAnimRig receiverValue91 = animRig;
     /// 会话开始前覆盖里昂快速反应四个动作片段，不修改正式控制器资源。
     /// </summary>
     /// <remarks>静态调用链：上游 LeonQTECoordinator.TryStart(QTEKind, IEnemyQTEParticipant, out int)；下游（含内部回调体） QTEAnimatorOverrideScope.Apply(Animator, AnimationClip, AnimationClip, AnimationClip, AnimationClip)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="variant">中文含义：变体。使用位置：作为 QTEAnimatorOverrideScope.Apply(Animator, AnimationClip, AnimationClip, AnimationClip, AnimationClip) 的参数、LeonAnimationActionCoordinator.ApplyQTEAnimationVariant(QTEAnimationVariant)。</param>
+    /// <param name="variant">变体。</param>
     public bool ApplyQTEAnimationVariant(QTEAnimationVariant variant)
     {
         if (variant == null || animator == null)
@@ -2563,11 +2565,27 @@ global::LeonAnimRig receiverValue91 = animRig;
         TryClearQTEAnimationVariantAfterFullBodyExit();
     }
 
+    private void FlushPendingQTEAnimationVariantClear()
+    {
+        if (!qteAnimationOverrideClearPending)
+        {
+            return;
+        }
+
+        qteAnimationOverrideClearPending = false;
+        qteAnimationOverride.Clear();
+    }
+
     /// <summary>TryClearQTEAnimationVariantAfterFullBodyExit 的业务处理入口；本方法直接依赖 Animator.GetLayerWeight(int)、QTEAnimatorOverrideScope.Clear()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonAnimationActionCoordinator.ClearQTEAnimationVariant()、LeonAnimationActionCoordinator.LateUpdate()；下游（含内部回调体） Animator.GetLayerWeight(int)、QTEAnimatorOverrideScope.Clear()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
     private void TryClearQTEAnimationVariantAfterFullBodyExit()
     {
         if (!qteAnimationOverrideClearPending)
+        {
+            return;
+        }
+
+        if (hasActiveFullBodyTx)
         {
             return;
         }
@@ -2583,8 +2601,8 @@ global::LeonAnimRig receiverValue91 = animRig;
 
     /// <summary>AdvanceQTEPhase 的业务处理入口；本方法直接依赖 LeonAnimationActionCoordinator.IsLegalQTETransition(FullBodyActionType, FullBodyActionType)、LeonAnimationActionCoordinator.ToQTEPhase(FullBodyActionType)、LeonAnimatorDriver.BeginFullBodyAction(FullBodyActionType)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonQTECoordinator.BeginResult(bool)、LeonQTECoordinator.TryAdvanceAfterPairCompletion()；下游（含内部回调体） LeonAnimationActionCoordinator.IsLegalQTETransition(FullBodyActionType, FullBodyActionType)、LeonAnimationActionCoordinator.ToQTEPhase(FullBodyActionType)、LeonAnimatorDriver.BeginFullBodyAction(FullBodyActionType)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="qteSessionId">中文含义：配对动作会话编号。使用位置：LeonAnimationActionCoordinator.AdvanceQTEPhase(int, FullBodyActionType)。</param>
-    /// <param name="nextAction">中文含义：下一次动作。使用位置：作为 LeonAnimationActionCoordinator.IsLegalQTETransition(FullBodyActionType, FullBodyActionType) 的参数、作为 LeonAnimationActionCoordinator.ToQTEPhase(FullBodyActionType) 的参数、作为 LeonAnimatorDriver.BeginFullBodyAction(FullBodyActionType) 的参数 等共 4 处。</param>
+    /// <param name="qteSessionId">配对动作会话编号。</param>
+    /// <param name="nextAction">下一次动作。</param>
     public bool AdvanceQTEPhase(int qteSessionId, FullBodyActionType nextAction)
     {
         if (isDead || !hasActiveFullBodyTx)
@@ -2619,7 +2637,7 @@ global::LeonAnimRig receiverValue91 = animRig;
 
     /// <summary>CompleteQTE 的业务处理入口；本方法直接依赖 LeonAnimatorDriver.EndFullBodyAction()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonQTECoordinator.TryAdvanceAfterPairCompletion()；下游（含内部回调体） LeonAnimatorDriver.EndFullBodyAction()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="qteSessionId">中文含义：配对动作会话编号。使用位置：LeonAnimationActionCoordinator.CompleteQTE(int)。</param>
+    /// <param name="qteSessionId">配对动作会话编号。</param>
     public bool CompleteQTE(int qteSessionId)
     {
         if (isDead || !hasActiveFullBodyTx)
@@ -2649,7 +2667,7 @@ global::LeonAnimRig receiverValue91 = animRig;
 
     /// <summary>CancelQTE 的业务处理入口；本方法直接依赖 Action&lt;AnimationActionTransaction&gt;.Invoke(AnimationActionTransaction)、LeonAnimationActionCoordinator.RestoreQTEWeaponVisual(int)、LeonAnimatorDriver.EndFullBodyAction()、LeonAnimatorDriver.FinalizeFullBodyActionLayer()、object.ReferenceEquals(object, object)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonQTECoordinator.Cancel(int, QTECancelReason)；下游（含内部回调体） Action&lt;AnimationActionTransaction&gt;.Invoke(AnimationActionTransaction)、LeonAnimationActionCoordinator.RestoreQTEWeaponVisual(int)、LeonAnimatorDriver.EndFullBodyAction()、LeonAnimatorDriver.FinalizeFullBodyActionLayer()、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="qteSessionId">中文含义：配对动作会话编号。使用位置：作为 LeonAnimationActionCoordinator.RestoreQTEWeaponVisual(int) 的参数、LeonAnimationActionCoordinator.CancelQTE(int)。</param>
+    /// <param name="qteSessionId">配对动作会话编号。</param>
     public bool CancelQTE(int qteSessionId)
     {
         if (!hasActiveFullBodyTx || fullBodyTx.qteSessionId != qteSessionId)
@@ -2657,11 +2675,11 @@ global::LeonAnimRig receiverValue91 = animRig;
             return false;
         }
 
-        // wasAlreadyCancelled（之前是否已经已取消）：使用位置：LeonAnimationActionCoordinator.CancelQTE(int)。
+        // 之前是否已经已取消。
 bool wasAlreadyCancelled = fullBodyTx.cancelled;
         fullBodyTx.cancelled = true;
         fullBodyTx.fullBodyPhase = FullBodyTransactionPhase.Cancelled;
-        // receiverValue92（判空前缓存的里昂动画控制器驱动器）：从驱动组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.CancelQTE(int)。
+        // 判空前缓存的里昂动画控制器驱动器。
 global::LeonAnimatorDriver receiverValue92 = driver;
         if (!global::System.Object.ReferenceEquals(receiverValue92, null))
         {
@@ -2671,7 +2689,7 @@ global::LeonAnimatorDriver receiverValue92 = driver;
         RestoreQTEWeaponVisual(qteSessionId);
         if (!wasAlreadyCancelled)
         {
-            // receiverValue93（判空前缓存的配对动作动作中断时的通知回调）：从配对动作动作中断时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.CancelQTE(int)。
+            // 判空前缓存的配对动作动作中断时的通知回调。
 global::System.Action<global::AnimationActionTransaction> receiverValue93 = OnQTEActionInterrupted;
             if (!global::System.Object.ReferenceEquals(receiverValue93, null))
             {
@@ -2682,7 +2700,7 @@ global::System.Action<global::AnimationActionTransaction> receiverValue93 = OnQT
         if (!fullBodyTx.entryBound)
         {
             hasActiveFullBodyTx = false;
-            // receiverValue94（判空前缓存的里昂动画控制器驱动器）：从驱动组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.CancelQTE(int)。
+            // 判空前缓存的里昂动画控制器驱动器。
 global::LeonAnimatorDriver receiverValue94 = driver;
             if (!global::System.Object.ReferenceEquals(receiverValue94, null))
             {
@@ -2693,7 +2711,7 @@ global::LeonAnimatorDriver receiverValue94 = driver;
         return true;
     }
 
-    /// <summary>中文含义：配对动作成功状态的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。使用位置：LeonAnimationActionCoordinator.TryExitQTESuccessAtRecoveryPoint(int, float)。</summary>
+    /// <summary>配对动作成功状态的哈希编号（动画参数或状态路径的哈希编号）。只读字段，初始化后不由普通写入口替换。</summary>
     private static readonly int HashQTESuccessState = Animator.StringToHash("QTESuccess");
     /// <summary>
     /// 受事务身份保护的计划内恢复退出接口。
@@ -2701,8 +2719,8 @@ global::LeonAnimatorDriver receiverValue94 = driver;
     /// 调用后 SMB 可能发送未完成中断通知，该通知会被 plannedExit 标记抑制。
     /// </summary>
     /// <remarks>静态调用链：上游 LeonQTECoordinator.RequestPlayerRecoveryExit()；下游（含内部回调体） Animator.GetCurrentAnimatorStateInfo(int)、Animator.GetNextAnimatorStateInfo(int)、Animator.IsInTransition(int)、LeonAnimatorDriver.EndFullBodyAction()、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="qteSessionId">中文含义：配对动作会话编号。使用位置：LeonAnimationActionCoordinator.TryExitQTESuccessAtRecoveryPoint(int, float)。</param>
-    /// <param name="minimumNormalizedTime">中文含义：最小归一化时间。使用位置：LeonAnimationActionCoordinator.TryExitQTESuccessAtRecoveryPoint(int, float)。</param>
+    /// <param name="qteSessionId">配对动作会话编号。</param>
+    /// <param name="minimumNormalizedTime">最小归一化时间。</param>
     public bool TryExitQTESuccessAtRecoveryPoint(int qteSessionId, float minimumNormalizedTime)
     {
         if (isDead || !hasActiveFullBodyTx)
@@ -2735,7 +2753,7 @@ global::LeonAnimatorDriver receiverValue94 = driver;
             return false;
         }
 
-        // stateInfo（当前动画状态信息）：保存 Animator.GetCurrentAnimatorStateInfo(int) 的返回结果，供当前步骤使用。使用位置：LeonAnimationActionCoordinator.TryExitQTESuccessAtRecoveryPoint(int, float)。
+        // 当前动画状态信息。
 AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(AnimatorLayerID.FullBodyAction);
         if (stateInfo.shortNameHash != HashQTESuccessState && animator.IsInTransition(AnimatorLayerID.FullBodyAction))
         {
@@ -2754,7 +2772,7 @@ AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(AnimatorLayer
 
         fullBodyTx.plannedExit = true;
         fullBodyTx.fullBodyPhase = FullBodyTransactionPhase.WaitingForQTEExit;
-        // receiverValue95（判空前缓存的里昂动画控制器驱动器）：从驱动组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.TryExitQTESuccessAtRecoveryPoint(int, float)。
+        // 判空前缓存的里昂动画控制器驱动器。
 global::LeonAnimatorDriver receiverValue95 = driver;
         if (!global::System.Object.ReferenceEquals(receiverValue95, null))
         {
@@ -2769,7 +2787,7 @@ global::LeonAnimatorDriver receiverValue95 = driver;
     /// 直接清零参数、降低全身层权重、恢复武器视觉并发送退出通知。
     /// </summary>
     /// <remarks>静态调用链：未发现可解析的直接上游调用；下游（含内部回调体） LeonAnimationActionCoordinator.ForceFinishQTE(int)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="qteSessionId">中文含义：配对动作会话编号。使用位置：作为 LeonAnimationActionCoordinator.ForceFinishQTE(int) 的参数、LeonAnimationActionCoordinator.ForceFinishQTESuccess(int)。</param>
+    /// <param name="qteSessionId">配对动作会话编号。</param>
     public bool ForceFinishQTESuccess(int qteSessionId)
     {
         if (!hasActiveFullBodyTx || fullBodyTx.qteSessionId != qteSessionId)
@@ -2790,7 +2808,7 @@ global::LeonAnimatorDriver receiverValue95 = driver;
     /// 用于暗杀等变体已经进入结束节点，但事务仍停留在快速反应全身层时兜底释放。
     /// </summary>
     /// <remarks>静态调用链：上游 LeonAnimationActionCoordinator.ForceFinishQTESuccess(int)、LeonQTECoordinator.HandlePlayerExitTimeout()、LeonQTECoordinator.ReleasePlayer(int)、LeonQTECoordinator.TryFinalizeCommittedAssassination()；下游（含内部回调体） Action&lt;AnimationActionTransaction&gt;.Invoke(AnimationActionTransaction)、LeonAnimationActionCoordinator.IsQTEAction(FullBodyActionType)、LeonAnimationActionCoordinator.RestoreQTEWeaponVisual(int)、LeonAnimatorDriver.EndFullBodyAction()、LeonAnimatorDriver.FinalizeFullBodyActionLayer()、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="qteSessionId">中文含义：配对动作会话编号。使用位置：作为 LeonAnimationActionCoordinator.RestoreQTEWeaponVisual(int) 的参数、LeonAnimationActionCoordinator.ForceFinishQTE(int)。</param>
+    /// <param name="qteSessionId">配对动作会话编号。</param>
     public bool ForceFinishQTE(int qteSessionId)
     {
         if (qteSessionId <= 0)
@@ -2819,19 +2837,19 @@ global::LeonAnimatorDriver receiverValue95 = driver;
         fullBodyTx.plannedExit = true;
         fullBodyTx.completed = true;
         fullBodyTx.fullBodyPhase = FullBodyTransactionPhase.WaitingForQTEExit;
-        // receiverValue96（判空前缓存的里昂动画控制器驱动器）：从驱动组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.ForceFinishQTE(int)。
+        // 判空前缓存的里昂动画控制器驱动器。
 global::LeonAnimatorDriver receiverValue96 = driver;
         if (!global::System.Object.ReferenceEquals(receiverValue96, null))
         {
             receiverValue96.EndFullBodyAction();
         }
 
-        // exitedTx（已退出动作事务）：使用位置：作为 Action<AnimationActionTransaction>.Invoke(AnimationActionTransaction) 的参数、LeonAnimationActionCoordinator.ForceFinishQTE(int)。
+        // 已退出动作事务。
 AnimationActionTransaction exitedTx = fullBodyTx;
         exitedTx.fullBodyPhase = FullBodyTransactionPhase.Completed;
         hasActiveFullBodyTx = false;
         fullBodyTx.fullBodyPhase = FullBodyTransactionPhase.Completed;
-        // receiverValue97（判空前缓存的里昂动画控制器驱动器）：从驱动组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.ForceFinishQTE(int)。
+        // 判空前缓存的里昂动画控制器驱动器。
 global::LeonAnimatorDriver receiverValue97 = driver;
         if (!global::System.Object.ReferenceEquals(receiverValue97, null))
         {
@@ -2839,7 +2857,7 @@ global::LeonAnimatorDriver receiverValue97 = driver;
         }
 
         RestoreQTEWeaponVisual(qteSessionId);
-        // receiverValue98（判空前缓存的配对动作动作退出时的通知回调）：从配对动作动作退出时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.ForceFinishQTE(int)。
+        // 判空前缓存的配对动作动作退出时的通知回调。
 global::System.Action<global::AnimationActionTransaction> receiverValue98 = OnQTEActionExited;
         if (!global::System.Object.ReferenceEquals(receiverValue98, null))
         {
@@ -2851,7 +2869,7 @@ global::System.Action<global::AnimationActionTransaction> receiverValue98 = OnQT
 
     /// <summary>ForceClearWeaponActionBlockAfterQTE 的业务处理入口；本方法直接依赖 Action&lt;AnimationActionTransaction&gt;.Invoke(AnimationActionTransaction)、LeonAnimatorDriver.EndWeaponAction()、LeonAnimatorDriver.FinalizeWeaponActionLayer()、LeonAnimRig.CompleteWeaponActionIK(WeaponType)、LeonAnimRig.InterruptWeaponActionIK(WeaponType)、object.ReferenceEquals(object, object)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonQTECoordinator.FinishCleanup(QTEResult, QTECancelReason)、LeonQTECoordinator.ReleasePlayer(int)；下游（含内部回调体） Action&lt;AnimationActionTransaction&gt;.Invoke(AnimationActionTransaction)、LeonAnimatorDriver.EndWeaponAction()、LeonAnimatorDriver.FinalizeWeaponActionLayer()、LeonAnimRig.CompleteWeaponActionIK(WeaponType)、LeonAnimRig.InterruptWeaponActionIK(WeaponType)、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="restoredWeapon">中文含义：已恢复武器。使用位置：作为 LeonAnimRig.CompleteWeaponActionIK(WeaponType) 的参数、作为 LeonAnimRig.InterruptWeaponActionIK(WeaponType) 的参数。</param>
+    /// <param name="restoredWeapon">已恢复武器。</param>
     public void ForceClearWeaponActionBlockAfterQTE(WeaponType restoredWeapon)
     {
         if (isDead)
@@ -2868,7 +2886,7 @@ global::System.Action<global::AnimationActionTransaction> receiverValue98 = OnQT
         {
             weaponTx.cancelled = true;
             weaponTx.phase = WeaponTransactionPhase.Cancelled;
-            // receiverValue99（判空前缓存的武器动作已中断时的通知回调）：从武器动作已中断时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.ForceClearWeaponActionBlockAfterQTE(WeaponType)。
+            // 判空前缓存的武器动作已中断时的通知回调。
 global::System.Action<global::AnimationActionTransaction> receiverValue99 = OnWeaponActionInterrupted;
             if (!global::System.Object.ReferenceEquals(receiverValue99, null))
             {
@@ -2880,14 +2898,14 @@ global::System.Action<global::AnimationActionTransaction> receiverValue99 = OnWe
         hasPendingWeaponSwitch = false;
         waitingForWeaponExit = false;
         pendingWeaponType = WeaponType.Pistol;
-        // receiverValue100（判空前缓存的里昂动画控制器驱动器）：从驱动组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.ForceClearWeaponActionBlockAfterQTE(WeaponType)。
+        // 判空前缓存的里昂动画控制器驱动器。
 global::LeonAnimatorDriver receiverValue100 = driver;
         if (!global::System.Object.ReferenceEquals(receiverValue100, null))
         {
             receiverValue100.EndWeaponAction();
         }
 
-        // receiverValue101（判空前缓存的里昂动画控制器驱动器）：从驱动组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.ForceClearWeaponActionBlockAfterQTE(WeaponType)。
+        // 判空前缓存的里昂动画控制器驱动器。
 global::LeonAnimatorDriver receiverValue101 = driver;
         if (!global::System.Object.ReferenceEquals(receiverValue101, null))
         {
@@ -2910,7 +2928,7 @@ global::LeonAnimatorDriver receiverValue101 = driver;
             return;
         }
 
-        // interruptWeapon（中断武器）：使用位置：作为 LeonAnimRig.InterruptWeaponActionIK(WeaponType) 的参数、LeonAnimationActionCoordinator.InterruptWeaponTransactionForFullBody()。
+        // 中断武器。
 WeaponType interruptWeapon;
         if (animRig != null)
         {
@@ -2930,14 +2948,14 @@ WeaponType interruptWeapon;
         weaponTx.phase = WeaponTransactionPhase.Cancelled;
         hasActiveWeaponTx = false;
         hasPendingWeaponSwitch = false;
-        // receiverValue103（判空前缓存的武器动作已中断时的通知回调）：从武器动作已中断时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.InterruptWeaponTransactionForFullBody()。
+        // 判空前缓存的武器动作已中断时的通知回调。
 global::System.Action<global::AnimationActionTransaction> receiverValue103 = OnWeaponActionInterrupted;
         if (!global::System.Object.ReferenceEquals(receiverValue103, null))
         {
             receiverValue103.Invoke(weaponTx);
         }
 
-        // receiverValue104（判空前缓存的里昂动画控制器驱动器）：从驱动组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.InterruptWeaponTransactionForFullBody()。
+        // 判空前缓存的里昂动画控制器驱动器。
 global::LeonAnimatorDriver receiverValue104 = driver;
         if (!global::System.Object.ReferenceEquals(receiverValue104, null))
         {
@@ -2951,7 +2969,7 @@ global::LeonAnimatorDriver receiverValue104 = driver;
         else
         {
             waitingForWeaponExit = false;
-            // receiverValue105（判空前缓存的里昂动画控制器驱动器）：从驱动组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.InterruptWeaponTransactionForFullBody()。
+            // 判空前缓存的里昂动画控制器驱动器。
 global::LeonAnimatorDriver receiverValue105 = driver;
             if (!global::System.Object.ReferenceEquals(receiverValue105, null))
             {
@@ -2959,7 +2977,7 @@ global::LeonAnimatorDriver receiverValue105 = driver;
             }
         }
 
-        // receiverValue106（判空前缓存的当前里昂动画绑定组件）：从动画绑定组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.InterruptWeaponTransactionForFullBody()。
+        // 判空前缓存的当前里昂动画绑定组件。
 global::LeonAnimRig receiverValue106 = animRig;
         if (!global::System.Object.ReferenceEquals(receiverValue106, null))
         {
@@ -2969,8 +2987,8 @@ global::LeonAnimRig receiverValue106 = animRig;
 
     /// <summary>TryInterruptMeleeForPriority 的业务处理入口；本方法直接依赖 Action&lt;AnimationActionTransaction&gt;.Invoke(AnimationActionTransaction)、LeonAnimationActionCoordinator.IsKnifeAction(FullBodyActionType)、LeonAnimationActionCoordinator.IsMeleeAction(FullBodyActionType)、LeonAnimRig.EndKnifeActionIK()、object.ReferenceEquals(object, object)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonAnimationActionCoordinator.RequestHit(LeonHitDirection)、LeonAnimationActionCoordinator.RequestQTE(int)；下游（含内部回调体） Action&lt;AnimationActionTransaction&gt;.Invoke(AnimationActionTransaction)、LeonAnimationActionCoordinator.IsKnifeAction(FullBodyActionType)、LeonAnimationActionCoordinator.IsMeleeAction(FullBodyActionType)、LeonAnimRig.EndKnifeActionIK()、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="outgoingAction">中文含义：退出中的动作。输出参数，由本入口写入并交给调用方。使用位置：作为 LeonAnimationActionCoordinator.IsKnifeAction(FullBodyActionType) 的参数、LeonAnimationActionCoordinator.TryInterruptMeleeForPriority(out FullBodyActionType, out int)。</param>
-    /// <param name="outgoingSequence">中文含义：退出中的序号。输出参数，由本入口写入并交给调用方。使用位置：LeonAnimationActionCoordinator.TryInterruptMeleeForPriority(out FullBodyActionType, out int)。</param>
+    /// <param name="outgoingAction">退出中的动作。输出参数，由本入口写入并交给调用方。</param>
+    /// <param name="outgoingSequence">退出中的序号。输出参数，由本入口写入并交给调用方。</param>
     private bool TryInterruptMeleeForPriority(out FullBodyActionType outgoingAction, out int outgoingSequence)
     {
         outgoingAction = FullBodyActionType.None;
@@ -2989,7 +3007,7 @@ global::LeonAnimRig receiverValue106 = animRig;
         outgoingSequence = fullBodyTx.stateEntrySequence;
         if (IsKnifeAction(outgoingAction))
         {
-            // receiverValue107（判空前缓存的当前里昂动画绑定组件）：从动画绑定组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.TryInterruptMeleeForPriority(out FullBodyActionType, out int)。
+            // 判空前缓存的当前里昂动画绑定组件。
 global::LeonAnimRig receiverValue107 = animRig;
             if (!global::System.Object.ReferenceEquals(receiverValue107, null))
             {
@@ -2999,14 +3017,14 @@ global::LeonAnimRig receiverValue107 = animRig;
 
         fullBodyTx.cancelled = true;
         fullBodyTx.fullBodyPhase = FullBodyTransactionPhase.Cancelled;
-        // receiverValue108（判空前缓存的全身动作中断时的通知回调）：从全身动作中断时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.TryInterruptMeleeForPriority(out FullBodyActionType, out int)。
+        // 判空前缓存的全身动作中断时的通知回调。
 global::System.Action<global::AnimationActionTransaction> receiverValue108 = OnFullBodyActionInterrupted;
         if (!global::System.Object.ReferenceEquals(receiverValue108, null))
         {
             receiverValue108.Invoke(fullBodyTx);
         }
 
-        // receiverValue109（判空前缓存的近战动作已中断时的通知回调）：从近战动作已中断时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.TryInterruptMeleeForPriority(out FullBodyActionType, out int)。
+        // 判空前缓存的近战动作已中断时的通知回调。
 global::System.Action<global::AnimationActionTransaction> receiverValue109 = OnMeleeActionInterrupted;
         if (!global::System.Object.ReferenceEquals(receiverValue109, null))
         {
@@ -3041,7 +3059,7 @@ global::System.Action<global::AnimationActionTransaction> receiverValue109 = OnM
             weaponTx.cancelled = true;
             weaponTx.phase = WeaponTransactionPhase.Cancelled;
             hasActiveWeaponTx = false;
-            // receiverValue110（判空前缓存的武器动作已中断时的通知回调）：从武器动作已中断时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.RequestDeath()。
+            // 判空前缓存的武器动作已中断时的通知回调。
 global::System.Action<global::AnimationActionTransaction> receiverValue110 = OnWeaponActionInterrupted;
             if (!global::System.Object.ReferenceEquals(receiverValue110, null))
             {
@@ -3055,7 +3073,7 @@ global::System.Action<global::AnimationActionTransaction> receiverValue110 = OnW
             if (fullBodyTx.qteSessionId > 0)
             {
                 RestoreQTEWeaponVisual(fullBodyTx.qteSessionId);
-                // receiverValue111（判空前缓存的配对动作动作中断时的通知回调）：从配对动作动作中断时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.RequestDeath()。
+                // 判空前缓存的配对动作动作中断时的通知回调。
 global::System.Action<global::AnimationActionTransaction> receiverValue111 = OnQTEActionInterrupted;
                 if (!global::System.Object.ReferenceEquals(receiverValue111, null))
                 {
@@ -3065,14 +3083,14 @@ global::System.Action<global::AnimationActionTransaction> receiverValue111 = OnQ
 
             if (IsTraversalAction(fullBodyTx.fullBodyActionType))
             {
-                // receiverValue112（判空前缓存的全身动作中断时的通知回调）：从全身动作中断时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.RequestDeath()。
+                // 判空前缓存的全身动作中断时的通知回调。
 global::System.Action<global::AnimationActionTransaction> receiverValue112 = OnFullBodyActionInterrupted;
                 if (!global::System.Object.ReferenceEquals(receiverValue112, null))
                 {
                     receiverValue112.Invoke(fullBodyTx);
                 }
 
-                // receiverValue113（判空前缓存的通行动作中断时的通知回调）：从通行动作中断时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.RequestDeath()。
+                // 判空前缓存的通行动作中断时的通知回调。
 global::System.Action<global::AnimationActionTransaction> receiverValue113 = OnTraversalActionInterrupted;
                 if (!global::System.Object.ReferenceEquals(receiverValue113, null))
                 {
@@ -3091,14 +3109,14 @@ global::System.Action<global::AnimationActionTransaction> receiverValue113 = OnT
         }
         completedPairDeathPose = false;
 
-        // receiverValue114（判空前缓存的动作运动执行器）：从动作运动执行器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.RequestDeath()。
+        // 判空前缓存的动作运动执行器。
 global::LeonActionMotionDriver receiverValue114 = actionMotionDriver;
         if (!global::System.Object.ReferenceEquals(receiverValue114, null))
         {
             receiverValue114.BeginDeathMotion();
         }
 
-        // receiverValue115（判空前缓存的当前里昂动画绑定组件）：从动画绑定组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.RequestDeath()。
+        // 判空前缓存的当前里昂动画绑定组件。
 global::LeonAnimRig receiverValue115 = animRig;
         if (!global::System.Object.ReferenceEquals(receiverValue115, null))
         {
@@ -3108,7 +3126,7 @@ global::LeonAnimRig receiverValue115 = animRig;
         if (!deathEventSent)
         {
             deathEventSent = true;
-            // receiverValue116（判空前缓存的死亡已进入时的通知回调）：从死亡已进入时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.RequestDeath()。
+            // 判空前缓存的死亡已进入时的通知回调。
 global::System.Action receiverValue116 = OnDeathEntered;
             if (!global::System.Object.ReferenceEquals(receiverValue116, null))
             {
@@ -3119,7 +3137,7 @@ global::System.Action receiverValue116 = OnDeathEntered;
 
     /// <summary>IsQTEAction 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
     /// <remarks>静态调用链：上游 LeonAnimationActionCoordinator.ForceFinishQTE(int)、LeonAnimationActionCoordinator.HandleFullBodyCompleted(Animator, FullBodyActionType, int)、LeonAnimationActionCoordinator.HandleFullBodyEntered(Animator, FullBodyActionType, int)、LeonAnimationActionCoordinator.HandleFullBodyExited(Animator, FullBodyActionType, int, bool)、LeonAnimationActionCoordinator.HandleFullBodyInterrupted(Animator, FullBodyActionType, int)；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="action">中文含义：动作。使用位置：LeonAnimationActionCoordinator.IsQTEAction(FullBodyActionType)。</param>
+    /// <param name="action">动作。</param>
     private static bool IsQTEAction(FullBodyActionType action)
     {
         return action == FullBodyActionType.QTEEnter || action == FullBodyActionType.QTEHold || action == FullBodyActionType.QTESuccess || action == FullBodyActionType.QTEFail;
@@ -3127,7 +3145,7 @@ global::System.Action receiverValue116 = OnDeathEntered;
 
     /// <summary>IsMeleeAction 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
     /// <remarks>静态调用链：上游 LeonAnimationActionCoordinator.AdvanceMeleeAction(FullBodyActionType)、LeonAnimationActionCoordinator.CheckActionConflict(ActionKind)、LeonAnimationActionCoordinator.CompleteMeleeAction()、LeonAnimationActionCoordinator.HandleFullBodyCompleted(Animator, FullBodyActionType, int)、LeonAnimationActionCoordinator.HandleFullBodyEntered(Animator, FullBodyActionType, int) 等共 9 处；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="action">中文含义：动作。使用位置：LeonAnimationActionCoordinator.IsMeleeAction(FullBodyActionType)。</param>
+    /// <param name="action">动作。</param>
     private static bool IsMeleeAction(FullBodyActionType action)
     {
         return action == FullBodyActionType.KnifeQuickAttack || action == FullBodyActionType.KnifeParry || action == FullBodyActionType.QTERightCutKick || action == FullBodyActionType.QTESpinningHookKick
@@ -3136,7 +3154,7 @@ global::System.Action receiverValue116 = OnDeathEntered;
 
     /// <summary>IsTraversalAction 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
     /// <remarks>静态调用链：上游 LeonAnimationActionCoordinator.AdvanceTraversalAction(FullBodyActionType, float, float)、LeonAnimationActionCoordinator.CancelTraversal()、LeonAnimationActionCoordinator.HandleFullBodyCompleted(Animator, FullBodyActionType, int)、LeonAnimationActionCoordinator.HandleFullBodyEntered(Animator, FullBodyActionType, int)、LeonAnimationActionCoordinator.HandleFullBodyExited(Animator, FullBodyActionType, int, bool) 等共 7 处；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="action">中文含义：动作。使用位置：LeonAnimationActionCoordinator.IsTraversalAction(FullBodyActionType)。</param>
+    /// <param name="action">动作。</param>
     private static bool IsTraversalAction(FullBodyActionType action)
     {
         return action == FullBodyActionType.WindowClimbThrough || action == FullBodyActionType.WindowDropFall ||
@@ -3147,7 +3165,7 @@ global::System.Action receiverValue116 = OnDeathEntered;
 
     /// <summary>IsKnifeAction 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
     /// <remarks>静态调用链：上游 LeonAnimationActionCoordinator.AdvanceIndependentKnifeTransaction(int, KnifeActionConfiguration, float, float)、LeonAnimationActionCoordinator.CommitKnifeAssistOrientation(Quaternion)、LeonAnimationActionCoordinator.EndIndependentKnifeTransaction(int)、LeonAnimationActionCoordinator.HandleFullBodyExited(Animator, FullBodyActionType, int, bool)、LeonAnimationActionCoordinator.RequestMeleeAction(FullBodyActionType, int) 等共 6 处；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="action">中文含义：动作。使用位置：LeonAnimationActionCoordinator.IsKnifeAction(FullBodyActionType)。</param>
+    /// <param name="action">动作。</param>
     private static bool IsKnifeAction(FullBodyActionType action)
     {
         return action == FullBodyActionType.KnifeQuickAttack || action == FullBodyActionType.KnifeParry;
@@ -3155,7 +3173,7 @@ global::System.Action receiverValue116 = OnDeathEntered;
 
     /// <summary>IsMeleeAttackAction 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
     /// <remarks>静态调用链：上游 LeonAnimationActionCoordinator.HandleMeleeHitWindow(Animator, FullBodyActionType)；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="action">中文含义：动作。使用位置：LeonAnimationActionCoordinator.IsMeleeAttackAction(FullBodyActionType)。</param>
+    /// <param name="action">动作。</param>
     private static bool IsMeleeAttackAction(FullBodyActionType action)
     {
         return action == FullBodyActionType.KnifeQuickAttack || action == FullBodyActionType.QTERightCutKick || action == FullBodyActionType.QTESpinningHookKick
@@ -3164,7 +3182,7 @@ global::System.Action receiverValue116 = OnDeathEntered;
 
     /// <summary>IsGunWeapon 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
     /// <remarks>静态调用链：上游 LeonAnimationActionCoordinator.ContinueEquipAfterKnifeHide(int)、LeonAnimationActionCoordinator.ContinueEquipAfterWeaponCommit(int)、LeonAnimationActionCoordinator.HandleWeaponExited(Animator, WeaponActionType, int, bool)、LeonAnimationActionCoordinator.RequestWeaponSwitch(WeaponType, WeaponType)；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="weapon">中文含义：当前武器类别。使用位置：LeonAnimationActionCoordinator.IsGunWeapon(WeaponType)。</param>
+    /// <param name="weapon">当前武器类别。</param>
     private static bool IsGunWeapon(WeaponType weapon)
     {
         return weapon == WeaponType.Pistol || weapon == WeaponType.Rifle || weapon == WeaponType.Shotgun;
@@ -3172,7 +3190,7 @@ global::System.Action receiverValue116 = OnDeathEntered;
 
     /// <summary>IsLongGunWeapon 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
     /// <remarks>静态调用链：上游 LeonAnimationActionCoordinator.HandleWeaponProgress(Animator, WeaponActionType, int, float)、LeonAnimationActionCoordinator.ValidateVisualMarker(VisualMarker, WeaponActionType, WeaponTransactionPhase)；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="weapon">中文含义：当前武器类别。使用位置：LeonAnimationActionCoordinator.IsLongGunWeapon(WeaponType)。</param>
+    /// <param name="weapon">当前武器类别。</param>
     private static bool IsLongGunWeapon(WeaponType weapon)
     {
         return weapon == WeaponType.Rifle || weapon == WeaponType.Shotgun;
@@ -3180,8 +3198,8 @@ global::System.Action receiverValue116 = OnDeathEntered;
 
     /// <summary>IsLegalQTETransition 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
     /// <remarks>静态调用链：上游 LeonAnimationActionCoordinator.AdvanceQTEPhase(int, FullBodyActionType)；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="current">中文含义：当前全身动作类型。使用位置：LeonAnimationActionCoordinator.IsLegalQTETransition(FullBodyActionType, FullBodyActionType)。</param>
-    /// <param name="next">中文含义：下一个全身动作类型。使用位置：LeonAnimationActionCoordinator.IsLegalQTETransition(FullBodyActionType, FullBodyActionType)。</param>
+    /// <param name="current">当前全身动作类型。</param>
+    /// <param name="next">下一个全身动作类型。</param>
     private static bool IsLegalQTETransition(FullBodyActionType current, FullBodyActionType next)
     {
         return (current == FullBodyActionType.QTEEnter && next == FullBodyActionType.QTEHold) || (current == FullBodyActionType.QTEEnter && next == FullBodyActionType.QTESuccess) || (current == FullBodyActionType.QTEHold && (next == FullBodyActionType.QTESuccess || next == FullBodyActionType.QTEFail));
@@ -3189,7 +3207,7 @@ global::System.Action receiverValue116 = OnDeathEntered;
 
     /// <summary>ToQTEPhase 的状态或数值处理入口；通过当前参数与已有成员完成计算，不据静态扫描推断额外的运行期绑定。</summary>
     /// <remarks>静态调用链：上游 LeonAnimationActionCoordinator.AdvanceQTEPhase(int, FullBodyActionType)；没有解析到下游方法调用。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="action">中文含义：动作。使用位置：LeonAnimationActionCoordinator.ToQTEPhase(FullBodyActionType)。</param>
+    /// <param name="action">动作。</param>
     private static FullBodyTransactionPhase ToQTEPhase(FullBodyActionType action)
     {
         switch (action)
@@ -3209,7 +3227,7 @@ global::System.Action receiverValue116 = OnDeathEntered;
 
     /// <summary>RestoreQTEWeaponVisual 的业务处理入口；本方法直接依赖 Action&lt;int, bool&gt;.Invoke(int, bool)、object.ReferenceEquals(object, object)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonAnimationActionCoordinator.CancelQTE(int)、LeonAnimationActionCoordinator.ForceFinishQTE(int)、LeonAnimationActionCoordinator.HandleFullBodyExited(Animator, FullBodyActionType, int, bool)、LeonAnimationActionCoordinator.OnDisable()、LeonAnimationActionCoordinator.RequestDeath()；下游（含内部回调体） Action&lt;int, bool&gt;.Invoke(int, bool)、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="qteSessionId">中文含义：配对动作会话编号。使用位置：作为 Action&lt;int, bool&gt;.Invoke(int, bool) 的参数、LeonAnimationActionCoordinator.RestoreQTEWeaponVisual(int)。</param>
+    /// <param name="qteSessionId">配对动作会话编号。</param>
     private void RestoreQTEWeaponVisual(int qteSessionId)
     {
         if (qteSessionId <= 0 || qteWeaponHiddenSessionId != qteSessionId)
@@ -3218,7 +3236,7 @@ global::System.Action receiverValue116 = OnDeathEntered;
         }
 
         qteWeaponHiddenSessionId = -1;
-        // receiverValue117（判空前缓存的配对动作武器可见性请求的时的通知回调）：从配对动作武器可见性请求的时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.RestoreQTEWeaponVisual(int)。
+        // 判空前缓存的配对动作武器可见性请求的时的通知回调。
 global::System.Action<int, bool> receiverValue117 = OnQTEWeaponVisibilityRequested;
         if (!global::System.Object.ReferenceEquals(receiverValue117, null))
         {
@@ -3231,7 +3249,7 @@ global::System.Action<int, bool> receiverValue117 = OnQTEWeaponVisibilityRequest
     // ================================================================
     /// <summary>ResetVisualMarkers 的业务处理入口；本方法直接依赖 HashSet&lt;VisualMarker&gt;.Clear()，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonAnimationActionCoordinator.RequestReload(WeaponType)、LeonAnimationActionCoordinator.RequestWeaponSwitch(WeaponType, WeaponType)；下游（含内部回调体） HashSet&lt;VisualMarker&gt;.Clear()。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="txId">中文含义：动作事务编号。使用位置：LeonAnimationActionCoordinator.ResetVisualMarkers(int)。</param>
+    /// <param name="txId">动作事务编号。</param>
     private void ResetVisualMarkers(int txId)
     {
         if (visualMarkerTxId != txId)
@@ -3243,8 +3261,8 @@ global::System.Action<int, bool> receiverValue117 = OnQTEWeaponVisibilityRequest
 
     /// <summary>NotifyVisualMarker 的业务处理入口；本方法直接依赖 Action&lt;AnimationActionTransaction, VisualMarker&gt;.Invoke(AnimationActionTransaction, VisualMarker)、HashSet&lt;VisualMarker&gt;.Add(VisualMarker)、HashSet&lt;VisualMarker&gt;.Clear()、HashSet&lt;VisualMarker&gt;.Contains(VisualMarker)、LeonAnimationActionCoordinator.IsFromThisAnimator(Animator)、LeonAnimationActionCoordinator.ValidateVisualMarker(VisualMarker, WeaponActionType, WeaponTransactionPhase)、LeonAnimRig.NotifyEquipVisualRevealIK() 等共 9 处，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonAnimationActionCoordinator.HandleWeaponProgress(Animator, WeaponActionType, int, float)、WeaponVisualEventRelay.OnEquipVisualReveal()、WeaponVisualEventRelay.OnHolsterVisualCommit()、WeaponVisualEventRelay.OnLongGunSupportHandGrip()、WeaponVisualEventRelay.OnRifleBackHideBeforeReveal()；下游（含内部回调体） Action&lt;AnimationActionTransaction, VisualMarker&gt;.Invoke(AnimationActionTransaction, VisualMarker)、HashSet&lt;VisualMarker&gt;.Add(VisualMarker)、HashSet&lt;VisualMarker&gt;.Clear()、HashSet&lt;VisualMarker&gt;.Contains(VisualMarker)、LeonAnimationActionCoordinator.IsFromThisAnimator(Animator)、LeonAnimationActionCoordinator.ValidateVisualMarker(VisualMarker, WeaponActionType, WeaponTransactionPhase)、LeonAnimRig.NotifyEquipVisualRevealIK() 等共 9 处。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="source">中文含义：来源动画控制器。使用位置：作为 LeonAnimationActionCoordinator.IsFromThisAnimator(Animator) 的参数。</param>
-    /// <param name="marker">中文含义：标记。使用位置：作为 Action&lt;AnimationActionTransaction, VisualMarker&gt;.Invoke(AnimationActionTransaction, VisualMarker) 的参数、作为 HashSet&lt;VisualMarker&gt;.Add(VisualMarker) 的参数、作为 HashSet&lt;VisualMarker&gt;.Contains(VisualMarker) 的参数 等共 5 处。</param>
+    /// <param name="source">来源动画控制器。</param>
+    /// <param name="marker">标记。</param>
     public void NotifyVisualMarker(Animator source, VisualMarker marker)
     {
         if (!IsFromThisAnimator(source) || isDead)
@@ -3278,7 +3296,7 @@ global::System.Action<int, bool> receiverValue117 = OnQTEWeaponVisibilityRequest
         processedMarkers.Add(marker);
         if (marker == VisualMarker.EquipVisualReveal)
         {
-            // receiverValue118（判空前缓存的当前里昂动画绑定组件）：从动画绑定组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.NotifyVisualMarker(Animator, VisualMarker)。
+            // 判空前缓存的当前里昂动画绑定组件。
 global::LeonAnimRig receiverValue118 = animRig;
             if (!global::System.Object.ReferenceEquals(receiverValue118, null))
             {
@@ -3287,7 +3305,7 @@ global::LeonAnimRig receiverValue118 = animRig;
         }
         else if (marker == VisualMarker.LongGunSupportHandGrip)
         {
-            // receiverValue119（判空前缓存的当前里昂动画绑定组件）：从动画绑定组件读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.NotifyVisualMarker(Animator, VisualMarker)。
+            // 判空前缓存的当前里昂动画绑定组件。
 global::LeonAnimRig receiverValue119 = animRig;
             if (!global::System.Object.ReferenceEquals(receiverValue119, null))
             {
@@ -3295,7 +3313,7 @@ global::LeonAnimRig receiverValue119 = animRig;
             }
         }
 
-        // receiverValue120（判空前缓存的视觉表现标记时的通知回调）：从视觉表现标记时的通知回调读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.NotifyVisualMarker(Animator, VisualMarker)。
+        // 判空前缓存的视觉表现标记时的通知回调。
 global::System.Action<global::AnimationActionTransaction, global::VisualMarker> receiverValue120 = OnVisualMarker;
         if (!global::System.Object.ReferenceEquals(receiverValue120, null))
         {
@@ -3305,9 +3323,9 @@ global::System.Action<global::AnimationActionTransaction, global::VisualMarker> 
 
     /// <summary>ValidateVisualMarker 的业务处理入口；本方法直接依赖 LeonAnimationActionCoordinator.IsLongGunWeapon(WeaponType)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonAnimationActionCoordinator.NotifyVisualMarker(Animator, VisualMarker)；下游（含内部回调体） LeonAnimationActionCoordinator.IsLongGunWeapon(WeaponType)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="marker">中文含义：标记。使用位置：LeonAnimationActionCoordinator.ValidateVisualMarker(VisualMarker, WeaponActionType, WeaponTransactionPhase)。</param>
-    /// <param name="action">中文含义：动作。使用位置：LeonAnimationActionCoordinator.ValidateVisualMarker(VisualMarker, WeaponActionType, WeaponTransactionPhase)。</param>
-    /// <param name="phase">中文含义：阶段。使用位置：LeonAnimationActionCoordinator.ValidateVisualMarker(VisualMarker, WeaponActionType, WeaponTransactionPhase)。</param>
+    /// <param name="marker">标记。</param>
+    /// <param name="action">动作。</param>
+    /// <param name="phase">阶段。</param>
     private bool ValidateVisualMarker(VisualMarker marker, WeaponActionType action, WeaponTransactionPhase phase)
     {
         switch (marker)
@@ -3350,23 +3368,23 @@ global::System.Action<global::AnimationActionTransaction, global::VisualMarker> 
         return weaponTx.sourceWeaponType;
     }
 
-    /// <summary>中文含义：玩家移动。使用位置：LeonAnimationActionCoordinator.CommitCompatibleState(LeonState)、LeonAnimationActionCoordinator.InitializePlayerState(LeonLocomotion, LeonState)、LeonAnimationActionCoordinator.OnDisable() 等共 4 处。</summary>
+    /// <summary>玩家移动。</summary>
     [Header("动作状态归属")]
     [UnityEngine.Serialization.FormerlySerializedAs("玩家移动")]
     [UnityEngine.InspectorName("玩家移动")]
     public LeonLocomotion playerMovement;
-    /// <summary>中文含义：玩家武器动作。使用位置：LeonAnimationActionCoordinator.CommitCompatibleState(LeonState)、LeonAnimationActionCoordinator.OnDisable()、LeonAnimationActionCoordinator.PlayerSnapshot.get。</summary>
+    /// <summary>玩家武器动作。</summary>
     private PlayerWeaponPhase playerWeaponAction;
-    /// <summary>中文含义：玩家全身动作。使用位置：LeonAnimationActionCoordinator.CommitCompatibleState(LeonState)、LeonAnimationActionCoordinator.OnDisable()、LeonAnimationActionCoordinator.PlayerSnapshot.get。</summary>
+    /// <summary>玩家全身动作。</summary>
     private PlayerFullBodyPhase playerFullBodyAction;
-    /// <summary>中文含义：玩家状态是否已初始化。使用位置：LeonAnimationActionCoordinator.InitializePlayerState(LeonLocomotion, LeonState)。</summary>
+    /// <summary>玩家状态是否已初始化。</summary>
     private bool playerStateInitialized;
-    /// <summary>中文含义：玩家快照。使用位置：作为 LeonActionMotionDriver.SynchronizeNormalMotionPermission(LeonState) 的参数、LeonController.currentState.get。</summary>
+    /// <summary>玩家快照。</summary>
     public PlayerActionSnapshot PlayerSnapshot
     {
         get
         {
-            // argumentValue124（按原顺序缓存的实参玩家移动的当前移动阶段）：按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 PlayerActionSnapshot.PlayerActionSnapshot(LeonState, PlayerWeaponPhase, PlayerFullBodyPhase, int, int) 的参数、LeonAnimationActionCoordinator.PlayerSnapshot.get。
+            // 按原顺序缓存的实参玩家移动的当前移动阶段。
 global::LeonState argumentValue124;
             if (playerMovement != null)
             {
@@ -3377,11 +3395,11 @@ global::LeonState argumentValue124;
                 argumentValue124 = LeonState.Idle;
             }
 
-            // argumentValue125（按原顺序缓存的实参玩家武器动作）：从玩家武器动作读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 PlayerActionSnapshot.PlayerActionSnapshot(LeonState, PlayerWeaponPhase, PlayerFullBodyPhase, int, int) 的参数。
+            // 按原顺序缓存的实参玩家武器动作。
 global::PlayerWeaponPhase argumentValue125 = playerWeaponAction;
-            // argumentValue126（按原顺序缓存的实参玩家全身动作）：从玩家全身动作读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 PlayerActionSnapshot.PlayerActionSnapshot(LeonState, PlayerWeaponPhase, PlayerFullBodyPhase, int, int) 的参数。
+            // 按原顺序缓存的实参玩家全身动作。
 global::PlayerFullBodyPhase argumentValue126 = playerFullBodyAction;
-            // argumentValue127（按原顺序缓存的实参武器动作事务的事务编号）：按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 PlayerActionSnapshot.PlayerActionSnapshot(LeonState, PlayerWeaponPhase, PlayerFullBodyPhase, int, int) 的参数、LeonAnimationActionCoordinator.PlayerSnapshot.get。
+            // 按原顺序缓存的实参武器动作事务的事务编号。
 int argumentValue127;
             if (hasActiveWeaponTx)
             {
@@ -3392,7 +3410,7 @@ int argumentValue127;
                 argumentValue127 = -1;
             }
 
-            // selectedValue123（分支选出的全身动作事务的事务编号）：保存分支选择的结果，两个分支分别赋值后供原表达式使用，避免重复求值。使用位置：作为 PlayerActionSnapshot.PlayerActionSnapshot(LeonState, PlayerWeaponPhase, PlayerFullBodyPhase, int, int) 的参数、LeonAnimationActionCoordinator.PlayerSnapshot.get。
+            // 分支选出的全身动作事务的事务编号。
 int selectedValue123;
             if (hasActiveFullBodyTx)
             {
@@ -3409,8 +3427,8 @@ int selectedValue123;
 
     /// <summary>InitializePlayerState 的业务处理入口；本方法直接依赖 LeonAnimationActionCoordinator.CommitCompatibleState(LeonState)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 LeonController.InitPipeline()；下游（含内部回调体） LeonAnimationActionCoordinator.CommitCompatibleState(LeonState)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="movement">中文含义：移动。使用位置：LeonAnimationActionCoordinator.InitializePlayerState(LeonLocomotion, LeonState)。</param>
-    /// <param name="initialState">中文含义：初始状态。使用位置：作为 LeonAnimationActionCoordinator.CommitCompatibleState(LeonState) 的参数。</param>
+    /// <param name="movement">移动。</param>
+    /// <param name="initialState">初始状态。</param>
     public void InitializePlayerState(LeonLocomotion movement, LeonState initialState)
     {
         if (playerStateInitialized)
@@ -3425,7 +3443,7 @@ int selectedValue123;
 
     /// <summary>旧入口只转发到各状态拥有者；后续新增动作通过审批事务进入。</summary>
     /// <remarks>静态调用链：上游 LeonAnimationActionCoordinator.InitializePlayerState(LeonLocomotion, LeonState)、LeonController.ChangeState(LeonState)；下游（含内部回调体） LeonAnimationActionCoordinator.SynchronizeMotionControlAuthority()、LeonLocomotion.CommitMovementPhase(LeonState)、object.ReferenceEquals(object, object)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="state">中文含义：当前里昂状态。使用位置：作为 LeonLocomotion.CommitMovementPhase(LeonState) 的参数、LeonAnimationActionCoordinator.CommitCompatibleState(LeonState)。</param>
+    /// <param name="state">当前里昂状态。</param>
     public void CommitCompatibleState(LeonState state)
     {
         if (playerFullBodyAction == PlayerFullBodyPhase.EndEnd)
@@ -3465,7 +3483,7 @@ int selectedValue123;
                 playerFullBodyAction = PlayerFullBodyPhase.EndEnd;
                 break;
             default:
-                // receiverValue128（判空前缓存的玩家移动）：从玩家移动读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.CommitCompatibleState(LeonState)。
+                // 判空前缓存的玩家移动。
 global::LeonLocomotion receiverValue128 = playerMovement;
                 if (!global::System.Object.ReferenceEquals(receiverValue128, null))
                 {
@@ -3484,7 +3502,7 @@ global::LeonLocomotion receiverValue128 = playerMovement;
     {
         if (isActiveAndEnabled)
         {
-            // receiverValue129（判空前缓存的动作运动执行器）：从动作运动执行器读取一次后保存，供后续分支使用。按原表达式顺序保存一次求值结果，后续分支和调用复用此值，避免重新读取接收者或实参。使用位置：作为 object.ReferenceEquals(object, object) 的参数、LeonAnimationActionCoordinator.SynchronizeMotionControlAuthority()。
+            // 判空前缓存的动作运动执行器。
 global::LeonActionMotionDriver receiverValue129 = actionMotionDriver;
             if (!global::System.Object.ReferenceEquals(receiverValue129, null))
             {
@@ -3505,7 +3523,7 @@ global::LeonActionMotionDriver receiverValue129 = actionMotionDriver;
 
     /// <summary>CommitKnifeAssistOrientation 的业务处理入口；本方法直接依赖 LeonActionMotionDriver.CommitNormalOrientation(MotionControlToken, Quaternion)、LeonAnimationActionCoordinator.IsKnifeAction(FullBodyActionType)，调用方通过参数与返回结果交接本次处理。</summary>
     /// <remarks>静态调用链：上游 KnifeCombatModule.UpdateWeakSteering()；下游（含内部回调体） LeonActionMotionDriver.CommitNormalOrientation(MotionControlToken, Quaternion)、LeonAnimationActionCoordinator.IsKnifeAction(FullBodyActionType)。动态事件、动画标记、反射和序列化绑定须结合实际宿主核对；完整直接调用清单见项目通信索引。</remarks>
-    /// <param name="orientation">中文含义：朝向。使用位置：作为 LeonActionMotionDriver.CommitNormalOrientation(MotionControlToken, Quaternion) 的参数。</param>
+    /// <param name="orientation">朝向。</param>
     public bool CommitKnifeAssistOrientation(Quaternion orientation)
     {
         if (!hasActiveFullBodyTx || !IsKnifeAction(fullBodyTx.fullBodyActionType) || actionMotionDriver == null)
@@ -3517,11 +3535,11 @@ global::LeonActionMotionDriver receiverValue129 = actionMotionDriver;
         return actionMotionDriver.CommitNormalOrientation(actionMotionDriver.CurrentMotionToken, orientation);
     }
 
-    /// <summary>中文含义：是否死亡。使用位置：LeonFingerIKController.EvaluateTargetWeight(WeaponType)、LeonWeaponHandler.AdvanceBrokenRecoverKnife()、LeonWeaponHandler.HandleKnifeBroken()。</summary>
+    /// <summary>是否死亡。</summary>
     public bool IsDead => isDead;
-    /// <summary>中文含义：是否具有生效武器动作。使用位置：作为 Debug.LogError(object) 的参数、LeonFingerIKController.CanCaptureRuntimeTargets()、LeonFingerIKController.EvaluateTargetWeight(WeaponType) 等共 9 处。</summary>
+    /// <summary>是否具有生效武器动作。</summary>
     public bool HasActiveWeaponAction => hasActiveWeaponTx;
-    /// <summary>中文含义：是否具有生效全身动作。使用位置：LeonFingerIKController.EvaluateTargetWeight(WeaponType)、LeonFootAction.AllowGroundContact.get、LeonHighDropLanding.CanBeginDrop() 等共 9 处。</summary>
+    /// <summary>是否具有生效全身动作。</summary>
     public bool HasActiveFullBodyAction => hasActiveFullBodyTx;
     internal bool IsVillageGateOpening => hasActiveFullBodyTx && fullBodyTx.fullBodyActionType == FullBodyActionType.VillageGateOpen;
     internal bool TryReadLandingRollTime(out float time)
@@ -3533,22 +3551,22 @@ global::LeonActionMotionDriver receiverValue129 = actionMotionDriver;
     internal bool IsItemPickupActive => hasActiveFullBodyTx && fullBodyTx.fullBodyActionType == FullBodyActionType.ItemPickup;
     /// <summary>中文含义：是否命中事务生效。受击全身事务是否正在播放（供受击期间的再次伤害判断使用）</summary>
     public bool IsHitTransactionActive => hasActiveFullBodyTx && fullBodyTx.fullBodyActionType == FullBodyActionType.Hit && !fullBodyTx.cancelled;
-    /// <summary>中文含义：是否存在待处理的武器切换。使用位置：LeonCombat.IsFireBlockedByWeaponAction()、LeonWeaponHandler.AdvanceBrokenRecoverKnife()、LeonWeaponHandler.IsFireBlockedByWeaponAction.get 等共 5 处。</summary>
+    /// <summary>是否存在待处理的武器切换。</summary>
     public bool HasPendingWeaponSwitch => hasPendingWeaponSwitch;
-    /// <summary>中文含义：是否武器切换内部进度。使用位置：LeonCombat.IsFireBlockedByWeaponAction()、LeonWeaponHandler.IsFireBlockedByWeaponAction.get。</summary>
+    /// <summary>是否武器切换内部进度。</summary>
     public bool IsWeaponSwitchInProgress => hasActiveWeaponTx && weaponTx.isWeaponSwitch;
     /// <summary>中文含义：待处理武器类型。</summary>
     public WeaponType PendingWeaponType => pendingWeaponType;
-    /// <summary>中文含义：当前武器事务编号。使用位置：作为 WeaponBase.BeginReload(int) 的参数、LeonCombat.HandleReload()、LeonWeaponHandler.CompleteReload() 等共 5 处。</summary>
+    /// <summary>当前武器事务编号。</summary>
     public int CurrentWeaponTransactionId => weaponTx.transactionId;
-    /// <summary>中文含义：当前全身事务编号。使用位置：LeonCombat.StartMeleeAction(FullBodyActionType, int)、LeonHighDropLanding.BeginDrop()、LeonWindowTraversal.TryStartTraversal(WindowTraversalPoint)。</summary>
+    /// <summary>当前全身事务编号。</summary>
     public int CurrentFullBodyTransactionId => fullBodyTx.transactionId;
-    /// <summary>中文含义：当前阶段。使用位置：作为 Debug.LogError(object) 的参数、LeonFingerIKController.EvaluateTargetWeight(WeaponType)。</summary>
+    /// <summary>当前阶段。</summary>
     public WeaponTransactionPhase CurrentPhase => weaponTx.phase;
     /// <summary>中文含义：当前全身阶段。</summary>
     public FullBodyTransactionPhase CurrentFullBodyPhase => fullBodyTx.fullBodyPhase;
     /// <summary>中文含义：当前配对动作会话编号。</summary>
     public int CurrentQTESessionId => fullBodyTx.qteSessionId;
-    /// <summary>中文含义：是否等待武器退出。使用位置：LeonCombat.IsFireBlockedByWeaponAction()、LeonHighDropLanding.CanBeginDrop()、LeonWeaponHandler.AdvanceBrokenRecoverKnife() 等共 8 处。</summary>
+    /// <summary>是否等待武器退出。</summary>
     public bool WaitingForWeaponExit => waitingForWeaponExit;
 }

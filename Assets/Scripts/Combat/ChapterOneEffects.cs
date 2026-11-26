@@ -23,6 +23,7 @@ public sealed class ChapterOneEffects : ScriptableObject
     }
 
     [SerializeField] private Entry[] effects = Array.Empty<Entry>();
+    private Entry[] effectsByKind;
     private static ChapterOneEffects loaded;
     private static bool loadAttempted;
     private static GameObjectPoolManager warmedPool;
@@ -40,9 +41,26 @@ public sealed class ChapterOneEffects : ScriptableObject
         if (!loadAttempted)
         {
             loaded = Resources.Load<ChapterOneEffects>("Combat/ChapterOneEffects");
+            if (loaded != null)
+            {
+                loaded.BuildEffectIndex();
+            }
             loadAttempted = true;
         }
         return loaded;
+    }
+
+    private void BuildEffectIndex()
+    {
+        effectsByKind = new Entry[(int)ChapterOneEffect.KnifeHardSurface + 1];
+        foreach (Entry entry in effects)
+        {
+            int index = (int)entry.kind;
+            if (index >= 0 && index < effectsByKind.Length && entry.prefab != null && effectsByKind[index].prefab == null)
+            {
+                effectsByKind[index] = entry;
+            }
+        }
     }
 
     public static void Prewarm()
@@ -106,28 +124,30 @@ public sealed class ChapterOneEffects : ScriptableObject
         {
             return null;
         }
-        foreach (var entry in bank.effects)
+        int index = (int)kind;
+        if (index < 0 || index >= bank.effectsByKind.Length)
         {
-            if (entry.kind != kind || entry.prefab == null)
-            {
-                continue;
-            }
-
-            var pool = GameObjectPoolManager.Instance;
-            if (pool == null)
-            {
-                var clone = Instantiate(entry.prefab, point, rotation);
-                Destroy(clone, entry.lifetime);
-                return clone;
-            }
-
-            var effect = pool.GetVisualPool(entry.prefab).Get(point, rotation, null);
-            if (effect != null)
-            {
-                pool.ReturnDelayed(effect, entry.lifetime);
-            }
-            return effect;
+            return null;
         }
-        return null;
+        Entry entry = bank.effectsByKind[index];
+        if (entry.prefab == null)
+        {
+            return null;
+        }
+
+        var pool = GameObjectPoolManager.Instance;
+        if (pool == null)
+        {
+            var clone = Instantiate(entry.prefab, point, rotation);
+            Destroy(clone, entry.lifetime);
+            return clone;
+        }
+
+        var effect = pool.GetVisualPool(entry.prefab).Get(point, rotation, null);
+        if (effect != null)
+        {
+            pool.ReturnDelayed(effect, entry.lifetime);
+        }
+        return effect;
     }
 }

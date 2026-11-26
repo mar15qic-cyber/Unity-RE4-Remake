@@ -1,6 +1,8 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 internal sealed class ChapterLoadingView : MonoBehaviour
@@ -290,6 +292,57 @@ internal sealed class ChapterLoadingView : MonoBehaviour
             blackout.color = new Color(0f, 0f, 0f, Mathf.Clamp01(elapsed / duration));
             yield return null;
         }
+    }
+
+    internal void BeginAsyncSceneLoad(string scenePath, Action onBeforeActivate, Action onLoadFailed)
+    {
+        StartCoroutine(RunAsyncSceneLoad(scenePath, onBeforeActivate, onLoadFailed));
+    }
+
+    private IEnumerator RunAsyncSceneLoad(string scenePath, Action onBeforeActivate, Action onLoadFailed)
+    {
+        // 先让章节加载界面完成一帧绘制，再启动异步加载，避免画面停死在旧界面。
+        yield return null;
+        AsyncOperation operation = SceneManager.LoadSceneAsync(scenePath);
+        if (operation == null)
+        {
+            if (onLoadFailed != null)
+            {
+                onLoadFailed();
+            }
+
+            Destroy(gameObject);
+            yield break;
+        }
+
+        operation.allowSceneActivation = false;
+        while (operation.progress < 0.9f)
+        {
+            SetProgress(operation.progress / 0.9f);
+            yield return null;
+        }
+
+        ShowContinue();
+        while (!Confirmed)
+        {
+            yield return null;
+        }
+
+        if (onBeforeActivate != null)
+        {
+            onBeforeActivate();
+        }
+
+        if (UICursorManager.Instance != null)
+        {
+            UICursorManager.Instance.HideCustomCursor();
+        }
+
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
+        yield return FadeToBlack();
+        operation.allowSceneActivation = true;
+        yield return operation;
     }
 
     private void OnDestroy()
