@@ -1,0 +1,50 @@
+using UnityEngine;
+using Unity.Cinemachine;
+
+[DisallowMultipleComponent]
+public sealed class RE4CameraController : MonoBehaviour
+{
+    [Header("Player Binding")]
+    [SerializeField] private LeonController player;
+    [SerializeField] private Transform cameraAnchor;
+
+    [Header("Main Camera")]
+    [SerializeField] private Camera mainCamera;
+    [SerializeField] private CinemachineBrain brain;
+
+    [Header("Camera Rig")]
+    [SerializeField] private Transform followTarget;
+    [SerializeField] private Transform shoulderTarget;
+    [SerializeField] private Transform worldAimTarget;
+
+    [Header("Gameplay Camera")]
+    [SerializeField] private CinemachineCamera gameplayCamera;
+    [SerializeField] private CinemachineThirdPersonFollow thirdPersonFollow;
+    [SerializeField] private CinemachinePanTilt panTilt;
+    [SerializeField] private CinemachineDeoccluder deoccluder;
+
+    public LeonController Player => player;
+    public Transform CameraAnchor => cameraAnchor;
+    public Camera MainCamera => mainCamera;
+    public CinemachineBrain Brain => brain;
+    public Transform FollowTarget => followTarget;
+    public Transform ShoulderTarget => shoulderTarget;
+    public Transform WorldAimTarget => worldAimTarget;
+    public CinemachineCamera GameplayCamera => gameplayCamera;
+    public CinemachineThirdPersonFollow ThirdPersonFollow => thirdPersonFollow;
+    public CinemachinePanTilt PanTilt => panTilt;
+    public CinemachineDeoccluder Deoccluder => deoccluder;
+
+    public bool IsConfigured =>
+        player != null &&
+        cameraAnchor != null &&
+        mainCamera != null &&
+        brain != null &&
+        followTarget != null &&
+        shoulderTarget != null &&
+        worldAimTarget != null &&
+        gameplayCamera != null &&
+        thirdPersonFollow != null &&
+        panTilt != null &&
+        deoccluder != null;
+}

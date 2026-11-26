@@ -1,0 +1,708 @@
+using UnityEngine;
+using Unity.Cinemachine;
+
+/// <summary>
+/// RE4 Remake 第三人称相机控制器 — Cinemachine 驱动版
+///
+/// 架构：
+///   VCam_RE4 [CinemachineCamera]
+///     ├── CinemachineThirdPersonFollow → 位置（肩偏移 + 距离 + 高度 + 阻尼 + 碰撞）
+///     ├── CinemachinePanTilt           → 旋转（pan=yaw基准, tilt=pitch）
+///     └── CinemachineDeoccluder        → 碰撞检测（自动拉近）
+///
+/// 核心原理（位置与旋转完全独立）：
+///   FollowPivot 旋转 = yaw only → 相机位置在水平面内，pitch 不影响高度
+///   PanTilt tilt = pitch        → 相机朝向 = (yaw, pitch)，准心 = 摄像机 forward
+///
+/// 十大模块：
+///   1. 跟随       — SmoothDamp 位置阻尼 + Slerp 旋转阻尼 + 角色转向延迟跟随
+///   2. 鼠标旋转   — X=yaw, Y=pitch, 限制俯仰, 支持反转
+///   3. 碰撞检测   — CinemachineDeoccluder 自动拉近, 排除玩家层
+///   4. 瞄准模式   — 三状态（常态/瞄准/冲刺）参数实时插值
+///   5. 镜头震动   — Perlin noise Dutch angle, 公共 CameraShake API
+///   6. 剧情锁定   — 外部锁定/解锁, 平滑过渡回弹
+///   7. 奔跑效果   — 低强度 Perlin 位置抖动, 模拟 RE4 跑动震动
+///   8. 待机呼吸   — 缓慢水平摆动 + 垂直浮动, 提升沉浸感
+///   9. 近战推近   — 近战攻击时镜头前推 + 震动, 自动回弹
+///  10. 敌人拉远   — 敌人靠近时自动拉远镜头, 离开后回弹
+/// </summary>
+[DefaultExecutionOrder(-100)]
+public class RE4RThirdPersonCamera : MonoBehaviour
+{
+    // ========================================================================
+    // 模块 1：跟随设置
+    // ========================================================================
+    [Header("【1】跟随设置")]
+    [Tooltip("目标角色 Transform，为空则使用本物体")]
+    [SerializeField] private Transform target;
+
+    [Tooltip("常态相机偏移（X=左右肩, Y=高度, Z=-距离）")]
+    [SerializeField] private Vector3 normalOffset = new Vector3(0.5f, 1.6f, -1.8f);
+
+    [Tooltip("瞄准时相机偏移（拉近 + 专属肩位）")]
+    [SerializeField] private Vector3 aimOffset = new Vector3(0.4f, 1.6f, -0.7f);
+
+    [Tooltip("奔跑时相机偏移（轻微拉远）")]
+    [SerializeField] private Vector3 sprintOffset = new Vector3(0.5f, 1.65f, -2.0f);
+
+    [Tooltip("位置阻尼时间（秒，越小越跟手）")]
+    [SerializeField] private float positionDamping = 0.12f;
+
+    [Tooltip("瞄准时位置阻尼时间（更紧密）")]
+    [SerializeField] private float aimPositionDamping = 0.05f;
+
+    [Tooltip("旋转平滑速度（越大越快收敛）")]
+    [SerializeField] private float rotationSmoothing = 10f;
+
+    [Tooltip("角色转向时相机自动对齐速度（0=禁用）")]
+    [Range(0f, 5f)]
+    [SerializeField] private float autoAlignSpeed = 0.5f;
+
+    [Tooltip("转向延迟时间（秒，RE4 经典滞后跟随手感）")]
+    [Range(0f, 1f)]
+    [SerializeField] private float turnLagDelay = 0.15f;
+
+    // ========================================================================
+    // 模块 2：鼠标旋转
+    // ========================================================================
+    [Header("【2】鼠标旋转")]
+    [SerializeField] private float yawSensitivity = 2.0f;
+    [SerializeField] private float pitchSensitivity = 1.5f;
+    [SerializeField] private bool invertY = false;
+    [SerializeField] private Vector2 pitchRange = new Vector2(-25f, 35f);
+
+    // ========================================================================
+    // 模块 3：碰撞检测
+    // ========================================================================
+    [Header("【3】碰撞检测")]
+    [Tooltip("碰撞检测层（Start 中自动排除玩家自身层）")]
+    [SerializeField] private LayerMask collisionMask = ~0;
+
+    [Tooltip("SphereCast 球体半径（传入 Deoccluder）")]
+    [SerializeField] private float collisionRadius = 0.2f;
+
+    [Tooltip("碰撞时相机最近距离")]
+    [SerializeField] private float minimumDistanceFromTarget = 0.3f;
+
+    // ========================================================================
+    // 模块 4：瞄准模式 / 状态 FOV
+    // ========================================================================
+    [Header("【4】瞄准模式")]
+    [SerializeField] private float normalFOV = 48f;
+    [SerializeField] private float aimFOV = 35f;
+    [SerializeField] private float sprintFOV = 55f;
+    [SerializeField] private float paramBlendSpeed = 8f;
+
+    // ========================================================================
+    // 模块 5：镜头震动
+    // ========================================================================
+    [Header("【5】镜头震动")]
+    [SerializeField] private float defaultShakeDuration = 0.3f;
+
+    // ========================================================================
+    // 模块 6：剧情锁定
+    // ========================================================================
+    [Header("【6】剧情锁定")]
+    [SerializeField] private float unlockRecoverSpeed = 3f;
+
+    // ========================================================================
+    // 模块 7：奔跑效果
+    // ========================================================================
+    [Header("【7】奔跑效果")]
+    [SerializeField] private float sprintShakeIntensity = 0.03f;
+    [SerializeField] private float sprintShakeFrequency = 8f;
+
+    // ========================================================================
+    // 模块 8：待机呼吸
+    // ========================================================================
+    [Header("【8】待机呼吸")]
+    [SerializeField] private float idleBreathAmplitude = 1.5f;
+    [SerializeField] private float idleBreathSpeed = 0.3f;
+    [SerializeField] private float idleBobAmplitude = 0.03f;
+
+    // ========================================================================
+    // 模块 9：近战镜头微推
+    // ========================================================================
+    [Header("【9】近战镜头微推")]
+    [SerializeField] private float meleePushDistance = 0.3f;
+    [SerializeField] private float meleePushDuration = 0.1f;
+    [SerializeField] private float meleeRecoverDuration = 0.3f;
+    [SerializeField] private float meleeShakeIntensity = 0.5f;
+    [SerializeField] private bool autoDetectMelee = true;
+
+    // ========================================================================
+    // 模块 10：敌人近距离自动拉远
+    // ========================================================================
+    [Header("【10】敌人近距离自动拉远")]
+    [SerializeField] private LayerMask enemyLayerMask = 0;
+    [SerializeField] private float enemyProximityRange = 3f;
+    [SerializeField] private float enemyZoomOutFactor = 1.3f;
+    [SerializeField] private float enemyZoomSpeed = 3f;
+    [SerializeField] private int enemyCheckFrameInterval = 5;
+
+    // ========================================================================
+    // 内部状态
+    // ========================================================================
+
+    private LeonController controller;
+    private Animator anim;
+    private Camera cam;
+
+    // Cinemachine 组件
+    private CinemachineCamera vcam;
+    private CinemachineThirdPersonFollow tpf;
+    private CinemachinePanTilt panTilt;
+    private CinemachineDeoccluder deoccluder;
+    private Transform followPivot;  // yaw only → 位置不受 pitch 影响
+
+    // 位置
+    private Vector3 basePivotPos;   // SmoothDamp 后的基础位置
+    private Vector3 pivotVel;       // SmoothDamp 速度
+
+    // 旋转
+    private float yaw;
+    private float pitch;
+
+    // 转向延迟
+    private float turnLagTimer;
+    private float lastTargetYaw;
+
+    // 状态插值（Normal=0, Aim=1, Sprint=2）
+    private float stateBlend = 1f;
+    private int fromStateIndex;
+    private int toStateIndex;
+
+    private struct StateParams
+    {
+        public float fov;
+        public float cameraDistance;
+        public float verticalArm;
+        public float shoulderX;
+    }
+    private StateParams[] states;
+
+    // 当前插值后的参数（供其他模块使用）
+    private float curDistance;
+    private float curVerticalArm;
+    private float curShoulderX;
+    private float curFOV;
+
+    // 震动
+    private float shakeTimer;
+    private float shakeStartDuration;
+    private float currentShakeMag;
+
+    // 剧情锁定
+    private bool isLocked;
+    private Vector3 lockedPosition;
+    private Quaternion lockedRotation;
+    private float lockedFOV;
+
+    // 待机
+    private float idleTimer;
+    private float breathPhase;
+    private bool wasIdle;
+
+    // 解锁回弹
+    private float unlockBoost;
+
+    // 近战推近
+    private float meleePushTimer;
+    private float meleePushRatio;
+    private bool wasMelee;
+
+    // 敌人拉远
+    private float currentEnemyZoom = 1f;
+    private int enemyFrameCounter;
+    private bool hasNearbyEnemy;
+
+    // ========================== 公共 API ==========================
+
+    /// <summary>震屏（兼容旧接口：duration, magnitude）</summary>
+    public void Shake(float duration, float magnitude)
+        => CameraShake(magnitude, duration);
+
+    /// <summary>震屏公共方法 — 外部调用</summary>
+    public void CameraShake(float intensity, float duration)
+    {
+        if (duration <= 0f) duration = defaultShakeDuration;
+        if (shakeTimer <= 0f || intensity >= currentShakeMag)
+        {
+            shakeTimer = duration;
+            shakeStartDuration = duration;
+            currentShakeMag = intensity;
+        }
+    }
+
+    /// <summary>触发近战镜头微推</summary>
+    public void TriggerMeleePush()
+    {
+        meleePushTimer = meleePushDuration + meleeRecoverDuration;
+        CameraShake(meleeShakeIntensity, meleePushDuration);
+    }
+
+    /// <summary>锁定相机到指定位置/旋转（剧情用）</summary>
+    public void LockCamera(Vector3 position, Quaternion rotation, float fov = 55f)
+    {
+        isLocked = true;
+        lockedPosition = position;
+        lockedRotation = rotation;
+        lockedFOV = fov;
+        if (vcam != null) vcam.enabled = false;
+        var brain = cam != null ? cam.GetComponent<CinemachineBrain>() : null;
+        if (brain != null) brain.enabled = false;
+    }
+
+    /// <summary>锁定相机到指定 Transform</summary>
+    public void LockCamera(Transform lockTransform, float fov = 55f)
+        => LockCamera(lockTransform.position, lockTransform.rotation, fov);
+
+    /// <summary>解除锁定，平滑回弹至跟随状态</summary>
+    public void UnlockCamera()
+    {
+        if (!isLocked) return;
+        isLocked = false;
+        unlockBoost = 1f;
+
+        if (vcam != null) vcam.enabled = true;
+        var brain = cam != null ? cam.GetComponent<CinemachineBrain>() : null;
+        if (brain != null) brain.enabled = true;
+
+        // 从当前相机位置恢复，避免跳变
+        Vector3 e = cam.transform.eulerAngles;
+        yaw = Mathf.Repeat(e.y + 180f, 360f) - 180f;
+        float p = e.x;
+        if (p > 180f) p -= 360f;
+        pitch = Mathf.Clamp(p, pitchRange.x, pitchRange.y);
+
+        // 近似还原 FollowPivot 位置，让 VCam 从当前相机位置开始过渡
+        Quaternion yawRot = Quaternion.Euler(0f, yaw, 0f);
+        Vector3 offset = yawRot * new Vector3(curShoulderX, curVerticalArm, -curDistance);
+        basePivotPos = cam.transform.position - offset;
+        pivotVel = Vector3.zero;
+    }
+
+    public bool IsLocked => isLocked;
+    public float DistanceScale => 1f;
+
+    // ========================== 生命周期 ==========================
+
+    void Start()
+    {
+        controller = GetComponent<LeonController>();
+        anim = GetComponent<Animator>();
+
+        if (target == null) target = transform;
+
+        cam = controller != null ? controller.playerCamera : null;
+        if (cam == null) cam = Camera.main;
+        if (cam == null)
+        {
+            var go = new GameObject("MainCamera");
+            go.tag = "MainCamera";
+            cam = go.AddComponent<Camera>();
+            go.AddComponent<AudioListener>();
+        }
+        if (controller != null && controller.playerCamera == null)
+            controller.playerCamera = cam;
+
+        SetupCinemachine();
+
+        states = new StateParams[3];
+        states[0] = new StateParams { fov = normalFOV, cameraDistance = -normalOffset.z, verticalArm = normalOffset.y, shoulderX = normalOffset.x };
+        states[1] = new StateParams { fov = aimFOV, cameraDistance = -aimOffset.z, verticalArm = aimOffset.y, shoulderX = aimOffset.x };
+        states[2] = new StateParams { fov = sprintFOV, cameraDistance = -sprintOffset.z, verticalArm = sprintOffset.y, shoulderX = sprintOffset.x };
+
+        curDistance = states[0].cameraDistance;
+        curVerticalArm = states[0].verticalArm;
+        curShoulderX = states[0].shoulderX;
+        curFOV = states[0].fov;
+
+        basePivotPos = target.position;
+        yaw = target.eulerAngles.y;
+        pitch = 0f;
+
+        UICursorManager.Instance?.HideCustomCursor();
+    }
+
+    void SetupCinemachine()
+    {
+        // FollowPivot: yaw only → 位置不受 pitch 影响
+        var followGO = new GameObject("CamFollowPivot");
+        followGO.transform.SetPositionAndRotation(transform.position, transform.rotation);
+        followPivot = followGO.transform;
+
+        // VCam
+        var vcamGO = new GameObject("VCam_RE4");
+        vcamGO.transform.position = transform.position;
+
+        vcam = vcamGO.AddComponent<CinemachineCamera>();
+        vcam.Follow = followPivot;
+        vcam.LookAt = null; // PanTilt 控制旋转，不需要 LookAt 目标
+        vcam.Lens.FieldOfView = normalFOV;
+        vcam.Lens.NearClipPlane = 0.15f;
+
+        // Body: CinemachineThirdPersonFollow
+        // CameraDistance=距离, VerticalArmLength=高度, ShoulderOffset=肩偏, Damping=阻尼
+        tpf = vcamGO.AddComponent<CinemachineThirdPersonFollow>();
+        tpf.CameraDistance = -normalOffset.z;
+        tpf.CameraSide = 1f;
+        tpf.ShoulderOffset = new Vector3(normalOffset.x, 0f, 0f);
+        tpf.VerticalArmLength = normalOffset.y;
+        tpf.Damping = new Vector3(0.1f, 0.1f, 0.1f);
+
+        // Aim: CinemachinePanTilt
+        // ReferenceFrame=TrackingTarget → pan 相对于 FollowPivot 旋转
+        // Pan=0 → 相机朝 FollowPivot forward(yaw), Tilt=pitch → 俯仰
+        panTilt = vcamGO.AddComponent<CinemachinePanTilt>();
+        panTilt.ReferenceFrame = CinemachinePanTilt.ReferenceFrames.TrackingTarget;
+        panTilt.PanAxis.Value = 0f;
+        panTilt.PanAxis.Range = new Vector2(-180f, 180f);
+        panTilt.PanAxis.Wrap = true;
+        panTilt.TiltAxis.Value = 0f;
+        panTilt.TiltAxis.Range = new Vector2(pitchRange.x, pitchRange.y);
+        panTilt.TiltAxis.Wrap = false;
+
+        // Collision: CinemachineDeoccluder
+        deoccluder = vcamGO.AddComponent<CinemachineDeoccluder>();
+        deoccluder.CollideAgainst = collisionMask;
+        deoccluder.MinimumDistanceFromTarget = minimumDistanceFromTarget;
+        int playerLayer = gameObject.layer;
+        if (playerLayer > 0 && playerLayer < 32)
+            deoccluder.CollideAgainst &= ~(1 << playerLayer);
+
+        // 启用 CinemachineBrain
+        var brain = cam.GetComponent<CinemachineBrain>();
+        if (brain == null) brain = cam.gameObject.AddComponent<CinemachineBrain>();
+        brain.enabled = true;
+
+        // 禁用旧的 FreeLook（场景中 CM_FreeLook 已 inactive，此处兜底）
+        var oldFreeLookGO = GameObject.Find("CM_FreeLook");
+        if (oldFreeLookGO != null)
+            oldFreeLookGO.SetActive(false);
+    }
+
+    void LateUpdate()
+    {
+        if (controller == null && target == null) return;
+        if (cam == null || vcam == null) return;
+
+        float dt = Time.deltaTime;
+
+        // 剧情锁定最高优先级
+        if (isLocked)
+        {
+            ApplyLockedCamera(dt);
+            return;
+        }
+
+        DriveInput(dt);
+        UpdateStateBlend(dt);
+        UpdateMeleePush(dt);
+        UpdateEnemyProximity(dt);
+        ApplyCameraParams();
+        UpdateIdleBreathing(dt);
+        UpdateFollowPivot(dt);
+        UpdatePanTilt();
+        ApplyShake(dt);
+        ApplyFOV(dt);
+    }
+
+    // ========================== 模块 1：跟随 ==========================
+
+    void UpdateFollowPivot(float dt)
+    {
+        bool isAiming = IsAiming;
+        float dampTime = isAiming ? aimPositionDamping : positionDamping;
+
+        // 解锁后临时加快阻尼
+        if (unlockBoost > 0f)
+        {
+            unlockBoost -= dt * unlockRecoverSpeed;
+            dampTime = Mathf.Min(dampTime, 0.02f);
+        }
+
+        // 基础位置 SmoothDamp
+        basePivotPos = Vector3.SmoothDamp(basePivotPos, target.position, ref pivotVel, dampTime);
+
+        // 叠加待机垂直浮动 + 奔跑抖动（不影响 SmoothDamp 基准）
+        Vector3 finalPos = basePivotPos;
+
+        if (ShouldIdleBreath)
+            finalPos.y += Mathf.Sin(breathPhase) * idleBobAmplitude;
+
+        if (IsSprinting && !isAiming)
+        {
+            float sx = (Mathf.PerlinNoise(Time.time * sprintShakeFrequency, 0f) - 0.5f) * sprintShakeIntensity;
+            float sy = (Mathf.PerlinNoise(0f, Time.time * sprintShakeFrequency) - 0.5f) * sprintShakeIntensity;
+            finalPos += followPivot.right * sx + Vector3.up * sy;
+        }
+
+        followPivot.position = finalPos;
+
+        // 旋转 = yaw only（+ 待机呼吸偏移）
+        float breathYaw = ShouldIdleBreath ? Mathf.Sin(breathPhase) * idleBreathAmplitude : 0f;
+        Quaternion yawRot = Quaternion.Euler(0f, yaw + breathYaw, 0f);
+        followPivot.rotation = Quaternion.Slerp(followPivot.rotation, yawRot, dt * rotationSmoothing);
+    }
+
+    // ========================== 模块 2：鼠标旋转 ==========================
+
+    void DriveInput(float dt)
+    {
+        Vector2 look = GetLookInput();
+
+        yaw += look.x * yawSensitivity * dt;
+
+        float pitchInput = invertY ? look.y : -look.y;
+        pitch += pitchInput * pitchSensitivity * dt;
+        pitch = Mathf.Clamp(pitch, pitchRange.x, pitchRange.y);
+
+        yaw = Mathf.Repeat(yaw + 180f, 360f) - 180f;
+
+        // 角色转向延迟跟随（RE4 经典滞后手感）
+        if (autoAlignSpeed > 0f && !IsAiming && GetMoveMagnitude() > 0.1f)
+        {
+            float targetYaw = target.eulerAngles.y;
+            float targetDelta = Mathf.DeltaAngle(lastTargetYaw, targetYaw);
+            if (Mathf.Abs(targetDelta) > 1f)
+                turnLagTimer = turnLagDelay;
+            lastTargetYaw = targetYaw;
+
+            if (turnLagTimer > 0f)
+            {
+                turnLagTimer -= dt;
+            }
+            else
+            {
+                float yawDiff = Mathf.DeltaAngle(yaw, targetYaw);
+                if (Mathf.Abs(yawDiff) > 45f)
+                    yaw = Mathf.LerpAngle(yaw, targetYaw, autoAlignSpeed * dt);
+            }
+        }
+    }
+
+    // ========================== 模块 3：碰撞检测 ==========================
+    // 由 CinemachineDeoccluder 自动处理，无需手动 SphereCast
+
+    // ========================== 模块 4：瞄准模式 / 状态插值 ==========================
+
+    void UpdateStateBlend(float dt)
+    {
+        bool isAiming = IsAiming;
+        bool isSprinting = IsSprinting && !isAiming;
+        int targetIdx = isAiming ? 1 : (isSprinting ? 2 : 0);
+
+        if (targetIdx != toStateIndex)
+        {
+            fromStateIndex = toStateIndex;
+            toStateIndex = targetIdx;
+            stateBlend = 0f;
+        }
+        stateBlend = Mathf.Lerp(stateBlend, 1f, dt * paramBlendSpeed);
+
+        curDistance = Mathf.Lerp(states[fromStateIndex].cameraDistance, states[toStateIndex].cameraDistance, stateBlend);
+        curVerticalArm = Mathf.Lerp(states[fromStateIndex].verticalArm, states[toStateIndex].verticalArm, stateBlend);
+        curShoulderX = Mathf.Lerp(states[fromStateIndex].shoulderX, states[toStateIndex].shoulderX, stateBlend);
+        curFOV = Mathf.Lerp(states[fromStateIndex].fov, states[toStateIndex].fov, stateBlend);
+    }
+
+    /// <summary>将插值后的参数 + 近战/敌人修正应用到 Cinemachine 组件</summary>
+    void ApplyCameraParams()
+    {
+        // 近战推近：缩短距离
+        float finalDist = curDistance - meleePushDistance * meleePushRatio;
+        // 敌人拉远：放大距离
+        finalDist *= currentEnemyZoom;
+        finalDist = Mathf.Max(0.1f, finalDist);
+
+        tpf.CameraDistance = finalDist;
+        tpf.VerticalArmLength = curVerticalArm;
+        tpf.ShoulderOffset = new Vector3(curShoulderX, 0f, 0f);
+    }
+
+    void ApplyFOV(float dt)
+    {
+        vcam.Lens.FieldOfView = Mathf.Lerp(vcam.Lens.FieldOfView, curFOV, dt * paramBlendSpeed);
+    }
+
+    // ========================== 模块 5：镜头震动 ==========================
+
+    void ApplyShake(float dt)
+    {
+        if (shakeTimer > 0f)
+        {
+            shakeTimer -= dt;
+            float ratio = shakeStartDuration > 0f
+                ? Mathf.Max(0f, shakeTimer / shakeStartDuration) : 0f;
+            float shake = (Mathf.PerlinNoise(Time.time * 25f, 0f) - 0.5f)
+                          * currentShakeMag * ratio;
+            var lens = vcam.Lens;
+            lens.Dutch = shake * 2f;
+            vcam.Lens = lens;
+        }
+        else if (vcam.Lens.Dutch != 0f)
+        {
+            var lens = vcam.Lens;
+            lens.Dutch = 0f;
+            vcam.Lens = lens;
+        }
+    }
+
+    // ========================== 模块 6：剧情锁定 ==========================
+
+    void ApplyLockedCamera(float dt)
+    {
+        float k = dt * 5f;
+        cam.transform.position = Vector3.Lerp(cam.transform.position, lockedPosition, k);
+        cam.transform.rotation = Quaternion.Slerp(cam.transform.rotation, lockedRotation, k);
+        cam.fieldOfView = Mathf.Lerp(cam.fieldOfView, lockedFOV, k);
+    }
+
+    // ========================== 模块 7：奔跑晃动 ==========================
+    // 在 UpdateFollowPivot 中叠加到 followPivot.position
+
+    // ========================== 模块 8：待机呼吸 ==========================
+
+    void UpdateIdleBreathing(float dt)
+    {
+        bool isIdle = !IsAiming && GetMoveMagnitude() < 0.1f && !IsSprinting;
+
+        if (isIdle)
+        {
+            idleTimer += dt;
+            if (idleTimer > 0.5f)
+                breathPhase += dt * idleBreathSpeed;
+            wasIdle = true;
+        }
+        else
+        {
+            idleTimer = 0f;
+            if (wasIdle)
+            {
+                breathPhase = Mathf.Lerp(breathPhase, 0f, dt * 2f);
+                if (Mathf.Abs(breathPhase) < 0.01f) { breathPhase = 0f; wasIdle = false; }
+            }
+        }
+    }
+
+    bool ShouldIdleBreath => wasIdle && idleTimer > 0.5f && !IsAiming;
+
+    // ========================== 模块 9：近战镜头微推 ==========================
+
+    void UpdateMeleePush(float dt)
+    {
+        if (autoDetectMelee && controller != null)
+        {
+            bool isMelee = controller.currentState == LeonState.MeleeAttacking;
+            if (isMelee && !wasMelee)
+                TriggerMeleePush();
+            wasMelee = isMelee;
+        }
+
+        if (meleePushTimer > 0f)
+        {
+            meleePushTimer -= dt;
+            float totalDuration = meleePushDuration + meleeRecoverDuration;
+            float elapsed = totalDuration - meleePushTimer;
+
+            if (elapsed <= meleePushDuration)
+            {
+                float t = elapsed / meleePushDuration;
+                meleePushRatio = t * t * (3f - 2f * t);
+            }
+            else
+            {
+                float t = (elapsed - meleePushDuration) / meleeRecoverDuration;
+                meleePushRatio = 1f - (t * t * (3f - 2f * t));
+            }
+
+            if (meleePushTimer <= 0f)
+            {
+                meleePushTimer = 0f;
+                meleePushRatio = 0f;
+            }
+        }
+        else
+        {
+            meleePushRatio = 0f;
+        }
+    }
+
+    // ========================== 模块 10：敌人近距离自动拉远 ==========================
+
+    void UpdateEnemyProximity(float dt)
+    {
+        if (enemyLayerMask == 0) return;
+
+        enemyFrameCounter++;
+        if (enemyFrameCounter % enemyCheckFrameInterval == 0)
+        {
+            Vector3 center = target.position + Vector3.up * 1f;
+            Collider[] hits = Physics.OverlapSphere(center, enemyProximityRange, enemyLayerMask);
+            hasNearbyEnemy = hits != null && hits.Length > 0;
+        }
+
+        float targetZoom = hasNearbyEnemy ? enemyZoomOutFactor : 1f;
+        currentEnemyZoom = Mathf.Lerp(currentEnemyZoom, targetZoom, dt * enemyZoomSpeed);
+    }
+
+    // ========================== PanTilt 更新 ==========================
+
+    void UpdatePanTilt()
+    {
+        panTilt.PanAxis.Value = 0f;
+        panTilt.TiltAxis.Value = pitch;
+    }
+
+    // ========================== 辅助方法 ==========================
+
+    bool IsAiming => anim != null ? anim.GetFloat("Aim") > 0.5f : Input.GetMouseButton(1);
+
+    bool IsSprinting => controller != null
+        ? controller.IsSprinting
+        : Input.GetKey(KeyCode.LeftShift);
+
+    Vector2 GetLookInput()
+    {
+        if (controller != null)
+            return controller.LookInput;
+        return new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
+    }
+
+    float GetMoveMagnitude()
+    {
+        if (controller != null)
+            return controller.MoveInput.magnitude;
+        float h = Input.GetAxis("Horizontal");
+        float v = Input.GetAxis("Vertical");
+        return new Vector2(h, v).magnitude;
+    }
+
+    // ========================== 调试可视化 ==========================
+
+    void OnDrawGizmosSelected()
+    {
+        if (target == null) return;
+
+        Quaternion yawRot = Quaternion.Euler(0f, Application.isPlaying ? yaw : transform.eulerAngles.y, 0f);
+        Vector3 offset = Application.isPlaying
+            ? new Vector3(curShoulderX, curVerticalArm, -curDistance)
+            : normalOffset;
+        Vector3 armPos = target.position + Vector3.up * offset.y;
+        Vector3 camPos = armPos + yawRot * new Vector3(offset.x, 0f, offset.z);
+
+        Gizmos.color = Color.cyan;
+        Gizmos.DrawLine(armPos, camPos);
+        Gizmos.DrawWireSphere(camPos, collisionRadius);
+
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(armPos, 0.1f);
+
+        if (enemyLayerMask != 0)
+        {
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireSphere(target.position + Vector3.up, enemyProximityRange);
+        }
+    }
+}

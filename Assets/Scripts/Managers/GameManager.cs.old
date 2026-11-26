@@ -1,0 +1,117 @@
+using UnityEngine;
+
+/// <summary>
+/// 游戏全局状态枚举
+/// </summary>
+public enum GameState
+{
+    /// <summary>正常游戏中</summary>
+    Playing,
+    /// <summary>游戏暂停</summary>
+    Paused,
+    /// <summary>游戏结束</summary>
+    GameOver
+}
+
+/// <summary>
+/// 游戏管理器：管理游戏全局状态、流程控制、核心游戏数据
+/// 单例，场景不销毁，统一游戏入口和状态切换
+/// </summary>
+public class GameManager : Singleton<GameManager>
+{
+    #region ===== 序列化字段 =====
+
+    [Header("玩家引用")]
+    [Tooltip("场景中的PlayerController组件引用（Inspector拖拽赋值）")]
+    public PlayerController player;
+
+    [Header("游戏参数")]
+    [Tooltip("玩家最大血量")]
+    public float playerMaxHp = 100f;
+    [Tooltip("玩家攻击力")]
+    public float playerAtk = 15f;
+    [Tooltip("玩家防御力")]
+    public float playerDefense = 2f;
+
+    #endregion
+
+    #region ===== 属性 =====
+
+    /// <summary>
+    /// 当前游戏状态
+    /// </summary>
+    public GameState CurrentState { get; private set; } = GameState.Playing;
+
+    /// <summary>
+    /// 玩家是否死亡（血量归零）
+    /// </summary>
+    public bool IsPlayerDead
+    {
+        get
+        {
+            if (player == null) return false;
+            return player.currentHp <= 0f;
+        }
+    }
+
+    #endregion
+
+    #region ===== 初始化 =====
+
+    protected override void Awake()
+    {
+        base.Awake();
+        // 游戏启动时自动进入Playing状态
+        CurrentState = GameState.Playing;
+        Time.timeScale = 1f;
+    }
+
+    #endregion
+
+    #region ===== 游戏流程控制 =====
+
+    /// <summary>
+    /// 开始/重新开始游戏
+    /// 恢复时间缩放，切换到Playing状态
+    /// </summary>
+    public void StartGame()
+    {
+        CurrentState = GameState.Playing;
+        Time.timeScale = 1f;
+    }
+
+    /// <summary>
+    /// 暂停游戏
+    /// 冻结时间缩放，切换到Paused状态
+    /// </summary>
+    public void PauseGame()
+    {
+        if (CurrentState != GameState.Playing) return;
+        CurrentState = GameState.Paused;
+        Time.timeScale = 0f;
+    }
+
+    /// <summary>
+    /// 继续游戏（从暂停恢复）
+    /// 恢复时间缩放，切回Playing状态
+    /// </summary>
+    public void ResumeGame()
+    {
+        if (CurrentState != GameState.Paused) return;
+        CurrentState = GameState.Playing;
+        Time.timeScale = 1f;
+    }
+
+    /// <summary>
+    /// 触发游戏结束
+    /// 切换到GameOver状态
+    /// </summary>
+    public void GameOver()
+    {
+        if (CurrentState == GameState.GameOver) return;
+        CurrentState = GameState.GameOver;
+        // 游戏结束不暂停时间，允许死亡动画等播放
+    }
+
+    #endregion
+}
